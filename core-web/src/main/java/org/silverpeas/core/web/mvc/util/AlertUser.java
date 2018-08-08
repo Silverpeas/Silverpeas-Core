@@ -27,38 +27,45 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.util.Pair;
 
+import java.util.List;
+
 public class AlertUser {
-  protected String m_hostSpaceName;
-  protected String m_hostComponentId;
-  protected Pair<String, String> m_hostComponentLabel;
-  protected NotificationMetaData m_notificationMetaData;
+
+  private static final String URL = "/RalertUserPeas/jsp/Main";
+
+  protected String hostSpaceName;
+  protected String hostComponentId;
+  protected Pair<String, String> hostComponentLabel;
+  protected NotificationMetaData notificationMetaData;
   protected SelectionUsersGroups extraParams;
+  private List<String> hostPath;
 
   public AlertUser() {
     resetAll();
   }
 
   public void resetAll() {
-    m_hostSpaceName = "";
-    m_hostComponentId = "";
-    m_hostComponentLabel = new Pair<>("", "");
+    hostSpaceName = "";
+    hostComponentId = "";
+    hostComponentLabel = new Pair<>("", "");
     extraParams = null;
+    hostPath = null;
   }
 
-  static public String getAlertUserURL() {
-    return "/RalertUserPeas/jsp/Main";
+  public static String getAlertUserURL() {
+    return URL;
   }
 
   public void setHostSpaceName(String hostSpaceName) {
     if (hostSpaceName != null) {
-      m_hostSpaceName = hostSpaceName;
+      this.hostSpaceName = hostSpaceName;
     } else {
-      m_hostSpaceName = "";
+      this.hostSpaceName = "";
     }
   }
 
   public String getHostSpaceName() {
-    return m_hostSpaceName;
+    return hostSpaceName;
   }
 
   /**
@@ -68,14 +75,14 @@ public class AlertUser {
    */
   public void setHostComponentId(String hostComponentId) {
     if (hostComponentId != null) {
-      m_hostComponentId = hostComponentId;
+      this.hostComponentId = hostComponentId;
     } else {
-      m_hostComponentId = "";
+      this.hostComponentId = "";
     }
   }
 
   public String getHostComponentId() {
-    return m_hostComponentId;
+    return hostComponentId;
   }
 
   /**
@@ -85,26 +92,26 @@ public class AlertUser {
    */
   public void setHostComponentName(Pair<String, String> hostComponentLabel) {
     if (hostComponentLabel != null) {
-      m_hostComponentLabel = hostComponentLabel;
+      this.hostComponentLabel = hostComponentLabel;
     } else {
-      m_hostComponentLabel = new Pair<>("", "");
+      this.hostComponentLabel = new Pair<>("", "");
     }
   }
 
   public Pair<String, String> getHostComponentName() {
-    return m_hostComponentLabel;
+    return hostComponentLabel;
   }
 
   public void setNotificationMetaData(NotificationMetaData notificationMetaData) {
     if (notificationMetaData != null) {
-      m_notificationMetaData = notificationMetaData;
+      this.notificationMetaData = notificationMetaData;
     } else {
-      m_notificationMetaData = new NotificationMetaData();
+      this.notificationMetaData = new NotificationMetaData();
     }
   }
 
   public NotificationMetaData getNotificationMetaData() {
-    return m_notificationMetaData;
+    return notificationMetaData;
   }
 
   public SelectionUsersGroups getSelectionUsersGroups() {
@@ -113,5 +120,13 @@ public class AlertUser {
 
   public void setSelectionUsersGroups(SelectionUsersGroups extraParams) {
     this.extraParams = extraParams;
+  }
+
+  public List<String> getHostPath() {
+    return hostPath;
+  }
+
+  public void setHostPath(final List<String> hostPath) {
+    this.hostPath = hostPath;
   }
 }

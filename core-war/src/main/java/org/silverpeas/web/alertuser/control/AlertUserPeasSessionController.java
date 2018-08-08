@@ -23,7 +23,9 @@
  */
 package org.silverpeas.web.alertuser.control;
 
+import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.notification.user.client.GroupRecipient;
@@ -43,6 +45,7 @@ import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class declaration
@@ -51,12 +54,12 @@ import java.util.Arrays;
  */
 public class AlertUserPeasSessionController extends AbstractComponentSessionController {
 
-  protected AlertUser m_AlertUser = null;
-  protected Selection m_Selection = null;
-  protected NotificationSender notificationSender = null;
-  protected String m_Context = URLUtil.getApplicationURL();
-  protected UserDetail[] m_userRecipients;
-  protected Group[] m_groupRecipients;
+  protected AlertUser alertUser;
+  protected Selection selection;
+  protected NotificationSender notificationSender;
+  protected String webContext = URLUtil.getApplicationURL();
+  protected UserDetail[] userRecipients;
+  protected Group[] groupRecipients;
 
   /**
    * Standard Session Controller Constructeur
@@ -71,14 +74,14 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
         "org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle",
         "org.silverpeas.alertUserPeas.settings.alertUserPeasIcons");
     setComponentRootName(URLUtil.CMP_ALERTUSERPEAS);
-    m_AlertUser = getAlertUser();
-    m_Selection = getSelection();
+    alertUser = getAlertUser();
+    selection = getSelection();
     notificationSender = new NotificationSender(null);
   }
 
   public void init() {
-    m_userRecipients = new UserDetail[0];
-    m_groupRecipients = new Group[0];
+    userRecipients = new UserDetail[0];
+    groupRecipients = new Group[0];
   }
 
   // -------------------------------------------------------------------------------------------------------------------
@@ -86,58 +89,62 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
   // ----------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   public Pair getHostComponentName() {
-    return m_AlertUser.getHostComponentName();
+    return alertUser.getHostComponentName();
   }
 
   public String getHostSpaceName() {
-    return m_AlertUser.getHostSpaceName();
+    return alertUser.getHostSpaceName();
   }
 
   public String getHostComponentId() {
-    return m_AlertUser.getHostComponentId();
+    return alertUser.getHostComponentId();
+  }
+
+  public List<String> getHostPath() {
+    return alertUser.getHostPath();
   }
 
   public UserDetail[] getUserRecipients() {
-    return m_userRecipients;
+    return userRecipients;
   }
 
   public Group[] getGroupRecipients() {
-    return m_groupRecipients;
+    return groupRecipients;
   }
 
   public NotificationMetaData getNotificationMetaData() {
-    return m_AlertUser.getNotificationMetaData();
+    return alertUser.getNotificationMetaData();
   }
 
   // initialisation de Selection pour nav vers SelectionPeas
   public String initSelection() {
-    String url = m_Context + URLUtil.getURL(getComponentRootName(), null, null);
+    String url = webContext + URLUtil.getURL(getComponentRootName(), null, null);
     String goUrl = url + "FromSelection";
     String cancelUrl = url + "Close";
 
-    m_Selection.resetAll();
+    selection.resetAll();
 
-    m_Selection.setGoBackURL(goUrl);
-    m_Selection.setCancelURL(cancelUrl);
+    selection.setGoBackURL(goUrl);
+    selection.setCancelURL(cancelUrl);
 
     // bien que le up s'affiche en popup, le mécanisme de fermeture est assuré
     // par le composant=> il est donc nécessaire d'indiquer
     // à l'UserPanelPeas de ne pas s'occuper de cette fermeture!
-    m_Selection.setHostPath(null);
-    m_Selection.setHostComponentName(getHostComponentName());
-    m_Selection.setHostSpaceName(getHostSpaceName());
+    selection.setHostPath(null);
+    selection.setHostComponentName(getHostComponentName());
+    selection.setHostSpaceName(getHostSpaceName());
 
     // Add extra params
-    SelectionUsersGroups sug = m_AlertUser.getSelectionUsersGroups();
+    SelectionUsersGroups sug = alertUser.getSelectionUsersGroups();
     if (sug == null) {
       sug = new SelectionUsersGroups();
     }
     sug.setComponentId(getHostComponentId());
-    m_Selection.setExtraParams(sug);
+    selection.setExtraParams(sug);
 
     // Limitations
     if (getUserDetail().isUserManualNotificationUserReceiverLimit()) {
-      m_Selection
+      selection
           .setSelectedUserLimit(getUserDetail().getUserManualNotificationUserReceiverLimitValue());
     }
 
@@ -147,12 +154,12 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
   // recupération des users et groupes selectionnés au travers de
   // selectionPeas
   public void computeSelection() {
-    m_userRecipients = SelectionUsersGroups.getUserDetails(m_Selection
+    userRecipients = SelectionUsersGroups.getUserDetails(selection
         .getSelectedElements());
-    m_groupRecipients = SelectionUsersGroups.getGroups(m_Selection
+    groupRecipients = SelectionUsersGroups.getGroups(selection
         .getSelectedSets());
-    Arrays.sort(m_userRecipients);
-    Arrays.sort(m_groupRecipients);
+    Arrays.sort(userRecipients);
+    Arrays.sort(groupRecipients);
   }
 
   public void prepareNotification(String message) {
@@ -163,12 +170,21 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
     for (String groupId : SelectionUsersGroups.getGroupIds(getGroupRecipients())) {
       notifMetaData.addGroupRecipient(new GroupRecipient(groupId));
     }
-    if (StringUtil.isDefined(message) && (getUserRecipients().length > 0
-        || getGroupRecipients().length > 0)) {
+    if (StringUtil.isDefined(message) && (ArrayUtil.isNotEmpty(getUserRecipients())
+        || ArrayUtil.isNotEmpty(getGroupRecipients()))) {
       String safeMessage = Encode.forHtml(message);
       for (String language : DisplayI18NHelper.getLanguages()) {
         setNotificationContent(safeMessage, language);
       }
+    }
+    setSender();
+  }
+
+  private void setSender() {
+    getNotificationMetaData().setSender(getUserId());
+    for (SilverpeasTemplate template : getNotificationMetaData().getTemplates().values()) {
+      template.setAttribute("sender", getUserDetail());
+      template.setAttribute("senderName", getUserDetail().getDisplayedName());
     }
   }
 

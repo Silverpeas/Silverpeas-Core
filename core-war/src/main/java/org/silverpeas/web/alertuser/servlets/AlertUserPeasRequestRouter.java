@@ -35,20 +35,11 @@ import org.silverpeas.core.web.http.HttpRequest;
 /**
  * Class declaration
  *
- * @author
  */
 public class AlertUserPeasRequestRouter extends ComponentRequestRouter<AlertUserPeasSessionController> {
 
   private static final long serialVersionUID = 5335551355656715989L;
 
-  /**
-   * Method declaration
-   *
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
   @Override
   public AlertUserPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -98,8 +89,7 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter<AlertUser
         if ((userDetails.length > 0) || (groups.length > 0)) {
           request.setAttribute("UserR", userDetails);
           request.setAttribute("GroupR", groups);
-          request.setAttribute("HostComponentName", scc.getHostComponentName());
-          request.setAttribute("HostSpaceName", scc.getHostSpaceName());
+          setHostAttributes(scc, request);
           destination = "/alertUserPeas/jsp/writeMessage.jsp";
         } else {
           // No users or groups => clsoing the popup
@@ -109,15 +99,13 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter<AlertUser
         // Closing the popup
         destination = "/alertUserPeas/jsp/close.jsp";
       } else if (function.startsWith("ToAlert")) {
-        request.setAttribute("HostComponentName", scc.getHostComponentName());
-        request.setAttribute("HostSpaceName", scc.getHostSpaceName());
+        setHostAttributes(scc, request);
         String message = request.getParameter("messageAux");
         scc.prepareNotification(message);
         destination = "/alertUserPeas/jsp/sendMessage.jsp";
       } else if (function.startsWith("Notify")) {
         // Sending the notification
-        request.setAttribute("HostComponentName", scc.getHostComponentName());
-        request.setAttribute("HostSpaceName", scc.getHostSpaceName());
+        setHostAttributes(scc, request);
         scc.sendNotification();
         destination = "/alertUserPeas/jsp/messageOk.jsp";
       }
@@ -126,7 +114,12 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter<AlertUser
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-
     return destination;
+  }
+
+  private void setHostAttributes(AlertUserPeasSessionController scc, HttpRequest request) {
+    request.setAttribute("HostComponentName", scc.getHostComponentName());
+    request.setAttribute("HostSpaceName", scc.getHostSpaceName());
+    request.setAttribute("HostPath", scc.getHostPath());
   }
 }
