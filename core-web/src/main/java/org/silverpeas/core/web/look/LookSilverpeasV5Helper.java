@@ -630,10 +630,10 @@ public class LookSilverpeasV5Helper extends LookHelper {
     return defaultSpaceId;
   }
 
-  private PublicationHelper getPublicationHelper() throws ClassNotFoundException,
+  protected PublicationHelper getPublicationHelper() throws ClassNotFoundException,
       InstantiationException, IllegalAccessException {
     if (kmeliaTransversal == null) {
-      String helperClassName = resources.getString("publicationHelper",
+      String helperClassName = getSettings("publicationHelper",
           "org.silverpeas.components.kmelia.KmeliaTransversal");
       Class<?> helperClass = Class.forName(helperClassName);
       kmeliaTransversal = (PublicationHelper) helperClass.newInstance();
