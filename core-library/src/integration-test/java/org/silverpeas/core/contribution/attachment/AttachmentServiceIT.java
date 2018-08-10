@@ -34,7 +34,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -816,7 +815,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testReorderAttachments() throws RepositoryException, IOException {
-    WAPrimaryKey foreignKey = new ResourceReference("node36", instanceId);
+    ResourceReference foreignKey = new ResourceReference("node36", instanceId);
     try (JcrSession session = openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
@@ -862,7 +861,8 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
       document4.setPK(id);
       documentRepository.storeContent(document4, content);
       session.save();
-      List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+      List<SimpleDocument> result =
+          instance.listDocumentsByForeignKey(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(3));
       assertThat(result.get(0), SimpleDocumentMatcher.matches(document2));
@@ -908,7 +908,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testSearchAttachmentsByExternalObject() throws RepositoryException, IOException {
-    WAPrimaryKey foreignKey = new ResourceReference("node36", instanceId);
+    ResourceReference foreignKey = new ResourceReference("node36", instanceId);
     try (JcrSession session = openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
@@ -955,7 +955,8 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
       documentRepository.storeContent(document4, content);
 
       session.save();
-      List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+      List<SimpleDocument> result =
+          instance.listDocumentsByForeignKey(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(3));
       assertThat(result.get(0), SimpleDocumentMatcher.matches(document2));

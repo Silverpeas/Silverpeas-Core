@@ -30,7 +30,6 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.viewer.service.PreviewService;
 import org.silverpeas.core.viewer.service.ViewService;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
@@ -42,9 +41,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.reader;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.user;
@@ -110,23 +109,21 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
   }
 
   private List<SimpleDocumentEntity> asWebEntities(List<SimpleDocument> docs) {
-    final List<SimpleDocumentEntity> entities = new ArrayList<>();
     final SilverpeasRole userRole = highestUserRole != null ? highestUserRole : getHighestUserRole();
-    docs.stream().map(d -> {
+    return docs.stream().map(d -> {
       if (d.isVersioned() && !d.isPublic() && (userRole == user || userRole == reader)) {
         return d.getLastPublicVersion();
       }
       return d;
-    }).forEach(d -> {
+    }).map(d -> {
       final SimpleDocumentEntity entity = SimpleDocumentEntity.fromAttachment(d);
-      entities.add(entity);
       if (viewIndicators) {
         entity.prewiewable(PreviewService.get().isPreviewable(new File(d.getAttachmentPath())))
             .viewable(ViewService.get().isViewable(new File(d.getAttachmentPath())))
             .displayAsContent(d.isDisplayableAsContent());
       }
-    });
-    return entities;
+      return entity;
+    }).collect(Collectors.toList());
   }
 
 }

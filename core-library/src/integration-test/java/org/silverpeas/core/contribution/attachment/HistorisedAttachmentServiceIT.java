@@ -34,7 +34,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -475,7 +474,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
   @Test
   public void testReorderAttachments() throws RepositoryException,
       IOException {
-    WAPrimaryKey foreignKey = new ResourceReference("node36", instanceId);
+    ResourceReference foreignKey = new ResourceReference("node36", instanceId);
     try (JcrSession session = openSystemSession()) {
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -517,7 +516,8 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
       document4 = instance.searchDocumentById(id, "en");
 
       session.save();
-      List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+      List<SimpleDocument> result =
+          instance.listDocumentsByForeignKey(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(3));
       assertThat(result.get(0), SimpleDocumentMatcher.matches(document2));
@@ -549,7 +549,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testSwitchAllowingDownloadForReaders() throws RepositoryException, IOException {
-    WAPrimaryKey foreignKey = new ResourceReference("node36", instanceId);
+    ResourceReference foreignKey = new ResourceReference("node36", instanceId);
     SimpleDocumentPK documentPK;
     try (JcrSession session = openSystemSession()) {
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
@@ -568,7 +568,8 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
     try (JcrSession session = openSystemSession()) {
 
       // Verifying document is created.
-      List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+      List<SimpleDocument> result =
+          instance.listDocumentsByForeignKey(foreignKey, "fr");
       assertThat(result, notNullValue());
       assertThat(result, hasSize(1));
       SimpleDocument documentOfResult = result.get(0);
@@ -612,7 +613,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testSwitchDisplayableAsContent() throws RepositoryException, IOException {
-    WAPrimaryKey foreignKey = new ResourceReference("node36", instanceId);
+    ResourceReference foreignKey = new ResourceReference("node36", instanceId);
     SimpleDocumentPK documentPK;
     try (JcrSession session = openSystemSession()) {
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
@@ -688,7 +689,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
   @Test
   public void testSearchAttachmentsByExternalObject() throws RepositoryException,
       IOException {
-    WAPrimaryKey foreignKey = new ResourceReference("node36", instanceId);
+    ResourceReference foreignKey = new ResourceReference("node36", instanceId);
     try (JcrSession session = openSystemSession()) {
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);

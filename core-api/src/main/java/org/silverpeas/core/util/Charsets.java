@@ -23,9 +23,8 @@
  */
 package org.silverpeas.core.util;
 
-import org.apache.commons.lang3.CharEncoding;
-
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 
 /**
@@ -37,40 +36,40 @@ public class Charsets {
   /**
    * US-ASCII: seven-bit ASCII.
    */
-  public static final Charset US_ASCII = Charset.forName(CharEncoding.US_ASCII);
+  public static final Charset US_ASCII = StandardCharsets.US_ASCII;
   /**
    * ISO-8859-1 : ISO-LATIN-1.
    */
-  public static final Charset ISO_8859_1 = Charset.forName(CharEncoding.ISO_8859_1);
+  public static final Charset ISO_8859_1 = StandardCharsets.ISO_8859_1;
   /**
    * UTF-8.
    */
-  public static final Charset UTF_8 = Charset.forName(CharEncoding.UTF_8);
+  public static final Charset UTF_8 = StandardCharsets.UTF_8;
+
   /**
    * UTF-16BE: UTF-16 big-endian byte order.
    */
-  public static final Charset UTF_16BE = Charset.forName(CharEncoding.UTF_16BE);
+  public static final Charset UTF_16BE = StandardCharsets.UTF_16BE;
   /**
    * UTF-16LE: UTF-16 little-endian byte order.
    */
-  public static final Charset UTF_16LE = Charset.forName(CharEncoding.UTF_16LE);
+  public static final Charset UTF_16LE = StandardCharsets.UTF_16LE;
   /**
    * UTF-16: UTF-16 byte order identified by an optional byte-order mark.
    */
-  public static final Charset UTF_16 = Charset.forName(CharEncoding.UTF_16);
+  public static final Charset UTF_16 = StandardCharsets.UTF_16;
 
   private Charsets() {
   }
 
-
   /**
    * Returns a Charset for the named charset. If the name is null, return the default Charset.
-   *
+   * The {@link UnsupportedCharsetException} runtime exception is thrown if the specified charset
+   * doesn't exist or is not supported by Java.
    * @param charset The name of the requested charset, may be null.
    * @return a Charset for the named charset
-   * @throws java.nio.charset.UnsupportedCharsetException If the named charset is unavailable
    */
-  public static Charset toCharset(String charset) throws UnsupportedCharsetException {
+  public static Charset toCharset(String charset) {
     if (charset != null) {
       return Charset.forName(charset);
     }

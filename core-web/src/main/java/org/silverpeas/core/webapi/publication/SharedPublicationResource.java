@@ -122,7 +122,7 @@ public class SharedPublicationResource extends AbstractPublicationResource {
   @Override
   protected boolean isNodeReadable(NodePK nodePK) {
     nodePK.setComponentName(getComponentId());
-    NodeDetail node = super.geetNodeService().getDetail(nodePK);
+    NodeDetail node = super.getNodeService().getDetail(nodePK);
     ShareableNode nodeResource = new ShareableNode(token, node);
     return this.ticket.getAccessControl().isReadable(nodeResource);
   }

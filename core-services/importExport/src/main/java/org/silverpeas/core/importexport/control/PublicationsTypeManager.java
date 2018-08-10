@@ -269,7 +269,8 @@ public class PublicationsTypeManager {
       throws ImportExportException {
     // Récupération des attachments et copie des fichiers
     List<AttachmentDetail> attachments =
-        attachmentIE.getAttachments(publicationPK, exportPath, exportRelativePath, null);
+        attachmentIE.getAttachments(publicationPK.toResourceReference(), exportPath,
+            exportRelativePath, null);
     if (attachments != null && !attachments.isEmpty() && publicationType != null) {
       publicationType.setAttachmentsType(attachments);
     }
@@ -494,8 +495,8 @@ public class PublicationsTypeManager {
       PublicationDetail publicationDetail = publicationType.getPublicationDetail();
       fillPublicationType(gedIE, publicationType, rootPK);
 
-      List<AttachmentDetail> attachments = attachmentIE
-          .getAttachments(publicationDetail.getPK(), exportPath, null, "pdf");
+      List<AttachmentDetail> attachments = attachmentIE.getAttachments(
+          publicationDetail.getPK().toResourceReference(), exportPath, null, "pdf");
 
       if (attachments != null && !attachments.isEmpty()) {
         result.addAll(attachments);

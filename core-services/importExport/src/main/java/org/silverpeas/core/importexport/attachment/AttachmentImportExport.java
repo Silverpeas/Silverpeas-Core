@@ -23,26 +23,25 @@
  */
 package org.silverpeas.core.importexport.attachment;
 
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.importexport.form.FormTemplateImportExport;
-import org.silverpeas.core.importexport.form.XMLModelContentType;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.importexport.form.FormTemplateImportExport;
+import org.silverpeas.core.importexport.form.XMLModelContentType;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.file.FileUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -211,13 +210,13 @@ public class AttachmentImportExport {
    * @param extensionFilter
    * @return une liste des attachmentDetail trouves
    */
-  public List<AttachmentDetail> getAttachments(WAPrimaryKey pk, String exportPath,
+  public List<AttachmentDetail> getAttachments(ResourceReference pk, String exportPath,
       String relativeExportPath, String extensionFilter) {
 
     // Recuperation des attachments
     Collection<SimpleDocument> listAttachment = AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKey(pk, null);
-    List<AttachmentDetail> listToReturn = new ArrayList<AttachmentDetail>(listAttachment.size());
+    List<AttachmentDetail> listToReturn = new ArrayList<>(listAttachment.size());
     if (!listAttachment.isEmpty()) {
       // Pour chaque attachment trouve, on copie le fichier dans le dossier
       // d'exportation

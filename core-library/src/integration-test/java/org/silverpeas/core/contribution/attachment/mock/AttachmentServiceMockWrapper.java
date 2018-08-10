@@ -23,9 +23,8 @@
  */
 package org.silverpeas.core.contribution.attachment.mock;
 
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.mockito.Mockito;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -108,8 +107,8 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocumentPK> copyAllDocuments(final WAPrimaryKey resourceSourcePk,
-      final WAPrimaryKey targetDestinationPk) {
+  public List<SimpleDocumentPK> copyAllDocuments(final ResourceReference resourceSourcePk,
+      final ResourceReference targetDestinationPk) {
     return mock.copyAllDocuments(resourceSourcePk, targetDestinationPk);
   }
 
@@ -119,8 +118,8 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocumentPK> moveAllDocuments(final WAPrimaryKey resourceSourcePk,
-      final WAPrimaryKey targetDestinationPk) {
+  public List<SimpleDocumentPK> moveAllDocuments(final ResourceReference resourceSourcePk,
+      final ResourceReference targetDestinationPk) {
     return mock.moveAllDocuments(resourceSourcePk, targetDestinationPk);
   }
 
@@ -211,25 +210,25 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey,
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(ResourceReference foreignKey,
       String lang) {
     return mock.listDocumentsByForeignKey(foreignKey, lang);
   }
 
   @Override
-  public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey,
+  public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(ResourceReference foreignKey,
       String lang) {
     return mock.listAllDocumentsByForeignKey(foreignKey, lang);
   }
 
   @Override
   public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(
-      WAPrimaryKey foreignKey, DocumentType type, String lang) {
+      ResourceReference foreignKey, DocumentType type, String lang) {
     return mock.listDocumentsByForeignKeyAndType(foreignKey, type, lang);
   }
 
   @Override
-  public void unindexAttachmentsOfExternalObject(WAPrimaryKey foreignKey) {
+  public void unindexAttachmentsOfExternalObject(ResourceReference foreignKey) {
     mock.unindexAttachmentsOfExternalObject(foreignKey);
   }
 
@@ -297,7 +296,7 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public void indexAllDocuments(WAPrimaryKey fk, Date startOfVisibilityPeriod,
+  public void indexAllDocuments(ResourceReference fk, Date startOfVisibilityPeriod,
       Date endOfVisibilityPeriod) {
     mock.indexAllDocuments(fk, startOfVisibilityPeriod, endOfVisibilityPeriod);
   }

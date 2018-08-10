@@ -24,15 +24,14 @@
 package org.silverpeas.core.contribution.attachment;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.index.indexing.model.DocumentIndexing;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
+import org.silverpeas.core.index.indexing.model.DocumentIndexing;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.io.File;
 import java.io.InputStream;
@@ -42,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * Service to manage the attachments of resources in Silverpeas.
  * @author ehugonnet
  */
 public interface AttachmentService extends DocumentIndexing {
@@ -130,8 +129,8 @@ public interface AttachmentService extends DocumentIndexing {
    * that will get the copied attachments.
    * @return le list of copied attachments, empty if nothing is copied.
    */
-  List<SimpleDocumentPK> copyAllDocuments(WAPrimaryKey resourceSourcePk,
-      WAPrimaryKey targetDestinationPk);
+  List<SimpleDocumentPK> copyAllDocuments(ResourceReference resourceSourcePk,
+      ResourceReference targetDestinationPk);
 
   /**
    * Moves the attachment.
@@ -149,8 +148,8 @@ public interface AttachmentService extends DocumentIndexing {
    * that will get the moved attachments.
    * @return le list of moved attachments, empty if nothing is moved.
    */
-  List<SimpleDocumentPK> moveAllDocuments(WAPrimaryKey resourceSourcePk,
-      WAPrimaryKey targetDestinationPk);
+  List<SimpleDocumentPK> moveAllDocuments(ResourceReference resourceSourcePk,
+      ResourceReference targetDestinationPk);
 
 
   /**
@@ -310,7 +309,7 @@ public interface AttachmentService extends DocumentIndexing {
    * @return the list of attached documents.
    * @throws AttachmentException when is impossible to search
    */
-  SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey,
+  SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(ResourceReference foreignKey,
       String lang);
 
   /**
@@ -321,7 +320,7 @@ public interface AttachmentService extends DocumentIndexing {
    * @return the list of attached documents.
    * @throws AttachmentException when is impossible to search
    */
-  SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey,
+  SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(ResourceReference foreignKey,
       String lang);
 
   /**
@@ -333,10 +332,10 @@ public interface AttachmentService extends DocumentIndexing {
    * @return the list of attached documents.
    * @throws AttachmentException when is impossible to search
    */
-  SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey,
+  SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(ResourceReference foreignKey,
       DocumentType type, String lang);
 
-  void unindexAttachmentsOfExternalObject(WAPrimaryKey foreignKey);
+  void unindexAttachmentsOfExternalObject(ResourceReference foreignKey);
 
   /**
    * To update the document : status, metadata but not its content.
@@ -465,7 +464,7 @@ public interface AttachmentService extends DocumentIndexing {
    * @param startOfVisibilityPeriod can be null.
    * @param endOfVisibilityPeriod can be null.
    */
-  void indexAllDocuments(WAPrimaryKey fk, Date startOfVisibilityPeriod, Date endOfVisibilityPeriod);
+  void indexAllDocuments(ResourceReference fk, Date startOfVisibilityPeriod, Date endOfVisibilityPeriod);
 
   /**
    * Change the management of versions of the documents of a whole component (only attachments are

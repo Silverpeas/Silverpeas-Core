@@ -25,10 +25,8 @@ package org.silverpeas.core.contribution.attachment;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.cache.VolatileResourceCleaner;
@@ -47,8 +45,6 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
@@ -56,7 +52,7 @@ import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -75,7 +71,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -96,6 +91,7 @@ public class SimpleDocumentService
     implements AttachmentService, ComponentInstanceDeletion, VolatileResourceCleaner {
 
   private static final int STEP = 5;
+  private static final String ATTACHMENT_TYPE = "Attachment";
   @Inject
   private WebdavRepository webdavRepository;
   @Inject
@@ -124,7 +120,7 @@ public class SimpleDocumentService
                 componentInstanceId);
       }
     } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -150,7 +146,7 @@ public class SimpleDocumentService
   public void createIndex(SimpleDocument document, Date startOfVisibility, Date endOfVisibility) {
     if (settings.getBoolean("attachment.index.separately", true)) {
       String language = I18NHelper.checkLanguage(document.getLanguage());
-      String objectType = "Attachment" + document.getId() + "_" + language;
+      String objectType = ATTACHMENT_TYPE + document.getId() + "_" + language;
       FullIndexEntry indexEntry = new FullIndexEntry(document.getInstanceId(), objectType, document.
           getForeignId());
       indexEntry.setLang(language);
@@ -166,7 +162,7 @@ public class SimpleDocumentService
       indexEntry.setTitle(document.getTitle(), language);
       indexEntry.setPreview(document.getDescription(), language);
       indexEntry.setFilename(document.getFilename());
-      indexEntry.addFileContent(document.getAttachmentPath(), CharEncoding.UTF_8, document.
+      indexEntry.addFileContent(document.getAttachmentPath(), Charsets.UTF_8.name(), document.
           getContentType(), language);
       if (StringUtil.isDefined(document.getXmlFormId())) {
         updateIndexEntryWithXMLFormContent(document.getPk(), document.getXmlFormId(), indexEntry);
@@ -178,14 +174,13 @@ public class SimpleDocumentService
   private void updateIndexEntryWithXMLFormContent(SimpleDocumentPK pk, String xmlFormName,
       FullIndexEntry indexEntry) {
     try {
-      String objectType = "Attachment";
+      String objectType = ATTACHMENT_TYPE;
       PublicationTemplate pub = PublicationTemplateManager.getInstance().
           getPublicationTemplate(indexEntry.getComponent() + ":" + objectType + ":" + xmlFormName);
       RecordSet set = pub.getRecordSet();
       set.indexRecord(pk.getId(), xmlFormName, indexEntry);
     } catch (PublicationTemplateException | FormException e) {
-      SilverTrace
-          .error("attachment", "AttachmentService.updateIndexEntryWithXMLFormContent()", "", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -198,14 +193,14 @@ public class SimpleDocumentService
     if (language == null) {
       language = I18NHelper.defaultLanguage;
     }
-    String objectType = "Attachment" + document.getId() + '_' + language;
+    String objectType = ATTACHMENT_TYPE + document.getId() + '_' + language;
     IndexEntryKey indexEntry = new IndexEntryKey(document.getInstanceId(), objectType, document.
         getForeignId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
   @Override
-  public void unindexAttachmentsOfExternalObject(WAPrimaryKey foreignKey) {
+  public void unindexAttachmentsOfExternalObject(ResourceReference foreignKey) {
     try (JcrSession session = openSystemSession()) {
       List<SimpleDocument> docs = repository.listDocumentsByForeignId(session, foreignKey.
           getInstanceId(), foreignKey.getId(), I18NHelper.defaultLanguage);
@@ -213,7 +208,7 @@ public class SimpleDocumentService
         deleteIndex(doc, I18NHelper.defaultLanguage);
       }
     } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -225,7 +220,7 @@ public class SimpleDocumentService
       repository.updateDocument(session, doc, true);
       session.save();
     } catch (RepositoryException | IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -292,7 +287,7 @@ public class SimpleDocumentService
       }
       return finalDocument;
     } catch (RepositoryException | IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -326,7 +321,7 @@ public class SimpleDocumentService
       deleteAttachment(session, document, notify);
       session.save();
     } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -360,29 +355,29 @@ public class SimpleDocumentService
       }
       return doc;
     } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
   @Override
-  public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey,
+  public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(ResourceReference foreignKey,
       String lang) {
     try (JcrSession session = openSystemSession()) {
       return repository.listAllDocumentsByForeignId(session, foreignKey.getInstanceId(), foreignKey.
           getId(), lang);
     } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
   @Override
-  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey,
+  public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(ResourceReference foreignKey,
       String lang) {
     try (JcrSession session = openSystemSession()) {
       return repository.listDocumentsByForeignId(session, foreignKey.getInstanceId(), foreignKey.
           getId(), lang);
     } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -396,18 +391,16 @@ public class SimpleDocumentService
           repository.findDocumentById(session, document.getPk(), document.getLanguage());
       repository.fillNodeName(session, document);
       repository.updateDocument(session, document, true);
-      if (!oldAttachment.isVersioned()) {
-        if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
-          // le fichier est renommé
-          if (!oldAttachment.getFilename().equals(document.getFilename())) {
-            webdavRepository.deleteAttachmentNode(session, oldAttachment);
-            webdavRepository.createAttachmentNode(session, document);
-          } else {
-            webdavRepository.updateAttachmentBinaryContent(session, document);
-          }
+      if (!oldAttachment.isVersioned() && document.isOpenOfficeCompatible() &&
+          document.isReadOnly()) {
+        // le fichier est renommé
+        if (!oldAttachment.getFilename().equals(document.getFilename())) {
+          webdavRepository.deleteAttachmentNode(session, oldAttachment);
+          webdavRepository.createAttachmentNode(session, document);
+        } else {
+          webdavRepository.updateAttachmentBinaryContent(session, document);
         }
       }
-
       session.save();
 
       String userId = document.getUpdatedBy();
@@ -418,7 +411,7 @@ public class SimpleDocumentService
         createIndex(document);
       }
     } catch (RepositoryException | IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -459,7 +452,7 @@ public class SimpleDocumentService
         createIndex(finalDocument);
       }
     } catch (RepositoryException | IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -501,7 +494,7 @@ public class SimpleDocumentService
       FileUtils.deleteQuietly(fileToDelete);
       FileUtil.deleteEmptyDir(fileToDelete.getParentFile());
     } catch (RepositoryException | IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -523,7 +516,7 @@ public class SimpleDocumentService
       session.save();
       return clonePk;
     } catch (RepositoryException | IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -555,16 +548,16 @@ public class SimpleDocumentService
 
       return copyPk;
     } catch (RepositoryException | IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
-  public List<SimpleDocumentPK> copyAllDocuments(@SourcePK WAPrimaryKey resourceSourcePk,
-      @TargetPK WAPrimaryKey targetDestinationPk) {
-    List<SimpleDocumentPK> copiedDocumentKeys = new ArrayList<SimpleDocumentPK>();
+  public List<SimpleDocumentPK> copyAllDocuments(@SourcePK ResourceReference resourceSourcePk,
+      @TargetPK ResourceReference targetDestinationPk) {
+    List<SimpleDocumentPK> copiedDocumentKeys = new ArrayList<>();
     List<SimpleDocument> documentsToCopy = listAllDocumentsByForeignKey(resourceSourcePk, null);
     for (SimpleDocument documentToCopy : documentsToCopy) {
       copiedDocumentKeys.add(copyDocument(documentToCopy, new ResourceReference(targetDestinationPk)));
@@ -589,7 +582,7 @@ public class SimpleDocumentService
       }
       session.save();
     } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -609,7 +602,7 @@ public class SimpleDocumentService
       }
       session.save();
     } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -625,7 +618,7 @@ public class SimpleDocumentService
          InputStream in = repository.getContent(session, pk, lang)) {
       IOUtils.copyLarge(in, output, contentOffset, contentLength);
     } catch (IOException | RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -634,7 +627,7 @@ public class SimpleDocumentService
     try (JcrSession session = openSystemSession()) {
       return repository.listDocumentsRequiringWarning(session, alertDate, language);
     } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -643,7 +636,7 @@ public class SimpleDocumentService
     try (JcrSession session = openSystemSession()) {
       return repository.listExpiringDocuments(session, expiryDate, language);
     } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -652,7 +645,7 @@ public class SimpleDocumentService
     try (JcrSession session = openSystemSession()) {
       return repository.listDocumentsToUnlock(session, expiryDate, language);
     } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -661,27 +654,19 @@ public class SimpleDocumentService
   @Override
   public void updateAttachment(@SourceObject @TargetPK SimpleDocument document, File content,
       boolean indexIt, boolean notify) {
-    InputStream in = null;
-    try {
-      in = new BufferedInputStream(new FileInputStream(content));
+    try (InputStream in = new BufferedInputStream(new FileInputStream(content))) {
       updateAttachment(document, in, indexIt, notify);
-    } catch (FileNotFoundException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      IOUtils.closeQuietly(in);
+    } catch (IOException ex) {
+      throw new AttachmentException(ex);
     }
   }
 
   @Override
   public void getBinaryContent(File file, SimpleDocumentPK pk, String lang) {
-    OutputStream out = null;
-    try {
-      out = new BufferedOutputStream(new FileOutputStream(file));
+    try (OutputStream out = new BufferedOutputStream(new FileOutputStream(file))) {
       getBinaryContent(out, pk, lang);
-    } catch (FileNotFoundException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      IOUtils.closeQuietly(out);
+    } catch (IOException ex) {
+      throw new AttachmentException(ex);
     }
   }
 
@@ -706,14 +691,10 @@ public class SimpleDocumentService
   @Override
   public SimpleDocument createAttachment(@SourceObject @TargetPK SimpleDocument document,
       File content, boolean indexIt, boolean notify) {
-    InputStream in = null;
-    try {
-      in = new BufferedInputStream(new FileInputStream(content));
+    try (InputStream in = new BufferedInputStream(new FileInputStream(content))) {
       return createAttachment(document, in, indexIt, notify);
-    } catch (FileNotFoundException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
-    } finally {
-      IOUtils.closeQuietly(in);
+    } catch (IOException ex) {
+      throw new AttachmentException(ex);
     }
   }
 
@@ -736,56 +717,27 @@ public class SimpleDocumentService
       contentLanguage = document.getLanguage();
       boolean updateOfficeContentFromWebDav =
           document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav();
-      if (updateOfficeContentFromWebDav) {
+      if (updateOfficeContentFromWebDav && !contentLanguage.equals(StringUtil
+          .defaultStringIfNotDefined(document.getWebdavContentEditionLanguage(),
+              contentLanguage))) {
         // Verifying if the content language handled in WEBDAV repository is the same as the
         // content language took from the context.
-        if (!contentLanguage.equals(StringUtil
-            .defaultStringIfNotDefined(document.getWebdavContentEditionLanguage(),
-                contentLanguage))) {
-          // The language handled into WEVDAV is different, SimpleDocument must be reloaded with
-          // the right content language.
-          contentLanguage = document.getWebdavContentEditionLanguage();
-          document = repository
-              .findDocumentById(session, new SimpleDocumentPK(context.getAttachmentId()),
-                  contentLanguage);
-        }
+        // The language handled into WEVDAV is different, SimpleDocument must be reloaded with
+        // the right content language.
+        contentLanguage = document.getWebdavContentEditionLanguage();
+        document =
+            repository.findDocumentById(session, new SimpleDocumentPK(context.getAttachmentId()),
+                contentLanguage);
       }
-      if (document.isOpenOfficeCompatible() && !context.isForce() &&
-          webdavRepository.isNodeLocked(session, document)) {
-        return false;
-      }
-      if (!context.isForce() && document.isReadOnly() && !document.getEditedBy().equals(context.
-          getUserId())) {
+
+      if (!canBeUnlocked(context, session, document)) {
         return false;
       }
 
-      boolean notify = false;
-      if (context.isWebdav() || context.isUpload()) {
-        String workerId = document.getEditedBy();
-        document.setUpdated(new Date());
-        document.setUpdatedBy(workerId);
-        notify = true;
-      }
-      document.setPublicDocument(context.isPublicVersion());
-      document.setComment(context.getComment());
-      if (updateOfficeContentFromWebDav) {
-        document.setSize(document.getWebdavContentEditionSize());
-      }
-      SimpleDocument finalDocument = repository.unlock(session, document, restorePreviousVersion);
-      if (updateOfficeContentFromWebDav) {
-        webdavRepository.updateAttachmentBinaryContent(session, finalDocument);
-        webdavRepository.deleteAttachmentNode(session, finalDocument);
-        repository.duplicateContent(document, finalDocument);
-      } else if (finalDocument.isOpenOfficeCompatible() && (context.isUpload() || !context.
-          isWebdav())) {
-        webdavRepository.deleteAttachmentNode(session, finalDocument);
-      } else {
-        File file = new File(finalDocument.getAttachmentPath());
-        if (!file.exists() && !context.isForce()) {
-          repository.duplicateContent(document, finalDocument);
-        }
-      }
-      session.save();
+      boolean notify =
+          prepareDocumentForUnlocking(context, document, updateOfficeContentFromWebDav);
+      unlockDocumentInRepo(session, context, document, restorePreviousVersion,
+          updateOfficeContentFromWebDav);
       if (document.isPublic()) {
         String userId = context.getUserId();
         if (StringUtil.isDefined(userId) && reallyNotifying(document, notify)) {
@@ -793,10 +745,56 @@ public class SimpleDocumentService
         }
       }
     } catch (IOException | RepositoryException e) {
-      throw new AttachmentException("AttachmentService.unlock()", SilverpeasRuntimeException.ERROR,
-          "attachment.CHECKIN_FAILED", e);
+      throw new AttachmentException("Check-in failed", e);
     }
     return true;
+  }
+
+  private void unlockDocumentInRepo(final JcrSession session, final UnlockContext context,
+      final SimpleDocument document, final boolean restorePreviousVersion,
+      final boolean updateOfficeContentFromWebDav) throws RepositoryException, IOException {
+    SimpleDocument finalDocument = repository.unlock(session, document, restorePreviousVersion);
+    if (updateOfficeContentFromWebDav) {
+      webdavRepository.updateAttachmentBinaryContent(session, finalDocument);
+      webdavRepository.deleteAttachmentNode(session, finalDocument);
+      repository.duplicateContent(document, finalDocument);
+    } else if (finalDocument.isOpenOfficeCompatible() && (context.isUpload() || !context.
+        isWebdav())) {
+      webdavRepository.deleteAttachmentNode(session, finalDocument);
+    } else {
+      File file = new File(finalDocument.getAttachmentPath());
+      if (!file.exists() && !context.isForce()) {
+        repository.duplicateContent(document, finalDocument);
+      }
+    }
+    session.save();
+  }
+
+  private boolean prepareDocumentForUnlocking(final UnlockContext context,
+      final SimpleDocument document, final boolean updateOfficeContentFromWebDav) {
+    boolean notify = false;
+    if (context.isWebdav() || context.isUpload()) {
+      String workerId = document.getEditedBy();
+      document.setUpdated(new Date());
+      document.setUpdatedBy(workerId);
+      notify = true;
+    }
+    document.setPublicDocument(context.isPublicVersion());
+    document.setComment(context.getComment());
+    if (updateOfficeContentFromWebDav) {
+      document.setSize(document.getWebdavContentEditionSize());
+    }
+    return notify;
+  }
+
+  private boolean canBeUnlocked(final UnlockContext context, final JcrSession session,
+      final SimpleDocument document) throws RepositoryException {
+    if (document.isOpenOfficeCompatible() && !context.isForce() &&
+        webdavRepository.isNodeLocked(session, document)) {
+      return false;
+    }
+    return context.isForce() || !document.isReadOnly() || document.getEditedBy().equals(context.
+        getUserId());
   }
 
   /**
@@ -836,7 +834,7 @@ public class SimpleDocumentService
       session.save();
       return true;
     } catch (RepositoryException | IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -847,7 +845,7 @@ public class SimpleDocumentService
       session.save();
       return updatedPk;
     } catch (RepositoryException | IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -868,13 +866,13 @@ public class SimpleDocumentService
 
   @Override
   public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(
-      WAPrimaryKey foreignKey, DocumentType type, String lang) {
+      ResourceReference foreignKey, DocumentType type, String lang) {
     try (JcrSession session = openSystemSession()) {
       return repository
           .listDocumentsByForeignIdAndType(session, foreignKey.getInstanceId(), foreignKey.
               getId(), type, lang);
     } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -883,7 +881,7 @@ public class SimpleDocumentService
     try (JcrSession session = openSystemSession()) {
       return repository.listDocumentsLockedByUser(session, usedId, language);
     } catch (RepositoryException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -902,16 +900,16 @@ public class SimpleDocumentService
       session.save();
       return pk;
     } catch (RepositoryException | IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
   @SimulationActionProcess(elementLister = AttachmentSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
-  public List<SimpleDocumentPK> moveAllDocuments(@SourcePK WAPrimaryKey resourceSourcePk,
-      @TargetPK WAPrimaryKey targetDestinationPk) {
-    List<SimpleDocumentPK> movedDocumentKeys = new ArrayList<SimpleDocumentPK>();
+  public List<SimpleDocumentPK> moveAllDocuments(@SourcePK ResourceReference resourceSourcePk,
+      @TargetPK ResourceReference targetDestinationPk) {
+    List<SimpleDocumentPK> movedDocumentKeys = new ArrayList<>();
     List<SimpleDocument> documentsToMove = listAllDocumentsByForeignKey(resourceSourcePk, null);
     for (SimpleDocument documentToMove : documentsToMove) {
       movedDocumentKeys.add(moveDocument(documentToMove, new ResourceReference(targetDestinationPk)));
@@ -921,23 +919,23 @@ public class SimpleDocumentService
 
   @Override
   public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
-    if (settings.getBoolean("attachment.index.incorporated", true)) {
-      if (!indexEntry.getObjectType().startsWith("Attachment")) {
-        ResourceReference pk = new ResourceReference(indexEntry.getObjectId(), indexEntry.getComponent());
-        List<SimpleDocument> documents = listDocumentsByForeignKey(pk, indexEntry.getLang());
-        for (SimpleDocument currentDocument : documents) {
-          SimpleDocument version = currentDocument.getLastPublicVersion();
-          if (version != null) {
-            indexEntry.addFileContent(version.getAttachmentPath(), CharEncoding.UTF_8, version.
-                getContentType(), indexEntry.getLang());
-          }
+    if (settings.getBoolean("attachment.index.incorporated", true) &&
+        !indexEntry.getObjectType().startsWith(ATTACHMENT_TYPE)) {
+      ResourceReference pk =
+          new ResourceReference(indexEntry.getObjectId(), indexEntry.getComponent());
+      List<SimpleDocument> documents = listDocumentsByForeignKey(pk, indexEntry.getLang());
+      for (SimpleDocument currentDocument : documents) {
+        SimpleDocument version = currentDocument.getLastPublicVersion();
+        if (version != null) {
+          indexEntry.addFileContent(version.getAttachmentPath(), Charsets.UTF_8.name(), version.
+              getContentType(), indexEntry.getLang());
         }
       }
     }
   }
 
   @Override
-  public void indexAllDocuments(WAPrimaryKey fk, Date startOfVisibilityPeriod,
+  public void indexAllDocuments(ResourceReference fk, Date startOfVisibilityPeriod,
       Date endOfVisibilityPeriod) {
     List<SimpleDocument> documents = listAllDocumentsByForeignKey(fk, null);
     for (SimpleDocument currentDocument : documents) {
@@ -953,7 +951,7 @@ public class SimpleDocumentService
       List<SimpleDocument> attachments =
           listDocumentsByForeignKeyAndType(originalForeignKey, type, null);
       Map<String, SimpleDocument> clones = listDocumentsOfClone(cloneForeignKey, type, null);
-      Map<String, String> ids = new HashMap<String, String>(clones.size());
+      Map<String, String> ids = new HashMap<>(clones.size());
       // looking for updates and deletions
       for (SimpleDocument attachment : attachments) {
         if (clones.containsKey(attachment.getId())) {
@@ -982,7 +980,7 @@ public class SimpleDocumentService
       session.save();
       return ids;
     } catch (RepositoryException | IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
 
   }
@@ -990,7 +988,7 @@ public class SimpleDocumentService
   private Map<String, SimpleDocument> listDocumentsOfClone(ResourceReference resourceReference, DocumentType type,
       String lang) {
     List<SimpleDocument> documents = listDocumentsByForeignKeyAndType(resourceReference, type, lang);
-    Map<String, SimpleDocument> result = new HashMap<String, SimpleDocument>(documents.size());
+    Map<String, SimpleDocument> result = new HashMap<>(documents.size());
     for (SimpleDocument doc : documents) {
       if (StringUtil.isDefined(doc.getCloneId())) {
         result.put(doc.getCloneId(), doc);
@@ -1015,7 +1013,7 @@ public class SimpleDocumentService
       }
       session.save();
     } catch (RepositoryException | IOException ex) {
-      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      throw new AttachmentException(ex);
     }
   }
 
@@ -1037,7 +1035,7 @@ public class SimpleDocumentService
         repository.saveForbiddenDownloadForRoles(session, document);
         session.save();
       } catch (RepositoryException ex) {
-        throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+        throw new AttachmentException(ex);
       }
     }
   }
@@ -1054,7 +1052,7 @@ public class SimpleDocumentService
         repository.saveDisplayableAsContent(session, document);
         session.save();
       } catch (RepositoryException ex) {
-        throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+        throw new AttachmentException(ex);
       }
     }
   }

@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.contribution.attachment.process;
 
+import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.process.annotation.SimulationElementLister;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * User: Yohann Chastagnier
@@ -46,7 +46,7 @@ public class AttachmentSimulationElementLister extends SimulationElementLister {
   @Override
   public void listElements(final WAPrimaryKey sourcePK, final String language) {
     for (SimpleDocument document : AttachmentServiceProvider.getAttachmentService()
-        .listAllDocumentsByForeignKey(sourcePK, language)) {
+        .listAllDocumentsByForeignKey(sourcePK.toResourceReference(), language)) {
       addElement(new SimpleDocumentSimulationElement(document));
     }
   }
@@ -66,7 +66,7 @@ public class AttachmentSimulationElementLister extends SimulationElementLister {
       }
       addElement(new SimpleDocumentSimulationElement(document));
     } else {
-      throw new NotImplementedException();
+      throw new NotSupportedException("This class expects a SimpleDocument as source");
     }
   }
 }

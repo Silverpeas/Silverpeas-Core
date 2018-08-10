@@ -23,16 +23,14 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.xml.bind.annotation.XmlElement;
-
-import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.webapi.base.WebEntity;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  *
@@ -89,8 +87,7 @@ public class SimpleDocumentEntity implements WebEntity {
     try {
       entity.uri = new URI(URLUtil.getSimpleURL(URLUtil.URL_FILE, document.getId()));
     } catch (URISyntaxException e) {
-      throw new AttachmentException("AttachmentEntity.fromAttachment(",
-          AttachmentException.ERROR, "Couldn't build the URI to the attachment", e);
+      throw new AttachmentException("Couldn't build the URI to the attachment", e);
     }
     entity.id = document.getId();
     entity.instanceId = document.getInstanceId();

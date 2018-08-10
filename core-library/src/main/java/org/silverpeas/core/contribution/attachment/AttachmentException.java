@@ -23,68 +23,22 @@
  */
 package org.silverpeas.core.contribution.attachment;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 /**
- * Class declaration
- *
- * @author
+ * Exception thrown when an error occurs with attachments of a resource.
  */
 public class AttachmentException extends SilverpeasRuntimeException {
 
-  /**
-   * Creates new AttachmentException
-   */
-  public AttachmentException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public AttachmentException(final String message) {
+    super(message);
   }
 
-  /**
-   * Constructor declaration
-   *
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   *
-   */
-  public AttachmentException(String callingClass, int errorLevel, String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public AttachmentException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   *
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   *
-   */
-  public AttachmentException(String callingClass, int errorLevel, String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  /**
-   * Constructor declaration
-   *
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   *
-   */
-  public AttachmentException(String callingClass, int errorLevel, String message, String extraParams,
-      Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * method of interface FromModule
-   */
-  @Override
-  public String getModule() {
-    return "attachment";
+  public AttachmentException(final Throwable cause) {
+    super(cause);
   }
 }
