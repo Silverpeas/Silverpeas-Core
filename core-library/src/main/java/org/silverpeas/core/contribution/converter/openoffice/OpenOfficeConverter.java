@@ -31,27 +31,22 @@ import java.util.Arrays;
 
 import org.apache.commons.io.FilenameUtils;
 
-import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
-import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
+import org.jodconverter.JodConverter;
+import org.jodconverter.LocalConverter;
+import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.DocumentFormatConversion;
 import org.silverpeas.core.contribution.converter.DocumentFormatConversionException;
 import org.silverpeas.core.contribution.converter.DocumentFormatException;
 import org.silverpeas.core.contribution.converter.option.FilterOption;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
 
 /**
  * A document format converter using the OpenOffice API to perform its task. This class is the
  * common one of all of the API document conversion implementation based on the OpenOffice API.
  */
 public abstract class OpenOfficeConverter implements DocumentFormatConversion {
-
-  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
-      "org.silverpeas.converter.openoffice");
-  private static final String OPENOFFICE_PORT = "openoffice.port";
-  private static final String OPENOFFICE_HOST = "openoffice.host";
 
   /**
    * Is the specified document in the format on which the converter works?
@@ -81,6 +76,7 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
     }
     OpenOfficeConnection connection = null;
     try {
+      LocalConverter.builder().filterChain()
       connection = openConnection();
       convert(getOpenOfficeDocumentConverterFrom(connection), source, destination, options);
     } catch (final Exception e) {
@@ -171,6 +167,9 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
    * occurs when no OpenOffice service is available for example.
    */
   protected OpenOfficeConnection openConnection() throws ConnectException {
+    OpenOfficeService service = ServiceProvider.getService(OpenOfficeService.class);
+
+
     final String host = settings.getString(OPENOFFICE_HOST, "localhost");
     final int port = settings.getInteger(OPENOFFICE_PORT, 8100);
     final OpenOfficeConnection connection = new SocketOpenOfficeConnection(host, port);

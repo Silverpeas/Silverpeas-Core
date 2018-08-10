@@ -62,8 +62,8 @@
       <artifactId>nekohtml</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.artofsolving</groupId>
-      <artifactId>jodconverter</artifactId>
+      <groupId>org.jodconverter</groupId>
+      <artifactId>jodconverter-local</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
