@@ -38,6 +38,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -301,14 +302,17 @@ public class FileFolderManager {
    * @return the content of the whole file as a String instance. The content is expected to be
    * encoded in UTF-8.
    */
-  public static String getFileContent(final String directoryPath, final String fileName) {
+  public static Optional<String> getFileContent(final String directoryPath, final String fileName) {
     final Path directory = Paths.get(directoryPath);
     if (directory.toFile().isDirectory()) {
+      String content = null;
       try {
-        return new String(Files.readAllBytes(directory.resolve(fileName)), Charsets.UTF_8);
+        content = new String(Files.readAllBytes(directory.resolve(fileName)), Charsets.UTF_8);
       } catch (IOException e) {
-        throw new UtilException(e);
+        SilverLogger.getLogger(FileFolderManager.class)
+            .debug(directory.resolve(fileName).toString() + "does not exist");
       }
+      return Optional.ofNullable(content);
     } else {
       throw new UtilException(directoryPath + NOT_A_DIRECTORY_MSG);
     }

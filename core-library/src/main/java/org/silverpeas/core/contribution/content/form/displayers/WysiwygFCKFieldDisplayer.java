@@ -60,6 +60,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.text.MessageFormat.format;
 
@@ -395,7 +396,10 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   public static String getContentFromFile(String componentId, String fileName) {
     if (StringUtil.isDefined(fileName) && isDirectoryExists(componentId)) {
       String path = getPath(componentId);
-      return FileFolderManager.getFileContent(path, fileName);
+      Optional<String> content = FileFolderManager.getFileContent(path, fileName);
+      if (content.isPresent()) {
+        return content.get();
+      }
     }
     return "";
   }

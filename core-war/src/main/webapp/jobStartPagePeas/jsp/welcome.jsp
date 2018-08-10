@@ -34,6 +34,7 @@
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <c:set var="isUserAdmin" value="${requestScope['isUserAdmin']}" />
 <c:set var="globalMode" value="${requestScope['globalMode']}" />
@@ -66,7 +67,9 @@ function recoverRights() {
 <c:if test="${isUserAdmin}">
 <view:operationPane>
 	<fmt:message var="spaceAdd" key="JSPP.SpacePanelCreateTitle" />
-    <view:operation altText="${spaceAdd}" icon="" action="CreateSpace"></view:operation>
+    <fmt:message var="addIcon" key="JSPP.subspaceAdd" bundle="${icons}" />
+    <c:url var="addIcon" value="${addIcon}"/>
+    <view:operationOfCreation altText="${spaceAdd}" icon="${addIcon}" action="CreateSpace"></view:operationOfCreation>
 
     <c:if test="${clipboardNotEmpty}">
 	<fmt:message var="paste" key="GML.paste" />
@@ -105,6 +108,7 @@ function recoverRights() {
 	<div class="inlineMessage"><fmt:message key="JSPP.maintenanceTout" /></div>
 	<br clear="all"/>
 </c:if>
+  <view:areaOfOperationOfCreation/>
 <view:board>
 <div id="spaces-welcome-message">
 <c:out value="${content}" escapeXml="false" />
