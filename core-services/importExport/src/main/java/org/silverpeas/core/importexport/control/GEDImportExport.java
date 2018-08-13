@@ -86,6 +86,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Classe metier de creation d'entites silverpeas utilisee par le moteur d'importExport.
@@ -389,7 +390,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       throws WysiwygException, ImportExportException {
     // Retrieve new wysiwyg content
     File wysiwygFile = null;
-    String wysiwygText;
+    String wysiwygText = null;
     try {
       wysiwygFile = new File(FileUtil.convertPathToServerOS(wysiwygType.getPath()));
       if (!wysiwygFile.exists() && !wysiwygFile.isFile()) {
@@ -397,7 +398,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
         wysiwygFile = new File(
             FileUtil.convertPathToServerOS(baseDir + File.separatorChar + wysiwygType.getPath()));
       }
-      wysiwygText = FileFolderManager.getFileContent(wysiwygFile.getParent(), wysiwygFile.getName());
+      Optional<String> content = FileFolderManager.getFileContent(wysiwygFile.getParent(), wysiwygFile.getName());
+      if (content.isPresent()) {
+        wysiwygText = content.get();
+      }
     } catch (org.silverpeas.core.util.UtilException ex) {
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
       if (wysiwygFile != null) {

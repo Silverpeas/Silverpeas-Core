@@ -72,6 +72,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -668,7 +669,11 @@ public class WysiwygManager implements WysiwygContentRepository {
   public String loadFileWebsite(String path, String fileName) throws WysiwygException {
     checkPath(path);
     try {
-      return FileFolderManager.getFileContent(path, fileName);
+      Optional<String> content = FileFolderManager.getFileContent(path, fileName);
+      if (content.isPresent()) {
+        return content.get();
+      }
+      return "";
     } catch (org.silverpeas.core.util.UtilException e) {
       // There is no document
       throw new WysiwygException("WysiwygController.loadFileWebsite()", SilverpeasException.WARNING,
