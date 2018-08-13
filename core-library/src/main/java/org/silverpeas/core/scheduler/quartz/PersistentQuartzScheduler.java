@@ -102,7 +102,7 @@ public class PersistentQuartzScheduler extends QuartzScheduler {
   public static class PersistentJobExecutor extends JobExecutor {
 
     protected Job getJob(final JobDetail jobDetail) throws JobExecutionException {
-      String jobClass = jobDetail.getJobDataMap().getString(SCHEDULED_JOB);
+      String jobClass = jobDetail.getJobDataMap().getString(ACTUAL_JOB);
       String jobName = jobDetail.getKey().getName();
       return getByReflection(jobClass, jobName);
     }

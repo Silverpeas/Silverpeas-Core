@@ -321,6 +321,8 @@ public class ReminderIT {
     assertThat(reminder.isTriggered(), is(false));
 
     await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
+
+    reminder = Reminder.getById(reminder.getId());
     assertThat(reminder.isScheduled(), is(false));
     assertThat(reminder.isSchedulable(), is(false));
   }

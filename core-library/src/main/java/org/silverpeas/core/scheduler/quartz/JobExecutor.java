@@ -52,6 +52,7 @@ public abstract class JobExecutor implements org.quartz.Job {
   @Override
   public final void execute(org.quartz.JobExecutionContext jec) throws JobExecutionException {
     JobDetail jobDetail = jec.getJobDetail();
+    jobDetail.getJobDataMap().put(QuartzScheduler.JOB_SCHEDULED, false);
     Job job = getJob(jobDetail);
     SchedulerEventListener eventListener = getSchedulerEventListener(jobDetail);
     JobExecutionContext context = JobExecutionContext.createWith(job.getName(), jec.getFireTime());

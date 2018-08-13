@@ -82,7 +82,7 @@ public class VolatileQuartScheduler extends QuartzScheduler {
   public static class VolatileJobExecutor extends JobExecutor {
     protected Job getJob(final JobDetail jobDetail) throws JobExecutionException {
       try {
-        return (Job) jobDetail.getJobDataMap().get(SCHEDULED_JOB);
+        return (Job) jobDetail.getJobDataMap().get(ACTUAL_JOB);
       } catch (ClassCastException e) {
         throw new JobExecutionException(e);
       }

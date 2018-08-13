@@ -45,7 +45,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import static org.silverpeas.core.util.ArgumentAssertion.assertDefined;
@@ -65,14 +64,20 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
    * firing will be delegated to this job once constructed.
    * @see JobDataMap
    */
-  protected static final String SCHEDULED_JOB = "job";
+  static final String ACTUAL_JOB = "job";
   /**
    * The key in the job data map that refers the event listener registered in the scheduler for a
    * given job triggering. The listener is set in the data map in order to be retrieved at
    * job execution.
    * @see JobDataMap
    */
-  protected static final String JOB_LISTENER = "listener";
+  static final String JOB_LISTENER = "listener";
+
+  /**
+   * The key in the job data map that refers the scheduling status of the job. This status is
+   * explicitly set when the job is just scheduled and it is unset once its execution is triggered.
+   */
+  static final String JOB_SCHEDULED = "scheduled";
 
   /**
    * The Quartz scheduler (the backend).
@@ -94,7 +99,7 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
    * @throws QuartzSchedulerException if no Quartz scheduler cannot be instantiated or it cannot be
    * started.
    */
-  protected final void setUpQuartzScheduler(final String quartzProperties) {
+  final void setUpQuartzScheduler(final String quartzProperties) {
     try {
       StdSchedulerFactory quartzSchedulerFactory = new StdSchedulerFactory();
       if (StringUtil.isDefined(quartzProperties)) {
@@ -148,7 +153,8 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
    */
   private JobDetail buildJobDetail(final Job job, final SchedulerEventListener listener) {
     JobDetail jobDetail = JobBuilder.newJob(getJobExecutor()).withIdentity(job.getName()).build();
-    jobDetail.getJobDataMap().put(SCHEDULED_JOB, encodeJob(job));
+    jobDetail.getJobDataMap().put(ACTUAL_JOB, encodeJob(job));
+    jobDetail.getJobDataMap().put(JOB_SCHEDULED, true);
     if (listener != null) {
       jobDetail.getJobDataMap().put(JOB_LISTENER, encodeEventListener(listener));
     }
@@ -230,12 +236,10 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
   public boolean isJobScheduled(String jobName) {
     checkJobName(jobName);
     try {
-      JobKey jobKey = JobKey.jobKey(jobName);
       JobDetail jobDetail = this.quartz.getJobDetail(JobKey.jobKey(jobName));
       boolean isScheduled = false;
       if (jobDetail != null) {
-        List<? extends Trigger> triggers = this.quartz.getTriggersOfJob(jobKey);
-        isScheduled = !triggers.isEmpty();
+        isScheduled = jobDetail.getJobDataMap().getBoolean(JOB_SCHEDULED);
       }
       return isScheduled;
     } catch (org.quartz.SchedulerException e) {
