@@ -70,12 +70,13 @@ import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTI
 @Transactional(Transactional.TxType.MANDATORY)
 public class UserManager {
 
-  public static final String USERMANAGER_SYNCHRO_REPORT = "UserManager";
-  public static final String IN_DOMAIN = "in domain ";
-  public static final String ALL_USERS = "all users";
-  public static final String SPECIFIC_ID = "(specificId:";
+  private static final String USERMANAGER_SYNCHRO_REPORT = "UserManager";
+  private static final String IN_DOMAIN = "in domain ";
+  private static final String ALL_USERS = "all users";
+  private static final String SPECIFIC_ID = "(specificId:";
   private static final String USER_TABLE_REMOVE_USER = "UserTable.removeUser()";
   private static final String REMOVING_MESSAGE = "Suppression de ";
+  private static final String BLANK_NAME = "Anonymous";
   @Inject
   private UserDAO userDAO;
   @Inject
@@ -628,6 +629,27 @@ public class UserManager {
               user.getLastName() + SPECIFIC_ID + user.getSpecificId() + ") - " + e.getMessage(),
           null);
       throw new AdminException(failureOnDeleting("user", user.getId()), e);
+    }
+  }
+
+  /**
+   * Blanks any profile information about the specified user. This method can be invoked only
+   * for already deleted users. Although a user is deleted, profile information are kept in the
+   * data source in order to keep the links between him and its contributions within Silverpeas.
+   * At his own request, those data can be cleared in the data source so that the links are broken.
+   * Nevertheless, to keep the coherence with all of the operations in Silverpeas and to keep them
+   * simple, the tuple associated with the user profile isn't deleted in the data source, only the
+   * data inside it are blanked. One consequence to this method is to remove its last name and to
+   * replace its first name by the term "Anonymous".
+   * @param user the user to blank in Silverpeas.
+   */
+  public void blankUser(final UserDetail user) throws AdminException {
+    user.setFirstName(BLANK_NAME);
+    user.setLastName("");
+    try(Connection connection = DBUtil.openConnection()) {
+      userDAO.updateUser(connection, user);
+    } catch (SQLException e) {
+      throw new AdminException("Cannot blank the user " + user.getId(), e);
     }
   }
 
