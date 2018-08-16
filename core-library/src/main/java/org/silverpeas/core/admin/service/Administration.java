@@ -59,8 +59,15 @@ import java.util.Map;
  * @author Yohann Chastagnier
  */
 public interface Administration {
-  String ADMIN_COMPONENT_ID = "ADMIN";
-  String basketSuffix = " (Restauré)";
+
+  class Constants {
+    public static final String ADMIN_COMPONENT_ID = "ADMIN";
+    public static final String BASKET_SUFFIX = " (Restauré)";
+
+    private Constants() {
+
+    }
+  }
 
   static Administration get() {
     return ServiceProvider.getService(Administration.class);
@@ -332,7 +339,7 @@ public interface Administration {
       ComponentInst[] componentInsts) throws AdminException;
 
   void setComponentPlace(String componentId, String idComponentBefore,
-      ComponentInst[] m_BrothersComponents) throws AdminException;
+      ComponentInst[] brothersComponents) throws AdminException;
 
   String getRequestRouter(String sComponentName);
 
@@ -612,7 +619,7 @@ public interface Administration {
    */
   UserFull getUserFull(String sUserId) throws AdminException;
 
-  UserFull getUserFull(String domainId, String specificId) throws Exception;
+  UserFull getUserFull(String domainId, String specificId) throws AdminException;
 
   /**
    * Add the given user in Silverpeas and specific domain.
@@ -698,7 +705,7 @@ public interface Administration {
   /**
    * Converts driver space ids to client space ids
    */
-  String[] getClientSpaceIds(String[] asDriverSpaceIds) throws Exception;
+  String[] getClientSpaceIds(String[] asDriverSpaceIds);
 
   /**
    * Create a new domain
@@ -836,7 +843,7 @@ public interface Administration {
    * @throws Exception
    * @author neysseri
    */
-  List<SpaceInstLight> getUserSpaceTreeview(String userId) throws Exception;
+  List<SpaceInstLight> getUserSpaceTreeview(String userId) throws AdminException;
 
   String[] getAllowedSubSpaceIds(String userId, String spaceFatherId) throws AdminException;
 
@@ -1081,31 +1088,31 @@ public interface Administration {
   // -------------------------------------------------------------------
   // RE-INDEXATION
   // -------------------------------------------------------------------
-  String[] getAllSpaceIds(String sUserId) throws Exception;
+  String[] getAllSpaceIds(String sUserId) throws AdminException;
 
   /**
    * Return all the root spaces Id available in webactiv
    */
-  String[] getAllRootSpaceIds(String sUserId) throws Exception;
+  String[] getAllRootSpaceIds(String sUserId) throws AdminException;
 
   /**
    * Return all the subSpaces Id available in webactiv given a space id (driver format)
    */
-  String[] getAllSubSpaceIds(String sSpaceId, String sUserId) throws Exception;
+  String[] getAllSubSpaceIds(String sSpaceId, String sUserId) throws AdminException;
 
   /**
    * Returns all the component identifiers of the space represented by the given identifier.
    * <p>Component instance of sub spaces are not retrieved.</p>
    * <p>It returns also ids of {@link SilverpeasPersonalComponentInstance} instances.</p>
    */
-  String[] getAllComponentIds(String sSpaceId) throws Exception;
+  String[] getAllComponentIds(String sSpaceId) throws AdminException;
 
   /**
    * Returns all the component identifiers of the space, and its sub spaces, represented by the
    * given identifier.
    * <p>It returns also ids of {@link SilverpeasPersonalComponentInstance} instances.</p>
    */
-  String[] getAllComponentIdsRecur(String sSpaceId) throws Exception;
+  String[] getAllComponentIdsRecur(String sSpaceId) throws AdminException;
 
   /**
    * Return all the components Id recursively in (Space+subspaces, or only subspaces or in
@@ -1122,46 +1129,46 @@ public interface Administration {
    */
   @Deprecated
   String[] getAllComponentIdsRecur(String sSpaceId, String sUserId, String componentNameRoot,
-      boolean inCurrentSpace, boolean inAllSpaces) throws Exception;
+      boolean inCurrentSpace, boolean inAllSpaces) throws AdminException;
 
   void synchronizeGroupByRule(String groupId, boolean scheduledMode) throws AdminException;
 
   /**
    *
    */
-  String synchronizeGroup(String groupId, boolean recurs) throws Exception;
+  String synchronizeGroup(String groupId, boolean recurs) throws AdminException;
 
   /**
    *
    */
   String synchronizeImportGroup(String domainId, String groupKey, String askedParentId,
-      boolean recurs, boolean isIdKey) throws Exception;
+      boolean recurs, boolean isIdKey) throws AdminException;
 
   /**
    *
    */
-  String synchronizeRemoveGroup(String groupId) throws Exception;
+  String synchronizeRemoveGroup(String groupId) throws AdminException;
 
   /**
    * Synchronize Users and groups between cache and domain's datastore
    */
-  String synchronizeUser(String userId, boolean recurs) throws Exception;
+  String synchronizeUser(String userId, boolean recurs) throws AdminException;
 
   /**
    * Synchronize Users and groups between cache and domain's datastore
    */
   String synchronizeImportUserByLogin(String domainId, String userLogin, boolean recurs)
-      throws Exception;
+      throws AdminException;
 
   /**
    * Synchronize Users and groups between cache and domain's datastore
    */
-  String synchronizeImportUser(String domainId, String specificId, boolean recurs) throws Exception;
+  String synchronizeImportUser(String domainId, String specificId, boolean recurs) throws AdminException;
 
   List<DomainProperty> getSpecificPropertiesToImportUsers(String domainId, String language)
-      throws Exception;
+      throws AdminException;
 
-  UserDetail[] searchUsers(String domainId, Map<String, String> query) throws Exception;
+  UserDetail[] searchUsers(String domainId, Map<String, String> query) throws AdminException;
 
   /**
    * Synchronize Users and groups between cache and domain's datastore.
@@ -1169,9 +1176,9 @@ public interface Administration {
    * @return
    * @throws Exception
    */
-  String synchronizeRemoveUser(String userId) throws Exception;
+  String synchronizeRemoveUser(String userId) throws AdminException;
 
-  String synchronizeSilverpeasWithDomain(String sDomainId) throws Exception;
+  String synchronizeSilverpeasWithDomain(String sDomainId) throws AdminException;
 
   /**
    * Synchronize Users and groups between cache and domain's datastore
@@ -1256,4 +1263,21 @@ public interface Administration {
 
   SpaceWithSubSpacesAndComponents getAllowedFullTreeview(String userId, String spaceId)
       throws AdminException;
+
+  /**
+   * Gets all the users that were deleted in the specified domains and that weren't blanked.
+   * If no domains are specified, then all the domains are taken into account.
+   * @param domainIds the unique identifiers of the domains.
+   * @return a list of users or an empty list if there is no deleted users in the specified domains.
+   */
+  List<UserDetail> getNonBlankedDeletedUsers(String ... domainIds) throws AdminException;
+
+  /**
+   * Blanks the specified users in the specified domain. The users have to be deleted in Silverpeas,
+   * otherwise an {@link AdminException} exception is thrown.
+   * @param targetDomainId the unique identifier of the domain.
+   * @param userIds a list of unique identifiers of deleted users in the specified domain.
+   * @throws AdminException if an error occurs while blanking the deleted users.
+   */
+  void blankDeletedUsers(String targetDomainId, List<String> userIds) throws AdminException;
 }

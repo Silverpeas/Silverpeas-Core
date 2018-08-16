@@ -76,10 +76,8 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -148,7 +146,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getPathToComponent(componentId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -158,30 +156,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getPathToSpace(spaceId, includeTarget);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
-    }
-  }
-
-  /** Return the space Instance corresponding to the given space id */
-  public String[] getUserManageableSpaceRootIds(String sUserId) {
-
-    try {
-      return admin.getUserManageableSpaceRootIds(sUserId);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
-    }
-  }
-
-  /** Return the space Instance corresponding to the given space id */
-  public String[] getUserManageableSubSpaceIds(String sUserId,
-      String sParentSpace) {
-
-    try {
-      return admin.getUserManageableSubSpaceIds(sUserId, sParentSpace);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -194,7 +169,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getUserManageableSpaceIds(sUserId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -213,7 +188,7 @@ public class AdminController implements java.io.Serializable {
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -353,7 +328,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getAllWAComponents();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return new HashMap<String, WAComponent>();
+      return Collections.emptyMap();
     }
   }
 
@@ -512,7 +487,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getRemovedSpaces();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -521,7 +496,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getRemovedComponents();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -573,7 +548,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getProfilesByObject(objectId, objectType, componentId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -678,7 +653,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getProfileIds(sUserId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -695,7 +670,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getProfileIdsOfGroup(sGroupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -914,7 +889,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getAllDomains();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return new Domain[0];
     }
   }
 
@@ -1016,7 +991,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getAllUsersIds();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -1030,7 +1005,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getGroupManageableSpaceIds(sGroupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -1155,7 +1130,7 @@ public class AdminController implements java.io.Serializable {
       return new UserDetail[0];
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return new UserDetail[0];
     }
   }
 
@@ -1326,7 +1301,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getPathToGroup(groupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -1435,7 +1410,7 @@ public class AdminController implements java.io.Serializable {
       return admin.getSpecificPropertiesToImportUsers(domainId, language);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -1445,7 +1420,7 @@ public class AdminController implements java.io.Serializable {
       return Arrays.asList(admin.searchUsers(domainId, query));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return new ArrayList<UserDetail>();
+      return Collections.emptyList();
     }
   }
 
@@ -1481,18 +1456,19 @@ public class AdminController implements java.io.Serializable {
 
     try {
       return admin.synchronizeGroup(groupId, true);
-    } catch (Exception e) {
+    } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      if (e instanceof AdminException &&
-          ((AdminException) e).getCause() instanceof GroupSynchronizationRule.Error) {
-        GroupSynchronizationRule.Error error =
-            (GroupSynchronizationRule.Error) ((AdminException) e).getCause();
+      if (e.getCause() instanceof GroupSynchronizationRule.Error) {
+        GroupSynchronizationRule.Error error = (GroupSynchronizationRule.Error) e.getCause();
         if (error instanceof GroupSynchronizationRule.GroundRuleError) {
           return error.getHandledMessage() + "|" +
               ((GroupSynchronizationRule.GroundRuleError) error).getBaseRulePart();
         }
         return error.getHandledMessage();
       }
+      return "";
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
   }
@@ -1557,4 +1533,12 @@ public class AdminController implements java.io.Serializable {
     return false;
   }
 
+  public List<UserDetail> getDeletedUsersInDomain(final String domainId) throws AdminException {
+    return admin.getNonBlankedDeletedUsers(domainId);
+  }
+
+  public void blankDeletedUsers(final String targetDomainId, final List<String> userIds)
+      throws AdminException {
+    admin.blankDeletedUsers(targetDomainId, userIds);
+  }
 }

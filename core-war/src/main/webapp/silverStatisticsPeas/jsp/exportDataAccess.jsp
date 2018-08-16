@@ -34,7 +34,7 @@ response.setContentType("text/html");
 	Iterator   iter1 = null;
 	String filterIdGroup = (String) request.getAttribute("FilterIdGroup");
 		String filterIdUser = (String) request.getAttribute("FilterIdUser");
-        Vector vStatsData = (Vector) request.getAttribute("StatsData");
+        List vStatsData = (List) request.getAttribute("StatsData");
 		String separatorCSV = ",";
 
         String Organisation = resources.getString("silverStatisticsPeas.organisation");

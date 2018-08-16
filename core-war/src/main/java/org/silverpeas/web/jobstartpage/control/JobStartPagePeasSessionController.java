@@ -497,19 +497,16 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   public String addSpaceInst(SpaceInst spaceInst) {
     String res = adminController.addSpaceInst(spaceInst);
-    if (res == null || res.length() == 0) {
-      return res;
+    if (StringUtil.isDefined(res)) {
+      // Finally refresh the cache
+      m_NavBarMgr.addSpaceInCache(res);
+
+      // Component space storage quota
+      initializeComponentSpaceQuota(spaceInst);
+
+      // Data storage quota
+      initializeDataStorageQuota(spaceInst);
     }
-
-    // Finally refresh the cache
-    m_NavBarMgr.addSpaceInCache(res);
-
-    // Component space storage quota
-    initializeComponentSpaceQuota(spaceInst);
-
-    // Data storage quota
-    initializeDataStorageQuota(spaceInst);
-
     return res;
   }
 
@@ -789,17 +786,15 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    */
   public List<SpaceInstLight> getRemovedSpaces() {
     List<SpaceInstLight> removedSpaces = adminController.getRemovedSpaces();
-    SpaceInstLight space;
     String name;
-    for (int s = 0; removedSpaces != null && s < removedSpaces.size(); s++) {
-      space = removedSpaces.get(s);
+    for (SpaceInstLight space: removedSpaces) {
       space.setRemoverName(getOrganisationController().getUserDetail(String.valueOf(space.
           getRemovedBy())).getDisplayedName());
       space.setPath(adminController.getPathToSpace(space.getId(), false));
 
       // Remove suffix
       name = space.getName();
-      name = name.substring(0, name.indexOf(Administration.basketSuffix));
+      name = name.substring(0, name.indexOf(Administration.Constants.BASKET_SUFFIX));
       space.setName(name);
     }
     return removedSpaces;
@@ -807,17 +802,15 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   public List<ComponentInstLight> getRemovedComponents() {
     List<ComponentInstLight> removedComponents = adminController.getRemovedComponents();
-    ComponentInstLight component;
     String name;
-    for (int s = 0; removedComponents != null && s < removedComponents.size(); s++) {
-      component = removedComponents.get(s);
+    for (ComponentInstLight component: removedComponents) {
       component.setRemoverName(getOrganisationController().getUserDetail(String.valueOf(component.
           getRemovedBy())).getDisplayedName());
       component.setPath(adminController.getPathToComponent(component.getId()));
 
       // Remove suffix
       name = component.getLabel();
-      name = name.substring(0, name.indexOf(Administration.basketSuffix));
+      name = name.substring(0, name.indexOf(Administration.Constants.BASKET_SUFFIX));
       component.setLabel(name);
     }
     return removedComponents;

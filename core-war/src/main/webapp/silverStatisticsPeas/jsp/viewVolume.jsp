@@ -52,8 +52,8 @@
 	}
 	  String filterIdUser = (String) request.getAttribute("FilterIdUser");
 	  String spaceId = (String) request.getAttribute("SpaceId");
-	  Vector<String[]> vPath = (Vector<String[]>) request.getAttribute("Path");
-    Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
+	  List<String[]> vPath = (List<String[]>) request.getAttribute("Path");
+    List<String[]> vStatsData = (List<String[]>)request.getAttribute("StatsData");
     UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
 
     int totalNumberOfContributions = 0;
