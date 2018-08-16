@@ -74,7 +74,7 @@ public class CipherKeyResource extends RESTWebService {
 
   @Override
   public String getComponentId() {
-    return Administration.ADMIN_COMPONENT_ID;
+    return Administration.Constants.ADMIN_COMPONENT_ID;
   }
 
   @GET

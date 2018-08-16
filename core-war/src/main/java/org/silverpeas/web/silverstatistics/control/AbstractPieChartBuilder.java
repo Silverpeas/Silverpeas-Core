@@ -23,21 +23,21 @@
  */
 package org.silverpeas.web.silverstatistics.control;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chart.pie.PieChart;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * <p>
@@ -55,45 +55,23 @@ public abstract class AbstractPieChartBuilder {
   private void buildStatsByInstance() {
 
     // 0 - init new hashtable
-    statsByInstance = new HashMap<String, StatItem>();
+    statsByInstance = new HashMap<>();
 
     // 1 - Get stats for KM access
-    // Hashtable key=componentId, value=new String[3] {tout, groupe, user}
     Map<String, String[]> cmpStats = getCmpStats();
 
     // 2 - build statItems
-    Iterator<String> it = cmpStats.keySet().iterator();
+    buildStatItems(cmpStats);
+  }
+
+  private void buildStatItems(final Map<String, String[]> cmpStats) {
     String[] tabValue = null;
-    while (it.hasNext()) {
-      String cmpId = it.next();
-
-      tabValue = cmpStats.get(cmpId);
-      ComponentInstLight cmp = null;
-      try {
-        cmp = AdministrationServiceProvider.getAdminService().getComponentInstLight(cmpId);
-      } catch (AdminException e) {
-        SilverTrace.error("silverStatisticsPeas",
-            "AbstractPieChartBuilder.buildStatsByInstance()",
-            "root.EX_SQL_QUERY_FAILED", e);
-      }
+    for (Map.Entry<String, String[]> stat : cmpStats.entrySet()) {
+      String componentId = stat.getKey();
+      tabValue = stat.getValue();
+      ComponentInstLight cmp = getComponentInstLight(componentId);
       if (cmp != null) {
-        long[] countValues = new long[3];
-        countValues[0] = 0;
-        countValues[1] = 0;
-        countValues[2] = 0;
-
-        if (tabValue[0] != null) {
-          countValues[0] = Long.parseLong(tabValue[0]);
-        }
-        if (tabValue[1] != null) {
-          countValues[1] = Long.parseLong(tabValue[1]);
-        }
-        if (tabValue[2] != null) {
-          countValues[2] = Long.parseLong(tabValue[2]);
-        }
-
-        StatItem item = new StatItem(cmpId, cmp.getLabel(), countValues);
-        statsByInstance.put(cmpId, item);
+        addStateItemForComponentInstance(tabValue, cmp);
       }
     }
 
@@ -105,6 +83,37 @@ public abstract class AbstractPieChartBuilder {
         niveauFinesse = FINESSE_USER;
       }
     }
+  }
+
+  private void addStateItemForComponentInstance(final String[] tabValue,
+      final ComponentInstLight cmp) {
+    long[] countValues = new long[3];
+    countValues[0] = 0;
+    countValues[1] = 0;
+    countValues[2] = 0;
+
+    if (tabValue[0] != null) {
+      countValues[0] = Long.parseLong(tabValue[0]);
+    }
+    if (tabValue[1] != null) {
+      countValues[1] = Long.parseLong(tabValue[1]);
+    }
+    if (tabValue[2] != null) {
+      countValues[2] = Long.parseLong(tabValue[2]);
+    }
+
+    StatItem item = new StatItem(cmp.getId(), cmp.getLabel(), countValues);
+    statsByInstance.put(cmp.getId(), item);
+  }
+
+  private ComponentInstLight getComponentInstLight(final String componentId) {
+    ComponentInstLight cmp = null;
+    try {
+      cmp = AdministrationServiceProvider.getAdminService().getComponentInstLight(componentId);
+    } catch (AdminException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return cmp;
   }
 
   private boolean isIdBelongsTo(String spaceId, String[] tabAllSpaceIds) {
@@ -130,7 +139,7 @@ public abstract class AbstractPieChartBuilder {
    * @param currentStats list of current statistics
    * @return a PieChart in 2D
    */
-  public PieChart getChart(String spaceId, Vector<String[]> currentStats) {
+  public PieChart getChart(String spaceId, List<String[]> currentStats) {
     PieChart pieChart = null;
     try {
       // Get statistics
@@ -139,113 +148,132 @@ public abstract class AbstractPieChartBuilder {
       }
 
       // Get subspaces ids and components
-      String[] tabSpaceIds = null; // de type WA123
-      String[] componentIds = null;
+      List<String> tabSpaceIds = new ArrayList<>(); // of type WA123
+      List<String> componentIds = new ArrayList<>();
 
       // build instance list
-      UserDetail userDetail = UserDetail.getCurrentRequester();
-      if (!StringUtil.isDefined(spaceId)) {
-        if (userDetail.isAccessAdmin()) {// Admin
-          tabSpaceIds = AdministrationServiceProvider.getAdminService().getAllRootSpaceIds(); // de type WA123
-        } else {// Manager d'espaces ou de sous-espaces
-          // manager d'espace
-          List<String> listSpaceIds = new ArrayList<String>();
-          String[] tabManageableSpaceIds = AdministrationServiceProvider.getAdminService()
-              .getUserManageableSpaceIds(userDetail.getId()); // de type
-          // 123
-          for (String manageableSpaceId : tabManageableSpaceIds) {
-            SpaceInstLight espace =
-                AdministrationServiceProvider.getAdminService().getSpaceInstLightById(manageableSpaceId);
-            int level = espace.getLevel();
-            boolean trouve = false;
-            while (level > 0) {
-              String idEspace = espace.getFatherId();
-              espace = AdministrationServiceProvider.getAdminService().getSpaceInstLightById(idEspace);
-              level--;
-              if (isIdBelongsTo(idEspace, tabManageableSpaceIds)) {
-                trouve = true;
-                break;
-              }
-            }
-            if (!trouve) {
-              listSpaceIds.add(manageableSpaceId);
-            }
-          }
-          tabSpaceIds = listSpaceIds.toArray(new String[listSpaceIds.size()]);
-        }
-        componentIds = new String[0];
-      } else {
-        tabSpaceIds = AdministrationServiceProvider.getAdminService().getAllSubSpaceIds(spaceId); // de type WA123
-        componentIds = AdministrationServiceProvider.getAdminService().getAllComponentIds(spaceId);
-      }
+      buildInstanceList(spaceId, tabSpaceIds, componentIds);
 
       // build data
-      List<String> legend = new ArrayList<String>();
-      List<String> counts = new ArrayList<String>();
+      List<String> legend = new ArrayList<>();
+      List<String> counts = new ArrayList<>();
       currentStats.clear();
-      String[] allComponentsIds;
 
-      // first managesubspaces
-      for (String tabSpaceId : tabSpaceIds) {
-        long count1 = 0L;
-        long count2 = 0L;
-        long count3 = 0L;
-
-        SpaceInstLight space = AdministrationServiceProvider.getAdminService().getSpaceInstLightById(tabSpaceId);
-        allComponentsIds = AdministrationServiceProvider.getAdminService().getAllComponentIdsRecur(tabSpaceId);
-
-        for (String allComponentsId : allComponentsIds) {
-          StatItem item = statsByInstance.get(allComponentsId);
-          if (item != null) {
-            count1 += item.getCountValues()[0];
-            count2 += item.getCountValues()[1];
-            count3 += item.getCountValues()[2];
-          }
-        }
-
-        if (FINESSE_TOUS.equals(niveauFinesse)) {
-          counts.add(String.valueOf(count1));
-        } else if (FINESSE_GROUPE.equals(niveauFinesse)) {
-          counts.add(String.valueOf(count2));
-        } else if (FINESSE_USER.equals(niveauFinesse)) {
-          counts.add(String.valueOf(count3));
-        }
-
-        legend.add(StringUtil.truncate(space.getName(), LEGEND_MAX_LENGTH));
-        currentStats.add(new String[] { "SPACE", tabSpaceId, space.getName(),
-            String.valueOf(count1),
-            String.valueOf(count2), String.valueOf(count3) });
-      }
+      // first manage subspaces
+      buildStatsForSubspaces(currentStats, tabSpaceIds, legend, counts);
 
       // then manage components
-      for (String componentId : componentIds) {
-        StatItem item = statsByInstance.get(componentId);
-        if (item != null) {
-          long count1 = item.getCountValues()[0];
-          long count2 = item.getCountValues()[1];
-          long count3 = item.getCountValues()[2];
-
-          if (FINESSE_TOUS.equals(niveauFinesse)) {
-            counts.add(String.valueOf(count1));
-          } else if (FINESSE_GROUPE.equals(niveauFinesse)) {
-            counts.add(String.valueOf(count2));
-          } else if (FINESSE_USER.equals(niveauFinesse)) {
-            counts.add(String.valueOf(count3));
-          }
-          legend.add(StringUtil.truncate(item.getName(), LEGEND_MAX_LENGTH));
-          currentStats.add(new String[] { "CMP", componentId, item.getName(),
-              String.valueOf(count1),
-              String.valueOf(count2), String.valueOf(count3) });
-        }
-      }
+      buildStatsForComponents(currentStats, componentIds, legend, counts);
 
       pieChart = getPieChartFrom(legend, counts).withTitle(getChartTitle());
     } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas",
-          "AbstractPieChartBuilder.getChart()", "root.EX_SQL_QUERY_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     }
 
     return pieChart;
+  }
+
+  private void buildStatsForComponents(final List<String[]> currentStats,
+      final List<String> componentIds, final List<String> legend, final List<String> counts) {
+    for (String componentId : componentIds) {
+      StatItem item = statsByInstance.get(componentId);
+      if (item != null) {
+        long count1 = item.getCountValues()[0];
+        long count2 = item.getCountValues()[1];
+        long count3 = item.getCountValues()[2];
+
+        updateCountByFinesse(counts, count1, count2, count3);
+        legend.add(StringUtil.truncate(item.getName(), LEGEND_MAX_LENGTH));
+        currentStats.add(new String[]{"CMP", componentId, item.getName(), String.valueOf(count1),
+            String.valueOf(count2), String.valueOf(count3)});
+      }
+    }
+  }
+
+  private void buildStatsForSubspaces(final List<String[]> currentStats,
+      final List<String> tabSpaceIds, final List<String> legend, final List<String> counts)
+      throws AdminException {
+    for (String tabSpaceId : tabSpaceIds) {
+      long count1 = 0L;
+      long count2 = 0L;
+      long count3 = 0L;
+
+      SpaceInstLight space =
+          AdministrationServiceProvider.getAdminService().getSpaceInstLightById(tabSpaceId);
+      final String[] allComponentsIds =
+          AdministrationServiceProvider.getAdminService().getAllComponentIdsRecur(tabSpaceId);
+
+      for (String allComponentsId : allComponentsIds) {
+        StatItem item = statsByInstance.get(allComponentsId);
+        if (item != null) {
+          count1 += item.getCountValues()[0];
+          count2 += item.getCountValues()[1];
+          count3 += item.getCountValues()[2];
+        }
+      }
+
+      updateCountByFinesse(counts, count1, count2, count3);
+
+      legend.add(StringUtil.truncate(space.getName(), LEGEND_MAX_LENGTH));
+      currentStats.add(new String[]{"SPACE", tabSpaceId, space.getName(), String.valueOf(count1),
+          String.valueOf(count2), String.valueOf(count3)});
+    }
+  }
+
+  private void updateCountByFinesse(final List<String> counts, final long count1, final long count2,
+      final long count3) {
+    if (FINESSE_TOUS.equals(niveauFinesse)) {
+      counts.add(String.valueOf(count1));
+    } else if (FINESSE_GROUPE.equals(niveauFinesse)) {
+      counts.add(String.valueOf(count2));
+    } else if (FINESSE_USER.equals(niveauFinesse)) {
+      counts.add(String.valueOf(count3));
+    }
+  }
+
+  private void buildInstanceList(final String spaceId, final List<String> tabSpaceIds,
+      final List<String> componentIds) throws AdminException {
+    UserDetail userDetail = UserDetail.getCurrentRequester();
+    if (!StringUtil.isDefined(spaceId)) {
+      if (userDetail.isAccessAdmin()) {
+        tabSpaceIds.addAll(
+            Arrays.asList(AdministrationServiceProvider.getAdminService().getAllRootSpaceIds()));
+      } else {
+        List<String> listSpaceIds = new ArrayList<>();
+        String[] tabManageableSpaceIds = AdministrationServiceProvider.getAdminService()
+            .getUserManageableSpaceIds(userDetail.getId()); // of type 123
+        buildManageableSubSpaces(listSpaceIds, tabManageableSpaceIds);
+        tabSpaceIds.addAll(listSpaceIds);
+      }
+      componentIds.clear();
+    } else {
+      tabSpaceIds.addAll(Arrays.asList(
+          AdministrationServiceProvider.getAdminService().getAllSubSpaceIds(spaceId)));
+      componentIds.addAll(Arrays.asList(
+          AdministrationServiceProvider.getAdminService().getAllComponentIds(spaceId)));
+    }
+  }
+
+  private void buildManageableSubSpaces(final List<String> listSpaceIds,
+      final String[] tabManageableSpaceIds) throws AdminException {
+    for (String manageableSpaceId : tabManageableSpaceIds) {
+      SpaceInstLight espace =
+          AdministrationServiceProvider.getAdminService().getSpaceInstLightById(manageableSpaceId);
+      int level = espace.getLevel();
+      boolean trouve = false;
+      while (level > 0) {
+        String idEspace = espace.getFatherId();
+        espace = AdministrationServiceProvider.getAdminService().getSpaceInstLightById(idEspace);
+        level--;
+        if (isIdBelongsTo(idEspace, tabManageableSpaceIds)) {
+          trouve = true;
+          break;
+        }
+      }
+      if (!trouve) {
+        listSpaceIds.add(manageableSpaceId);
+      }
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -265,7 +293,5 @@ public abstract class AbstractPieChartBuilder {
 
   public abstract String getChartTitle();
 
-  // Hashtable key=componentId, value=new
-  // String[3] {tout, groupe, user}
   abstract Map<String, String[]> getCmpStats();
 }

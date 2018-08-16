@@ -2287,7 +2287,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public UserFull getUserFull(String domainId, String specificId) throws Exception {
+  public UserFull getUserFull(String domainId, String specificId) throws AdminException {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     return synchroDomain.getUserFull(specificId);
   }
@@ -2483,7 +2483,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public String[] getClientSpaceIds(String[] asDriverSpaceIds) throws Exception {
+  public String[] getClientSpaceIds(String[] asDriverSpaceIds) {
     String[] asClientSpaceIds = new String[asDriverSpaceIds.length];
     for (int nI = 0; nI < asDriverSpaceIds.length; nI++) {
       asClientSpaceIds[nI] = getClientSpaceId(asDriverSpaceIds[nI]);
@@ -3013,7 +3013,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public List<SpaceInstLight> getUserSpaceTreeview(String userId) throws Exception {
+  public List<SpaceInstLight> getUserSpaceTreeview(String userId) throws AdminException {
 
     Set<String> componentsId = new HashSet<>(Arrays.asList(getAvailCompoIds(userId)));
     Set<Integer> authorizedIds = new HashSet<>(100);
@@ -3097,6 +3097,22 @@ class Admin implements Administration {
       throws AdminException {
     List<String> componentIds = getAllowedComponentIds(userId);
     return getAllowedTreeview(componentIds, spaceId);
+  }
+
+  @Override
+  public List<UserDetail> getNonBlankedDeletedUsers(final String... domainIds) throws AdminException {
+    return userManager.getNonBlankedDeletedUserOfDomains(domainIds);
+  }
+
+  @Override
+  public void blankDeletedUsers(final String targetDomainId, final List<String> userIds)
+      throws AdminException {
+    final UserDetail[] users = getUserDetails(userIds.toArray(new String[0]));
+    for (final UserDetail user : users) {
+      if (user.getDomainId().equals(targetDomainId)) {
+        userManager.blankUser(user);
+      }
+    }
   }
 
   private SpaceWithSubSpacesAndComponents getAllowedTreeview(List<String> componentIds,
@@ -3391,7 +3407,7 @@ class Admin implements Administration {
 
   @Override
   public boolean isAnAdminTool(String toolId) {
-    return ADMIN_COMPONENT_ID.equals(toolId);
+    return Constants.ADMIN_COMPONENT_ID.equals(toolId);
   }
 
   @Override
@@ -3858,23 +3874,23 @@ class Admin implements Administration {
   // RE-INDEXATION
   // -------------------------------------------------------------------
   @Override
-  public String[] getAllSpaceIds(String sUserId) throws Exception {
+  public String[] getAllSpaceIds(String sUserId) throws AdminException {
     return getClientSpaceIds(getUserSpaceIds(sUserId));
   }
 
   @Override
-  public String[] getAllRootSpaceIds(String sUserId) throws Exception {
+  public String[] getAllRootSpaceIds(String sUserId) throws AdminException {
     return getClientSpaceIds(getUserRootSpaceIds(sUserId));
   }
 
   @Override
   public String[] getAllSubSpaceIds(String sSpaceId, String sUserId)
-      throws Exception {
+      throws AdminException {
     return getUserSubSpaceIds(sUserId, sSpaceId);
   }
 
   @Override
-  public String[] getAllComponentIds(String sSpaceId) throws Exception {
+  public String[] getAllComponentIds(String sSpaceId) throws AdminException {
     List<String> alCompoIds = new ArrayList<>();
 
     // Get the compo of this space
@@ -3911,7 +3927,7 @@ class Admin implements Administration {
 
   @Override
   public String[] getAllComponentIdsRecur(String sSpaceId, String sUserId, String componentNameRoot,
-      boolean inCurrentSpace, boolean inAllSpaces) throws Exception {
+      boolean inCurrentSpace, boolean inAllSpaces) throws AdminException {
     ArrayList<String> alCompoIds = new ArrayList<>();
     // In All silverpeas
     if (inAllSpaces) {
@@ -3938,7 +3954,7 @@ class Admin implements Administration {
    * @author dlesimple
    */
   private ArrayList<String> getAllComponentIdsRecur(String sSpaceId, String sUserId,
-      String componentNameRoot, boolean inCurrentSpace) throws Exception {
+      String componentNameRoot, boolean inCurrentSpace) throws AdminException {
     ArrayList<String> alCompoIds = new ArrayList<>();
     getComponentIdsByNameAndUserId(sUserId, componentNameRoot);
     // Get components in the root of the space
@@ -4043,7 +4059,7 @@ class Admin implements Administration {
   // Synchronization tools
   // //////////////////////////////////////////////////////////
   private List<String> translateGroupIds(String sDomainId, String[] groupSpecificIds,
-      boolean recursGroups) throws Exception {
+      boolean recursGroups) {
     List<String> convertedGroupIds = new ArrayList<>();
     String groupId;
     for (String groupSpecificId : groupSpecificIds) {
@@ -4073,8 +4089,7 @@ class Admin implements Administration {
     return convertedGroupIds;
   }
 
-  private String[] translateUserIds(String sDomainId, String[] userSpecificIds)
-      throws Exception {
+  private String[] translateUserIds(String sDomainId, String[] userSpecificIds) {
     List<String> convertedUserIds = new ArrayList<>();
     String userId = null;
     for (String userSpecificId : userSpecificIds) {
@@ -4094,11 +4109,11 @@ class Admin implements Administration {
         convertedUserIds.add(userId);
       }
     }
-    return convertedUserIds.toArray(new String[convertedUserIds.size()]);
+    return convertedUserIds.toArray(new String[0]);
   }
 
   @Override
-  public String synchronizeGroup(String groupId, boolean recurs) throws Exception {
+  public String synchronizeGroup(String groupId, boolean recurs) throws AdminException {
 
     GroupDetail theGroup = getGroup(groupId);
     if (theGroup.isSynchronized()) {
@@ -4117,7 +4132,7 @@ class Admin implements Administration {
 
   @Override
   public String synchronizeImportGroup(String domainId, String groupKey, String askedParentId,
-      boolean recurs, boolean isIdKey) throws Exception {
+      boolean recurs, boolean isIdKey) throws AdminException {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     GroupDetail gr;
 
@@ -4174,7 +4189,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public String synchronizeRemoveGroup(String groupId) throws Exception {
+  public String synchronizeRemoveGroup(String groupId) throws AdminException {
     GroupDetail theGroup = getGroup(groupId);
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theGroup.getDomainId());
     synchroDomain.removeGroup(theGroup.getSpecificId());
@@ -4182,7 +4197,7 @@ class Admin implements Administration {
   }
 
   protected void internalSynchronizeGroup(DomainDriver synchroDomain,
-      GroupDetail latestGroup, boolean recurs) throws Exception {
+      GroupDetail latestGroup, boolean recurs) throws AdminException {
     latestGroup.setUserIds(translateUserIds(latestGroup.getDomainId(),
         latestGroup.getUserIds()));
     updateGroup(latestGroup, true);
@@ -4211,7 +4226,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public String synchronizeUser(String userId, boolean recurs) throws Exception {
+  public String synchronizeUser(String userId, boolean recurs) throws AdminException {
     Collection<UserDetail> listUsersUpdate = new ArrayList<>();
     try {
       UserDetail theUserDetail = getUserDetail(userId);
@@ -4267,7 +4282,7 @@ class Admin implements Administration {
 
   @Override
   public String synchronizeImportUserByLogin(String domainId, String userLogin, boolean recurs)
-      throws Exception {
+      throws AdminException {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     UserDetail ud = synchroDomain.importUser(userLogin);
     ud.setDomainId(domainId);
@@ -4279,7 +4294,7 @@ class Admin implements Administration {
 
   @Override
   public String synchronizeImportUser(String domainId, String specificId, boolean recurs) throws
-      Exception {
+      AdminException {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     UserDetail ud = synchroDomain.getUser(specificId);
 
@@ -4292,20 +4307,20 @@ class Admin implements Administration {
 
   @Override
   public List<DomainProperty> getSpecificPropertiesToImportUsers(String domainId, String language)
-      throws Exception {
+      throws AdminException {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     return synchroDomain.getPropertiesToImport(language);
   }
 
   @Override
   public UserDetail[] searchUsers(String domainId, Map<String, String> query)
-      throws Exception {
+      throws AdminException {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     return synchroDomain.getUsersByQuery(query);
   }
 
   @Override
-  public String synchronizeRemoveUser(String userId) throws Exception {
+  public String synchronizeRemoveUser(String userId) throws AdminException {
     UserDetail theUserDetail = getUserDetail(userId);
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theUserDetail.getDomainId());
     synchroDomain.removeUser(theUserDetail.getSpecificId());
@@ -4317,7 +4332,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public String synchronizeSilverpeasWithDomain(String sDomainId) throws Exception {
+  public String synchronizeSilverpeasWithDomain(String sDomainId) throws AdminException {
     return synchronizeSilverpeasWithDomain(sDomainId, false);
   }
 

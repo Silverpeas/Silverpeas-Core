@@ -31,7 +31,9 @@ import org.silverpeas.core.admin.user.model.User;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 
@@ -105,8 +107,13 @@ public class ComponentAccessController extends AbstractAccessController<String>
   @SuppressWarnings("ConstantConditions")
   @Override
   public boolean isTopicTrackerSupported(String componentId) {
-    return getOrganisationController().getComponentInstance(componentId).orElse(null)
-        .isTopicTracker();
+    boolean isSupported = false;
+    Optional<SilverpeasComponentInstance> optionalComponent =
+        getOrganisationController().getComponentInstance(componentId);
+    if (optionalComponent.isPresent()) {
+      isSupported = optionalComponent.get().isTopicTracker();
+    }
+    return isSupported;
   }
 
   @Override
@@ -118,52 +125,32 @@ public class ComponentAccessController extends AbstractAccessController<String>
   @Override
   protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
       String userId, String componentId) {
+    final Predicate<User> isUserNotValidState =
+        u -> u == null || (!u.isActivatedState() && !u.isAnonymous());
+    final Predicate<String> isTool =
+        c -> c == null || getOrganisationController().isToolAvailable(c);
 
     // If userId corresponds to nothing or to a deleted or deactivated user, then no role is
     // retrieved.
     User user = User.getById(userId);
-    if (user == null || (!user.isActivatedState() && !user.isAnonymous())) {
+    if (isUserNotValidState.test(user)) {
       return;
     }
 
-
     // Personal space or user tool
-    if (componentId == null || getOrganisationController().isToolAvailable(componentId)) {
+    if (isTool.test(componentId)) {
       userRoles.add(SilverpeasRole.admin);
       return;
     }
-    if (Administration.ADMIN_COMPONENT_ID.equals(componentId)) {
+    if (Administration.Constants.ADMIN_COMPONENT_ID.equals(componentId)) {
       if (User.getById(userId).isAccessAdmin()) {
         userRoles.add(SilverpeasRole.admin);
       }
       return;
     }
 
-    SilverpeasComponentInstance componentInstance =
-        getOrganisationController().getComponentInstance(componentId).orElse(null);
-    if (componentInstance == null) {
+    if (fillUserRolesFromComponentInstance(userId, componentId, context, userRoles)) {
       return;
-    }
-
-    if (componentInstance.isPersonal()) {
-      userRoles.addAll(componentInstance.getSilverpeasRolesFor(User.getById(userId)));
-      if (AccessControlOperation.isPersistActionFrom(context.getOperations()) ||
-          AccessControlOperation.isDownloadActionFrom(context.getOperations()) ||
-          AccessControlOperation.isSharingActionFrom(context.getOperations())) {
-        userRoles.remove(SilverpeasRole.user);
-      }
-      return;
-    }
-
-    if (componentInstance.isPublic() || getBooleanValue(
-        getOrganisationController().getComponentParameterValue(componentId, "publicFiles"))) {
-      userRoles.add(SilverpeasRole.user);
-      if (!AccessControlOperation.isPersistActionFrom(context.getOperations()) &&
-          !AccessControlOperation.isDownloadActionFrom(context.getOperations()) &&
-          !AccessControlOperation.isSharingActionFrom(context.getOperations())) {
-        // In that case, it is not necessary to check deeper the user rights
-        return;
-      }
     }
 
     if (getOrganisationController().isComponentAvailable(componentId, userId)) {
@@ -176,6 +163,38 @@ public class ComponentAccessController extends AbstractAccessController<String>
         userRoles.addAll(roles);
       }
     }
+  }
+
+  private boolean fillUserRolesFromComponentInstance(final String userId, final String componentId,
+      final AccessControlContext context, final Set<SilverpeasRole> userRoles) {
+    Optional<SilverpeasComponentInstance> optionalInstance =
+        getOrganisationController().getComponentInstance(componentId);
+    if (!optionalInstance.isPresent()) {
+      return true;
+    }
+
+    SilverpeasComponentInstance componentInstance = optionalInstance.get();
+    if (componentInstance.isPersonal()) {
+      userRoles.addAll(componentInstance.getSilverpeasRolesFor(User.getById(userId)));
+      if (AccessControlOperation.isPersistActionFrom(context.getOperations()) ||
+          AccessControlOperation.isDownloadActionFrom(context.getOperations()) ||
+          AccessControlOperation.isSharingActionFrom(context.getOperations())) {
+        userRoles.remove(SilverpeasRole.user);
+      }
+      return true;
+    }
+
+    if (componentInstance.isPublic() || getBooleanValue(
+        getOrganisationController().getComponentParameterValue(componentId, "publicFiles"))) {
+      userRoles.add(SilverpeasRole.user);
+      if (!AccessControlOperation.isPersistActionFrom(context.getOperations()) &&
+          !AccessControlOperation.isDownloadActionFrom(context.getOperations()) &&
+          !AccessControlOperation.isSharingActionFrom(context.getOperations())) {
+        // In that case, it is not necessary to check deeper the user rights
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

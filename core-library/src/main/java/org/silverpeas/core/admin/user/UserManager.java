@@ -76,7 +76,7 @@ public class UserManager {
   private static final String SPECIFIC_ID = "(specificId:";
   private static final String USER_TABLE_REMOVE_USER = "UserTable.removeUser()";
   private static final String REMOVING_MESSAGE = "Suppression de ";
-  private static final String BLANK_NAME = "Anonymous";
+
   @Inject
   private UserDAO userDAO;
   @Inject
@@ -641,13 +641,16 @@ public class UserManager {
    * simple, the tuple associated with the user profile isn't deleted in the data source, only the
    * data inside it are blanked. One consequence to this method is to remove its last name and to
    * replace its first name by the term "Anonymous".
+   * @throws AdminException if the user isn't deleted or if an error occurs while blanking it.
    * @param user the user to blank in Silverpeas.
    */
   public void blankUser(final UserDetail user) throws AdminException {
-    user.setFirstName(BLANK_NAME);
-    user.setLastName("");
+    if (!user.getState().equals(UserState.DELETED)) {
+      throw new AdminException(
+          "The user " + user.getId() + " cannot be blanked because it is not deleted!");
+    }
     try(Connection connection = DBUtil.openConnection()) {
-      userDAO.updateUser(connection, user);
+      userDAO.blankUser(connection, user);
     } catch (SQLException e) {
       throw new AdminException("Cannot blank the user " + user.getId(), e);
     }
@@ -806,6 +809,24 @@ public class UserManager {
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("users in domains", String.join(", ", domainIds)),
           e);
+    }
+  }
+
+  /**
+   * Gets all the deleted users in the specified domains. If no domains are given, then all the
+   * deleted users in Silverpeas are returned.
+   * @param domainIds zero, one or more unique identifiers of user domains in Silverpeas.
+   * @return a list of the deleted users in Silverpeas. If no users are deleted in the specified
+   * domains, then an empty list is returned.
+   * @throws AdminException if the deleted users cannot be fetched or if an unexpected exception
+   * is thrown.
+   */
+  public List<UserDetail> getNonBlankedDeletedUserOfDomains(final String... domainIds) throws AdminException {
+    try (Connection connection = DBUtil.openConnection()) {
+      return userDAO.getNonBlankedDeletedUsers(connection, domainIds);
+    } catch (Exception e) {
+      throw new AdminException(
+          failureOnGetting("deleted users in domains", String.join(", ", domainIds)), e);
     }
   }
 

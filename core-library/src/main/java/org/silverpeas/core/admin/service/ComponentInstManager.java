@@ -167,7 +167,7 @@ public class ComponentInstManager {
     int retry = 0;
     String deletedComponentName = null;
     while (!nameOK) {
-      String componentName = componentInst.getLabel() + Admin.basketSuffix;
+      String componentName = componentInst.getLabel() + Admin.Constants.BASKET_SUFFIX;
       if (retry > 0) {
         componentName += " " + retry;
       }

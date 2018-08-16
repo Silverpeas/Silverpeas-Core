@@ -2311,4 +2311,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return getSessionUsers().get(currentIndex.getNextIndex());
   }
 
+  public List<UserDetail> getDeletedUsers() throws AdminException {
+    return adminCtrl.getDeletedUsersInDomain(this.targetDomainId);
+  }
+
+  public void blankDeletedUsers(final List<String> userIds) throws AdminException {
+    adminCtrl.blankDeletedUsers(targetDomainId, userIds);
+  }
 }
