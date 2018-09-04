@@ -355,7 +355,7 @@ public class ActifyDocumentProcessSchedulerIT {
      */
     private void prepareMock() {
       when(attachmentService.listDocumentsByForeignKey(any(ResourceReference.class), eq((String) null)))
-          .thenReturn(new SimpleDocumentList<SimpleDocument>());
+          .thenReturn(new SimpleDocumentList<>());
       if (isVersioned()) {
         String lastFilename = ACTIFY_DOCUMENT_PREFIX + (actifyDocuments - 1) + ".3d";
         SimpleAttachment existingAttachment = new SimpleAttachment(lastFilename, null,

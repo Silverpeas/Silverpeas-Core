@@ -23,16 +23,14 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.xml.bind.annotation.XmlElement;
-
-import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.webapi.base.WebEntity;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  *
@@ -77,14 +75,19 @@ public class SimpleDocumentEntity implements WebEntity {
   private String comment;
   @XmlElement(defaultValue = "false")
   private String versioned;
+  @XmlElement
+  private Boolean prewiewable;
+  @XmlElement
+  private Boolean viewable;
+  @XmlElement
+  private Boolean displayAsContent;
 
   public static SimpleDocumentEntity fromAttachment(SimpleDocument document) {
     SimpleDocumentEntity entity = new SimpleDocumentEntity();
     try {
       entity.uri = new URI(URLUtil.getSimpleURL(URLUtil.URL_FILE, document.getId()));
     } catch (URISyntaxException e) {
-      throw new AttachmentException("AttachmentEntity.fromAttachment(",
-          AttachmentException.ERROR, "Couldn't build the URI to the attachment", e);
+      throw new AttachmentException("Couldn't build the URI to the attachment", e);
     }
     entity.id = document.getId();
     entity.instanceId = document.getInstanceId();
@@ -192,4 +195,30 @@ public class SimpleDocumentEntity implements WebEntity {
     return versioned;
   }
 
+  public Boolean getPrewiewable() {
+    return prewiewable;
+  }
+
+  public SimpleDocumentEntity prewiewable(final boolean prewiewable) {
+    this.prewiewable = prewiewable;
+    return this;
+  }
+
+  public Boolean getViewable() {
+    return viewable;
+  }
+
+  public SimpleDocumentEntity viewable(final boolean viewable) {
+    this.viewable = viewable;
+    return this;
+  }
+
+  public Boolean getDisplayAsContent() {
+    return displayAsContent;
+  }
+
+  public SimpleDocumentEntity displayAsContent(final boolean displayAsContent) {
+    this.displayAsContent = displayAsContent;
+    return this;
+  }
 }

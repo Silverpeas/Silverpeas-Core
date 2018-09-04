@@ -24,35 +24,27 @@
 package org.silverpeas.core.persistence.jcr;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
 import org.apache.jackrabbit.JcrConstants;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.jcr.AccessDeniedException;
 import javax.jcr.Binary;
-import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
-import javax.jcr.ValueFormatException;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.nodetype.NodeType;
-import javax.jcr.version.VersionException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -75,10 +67,9 @@ public abstract class AbstractJcrConverter {
    * @param propertyName the name of the property required.
    * @return the String value of the property - null if the property doesn't exist.
    * @throws RepositoryException on error
-   * @throws ValueFormatException on error
    */
   protected String getStringProperty(Node node, String propertyName)
-      throws ValueFormatException, RepositoryException {
+      throws RepositoryException {
     if (node.hasProperty(propertyName)) {
       return node.getProperty(propertyName).getString();
     }
@@ -91,12 +82,9 @@ public abstract class AbstractJcrConverter {
    *
    * @param node the node whose componentId is required.
    * @return the componentId of the specified node.
-   * @throws ItemNotFoundException on error
-   * @throws AccessDeniedException on error
    * @throws RepositoryException on error
    */
-  protected String getComponentId(Node node) throws ItemNotFoundException,
-      AccessDeniedException, RepositoryException {
+  protected String getComponentId(Node node) throws RepositoryException {
     return JcrDataConverter.convertFromJcrPath(node.getAncestor(1).getName());
   }
 
@@ -107,18 +95,15 @@ public abstract class AbstractJcrConverter {
    * @param node the node whose property is being set.
    * @param propertyName the name of the property being set.
    * @param value the value being set. If it is null then the property is removed.
-   * @throws VersionException on error
-   * @throws LockException on error
-   * @throws ConstraintViolationException on error
    * @throws RepositoryException on error
    */
   public void addStringProperty(Node node, String propertyName,
-      String value) throws VersionException, LockException,
-      ConstraintViolationException, RepositoryException {
+      String value) throws RepositoryException {
     if (value == null) {
       try {
         node.getProperty(propertyName).remove();
-      } catch (PathNotFoundException pnfex) {
+      } catch (PathNotFoundException e) {
+        SilverLogger.getLogger(this).silent(e);
       }
     } else {
       node.setProperty(propertyName, value);
@@ -132,18 +117,15 @@ public abstract class AbstractJcrConverter {
    * @param node the node whose property is being set.
    * @param propertyName the name of the property being set.
    * @param value the value being set. If it is null then the property is removed.
-   * @throws VersionException on error
-   * @throws LockException on error
-   * @throws ConstraintViolationException on error
    * @throws RepositoryException on error
    */
   public void addDateProperty(Node node, String propertyName, Date value)
-      throws VersionException, LockException, ConstraintViolationException,
-      RepositoryException {
+      throws RepositoryException {
     if (value == null) {
       try {
         node.getProperty(propertyName).remove();
-      } catch (PathNotFoundException pnfex) {
+      } catch (PathNotFoundException e) {
+        SilverLogger.getLogger(this).silent(e);
       }
     } else {
       Calendar calend = Calendar.getInstance();
@@ -160,18 +142,15 @@ public abstract class AbstractJcrConverter {
    * @param node the node whose property is being set.
    * @param propertyName the name of the property being set.
    * @param value the value being set. If it is null then the property is removed.
-   * @throws VersionException on error
-   * @throws LockException on error
-   * @throws ConstraintViolationException on error
    * @throws RepositoryException on error
    */
   public void addCalendarProperty(Node node, String propertyName,
-      Calendar value) throws VersionException, LockException,
-      ConstraintViolationException, RepositoryException {
+      Calendar value) throws RepositoryException {
     if (value == null) {
       try {
         node.getProperty(propertyName).remove();
-      } catch (PathNotFoundException pnfex) {
+      } catch (PathNotFoundException e) {
+        SilverLogger.getLogger(this).silent(e);
       }
     } else {
       Value propertyValue = node.getSession().getValueFactory().createValue(value);
@@ -187,10 +166,9 @@ public abstract class AbstractJcrConverter {
    * @param propertyName the name of the property required.
    * @return the Calendar value of the property - null if the property doesn't exist.
    * @throws RepositoryException on error
-   * @throws ValueFormatException on error
    */
   protected Calendar getCalendarProperty(Node node, String propertyName)
-      throws ValueFormatException, RepositoryException {
+      throws RepositoryException {
     if (node.hasProperty(propertyName)) {
       return node.getProperty(propertyName).getDate();
     }
@@ -205,10 +183,8 @@ public abstract class AbstractJcrConverter {
    * @param propertyName the name of the property required.
    * @return the java.util.Date value of the property - null if the property doesn't exist.
    * @throws RepositoryException on error
-   * @throws ValueFormatException on error
    */
-  protected Date getDateProperty(Node node, String propertyName)
-      throws ValueFormatException, RepositoryException {
+  protected Date getDateProperty(Node node, String propertyName) throws RepositoryException {
     if (node.hasProperty(propertyName)) {
       return node.getProperty(propertyName).getDate().getTime();
     }
@@ -222,12 +198,10 @@ public abstract class AbstractJcrConverter {
    * @param propertyName the name of the property required.
    * @return the int value of the property - 0 if the property doesn't exist.
    * @throws RepositoryException on error
-   * @throws ValueFormatException on error
    */
-  protected int getIntProperty(Node node, String propertyName) throws ValueFormatException,
-      RepositoryException {
+  protected int getIntProperty(Node node, String propertyName) throws RepositoryException {
     if (node.hasProperty(propertyName)) {
-      return Long.valueOf(node.getProperty(propertyName).getLong()).intValue();
+      return ((Long)(node.getProperty(propertyName).getLong())).intValue();
     }
     return 0;
   }
@@ -238,16 +212,16 @@ public abstract class AbstractJcrConverter {
    *
    * @param node the node whose property is required.
    * @param propertyName the name of the property required.
+   * @param defaultValueIfNull the default value of the value does not exist
    * @return the boolean value of the property - false if the property doesn't exist.
    * @throws RepositoryException on error
-   * @throws ValueFormatException on error
    */
-  protected boolean getBooleanProperty(Node node, String propertyName) throws ValueFormatException,
-      RepositoryException {
+  protected boolean getBooleanProperty(Node node, String propertyName,
+      final boolean defaultValueIfNull) throws RepositoryException {
     if (node.hasProperty(propertyName)) {
       return node.getProperty(propertyName).getBoolean();
     }
-    return false;
+    return defaultValueIfNull;
   }
 
   /**
@@ -257,10 +231,8 @@ public abstract class AbstractJcrConverter {
    * @param propertyName the name of the property required.
    * @return the long value of the property - 0 if the property doesn't exist.
    * @throws RepositoryException on error
-   * @throws ValueFormatException on error
    */
-  protected long getLongProperty(Node node, String propertyName)
-      throws ValueFormatException, RepositoryException {
+  protected long getLongProperty(Node node, String propertyName) throws RepositoryException {
     if (node.hasProperty(propertyName)) {
       return node.getProperty(propertyName).getLong();
     }
@@ -274,12 +246,9 @@ public abstract class AbstractJcrConverter {
    * @param values the array of references
    * @param uuid the reference to be removed
    * @return the updated arry of references.
-   * @throws ValueFormatException on error
-   * @throws IllegalStateException on error
    * @throws RepositoryException on error
    */
-  protected Value[] removeReference(Value[] values, String uuid) throws ValueFormatException,
-      IllegalStateException, RepositoryException {
+  protected Value[] removeReference(Value[] values, String uuid) throws RepositoryException {
     List<Value> references = CollectionUtil.asList(values);
     Iterator<Value> iter = references.iterator();
     while (iter.hasNext()) {
@@ -299,9 +268,8 @@ public abstract class AbstractJcrConverter {
    * @param prefix a prefix to add to the node name
    * @param tableName the name of the column used to stored the id.
    * @return the name of the node.
-   * @throws UtilException on error
    */
-  protected String computeUniqueName(String prefix, String tableName) throws SQLException {
+  protected String computeUniqueName(String prefix, String tableName) {
     return prefix + DBUtil.getNextId(tableName, null);
   }
 
@@ -320,7 +288,7 @@ public abstract class AbstractJcrConverter {
     if (fileMimeType == null) {
       fileMimeType = FileUtil.getMimeType(fileNode.getProperty(SLV_PROPERTY_NAME).getString());
     }
-    contentNode.setProperty(JCR_ENCODING, CharEncoding.UTF_8);
+    contentNode.setProperty(JCR_ENCODING, Charsets.UTF_8.name());
     contentNode.setProperty(JCR_MIMETYPE, fileMimeType);
     Calendar lastModified = Calendar.getInstance();
     contentNode.setProperty(JCR_LAST_MODIFIED, lastModified);
@@ -358,14 +326,10 @@ public abstract class AbstractJcrConverter {
   }
 
   public void setContent(Node fileNode, File file, String mimeType) throws RepositoryException {
-    InputStream in = null;
-    try {
-      in = new FileInputStream(file);
+    try(InputStream in = new FileInputStream(file)) {
       setContent(fileNode, in, mimeType);
-    } catch (FileNotFoundException ex) {
+    } catch (IOException ex) {
       throw new RepositoryException(ex);
-    } finally {
-      IOUtils.closeQuietly(in);
     }
   }
 
@@ -431,8 +395,7 @@ public abstract class AbstractJcrConverter {
 
   }
 
-  private long getSize(Node contentNode) throws ValueFormatException, PathNotFoundException,
-      RepositoryException {
+  private long getSize(Node contentNode) throws RepositoryException {
     if (contentNode.hasProperty(JCR_DATA)) {
       return contentNode.getProperty(JCR_DATA).getBinary().getSize();
     }

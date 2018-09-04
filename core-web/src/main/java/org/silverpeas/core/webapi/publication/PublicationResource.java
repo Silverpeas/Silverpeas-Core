@@ -124,7 +124,7 @@ public class PublicationResource extends AbstractPublicationResource {
         List<AttachmentEntity> attachments = publication.getAttachments();
         if (attachments != null) {
           for (AttachmentEntity attachment : attachments) {
-            attachment.withUri(getUri().getBaseUri().toString());
+            attachment.withBaseUri(getUri().getBaseUri().toString());
           }
         }
       }

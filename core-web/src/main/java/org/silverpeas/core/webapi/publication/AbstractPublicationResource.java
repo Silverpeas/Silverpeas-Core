@@ -75,15 +75,17 @@ public abstract class AbstractPublicationResource extends RESTWebService {
 
   protected PublicationEntity getPublicationEntity(PublicationDetail publication, boolean withAttachments) {
     if (publication.isValid()) {
-      URI uri = getURI(publication);
+      URI uri = getPublicationUri(publication);
       PublicationEntity entity = PublicationEntity.fromPublicationDetail(publication, uri);
       if (withAttachments) {
         AttachmentService attachmentService = AttachmentServiceProvider.getAttachmentService();
         // expose regular files
         Collection<SimpleDocument> attachments =
-            attachmentService.listDocumentsByForeignKey(publication.getPK(), null);
+            attachmentService.listDocumentsByForeignKey(publication.getPK().toResourceReference(),
+                null);
         // and files attached to form too...
-        attachments.addAll(attachmentService.listDocumentsByForeignKeyAndType(publication.getPK(),
+        attachments.addAll(attachmentService.listDocumentsByForeignKeyAndType(
+            publication.getPK().toResourceReference(),
             DocumentType.form, null));
         entity.withAttachments(attachments);
       }
@@ -94,14 +96,14 @@ public abstract class AbstractPublicationResource extends RESTWebService {
 
   protected abstract boolean isNodeReadable(NodePK nodePK);
 
-  private URI getURI(PublicationDetail publication) {
+  private URI getPublicationUri(PublicationDetail publication) {
     return getUri().getAbsolutePathBuilder()
         .path("publication")
         .path(publication.getPK().getId())
         .build();
   }
 
-  protected NodeService geetNodeService() {
+  protected NodeService getNodeService() {
     try {
       return NodeService.get();
     } catch (Exception e) {

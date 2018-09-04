@@ -23,26 +23,25 @@
  */
 package org.silverpeas.core.contribution.attachment;
 
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Calendar;
@@ -152,8 +151,7 @@ public class ScheduledReservedFile implements Initialization {
         AttachmentServiceProvider.getAttachmentService().updateAttachment(document, false, false);
       }
     } catch (Exception e) {
-      throw new AttachmentException("ScheduledReservedFile.doScheduledReservedFile()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new AttachmentException(e);
     }
 
   }
@@ -163,9 +161,8 @@ public class ScheduledReservedFile implements Initialization {
     atDate.setTime(document.getExpiry());
     String day = "GML.jour" + atDate.get(Calendar.DAY_OF_WEEK);
     String month = "GML.mois" + atDate.get(Calendar.MONTH);
-    String date = generalMessage.getString(day) + " " + atDate.get(Calendar.DATE) + " " +
+    return generalMessage.getString(day) + " " + atDate.get(Calendar.DATE) + " " +
         generalMessage.getString(month) + " " + atDate.get(Calendar.YEAR);
-    return date;
   }
 
   private void createMessageByLanguage(String date, String url, SimpleDocument document,
@@ -230,8 +227,7 @@ public class ScheduledReservedFile implements Initialization {
       NotificationSender notifSender = new NotificationSender(componentId);
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
-      throw new AttachmentException("AttachmentBmImpl.notifyUser()",
-          SilverpeasRuntimeException.ERROR, "attachment.MSG_ATTACHMENT_NOT_EXIST", e);
+      throw new AttachmentException(e);
     }
   }
 

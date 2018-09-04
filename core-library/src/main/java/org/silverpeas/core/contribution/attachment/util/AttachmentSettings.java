@@ -23,8 +23,13 @@
  */
 package org.silverpeas.core.contribution.attachment.util;
 
+import org.silverpeas.core.admin.component.model.SilverpeasComponent;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Handled the settings around the attachments.
@@ -35,6 +40,10 @@ public class AttachmentSettings {
   private static SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
 
+  private AttachmentSettings() {
+    throw new IllegalStateException("Utility class");
+  }
+
   /**
    * Indicates if metadata of a file, if any, can be used to fill data (title & description) of an
    * attachment. (defined in properties by attachment.data.fromMetadata)
@@ -42,5 +51,24 @@ public class AttachmentSettings {
    */
   public static boolean isUseFileMetadataForAttachmentDataEnabled() {
     return settings.getBoolean("attachment.data.fromMetadata", false);
+  }
+
+  /**
+   * Indicates if the displaying as content is enabled for a component instance represented by
+   * the given identifier.
+   * @param componentInstanceId identifier of a component instance.
+   * @return true if activated, false otherwise.
+   */
+  public static boolean isDisplayableAsContentForComponentInstanceId(
+      final String componentInstanceId) {
+    return Stream
+        .of(settings.getString("attachmentsAsContent.component.names", StringUtil.EMPTY).split("[ ,;]"))
+        .map(c -> {
+          final Optional<SilverpeasComponent> component = SilverpeasComponent.getByInstanceId(componentInstanceId);
+          return component.isPresent() && component.get().getName().equalsIgnoreCase(c.trim());
+        })
+        .filter(b -> b)
+        .findFirst()
+        .orElse(false);
   }
 }

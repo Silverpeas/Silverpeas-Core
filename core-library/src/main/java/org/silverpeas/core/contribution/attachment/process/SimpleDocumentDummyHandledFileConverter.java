@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.contribution.attachment.process;
 
+import org.silverpeas.core.ActionType;
+import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.process.annotation.AbstractDummyHandledFileConverter;
 import org.silverpeas.core.process.io.file.DummyHandledFile;
-import org.silverpeas.core.ActionType;
-import org.silverpeas.core.WAPrimaryKey;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -44,7 +44,7 @@ public class SimpleDocumentDummyHandledFileConverter
       final WAPrimaryKey targetPK, final ActionType actionType) {
 
     // Initializing the result
-    List<DummyHandledFile> dummyHandledFiles = new LinkedList<DummyHandledFile>();
+    List<DummyHandledFile> dummyHandledFiles = new LinkedList<>();
 
     // For now, only move and copy actions are handled
     if (actionType.isCreate() || actionType.isUpdate() || actionType.isCopy() ||
@@ -69,7 +69,7 @@ public class SimpleDocumentDummyHandledFileConverter
         }
       }
     } else {
-      throw new NotImplementedException();
+      throw new NotSupportedException("The action type isn't supported by this class");
     }
 
     // Result

@@ -23,18 +23,17 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
-import org.silverpeas.core.webapi.base.WebEntity;
-import org.silverpeas.core.util.URLUtil;
-
-import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -79,8 +78,7 @@ public class AttachmentEntity implements WebEntity {
     try {
       entity.uri = new URI(URLUtil.getSimpleURL(URLUtil.URL_FILE, detail.getId()));
     } catch (URISyntaxException e) {
-      throw new AttachmentException("AttachmentEntity.fromAttachment(",
-          AttachmentException.ERROR, "Couldn't build the URI to the attachment", e);
+      throw new AttachmentException("Couldn't build the URI to the attachment", e);
     }
     entity.id = detail.getId();
     entity.instanceId = detail.getInstanceId();
@@ -113,34 +111,34 @@ public class AttachmentEntity implements WebEntity {
   }
 
   public void withSharedUri(String baseURI, String token) {
-    URI sharedUri;
+    URI theUri;
     try {
-      sharedUri = UriBuilder.fromUri(baseURI)
+      theUri = UriBuilder.fromUri(baseURI)
           .path("sharing/attachments")
           .path(instanceId)
           .path(token)
           .path(id)
-          .path(URLEncoder.encode(logicalName, CharEncoding.UTF_8))
+          .path(URLEncoder.encode(logicalName, Charsets.UTF_8.name()))
           .build();
     } catch (UnsupportedEncodingException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      throw new RuntimeException(ex.getMessage(), ex);
+      throw new SilverpeasRuntimeException(ex.getMessage(), ex);
     }
-    this.sharedUri = sharedUri;
+    this.sharedUri = theUri;
   }
 
-  public void withUri(String baseURI) {
+  public void withBaseUri(String baseURI) {
     URI privateUri;
     try {
       privateUri = UriBuilder.fromUri(baseURI)
           .path("private/attachments")
           .path(instanceId)
           .path(id)
-          .path(URLEncoder.encode(logicalName, CharEncoding.UTF_8))
+          .path(URLEncoder.encode(logicalName, Charsets.UTF_8.name()))
           .build();
     } catch (UnsupportedEncodingException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      throw new RuntimeException(ex.getMessage(), ex);
+      throw new SilverpeasRuntimeException(ex.getMessage(), ex);
     }
     this.uri = privateUri;
   }

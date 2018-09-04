@@ -24,21 +24,29 @@
 package org.silverpeas.core.webapi.attachment;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.viewer.service.PreviewService;
+import org.silverpeas.core.viewer.service.ViewService;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.reader;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.user;
 
 @Service
 @RequestScoped
@@ -48,6 +56,12 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
 
   @PathParam("id")
   private String resourceId;
+
+  @QueryParam("viewIndicators")
+  private boolean viewIndicators = false;
+
+  @QueryParam("highestUserRole")
+  private SilverpeasRole highestUserRole = null;
 
   public String getResourceId() {
     return resourceId;
@@ -95,11 +109,21 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
   }
 
   private List<SimpleDocumentEntity> asWebEntities(List<SimpleDocument> docs) {
-    List<SimpleDocumentEntity> entities = new ArrayList<>();
-    for (SimpleDocument doc : docs) {
-      entities.add(SimpleDocumentEntity.fromAttachment(doc));
-    }
-    return entities;
+    final SilverpeasRole userRole = highestUserRole != null ? highestUserRole : getHighestUserRole();
+    return docs.stream().map(d -> {
+      if (d.isVersioned() && !d.isPublic() && (userRole == user || userRole == reader)) {
+        return d.getLastPublicVersion();
+      }
+      return d;
+    }).map(d -> {
+      final SimpleDocumentEntity entity = SimpleDocumentEntity.fromAttachment(d);
+      if (viewIndicators) {
+        entity.prewiewable(PreviewService.get().isPreviewable(new File(d.getAttachmentPath())))
+            .viewable(ViewService.get().isViewable(new File(d.getAttachmentPath())))
+            .displayAsContent(d.isDisplayableAsContent());
+      }
+      return entity;
+    }).collect(Collectors.toList());
   }
 
 }

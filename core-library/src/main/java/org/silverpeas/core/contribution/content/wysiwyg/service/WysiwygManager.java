@@ -46,7 +46,6 @@ import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.contribution.service.WysiwygContentRepository;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -989,7 +988,7 @@ public class WysiwygManager implements WysiwygContentRepository {
   }
 
   /**
-   * To create path. Warning: the token separing the repertories is ",".
+   * To create path. Warning: the token separating the repertories is ",".
    * @param componentId : the name of component
    * @param context : string made up of the repertories separated by token ","
    * @return the path.
@@ -1003,8 +1002,7 @@ public class WysiwygManager implements WysiwygContentRepository {
       }
       return path;
     } catch (org.silverpeas.core.util.UtilException e) {
-      throw new AttachmentException("Wysiwyg.createPath(spaceId, componentId, context)",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_CREATE_FILE", e);
+      throw new AttachmentException("Cannot create path", e);
     }
   }
 

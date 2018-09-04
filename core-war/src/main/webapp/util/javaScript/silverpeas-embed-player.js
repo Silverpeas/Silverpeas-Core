@@ -92,8 +92,6 @@
    */
   function __configurePlayerContainer($container, config) {
     $container.empty();
-    $container.css('width', config.width);
-    $container.css('height', config.height);
     var $embed = $('<iframe>');
     $embed.attr('class', 'embed');
     $embed.attr('frameborder', '0');
