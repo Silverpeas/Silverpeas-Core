@@ -53,8 +53,8 @@
 	String filterLibUser = (String)request.getAttribute("FilterLibUser");
 	String filterIdUser = (String) request.getAttribute("FilterIdUser");
 	String spaceId = (String) request.getAttribute("SpaceId");
-	Vector vPath = (Vector) request.getAttribute("Path");
-  Vector vStatsData = (Vector)request.getAttribute("StatsData");
+	List vPath = (List) request.getAttribute("Path");
+  List vStatsData = (List)request.getAttribute("StatsData");
   UserAccessLevel userProfile = (UserAccessLevel) request.getAttribute("UserProfile");
   PieChart chart = (PieChart) request.getAttribute("Chart");
 %>

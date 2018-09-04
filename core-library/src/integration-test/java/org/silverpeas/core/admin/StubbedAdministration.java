@@ -98,84 +98,83 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String addSpaceInst(final String userId, final SpaceInst spaceInst) throws AdminException {
+  public String addSpaceInst(final String userId, final SpaceInst spaceInst) {
     return null;
   }
 
   @Override
   public String deleteSpaceInstById(final String userId, final String spaceId,
-      final boolean definitive) throws AdminException {
+      final boolean definitive) {
     return null;
   }
 
   @Override
-  public void restoreSpaceFromBasket(final String spaceId) throws AdminException {
+  public void restoreSpaceFromBasket(final String spaceId) {
 
   }
 
   @Override
-  public SpaceInst getSpaceInstById(final String spaceId) throws AdminException {
+  public SpaceInst getSpaceInstById(final String spaceId) {
     return null;
   }
 
   @Override
-  public SpaceInst getPersonalSpace(final String userId) throws AdminException {
+  public SpaceInst getPersonalSpace(final String userId) {
     return null;
   }
 
   @Override
-  public String[] getAllSubSpaceIds(final String domainFatherId) throws AdminException {
+  public String[] getAllSubSpaceIds(final String domainFatherId) {
     return new String[0];
   }
 
   @Override
-  public String updateSpaceInst(final SpaceInst spaceInstNew) throws AdminException {
+  public String updateSpaceInst(final SpaceInst spaceInstNew) {
     return null;
   }
 
   @Override
-  public void updateSpaceOrderNum(final String spaceId, final int orderNum) throws AdminException {
+  public void updateSpaceOrderNum(final String spaceId, final int orderNum) {
 
   }
 
   @Override
-  public boolean isSpaceInstExist(final String spaceId) throws AdminException {
+  public boolean isSpaceInstExist(final String spaceId) {
     return false;
   }
 
   @Override
-  public String[] getAllRootSpaceIds() throws AdminException {
+  public String[] getAllRootSpaceIds() {
     return new String[0];
   }
 
   @Override
-  public List<SpaceInstLight> getPathToComponent(final String componentId) throws AdminException {
+  public List<SpaceInstLight> getPathToComponent(final String componentId) {
     return null;
   }
 
   @Override
-  public List<SpaceInstLight> getPathToSpace(final String spaceId, final boolean includeTarget)
-      throws AdminException {
+  public List<SpaceInstLight> getPathToSpace(final String spaceId, final boolean includeTarget) {
     return null;
   }
 
   @Override
-  public String[] getAllSpaceIds() throws AdminException {
+  public String[] getAllSpaceIds() {
     return new String[0];
   }
 
   @Override
-  public List<SpaceInstLight> getRemovedSpaces() throws AdminException {
+  public List<SpaceInstLight> getRemovedSpaces() {
     return null;
   }
 
   @Override
-  public List<ComponentInstLight> getRemovedComponents() throws AdminException {
+  public List<ComponentInstLight> getRemovedComponents() {
     return null;
   }
 
   @Override
-  public String[] getSpaceNames(final String[] asClientSpaceIds) throws AdminException {
+  public String[] getSpaceNames(final String[] asClientSpaceIds) {
     return new String[0];
   }
 
@@ -185,18 +184,18 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public ComponentInst getComponentInst(final String sClientComponentId) throws AdminException {
+  public ComponentInst getComponentInst(final String sClientComponentId) {
     return null;
   }
 
   @Override
-  public SilverpeasComponentInstance getComponentInstance(final String componentInstanceIdentifier)
-      throws AdminException {
+  public SilverpeasComponentInstance getComponentInstance(
+      final String componentInstanceIdentifier) {
     return null;
   }
 
   @Override
-  public ComponentInstLight getComponentInstLight(final String componentId) throws AdminException {
+  public ComponentInstLight getComponentInstLight(final String componentId) {
     return null;
   }
 
@@ -217,7 +216,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public void restoreComponentFromBasket(final String componentId) throws AdminException {
+  public void restoreComponentFromBasket(final String componentId) {
 
   }
 
@@ -233,7 +232,7 @@ public class StubbedAdministration implements Administration {
 
   @Override
   public void deleteAllComponentIndexes() {
-    
+
   }
 
   @Override
@@ -244,54 +243,51 @@ public class StubbedAdministration implements Administration {
 
   @Override
   public String deleteComponentInst(final String userId, final String componentId,
-      final boolean definitive) throws AdminException {
+      final boolean definitive) {
     return null;
   }
 
   @Override
-  public void updateComponentOrderNum(final String componentId, final int orderNum)
-      throws AdminException {
+  public void updateComponentOrderNum(final String componentId, final int orderNum) {
 
   }
 
   @Override
-  public String updateComponentInst(final ComponentInst component) throws AdminException {
+  public String updateComponentInst(final ComponentInst component) {
     return null;
   }
 
   @Override
-  public void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space)
-      throws AdminException {
+  public void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space) {
 
   }
 
   @Override
   public void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space,
-      final boolean persist, final boolean startNewTransaction) throws AdminException {
+      final boolean persist, final boolean startNewTransaction) {
 
   }
 
   @Override
-  public void setSpaceProfilesToComponent(final ComponentInst component, final SpaceInst space)
-      throws AdminException {
+  public void setSpaceProfilesToComponent(final ComponentInst component, final SpaceInst space) {
 
   }
 
 
   @Override
-  public void moveSpace(final String spaceId, final String fatherId) throws AdminException {
+  public void moveSpace(final String spaceId, final String fatherId) {
 
   }
 
   @Override
   public void moveComponentInst(final String spaceId, final String componentId,
-      final String idComponentBefore, final ComponentInst[] componentInsts) throws AdminException {
+      final String idComponentBefore, final ComponentInst[] componentInsts) {
 
   }
 
   @Override
   public void setComponentPlace(final String componentId, final String idComponentBefore,
-      final ComponentInst[] m_BrothersComponents) throws AdminException {
+      final ComponentInst[] brothersComponents) {
 
   }
 
@@ -312,212 +308,202 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public ProfileInst getProfileInst(final String sProfileId) throws AdminException {
+  public ProfileInst getProfileInst(final String sProfileId) {
     return null;
   }
 
   @Override
   public List<ProfileInst> getProfilesByObject(final String objectId, final String objectType,
-      final String componentId) throws AdminException {
+      final String componentId) {
     return null;
   }
 
   @Override
   public String[] getProfilesByObjectAndUserId(final int objectId, final String objectType,
-      final String componentId, final String userId) throws AdminException {
+      final String componentId, final String userId) {
     return new String[0];
   }
 
   @Override
   public Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(final String objectType,
-      final String componentId, final String userId) throws AdminException {
+      final String componentId, final String userId) {
     return null;
   }
 
   @Override
   public boolean isObjectAvailable(final String componentId, final int objectId,
-      final String objectType, final String userId) throws AdminException {
+      final String objectType, final String userId) {
     return false;
   }
 
   @Override
-  public String addProfileInst(final ProfileInst profileInst) throws AdminException {
+  public String addProfileInst(final ProfileInst profileInst) {
     return null;
   }
 
   @Override
-  public String addProfileInst(final ProfileInst profileInst, final String userId)
-      throws AdminException {
+  public String addProfileInst(final ProfileInst profileInst, final String userId) {
     return null;
   }
 
   @Override
-  public String deleteProfileInst(final String sProfileId, final String userId)
-      throws AdminException {
+  public String deleteProfileInst(final String sProfileId, final String userId) {
     return null;
   }
 
   @Override
-  public String updateProfileInst(final ProfileInst profileInstNew) throws AdminException {
+  public String updateProfileInst(final ProfileInst profileInstNew) {
     return null;
   }
 
   @Override
-  public String updateProfileInst(final ProfileInst profileInstNew, final String userId)
-      throws AdminException {
+  public String updateProfileInst(final ProfileInst profileInstNew, final String userId) {
     return null;
   }
 
   @Override
-  public SpaceProfileInst getSpaceProfileInst(final String spaceProfileId) throws AdminException {
+  public SpaceProfileInst getSpaceProfileInst(final String spaceProfileId) {
     return null;
   }
 
   @Override
-  public String addSpaceProfileInst(final SpaceProfileInst spaceProfile, final String userId)
-      throws AdminException {
+  public String addSpaceProfileInst(final SpaceProfileInst spaceProfile, final String userId) {
     return null;
   }
 
   @Override
-  public String deleteSpaceProfileInst(final String sSpaceProfileId, final String userId)
-      throws AdminException {
+  public String deleteSpaceProfileInst(final String sSpaceProfileId, final String userId) {
     return null;
   }
 
   @Override
-  public String updateSpaceProfileInst(final SpaceProfileInst newSpaceProfile, final String userId)
-      throws AdminException {
+  public String updateSpaceProfileInst(final SpaceProfileInst newSpaceProfile,
+      final String userId) {
     return null;
   }
 
   @Override
-  public String[] getGroupNames(final String[] groupIds) throws AdminException {
+  public String[] getGroupNames(final String[] groupIds) {
     return new String[0];
   }
 
   @Override
-  public String getGroupName(final String sGroupId) throws AdminException {
+  public String getGroupName(final String sGroupId) {
     return null;
   }
 
   @Override
-  public List<GroupDetail> getAllGroups() throws AdminException {
+  public List<GroupDetail> getAllGroups() {
     return Collections.emptyList();
   }
 
   @Override
-  public boolean isGroupExist(final String groupName) throws AdminException {
+  public boolean isGroupExist(final String groupName) {
     return false;
   }
 
   @Override
-  public GroupDetail getGroup(final String groupId) throws AdminException {
+  public GroupDetail getGroup(final String groupId) {
     return null;
   }
 
   @Override
-  public List<String> getPathToGroup(final String groupId) throws AdminException {
+  public List<String> getPathToGroup(final String groupId) {
     return null;
   }
 
   @Override
-  public GroupDetail getGroupByNameInDomain(final String groupName, final String domainFatherId)
-      throws AdminException {
+  public GroupDetail getGroupByNameInDomain(final String groupName, final String domainFatherId) {
     return null;
   }
 
   @Override
-  public GroupDetail[] getGroups(final String[] asGroupId) throws AdminException {
+  public GroupDetail[] getGroups(final String[] asGroupId) {
     return new GroupDetail[0];
   }
 
   @Override
-  public String addGroup(final GroupDetail group) throws AdminException {
+  public String addGroup(final GroupDetail group) {
     return null;
   }
 
   @Override
-  public String addGroup(final GroupDetail group, final boolean onlyInSilverpeas) throws AdminException {
+  public String addGroup(final GroupDetail group, final boolean onlyInSilverpeas) {
     return null;
   }
 
   @Override
-  public String deleteGroupById(final String sGroupId) throws AdminException {
+  public String deleteGroupById(final String sGroupId) {
     return null;
   }
 
   @Override
-  public String deleteGroupById(final String sGroupId, final boolean onlyInSilverpeas)
-      throws AdminException {
+  public String deleteGroupById(final String sGroupId, final boolean onlyInSilverpeas) {
     return null;
   }
 
   @Override
-  public String updateGroup(final GroupDetail group) throws AdminException {
+  public String updateGroup(final GroupDetail group) {
     return null;
   }
 
   @Override
-  public String updateGroup(final GroupDetail group, final boolean onlyInSilverpeas)
-      throws AdminException {
+  public String updateGroup(final GroupDetail group, final boolean onlyInSilverpeas) {
     return null;
   }
 
   @Override
-  public void removeUserFromGroup(final String sUserId, final String sGroupId)
-      throws AdminException {
+  public void removeUserFromGroup(final String sUserId, final String sGroupId) {
 
   }
 
   @Override
-  public void addUserInGroup(final String sUserId, final String sGroupId) throws AdminException {
+  public void addUserInGroup(final String sUserId, final String sGroupId) {
 
   }
 
   @Override
-  public List<GroupDetail> getAllRootGroups() throws AdminException {
+  public List<GroupDetail> getAllRootGroups() {
     return Collections.emptyList();
   }
 
   @Override
-  public GroupProfileInst getGroupProfileInst(final String groupId) throws AdminException {
+  public GroupProfileInst getGroupProfileInst(final String groupId) {
     return null;
   }
 
   @Override
-  public String addGroupProfileInst(final GroupProfileInst spaceProfileInst) throws AdminException {
+  public String addGroupProfileInst(final GroupProfileInst spaceProfileInst) {
     return null;
   }
 
   @Override
-  public String deleteGroupProfileInst(final String groupId) throws AdminException {
+  public String deleteGroupProfileInst(final String groupId) {
     return null;
   }
 
   @Override
-  public String updateGroupProfileInst(final GroupProfileInst groupProfileInstNew)
-      throws AdminException {
+  public String updateGroupProfileInst(final GroupProfileInst groupProfileInstNew) {
     return null;
   }
 
   @Override
-  public void indexAllGroups() throws AdminException {
+  public void indexAllGroups() {
 
   }
 
   @Override
-  public void indexGroups(final String domainId) throws AdminException {
+  public void indexGroups(final String domainId) {
 
   }
 
   @Override
-  public String[] getAllUsersIds() throws AdminException {
+  public String[] getAllUsersIds() {
     return new String[0];
   }
 
   @Override
-  public UserDetail getUserDetail(final String sUserId) throws AdminException {
+  public UserDetail getUserDetail(final String sUserId) {
     return null;
   }
 
@@ -527,101 +513,97 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public List<UserDetail> getAllUsers() throws AdminException {
+  public List<UserDetail> getAllUsers() {
     return null;
   }
 
   @Override
-  public List<UserDetail> getAllUsersFromNewestToOldest() throws AdminException {
+  public List<UserDetail> getAllUsersFromNewestToOldest() {
     return null;
   }
 
   @Override
-  public boolean isEmailExisting(final String email) throws AdminException {
+  public boolean isEmailExisting(final String email) {
     return false;
   }
 
   @Override
-  public String getUserIdByLoginAndDomain(final String sLogin, final String sDomainId)
-      throws AdminException {
+  public String getUserIdByLoginAndDomain(final String sLogin, final String sDomainId) {
     return null;
   }
 
   @Override
-  public String getUserIdByAuthenticationKey(final String authenticationKey) throws AdminException {
+  public String getUserIdByAuthenticationKey(final String authenticationKey) {
     return null;
   }
 
   @Override
-  public UserFull getUserFull(final String sUserId) throws AdminException {
+  public UserFull getUserFull(final String sUserId) {
     return null;
   }
 
   @Override
-  public UserFull getUserFull(final String domainId, final String specificId) throws Exception {
+  public UserFull getUserFull(final String domainId, final String specificId) {
     return null;
   }
 
   @Override
-  public String addUser(final UserDetail userDetail) throws AdminException {
+  public String addUser(final UserDetail userDetail) {
     return null;
   }
 
   @Override
-  public String addUser(final UserDetail userDetail, final boolean addOnlyInSilverpeas)
-      throws AdminException {
+  public String addUser(final UserDetail userDetail, final boolean addOnlyInSilverpeas) {
     return null;
   }
 
   @Override
-  public void migrateUser(final UserDetail userDetail, final String targetDomainId)
-      throws AdminException {
+  public void migrateUser(final UserDetail userDetail, final String targetDomainId) {
 
   }
 
   @Override
-  public void blockUser(final String userId) throws AdminException {
+  public void blockUser(final String userId) {
 
   }
 
   @Override
-  public void unblockUser(final String userId) throws AdminException {
+  public void unblockUser(final String userId) {
 
   }
 
   @Override
-  public void deactivateUser(final String userId) throws AdminException {
+  public void deactivateUser(final String userId) {
 
   }
 
   @Override
-  public void activateUser(final String userId) throws AdminException {
+  public void activateUser(final String userId) {
 
   }
 
   @Override
-  public void userAcceptsTermsOfService(final String userId) throws AdminException {
+  public void userAcceptsTermsOfService(final String userId) {
 
   }
 
   @Override
-  public String deleteUser(final String sUserId) throws AdminException {
+  public String deleteUser(final String sUserId) {
     return null;
   }
 
   @Override
-  public String deleteUser(final String sUserId, final boolean onlyInSilverpeas)
-      throws AdminException {
+  public String deleteUser(final String sUserId, final boolean onlyInSilverpeas) {
     return null;
   }
 
   @Override
-  public String updateUser(final UserDetail user) throws AdminException {
+  public String updateUser(final UserDetail user) {
     return null;
   }
 
   @Override
-  public String updateUserFull(final UserFull user) throws AdminException {
+  public String updateUserFull(final UserFull user) {
     return null;
   }
 
@@ -631,203 +613,194 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String[] getClientSpaceIds(final String[] asDriverSpaceIds) throws Exception {
+  public String[] getClientSpaceIds(final String[] asDriverSpaceIds) {
     return new String[0];
   }
 
   @Override
-  public String getNextDomainId() throws AdminException {
+  public String getNextDomainId() {
     return null;
   }
 
   @Override
-  public String addDomain(final Domain theDomain) throws AdminException {
+  public String addDomain(final Domain theDomain) {
     return null;
   }
 
   @Override
-  public String updateDomain(final Domain domain) throws AdminException {
+  public String updateDomain(final Domain domain) {
     return null;
   }
 
   @Override
-  public String removeDomain(final String domainId) throws AdminException {
+  public String removeDomain(final String domainId) {
     return null;
   }
 
   @Override
-  public Domain[] getAllDomains() throws AdminException {
+  public Domain[] getAllDomains() {
     return new Domain[0];
   }
 
   @Override
-  public List<String> getAllDomainIdsForLogin(final String login) throws AdminException {
+  public List<String> getAllDomainIdsForLogin(final String login) {
     return null;
   }
 
   @Override
-  public Domain getDomain(final String domainId) throws AdminException {
+  public Domain getDomain(final String domainId) {
     return null;
   }
 
   @Override
-  public long getDomainActions(final String domainId) throws AdminException {
+  public long getDomainActions(final String domainId) {
     return 0;
   }
 
   @Override
-  public GroupDetail[] getRootGroupsOfDomain(final String domainId) throws AdminException {
+  public GroupDetail[] getRootGroupsOfDomain(final String domainId) {
     return new GroupDetail[0];
   }
 
   @Override
-  public List<GroupDetail> getSynchronizedGroups() throws AdminException {
+  public List<GroupDetail> getSynchronizedGroups() {
     return Collections.emptyList();
   }
 
   @Override
-  public UserDetail[] getAllUsersOfGroup(final String groupId) throws AdminException {
+  public UserDetail[] getAllUsersOfGroup(final String groupId) {
     return new UserDetail[0];
   }
 
   @Override
-  public UserDetail[] getUsersOfDomain(final String domainId) throws AdminException {
+  public UserDetail[] getUsersOfDomain(final String domainId) {
     return new UserDetail[0];
   }
 
   @Override
-  public List<UserDetail> getUsersOfDomains(final List<String> domainIds) throws AdminException {
+  public List<UserDetail> getUsersOfDomains(final List<String> domainIds) {
     return null;
   }
 
   @Override
-  public List<UserDetail> getUsersOfDomainsFromNewestToOldest(final List<String> domainIds)
-      throws AdminException {
+  public List<UserDetail> getUsersOfDomainsFromNewestToOldest(final List<String> domainIds) {
     return null;
   }
 
   @Override
-  public String[] getUserIdsOfDomain(final String domainId) throws AdminException {
+  public String[] getUserIdsOfDomain(final String domainId) {
     return new String[0];
   }
 
   @Override
   public String identify(final String sKey, final String sSessionId,
-      final boolean isAppInMaintenance) throws AdminException {
+      final boolean isAppInMaintenance) {
     return null;
   }
 
   @Override
   public String identify(final String sKey, final String sSessionId,
-      final boolean isAppInMaintenance, final boolean removeKey) throws AdminException {
+      final boolean isAppInMaintenance, final boolean removeKey) {
     return null;
   }
 
   @Override
-  public List<GroupDetail> getDirectGroupsOfUser(final String userId) throws AdminException {
+  public List<GroupDetail> getDirectGroupsOfUser(final String userId) {
     return Collections.emptyList();
   }
 
   @Override
-  public String[] getUserSpaceIds(final String sUserId) throws AdminException {
+  public String[] getUserSpaceIds(final String sUserId) {
     return new String[0];
   }
 
   @Override
-  public String[] getUserRootSpaceIds(final String sUserId) throws AdminException {
+  public String[] getUserRootSpaceIds(final String sUserId) {
     return new String[0];
   }
 
   @Override
-  public String[] getUserSubSpaceIds(final String sUserId, final String spaceId)
-      throws AdminException {
+  public String[] getUserSubSpaceIds(final String sUserId, final String spaceId) {
     return new String[0];
   }
 
   @Override
-  public boolean isSpaceAvailable(final String userId, final String spaceId) throws AdminException {
+  public boolean isSpaceAvailable(final String userId, final String spaceId) {
     return false;
   }
 
   @Override
-  public List<SpaceInstLight> getSubSpacesOfUser(final String userId, final String spaceId)
-      throws AdminException {
+  public List<SpaceInstLight> getSubSpacesOfUser(final String userId, final String spaceId) {
     return null;
   }
 
   @Override
-  public List<SpaceInstLight> getSubSpaces(final String spaceId) throws AdminException {
+  public List<SpaceInstLight> getSubSpaces(final String spaceId) {
     return null;
   }
 
   @Override
-  public List<ComponentInstLight> getAvailCompoInSpace(final String userId, final String spaceId)
-      throws AdminException {
+  public List<ComponentInstLight> getAvailCompoInSpace(final String userId, final String spaceId) {
     return null;
   }
 
   @Override
-  public Map<String, SpaceAndChildren> getTreeView(final String userId, final String spaceId)
-      throws AdminException {
+  public Map<String, SpaceAndChildren> getTreeView(final String userId, final String spaceId) {
     return null;
   }
 
   @Override
-  public List<SpaceInstLight> getUserSpaceTreeview(final String userId) throws Exception {
+  public List<SpaceInstLight> getUserSpaceTreeview(final String userId) {
     return null;
   }
 
   @Override
-  public String[] getAllowedSubSpaceIds(final String userId, final String spaceFatherId)
-      throws AdminException {
+  public String[] getAllowedSubSpaceIds(final String userId, final String spaceFatherId) {
     return new String[0];
   }
 
   @Override
-  public SpaceInstLight getSpaceInstLightById(final String sClientSpaceId) throws AdminException {
+  public SpaceInstLight getSpaceInstLightById(final String sClientSpaceId) {
     return null;
   }
 
   @Override
-  public SpaceInstLight getRootSpace(final String spaceId) throws AdminException {
+  public SpaceInstLight getRootSpace(final String spaceId) {
     return null;
   }
 
   @Override
-  public String[] getGroupManageableSpaceIds(final String sGroupId) throws AdminException {
+  public String[] getGroupManageableSpaceIds(final String sGroupId) {
     return new String[0];
   }
 
   @Override
-  public String[] getUserManageableSpaceIds(final String sUserId) throws AdminException {
+  public String[] getUserManageableSpaceIds(final String sUserId) {
     return new String[0];
   }
 
   @Override
-  public String[] getUserManageableSpaceRootIds(final String sUserId) throws AdminException {
+  public String[] getUserManageableSpaceRootIds(final String sUserId) {
     return new String[0];
   }
 
   @Override
-  public String[] getUserManageableSubSpaceIds(final String sUserId, final String sParentSpaceId)
-      throws AdminException {
+  public String[] getUserManageableSubSpaceIds(final String sUserId, final String sParentSpaceId) {
     return new String[0];
   }
 
   @Override
-  public SpaceProfile getSpaceProfile(final String spaceId, final SilverpeasRole role)
-      throws AdminException {
+  public SpaceProfile getSpaceProfile(final String spaceId, final SilverpeasRole role) {
     return null;
   }
 
   @Override
-  public List<String> getUserManageableGroupIds(final String sUserId) throws AdminException {
+  public List<String> getUserManageableGroupIds(final String sUserId) {
     return null;
   }
 
   @Override
-  public String[] getAvailCompoIds(final String sClientSpaceId, final String sUserId)
-      throws AdminException {
+  public String[] getAvailCompoIds(final String sClientSpaceId, final String sUserId) {
     return new String[0];
   }
 
@@ -837,82 +810,77 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public boolean isComponentAvailable(final String componentId, final String userId)
-      throws AdminException {
+  public boolean isComponentAvailable(final String componentId, final String userId) {
     return false;
   }
 
   @Override
-  public boolean isComponentManageable(final String componentId, final String userId)
-      throws AdminException {
+  public boolean isComponentManageable(final String componentId, final String userId) {
     return false;
   }
 
   @Override
-  public String[] getAvailCompoIdsAtRoot(final String sClientSpaceId, final String sUserId)
-      throws AdminException {
+  public String[] getAvailCompoIdsAtRoot(final String sClientSpaceId, final String sUserId) {
     return new String[0];
   }
 
   @Override
   public List<String> getAvailCompoIdsAtRoot(final String sClientSpaceId, final String sUserId,
-      final String componentNameRoot) throws AdminException {
+      final String componentNameRoot) {
     return null;
   }
 
   @Override
-  public String[] getAvailCompoIds(final String userId) throws AdminException {
+  public String[] getAvailCompoIds(final String userId) {
     return new String[0];
   }
 
   @Override
-  public String[] getAvailDriverCompoIds(final String sClientSpaceId, final String sUserId)
-      throws AdminException {
+  public String[] getAvailDriverCompoIds(final String sClientSpaceId, final String sUserId) {
     return new String[0];
   }
 
   @Override
-  public String[] getComponentIdsByNameAndUserId(final String sUserId, final String sComponentName)
-      throws AdminException {
+  public String[] getComponentIdsByNameAndUserId(final String sUserId,
+      final String sComponentName) {
     return new String[0];
   }
 
   @Override
   public List<ComponentInstLight> getAvailComponentInstLights(final String userId,
-      final String componentName) throws AdminException {
+      final String componentName) {
     return null;
   }
 
   @Override
   public List<SpaceInstLight> getRootSpacesContainingComponent(final String userId,
-      final String componentName) throws AdminException {
+      final String componentName) {
     return null;
   }
 
   @Override
   public List<SpaceInstLight> getSubSpacesContainingComponent(final String spaceId,
-      final String userId, final String componentName) throws AdminException {
+      final String userId, final String componentName) {
     return null;
   }
 
   @Override
-  public CompoSpace[] getCompoForUser(final String sUserId, final String sComponentName)
-      throws AdminException {
+  public CompoSpace[] getCompoForUser(final String sUserId, final String sComponentName) {
     return new CompoSpace[0];
   }
 
   @Override
-  public String[] getCompoId(final String sComponentName) throws AdminException {
+  public String[] getCompoId(final String sComponentName) {
     return new String[0];
   }
 
   @Override
-  public String[] getProfileIds(final String sUserId) throws AdminException {
+  public String[] getProfileIds(final String sUserId) {
     return new String[0];
   }
 
   @Override
-  public String[] getProfileIdsOfGroup(final String sGroupId) throws AdminException {
+  public String[] getProfileIdsOfGroup(final String sGroupId) {
     return new String[0];
   }
 
@@ -922,45 +890,44 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String[] getCurrentProfiles(final String sUserId, final String componentId)
-      throws AdminException {
+  public String[] getCurrentProfiles(final String sUserId, final String componentId) {
     return new String[0];
   }
 
   @Override
   public UserDetail[] getUsers(final boolean bAllProfiles, final String sProfile,
-      final String sClientSpaceId, final String sClientComponentId) throws AdminException {
+      final String sClientSpaceId, final String sClientComponentId) {
     return new UserDetail[0];
   }
 
   @Override
-  public GroupDetail[] getAllSubGroups(final String parentGroupId) throws AdminException {
+  public GroupDetail[] getAllSubGroups(final String parentGroupId) {
     return new GroupDetail[0];
   }
 
   @Override
-  public GroupDetail[] getRecursivelyAllSubGroups(String parentGroupId) throws AdminException {
+  public GroupDetail[] getRecursivelyAllSubGroups(String parentGroupId) {
     return new GroupDetail[0];
   }
 
   @Override
-  public UserDetail[] getFiltredDirectUsers(final String sGroupId, final String sUserLastNameFilter)
-      throws AdminException {
+  public UserDetail[] getFiltredDirectUsers(final String sGroupId,
+      final String sUserLastNameFilter) {
     return new UserDetail[0];
   }
 
   @Override
-  public int getAllSubUsersNumber(final String sGroupId) throws AdminException {
+  public int getAllSubUsersNumber(final String sGroupId) {
     return 0;
   }
 
   @Override
-  public int getUsersNumberOfDomain(final String domainId) throws AdminException {
+  public int getUsersNumberOfDomain(final String domainId) {
     return 0;
   }
 
   @Override
-  public String[] getAdministratorUserIds(final String fromUserId) throws AdminException {
+  public String[] getAdministratorUserIds(final String fromUserId) {
     return new String[0];
   }
 
@@ -980,128 +947,122 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String[] getAllSpaceIds(final String sUserId) throws Exception {
+  public String[] getAllSpaceIds(final String sUserId) {
     return new String[0];
   }
 
   @Override
-  public String[] getAllRootSpaceIds(final String sUserId) throws Exception {
+  public String[] getAllRootSpaceIds(final String sUserId) {
     return new String[0];
   }
 
   @Override
-  public String[] getAllSubSpaceIds(final String sSpaceId, final String sUserId) throws Exception {
+  public String[] getAllSubSpaceIds(final String sSpaceId, final String sUserId) {
     return new String[0];
   }
 
   @Override
-  public String[] getAllComponentIds(final String sSpaceId) throws Exception {
+  public String[] getAllComponentIds(final String sSpaceId) {
     return new String[0];
   }
 
   @Override
-  public String[] getAllComponentIdsRecur(final String sSpaceId) throws Exception {
+  public String[] getAllComponentIdsRecur(final String sSpaceId) {
     return new String[0];
   }
 
   @Override
   public String[] getAllComponentIdsRecur(final String sSpaceId, final String sUserId,
-      final String componentNameRoot, final boolean inCurrentSpace, final boolean inAllSpaces)
-      throws Exception {
+      final String componentNameRoot, final boolean inCurrentSpace, final boolean inAllSpaces) {
     return new String[0];
   }
 
   @Override
-  public void synchronizeGroupByRule(final String groupId, final boolean scheduledMode)
-      throws AdminException {
+  public void synchronizeGroupByRule(final String groupId, final boolean scheduledMode) {
 
   }
 
   @Override
-  public String synchronizeGroup(final String groupId, final boolean recurs) throws Exception {
+  public String synchronizeGroup(final String groupId, final boolean recurs) {
     return null;
   }
 
   @Override
   public String synchronizeImportGroup(final String domainId, final String groupKey,
-      final String askedParentId, final boolean recurs, final boolean isIdKey) throws Exception {
+      final String askedParentId, final boolean recurs, final boolean isIdKey) {
     return null;
   }
 
   @Override
-  public String synchronizeRemoveGroup(final String groupId) throws Exception {
+  public String synchronizeRemoveGroup(final String groupId) {
     return null;
   }
 
   @Override
-  public String synchronizeUser(final String userId, final boolean recurs) throws Exception {
+  public String synchronizeUser(final String userId, final boolean recurs) {
     return null;
   }
 
   @Override
   public String synchronizeImportUserByLogin(final String domainId, final String userLogin,
-      final boolean recurs) throws Exception {
+      final boolean recurs) {
     return null;
   }
 
   @Override
   public String synchronizeImportUser(final String domainId, final String specificId,
-      final boolean recurs) throws Exception {
+      final boolean recurs) {
     return null;
   }
 
   @Override
   public List<DomainProperty> getSpecificPropertiesToImportUsers(final String domainId,
-      final String language) throws Exception {
+      final String language) {
     return null;
   }
 
   @Override
-  public UserDetail[] searchUsers(final String domainId, final Map<String, String> query)
-      throws Exception {
+  public UserDetail[] searchUsers(final String domainId, final Map<String, String> query) {
     return new UserDetail[0];
   }
 
   @Override
-  public String synchronizeRemoveUser(final String userId) throws Exception {
+  public String synchronizeRemoveUser(final String userId) {
     return null;
   }
 
   @Override
-  public String synchronizeSilverpeasWithDomain(final String sDomainId) throws Exception {
+  public String synchronizeSilverpeasWithDomain(final String sDomainId) {
     return null;
   }
 
   @Override
-  public String synchronizeSilverpeasWithDomain(final String sDomainId, final boolean threaded)
-      throws AdminException {
+  public String synchronizeSilverpeasWithDomain(final String sDomainId, final boolean threaded) {
     return null;
   }
 
   @Override
-  public List<String> searchUserIdsByProfile(final List<String> profileIds) throws AdminException {
+  public List<String> searchUserIdsByProfile(final List<String> profileIds) {
     return Collections.emptyList();
   }
 
   @Override
-  public ListSlice<UserDetail> searchUsers(final UserDetailsSearchCriteria searchCriteria)
-      throws AdminException {
+  public ListSlice<UserDetail> searchUsers(final UserDetailsSearchCriteria searchCriteria) {
     return null;
   }
 
   @Override
-  public ListSlice<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria)
-      throws AdminException {
+  public ListSlice<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria) {
     return null;
   }
 
   @Override
-  public void indexAllUsers() throws AdminException {
+  public void indexAllUsers() {
 
   }
 
   @Override
-  public void indexUsers(final String domainId) throws AdminException {
+  public void indexUsers(final String domainId) {
 
   }
 
@@ -1120,28 +1081,28 @@ public class StubbedAdministration implements Administration {
   @Override
   public void assignRightsFromUserToUser(final RightAssignationContext.MODE operationMode,
       final String sourceUserId, final String targetUserId, final boolean nodeAssignRights,
-      final String authorId) throws AdminException {
+      final String authorId) {
 
   }
 
   @Override
   public void assignRightsFromUserToGroup(final RightAssignationContext.MODE operationMode,
       final String sourceUserId, final String targetGroupId, final boolean nodeAssignRights,
-      final String authorId) throws AdminException {
+      final String authorId) {
 
   }
 
   @Override
   public void assignRightsFromGroupToUser(final RightAssignationContext.MODE operationMode,
       final String sourceGroupId, final String targetUserId, final boolean nodeAssignRights,
-      final String authorId) throws AdminException {
+      final String authorId) {
 
   }
 
   @Override
   public void assignRightsFromGroupToGroup(final RightAssignationContext.MODE operationMode,
       final String sourceGroupId, final String targetGroupId, final boolean nodeAssignRights,
-      final String authorId) throws AdminException {
+      final String authorId) {
 
   }
 
@@ -1157,14 +1118,22 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public SpaceWithSubSpacesAndComponents getAllowedFullTreeview(final String userId)
-      throws AdminException {
+  public SpaceWithSubSpacesAndComponents getAllowedFullTreeview(final String userId) {
     return null;
   }
 
   @Override
   public SpaceWithSubSpacesAndComponents getAllowedFullTreeview(final String userId,
-      final String spaceId) throws AdminException {
+      final String spaceId) {
     return null;
+  }
+
+  @Override
+  public List<UserDetail> getNonBlankedDeletedUsers(final String... domainIds) {
+    return null;
+  }
+
+  @Override
+  public void blankDeletedUsers(final String targetDomainId, final List<String> userIds) {
   }
 }

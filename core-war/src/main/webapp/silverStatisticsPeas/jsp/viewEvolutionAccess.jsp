@@ -92,7 +92,7 @@
 	String filterLibUser = (String)request.getAttribute("FilterLibUser");
 	String filterIdUser = (String) request.getAttribute("FilterIdUser");
     String spaceId = (String) request.getAttribute("SpaceId");
-	Vector vPath = (Vector) request.getAttribute("Path");
+	List vPath = (List) request.getAttribute("Path");
 	PeriodChart chart = (PeriodChart) request.getAttribute("Chart");
 	UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
 %>

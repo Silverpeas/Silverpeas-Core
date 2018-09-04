@@ -74,6 +74,7 @@
 	if (theUser.isAccessAdmin())
 	{
 	    if (!mixedDomain) {
+	      operationPane.addOperation(resource.getIcon("JDP.deletedUserAccess"), resource.getString("JDP.deletedUserAccess"), "displayDeletedUsers");
 		    operationPane.addLine();
 		if(isDomainSql) {
 		        operationPane.addOperation(resource.getIcon("JDP.domainSqlUpdate"),resource.getString("JDP.domainSQLUpdate"),"displayDomainSQLModify");

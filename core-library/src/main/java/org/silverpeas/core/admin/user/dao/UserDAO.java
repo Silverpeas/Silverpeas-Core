@@ -25,10 +25,13 @@ package org.silverpeas.core.admin.user.dao;
 
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
@@ -38,7 +41,9 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Singleton
 public class UserDAO {
@@ -50,7 +55,8 @@ public class UserDAO {
       + "loginQuestion,loginAnswer,creationDate,saveDate,version,tosAcceptanceDate,"
       + "lastLoginDate,nbSuccessfulLoginAttempts,lastLoginCredentialUpdateDate,expirationDate,"
       + "state,stateSaveDate, notifManualReceiverLimit";
-  private static final String STATE_CRITERION = "state <> ?";
+  private static final String STATE_CRITERION_NOT = "state <> ?";
+  private static final String STATE_CRITERION = "state = ?";
   private static final String ID_CRITERION = "id = ?";
   private static final String DOMAIN_ID_CRITERION = "domainId = ?";
   private static final String ACCESS_LEVEL_CRITERION = "accessLevel = ?";
@@ -61,10 +67,10 @@ public class UserDAO {
   private static final String DOMAIN_ID = "domainId";
   private static final String SPECIFIC_ID = "specificId";
   private static final String STATE = "state";
-  public static final String LOGIN = "login";
-  public static final String SAVE_DATE = "saveDate";
-  public static final String STATE_SAVE_DATE = "stateSaveDate";
-
+  private static final String LOGIN = "login";
+  private static final String SAVE_DATE = "saveDate";
+  private static final String STATE_SAVE_DATE = "stateSaveDate";
+  private static final String BLANK_NAME = "_Anonymous_";
 
   protected UserDAO() {
   }
@@ -135,8 +141,7 @@ public class UserDAO {
       throws SQLException {
     return JdbcSqlQuery.createSelect("COUNT(id)")
         .from(USER_TABLE)
-        .where(ID_CRITERION, Integer.parseInt(id))
-        .and(STATE_CRITERION, UserState.DELETED)
+        .where(ID_CRITERION, Integer.parseInt(id)).and(STATE_CRITERION_NOT, UserState.DELETED)
         .executeUniqueWith(connection, row -> row.getInt(1)) == 1;
   }
 
@@ -158,13 +163,36 @@ public class UserDAO {
         .executeWith(connection, UserDAO::fetchUser);
   }
 
+  /**
+   * Gets all the users that were deleted in the specified domains and that weren't yet blanked.
+   * @param connection a connection to the data source.
+   * @param domainIds zero, one or more unique identifiers of Silverpeas domains. If no domains
+   * are passed, then all the domains are taken by the request.
+   * @return a list of user details.
+   * @throws SQLException if an error while requesting the users.
+   */
+  public List<UserDetail> getNonBlankedDeletedUsers(final Connection connection, final String... domainIds)
+      throws SQLException {
+    Objects.requireNonNull(connection);
+    Objects.requireNonNull(domainIds);
+    JdbcSqlQuery query = JdbcSqlQuery.createSelect(USER_COLUMNS)
+        .from(USER_TABLE)
+        .where(STATE_CRITERION, UserState.DELETED)
+        .and("firstName <> ?", BLANK_NAME);
+    final List<Integer> requestedDomainIds =
+        Stream.of(domainIds).map(Integer::parseInt).collect(Collectors.toList());
+    if (!requestedDomainIds.isEmpty()) {
+      query = query.and(DOMAIN_ID).in(requestedDomainIds);
+    }
+    return query.executeWith(connection, UserDAO::fetchUser);
+  }
+
   public UserDetail getUserByLogin(final Connection connection, final String domainId,
       final String login) throws SQLException {
     return JdbcSqlQuery.createSelect(USER_COLUMNS)
         .from(USER_TABLE)
         .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
-        .and("lower(login) = lower(?)", login)
-        .and(STATE_CRITERION, UserState.DELETED)
+        .and("lower(login) = lower(?)", login).and(STATE_CRITERION_NOT, UserState.DELETED)
         .executeUniqueWith(connection, UserDAO::fetchUser);
   }
 
@@ -192,6 +220,18 @@ public class UserDAO {
         .and("login = ?", login)
         .orderBy(DOMAIN_ID)
         .executeWith(connection, row -> row.getString("domain"));
+  }
+
+  /**
+   * Updates the specified user by blanking some of its profile information.
+   * @param connection a connection to the data source.
+   * @param user the user to blank.
+   * @throws SQLException if the update fails.
+   */
+  public void blankUser(final Connection connection, final UserDetail user) throws SQLException {
+    user.setFirstName(BLANK_NAME);
+    user.setLastName("");
+    updateUser(connection, user);
   }
 
   /**
@@ -263,25 +303,25 @@ public class UserDAO {
     return JdbcSqlQuery.createSelect(USER_COLUMNS)
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
         .where(USER_ID_JOINTURE).and("groupid").in(groupIdsAsInt)
-        .and(STATE_CRITERION, UserState.DELETED)
+        .and(STATE_CRITERION_NOT, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(con, UserDAO::fetchUser);
   }
 
   public List<String> getAllUserIds(Connection connection) throws SQLException {
     return JdbcSqlQuery.createSelect("id")
-        .from(USER_TABLE)
-        .where(STATE_CRITERION, UserState.DELETED)
+        .from(USER_TABLE).where(STATE_CRITERION_NOT, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
 
   public List<String> getAllAdminIds(Connection connection, final UserDetail fromUser)
       throws SQLException {
-    JdbcSqlQuery query =
-        JdbcSqlQuery.createSelect("id").from(USER_TABLE).where(STATE_CRITERION, UserState.DELETED);
+    JdbcSqlQuery query = JdbcSqlQuery.createSelect("id")
+        .from(USER_TABLE)
+        .where(STATE_CRITERION_NOT, UserState.DELETED);
     if (fromUser.isAccessAdmin() || fromUser.isAccessDomainManager()) {
-      query.and("accessLevel = ?", UserAccessLevel.ADMINISTRATOR.code());
+      query.and(ACCESS_LEVEL_CRITERION, UserAccessLevel.ADMINISTRATOR.code());
     } else {
       query.and(DOMAIN_ID_CRITERION, Integer.parseInt(fromUser.getDomainId()))
           .and("(accessLevel = ? or accessLevel = ?)", UserAccessLevel.ADMINISTRATOR.code(),
@@ -295,8 +335,7 @@ public class UserDAO {
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
         .where(USER_ID_JOINTURE)
-        .and("groupId = ?", Integer.parseInt(groupId))
-        .and(STATE_CRITERION, UserState.DELETED)
+        .and("groupId = ?", Integer.parseInt(groupId)).and(STATE_CRITERION_NOT, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -308,7 +347,7 @@ public class UserDAO {
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
         .where(USER_ID_JOINTURE).and("groupid").in(groupIdsAsInt)
-        .and(STATE_CRITERION, UserState.DELETED)
+        .and(STATE_CRITERION_NOT, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(con, row -> Integer.toString(row.getInt(1)));
   }
@@ -316,8 +355,7 @@ public class UserDAO {
   public List<String> getUserIdsInDomain(Connection connection, final String domainId)
       throws SQLException {
     return JdbcSqlQuery.createSelect("id")
-        .from(USER_TABLE)
-        .where(STATE_CRITERION, UserState.DELETED)
+        .from(USER_TABLE).where(STATE_CRITERION_NOT, UserState.DELETED)
         .and(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
@@ -326,8 +364,7 @@ public class UserDAO {
   public List<String> getUserIdsByAccessLevel(final Connection connection,
       final UserAccessLevel accessLevel) throws SQLException {
     return JdbcSqlQuery.createSelect("id")
-        .from(USER_TABLE)
-        .where(STATE_CRITERION, UserState.DELETED)
+        .from(USER_TABLE).where(STATE_CRITERION_NOT, UserState.DELETED)
         .and(ACCESS_LEVEL_CRITERION, accessLevel.code())
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
@@ -336,8 +373,7 @@ public class UserDAO {
   public List<String> getUserIdsByAccessLevelInDomain(Connection connection,
       final UserAccessLevel accessLevel, final String domainId) throws SQLException {
     return JdbcSqlQuery.createSelect("id")
-        .from(USER_TABLE)
-        .where(STATE_CRITERION, UserState.DELETED)
+        .from(USER_TABLE).where(STATE_CRITERION_NOT, UserState.DELETED)
         .and(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .and(ACCESS_LEVEL_CRITERION, accessLevel.code())
         .orderBy(LAST_NAME)
@@ -350,7 +386,7 @@ public class UserDAO {
         .from(USER_TABLE, "ST_UserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("userRoleId = ?", Integer.parseInt(userRoleId))
-        .and(STATE_CRITERION, UserState.DELETED)
+        .and(STATE_CRITERION_NOT, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -367,7 +403,7 @@ public class UserDAO {
         .from(USER_TABLE, "ST_SpaceUserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("spaceUserRoleId = ?", Integer.parseInt(spaceUserRoleId))
-        .and(STATE_CRITERION, UserState.DELETED)
+        .and(STATE_CRITERION_NOT, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -378,7 +414,7 @@ public class UserDAO {
         .from(USER_TABLE, "ST_GroupUserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("groupUserRoleId = ?", Integer.parseInt(groupUserRoleId))
-        .and(STATE_CRITERION, UserState.DELETED)
+        .and(STATE_CRITERION_NOT, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -395,8 +431,7 @@ public class UserDAO {
       throws SQLException {
     final String order = StringUtil.isDefined(orderBy) ? orderBy : LAST_NAME;
     JdbcSqlQuery query = JdbcSqlQuery.createSelect(USER_COLUMNS)
-        .from(USER_TABLE)
-        .where(STATE_CRITERION, UserState.DELETED);
+        .from(USER_TABLE).where(STATE_CRITERION_NOT, UserState.DELETED);
     if (domainIds != null && !domainIds.isEmpty()) {
       final List<Integer> domainIdsAsInt =
           domainIds.stream().map(Integer::parseInt).collect(Collectors.toList());
@@ -424,7 +459,16 @@ public class UserDAO {
     u.setSpecificId(rs.getString(2));
     u.setDomainId(Integer.toString(rs.getInt(3)));
     u.setLogin(rs.getString(4));
-    u.setFirstName(rs.getString(5));
+    String firstName = rs.getString(5);
+    if (BLANK_NAME.equals(firstName)) {
+      User user = User.getCurrentRequester();
+      if (user != null) {
+        final String language = user.getUserPreferences().getLanguage();
+        LocalizationBundle generalBundle = ResourceLocator.getGeneralLocalizationBundle(language);
+        firstName = generalBundle.getString("GML.Anonymous");
+      }
+    }
+    u.setFirstName(firstName);
     u.setLastName(rs.getString(6));
     u.seteMail(rs.getString(8));
     u.setAccessLevel(UserAccessLevel.fromCode(rs.getString(9)));

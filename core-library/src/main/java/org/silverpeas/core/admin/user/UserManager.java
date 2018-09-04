@@ -70,12 +70,13 @@ import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTI
 @Transactional(Transactional.TxType.MANDATORY)
 public class UserManager {
 
-  public static final String USERMANAGER_SYNCHRO_REPORT = "UserManager";
-  public static final String IN_DOMAIN = "in domain ";
-  public static final String ALL_USERS = "all users";
-  public static final String SPECIFIC_ID = "(specificId:";
+  private static final String USERMANAGER_SYNCHRO_REPORT = "UserManager";
+  private static final String IN_DOMAIN = "in domain ";
+  private static final String ALL_USERS = "all users";
+  private static final String SPECIFIC_ID = "(specificId:";
   private static final String USER_TABLE_REMOVE_USER = "UserTable.removeUser()";
   private static final String REMOVING_MESSAGE = "Suppression de ";
+
   @Inject
   private UserDAO userDAO;
   @Inject
@@ -631,6 +632,30 @@ public class UserManager {
     }
   }
 
+  /**
+   * Blanks any profile information about the specified user. This method can be invoked only
+   * for already deleted users. Although a user is deleted, profile information are kept in the
+   * data source in order to keep the links between him and its contributions within Silverpeas.
+   * At his own request, those data can be cleared in the data source so that the links are broken.
+   * Nevertheless, to keep the coherence with all of the operations in Silverpeas and to keep them
+   * simple, the tuple associated with the user profile isn't deleted in the data source, only the
+   * data inside it are blanked. One consequence to this method is to remove its last name and to
+   * replace its first name by the term "Anonymous".
+   * @throws AdminException if the user isn't deleted or if an error occurs while blanking it.
+   * @param user the user to blank in Silverpeas.
+   */
+  public void blankUser(final UserDetail user) throws AdminException {
+    if (!user.getState().equals(UserState.DELETED)) {
+      throw new AdminException(
+          "The user " + user.getId() + " cannot be blanked because it is not deleted!");
+    }
+    try(Connection connection = DBUtil.openConnection()) {
+      userDAO.blankUser(connection, user);
+    } catch (SQLException e) {
+      throw new AdminException("Cannot blank the user " + user.getId(), e);
+    }
+  }
+
   private void deleteUser(final Connection connection, final UserDetail user) throws SQLException {
     final String userLogin = user.getLogin();
     SynchroDomainReport.info(USER_TABLE_REMOVE_USER,
@@ -784,6 +809,24 @@ public class UserManager {
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("users in domains", String.join(", ", domainIds)),
           e);
+    }
+  }
+
+  /**
+   * Gets all the deleted users in the specified domains. If no domains are given, then all the
+   * deleted users in Silverpeas are returned.
+   * @param domainIds zero, one or more unique identifiers of user domains in Silverpeas.
+   * @return a list of the deleted users in Silverpeas. If no users are deleted in the specified
+   * domains, then an empty list is returned.
+   * @throws AdminException if the deleted users cannot be fetched or if an unexpected exception
+   * is thrown.
+   */
+  public List<UserDetail> getNonBlankedDeletedUserOfDomains(final String... domainIds) throws AdminException {
+    try (Connection connection = DBUtil.openConnection()) {
+      return userDAO.getNonBlankedDeletedUsers(connection, domainIds);
+    } catch (Exception e) {
+      throw new AdminException(
+          failureOnGetting("deleted users in domains", String.join(", ", domainIds)), e);
     }
   }
 

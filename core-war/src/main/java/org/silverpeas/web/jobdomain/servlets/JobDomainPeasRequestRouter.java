@@ -153,6 +153,21 @@ public class JobDomainPeasRequestRouter extends
         }
       }
 
+      if ("blankUsers".equals(function)) {
+        final Enumeration<String> paramNames = request.getParameterNames();
+        final List<String> userIds = new ArrayList<>();
+        while(paramNames.hasMoreElements()) {
+          final String paramName = paramNames.nextElement();
+          if (paramName.startsWith("blank_")) {
+            userIds.add(request.getParameter(paramName));
+          }
+        }
+        if (!userIds.isEmpty()) {
+          jobDomainSC.blankDeletedUsers(userIds);
+        }
+        function = "domainContent";
+      }
+
       if (function.startsWith("Main")) {
         jobDomainSC.returnIntoGroup(null);
         jobDomainSC.setDefaultTargetDomain();
@@ -648,6 +663,12 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("displayDynamicSynchroReport")) {
           SynchroDomainReport.setReportLevel(Level.valueOf(request.getParameter("IdTraceLevel")));
           destination = "dynamicSynchroReport.jsp";
+        } else if (function.startsWith("displayDeletedUsers")) {
+          List<UserDetail> deletedUsers = jobDomainSC.getDeletedUsers();
+          request.setAttribute("deletedUsers", deletedUsers);
+          request.setAttribute("domain", jobDomainSC.getTargetDomain());
+          request.setAttribute("theUser", jobDomainSC.getUserDetail());
+          destination = "deletedUsers.jsp";
         }
       } else if (function.startsWith("welcome")) {
         jobDomainSC.returnIntoGroup(null);

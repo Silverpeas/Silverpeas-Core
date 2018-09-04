@@ -523,7 +523,7 @@ public class SpaceInstManager {
     int retry = 0;
     String deletedSpaceName = null;
     while (!nameOK) {
-      String spaceName = spaceInst.getName() + Admin.basketSuffix;
+      String spaceName = spaceInst.getName() + Admin.Constants.BASKET_SUFFIX;
       if (retry > 0) {
         spaceName += " " + retry;
       }
