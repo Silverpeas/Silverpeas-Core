@@ -3111,6 +3111,7 @@ class Admin implements Administration {
     for (final UserDetail user : users) {
       if (user.getDomainId().equals(targetDomainId)) {
         userManager.blankUser(user);
+        cache.opUpdateUser(userManager.getUserDetail(user.getId()));
       }
     }
   }

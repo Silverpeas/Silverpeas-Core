@@ -25,13 +25,10 @@ package org.silverpeas.core.admin.user.dao;
 
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.ListSlice;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
@@ -44,6 +41,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.silverpeas.core.admin.user.model.UserDetail.BLANK_NAME;
 
 @Singleton
 public class UserDAO {
@@ -70,7 +69,6 @@ public class UserDAO {
   private static final String LOGIN = "login";
   private static final String SAVE_DATE = "saveDate";
   private static final String STATE_SAVE_DATE = "stateSaveDate";
-  private static final String BLANK_NAME = "_Anonymous_";
 
   protected UserDAO() {
   }
@@ -459,16 +457,7 @@ public class UserDAO {
     u.setSpecificId(rs.getString(2));
     u.setDomainId(Integer.toString(rs.getInt(3)));
     u.setLogin(rs.getString(4));
-    String firstName = rs.getString(5);
-    if (BLANK_NAME.equals(firstName)) {
-      User user = User.getCurrentRequester();
-      if (user != null) {
-        final String language = user.getUserPreferences().getLanguage();
-        LocalizationBundle generalBundle = ResourceLocator.getGeneralLocalizationBundle(language);
-        firstName = generalBundle.getString("GML.Anonymous");
-      }
-    }
-    u.setFirstName(firstName);
+    u.setFirstName(rs.getString(5));
     u.setLastName(rs.getString(6));
     u.seteMail(rs.getString(8));
     u.setAccessLevel(UserAccessLevel.fromCode(rs.getString(9)));

@@ -59,7 +59,7 @@
 <body id="domainContent" class="page_content_admin">
 <fmt:message var="domainTitle" key="JDP.domains"/>
 <view:browseBar componentId="${domainTitle}">
-  <view:browseBarElt label="${silfn:escapeHtml(domain.name)}" link="domainContent?Iddomain=${domain.id}"/>
+  <view:browseBarElt label="${domain.name}" link="domainContent?Iddomain=${domain.id}"/>
 </view:browseBar>
 <view:window>
   <view:frame>
