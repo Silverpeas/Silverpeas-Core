@@ -23,19 +23,19 @@
  */
 package org.silverpeas.web.silverstatistics.control;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.chart.pie.PieChart;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.chart.pie.PieChart;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * <p>
@@ -87,8 +87,7 @@ public class PubliPieChartBuilder extends AbstractPieChartBuilder {
             + space.getName() + "\" ";
       }
     } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas", "PubliPieChartBuilder.getChartTitle()",
-          "root.EX_SQL_QUERY_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     }
     title += message.getString("silverStatisticsPeas.Until") + " " + this.dateFormate;
     return title;
@@ -101,20 +100,18 @@ public class PubliPieChartBuilder extends AbstractPieChartBuilder {
    */
   @Override
   Map<String, String[]> getCmpStats() {
-    // Hashtable key=componentId, value=new String[3] {tout, groupe, user}
-    Map<String, String[]> cmpStats = new HashMap<String, String[]>();
+    Map<String, String[]> cmpStats = new HashMap<>();
     try {
       cmpStats.putAll(SilverStatisticsPeasDAOAccesVolume.getStatsPublicationsVentil(dateStat,
           filterIdGroup, filterIdUser));
     } catch (SQLException e) {
-      SilverTrace.error("silverStatisticsPeas",
-          "PubliPieChartBuilder.getCmpStats()", "root.EX_SQL_QUERY_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return cmpStats;
   }
 
   @Override
-  public PieChart getChart(String spaceId, Vector<String[]> currentStats) {
+  public PieChart getChart(String spaceId, List<String[]> currentStats) {
     setScope(AbstractPieChartBuilder.FINESSE_TOUS);
     if (StringUtil.isDefined(filterIdGroup)) {
       setScope(AbstractPieChartBuilder.FINESSE_GROUPE);

@@ -75,7 +75,7 @@
 %>
 
 <%
-  Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
+  List<String[]> vStatsData = (List<String[]>)request.getAttribute("StatsData");
   UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
 
 	TabbedPane tabbedPane = gef.getTabbedPane();

@@ -113,7 +113,7 @@ public class SilverStatisticsPeasRequestRouter extends
             .getConnectedUsersList());
         destination = "/silverStatisticsPeas/jsp/connections.jsp";
       } else if (function.equals("KickSession")) {
-        statsSC.KickSession(request.getParameter("theSessionId"));
+        statsSC.kickSession(request.getParameter("theSessionId"));
         request.setAttribute("ConnectedUsersList", statsSC.getConnectedUsersList());
         destination = "/silverStatisticsPeas/jsp/connections.jsp";
       } else if (function.equals("DisplayNotifySession")) {

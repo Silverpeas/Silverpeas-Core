@@ -154,7 +154,6 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
   private JobDetail buildJobDetail(final Job job, final SchedulerEventListener listener) {
     JobDetail jobDetail = JobBuilder.newJob(getJobExecutor()).withIdentity(job.getName()).build();
     jobDetail.getJobDataMap().put(ACTUAL_JOB, encodeJob(job));
-    jobDetail.getJobDataMap().put(JOB_SCHEDULED, true);
     if (listener != null) {
       jobDetail.getJobDataMap().put(JOB_LISTENER, encodeEventListener(listener));
     }
@@ -205,6 +204,7 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
       if (isInPast(quartzTrigger)) {
         fireNow(quartzTrigger.getFinalFireTime(), theJob, listener);
       } else {
+        jobDetail.getJobDataMap().put(JOB_SCHEDULED, true);
         execute(() -> this.quartz.scheduleJob(jobDetail, quartzTrigger));
       }
       return new QuartzScheduledJob(quartzTrigger);

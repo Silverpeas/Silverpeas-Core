@@ -42,7 +42,9 @@ import org.silverpeas.core.socialnetwork.invitation.Invitation;
 import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.socialnetwork.status.StatusService;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
@@ -67,6 +69,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class UserDetail implements User {
 
+  public static final String BLANK_NAME = "_Anonymous_";
   private static final long serialVersionUID = -109886153681824159L;
   private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
   private static final String AVATAR_PROPERTY =
@@ -393,7 +396,19 @@ public class UserDetail implements User {
 
   @Override
   public String getFirstName() {
-    return firstName;
+    String result = firstName;
+    if (BLANK_NAME.equals(firstName)) {
+      final User user = User.getCurrentRequester();
+      final String language;
+      if (user != null) {
+        language = user.getUserPreferences().getLanguage();
+      } else {
+        language = DisplayI18NHelper.getDefaultLanguage();
+      }
+      final LocalizationBundle generalBundle = ResourceLocator.getGeneralLocalizationBundle(language);
+      result = generalBundle.getString("GML.Anonymous");
+    }
+    return result;
   }
 
   /**
