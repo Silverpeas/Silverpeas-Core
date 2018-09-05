@@ -134,6 +134,8 @@ public class DataRecordUtil {
           String fileName = value.substring(WysiwygFCKFieldDisplayer.dbKey.length());
           value = WysiwygFCKFieldDisplayer
               .getContentFromFile(data.getResourceReference().getComponentInstanceId(), fileName);
+          // replacing non HTML End-Of-Line
+          value = value.replaceAll("\r\n", "");
         }
       }
       if (value == null) {
