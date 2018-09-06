@@ -423,12 +423,13 @@ public class LDAPUtility {
       LDAPSearchContext context = new LDAPSearchContext().setVarToSort(varToSort);
       LDAPSearchQuery query = new LDAPSearchQuery().setScope(scope)
           .setAttrs(args)
-          .setConstraints(constraints)
-          .setFilter(filter);
+          .setConstraints(constraints);
 
       String[] baseDNs = extractBaseDNs(baseDN);
       for (String baseDN1 : baseDNs) {
         query.setBaseDN(baseDN1);
+        // filter can be changed by search, so use the initial one for each DN
+        query.setFilter(filter);
 
         while (query.getFilter() != null) {
           SynchroDomainReport.debug(LDAPUTILITY_SEARCH1000_PLUS,
