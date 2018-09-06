@@ -23,21 +23,16 @@
  */
 package org.silverpeas.core.viewer.util;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.apache.commons.exec.CommandLine;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.exec.ExternalExecution;
 import org.silverpeas.core.util.exec.ExternalExecutionException;
 import org.silverpeas.core.viewer.service.SwfToolManager;
 import org.silverpeas.core.viewer.service.ViewerException;
 
-import org.silverpeas.core.util.StringUtil;
-
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.apache.commons.io.FilenameUtils.*;
 
@@ -63,53 +58,6 @@ public class SwfUtil extends ExternalExecution {
   }
 
   /**
-   * Indicates if swfrender0 tool is activated
-   * @return
-   */
-  public static boolean isPdfToImageActivated() {
-    return isPdfToSwfActivated() && SwfToolManager.isSwfRenderActivated();
-  }
-
-  /**
-   * Converts a PDF file into an image file.
-   *
-   * @param fileIn the pdf file
-   * @param fileOut the image file
-   */
-  public static void fromPdfToImage(final File fileIn, final File fileOut) {
-    // First Step : converting first page of PDF file into a SWF file
-    final File swfFile = changeFileExtension(fileOut, SWF_DOCUMENT_EXTENSION);
-    fromPdfToSwf(fileIn, swfFile, false, "-p 1-1");
-    // Secong Step : converting SFW file into image file
-    fromSwfToImage(swfFile, fileOut);
-    FileUtils.deleteQuietly(swfFile);
-  }
-
-  /**
-   * Converts a SWF file into an image file.
-   *
-   * @param fileIn the Swf file
-   * @param fileOut the image file
-   */
-  private static void fromSwfToImage(final File fileIn, final File fileOut) {
-    try {
-      exec(buildSwfToImageCommandLine(fileIn, fileOut));
-    } catch (ExternalExecutionException e) {
-      throw new ViewerException(e);
-    }
-  }
-
-  /**
-   * Converts a PDF file into a SWF file.
-   *
-   * @param fileIn the pdf file
-   * @param fileOut the swf file
-   */
-  public static void fromPdfToSwf(final File fileIn, final File fileOut) {
-    fromPdfToSwf(fileIn, fileOut, false);
-  }
-
-  /**
    * Converts a PDF file into a SWF file.
    *
    * @param fileIn the pdf file
@@ -129,7 +77,7 @@ public class SwfUtil extends ExternalExecution {
    * @param oneFilePerPage if true it activates one swf file per page
    * @param endingCommand
    */
-  public static void fromPdfToSwf(final File fileIn, final File fileOut,
+  private static void fromPdfToSwf(final File fileIn, final File fileOut,
       final boolean oneFilePerPage, final String endingCommand) {
     File outputFile = fileOut;
     if (oneFilePerPage) {
@@ -148,33 +96,6 @@ public class SwfUtil extends ExternalExecution {
     }
   }
 
-  /**
-   * Return some document info from a PDF file
-   *
-   * @param pdfFile
-   * @return
-   */
-  public static DocumentInfo getPdfDocumentInfo(final File pdfFile) {
-    List<String> execResult;
-    try {
-      execResult = exec(buildPdfDocumentInfoCommandLine(pdfFile));
-    } catch (ExternalExecutionException e) {
-      throw new ExternalExecutionException(e);
-    }
-    return new DocumentInfo().addFromSwfToolsOutput(execResult);
-  }
-
-  /**
-   * Changes the extension of a file
-   *
-   * @param fileExtension
-   * @return
-   */
-  private static File changeFileExtension(final File file, final String fileExtension) {
-    return new File(
-        getFullPath(file.getPath()) + getBaseName(file.getPath()) + '.' + fileExtension);
-  }
-
   static CommandLine buildPdfToSwfCommandLine(final String endingCommand, File inputFile,
       File outputFile) {
     Map<String, File> files = new HashMap<>(2);
@@ -188,29 +109,6 @@ public class SwfUtil extends ExternalExecution {
     if (StringUtil.isDefined(endingCommand)) {
       commandLine.addArguments(endingCommand, false);
     }
-    commandLine.setSubstitutionMap(files);
-    return commandLine;
-  }
-
-  static CommandLine buildPdfDocumentInfoCommandLine(File file) {
-    Map<String, File> files = new HashMap<>(1);
-    files.put("file", file);
-    CommandLine commandLine = new CommandLine("pdf2swf");
-    commandLine.addArgument("-qq");
-    commandLine.addArgument("${file}", false);
-    commandLine.addArgument("--info");
-    commandLine.setSubstitutionMap(files);
-    return commandLine;
-  }
-
-  static CommandLine buildSwfToImageCommandLine(File inputFile, File outputFile) {
-    Map<String, File> files = new HashMap<>(2);
-    files.put("inputFile", inputFile);
-    files.put("outputFile", outputFile);
-    CommandLine commandLine = new CommandLine("swfrender");
-    commandLine.addArgument("${inputFile}", false);
-    commandLine.addArgument(OUTPUT_COMMAND);
-    commandLine.addArgument("${outputFile}", false);
     commandLine.setSubstitutionMap(files);
     return commandLine;
   }

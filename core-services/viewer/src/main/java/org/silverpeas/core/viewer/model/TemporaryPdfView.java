@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.viewer.model;
 
-import org.silverpeas.core.viewer.util.DocumentInfo;
+import org.silverpeas.core.util.DocumentInfo;
 
 import java.io.File;
 
@@ -42,7 +42,7 @@ public class TemporaryPdfView extends AbstractView {
   public TemporaryPdfView(final String documentId, final String language,
       final String originalFileName, final File physicalFile, final DocumentInfo info) {
     super(documentId, language, originalFileName, physicalFile, 0);
-    width = info.getMaxWidh();
+    width = info.getMaxWidth();
     height = info.getMaxHeight();
   }
 

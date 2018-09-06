@@ -24,9 +24,9 @@
 package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.exec.CommandLine;
-import org.silverpeas.core.util.exec.ExternalExecution;
-import org.silverpeas.core.util.exec.ExternalExecution.Config;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.util.exec.ExternalExecution;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Map;
 
@@ -36,14 +36,13 @@ import java.util.Map;
 public class SwfToolManager implements Initialization {
 
   private static boolean isActivated = false;
-  private static boolean isSwfRenderActivated = false;
 
   @Override
-  public void init() throws Exception {
+  public synchronized void init() {
 
     // SwfTools settings
     for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
-      if ("path".equals(entry.getKey().toLowerCase())) {
+      if ("path".equalsIgnoreCase(entry.getKey())) {
         try {
           CommandLine commandLine = new CommandLine("pdf2swf");
           commandLine.addArgument("--version");
@@ -51,17 +50,7 @@ public class SwfToolManager implements Initialization {
           isActivated = true;
         } catch (final Exception e) {
           // SwfTool is not installed
-          System.err.println("pdf2swf is not installed");
-        }
-        try {
-          CommandLine commandLine = new CommandLine("swfrender");
-          commandLine.addArgument("--help");
-          ExternalExecution.exec(commandLine,
-              Config.init().successfulExitStatusValueIs(1).doNotDisplayErrorTrace());
-          isSwfRenderActivated = true;
-        } catch (final Exception e) {
-          // SwfTool is not installed
-          System.err.println("swfrender is not installed");
+          SilverLogger.getLogger(this).warn("pdf2swf is not installed");
         }
       }
     }
@@ -73,13 +62,5 @@ public class SwfToolManager implements Initialization {
    */
   public static boolean isActivated() {
     return isActivated;
-  }
-
-  /**
-   * Indicates if swfrender is activated
-   * @return
-   */
-  public static boolean isSwfRenderActivated() {
-    return isSwfRenderActivated;
   }
 }

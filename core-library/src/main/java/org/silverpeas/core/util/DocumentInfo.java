@@ -21,9 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.viewer.util;
-
-import java.util.Collection;
+package org.silverpeas.core.util;
 
 /**
  * Information about the pdf to be converted.
@@ -33,40 +31,8 @@ import java.util.Collection;
 public class DocumentInfo {
 
   private int nbPages = 0;
-  private int maxWidh = 0;
+  private int maxWidth = 0;
   private int maxHeight = 0;
-
-  /**
-   * Initializing data from output SwfTools query
-   *
-   * @param swfOutput
-   * @return
-   */
-  protected DocumentInfo addFromSwfToolsOutput(final Collection<String> swfOutput) {
-    for (final String outputLine : swfOutput) {
-      try {
-        boolean widthOk = false;
-        boolean heightOk = false;
-        for (final String info : outputLine.split(" ")) {
-          if (info.contains("width")) {
-            maxWidh = Math.max(maxWidh, Integer.valueOf(info.replaceAll("width=", "").replaceAll(
-                "\\.[0-9]+", "")));
-            widthOk = true;
-          } else if (info.contains("height")) {
-            maxHeight = Math.max(maxHeight, Integer.valueOf(info.replaceAll("height=", "")
-                .replaceAll("\\.[0-9]+", "")));
-            heightOk = true;
-          }
-        }
-        if (widthOk && heightOk) {
-          nbPages++;
-        }
-      } catch (final NumberFormatException e) {
-        // Nothing to do, just pass to the next line
-      }
-    }
-    return this;
-  }
 
   /**
    * @return the nbPage
@@ -75,11 +41,19 @@ public class DocumentInfo {
     return nbPages;
   }
 
+  public void setNbPages(final int nbPages) {
+    this.nbPages = nbPages;
+  }
+
   /**
-   * @return the maxWidh
+   * @return the maxWidth
    */
-  public int getMaxWidh() {
-    return maxWidh;
+  public int getMaxWidth() {
+    return maxWidth;
+  }
+
+  public void setMaxWidth(final int maxWidth) {
+    this.maxWidth = maxWidth;
   }
 
   /**
@@ -87,5 +61,9 @@ public class DocumentInfo {
    */
   public int getMaxHeight() {
     return maxHeight;
+  }
+
+  public void setMaxHeight(final int maxHeight) {
+    this.maxHeight = maxHeight;
   }
 }

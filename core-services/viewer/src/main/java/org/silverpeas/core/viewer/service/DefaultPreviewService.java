@@ -26,15 +26,15 @@ package org.silverpeas.core.viewer.service;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
 import org.silverpeas.core.contribution.converter.option.PageRangeFilterOption;
-import org.silverpeas.core.viewer.model.Preview;
-import org.silverpeas.core.viewer.model.TemporaryPreview;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.ImageToolDirective;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
 import org.silverpeas.core.thread.ManagedThreadPool;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.viewer.util.SwfUtil;
+import org.silverpeas.core.util.PdfUtil;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.viewer.model.Preview;
+import org.silverpeas.core.viewer.model.TemporaryPreview;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -162,8 +162,8 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
    */
   private File toImage(File source, File destination) {
     boolean deleteSource = false;
-    if (SwfUtil.isPdfToImageActivated() && FileUtil.isPdf(source.getPath())) {
-      SwfUtil.fromPdfToImage(source, destination);
+    if (FileUtil.isPdf(source.getPath())) {
+      PdfUtil.firstPageAsImage(source, destination);
       source = destination;
       destination = changeFileExtension(destination, JPG_IMAGE_EXTENSION);
       deleteSource = !source.equals(destination);
