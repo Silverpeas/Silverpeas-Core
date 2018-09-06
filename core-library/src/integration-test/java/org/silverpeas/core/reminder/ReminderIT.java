@@ -323,6 +323,7 @@ public class ReminderIT {
     await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
 
     reminder = Reminder.getById(reminder.getId());
+    await().pollInterval(1, SECONDS).timeout(5, SECONDS).until(isNotScheduled(reminder));
     assertThat(reminder.isScheduled(), is(false));
     assertThat(reminder.isSchedulable(), is(false));
   }
@@ -401,6 +402,10 @@ public class ReminderIT {
 
   private Callable<Boolean> isTriggered(final Reminder reminder) {
     return () -> Reminder.getById(reminder.getId()).isTriggered();
+  }
+
+  private Callable<Boolean> isNotScheduled(final Reminder reminder) {
+    return () -> !Reminder.getById(reminder.getId()).isScheduled();
   }
 
   /**
