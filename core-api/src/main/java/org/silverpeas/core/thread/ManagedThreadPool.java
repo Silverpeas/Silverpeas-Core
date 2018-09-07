@@ -30,6 +30,7 @@ import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -88,6 +89,20 @@ public class ManagedThreadPool {
       thread.start();
     }
     return threads;
+  }
+
+  /**
+   * Invokes the given {@link java.lang.Runnable} instances into a managed thread and waiting for
+   * the end of execution of all of it.<br>
+   * Each {@link java.lang.Runnable} instance will be used one managed thread.<br>
+   * If the application server has no more thread to supply, then the execution will wait until it
+   * exists one again available.
+   * @param runnables the {@link java.lang.Runnable} instances to invoke.
+   * @throws ManagedThreadPoolException if the invocation fails.
+   */
+  public void invokeAndAwaitTermination(Runnable ... runnables)
+      throws ManagedThreadPoolException {
+    invokeAndAwaitTermination(Arrays.asList(runnables), defaultConfig());
   }
 
   /**

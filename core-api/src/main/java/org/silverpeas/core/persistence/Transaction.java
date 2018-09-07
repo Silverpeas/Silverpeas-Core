@@ -25,16 +25,21 @@ package org.silverpeas.core.persistence;
 
 
 import org.silverpeas.core.util.Process;
-import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Resource;
+import javax.transaction.Status;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 import javax.transaction.Transactional;
-import javax.transaction.TransactionalException;
 
 /**
  * A transaction. All processes it performs will be in charge by the JPA transaction manager.
  * @author mmoquillon
  */
 public class Transaction {
+
+  @Resource(mappedName = "java:/TransactionManager")
+  private TransactionManager transactionManager;
 
   /**
    * Gets a transaction instance in order to perform some transactional tasks.
@@ -69,12 +74,17 @@ public class Transaction {
    * @return true if there is a transaction active in the current thread, false otherwise.
    */
   public static boolean isTransactionActive() {
-    try {
-      return getTransaction().checkExistingTransaction();
-    } catch (TransactionalException e) {
-      SilverLogger.getLogger(Transaction.class).silent(e);
-      return false;
-    }
+    return getTransaction().isActive();
+  }
+
+  /**
+   * Gets the status of the transaction currently in the current thread. If there is no
+   * transaction, then {@link javax.transaction.Status#STATUS_NO_TRANSACTION} is returned.
+   * @see javax.transaction.Status
+   * @return the current transaction's status.
+   */
+  public static int getTransactionStatus() {
+    return getTransaction().getStatus();
   }
 
   /**
@@ -90,6 +100,19 @@ public class Transaction {
     try {
       return process.execute();
     } catch (Exception e) {
+      throw new TransactionRuntimeException(e);
+    }
+  }
+
+  /**
+   * Gets the current status of this transaction.
+   * @return the status code of this transaction.
+   * @see javax.transaction.Status
+   */
+  public int getStatus() {
+    try {
+      return transactionManager.getStatus();
+    } catch (SystemException e) {
       throw new TransactionRuntimeException(e);
     }
   }
@@ -111,8 +134,16 @@ public class Transaction {
   }
 
   @Transactional(Transactional.TxType.MANDATORY)
-  protected boolean checkExistingTransaction() {
-    return true;
+  protected boolean isActive() {
+    return getStatus() == Status.STATUS_ACTIVE;
+  }
+
+  /**
+   * Gets the transaction manager behind this transaction.
+   * @return a {@link TransactionManager} instance.
+   */
+  public TransactionManager getTransactionManager() {
+    return this.transactionManager;
   }
 
 }
