@@ -23,16 +23,21 @@
  */
 package org.silverpeas.core.util;
 
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfContentByte;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfStamper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -45,6 +50,75 @@ import java.io.OutputStream;
  * Date: 08/07/13
  */
 public class PdfUtil {
+
+  private static final String PDF_FILE_ERROR_MSG = "The pdf source file doesn't exist";
+  private static final String NOT_PDF_FILE_ERROR_MSG = "The source is not a pdf file";
+  private static final String PDF_DESTINATION_ERROR_MSG = "The pdf destination file is unknown";
+
+  private PdfUtil() {
+    throw new IllegalStateException("Utility class");
+  }
+
+  /**
+   * Gets some document info from a PDF file.
+   * @param pdfSource the source pdf file, this content is not modified by this method
+   * @return a {@link DocumentInfo} instance.
+   */
+  public static DocumentInfo getDocumentInfo(File pdfSource) {
+    if (pdfSource == null || !pdfSource.isFile()) {
+      throw new SilverpeasRuntimeException(PDF_FILE_ERROR_MSG);
+    } else if (!FileUtil.isPdf(pdfSource.getPath())) {
+      throw new SilverpeasRuntimeException(NOT_PDF_FILE_ERROR_MSG);
+    }
+    PdfReader reader = null;
+    try (final InputStream pdfSourceIS = FileUtils.openInputStream(pdfSource)) {
+      reader = new PdfReader(pdfSourceIS);
+      final DocumentInfo documentInfo = new DocumentInfo();
+      documentInfo.setNbPages(reader.getNumberOfPages());
+      for (int i = 1; i <= documentInfo.getNbPages(); i++) {
+        final Rectangle rectangle = reader.getPageSize(i);
+        final int maxWidth = Math.round(rectangle.getWidth());
+        final int maxHeight = Math.round(rectangle.getHeight());
+        if (maxWidth > documentInfo.getMaxWidth()) {
+          documentInfo.setMaxWidth(maxWidth);
+        }
+        if (maxHeight > documentInfo.getMaxHeight()) {
+          documentInfo.setMaxHeight(maxHeight);
+        }
+      }
+      return documentInfo;
+    } catch (Exception e) {
+      SilverLogger.getLogger(PdfUtil.class).error(e);
+      throw new SilverpeasRuntimeException(
+          "A problem has occurred during the reading of a pdf file", e);
+    } finally {
+      if (reader != null) {
+        reader.close();
+      }
+    }
+  }
+
+  /**
+   * Converts the first page of a PDF file into a JPEG image.
+   * @param pdfSource the source pdf file, this content is not modified by this method.
+   * @param imageDestination the destination file of the image representing the first page.
+   */
+  public static void firstPageAsImage(File pdfSource, File imageDestination) {
+    if (pdfSource == null || !pdfSource.isFile()) {
+      throw new SilverpeasRuntimeException(PDF_FILE_ERROR_MSG);
+    } else if (!FileUtil.isPdf(pdfSource.getPath())) {
+      throw new SilverpeasRuntimeException(NOT_PDF_FILE_ERROR_MSG);
+    }
+    try (final PDDocument document = PDDocument.load(pdfSource)) {
+      final PDFRenderer pdfRenderer = new PDFRenderer(document);
+      final BufferedImage image = pdfRenderer.renderImage(0);
+      ImageIO.write(image, "jpg", imageDestination);
+    } catch (Exception e) {
+      SilverLogger.getLogger(PdfUtil.class).error(e);
+      throw new SilverpeasRuntimeException(
+          "A problem has occurred during the adding of an image into a pdf file", e);
+    }
+  }
 
   /**
    * Add a image stamp on each page of a PDF file.
@@ -98,11 +172,11 @@ public class PdfUtil {
   private static void addImageOnEachPage(File pdfSource, File image, File pdfDestination,
       final boolean isBackground) {
     if (pdfSource == null || !pdfSource.isFile()) {
-      throw new RuntimeException("The pdf source file doesn't exist");
+      throw new SilverpeasRuntimeException(PDF_FILE_ERROR_MSG);
     } else if (!FileUtil.isPdf(pdfSource.getPath())) {
-      throw new RuntimeException("The source is not a pdf file");
+      throw new SilverpeasRuntimeException(NOT_PDF_FILE_ERROR_MSG);
     } else if (pdfDestination == null) {
-      throw new RuntimeException("The pdf destination file is unknown");
+      throw new SilverpeasRuntimeException(PDF_DESTINATION_ERROR_MSG);
     }
 
     FileInputStream pdfSourceIS = null;
@@ -112,7 +186,7 @@ public class PdfUtil {
       pdfDestinationIS = FileUtils.openOutputStream(pdfDestination);
       addImageOnEachPage(pdfSourceIS, image, pdfDestinationIS, isBackground);
     } catch (IOException e) {
-      throw new RuntimeException(
+      throw new SilverpeasRuntimeException(
           "Pdf source file cannot be opened or pdf destination file cannot be created", e);
     } finally {
       IOUtils.closeQuietly(pdfSourceIS);
@@ -133,9 +207,9 @@ public class PdfUtil {
 
     // Verify given arguments
     if (imageToAdd == null || !imageToAdd.isFile()) {
-      throw new RuntimeException("The image file doesn't exist");
+      throw new SilverpeasRuntimeException("The image file doesn't exist");
     } else if (!FileUtil.isImage(imageToAdd.getPath())) {
-      throw new RuntimeException("The picture to add is not an image file");
+      throw new SilverpeasRuntimeException("The picture to add is not an image file");
     }
 
     PdfReader reader = null;
@@ -178,9 +252,9 @@ public class PdfUtil {
       stamper.close();
 
     } catch (Exception e) {
-      SilverTrace.error("util", "PdfUtil.stamp", "EX_ERROR_PDF_ADD_WATERWARK", e);
-      throw new RuntimeException(
-          "A problem has occured during the adding of an image into a pdf file", e);
+      SilverLogger.getLogger(PdfUtil.class).error(e);
+      throw new SilverpeasRuntimeException(
+          "A problem has occurred during the adding of an image into a pdf file", e);
     } finally {
       if (reader != null) {
         reader.close();
@@ -190,9 +264,9 @@ public class PdfUtil {
 
   /**
    * Compute the center position on an axis.
-   * @param documentSize
-   * @param imageSize
-   * @return
+   * @param documentSize the document size.
+   * @param imageSize the image size.
+   * @return the position of the center of the image to include into document.
    */
   private static float computeImageCenterPosition(float documentSize, float imageSize) {
 

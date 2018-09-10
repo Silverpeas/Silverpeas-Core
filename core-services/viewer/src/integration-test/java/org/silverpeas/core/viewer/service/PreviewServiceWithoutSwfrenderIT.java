@@ -65,7 +65,6 @@ public class PreviewServiceWithoutSwfrenderIT extends AbstractViewerIT {
         .thenReturn(false);
     when(mockedSettings.getBoolean(eq("viewer.conversion.strategy.split.enabled"), anyBoolean()))
         .thenReturn(false);
-    reflectionRule.setField(SwfToolManager.class, false, "isSwfRenderActivated");
   }
 
   @After
@@ -298,11 +297,11 @@ public class PreviewServiceWithoutSwfrenderIT extends AbstractViewerIT {
   }
 
   private void assertPptDocumentPreview(Preview preview) {
-    assertDocumentPreview(preview, 720, 540, false, "png");
+    assertDocumentPreview(preview, 720, 540, false, "jpg");
   }
 
   private void assertPptDocumentPreviewWithCacheManagement(Preview preview) {
-    assertDocumentPreview(preview, 720, 540, true, "png");
+    assertDocumentPreview(preview, 720, 540, true, "jpg");
   }
 
   private void assertImageDocumentPreview(Preview preview) {
@@ -314,11 +313,11 @@ public class PreviewServiceWithoutSwfrenderIT extends AbstractViewerIT {
   }
 
   private void assertOfficeOrPdfDocumentPreview(Preview preview) {
-    assertDocumentPreview(preview, 595, 842, false, "png");
+    assertDocumentPreview(preview, 595, 842, false, "jpg");
   }
 
   private void assertOfficeOrPdfDocumentPreviewWithCacheManagement(Preview preview) {
-    assertDocumentPreview(preview, 595, 842, true, "png");
+    assertDocumentPreview(preview, 595, 842, true, "jpg");
   }
 
   private void assertDocumentPreview(Preview preview, int width, int height,

@@ -27,12 +27,13 @@ import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
 import org.silverpeas.core.thread.ManagedThreadPool;
+import org.silverpeas.core.util.DocumentInfo;
+import org.silverpeas.core.util.PdfUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.viewer.flexpaper.TemporaryFlexPaperView;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.model.TemporaryPdfView;
-import org.silverpeas.core.viewer.util.DocumentInfo;
 import org.silverpeas.core.viewer.util.JsonPdfUtil;
 import org.silverpeas.core.viewer.util.SwfUtil;
 
@@ -59,8 +60,9 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
   @Override
   public boolean isViewable(final File file) {
     final String fileName = file.getPath();
-    return (SwfUtil.isPdfToSwfActivated() && file.exists() && (FileUtil.isPdf(fileName) || FileUtil
-        .isOpenOfficeCompatible(fileName)));
+    final boolean toolsAvailable = !isSwfNeeded() || SwfUtil.isPdfToSwfActivated();
+    return (toolsAvailable && file.exists() &&
+        (FileUtil.isPdf(fileName) || FileUtil.isOpenOfficeCompatible(fileName)));
   }
 
   /*
@@ -107,7 +109,7 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
         final String documentId = viewerContext.getDocumentId();
         final String language = viewerContext.getLanguage();
         final String originalFileName = viewerContext.getOriginalFileName();
-        if (isDefined(getLicenceKey()) || !pdfViewerEnabled()) {
+        if (isSwfNeeded()) {
           documentView = toSwfResult(documentId, language, originalFileName, pdfFile);
           FileUtils.deleteQuietly(pdfFile);
         } else {
@@ -129,6 +131,10 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
         return ViewerTreatment.super.performAfterSuccess(result);
       }
     }).execute(viewerContext);
+  }
+
+  private static boolean isSwfNeeded() {
+    return isDefined(getLicenceKey()) || !pdfViewerEnabled();
   }
 
   /**
@@ -153,7 +159,7 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
       final String originalFileName, final File pdfSource) {
 
     // NbPages & max page width & max page height
-    final DocumentInfo info = SwfUtil.getPdfDocumentInfo(pdfSource);
+    final DocumentInfo info = PdfUtil.getDocumentInfo(pdfSource);
 
     File swfFile = changeFileExtension(pdfSource, SWF_DOCUMENT_EXTENSION);
     swfFile.getParentFile().mkdirs();
@@ -204,7 +210,7 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
       final String originalFileName, final File pdfSource) {
 
     // NbPages & max page width & max page height
-    final DocumentInfo info = SwfUtil.getPdfDocumentInfo(pdfSource);
+    final DocumentInfo info = PdfUtil.getDocumentInfo(pdfSource);
 
     final File pdfFile = new File(pdfSource.getPath());
     return new TemporaryPdfView(documentId, language, originalFileName, pdfFile, info);

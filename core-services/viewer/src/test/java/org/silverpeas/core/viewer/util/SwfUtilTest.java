@@ -74,33 +74,6 @@ public class SwfUtilTest {
   }
 
   /**
-   * Test of buildPdfDocumentInfoCommandLine method, of class SwfUtil.
-   */
-  @Test
-  public void testLinuxBuildPdfDocumentInfoCommandLine() {
-    System.setProperty(OS_KEY, "Linux");
-    File file = new File("/silverpeas/viewer/", "file ' - '' .pdf");
-    CommandLine result = SwfUtil.buildPdfDocumentInfoCommandLine(file);
-    assertThat(result, is(notNullValue()));
-    assertThat(separatorsToUnix(String.join(" ", result.toStrings())),
-        is("pdf2swf -qq " + "/silverpeas/viewer/file ' - '' .pdf --info"));
-  }
-
-  /**
-   * Test of buildSwfToImageCommandLine method, of class SwfUtil.
-   */
-  @Test
-  public void testLinuxBuildSwfToImageCommandLine() {
-    System.setProperty(OS_KEY, "Linux");
-    File inputFile = new File("/silverpeas/viewer/", "file ' - '' .pdf");
-    File outputFile = new File("/silverpeas/viewer/", "file ' - '' .swf");
-    CommandLine result = SwfUtil.buildSwfToImageCommandLine(inputFile, outputFile);
-    assertThat(result, is(notNullValue()));
-    assertThat(separatorsToUnix(String.join(" ", result.toStrings())), is("swfrender " +
-        "/silverpeas/viewer/file ' - '' .pdf -o /silverpeas/viewer/file ' - '' .swf"));
-  }
-
-  /**
    * Test of buildPdfToSwfCommandLine method, of class SwfUtil.
    */
   @Test
@@ -114,33 +87,6 @@ public class SwfUtilTest {
     assertThat(separatorsToUnix(String.join(" ", result.toStrings())),
         is("pdf2swf /silverpeas/viewer/file ' - '' .pdf" +
             " -o /silverpeas/viewer/file ' - '' .swf -f -T 9 -t -s storeallcharacters"));
-  }
-
-  /**
-   * Test of buildPdfDocumentInfoCommandLine method, of class SwfUtil.
-   */
-  @Test
-  public void testBuildPdfDocumentInfoCommandLine() {
-    System.setProperty(OS_KEY, "Windows XP");
-    File file = new File("/silverpeas/viewer/", "file ' - '' .pdf");
-    CommandLine result = SwfUtil.buildPdfDocumentInfoCommandLine(file);
-    assertThat(result, is(notNullValue()));
-    assertThat(separatorsToUnix(String.join(" ", result.toStrings())),
-        is("pdf2swf -qq " + "/silverpeas/viewer/file ' - '' .pdf" + " --info"));
-  }
-
-  /**
-   * Test of buildSwfToImageCommandLine method, of class SwfUtil.
-   */
-  @Test
-  public void testBuildSwfToImageCommandLine() {
-    System.setProperty(OS_KEY, "Windows XP");
-    File inputFile = new File("/silverpeas/viewer/", "file ' - '' .pdf");
-    File outputFile = new File("/silverpeas/viewer/", "file ' - '' .swf");
-    CommandLine result = SwfUtil.buildSwfToImageCommandLine(inputFile, outputFile);
-    assertThat(result, is(notNullValue()));
-    assertThat(separatorsToUnix(String.join(" ", result.toStrings())), is("swfrender " +
-        "/silverpeas/viewer/file ' - '' .pdf -o /silverpeas/viewer/file ' - '' .swf"));
   }
 
   private static String separatorsToUnix(String filePath) {
