@@ -37,6 +37,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarElement" %>
+<%@ page import="org.silverpeas.core.util.CollectionUtil" %>
 
 <%@ include file="check.jsp" %>
 
@@ -66,8 +67,10 @@
     <%
           browseBar.setDomainName(hostSpaceName);
           browseBar.setComponentName(hostComponentName);
-          for (String pathItem : hostPath) {
-            browseBar.addElement(new BrowseBarElement(pathItem, null));
+          if (CollectionUtil.isNotEmpty(hostPath)) {
+            for (String pathItem : hostPath) {
+              browseBar.addElement(new BrowseBarElement(pathItem, null));
+            }
           }
 
           out.println(window.printBefore());
