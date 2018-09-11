@@ -222,7 +222,8 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
       session.save();
-      SimpleDocument doc = documentRepository.findLast(session, instanceId, foreignId);
+      SimpleDocument doc = documentRepository
+          .findLast(session, instanceId, foreignId, DocumentType.attachment);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(oldSilverpeasId));
     }

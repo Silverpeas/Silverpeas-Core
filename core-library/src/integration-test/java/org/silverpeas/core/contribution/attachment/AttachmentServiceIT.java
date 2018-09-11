@@ -67,7 +67,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
@@ -1226,6 +1228,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
         "5"));
     docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
     instance.createAttachment(docToUnlock2, content);
+    await().atLeast(1, TimeUnit.MILLISECONDS).timeout(1, TimeUnit.SECONDS).until(() -> true);
     emptyId = new SimpleDocumentPK("-1", instanceId);
     SimpleDocument docToUnlock3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
         new SimpleAttachment("test.pdf", "en", "My test document",
@@ -1245,7 +1248,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     List<SimpleDocument> docs = instance.listDocumentsLockedByUser(owner, "fr");
     assertThat(docs, is(notNullValue()));
     assertThat(docs.size(), is(2));
-    assertThat(docs, contains(docToUnlock2, docToUnlock3));
+    assertThat(docs, contains(docToUnlock3, docToUnlock2));
   }
 
   private void checkFrenchSimpleDocument(SimpleDocument doc) {

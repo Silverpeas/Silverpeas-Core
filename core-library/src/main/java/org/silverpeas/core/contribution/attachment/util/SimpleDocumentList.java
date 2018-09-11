@@ -23,32 +23,35 @@
  */
 package org.silverpeas.core.contribution.attachment.util;
 
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.repository.DocumentRepository;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
 
 /**
  * This list provides some additional useful behaviors around simple documents.
  * @author: Yohann Chastagnier
- * @param <SIMPLE_DOCUMENT> the type of simple document that the list contains.
+ * @param <T> the type of simple document that the list contains.
  */
-public class SimpleDocumentList<SIMPLE_DOCUMENT extends SimpleDocument>
-    extends ArrayList<SIMPLE_DOCUMENT> {
+public class SimpleDocumentList<T extends SimpleDocument>
+    extends ArrayList<T> {
   private static final long serialVersionUID = 4986827710138035170L;
 
   private static final String[] ALL_LANGUAGES_BY_PRIORITY =
       I18NHelper.getAllSupportedLanguages().toArray(new String[I18NHelper.getNumberOfLanguages()]);
 
   private String queryLanguage = null;
+  private boolean youngestToOldestAddSorted = false;
 
   public SimpleDocumentList(final int initialCapacity) {
     super(initialCapacity);
@@ -58,7 +61,7 @@ public class SimpleDocumentList<SIMPLE_DOCUMENT extends SimpleDocument>
     super();
   }
 
-  public SimpleDocumentList(final Collection<? extends SIMPLE_DOCUMENT> c) {
+  public SimpleDocumentList(final Collection<? extends T> c) {
     super(c);
   }
 
@@ -75,7 +78,7 @@ public class SimpleDocumentList<SIMPLE_DOCUMENT extends SimpleDocument>
    * @param queryLanguage the language used to perform the JCR query in order to load the list.
    * @return itself.
    */
-  public SimpleDocumentList<SIMPLE_DOCUMENT> setQueryLanguage(final String queryLanguage) {
+  public SimpleDocumentList<T> setQueryLanguage(final String queryLanguage) {
     if (StringUtil.isDefined(queryLanguage)) {
       this.queryLanguage = queryLanguage;
     } else {
@@ -90,17 +93,11 @@ public class SimpleDocumentList<SIMPLE_DOCUMENT extends SimpleDocument>
    * If {@link #getQueryLanguage()} returns null or an unknown languague, nothing is done.
    * @return itself.
    */
-  public SimpleDocumentList<SIMPLE_DOCUMENT> removeLanguageFallbacks() {
+  public SimpleDocumentList<T> removeLanguageFallbacks() {
     if (!isEmpty()) {
       String language = I18NHelper.checkLanguage(getQueryLanguage());
       if (language.equals(getQueryLanguage())) {
-        Iterator<SIMPLE_DOCUMENT> it = iterator();
-        while (it.hasNext()) {
-          SIMPLE_DOCUMENT document = it.next();
-          if (!language.equals(document.getLanguage())) {
-            it.remove();
-          }
-        }
+        removeIf(document -> !language.equals(document.getLanguage()));
       }
     }
     return this;
@@ -115,13 +112,56 @@ public class SimpleDocumentList<SIMPLE_DOCUMENT extends SimpleDocument>
    * lowest.
    * @return itself.
    */
-  public SimpleDocumentList<SIMPLE_DOCUMENT> orderByLanguageAndLastUpdate(
+  public SimpleDocumentList<T> orderByLanguageAndLastUpdate(
       String... languageOrderedByPriority) {
     if (size() > 1) {
-      Collections.sort(this, new LanguageAndLastUpdateComparator(languageOrderedByPriority,
+      this.sort(new LanguageAndLastUpdateComparator(languageOrderedByPriority,
           ORDER_BY.LANGUAGE_PRIORITY_DESC, ORDER_BY.LAST_UPDATE_DATE_DESC));
     }
     return this;
+  }
+
+  /**
+   * Indicates from the given list of documents if the sort of the list is manual.
+   * <p>
+   *   The given list has to be provided by {@link DocumentRepository} listing methods which
+   *   apply an ordering on the order metadata.
+   * </p>
+   * @return true if the list is sorted manually, false otherwise.
+   * @throw IllegalStateException if documents of the list are not linked to a same foreignId.
+   */
+  public boolean isManuallySorted() {
+    final SimpleDocumentList<T> documents;
+    if (youngestToOldestAddSorted) {
+      documents = new SimpleDocumentList<>(this);
+      Collections.reverse(documents);
+    } else {
+      documents = this;
+    }
+    boolean manuallySorted = false;
+    if (documents.size() > 1) {
+      final String foreignId = documents.get(0).getForeignId();
+      if (documents.stream().anyMatch(d -> !d.getForeignId().equals(foreignId))) {
+        throw new IllegalStateException(
+            "the given list must only contain documents linked to foreignId " + foreignId);
+      }
+      for (int i = 1; !manuallySorted && i < documents.size(); i++) {
+        final int orderOffset = documents.get(i).getOrder() - documents.get(i - 1).getOrder();
+        manuallySorted =
+            documents.get(i).getOldSilverpeasId() < documents.get(i - 1).getOldSilverpeasId() &&
+                (orderOffset % 5) == 0;
+      }
+    }
+    return manuallySorted;
+  }
+
+
+  public void sortYoungestToOldestAddIfEnabled() {
+    if (!isEmpty() && !youngestToOldestAddSorted && listFromYoungestToOldestAdd() &&
+        !isManuallySorted()) {
+      sort((o1, o2) -> o2.getOrder() - o1.getOrder());
+      youngestToOldestAddSorted = true;
+    }
   }
 
   /**
@@ -146,10 +186,10 @@ public class SimpleDocumentList<SIMPLE_DOCUMENT extends SimpleDocument>
    * Comparator class that permits to order a list of simple documents by a language priority and
    * descending update date.
    */
-  private class LanguageAndLastUpdateComparator extends AbstractComplexComparator<SIMPLE_DOCUMENT> {
+  private class LanguageAndLastUpdateComparator extends AbstractComplexComparator<T> {
+    private static final long serialVersionUID = 4826457857348422450L;
 
-    private Map<String, Integer> languagePriorityCache =
-        new HashMap<String, Integer>(I18NHelper.getNumberOfLanguages());
+    private Map<String, Integer> languagePriorityCache = new HashMap<>(I18NHelper.getNumberOfLanguages());
     private final ORDER_BY[] orderBies;
 
     /**
@@ -176,7 +216,7 @@ public class SimpleDocumentList<SIMPLE_DOCUMENT extends SimpleDocument>
     }
 
     @Override
-    protected ValueBuffer getValuesToCompare(final SIMPLE_DOCUMENT simpleDocument) {
+    protected ValueBuffer getValuesToCompare(final T simpleDocument) {
       ValueBuffer valueBuffer = new ValueBuffer();
       for (ORDER_BY orderBy : orderBies) {
         switch (orderBy) {
@@ -200,8 +240,18 @@ public class SimpleDocumentList<SIMPLE_DOCUMENT extends SimpleDocument>
      * @return the priority index of the language content, 0 is the highest priority and the less
      * the index decreases the less is the language priority
      */
-    private int getLanguagePriorityIndex(final SIMPLE_DOCUMENT simpleDocument) {
+    private int getLanguagePriorityIndex(final T simpleDocument) {
       return languagePriorityCache.get(simpleDocument.getLanguage()) * -1;
     }
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

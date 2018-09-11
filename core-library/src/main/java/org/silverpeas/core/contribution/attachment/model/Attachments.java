@@ -23,16 +23,24 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.CollectionUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+
+import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
 
 /**
  * A collection of files attached or in being attached to a contribution in Silverpeas. With this
@@ -83,13 +91,7 @@ public class Attachments {
    * @param contribution the contribution to which the attachments has to be attached.
    */
   public void attachTo(final Contribution contribution) {
-    if (CollectionUtil.isNotEmpty(this.uploadedFiles)) {
-      for (UploadedFile uploadedFile : this.uploadedFiles) {
-        // Register attachment
-        uploadedFile.registerAttachment(contribution.getContributionId(),
-            I18NHelper.defaultLanguage, contribution.isIndexable());
-      }
-    }
+    attachTo(contribution, I18NHelper.defaultLanguage);
   }
 
   /**
@@ -103,11 +105,23 @@ public class Attachments {
    * @param contribution the contribution to which the attachments has to be attached.
    */
   public void attachTo(final LocalizedContribution contribution) {
+    attachTo(contribution, contribution.getLanguage());
+  }
+
+  private void attachTo(final Contribution contribution, final String language) {
     if (CollectionUtil.isNotEmpty(this.uploadedFiles)) {
-      for (UploadedFile uploadedFile : this.uploadedFiles) {
+      List<UploadedFile> files = new ArrayList<>(this.uploadedFiles);
+      final ContributionIdentifier contributionId = contribution.getContributionId();
+      if (listFromYoungestToOldestAdd() && !getAttachmentService().
+          listDocumentsByForeignKeyAndType(new ResourceReference(contributionId.getLocalId(),
+              contributionId.getComponentInstanceId()), DocumentType.attachment, null)
+          .isManuallySorted()) {
+        Collections.reverse(files);
+      }
+      for (UploadedFile uploadedFile : files) {
         // Register attachment
-        uploadedFile.registerAttachment(contribution.getContributionId(),
-            contribution.getLanguage(), contribution.isIndexable());
+        uploadedFile.registerAttachment(contributionId, language,
+            contribution.isIndexable());
       }
     }
   }

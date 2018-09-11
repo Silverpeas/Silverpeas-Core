@@ -103,7 +103,7 @@ public class SimpleDocumentService
       ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
 
   @Override
-  public void deleteAllAttachments(final String componentInstanceId) throws AttachmentException {
+  public void deleteAllAttachments(final String componentInstanceId) {
     try (JcrSession session = openSystemSession()) {
       final String componentInstanceNodePath = '/' + componentInstanceId;
       if (session.nodeExists(componentInstanceNodePath)) {
@@ -235,7 +235,7 @@ public class SimpleDocumentService
   @Action(ActionType.CREATE)
   @Override
   public SimpleDocument createAttachment(@SourceObject @TargetPK SimpleDocument document,
-      InputStream content) throws AttachmentException {
+      InputStream content) {
     return createAttachment(document, content, true);
   }
 
@@ -374,8 +374,11 @@ public class SimpleDocumentService
   public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(ResourceReference foreignKey,
       String lang) {
     try (JcrSession session = openSystemSession()) {
-      return repository.listDocumentsByForeignId(session, foreignKey.getInstanceId(), foreignKey.
-          getId(), lang);
+      final SimpleDocumentList<SimpleDocument> documents = repository
+          .listDocumentsByForeignId(session, foreignKey.getInstanceId(), foreignKey.
+              getId(), lang);
+      documents.sortYoungestToOldestAddIfEnabled();
+      return documents;
     } catch (RepositoryException ex) {
       throw new AttachmentException(ex);
     }
@@ -571,15 +574,13 @@ public class SimpleDocumentService
    * @throws AttachmentException
    */
   @Override
-  public void reorderAttachments(List<SimpleDocumentPK> pks) throws AttachmentException {
+  public void reorderAttachments(List<SimpleDocumentPK> pks) {
     try (JcrSession session = openSystemSession()) {
-      int i = STEP;
+      final List<SimpleDocument> list = new ArrayList<>();
       for (SimpleDocumentPK pk : pks) {
-        SimpleDocument doc = repository.findDocumentById(session, pk, null);
-        doc.setOrder(i);
-        repository.setOrder(session, doc);
-        i += STEP;
+        list.add(repository.findDocumentById(session, pk, null));
       }
+      reorderDocuments(session, list);
       session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(ex);
@@ -592,17 +593,22 @@ public class SimpleDocumentService
    * @throws AttachmentException
    */
   @Override
-  public void reorderDocuments(List<SimpleDocument> documents) throws AttachmentException {
+  public void reorderDocuments(List<SimpleDocument> documents) {
     try (JcrSession session = openSystemSession()) {
-      int i = STEP;
-      for (SimpleDocument doc : documents) {
-        doc.setOrder(i);
-        repository.setOrder(session, doc);
-        i += STEP;
-      }
+      reorderDocuments(session, documents);
       session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(ex);
+    }
+  }
+
+  private void reorderDocuments(final JcrSession session, final List<SimpleDocument> documents)
+      throws RepositoryException {
+    int i = STEP;
+    for (SimpleDocument doc : documents) {
+      doc.setOrder(i);
+      repository.setOrder(session, doc);
+      i += STEP;
     }
   }
 
@@ -674,7 +680,7 @@ public class SimpleDocumentService
   @Action(ActionType.CREATE)
   @Override
   public SimpleDocument createAttachment(@SourceObject @TargetPK SimpleDocument document,
-      File content) throws AttachmentException {
+      File content) {
     return createAttachment(document, content, true);
   }
 
@@ -852,10 +858,10 @@ public class SimpleDocumentService
   @Override
   public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName,
       ResourceReference foreign, String lang) {
-    List<SimpleDocument> exisitingsDocuments = listDocumentsByForeignKey(foreign, lang);
+    List<SimpleDocument> existingDocuments = listDocumentsByForeignKey(foreign, lang);
     SimpleDocument document = searchDocumentById(pk, lang);
     if (document == null) {
-      for (SimpleDocument doc : exisitingsDocuments) {
+      for (SimpleDocument doc : existingDocuments) {
         if (doc.getFilename().equalsIgnoreCase(fileName)) {
           return doc;
         }
@@ -868,9 +874,11 @@ public class SimpleDocumentService
   public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(
       ResourceReference foreignKey, DocumentType type, String lang) {
     try (JcrSession session = openSystemSession()) {
-      return repository
+      final SimpleDocumentList<SimpleDocument> documents = repository
           .listDocumentsByForeignIdAndType(session, foreignKey.getInstanceId(), foreignKey.
               getId(), type, lang);
+      documents.sortYoungestToOldestAddIfEnabled();
+      return documents;
     } catch (RepositoryException ex) {
       throw new AttachmentException(ex);
     }
@@ -879,7 +887,10 @@ public class SimpleDocumentService
   @Override
   public List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language) {
     try (JcrSession session = openSystemSession()) {
-      return repository.listDocumentsLockedByUser(session, usedId, language);
+      final List<SimpleDocument> documents = repository
+          .listDocumentsLockedByUser(session, usedId, language);
+      documents.sort((o1, o2) -> o2.getUpdated().compareTo(o1.getUpdated()));
+      return documents;
     } catch (RepositoryException ex) {
       throw new AttachmentException(ex);
     }

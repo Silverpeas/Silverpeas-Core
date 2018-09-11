@@ -390,11 +390,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Path("moveUp")
   @Produces(MediaType.APPLICATION_JSON)
   public String moveSimpleDocumentUp() {
-    SimpleDocument document = getSimpleDocument(defaultLanguage);
-    List<SimpleDocument> docs = getListDocuments(document);
-    int position = docs.indexOf(document);
-    Collections.swap(docs, position, position - 1);
-    return reorderDocuments(docs);
+    return moveSimpleDocument(true);
   }
 
   /**
@@ -407,10 +403,14 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Path("moveDown")
   @Produces(MediaType.APPLICATION_JSON)
   public String moveSimpleDocumentDown() {
+    return moveSimpleDocument(false);
+  }
+
+  private String moveSimpleDocument(boolean up) {
     SimpleDocument document = getSimpleDocument(defaultLanguage);
     List<SimpleDocument> docs = getListDocuments(document);
     int position = docs.indexOf(document);
-    Collections.swap(docs, position, position + 1);
+    Collections.swap(docs, position, up ? (position - 1) : (position + 1));
     return reorderDocuments(docs);
   }
 

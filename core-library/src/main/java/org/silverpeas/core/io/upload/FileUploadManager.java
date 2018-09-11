@@ -28,8 +28,8 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,11 +43,15 @@ public class FileUploadManager {
 
   private static final String UPLOADED_FILE_PREFIX_ID = "uploaded-file";
 
+  private FileUploadManager() {
+    throw new IllegalStateException("Utility class");
+  }
+
   /**
    * Retrieves from {@link HttpServletRequest} a collection of {@link UploadedFile}
    */
   @SuppressWarnings("unchecked")
-  public static Collection<UploadedFile> getUploadedFiles(HttpServletRequest request,
+  public static List<UploadedFile> getUploadedFiles(HttpServletRequest request,
       final User uploader) {
     Map<String, String[]> parameters = null;
     if (request != null) {
@@ -60,9 +64,9 @@ public class FileUploadManager {
    * Retrieves from {@link HttpServletRequest} a collection of {@link UploadedFile}
    */
   @SuppressWarnings("unchecked")
-  public static Collection<UploadedFile> getUploadedFiles(Map<String, String[]> parameters,
+  public static List<UploadedFile> getUploadedFiles(Map<String, String[]> parameters,
       final User uploader) {
-    Collection<UploadedFile> uploadedFiles = new ArrayList<>();
+    List<UploadedFile> uploadedFiles = new ArrayList<>();
     if (parameters != null) {
       parameters.forEach((name, value) -> {
         if (name.startsWith(UPLOADED_FILE_PREFIX_ID)) {
