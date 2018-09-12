@@ -1391,7 +1391,7 @@ if (typeof window.sp === 'undefined') {
           for (var key in params) {
             var paramList = params[key];
             var typeOfParamList = typeof paramList;
-            if (!paramList && typeOfParamList !== 'boolean') {
+            if (!paramList && typeOfParamList !== 'number' && typeOfParamList !== 'boolean') {
               continue;
             }
             if (typeOfParamList !== 'object') {

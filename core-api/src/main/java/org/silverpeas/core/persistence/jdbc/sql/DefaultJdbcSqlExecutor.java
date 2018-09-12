@@ -32,6 +32,10 @@ import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -202,6 +206,10 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
         preparedStatement.setInt(paramIndex, (Integer) parameter);
       } else if (parameter instanceof Long) {
         preparedStatement.setLong(paramIndex, (Long) parameter);
+      } else if (parameter instanceof BigInteger) {
+        preparedStatement.setBigDecimal(paramIndex, new BigDecimal((BigInteger) parameter));
+      } else if (parameter instanceof BigDecimal) {
+        preparedStatement.setBigDecimal(paramIndex, (BigDecimal) parameter);
       } else if (parameter instanceof Timestamp) {
         preparedStatement.setTimestamp(paramIndex, (Timestamp) parameter);
       } else if (isADateTime(parameter)) {
@@ -210,6 +218,10 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
       } else if (isADate(parameter)) {
         preparedStatement.setDate(paramIndex,
             new java.sql.Date(toInstant(parameter).toEpochMilli()));
+      } else if (parameter instanceof Blob) {
+        preparedStatement.setBlob(paramIndex, (Blob) parameter);
+      } else if (parameter instanceof Clob) {
+        preparedStatement.setClob(paramIndex, (Clob) parameter);
       } else {
         try {
           Method idGetter = parameter.getClass().getDeclaredMethod("getId");
