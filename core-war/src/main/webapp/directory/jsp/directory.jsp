@@ -203,7 +203,7 @@
 
       $(document).ready(function() {
         <c:if test="${showHelp}">
-          showAutoHelp();
+          setTimeout(showAutoHelp, 0);
         </c:if>
 
         // hide all extra fields by default
