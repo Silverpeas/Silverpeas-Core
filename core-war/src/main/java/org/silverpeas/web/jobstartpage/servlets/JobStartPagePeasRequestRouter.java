@@ -63,6 +63,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
   private static final long serialVersionUID = 3751632991093466433L;
   private static final String WELCOME_SPACE_ADMIN_TEMPLATE_FILE = "/space/welcome_space_admin_";
   private static final String WELCOME_SPACE_MGR_TEMPLATE_FILE = "/space/welcome_space_manager_";
+  private static final String ATT_INHERITANCE = "IsInheritanceEnable";
 
   @Override
   public JobStartPagePeasSessionController createComponentSessionController(
@@ -518,22 +519,12 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       request.setAttribute("brothers", jobStartPageSC.getBrotherSpaces(true));
       request.setAttribute("isUserAdmin", jobStartPageSC.isUserAdmin());
       destination = "/jobStartPagePeas/jsp/createSpace.jsp";
-    } else if (function.equals("SetSpaceProfile")) {
-      if (request.getParameter("NameObject") != null
-          && request.getParameter("NameObject").length() > 0) {
-        jobStartPageSC.setCreateSpaceParameters(request.getParameter("NameObject"), request.
-            getParameter("Description"),
-            request.getParameter("SousEspace"), I18NHelper.getSelectedContentLanguage(
-                request),
-            request.getParameter("SelectedLook"),
-            request.getParameter("ComponentSpaceQuota"),
-            request.getParameter("DataStorageQuota"));
-      }
+    } else if (function.equals("EffectiveCreateSpace")) {
+      // Space CREATE action
+      SpaceInst newSpace = new SpaceInst();
+      request2SpaceInst(newSpace, jobStartPageSC, request);
 
-      destination = getDestinationSpace("EffectiveCreateSpace", jobStartPageSC, request);
-
-    } else if (function.equals("EffectiveCreateSpace")) { // Space CREATE action
-      String spaceId = jobStartPageSC.createSpace();
+      String spaceId = jobStartPageSC.createSpace(newSpace);
       if (spaceId != null && spaceId.length() > 0) {
         jobStartPageSC.setSpacePlace(request.getParameter("SpaceBefore"));
         refreshNavBar(jobStartPageSC, request);
@@ -552,7 +543,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
       request.setAttribute("Space", spaceint1);
       request.setAttribute("Translation", translation);
-      request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
       request.setAttribute("isUserAdmin", jobStartPageSC.isUserAdmin());
 
       destination = "/jobStartPagePeas/jsp/updateSpace.jsp";
@@ -615,9 +605,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       request.setAttribute("Role", role);
 
       if (SilverpeasRole.Manager == SilverpeasRole.from(role)) {
-        request.setAttribute("IsInheritanceEnable", true);
+        request.setAttribute(ATT_INHERITANCE, true);
       } else {
-        request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
+        request.setAttribute(ATT_INHERITANCE, JobStartPagePeasSettings.isInheritanceEnable);
       }
 
       destination = "/jobStartPagePeas/jsp/spaceManager.jsp";
@@ -644,7 +634,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       request.setAttribute("Space", spaceint1);
       request.setAttribute("SpaceLookHelper", jobStartPageSC.getSpaceLookHelper());
       request.setAttribute("SpaceExtraInfos", jobStartPageSC.getManagedSpace());
-      request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
+      request.setAttribute(ATT_INHERITANCE, JobStartPagePeasSettings.isInheritanceEnable);
 
       setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
 
@@ -740,7 +730,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         // courant
         request.setAttribute("isUserAdmin", jobStartPageSC.isUserAdmin());
         request.setAttribute("FirstPageType", spaceint1.getFirstPageType());
-        request.setAttribute("Description", spaceint1.getDescription());
         String spaceId = jobStartPageSC.getManagedSpaceId();
         request.setAttribute("currentSpaceId", spaceId);
         request.setAttribute("MaintenanceState", jobStartPageSC.getCurrentSpaceMaintenanceState());
@@ -751,7 +740,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         request.setAttribute("NameProfile", jobStartPageSC.getSpaceProfileName(spaceint1));
         request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
 
-        request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
+        request.setAttribute(ATT_INHERITANCE, JobStartPagePeasSettings.isInheritanceEnable);
 
         request.setAttribute("CopiedComponents", jobStartPageSC.getCopiedComponents());
 
@@ -781,7 +770,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
               getAllUsers()));
         }
         request.setAttribute("ProfileEditable", jobStartPageSC.isProfileEditable());
-        request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
+        request.setAttribute(ATT_INHERITANCE, JobStartPagePeasSettings.isInheritanceEnable);
 
         String profileHelp = jobStartPageSC.getManagedProfileHelp(compoint1.getName());
         request.setAttribute("ProfileHelp", profileHelp);
@@ -918,7 +907,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     request.setAttribute("JobPeas", waComponent.getLabel(language));
     request.setAttribute("Profiles", sessionController.getAllProfiles(componentInst));
     request.setAttribute("ComponentInst", componentInst);
-    request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
     request.setAttribute("Scope", sessionController.getScope());
     return "/jobStartPagePeas/jsp/updateInstance.jsp";
   }
@@ -954,7 +942,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     request.setAttribute("ComponentInst", componentInst);
     request.setAttribute("JobPeas", waComponent);
     request.setAttribute("Profiles", sessionController.getAllProfiles(componentInst));
-    request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
+    request.setAttribute(ATT_INHERITANCE, JobStartPagePeasSettings.isInheritanceEnable);
     request.setAttribute("MaintenanceState", sessionController.getCurrentSpaceMaintenanceState());
     request.setAttribute("Scope", sessionController.getScope());
   }

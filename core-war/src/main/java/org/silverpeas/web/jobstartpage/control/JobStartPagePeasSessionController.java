@@ -62,12 +62,10 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.util.memory.MemoryUnit;
 import org.silverpeas.core.web.look.SilverpeasLook;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -109,16 +107,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   String m_ManagedInstanceId = null;
   ProfileInst m_ManagedProfile = null;
   ProfileInst m_ManagedInheritedProfile = null;
-  // Space creation parameters
-  String m_ssEspace = "";
-  String m_name = "";
-  String m_desc = "";
-  String currentLanguage = "";
-  String m_look = null;
-  String m_componentSpaceQuotaMaxCount = "";
-  String m_dataStorageQuotaMaxCount = "";
-  // Order space / component b
-  boolean m_spaceFirst = true;
   // Space sort buffers
   SpaceInst[] m_BrothersSpaces = new SpaceInst[0];
   ComponentInst[] m_BrothersComponents = new ComponentInst[0];
@@ -140,10 +128,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   // Init at first entry
   public void init() {
     m_NavBarMgr.initWithUser(this, getUserDetail());
-  }
-
-  public boolean isInheritanceEnable() {
-    return JobStartPagePeasSettings.isInheritanceEnable;
   }
 
   public boolean isUserAdmin() {
@@ -413,85 +397,27 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return adminController.getSpaceInstById("WA" + idSpace);
   }
 
-  public void setCreateSpaceParameters(String name, String desc, String ssEspace,
-      String language, String look, String componentSpaceQuotaMaxCount,
-      String dataStorageQuotaMaxCount) {
-    m_ssEspace = ssEspace;
-    m_name = name;
-    m_desc = desc;
-    currentLanguage = language;
-    m_look = look;
-    m_componentSpaceQuotaMaxCount = componentSpaceQuotaMaxCount;
-    m_dataStorageQuotaMaxCount = dataStorageQuotaMaxCount;
-    // Only use global variable to set spacePosition
-    m_spaceFirst = !JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER.equalsIgnoreCase(
-        JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG);
-  }
-
-  public String createSpace() {
-    SpaceInst spaceInst = new SpaceInst();
-
-    if (m_desc == null) {
-      m_desc = "";
-    }
-
+  public String createSpace(SpaceInst newSpace) {
     SpaceInst spaceint1 = getSpaceInstById();
-    String fatherId = null;
-
-    if (m_ssEspace != null && m_ssEspace.equals("SousEspace")) { // on est en creation de
-      // sous-espace
-      String idSpace = spaceint1.getId();
-      if (idSpace != null) {
-        spaceInst.setDomainFatherId(idSpace);
-      }
-    } else {// on est en creation d'espace
+    if (spaceint1 != null) {
+      // on est en creation de sous-espace
+      newSpace.setDomainFatherId(spaceint1.getId());
+    }
+    newSpace.setCreatorUserId(getUserId());
+    String sSpaceInstId = addSpaceInst(newSpace);
+    if (StringUtil.isDefined(sSpaceInstId)) {
       if (spaceint1 != null) {
-        fatherId = spaceint1.getDomainFatherId();
-      }
-      if (fatherId != null && !fatherId.equals("0")) {// dans un espace
-        spaceInst.setDomainFatherId("WA" + fatherId);
-      }
-    }
-
-    // Component space quota
-    if (isUserAdmin() && JobStartPagePeasSettings.componentsInSpaceQuotaActivated && StringUtil.
-        isDefined(m_componentSpaceQuotaMaxCount)) {
-      try {
-        spaceInst.setComponentSpaceQuotaMaxCount(Integer.valueOf(m_componentSpaceQuotaMaxCount));
-      } catch (QuotaException qe) {
-        throw new QuotaRuntimeException(qe.getMessage(), qe);
-      }
-    }
-
-    // Data storage quota
-    if (isUserAdmin() && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated && StringUtil.
-        isDefined(m_dataStorageQuotaMaxCount)) {
-      try {
-        spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
-            Long.valueOf(m_dataStorageQuotaMaxCount), MemoryUnit.MB, MemoryUnit.B));
-      } catch (QuotaException qe) {
-        throw new QuotaRuntimeException(qe.getMessage(), qe);
-      }
-    }
-
-    spaceInst.setName(m_name);
-    spaceInst.setDescription(m_desc);
-    spaceInst.setLanguage(currentLanguage);
-    spaceInst.setCreatorUserId(getUserId());
-    String sSpaceInstId = addSpaceInst(spaceInst);
-    if (sSpaceInstId != null && sSpaceInstId.length() > 0) {
-      if (m_ssEspace != null && m_ssEspace.equals("SousEspace")) { // on est en creation de
-        // sous-espace
+        // on est en creation de sous-espace
         setSubSpaceId(sSpaceInstId);
-      } else {// on est en creation d'espace
-        if (fatherId != null && !fatherId.equals("0")) {// dans un espace
-          setSubSpaceId(sSpaceInstId);
-        } else {
-          setSpaceId(sSpaceInstId);
-        }
+      } else {
+        // on est en creation d'espace
+        setSpaceId(sSpaceInstId);
       }
     }
-    spaceInst.setDisplaySpaceFirst(m_spaceFirst);
+    // Only use global variable to set spacePosition
+    boolean spaceFirst = !JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER.equalsIgnoreCase(
+        JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG);
+    newSpace.setDisplaySpaceFirst(spaceFirst);
     return sSpaceInstId;
   }
 
@@ -1208,7 +1134,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       hostUrl = compoURL + "EffectiveCreateInstanceProfile";
     }
     selection.setGoBackURL(hostUrl);
-    //selection.setCancelURL(compoURL + "CancelCreateOrUpdateInstanceProfile");
     selection.setPopupMode(true);
     selection.setHtmlFormElementId("roleItems");
     selection.setHtmlFormName("dummy");
