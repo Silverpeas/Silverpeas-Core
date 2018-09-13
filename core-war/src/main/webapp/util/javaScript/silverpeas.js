@@ -1483,6 +1483,12 @@ if (typeof window.sp === 'undefined') {
         }
         return isInView;
       },
+      asVanillaOne : function(element) {
+        if (typeof element.appendChild === 'function') {
+          return element;
+        }
+        return jQuery(element)[0];
+      },
       querySelector: function(cssSelector, fromElement) {
         var from = typeof fromElement !== 'undefined' ? fromElement : document;
         return from.querySelector(cssSelector);
@@ -1900,6 +1906,11 @@ if (typeof window.sp === 'undefined') {
         fromBase64: function(contributionId) {
           return sp.contribution.id.from(sp.base64.decode(contributionId));
         }
+      }
+    },
+    component : {
+      extractNameFromInstanceId : function (componentInstanceId) {
+        return componentInstanceId.replace(/[0-9]+.*$/g, '');
       }
     }
   };
