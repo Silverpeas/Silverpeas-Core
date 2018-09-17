@@ -223,16 +223,21 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
       } else if (parameter instanceof Clob) {
         preparedStatement.setClob(paramIndex, (Clob) parameter);
       } else {
-        try {
-          Method idGetter = parameter.getClass().getDeclaredMethod("getId");
-          String id = (String) idGetter.invoke(parameter);
-          preparedStatement.setString(paramIndex, id);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-          throw new IllegalArgumentException(
-              "SQL parameter type not handled: " + parameter.getClass(), e);
-        }
+        setObjectIdentifier(preparedStatement, paramIndex, parameter);
       }
       paramIndex++;
+    }
+  }
+
+  private static void setObjectIdentifier(final PreparedStatement preparedStatement,
+      final int paramIndex, final Object parameter) throws SQLException {
+    try {
+      Method idGetter = parameter.getClass().getDeclaredMethod("getId");
+      String id = (String) idGetter.invoke(parameter);
+      preparedStatement.setString(paramIndex, id);
+    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+      throw new IllegalArgumentException(
+          "SQL parameter type not handled: " + parameter.getClass(), e);
     }
   }
 
