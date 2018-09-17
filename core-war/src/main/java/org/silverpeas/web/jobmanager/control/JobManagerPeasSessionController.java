@@ -91,10 +91,12 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     JobManagerService jTools;
 
     // initialisation des opérations du services jDesigner
-    JobManagerService jdp = new JobManagerService("11", "JDP", LEVEL_OPERATION, webContext
-        + getURL(CMP_JOBDOMAINPEAS, null, null) + "Main", null, false);
-    JobManagerService jspp = new JobManagerService("12", "JSPP", LEVEL_OPERATION, webContext
-        + getURL(CMP_JOBSTARTPAGEPEAS, null, null) + "Main", null, false);
+    JobManagerService jdp = new JobManagerService("11", "JDP", LEVEL_OPERATION,
+        webContext + getURL(CMP_JOBDOMAINPEAS, null, null) + "Main?ownBodyLayout=true", null,
+        false);
+    JobManagerService jspp = new JobManagerService("12", "JSPP", LEVEL_OPERATION,
+        webContext + getURL(CMP_JOBSTARTPAGEPEAS, null, null) + "Main?ownBodyLayout=true", null,
+        false);
     JobManagerService jsp = new JobManagerService("14", "JSP", LEVEL_OPERATION, webContext
         + getURL(CMP_JOBSEARCHPEAS, null, null) + "Main", null, false);
     // tools

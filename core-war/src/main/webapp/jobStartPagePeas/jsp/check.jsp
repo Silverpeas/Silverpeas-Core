@@ -31,52 +31,46 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
+<%@ page import="org.silverpeas.core.admin.component.model.ComponentInst"%>
 <%@ page import="org.silverpeas.core.admin.component.model.LocalizedGroupOfParameters"%>
 <%@ page import="org.silverpeas.core.admin.component.model.LocalizedOption"%>
 <%@ page import="org.silverpeas.core.admin.component.model.LocalizedParameter"%>
 <%@ page import="org.silverpeas.core.admin.component.model.WAComponent"%>
-<%@ page import="org.silverpeas.web.jobstartpage.AllComponentParameters"%>
 
 <%// En fonction de ce dont vous avez besoin %>
-<%@ page import="org.silverpeas.web.jobstartpage.DisplaySorted"%>
-<%@ page import="org.silverpeas.web.jobstartpage.JobStartPagePeasSettings"%>
-<%@ page import="org.silverpeas.web.jobstartpage.SpaceLookHelper"%>
-<%@ page import="org.silverpeas.web.jobstartpage.control.JobStartPagePeasSessionController"%>
-<%@ page import="org.silverpeas.core.util.URLUtil"%>
-<%@ page import="org.silverpeas.core.admin.component.model.ComponentInst"%>
-<%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
-<%@ page import="org.silverpeas.core.admin.user.model.Group"%>
-<%@ page import="org.silverpeas.core.admin.user.model.ProfileInst"%>
 <%@ page import="org.silverpeas.core.admin.space.SpaceInst"%>
-<%@ page import="org.silverpeas.core.admin.space.SpaceInstLight"%>
-<%@ page import="org.silverpeas.core.admin.space.SpaceProfileInst"%>
-
-<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
+<%@ page import="org.silverpeas.core.admin.user.model.ProfileInst"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText"%>
-
-
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
 
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
+
+
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
+<%@ page import="org.silverpeas.web.jobstartpage.AllComponentParameters"%>
+
+<%@ page import="org.silverpeas.web.jobstartpage.DisplaySorted"%>
+<%@ page import="org.silverpeas.web.jobstartpage.JobStartPagePeasSettings"%>
+<%@ page import="org.silverpeas.web.jobstartpage.SpaceLookHelper" %>
+<%@ page import="org.silverpeas.web.jobstartpage.control.JobStartPagePeasSessionController" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.util.Map" %>
 <%@ page import="java.util.Set" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
@@ -103,12 +97,8 @@ Board board = gef.getBoard();
 %>
 <%  if (haveToRefreshNavBar != null && haveToRefreshNavBar.booleanValue()) { %>
 <script type="text/javascript">
-if (window.name == "startPageContent") {
-    window.parent.startPageNavigation.location.href="jobStartPageNav";
-} else if (window.name == "IdleFrame") {
-	parent.frames["bottomFrame"].frames["startPageNavigation"].location.href="<%=m_context%>/RjobStartPagePeas/jsp/jobStartPageNav";
-} else {
-    window.opener.parent.startPageNavigation.location.href="jobStartPageNav";
-}
+  if (top.window.spAdminLayout) {
+    top.window.spAdminLayout.getBody().getNavigation().load('<%=m_context%>/RjobStartPagePeas/jsp/jobStartPageNav');
+  }
 </script>
 <% } %>

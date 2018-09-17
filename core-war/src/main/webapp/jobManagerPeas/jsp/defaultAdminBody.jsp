@@ -23,8 +23,6 @@
   --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ include file="check.jsp" %>
-
 <style type="text/css">
   #sp-admin-layout-body-part-layout {
     width: 100%;
@@ -48,10 +46,3 @@
   <div id="sp-admin-layout-body-part-layout-navigation-part"></div>
   <div id="sp-admin-layout-body-part-layout-content-part"></div>
 </div>
-<script type="text/javascript">
-  (function() {
-    spAdminLayout.getBody().ready(function() {
-      spAdminWindow.loadUserAndGroupHomepage();
-    });
-  })();
-</script>

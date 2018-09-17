@@ -24,6 +24,8 @@
 package org.silverpeas.core.webapi.admin;
 
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.admin.component.model.PersonalComponent;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.space.SpaceInst;
@@ -393,17 +395,20 @@ public class SpaceResource extends AbstractAdminResource {
 
       final Collection<AbstractPersonnalEntity> personals = new ArrayList<>();
 
+      if (getAll) {
+        PersonalComponent.getAll().stream()
+            .map(p -> PersonalComponentInstance.from(getUser(), p))
+            .map(this::asWebPersonalEntity)
+            .forEach(personals::add);
+      }
       if (getAll || getNotUsedComponents) {
-        personals.addAll(asWebPersonalEntities(PersonalComponentEntity.class,
-            getAdminPersonalDelegate().getNotUsedComponents()));
+        personals.addAll(asWebPersonalEntities(getAdminPersonalDelegate().getNotUsedComponents()));
       }
       if (getAll || getUsedComponents) {
-        personals.addAll(asWebPersonalEntities(PersonalComponentEntity.class,
-            getAdminPersonalDelegate().getUsedComponents()));
+        personals.addAll(asWebPersonalEntities(getAdminPersonalDelegate().getUsedComponents()));
       }
       if (getAll || getUsedTools) {
-        personals.addAll(asWebPersonalEntities(PersonalToolEntity.class,
-            getAdminPersonalDelegate().getUsedTools()));
+        personals.addAll(asWebPersonalEntities(getAdminPersonalDelegate().getUsedTools()));
       }
       return Response.ok(personals).build();
     } catch (final WebApplicationException ex) {

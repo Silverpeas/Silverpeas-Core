@@ -182,18 +182,23 @@
         __logDebug("queue execution end");
       };
     },
-    manualContentLoad : false
+    manualContentLoad : false,
+    lastNavigationEventData : {}
   };
   var __dispatchClickOn = function($link) {
-    if (__spWindowContext.queue.exists()) {
-      __spWindowContext.queue.push(function() {
+    return new Promise(function(resolve) {
+      if (__spWindowContext.queue.exists()) {
+        __spWindowContext.queue.push(function() {
+          __logDebug("click event on " + $link.href);
+          $link.click();
+          resolve();
+        });
+      } else {
         __logDebug("click event on " + $link.href);
         $link.click();
-      });
-    } else {
-      __logDebug("click event on " + $link.href);
-      $link.click();
-    }
+        resolve();
+      }
+    });
   };
 
   var __showProgressMessage = function(hidePromise) {
@@ -210,29 +215,36 @@
 
   var __loadBody = function(params) {
     if (__spWindowContext.queue.exists()) {
-      __spWindowContext.queue.push(function() {
-        __logDebug("load body with " + JSON.stringify(params));
-        spLayout.getBody().load(params)['catch'](__loadErrorListener);
+      return new Promise(function(resolve, reject) {
+        __spWindowContext.queue.push(function() {
+          __logDebug("load body with " + JSON.stringify(params));
+          spLayout.getBody().load(params).then(function() {
+            resolve();
+          })['catch'](function(request) {
+            __loadErrorListener(request);
+            reject();
+          });
+        });
       });
     } else {
       __logDebug("load body with " + JSON.stringify(params));
-      spLayout.getBody().load(params)['catch'](__loadErrorListener);
+      return spLayout.getBody().load(params)['catch'](__loadErrorListener);
     }
   };
 
   var __loadNavigation = function(params) {
     if (__spWindowContext.queue.exists()) {
-      var __deferred = sp.promise.deferred();
-      __spWindowContext.queue.push(function() {
-        __logDebug("load navigation with " + JSON.stringify(params));
-        spLayout.getBody().getNavigation().load(params).then(function(data) {
-          __deferred.resolve(data);
-        }, function(request) {
-          __loadErrorListener(request);
-          __deferred.reject(request);
+      return new Promise(function(resolve, reject) {
+        __spWindowContext.queue.push(function() {
+          __logDebug("load navigation with " + JSON.stringify(params));
+          spLayout.getBody().getNavigation().load(params).then(function(data) {
+            resolve(data);
+          }, function(request) {
+            __loadErrorListener(request);
+            reject(request);
+          });
         });
       });
-      return __deferred.promise;
     } else {
       __logDebug("load navigation with " + JSON.stringify(params));
       return spLayout.getBody().getNavigation().load(params)['catch'](__loadErrorListener);
@@ -280,10 +292,11 @@
     this.currentUser = currentUser;
 
     var __loadingWindowData = function(loadId, loadParams) {
-      var $link = __getNavigationLink(loadId);
-      if ($link) {
-        __dispatchClickOn($link);
-        return;
+      if (!loadParams.navigationMustBeReloaded) {
+        var $link = __getNavigationLink(loadId);
+        if ($link) {
+          return __dispatchClickOn($link);
+        }
       }
       __showProgressMessage();
       var personalComponent = personalSpaceManager.getByComponentId(loadId);
@@ -292,10 +305,55 @@
         __loadContent(personalContentUrl);
         return spWindow.loadPersonalSpace({
           loadOnlyNavigation : true,
-          componentId : personalComponent.id
+          componentId : personalComponent.id,
+          navigationMustBeReloaded : loadParams.navigationMustBeReloaded
         });
       }
       return __loadBody(loadParams);
+    };
+
+    var __navigationListener = function(event) {
+      __spWindowContext.lastNavigationEventData = event.detail.data;
+    };
+    spLayout.getBody().getNavigation().addEventListener('load', __navigationListener, '__id__sp-window');
+    spLayout.getBody().getNavigation().addEventListener('changeselected', __navigationListener, '__id__sp-window');
+
+    this.reloadLastComponentOrSpaceAccessed = function(navigationMustBeReloaded) {
+      var spaceId = __spWindowContext.lastNavigationEventData.currentSpaceId;
+      var componentId = __spWindowContext.lastNavigationEventData.currentComponentId;
+      var isPersonalSpace = __spWindowContext.lastNavigationEventData.isPersonalSpace;
+      var params = {navigationMustBeReloaded : navigationMustBeReloaded};
+      if (componentId) {
+        return this.loadComponent(componentId, params);
+      } else if (spaceId) {
+        return this.loadSpace(spaceId, params);
+      } else if (isPersonalSpace) {
+        return this.loadPersonalSpace(params);
+      }
+      return spWindow.loadHomePage(params);
+    };
+
+    this.loadAdminHomePage = function() {
+      __logDebug("Loading admin homepage");
+      spLayout.getSplash().load(webContext + '/RjobManagerPeas/jsp/Main');
+    };
+
+    this.leaveAdmin = function(options) {
+      options = extendsObject({
+        'fromSpaceId' : undefined,
+        'fromComponentId' : undefined
+      }, options);
+      __logDebug("Leaving admin " + JSON.stringify(options));
+      if (options.fromSpaceId || options.fromComponentId) {
+        __spWindowContext.lastNavigationEventData = {
+          currentSpaceId : options.fromSpaceId,
+          currentComponentId : options.fromComponentId,
+          isPersonalSpace : false
+        }
+      }
+      spWindow.reloadLastComponentOrSpaceAccessed(true).then(function() {
+        spLayout.getSplash().close();
+      });
     };
 
     this.loadHomePage = function(params) {
@@ -308,16 +366,16 @@
 
     this.loadPersonalSpace = function(params) {
       var options = extendsObject({
+        navigationMustBeReloaded : false,
         loadOnlyNavigation : undefined,
         componentId : undefined
       }, params);
       if (options.loadOnlyNavigation) {
         __logDebug("Loading personal space navigation");
-        if (options.componentId) {
+        if (options.componentId && !options.navigationMustBeReloaded) {
           var $link = __getNavigationLink(options.componentId);
           if ($link) {
-            __dispatchClickOn($link);
-            return;
+            return __dispatchClickOn($link);
           }
         }
         __showProgressMessage();
@@ -333,18 +391,20 @@
       });
     };
 
-    this.loadSpace = function(spaceId) {
+    this.loadSpace = function(spaceId, options) {
       __logDebug("Loading space " + spaceId);
-      return __loadingWindowData(spaceId, {
+      var loadParams = extendsObject({}, options, {
         "SpaceId" : spaceId
       });
+      return __loadingWindowData(spaceId, loadParams);
     };
 
-    this.loadComponent = function(componentId) {
+    this.loadComponent = function(componentId, options) {
       __logDebug("Loading component " + componentId);
-      return __loadingWindowData(componentId, {
+      var loadParams = extendsObject({}, options, {
         "ComponentId" : componentId
       });
+      return __loadingWindowData(componentId, loadParams);
     };
 
     this.loadContent = function(url) {
@@ -359,6 +419,7 @@
      * @returns {*}
      */
     this.loadPermalink = function(permalink) {
+      spLayout.getSplash().close();
       var serverReplace = new RegExp('^.+' + webContext, 'g');
       var normalizedPermalink = permalink.replace(serverReplace, webContext);
       var focusMatch = /#([^?]+)/g.exec(normalizedPermalink);
@@ -403,8 +464,7 @@
             if (loadId) {
               var $link = __getNavigationLink(loadId);
               if ($link) {
-                __dispatchClickOn($link);
-                return;
+                return __dispatchClickOn($link);
               }
               if (personalSpace) {
                 spWindow.loadPersonalSpace({
@@ -474,11 +534,11 @@
      * Go to space administration (back office side)
      */
     this.setupSpace = function(spaceId) {
-      window.top.location = webContext + "/RjobManagerPeas/jsp/Main?SpaceId=" + spaceId;
+      spLayout.getSplash().load(webContext + "/RjobManagerPeas/jsp/Main?SpaceId=" + spaceId)['catch'](__loadErrorListener);
     };
 
     this.setupComponent = function(componentId) {
-      spLayout.getBody().getContent().load(
+      spLayout.getSplash().load(
           webContext + "/RjobStartPagePeas/jsp/SetupComponent?ComponentId=" + componentId)['catch'](__loadErrorListener);
     };
 
@@ -534,14 +594,16 @@
 
   /**
    * Logs debug messages.
-   * @param message
    * @private
    */
-  function __logDebug(message) {
+  function __logDebug() {
     if (__windowDebug) {
       var mainDebugStatus = sp.log.debugActivated;
       sp.log.debugActivated = true;
-      sp.log.debug("Window - " + message);
+      var messages = [];
+      Array.prototype.push.apply(messages, arguments);
+      messages.splice(0, 0, "Window -");
+      sp.log.debug.apply(this, messages);
       sp.log.debugActivated = mainDebugStatus;
     }
   }

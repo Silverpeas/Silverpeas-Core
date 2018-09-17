@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.web.look.LookHelper" %><%--
   ~ Copyright (C) 2000 - 2018 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
@@ -23,37 +23,39 @@
   --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-
-<fmt:setLocale value="${requestScope.resources.language}"/>
-<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
-
-<c:set var="navigationURL" value="jobStartPageNav"/>
-<c:set var="spaceId" value="${requestScope.SpaceId}"/>
-<c:if test="${silfn:isDefined(spaceId)}">
-  <c:set var="navigationURL" value="GoToSpace?Espace=${spaceId}"/>
-</c:if>
-
 <%@ include file="check.jsp" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title><fmt:message key="GML.popupTitle"/></title>
-  <script type="text/javascript">
-    function jumpToSpace(spaceId) {
-      window.startPageNavigation.location.href = "GoToSubSpace?SubSpace=" + spaceId;
-    }
-    function jumpToComponent(componentId) {
-      window.startPageContent.location.href = "GoToComponent?ComponentId=" + componentId;
-    }
-  </script>
-</head>
-  <frameset cols="200,*" border="0" framespacing="5" frameborder="NO">
-    <frame src="${navigationURL}" marginwidth="0" marginheight="10" name="startPageNavigation" frameborder="0" scrolling="AUTO">
-    <frame src="welcome" name="startPageContent" marginwidth="10" marginheight="10" frameborder="0" scrolling="AUTO">
-  </frameset>
-</html>
+<%
+  LookHelper helper = LookHelper.getLookHelper(session);
+  String navigationWidth = helper.getSettings("domainsBarFramesetWidth", "255") + "px";
+%>
+
+<style type="text/css">
+  #sp-admin-layout-body-part-layout {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+  }
+
+  #sp-admin-layout-body-part-layout-navigation-part {
+    position: relative;
+    overflow: auto;
+    width: <%=navigationWidth%>;
+  }
+
+  #sp-admin-layout-body-part-layout-content-part {
+    flex: 1;
+    height: 100%;
+  }
+</style>
+<div id="sp-admin-layout-body-part-layout">
+  <div id="sp-admin-layout-body-part-layout-navigation-part"></div>
+  <div id="sp-admin-layout-body-part-layout-content-part"></div>
+</div>
+<script type="text/javascript">
+  (function() {
+    spAdminLayout.getBody().ready(function() {
+      spAdminWindow.loadSpaceAndComponentHomepage();
+    });
+  })();
+</script>

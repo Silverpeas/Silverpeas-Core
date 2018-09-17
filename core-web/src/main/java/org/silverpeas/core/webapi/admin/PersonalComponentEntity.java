@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.webapi.admin;
 
+import org.silverpeas.core.admin.component.model.SilverpeasComponent;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.util.URLUtil;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 
 /**
  * The personal component entity.
@@ -43,12 +43,28 @@ public class PersonalComponentEntity extends AbstractPersonnalEntity {
 
   private static final long serialVersionUID = -8503056197679476051L;
 
+  private PersonalComponentEntity(final SilverpeasComponent component, final String componentLabel,
+      final String language) {
+    super(TYPE, "", 0, component.getName(), componentLabel, component.getDescription()
+        .get(language), "");
+  }
+
+  private PersonalComponentEntity(final SilverpeasComponentInstance component) {
+    super(TYPE, component.getId(), 0, component.getName(), component.getLabel(), component
+        .getDescription(), URLUtil.getURL(component.getName(), null, component.getId()) +
+        "Main");
+  }
+
+  protected PersonalComponentEntity() {
+    // Nothing to do (Tests)
+  }
+
   /**
    * Creates a new personal component entity from the specified WAComponent.
    * @param component the tool to entitify.
    * @return new personal component entity
    */
-  public static PersonalComponentEntity createFrom(final WAComponent component,
+  public static PersonalComponentEntity createFrom(final SilverpeasComponent component,
       final String componentLabel, final String language) {
     return new PersonalComponentEntity(component, componentLabel, language);
   }
@@ -58,7 +74,7 @@ public class PersonalComponentEntity extends AbstractPersonnalEntity {
    * @param component the tool to entitify.
    * @return new personal component entity
    */
-  public static PersonalComponentEntity createFrom(final ComponentInst component) {
+  public static PersonalComponentEntity createFrom(final SilverpeasComponentInstance component) {
     return new PersonalComponentEntity(component);
   }
 
@@ -69,21 +85,5 @@ public class PersonalComponentEntity extends AbstractPersonnalEntity {
   @Override
   protected String getUriIdentifier() {
     return getName();
-  }
-
-  private PersonalComponentEntity(final WAComponent component, final String componentLabel,
-      final String language) {
-    super(TYPE, "", 0, component.getName(), componentLabel, component.getDescription()
-        .get(language), "");
-  }
-
-  private PersonalComponentEntity(final ComponentInst component) {
-    super(TYPE, component.getId(), 0, component.getName(), component.getLabel(), component
-        .getDescription(), URLUtil.getURL(component.getName(), null, component.getId()) +
-        "Main");
-  }
-
-  protected PersonalComponentEntity() {
-    // Nothing to do (Tests)
   }
 }

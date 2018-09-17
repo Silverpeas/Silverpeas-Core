@@ -25,6 +25,8 @@ package org.silverpeas.core.webapi.admin;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.SilverpeasComponent;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
@@ -133,7 +135,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
   @SuppressWarnings("unchecked")
   protected <T, E extends AbstractTypeEntity> Collection<E> asWebEntities(
       final Class<E> entityClass, final Collection<T> data, final boolean forceGettingFavorite) {
-    final Collection<E> entities = new ArrayList<E>(data.size());
+    final Collection<E> entities = new ArrayList<>(data.size());
     for (final Object object : data) {
       if (object instanceof SpaceInstLight) {
         entities.add((E) asWebEntity((SpaceInstLight) object, forceGettingFavorite));
@@ -148,19 +150,18 @@ public abstract class AbstractAdminResource extends RESTWebService {
 
   /**
    * Converts the given list of data into their corresponding web entities.
-   * @param entityClass the entity class returned.
    * @param data data to convert.
    * @return an array with the corresponding web entities.
    */
   @SuppressWarnings("unchecked")
   protected <T, E extends AbstractTypeEntity> Collection<E> asWebPersonalEntities(
-      final Class<E> entityClass, final Collection<T> data) {
-    final Collection<E> entities = new ArrayList<E>(data.size());
+      final Collection<T> data) {
+    final Collection<E> entities = new ArrayList<>(data.size());
     for (final Object object : data) {
       if (object instanceof WAComponent) {
-        entities.add((E) asWebPersonalEntity((WAComponent) object));
+        entities.add((E) asWebPersonalEntity((SilverpeasComponent) object));
       } else if (object instanceof ComponentInst) {
-        entities.add((E) asWebPersonalEntity((ComponentInst) object));
+        entities.add((E) asWebPersonalEntity((SilverpeasComponentInstance) object));
       } else if (object instanceof AbstractTool) {
         entities.add((E) asWebPersonalEntity((AbstractTool) object));
       } else {
@@ -221,7 +222,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * @param component the personal component to convert.
    * @return the corresponding personal component entity.
    */
-  protected PersonalComponentEntity asWebPersonalEntity(final WAComponent component) {
+  protected PersonalComponentEntity asWebPersonalEntity(final SilverpeasComponent component) {
     checkNotFoundStatus(component);
     return PersonalComponentEntity
         .createFrom(component, getAdminPersonalDelegate().getComponentLabel(component),
@@ -234,7 +235,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * @param component the personal component to convert.
    * @return the corresponding personal component entity.
    */
-  protected PersonalComponentEntity asWebPersonalEntity(final ComponentInst component) {
+  protected PersonalComponentEntity asWebPersonalEntity(final SilverpeasComponentInstance component) {
     checkNotFoundStatus(component);
     return PersonalComponentEntity.createFrom(component)
         .withUriBase(getUri().getBaseUri());

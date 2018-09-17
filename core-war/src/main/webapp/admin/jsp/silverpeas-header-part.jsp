@@ -228,7 +228,7 @@ window.USERNOTIFICATION_PROMISE.then(function() {
        <table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 		<td>
-                <a href="<%=m_sContext + URLUtil.getURL(URLUtil.CMP_JOBMANAGERPEAS, null, null)%>Main" target="_top"><%=helper.getString("lookSilverpeasV5.backOffice")%></a>
+                <a href="javascript:void(0)" onclick="spWindow.loadAdminHomePage();"><%=helper.getString("lookSilverpeasV5.backOffice")%></a>
                 </td>
             </tr>
         </table>

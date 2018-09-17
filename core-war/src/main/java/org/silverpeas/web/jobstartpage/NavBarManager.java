@@ -377,7 +377,7 @@ public class NavBarManager {
         StringBuilder spacesSpaces = new StringBuilder();
 
         objType = (space.id.equals(m_CurrentSubSpaceId)) ? SPACE_EXPANDED : SPACE_COLLAPSE;
-        link = "GoToSubSpace?SubSpace=" + space.id;
+        link = "javascript:onclick=jumpToSubSpace('" + space.id + "');";
         if (m_SessionCtrl.isSpaceInMaintenance(space.id)) {
           spaceName = space.name + " (M)";
         } else {
@@ -386,8 +386,9 @@ public class NavBarManager {
         for (int i = 0; i < space.deep - 1; i++) {
           spacesSpaces.append("&nbsp;&nbsp;");
         }
-        space.htmlLine = spacesSpaces.toString() + "<a name=\"" + space.id + "\"/>" +
-            urlFactory(link, "space" + space.id, "", spaceName, SPACE, objType, m_sContext, "");
+        space.htmlLine =
+            spacesSpaces.toString() + "<a id=\"navSpace" + space.id + "\" name=\"" + space.id + "\"/>" +
+                urlFactory(link, "space" + space.id, "", spaceName, SPACE, objType, m_sContext, "");
       } else {
         StringBuilder sb = new StringBuilder();
         sb.append("<option ");
@@ -442,7 +443,7 @@ public class NavBarManager {
       if (ds.isVisible) {
         // Build HTML Line
         String label = ds.name;
-        String link = "GoToComponent?ComponentId=" + ci.getId();
+        String link = "javascript:onclick=jumpToComponent('" + ci.getId() + "');";
         final int objType;
         if (subSpaces) {
           if (componentInstIterator.hasNext()) {
@@ -463,7 +464,7 @@ public class NavBarManager {
         }
         ds.htmlLine = componentsSpaces.toString() +
             urlFactory(link, "element" + m_elmtCounter++, componentIcon, label, COMPONENT,
-                objType, m_sContext, "startPageContent");
+                objType, m_sContext, "");
       } else {
         ds.htmlLine = "";
       }

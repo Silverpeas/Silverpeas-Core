@@ -156,6 +156,15 @@ var currentLanguage = "<%=compoInst.getLanguage()%>";
 	}
 %>
 
+function viewFrontEndComponent() {
+  var $w = window;
+  if (!$w.spWindow) {
+    $w = window.opener;
+    window.close();
+  }
+  $w.top.window.spWindow.leaveAdmin({fromComponentId : '<%=compoInst.getId()%>'});
+}
+
 function showTranslation(lang) {
 	<%=I18NHelper.updateHTMLLinks(compoInst)%>
 	$(".title-principal").html(eval("name_"+lang));
@@ -220,7 +229,7 @@ out.println(tabbedPane.print());
           </div>
         <% } else { %>
           <div id="goToApplication">
-            <a class="navigation-button sp-permalink" href="<%=compoInst.getPermalink() %>"><span><%=resource.getString("JSPP.application.go")%></span></a>
+            <a class="navigation-button" href="javascript:onclick=viewFrontEndComponent()"><span><%=resource.getString("JSPP.application.go")%></span></a>
           </div>
         <% } %>
       <% } %>

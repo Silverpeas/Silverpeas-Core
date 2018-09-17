@@ -24,6 +24,7 @@
 package org.silverpeas.core.webapi.admin.delegate;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponent;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -66,7 +67,7 @@ public class AdminPersonalWebDelegate {
    * @param component
    * @return the component label
    */
-  public String getComponentLabel(final WAComponent component) {
+  public String getComponentLabel(final SilverpeasComponent component) {
     String label = getLookDelegate().getHelper()
         .getString("lookSilverpeasV5.personalSpace." + component.getName());
     if (!StringUtil.isDefined(label)) {

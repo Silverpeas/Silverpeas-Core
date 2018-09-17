@@ -28,7 +28,6 @@ var currentRootSpaceId = "-1";
 var currentComponentId = "";
 var currentAxisId = "-1";
 var currentValuePath = "-1";
-var displayMySpace = "off";
 var displayComponentIcons = false;
 
 var currentLook = "none";
@@ -53,14 +52,19 @@ function openMySpace(options) {
     itemIdToSelect : undefined
   }, options);
   var mySpaceContainer = document.querySelector("#spacePerso");
-  if (displayMySpace === "off") {
-    ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0', 'SpaceId=-10').then(function() {
+  var spaceContent = document.getElementById("contentSpace" + "spacePerso");
+  var displayMySpace = !spaceContent;
+  if (displayMySpace) {
+    var args = ['getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0', 'SpaceId=-10'];
+    if (options.itemIdToSelect) {
+      args.push('ComponentId=' + options.itemIdToSelect);
+    }
+    ajaxEngine.sendRequest.apply(this, args).then(function() {
       if (options.itemIdToSelect) {
         __selectComponentItem(options.itemIdToSelect);
       }
       refreshPDCFrame();
     });
-    displayMySpace = "on";
     var timeElapsedSinceContentStartLoadInMs = new Date().getTime() - spLayout.getBody().getContent().getLastStartLoadTime();
     var isContentLoadedManually = timeElapsedSinceContentStartLoadInMs < 2000;
     if (!isContentLoadedManually) {
@@ -92,13 +96,10 @@ function openMySpace(options) {
     mySpaceContainer.classList.add("spaceLevelPersoOn");
   }
   else {
-    var spaceContent = document.getElementById("contentSpace" + "spacePerso");
     var space = spaceContent.parentNode;
     space.removeChild(spaceContent);
     mySpaceContainer.classList.add("spaceLevelPerso");
     mySpaceContainer.classList.remove("spaceLevelPersoOn");
-
-    displayMySpace = "off";
   }
 }
 
@@ -1372,7 +1373,7 @@ var AjaxEngine = function() {
     }
 
     // Allow for backwards Compatibility
-    if (arguments.length >= 2 && typeof arguments[1] == 'string') {
+    if (arguments.length >= 2 && typeof arguments[1] === 'string') {
       options = {parameters : _createQueryString(arguments, 1)};
     }
 
@@ -1429,12 +1430,13 @@ whenSilverpeasReady(function() {
   displayPDCFrame(getSpaceIdToInit(), getComponentIdToInit());
 
   var __scrollListener = function() {
-    var $activeComponentItem = currentComponentId && document.getElementById(currentComponentId);
-    if ($activeComponentItem) {
-      var $view = spLayout.getBody().getNavigation().getContainer();
-      if (!sp.element.isInView($activeComponentItem, true, $view)) {
-        sp.element.scrollTo($activeComponentItem, $view);
-      }
+    var $activeItem = currentComponentId && document.getElementById(currentComponentId);
+    if (!$activeItem) {
+      $activeItem = currentSpaceId && document.getElementById(currentSpaceId);
+      $activeItem = $activeItem ? sp.element.querySelector('.spaceURL', $activeItem) : $activeItem;
+    }
+    if ($activeItem) {
+      sp.element.scrollToIfNotFullyInView($activeItem, spLayout.getBody().getNavigation().getContainer());
     }
   };
   spLayout.getBody().getContent().addEventListener('load', __scrollListener, '__id__navigation-part');

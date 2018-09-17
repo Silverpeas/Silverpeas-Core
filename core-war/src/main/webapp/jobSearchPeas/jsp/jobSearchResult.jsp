@@ -111,7 +111,7 @@ function openComponent(componentId) {
 }
 
 function openPublication(permalink) {
-  window.location.href = permalink;
+  top.window.spWindow.loadPermalink(permalink);
 }
 
 function openGroup(groupId) {

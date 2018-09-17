@@ -149,7 +149,7 @@ function ConfirmAndSend(textToDisplay,groupId)
 
   <c:if test="${reloadDomainNavigationFrame}">
   whenSilverpeasReady(function() {
-    parent.domainBar.refreshCurrentLevel();
+    parent.refreshCurrentLevel();
   });
   </c:if>
 

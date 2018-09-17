@@ -494,9 +494,9 @@ Definition des class de style Silverpeas
 	display:none;
 }
 
-#topBarManager {
-	background-repeat:none;
-	background-position:top right;
+#sp-admin-layout-header-part {
+  background-repeat: none;
+  background-position: top right;
 }
 
 .sp_menuAdmin{
@@ -548,7 +548,7 @@ Definition des class de style Silverpeas
 	display:inline-block;
 }
 
-#topBarManager .sp_back_front{
+#sp-admin-layout-header-part .sp_back_front{
 	background:#f7f7f7 url(../../util/icons/back.png) 1em  1.25em no-repeat;
     line-height: 16px;
     padding: 1.25em 1em 1.25em 3.5em;
@@ -561,26 +561,32 @@ Definition des class de style Silverpeas
 	border-left: 1px solid #ccc;
 }
 
-.domainNavigation,
-#admin-treeview {
+#sp-admin-layout-body-part-layout-navigation-part,
+#sp-admin-layout-body-part-layout-navigation-part {
 	padding:1em 0 1em 0.5em;
 }
 
-.domainNavigation .domains-label,
-#admin-treeview .treeview-label {
+#sp-admin-layout-body-part-layout-navigation-part .domains-label,
+#sp-admin-layout-body-part-layout-navigation-part .treeview-label {
 	padding:0em 0.25em 1em 0.25em;
 	display:inline-block;
 }
-.domainNavigation .domainsNamesForm{
+#sp-admin-layout-body-part-layout-navigation-part .domainsNamesForm{
 	padding:1em 0.25em;
 }
 
 .treeview_selectSpace{
 	padding:1em 0.25em 0.25em;
 }
+.treeview_selectSpace select{
+	width: 90% !important;
+}
 .treeview_contentSpace{
 	padding:0.25em 0.25em 1em;
 	white-space: nowrap;
+}
+.domain-group-list{
+	padding:0.25em 0.25em 1em;
 }
 
 #admin-component, .page_content_admin , .admin-users{
@@ -719,12 +725,35 @@ Style Utilise par le ViewGenerator
   display: none;
 }
 
-.sp-layout-part-on-foreground {
+.sp-layout-part-on-foreground,
+.sp-admin-layout-part-on-foreground {
   z-index:3000;
 }
 
-.sp-layout-part-on-top-element-drag {
+.sp-layout-part-on-top-element-drag,
+.sp-admin-layout-part-on-top-element-drag {
   pointer-events: none;
+}
+
+#sp-layout-splash-content-url-part {
+  z-index: 1502;
+  background-color: #FFF;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.sp-layout-splash-content-url-part-overlay {
+  z-index: 1501;
+  opacity: 0.5;
+  background-color: #666;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 /****************************************/
@@ -1431,7 +1460,7 @@ span.csv {
 }
 
 /*- [ admin ] --------------------------- */
-#admin-treeview  img{
+#sp-admin-layout-body-part-layout-navigation-part  img{
   border:none;
 }
 
