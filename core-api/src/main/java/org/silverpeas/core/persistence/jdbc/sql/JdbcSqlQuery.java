@@ -332,13 +332,17 @@ public class JdbcSqlQuery {
   }
 
   /**
-   * Orders the result of the query by the specified statement.
+   * Orders the result of the query by the specified statement. If the statement isn't defined,
+   * then no ordering will be done.
    * @param sqlPart the SQL part that contains the statement over which the result of the query
    * should be ordered.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery orderBy(String sqlPart) {
-    return addSqlPart("ORDER BY " + sqlPart);
+    if (StringUtil.isDefined(sqlPart)) {
+      return addSqlPart("ORDER BY " + sqlPart);
+    }
+    return this;
   }
 
   /**
