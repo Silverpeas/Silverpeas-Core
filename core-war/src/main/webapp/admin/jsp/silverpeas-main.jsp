@@ -130,7 +130,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title><%=generalMessage.getString("GML.popupTitle")%></title>
-  <link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
   <view:looknfeel/>
   <style type="text/css">
     body {
