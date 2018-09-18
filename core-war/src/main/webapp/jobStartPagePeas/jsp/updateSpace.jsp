@@ -33,10 +33,10 @@
 <%@ include file="check.jsp" %>
 
 <%
-  SpaceInst	space				= (SpaceInst) request.getAttribute("Space");
-String		translation 		= (String) request.getParameter("Translation");
-boolean 	isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
-boolean isUserAdmin = ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
+SpaceInst	space				= (SpaceInst) request.getAttribute("Space");
+String		translation 		= request.getParameter("Translation");
+boolean 	isInHeritanceEnable = JobStartPagePeasSettings.isInheritanceEnable;
+boolean isUserAdmin = (Boolean) request.getAttribute("isUserAdmin");
 
 // Component space quota
 boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
