@@ -23,29 +23,35 @@
  */
 package org.silverpeas.web.attachment;
 
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
-import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.io.upload.UploadSession;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
+import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
+import static org.silverpeas.core.i18n.I18NHelper.checkLanguage;
 import static org.silverpeas.core.importexport.control.RepositoriesTypeManager.handleFileToAttach;
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
-import static org.silverpeas.core.i18n.I18NHelper.checkLanguage;
 
 /**
  * Servlet used whith the drag and drop applet to import non-versioned documents.
@@ -81,9 +87,8 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
 
     final String versionType = req.getParameter("Type");
 
-
     final HttpRequest request = HttpRequest.decorate(req);
-    request.setCharacterEncoding(CharEncoding.UTF_8);
+    request.setCharacterEncoding(Charsets.UTF_8.name());
 
     final UserDetail currentUser = UserDetail.getCurrentRequester();
     final String userLanguage = currentUser.getUserPreferences().getLanguage();
@@ -111,17 +116,22 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       final File rootUploadFolder = uploadSession.getRootFolder();
       final Date creationDate = new Date();
 
-      for (final File file : FileUtils.listFiles(rootUploadFolder, FileFilterUtils.fileFileFilter(),
-          FileFilterUtils.trueFileFilter())) {
-
+      final List<File> files = new ArrayList<>(FileUtils
+          .listFiles(rootUploadFolder, FileFilterUtils.fileFileFilter(),
+              FileFilterUtils.trueFileFilter()));
+      if (listFromYoungestToOldestAdd() && !getAttachmentService().
+          listDocumentsByForeignKeyAndType(new ResourceReference(resourceId, componentId),
+              documentType, null).isManuallySorted()) {
+        Collections.reverse(files);
+      }
+      for (final File file : files) {
         handleFileToAttach(currentUser, componentId, resourceId, request.getParameter("DocumentId"),
             documentType, file, contentLanguage, creationDate, hasToBeIndexed,
             versionControlActivated, publicVersion);
 
       }
     } catch (Exception ex) {
-      SilverTrace.error(StringUtil.isNotDefined(versionType) ? "attachment" : "versioningPeas",
-          "DragAndDrop.doPost", "ERREUR", ex);
+      SilverLogger.getLogger(this).error(ex);
       SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, userLanguage);
       throw new ServletException(ex);
     } finally {

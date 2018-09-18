@@ -45,6 +45,15 @@ public class AttachmentSettings {
   }
 
   /**
+   * Indicates the order the methods in charge of returning list of documents must apply.
+   * @return false to list from oldest to youngest, true to list from the youngest to the oldest.
+   */
+  public static boolean listFromYoungestToOldestAdd() {
+    final int order = settings.getInteger("attachment.list.order", 1);
+    return order < 0;
+  }
+
+  /**
    * Indicates if metadata of a file, if any, can be used to fill data (title & description) of an
    * attachment. (defined in properties by attachment.data.fromMetadata)
    * @return true if they must be used, false otherwise.

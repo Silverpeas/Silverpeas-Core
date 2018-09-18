@@ -24,6 +24,7 @@
 package org.silverpeas.core.contribution.attachment.repository;
 
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -31,16 +32,15 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentVersion;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jcr.JcrRepositoryConnector;
 import org.silverpeas.core.persistence.jcr.JcrSession;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jcr.util.NodeIterable;
 import org.silverpeas.core.persistence.jcr.util.PropertyIterable;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
@@ -73,8 +73,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
+import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 /**
  *
@@ -110,7 +110,8 @@ public class DocumentRepository {
    */
   public SimpleDocumentPK createDocument(Session session, SimpleDocument document) throws
       RepositoryException {
-    SimpleDocument last = findLast(session, document.getInstanceId(), document.getForeignId());
+    final SimpleDocument last = findLast(session, document.getInstanceId(), document.getForeignId(),
+        document.getDocumentType());
     if ((null != last) && (0 >= document.getOrder())) {
       document.setOrder(last.getOrder() + 1);
     }
@@ -574,15 +575,17 @@ public class DocumentRepository {
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param foreignId the id of the container owning the documents.
+   * @param documentType the type of document.
    * @return the last document in an instance with the specified foreignId.
    * @throws RepositoryException
    */
-  public SimpleDocument findLast(Session session, String instanceId, String foreignId) throws
+  SimpleDocument findLast(Session session, String instanceId, String foreignId,
+      final DocumentType documentType) throws
       RepositoryException {
-    NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
-        DocumentType.attachment);
+    final NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
+        documentType);
     while (iter.hasNext()) {
-      Node node = iter.nextNode();
+      final Node node = iter.nextNode();
       if (!iter.hasNext()) {
         return converter.convertNode(node, I18NHelper.defaultLanguage);
       }
