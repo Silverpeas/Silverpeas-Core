@@ -157,29 +157,40 @@ public class MapTag extends TagSupport {
       result.append(spaceHref).append(spaceInst.getName(language));
       result.append("</a>\n");
 
-      if (isMegaMenu() && !spaceInst.isRoot() && StringUtil.isDefined(spaceInst.getDescription(language))) {
-        result.append("<p class=\"megaMenu-spaceDescription\">"+spaceInst.getDescription(language)+"</p>");
+      result.append(getSpaceDescription(spaceInst, language));
+
+      String apps = printApps(space, showHiddenComponents);
+      String subspaces = printSubspaces(space, showHiddenComponents);
+
+      if (StringUtil.isDefined(apps) || StringUtil.isDefined(subspaces)) {
+        result.append("<ul class=\"" + megaMenuUL + "\">");
+
+        if (displayAppsFirst) {
+          // Get apps
+          result.append(apps);
+          result.append("<li class=\"clear\"></li>");
+        }
+
+        // Get sub spaces
+        result.append(subspaces);
+
+        if (!displayAppsFirst) {
+          // Get apps
+          result.append(apps);
+        }
+
+        result.append("</ul>\n");
       }
-
-      result.append("<ul class=\""+megaMenuUL+"\">");
-
-      if (displayAppsFirst) {
-        // Get apps
-        result.append(printApps(space, showHiddenComponents));
-        result.append("<li class=\"clear\"></li>");
-      }
-
-      // Get sub spaces
-      result.append(printSubspaces(space, showHiddenComponents));
-
-      if (!displayAppsFirst) {
-        // Get apps
-        result.append(printApps(space, showHiddenComponents));
-      }
-
-      result.append("</ul>\n");
     }
     return result.toString();
+  }
+
+  private String getSpaceDescription(SpaceInstLight spaceInst, String language) {
+    if (isMegaMenu() && !spaceInst.isRoot() &&
+        StringUtil.isDefined(spaceInst.getDescription(language))) {
+      return "<p class=\"megaMenu-spaceDescription\">"+spaceInst.getDescription(language)+"</p>";
+    }
+    return "";
   }
 
   private String getSpaceHREF(SpaceInstLight spaceInst) {
