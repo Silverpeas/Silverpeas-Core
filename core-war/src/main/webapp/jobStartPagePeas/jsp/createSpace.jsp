@@ -32,17 +32,18 @@
 String 		m_SousEspace 		= (String) request.getAttribute("SousEspace");
 SpaceInst[] brothers 			= (SpaceInst[]) request.getAttribute("brothers");
 String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
-boolean isUserAdmin = ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
+boolean isUserAdmin = (Boolean)request.getAttribute("isUserAdmin");
 boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
 long    defaultDataStorageQuota = JobStartPagePeasSettings.dataStorageInSpaceQuotaDefaultMaxCount;
 boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated;
-
+boolean isInHeritanceEnable = JobStartPagePeasSettings.isInheritanceEnable;
 
 	browseBar.setSpaceId(spaceId);
-	if (m_SousEspace == null)
-		browseBar.setComponentName(resource.getString("JSPP.creationSpace"));
-	else
-		browseBar.setPath(resource.getString("JSPP.creationSubSpace"));
+	if (m_SousEspace == null) {
+    browseBar.setComponentName(resource.getString("JSPP.creationSpace"));
+  } else {
+    browseBar.setPath(resource.getString("JSPP.creationSubSpace"));
+  }
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -111,8 +112,7 @@ function ifCorrectFormExecute(callback) {
 </script>
 </head>
 <body onload="document.infoSpace.NameObject.focus();" class="page_content_admin">
-<form name="infoSpace" action="SetSpaceProfile" method="post">
-<input type="hidden" name="SousEspace" value="<%=m_SousEspace%>"/>
+<form name="infoSpace" action="EffectiveCreateSpace" method="post">
 
 <%
 out.println(window.printBefore());
@@ -128,7 +128,7 @@ out.println(board.printBefore());
 			</tr>
 			<tr>
 				<td class="txtlibform" valign="top"><%=resource.getString("GML.description")%> :</td>
-				<td><textarea name="Description" rows="4" cols="49"></textarea></td>
+				<td><textarea name="Description" rows="4" cols="60"></textarea></td>
 			</tr>
 			<tr>
 				<td class="txtlibform"><%=resource.getString("JSPP.SpacePlace")%> :</td>
@@ -155,7 +155,16 @@ out.println(board.printBefore());
           <td><input type="text" name="DataStorageQuota" size="9" maxlength="10" value="<%=defaultDataStorageQuota%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"> <%=resource.getString("JSPP.dataStorageQuotaHelp")%></td>
         </tr>
       <% } %>
-			<tr align=left>
+      <% if (isInHeritanceEnable && spaceId != null) { %>
+      <tr>
+        <td class="txtlibform" nowrap="nowrap" valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
+        <td align="left" valign="top" width="100%">
+          <input type="radio" name="InheritanceBlocked" value="true"/> <%=resource.getString("JSPP.inheritanceSpaceNotUsed")%><br/>
+          <input type="radio" name="InheritanceBlocked" value="false" checked="checked" /> <%=resource.getString("JSPP.inheritanceSpaceUsed")%>
+        </td>
+      </tr>
+      <% } %>
+			<tr align="left">
 				<td colspan="2"><img border="0" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%></td>
 			</tr>
 		</table>
@@ -166,7 +175,7 @@ out.println(board.printBefore());
 		ButtonPane buttonPane = gef.getButtonPane();
 		buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
 		buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:onclick=history.back()", false));
-		out.println("<br/><center>"+buttonPane.print()+"</center>");
+		out.println("<br/>"+buttonPane.print());
 
 		out.println(frame.printAfter());
 		out.println(window.printAfter());

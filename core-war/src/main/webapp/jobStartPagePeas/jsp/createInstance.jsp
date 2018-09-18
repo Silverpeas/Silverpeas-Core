@@ -129,6 +129,7 @@ WAComponent 	component 			= (WAComponent) request.getAttribute("WAComponent");
 AllComponentParameters 	parameters 			= (AllComponentParameters) request.getAttribute("Parameters");
 ComponentInst[] brothers 			= (ComponentInst[]) request.getAttribute("brothers");
 String 			spaceId				= (String) request.getAttribute("CurrentSpaceId");
+boolean isInHeritanceEnable = JobStartPagePeasSettings.isInheritanceEnable;
 
 String m_JobPeas = component.getLabel(resource.getLanguage());
 
@@ -269,6 +270,16 @@ out.println(window.printBefore());
         </select>
       </div>
     </li>
+
+    <% if (isInHeritanceEnable) { %>
+      <li class="field entireWidth">
+        <label class="txtlibform"><%=resource.getString("JSPP.inheritanceBlockedComponent") %></label>
+        <div class="champs">
+          <input class="radio" type="radio" name="InheritanceBlocked" value="true"/> <%=resource.getString("JSPP.inheritanceComponentNotUsed")%><br/>
+          <input class="radio newline" type="radio" name="InheritanceBlocked" value="false" checked="checked" /> <%=resource.getString("JSPP.inheritanceComponentUsed")%>
+        </div>
+      </li>
+    <% } %>
 
   </ul>
 </fieldset>

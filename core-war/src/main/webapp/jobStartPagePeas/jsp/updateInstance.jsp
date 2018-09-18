@@ -127,7 +127,7 @@ String 			m_JobPeas 			= (String) request.getAttribute("JobPeas");
 AllComponentParameters 	parameters 			= (AllComponentParameters) request.getAttribute("Parameters");
 List<ProfileInst> m_Profiles 		= (List<ProfileInst>) request.getAttribute("Profiles");
 String			translation 		= (String) request.getParameter("Translation");
-boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
+boolean 		isInHeritanceEnable = JobStartPagePeasSettings.isInheritanceEnable;
 int				scope				= ((Integer) request.getAttribute("Scope")).intValue();
 
 if (scope == JobStartPagePeasSessionController.SCOPE_FRONTOFFICE) {
