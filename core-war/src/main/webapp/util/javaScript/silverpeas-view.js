@@ -279,10 +279,13 @@
   ATTACHMENT VIEWER AS CONTENT
    */
 
+  var DISPLAY_AS_CONTENT_COMPONENT_NAMES = ViewSettings.get("dac.cns");
+
   window.AttachmentsAsContentViewer = function(options) {
     var __context = {
       options : extendsObject({
         domSelector : undefined,
+        parentContainer : undefined,
         componentInstanceId : undefined,
         resourceId : undefined,
         resourceType : undefined,
@@ -296,9 +299,21 @@
         enableSimpleText : true
       }, options)
     };
-    if (!__context.options.domSelector || !__context.options.componentInstanceId ||
-        !__context.options.resourceId || !__context.options.resourceType) {
-      sp.log.error("domSelector, componentInstanceId, resourceId or resourceType is missing");
+    if (!__context.options.componentInstanceId || !__context.options.resourceId ||
+        !__context.options.resourceType) {
+      sp.log.error("componentInstanceId ("+__context.options.componentInstanceId+"), resourceId ("+__context.options.resourceId+") or resourceType ("+__context.options.resourceType+") is missing");
+      return;
+    }
+    if (__context.options.parentContainer) {
+      __context.options.parentContainer = sp.element.asVanillaOne(__context.options.parentContainer);
+    } else if (!__context.options.domSelector) {
+      sp.log.error("domSelector or parentContainer is missing");
+      return;
+    }
+
+    var componentName = sp.component.extractNameFromInstanceId(__context.options.componentInstanceId);
+    if (!DISPLAY_AS_CONTENT_COMPONENT_NAMES.getElement(componentName)) {
+      sp.log.debug("Not activated for component name " + componentName);
       return;
     }
 
@@ -363,8 +378,14 @@
       });
       return $viewableContainer;
     };
-    whenSilverpeasReady(function() {
-      this.$rootContainer = document.querySelector(__context.options.domSelector);
+    var domInit = function() {
+      if (__context.options.parentContainer) {
+        this.$rootContainer = document.createElement('div');
+        this.$rootContainer.classList.add('attachments-as-content');
+        __context.options.parentContainer.appendChild(this.$rootContainer);
+      } else {
+        this.$rootContainer = document.querySelector(__context.options.domSelector);
+      }
       __initPromise.then(function(attachments) {
         attachments.forEach(function(attachment) {
           if (!attachment.displayAsContent) {
@@ -394,6 +415,11 @@
           }
         }.bind(this));
       }.bind(this));
-    });
+    };
+    if (!__context.options.parentContainer) {
+      whenSilverpeasReady(domInit);
+    } else {
+      domInit();
+    }
   }
 })(jQuery);

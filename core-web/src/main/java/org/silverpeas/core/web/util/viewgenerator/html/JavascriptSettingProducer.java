@@ -94,7 +94,7 @@ public class JavascriptSettingProducer {
    * @param valuesAreStrings indicates if the values must be registered as string.
    * @return itself.
    */
-  protected JavascriptSettingProducer add(String key, Stream<Object> values,
+  protected <T> JavascriptSettingProducer add(String key, Stream<T> values,
       boolean valuesAreStrings) {
     Stream<String> decodedValues = values.map(String::valueOf)
         .filter(StringUtil::isDefined)

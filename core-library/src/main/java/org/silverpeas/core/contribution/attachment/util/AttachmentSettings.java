@@ -63,6 +63,16 @@ public class AttachmentSettings {
   }
 
   /**
+   * Gets the stream of component name for which the the displaying as content is enabled.
+   * @return {@link Stream} of component name as {@link String}.
+   */
+  public static Stream<String> displayableAsContentComponentNames() {
+    return Stream
+        .of(settings.getString("attachmentsAsContent.component.names", StringUtil.EMPTY).split("[ ,;]"))
+        .map(String::trim);
+  }
+
+  /**
    * Indicates if the displaying as content is enabled for a component instance represented by
    * the given identifier.
    * @param componentInstanceId identifier of a component instance.
@@ -70,8 +80,7 @@ public class AttachmentSettings {
    */
   public static boolean isDisplayableAsContentForComponentInstanceId(
       final String componentInstanceId) {
-    return Stream
-        .of(settings.getString("attachmentsAsContent.component.names", StringUtil.EMPTY).split("[ ,;]"))
+    return displayableAsContentComponentNames()
         .map(c -> {
           final Optional<SilverpeasComponent> component = SilverpeasComponent.getByInstanceId(componentInstanceId);
           return component.isPresent() && component.get().getName().equalsIgnoreCase(c.trim());

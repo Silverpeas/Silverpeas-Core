@@ -55,6 +55,7 @@ import static java.util.Arrays.stream;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAsJson;
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.displayableAsContentComponentNames;
 import static org.silverpeas.core.html.SupportedWebPlugins.*;
 import static org.silverpeas.core.notification.user.UserNotificationServerEvent.getNbUnreadFor;
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings
@@ -589,6 +590,9 @@ public class JavascriptPluginInclusion {
   static ElementContainer includePreview(final ElementContainer xhtml) {
     includePopup(xhtml);
     includeEmbedPlayer(xhtml);
+    xhtml.addElement(scriptContent(settingVariableName("ViewSettings")
+        .add("dac.cns", displayableAsContentComponentNames(), true)
+        .produce()));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PREVIEW));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_VIEW));
     return xhtml;
