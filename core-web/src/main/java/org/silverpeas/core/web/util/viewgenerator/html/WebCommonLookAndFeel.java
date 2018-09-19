@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.apache.commons.lang3.CharEncoding;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -103,8 +103,12 @@ class WebCommonLookAndFeel {
     String silverpeasUrl = URLUtil.getFullApplicationURL(request);
     String contextPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     String charset =
-        ResourceLocator.getGeneralSettingBundle().getString("charset", CharEncoding.UTF_8);
+        ResourceLocator.getGeneralSettingBundle().getString("charset", Charsets.UTF_8.name());
     StringBuilder code = new StringBuilder();
+    code.append("<link rel=\"icon\" href=\"")
+        .append(getLookSettings(controller, spaceId).getString("favicon",
+            request.getContextPath() + "/util/icons/favicon.ico"))
+        .append("\"/>");
     code.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=");
     code.append(charset);
     code.append("\"/>\n");

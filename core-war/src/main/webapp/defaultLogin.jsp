@@ -57,7 +57,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title><fmt:message key="GML.popupTitle"/></title>
-  <link rel="SHORTCUT ICON" href='<c:url value="/util/icons/favicon.ico" />'/>
+  <link rel="icon" href="<%=favicon%>" />
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>

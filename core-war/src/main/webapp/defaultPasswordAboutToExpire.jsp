@@ -46,7 +46,7 @@
 <head>
   <title><%=generalMultilang.getString("GML.popupTitle")%>
   </title>
-  <link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
+  <link rel="icon" href="<%=favicon%>" />
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
   <view:includePlugin name="jquery"/>
