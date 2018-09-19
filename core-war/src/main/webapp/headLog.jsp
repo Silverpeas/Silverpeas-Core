@@ -63,6 +63,7 @@
 
   String logo = general.getString("logo", m_context + "/images/logo.jpg");
   String styleSheet = general.getString("defaultLoginStyleSheet", m_context + "/style.css");
+  String favicon = general.getString("loginPage.favicon", "util/icons/favicon.ico");
 
 // Is "forgotten password" feature active ?
   String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");
