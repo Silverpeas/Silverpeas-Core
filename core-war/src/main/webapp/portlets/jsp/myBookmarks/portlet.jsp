@@ -52,13 +52,15 @@ if (!links.hasNext()) {
 		if (link.isVisible()) {
 			String lien = link.getUrl();
 			String name = WebEncodeHelper.convertHTMLEntities(link.getName());
+			String linkClass = "";
 			if (!StringUtil.isDefined(name)) {
 				name = lien;
 			}
 
       // Add context before link if needed
-			if (lien.indexOf("://") == -1 && !lien.startsWith("/website")) {
+			if (!lien.contains("://") && !lien.startsWith("/website")) {
 				lien = URLUtil.getApplicationURL() + lien;
+			  linkClass = "sp-link";
 			}
 
 			String target = "_self";
@@ -66,7 +68,7 @@ if (!links.hasNext()) {
 				target = "_blank";
 			}
 			%>
-			<li><a class="sp-link" href="<%=lien%>" target="<%=target%>"><%=name%></a></li>
+			<li><a class="<%=linkClass%>" href="<%=lien%>" target="<%=target%>"><%=name%></a></li>
 			<%
 		}
 	}
