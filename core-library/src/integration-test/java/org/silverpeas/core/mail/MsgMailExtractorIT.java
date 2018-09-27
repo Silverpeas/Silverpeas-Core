@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.mail;
 
+import org.junit.After;
+import org.junit.Before;
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hsmf.MAPIMessage;
@@ -33,9 +35,11 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.contribution.converter.openoffice.OpenOfficeService;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.ByteArrayInputStream;
@@ -81,6 +85,18 @@ public class MsgMailExtractorIT {
               .addPackages(true, "org.silverpeas.core.mail")
               .addAsResource("org/silverpeas/core/mail/mailWithAttachments.msg");
         }).build();
+  }
+
+  @Before
+  public void startOpenOfficeService() throws Exception {
+    OpenOfficeService service = ServiceProvider.getService(OpenOfficeService.class);
+    service.init();
+  }
+
+  @After
+  public void stopOpenOfficeService() throws Exception {
+    OpenOfficeService service = ServiceProvider.getService(OpenOfficeService.class);
+    service.release();
   }
 
   /**
