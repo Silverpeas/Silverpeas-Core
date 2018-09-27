@@ -55,10 +55,10 @@ public interface DocumentFormatConversion {
    * DocumentFormatConversionException is thrown.
    * @param source the document to convert.
    * @param destination the converted document.
-   * @param inFormat the format into which the document has to be converted.
+   * @param outFormat the format into which the document has to be converted.
    * @return the destination file.
    */
-  File convert(File source, File destination, DocumentFormat inFormat, FilterOption... options);
+  File convert(File source, File destination, DocumentFormat outFormat, FilterOption... options);
 
   /**
    * Converts the specified inputstream/format in the specified outputstream/format.

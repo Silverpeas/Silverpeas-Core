@@ -24,7 +24,6 @@
 package org.silverpeas.core.contribution.converter;
 
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,9 +31,9 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import java.io.File;
 
-import static org.silverpeas.core.contribution.converter.DocumentFormat.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.silverpeas.core.contribution.converter.DocumentFormat.*;
 
 /**
  * Test the conversion of documents with an OpenOffice server.
@@ -55,10 +54,6 @@ public class HTMLConverterIT extends AbstractConverterIntegrationTest {
   public void setUp() throws Exception {
     document = getDocumentNamed(DOCUMENT_NAME);
     assertThat(document.exists(), is(true));
-  }
-
-  @After
-  public void tearDown() {
   }
 
   @Test

@@ -45,6 +45,7 @@ public class OpenOfficeService implements Initialization {
       "org.silverpeas.converter.openoffice");
   private static final String OPENOFFICE_PORT = "openoffice.port";
   private static final String OPENOFFICE_HOME = "openoffice.home";
+  private static final String OPENOFFICE_TASK_TIMEOUT = "openoffice.taskTimeout";
 
   private OfficeManager officeManager;
 
@@ -52,8 +53,10 @@ public class OpenOfficeService implements Initialization {
   public void init() throws Exception {
     final String home = settings.getString(OPENOFFICE_HOME);
     final String ports = settings.getString(OPENOFFICE_PORT, "8100");
+    final int taskTimeout = settings.getInteger(OPENOFFICE_TASK_TIMEOUT, 30000);
     final int[] portNumbers = Stream.of(ports.split(",")).mapToInt(Integer::parseInt).toArray();
-    LocalOfficeManager.Builder builder = LocalOfficeManager.builder().portNumbers(portNumbers);
+    LocalOfficeManager.Builder builder = LocalOfficeManager.builder().portNumbers(portNumbers)
+        .taskQueueTimeout(taskTimeout);
     if (StringUtil.isDefined(home)) {
       builder = builder.officeHome(home);
     }
@@ -64,9 +67,19 @@ public class OpenOfficeService implements Initialization {
 
   @Override
   public void release() throws Exception {
-    if (officeManager != null) {
+    if (officeManager != null && officeManager.isRunning()) {
       officeManager.stop();
     }
+  }
+
+  /**
+   * Gets the {@link OfficeManager} instance to use to manages the different processes of the
+   * OpenOffice/LibreOffice program.
+   * @return the {@link OfficeManager} instance preconfigured according to the OpenOffice settings
+   * in Silverpeas.
+   */
+  public OfficeManager getOfficeManager() {
+    return officeManager;
   }
 }
   

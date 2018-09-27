@@ -25,7 +25,7 @@ package org.silverpeas.core.viewer.service;
 
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
-import org.silverpeas.core.contribution.converter.option.PageRangeFilterOption;
+import org.silverpeas.core.contribution.converter.option.SinglePageSelection;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.ImageToolDirective;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
@@ -151,7 +151,7 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
    */
   private File toPdf(final File source, final File destination) {
     DocumentFormatConverterProvider.getToPDFConverter()
-        .convert(source, destination, DocumentFormat.pdf, new PageRangeFilterOption("1"));
+        .convert(source, destination, DocumentFormat.pdf, new SinglePageSelection(1));
     return destination;
   }
 

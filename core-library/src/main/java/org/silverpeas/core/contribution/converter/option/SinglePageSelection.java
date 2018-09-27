@@ -21,46 +21,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.converter;
+package org.silverpeas.core.contribution.converter.option;
 
-import javax.inject.Inject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import static org.junit.Assert.*;
 
 /**
- * Unit tests to check the objects implementing the document format conversion API are correctly
- * injected by an IoC container.
+ * An option of filtering a given single page.
+ * @author Yohann Chastagnier
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/spring-converter.xml")
-public class ConverterImplementationInjectionTest {
+public class SinglePageSelection implements FilterOption<String> {
 
-  @Inject
-  private ODTConverter converterOfODT;
+  private final String pageNumber;
 
-  @Inject
-  private HTMLConverter converterOfHTML;
-
-  public ConverterImplementationInjectionTest() {
+  public SinglePageSelection(final int pageNumber) {
+    this.pageNumber = String.valueOf(pageNumber);
   }
 
-  @Test
-  public void emptyTest() {
-    assertTrue(true);
+  @Override
+  public String getName() {
+    return "PageRange";
   }
 
-  @Test
-  public void convertersShouldBeDirectlyInjected() {
-    assertNotNull(converterOfODT);
-    assertNotNull(converterOfHTML);
-  }
-
-  @Test
-  public void convertersShouldBeGetFromTheFactory() {
-    assertNotNull(DocumentFormatConverterProvider.getODTConverter());
-    assertNotNull(DocumentFormatConverterProvider.getHTMLConverter());
+  @Override
+  public String getValue() {
+    return pageNumber;
   }
 }

@@ -26,10 +26,12 @@ package org.silverpeas.core.viewer.service;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.After;
 import org.junit.Before;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.converter.openoffice.OpenOfficeService;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.io.media.image.imagemagick.Im4javaManager;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
@@ -38,7 +40,9 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.viewer.test.WarBuilder4Viewer;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -57,6 +61,11 @@ public abstract class AbstractViewerIT {
 
   private static File tempPath;
   private static File resourceTestDir;
+  private static List<Class<? extends Initialization>> services = Arrays.asList(
+      Im4javaManager.class,
+      SwfToolManager.class,
+      JsonPdfToolManager.class,
+      OpenOfficeService.class);
 
   private static void init() {
     if (tempPath == null) {
@@ -77,13 +86,19 @@ public abstract class AbstractViewerIT {
   }
 
   @Before
-  public void setupCommonServices() throws Exception {
+  public void initCommonServices() throws Exception {
     init();
-    for (Initialization serviceToInitialize : new Initialization[]{
-        ServiceProvider.getService(Im4javaManager.class),
-        ServiceProvider.getService(SwfToolManager.class),
-        ServiceProvider.getService(JsonPdfToolManager.class)}) {
+    for (Class<? extends Initialization> service: services) {
+      Initialization serviceToInitialize = ServiceProvider.getService(service);
       serviceToInitialize.init();
+    }
+  }
+
+  @After
+  public void releaseCommonServices() throws Exception {
+    for (Class<? extends Initialization> service: services) {
+      Initialization serviceToInitialize = ServiceProvider.getService(service);
+      serviceToInitialize.release();
     }
   }
 
