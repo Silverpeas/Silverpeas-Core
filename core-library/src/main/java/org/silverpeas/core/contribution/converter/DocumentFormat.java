@@ -49,7 +49,11 @@ public enum DocumentFormat {
   /**
    * The HTML format.
    */
-  html(MimeTypes.HTML_MIME_TYPE);
+  html(MimeTypes.HTML_MIME_TYPE),
+  /**
+   * The SQL format.
+   */
+  sql(MimeTypes.PLAIN_TEXT_MIME_TYPE);
 
   /**
    * A helper method to improve readability in method calls with a document format as argument.

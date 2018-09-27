@@ -51,7 +51,7 @@ public class AbstractConverterIntegrationTest {
         .addFileRepositoryFeatures()
         .addMavenDependencies("org.apache.commons:commons-exec")
         .testFocusedOn(warBuilder ->
-            warBuilder.addMavenDependencies("com.artofsolving:jodconverter")
+            warBuilder.addMavenDependencies("org.jodconverter:jodconverter-local")
                 .addPackages(true, "org.silverpeas.core.contribution.converter")
                 .addAsResource("org/silverpeas/converter"))
         .build();

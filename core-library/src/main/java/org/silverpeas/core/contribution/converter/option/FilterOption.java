@@ -24,11 +24,12 @@
 package org.silverpeas.core.contribution.converter.option;
 
 /**
+ * An option of filtering to apply on a document to convert.
  * @author Yohann Chastagnier
  */
-public interface FilterOption {
+public interface FilterOption<T> {
 
   String getName();
 
-  Object getValue();
+  T getValue();
 }
