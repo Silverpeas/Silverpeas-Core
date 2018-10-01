@@ -153,9 +153,17 @@ public abstract class AbstractViewerService {
           getLogger(this).debug(() -> format("workspace of view context {0} exists already",
               viewerContext.getViewId()));
 
-          // If the original resource has not changed since the last conversion, then getting the
-          // converted data that exist already.
-          if (workspace.lastModified() >= viewerContext.getOriginalSourceFile().lastModified()) {
+          if (!workspace.isWorkInProgress() && workspace.empty()) {
+            // If workspace is empty, something is wrong and the workspace must be removed to be
+            // again created.
+            getLogger(this).debug(
+                () -> format("workspace is empty for view context {0}, create it again",
+                    viewerContext.getViewId()));
+            workspace.remove();
+          } else if (workspace.lastModified() >=
+              viewerContext.getOriginalSourceFile().lastModified()) {
+            // If the original resource has not changed since the last conversion, then getting the
+            // converted data that exist already.
             Semaphore currentProcessing = (Semaphore) cache.get(workspace.getRootPath().getPath());
             if (currentProcessing != null) {
               getLogger(this).debug(() -> format("semaphore exists already for view context {0}",
@@ -188,6 +196,7 @@ public abstract class AbstractViewerService {
             () -> format("creating workspace of view context {0} with its semaphore",
                 viewerContext.getViewId()));
         viewerContext.processingCache();
+        workspace.markWorkInProgress();
         workspace.create();
         Semaphore newSemaphore = new Semaphore(1);
         cache.put(workspace.getRootPath().getPath(), newSemaphore);

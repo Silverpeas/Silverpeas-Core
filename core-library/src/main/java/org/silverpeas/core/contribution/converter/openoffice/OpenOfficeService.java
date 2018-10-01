@@ -54,7 +54,10 @@ public class OpenOfficeService implements Initialization {
     final String home = settings.getString(OPENOFFICE_HOME);
     final String ports = settings.getString(OPENOFFICE_PORT, "8100");
     final int taskTimeout = settings.getInteger(OPENOFFICE_TASK_TIMEOUT, 30000);
-    final int[] portNumbers = Stream.of(ports.split(",")).mapToInt(Integer::parseInt).toArray();
+    final int[] portNumbers = Stream.of(ports.split(","))
+        .map(String::trim)
+        .mapToInt(Integer::parseInt)
+        .toArray();
     LocalOfficeManager.Builder builder = LocalOfficeManager.builder().portNumbers(portNumbers)
         .taskQueueTimeout(taskTimeout);
     if (StringUtil.isDefined(home)) {
