@@ -26,8 +26,8 @@ package org.silverpeas.core.io.temp;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
@@ -47,6 +47,7 @@ import static org.silverpeas.core.util.SerializationUtil.serializeAsString;
  * is translated.<br>
  * @author Yohann Chastagnier
  */
+@SuppressWarnings("SynchronizeOnNonFinalField")
 public class TemporaryWorkspaceTranslation {
 
   private static final String TRANSLATION_ID = "__sptrans_id";
@@ -55,6 +56,7 @@ public class TemporaryWorkspaceTranslation {
   private final File descriptor;
   private File workspace;
   private Map<String, String> descriptorContent = new HashMap<>();
+  private boolean workInProgress = false;
   private Object lock = new Object();
 
   /**
@@ -129,6 +131,16 @@ public class TemporaryWorkspaceTranslation {
   }
 
   /**
+   * Indicates if the workspace is empty.
+   * @return true if it is empty, false otherwise.
+   */
+  public boolean empty() {
+    synchronized (lock) {
+      return exists() && FileUtils.sizeOfDirectory(workspace) == 0;
+    }
+  }
+
+  /**
    * Gets the last time the workspace was modified.
    * @return
    */
@@ -182,9 +194,27 @@ public class TemporaryWorkspaceTranslation {
           }
           FileUtils.writeStringToFile(descriptor, content.toString(), Charsets.UTF_8);
         }
-      } catch (IOException ignore) {
-        SilverLogger.getLogger(this).silent(ignore);
+      } catch (IOException e) {
+        SilverLogger.getLogger(this).silent(e);
       }
+    }
+  }
+
+  public void markWorkInProgress() {
+    synchronized (lock) {
+      workInProgress = true;
+    }
+  }
+
+  private void markWorkNoMoreInProgress() {
+    synchronized (lock) {
+      workInProgress = false;
+    }
+  }
+
+  public boolean isWorkInProgress() {
+    synchronized (lock) {
+      return workInProgress;
     }
   }
 
@@ -203,6 +233,7 @@ public class TemporaryWorkspaceTranslation {
     if (exists()) {
       saveDescriptor();
     }
+    markWorkNoMoreInProgress();
     return this;
   }
 

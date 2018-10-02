@@ -23,18 +23,14 @@
  */
 package org.silverpeas.core.contribution.converter;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
+
 /**
  * Exception thrown when the format of a document or the format in which a document has to be
  * converted isn't supported by a converter.
  */
-public class DocumentFormatException extends RuntimeException {
-  private static final long serialVersionUID = -4921928945224013781L;
-
-  /**
-   * Creates a new instance of <code>DocumentFormatException</code> without detail message.
-   */
-  public DocumentFormatException() {
-  }
+public class DocumentFormatException extends SilverpeasRuntimeException {
+  private static final long serialVersionUID = -4921928945224013783L;
 
   /**
    * Constructs an instance of <code>DocumentFormatException</code> with the specified detail

@@ -25,31 +25,24 @@ package org.silverpeas.core.contribution.converter.option;
 
 
 /**
+ * An option of filtering a given single page.
  * @author Yohann Chastagnier
  */
-public class PageRangeFilterOption implements FilterOption {
+public class SinglePageSelection implements FilterOption<String> {
 
-  private final String pageRange;
+  private final String pageNumber;
 
-  public PageRangeFilterOption(final String pageRange) {
-    this.pageRange = pageRange;
+  public SinglePageSelection(final int pageNumber) {
+    this.pageNumber = String.valueOf(pageNumber);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.converter.ConverterOption#getName()
-   */
   @Override
   public String getName() {
     return "PageRange";
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.converter.ConverterOption#getValue()
-   */
   @Override
-  public Object getValue() {
-    return pageRange;
+  public String getValue() {
+    return pageNumber;
   }
 }
