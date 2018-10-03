@@ -288,7 +288,7 @@ out.println(tabbedPane.print());
 <view:areaOfOperationOfCreation/>
   <div class="rightContent" id="right-content-adminSpace">
     <div id="goToApplication">
-      <a class="navigation-button" href="<%=space.getPermalink() %>"><span><%=resource.getString("JSPP.space.go")%></span></a>
+      <a class="navigation-button" href="javascript:onclick=window.top.spWindow.leaveAdmin({fromSpaceId:'<%=space.getId()%>'});"><span><%=resource.getString("JSPP.space.go")%></span></a>
     </div>
     <viewTags:displayLastUserCRUD
         permalink="<%=space.getPermalink() %>"

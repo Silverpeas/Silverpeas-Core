@@ -422,8 +422,13 @@
   // Content Part
   var SplashContentUrlPart = Part.extend({
     initialize : function(mainLayout) {
+      var overlay = document.createElement('div');
+      overlay.classList.add('sp-layout-splash-content-url-part-overlay');
+      overlay.style.display = 'none';
+      document.body.appendChild(overlay);
       var contentFrame = document.createElement('iframe');
-      contentFrame.setAttribute('name', 'SpLayoutSplashContentUrl');
+      contentFrame.setAttribute('src', 'about:blank');
+      contentFrame.setAttribute('name', 'SpLayoutSplashContentWindow');
       contentFrame.setAttribute('marginheight', '0');
       contentFrame.setAttribute('frameborder', '0');
       contentFrame.setAttribute('scrolling', 'auto');
@@ -445,11 +450,17 @@
         } else {
           __logDebug("no promise to resolve about the splash content loading");
         }
+
+        var frameContentDocument = this.contentFrame.contentWindow.document;
+        frameContentDocument.body.setAttribute('tabindex', '-1');
+        frameContentDocument.body.focus();
+
         this.dispatchEvent("load");
         spLayout.getBody().hideProgressMessage();
       }.bind(this));
 
       this._super(mainLayout, '#sp-layout-splash-content-url-part');
+      this.overlay = overlay;
       this.contentFrame = contentFrame;
 
       this.addEventListener("start-load", function() {
@@ -462,14 +473,72 @@
       this.dispatchEvent("start-load");
       this.contentFrame.setAttribute('src', url);
       promise.then(function() {
-        var maxWidth = $window.document.body.offsetWidth - 100;
-        var maxHeight = $window.document.body.offsetHeight - 100;
-        jQuery(this.getContainer()).popup('free', {
-          width : maxWidth,
-          height : maxHeight
-        });
+        var progressMessageDeferred;
+        if (!this.isShown()) {
+          progressMessageDeferred = sp.promise.deferred();
+          spLayout.getBody().showProgressMessage(progressMessageDeferred.promise);
+        }
+        this.show(progressMessageDeferred);
       }.bind(this));
       return promise;
+    },
+    close : function() {
+      this.hide().then(function() {
+        this.contentFrame.setAttribute('src', 'about:blank');
+        this.dispatchEvent("close");
+      }.bind(this));
+    },
+    show : function(progressMessageDeferred) {
+      var _super = this._super;
+      return new Promise(function(resolve) {
+        var __end = function() {
+          resolve();
+          if (progressMessageDeferred) {
+            progressMessageDeferred.resolve();
+          }
+        };
+        if (!this.isShown()) {
+          this.overlay.style.display = 'block';
+          jQuery(this.getContainer()).fadeIn(200, function() {
+            _super.call(this);
+            __end();
+          }.bind(this));
+        } else {
+          __end();
+        }
+      }.bind(this));
+    },
+    hide : function() {
+      var _super = this._super;
+      return new Promise(function(resolve) {
+        if (this.isShown()) {
+          jQuery(this.getContainer()).fadeOut(400, function() {
+            this.overlay.style.display = 'none';
+            _super.call(this);
+            resolve();
+          }.bind(this));
+        } else {
+          resolve();
+        }
+      }.bind(this));
+    },
+    addEventListener : function(eventName, listener, listenerId) {
+      switch (eventName) {
+        case 'close':
+          var normalizedEventName = this.normalizeEventName(eventName);
+          __eventManager.addEventListener(normalizedEventName, listener, listenerId);
+          break;
+        default:
+          this._super(eventName, listener);
+      }
+    },
+    muteMouseEvents : function() {
+      var $iframe = this.getContainer().querySelector('iframe');
+      $iframe.classList.add('sp-layout-part-on-top-element-drag');
+    },
+    unmuteMouseEvents : function() {
+      var $iframe = this.getContainer().querySelector('iframe');
+      $iframe.classList.remove('sp-layout-part-on-top-element-drag');
     }
   });
 
@@ -495,6 +564,18 @@
     };
     this.getSplash = function() {
       return splashContentUrlPart;
+    };
+    this.isWindowTop = function(win) {
+      return this.getWindowTopFrom(win).window === win;
+    };
+    this.getWindowTopFrom = function(win) {
+      var $top = win.top;
+      if (win.name === 'SpLayoutSplashContentWindow') {
+        $top = win;
+      } else if (win.parent.window.name === 'SpLayoutSplashContentWindow') {
+        $top = win.parent;
+      }
+      return $top;
     };
 
     var timer_resize;
@@ -525,20 +606,18 @@
 
   /**
    * Logs debug messages.
-   * @param message
    * @private
    */
-  function __logDebug(message) {
+  function __logDebug() {
     if (layoutDebug) {
       var mainDebugStatus = sp.log.debugActivated;
       sp.log.debugActivated = true;
-      sp.log.debug("Layout - " + message);
+      var messages = [];
+      Array.prototype.push.apply(messages, arguments);
+      messages.splice(0, 0, "Layout -");
+      sp.log.debug.apply(this, messages);
       sp.log.debugActivated = mainDebugStatus;
     }
-  }
-
-  function __displayError(error) {
-    notyError(error);
   }
 })(top.window);
 

@@ -1,3 +1,7 @@
+#jsxc_windowList {
+  z-index: 8000;
+}
+
 #jsxc_windowList, #jsxc_windowList.jsxc_roster_hidden {
   right: 280px;
 }
@@ -18,9 +22,9 @@
   right: 20px;
   overflow: hidden;
   width: 250px;
-  height:70%;
+  height: 70%;
   background-color: #f5f5f5;
-  box-shadow: 0px 0px 5px 0px rgba( 0, 0, 0, 0.3);
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.3);
 }
 
 #silverchat_roster_header {
@@ -29,31 +33,32 @@
   position: relative;
   height: 2.5em;
   line-height: 2.5em;
-  cursor:pointer;
+  cursor: pointer;
 }
 
-#silverchat_roster_header  #silverchat_notice span{
-  background:#1c94d4 url(../img/packIconsChat.png) right -199px no-repeat;
-  width:34px;
+#silverchat_roster_header #silverchat_notice span {
+  background: #1c94d4 url(../img/packIconsChat.png) right -199px no-repeat;
+  width: 34px;
   line-height: 27px;
-  height:30px;
-  position:absolute;
-  right:0;
-  top:0;
-  text-align:center;
-  font-weight:bold;
+  height: 30px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  text-align: center;
+  font-weight: bold;
   -webkit-animation: bounce 2s 1s infinite;
   animation: bounce 2s 1s infinite;
 }
-#silverchat_roster_header  #silverchat_notice span:empty{
-  display:none;
-  }
+
+#silverchat_roster_header #silverchat_notice span:empty {
+  display: none;
+}
 
 #silverchat_roster_menu #jsxc_notice {
-  height: auto; 
-  width: auto; 
-  float: none; 
-  text-align: left; 
+  height: auto;
+  width: auto;
+  float: none;
+  text-align: left;
   line-height: 30px;
 }
 
@@ -63,29 +68,31 @@
   border-bottom: 1px solid #f9e98e;
 }
 
-#silverchat_roster_menu #jsxc_notice .silverchat_menu_item  li {
-  background:#fbf7aa;
+#silverchat_roster_menu #jsxc_notice .silverchat_menu_item li {
+  background: #fbf7aa;
   border-top: 1px solid #f9e98e;
 }
+
 #silverchat_roster_menu #jsxc_notice span {
-  display:inline-block;
-  background:#FFF url(../img/packIconsChat.png) right -199px no-repeat;
+  display: inline-block;
+  background: #FFF url(../img/packIconsChat.png) right -199px no-repeat;
   border-radius: 0;
   color: #FFF;
-  width:34px;
+  width: 34px;
   line-height: 27px;
-  height:30px;
-  font-size:100%;
+  height: 30px;
+  font-size: 100%;
   padding: 0;
   position: relative;
-  text-align:center;
-  font-weight:bold;
+  text-align: center;
+  font-weight: bold;
   -webkit-animation: bounce 2s 1s infinite;
   animation: bounce 2s 1s infinite;
 }
-#silverchat_roster_menu #jsxc_notice span:empty{
-  display:none;
-  }
+
+#silverchat_roster_menu #jsxc_notice span:empty {
+  display: none;
+}
 
 #silverchat_roster_body {
   overflow: hidden;
@@ -95,7 +102,7 @@
 #silverchat_roster_content {
   overflow-x: hidden;
   overflow-y: scroll;
-  border-bottom:1px solid  #ddd;
+  border-bottom: 1px solid #ddd;
   background: #FFF;
   margin-bottom: 34px;
   clear: both;
@@ -107,38 +114,41 @@
 }
 
 .ui-tooltip {
-  font-size:11px;
-  box-shadow:none;
-  border:1px solid #ddd;
+  font-size: 11px;
+  box-shadow: none;
+  border: 1px solid #ddd;
 }
 
 #silverchat_roster_content .jsxc_rosteritem {
-    line-height: 2.5em;
-}
-.jsxc_window .jsxc_tools > div {
-  line-height:30px;
-}
- .jsxc_menu a {
-  opacity:0.8;
-}
- .jsxc_menu.jsxc_open {
-  -webkit-filter:none;
-  filter: none;
-  border: 1px solid #ddd;
-  padding:0;
+  line-height: 2.5em;
 }
 
- .jsxc_menu.jsxc_open a {
-  text-decoration:none;
-  padding:0 5px;
-  text-align:left;
-  display:block;
+.jsxc_window .jsxc_tools > div {
+  line-height: 30px;
+}
+
+.jsxc_menu a {
+  opacity: 0.8;
+}
+
+.jsxc_menu.jsxc_open {
+  -webkit-filter: none;
+  filter: none;
+  border: 1px solid #ddd;
+  padding: 0;
+}
+
+.jsxc_menu.jsxc_open a {
+  text-decoration: none;
+  padding: 0 5px;
+  text-align: left;
+  display: block;
   border-bottom: 1px solid #ddd;
 }
 
- .jsxc_menu.jsxc_open ul li:last-child a {
-  border-bottom:0;
- }
+.jsxc_menu.jsxc_open ul li:last-child a {
+  border-bottom: 0;
+}
 
 .jsxc_menu::after {
   -webkit-filter: drop-shadow(0px -1px 0px rgba(150, 150, 150, 0.50));
@@ -147,13 +157,13 @@
 
 #silverchat_roster_content #jsxc_buddylist,
 #silverchat_roster_content .slimScrollDiv {
-  width:100% !important;
-  height:auto !important;
+  width: 100% !important;
+  height: auto !important;
 }
 
 #silverchat_buddies_filter,
 #silverchat_groupchats_filter {
-  color:#212121;
+  color: #212121;
   cursor: pointer;
   display: block;
   float: right;
@@ -161,25 +171,26 @@
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
-  width:50%;
+  width: 50%;
   background: #f5f5f5 url(../img/packIconsChat.png) bottom right no-repeat;
 }
-#silverchat_buddies_filter{
-  width:40%;
-  padding-right:10%
+
+#silverchat_buddies_filter {
+  width: 40%;
+  padding-right: 10%
 }
 
 #silverchat_groupchats_filter.selected,
 #silverchat_buddies_filter.selected {
-  color: #1c94d4 ;
+  color: #1c94d4;
   background-position: bottom left;
 }
 
 #silverchat_roster_tabs {
-  position:relative;
+  position: relative;
 }
 
-#silverchat_roster_menu>#jsxc_menu {
+#silverchat_roster_menu > #jsxc_menu {
   height: auto;
   width: 100%;
   text-align: inherit;
@@ -187,9 +198,9 @@
 
 #silverchat_roster_menu_toggle {
   content: ' ';
-  background:transparent url('../img/packIconsChat.png') right -550px no-repeat;
+  background: transparent url('../img/packIconsChat.png') right -550px no-repeat;
   display: block;
-  height:20px;
+  height: 20px;
   vertical-align: middle;
   cursor: pointer;
   opacity: 0.4;
@@ -228,7 +239,7 @@
 
 #silverchat_roster.jsxc_state_hidden {
   display: block;
-  bottom:-65%;
+  bottom: -65%;
   -webkit-transition: bottom 0.5s;
   transition: bottom 0.5s;
 }
@@ -305,7 +316,7 @@
   margin-left: 5px;
 }
 
-#silverchat_roster_footer  {
+#silverchat_roster_footer {
   position: absolute;
   left: 0;
   bottom: 0;
@@ -313,12 +324,12 @@
   line-height: 34px;
   height: 34px;
   z-index: 100;
-  padding:0;
+  padding: 0;
 }
 
 #silverchat_roster_footer .jsxc_list {
-  background:transparent url(../img/packIconsChat.png)  right -438px no-repeat;
-  padding-left:2em;
+  background: transparent url(../img/packIconsChat.png) right -438px no-repeat;
+  padding-left: 2em;
 }
 
 #silverchat_roster_footer::before {
@@ -326,26 +337,28 @@
   left: 0.8em;
   bottom: 0.7em;
 }
-#silverchat_roster_footer  .jsxc_inner {
+
+#silverchat_roster_footer .jsxc_inner {
   width: 100%;
 }
 
 #jsxc_buddylist li .jsxc_more {
-  display:none;
-  width:38px;
-  margin:0;
+  display: none;
+  width: 38px;
+  margin: 0;
 }
 
 #jsxc_buddylist li:hover .jsxc_more {
-  display:block;
-}
-#jsxc_buddylist li:hover,
-.silverchat_roster_content a:hover,
- .jsxc_menu.jsxc_open a:hover  {
-  background-color:#ededed;
+  display: block;
 }
 
-#silverchat_roster_footer  ul {
+#jsxc_buddylist li:hover,
+.silverchat_roster_content a:hover,
+.jsxc_menu.jsxc_open a:hover {
+  background-color: #ededed;
+}
+
+#silverchat_roster_footer ul {
   padding: 0;
   margin: 0;
   width: 100%;
@@ -354,11 +367,11 @@
   margin: 0;
 }
 
-#silverchat_roster_footer  ul li:last-child {
+#silverchat_roster_footer ul li:last-child {
   border-bottom: 1px solid transparent;
 }
 
-#silverchat_roster_footer  li {
+#silverchat_roster_footer li {
   height: 30px;
   background-color: #eeeeee;
   color: #000;
@@ -376,17 +389,17 @@
   opacity: 0.8;
 }
 
-#silverchat_roster_footer  li.jsxc_disabled {
+#silverchat_roster_footer li.jsxc_disabled {
   color: #333333;
   cursor: default;
 }
 
-#silverchat_roster_footer  li:hover:not(.jsxc_disabled) {
+#silverchat_roster_footer li:hover:not(.jsxc_disabled) {
   color: #000;
   background-color: #ddd;
 }
 
-#silverchat_roster_footer  > div > span {
+#silverchat_roster_footer > div > span {
   cursor: pointer;
 }
 
@@ -400,6 +413,7 @@
   font-size: 0.9em;
   font-style: italic;
 }
+
 .jsxc_windowItem .silverchat_composing:before {
   content: " ";
   width: 1.5em;
@@ -417,14 +431,15 @@
   color: #eee;
 }
 
-
 .jsxc_rosteritem .jsxc_caption input {
-  width:130px;
+  width: 130px;
 }
+
 .jsxc_min .jsxc_caption .jsxc_name {
   height: auto;
   line-height: 40px;
 }
+
 /* buddy menu */
 .jsxc_rosteritem .jsxc_menu {
   position: fixed;
@@ -433,37 +448,75 @@
 
 .jsxc_menu .jsxc_infoicon {
   background: url('../img/packIconsChat.png') 0 -147px no-repeat;
-  opacity:0.8;
+  opacity: 0.8;
 }
 
 .jsxc_menu .jsxc_deleteicon {
   background: url('../img/packIconsChat.png') -57px -590px no-repeat;
-  opacity:0.8;
+  opacity: 0.8;
 }
+
 .jsxc_menu .jsxc_editicon {
   background: url('../img/packIconsChat.png') -162px -590px no-repeat;
-  opacity:0.8;
+  opacity: 0.8;
 }
+
 .jsxc_menu a:hover .jsxc_icon {
-  opacity:1;
+  opacity: 1;
 }
 
 #jsxc_webrtc {
-  z-index: 1000!important;
+  z-index: 7999 !important;
   position: fixed;
   top: 0px;
   left: 0px;
   overflow: auto;
   width: 100%;
-  background: rgba(0, 0, 0, 0.8)!important;
-  height: 300px!important;
+  background: rgba(0, 0, 0, 0.8) !important;
+  height: 300px !important;
 }
 
 #jsxc_webrtc.jsxc_state_hidden {
   display: block;
-  top:-250px;
+  top: -250px;
   -webkit-transition: top 0.5s;
   transition: top 0.5s;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.3) !important;
+}
+
+#jsxc_webrtc.jsxc_state_hidden,
+#jsxc_webrtc.jsxc_state_hidden .jsxc_videoContainer,
+#jsxc_webrtc.jsxc_state_hidden .jsxc_localvideo,
+#jsxc_webrtc.jsxc_state_hidden .jsxc_remotevideo,
+#jsxc_webrtc.jsxc_state_hidden .jsxc_establishing:after,
+#jsxc_webrtc.jsxc_state_hidden .jsxc_ringing:after {
+  background: transparent !important;
+  border: none;
+}
+
+#jsxc_webrtc.jsxc_state_hidden .jsxc_localvideo,
+#jsxc_webrtc.jsxc_state_hidden .jsxc_remotevideo {
+  opacity: 0;
+}
+
+#jsxc_webrtc.jsxc_state_hidden .jsxc_controlbar {
+  opacity: 1;
+}
+
+#jsxc_webrtc.jsxc_state_shown .jsxc_controlbar.jsxc_visible .jsxc_toggleVideo,
+#jsxc_webrtc.jsxc_state_shown .jsxc_controlbar.jsxc_visible .jsxc_fullscreen,
+#jsxc_webrtc.jsxc_state_hidden .jsxc_controlbar .jsxc_toggleVideo,
+#jsxc_webrtc.jsxc_state_shown .jsxc_controlbar .jsxc_fullscreen {
+  display: inline-block;
+}
+
+#jsxc_webrtc.jsxc_state_hidden .jsxc_controlbar .jsxc_fullscreen {
+  display: none;
+}
+
+#jsxc_webrtc.jsxc_state_shown .jsxc_controlbar .jsxc_toggleVideo {
+  display: none;
 }
 
 #jsxc_webrtc.jsxc_state_shown {
@@ -482,6 +535,10 @@
   }
 }
 
+.jsxc_videoControl {
+  pointer-events: auto;
+}
+
 .jsxc_remotevideo {
   min-width: 200px;
   min-height: 200px;
@@ -490,18 +547,19 @@
 }
 
 .jsxc_controlbar .jsxc_toggleVideo {
-  background:transparent url('../img/packIconsChat.png') right -62px no-repeat;
-  background-size:inherit
+  background: transparent url('../img/packIconsChat.png') right -62px no-repeat;
+  background-size: inherit
 }
 
 .jsxc_controlbar.jsxc_visible .jsxc_toggleVideo {
-  background:transparent url('../img/packIconsChat.png') right -106px no-repeat;
-  background-size:inherit
+  background: transparent url('../img/packIconsChat.png') right -106px no-repeat;
+  background-size: inherit
 }
 
-.jsxc_localvideo{
+.jsxc_localvideo {
   border: 3px solid #efefef;
 }
-.jsxc_videoContainer{
+
+.jsxc_videoContainer {
   border-bottom: 1px solid #656565;
 }

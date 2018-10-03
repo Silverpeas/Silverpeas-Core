@@ -23,108 +23,89 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%
-List<Domain> allDomains = (List<Domain>)request.getAttribute("allDomains");
-Domain currentDomain = (Domain) request.getAttribute("CurrentDomain");
-String currentDomainId = "";
-if (currentDomain != null) {
-  currentDomainId = currentDomain.getId();
-}
-%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
+<fmt:message var="domainsLabel" key="JDP.domains"/>
+<fmt:message var="mixedDomainLabel" key="JDP.domainMixt"/>
+<fmt:message var="groupIconUrl" key="JDP.group" bundle="${icons}"/>
+<c:url var="groupIconUrl" value="${groupIconUrl}"/>
+<fmt:message var="synchronizedGroupIconUrl" key="JDP.groupSynchronized" bundle="${icons}"/>
+<c:url var="synchronizedGroupIconUrl" value="${synchronizedGroupIconUrl}"/>
+<fmt:message var="selectLabel" key="GML.select"/>
+<fmt:message var="groupLabel" key="GML.groupe"/>
+
+<c:set var="allDomains" value="${requestScope.allDomains}"/>
+<jsp:useBean id="allDomains" type="java.util.List<org.silverpeas.core.admin.domain.model.Domain>"/>
+<c:set var="currentDomainId" value=""/>
+<c:if test="${requestScope.CurrentDomain != null}">
+  <c:set var="currentDomainId" value="${requestScope.CurrentDomain.id}"/>
+</c:if>
+<c:set var="allRootGroups" value="${requestScope.allRootGroups}"/>
+<jsp:useBean id="allRootGroups" type="org.silverpeas.core.admin.user.model.Group[]"/>
 
 <%@ include file="check.jsp" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-<title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
-<script language="JavaScript1.2">
-function viewGroup(arg){
-	parent.domainContent.location = "groupSet?Idgroup="+arg;
-}
 
-function viewDomain()
-{
-  <c:if test="${empty requestScope.domainRefreshCurrentLevel}">
-    <%
-        String URLForContent = (String)request.getAttribute("URLForContent");
+<script type="text/javascript">
+  function viewDomain(domainId) {
+    spAdminWindow.loadDomain(domainId);
+  }
 
-        if ((URLForContent != null) && (URLForContent.length() > 0))
-        {
-            out.println("parent.domainContent.location = \"" + URLForContent + "\"");
-        }
-    %>
-  </c:if>
-}
+  function viewGroup(groupId) {
+    spAdminWindow.loadGroup(groupId);
+  }
 
-function refreshCurrentLevel() {
-  parent.domainBar.location = "domainRefreshCurrentLevel";
-}
-
+  function refreshCurrentLevel() {
+    spAdminLayout.getBody().getNavigation().load(webContext + "/RjobDomainPeas/jsp/domainRefreshCurrentLevel");
+  }
 </script>
-</head>
-<body class="domainNavigation" onload="javascript:viewDomain()">
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-<tr class="intfdcolor">
-    <td width="100%">
-      <span class="domains-label"><%=resource.getString("JDP.domains")%> : </span>
-	</td>
-</tr>
-<tr class="intfdcolor51">
-    <td width="100%">
-		
-		<% if (allDomains.size() > 1) { %>
-			<form class="domainsNamesForm" name="domainsNamesForm" Action="domainNavigation" Method="POST">
-	                    <span class="selectNS">
-	                    <select name="Iddomain" size="1" onchange="javascript:document.domainsNamesForm.submit()">
-	                    <option value=""><%=resource.getString("GML.select")%></option>
-	                    <option value="">-----------------</option>
-	                    <% for(int n = 0; n < allDomains.size(); n++) {
-					Domain domain = allDomains.get(n);
-					String domainName = domain.getName();
-					if (domain.isMixedOne()) {
-					  domainName = resource.getString("JDP.domainMixt");
-					}
-					String selected = "";
-					if (domain.getId().equals(currentDomainId)) {
-					  selected = " selected=\"selected\"";
-					}
-					if (n == 1) {
-						out.println("<option value=\"\">-----------------</option>");
-					}
-	                            out.println("<option value=\"" + domain.getId() + "\" " + selected + ">" + domainName + "</option>");
-	                        }
-	                    %>
-	                    </select></span>
-                    </form>
-		<% } else { %>
-			<span class="txtlibform"><%=allDomains.get(0).getName()%></span>
-		<% } %>
-		</td>
-</tr>
-<tr class="intfdcolor51">
-    <td width="100%">
-						<%
-              Group[] allRootGroups = (Group[])request.getAttribute("allRootGroups");
-							String icon = null;
-							for (Group group : allRootGroups) {
-								icon = resource.getIcon("JDP.group");
-								if (group.isSynchronized()) {
-									icon = resource.getIcon("JDP.groupSynchronized");
-								}
-								%>
-								
-                <img class="GroupIcon" src="<%=icon%>"  alt="<%=resource.getString("GML.groupe")%>" title="<%=resource.getString("GML.groupe")%>" />
-                &nbsp;<a href="javascript:viewGroup('<%=group.getId()%>')"><%=WebEncodeHelper.javaStringToHtmlString(group.getName()) + " (" + group.getTotalNbUsers() + ")"%></a><br>
-								<%
-                            }
-						%>
-	</td>
-</tr>
-</table>
-</body>
-</html>
+<div class="intfdcolor">
+  <span class="domains-label">${domainsLabel} : </span>
+</div>
+<div class="intfdcolor51">
+  <c:choose>
+    <c:when test="${fn:length(allDomains) > 1}">
+      <form class="domainsNamesForm" name="domainsNamesForm" action="javascript:viewDomain(document.domainsNamesForm.Iddomain.value)" Method="POST">
+        <span class="selectNS">
+        <select name="Iddomain" size="1" onchange="document.domainsNamesForm.submit()">
+          <option value="">${selectLabel}</option>
+          <c:forEach var="domain" items="${allDomains}">
+            <c:set var="domainName" value="${domain.name}"/>
+            <c:if test="${domain.mixedOne}">
+              <c:set var="domainName" value="${mixedDomainLabel}"/>
+              <option value="">-----------------</option>
+            </c:if>
+            <option value="${domain.id}" ${domain.id eq currentDomainId ? 'selected' : ''}>${domainName}</option>
+            <c:if test="${domain.mixedOne}">
+              <option value="">-----------------</option>
+            </c:if>
+          </c:forEach>
+        </select>
+        </span>
+      </form>
+    </c:when>
+    <c:otherwise>
+      <span class="txtlibform">${allDomains[0].name}</span>
+    </c:otherwise>
+  </c:choose>
+</div>
+<c:if test="${fn:length(allRootGroups) > 0}">
+  <div class="intfdcolor51 domain-group-list">
+    <c:forEach var="group" items="${allRootGroups}">
+      <img class="GroupIcon" src="${group.synchronized ? synchronizedGroupIconUrl : groupIconUrl}" alt="${groupLabel}" title="${groupLabel}"/>
+      &nbsp;<a href="javascript:void(0)" onclick="viewGroup('${group.id}');">${silfn:escapeHtml(group.name).concat(' (').concat(group.totalNbUsers).concat(')')}
+      </a><br/>
+    </c:forEach>
+  </div>
+</c:if>
+<script type="text/javascript">
+  spAdminLayout.getBody().getNavigation().dispatchEvent('load');
+</script>

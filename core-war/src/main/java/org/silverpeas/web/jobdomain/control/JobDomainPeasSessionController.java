@@ -103,9 +103,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static java.util.Collections.synchronizedList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
-import static org.silverpeas.core.personalization.service.PersonalizationServiceProvider
-    .getPersonalizationService;
+import static org.silverpeas.core.personalization.service.PersonalizationServiceProvider.getPersonalizationService;
 
 /**
  * Class declaration
@@ -123,7 +123,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   private String targetUserId = null;
   private String targetDomainId = "";
   private DomainNavigationStock targetDomain = null;
-  private List<GroupNavigationStock> groupsPath = new ArrayList<>();
+  private List<GroupNavigationStock> groupsPath = synchronizedList(new ArrayList<>());
   private SynchroThread synchroThread = null;
   private Exception errorOccured = null;
   private String synchroReport = "";
@@ -131,12 +131,12 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   private List<UserDetail> usersToImport = null;
   private Map<String, String> queryToImport = null;
   private AdminController adminCtrl = null;
-  private List<String> listSelectedUsers = new ArrayList<String>();
+  private List<String> listSelectedUsers = synchronizedList(new ArrayList<>());
   // pagination de la liste des résultats
   private int indexOfFirstItemToDisplay = 0;
   private boolean refreshDomain = true;
   private ListIndex currentIndex = new ListIndex(0);
-  private List<UserDetail> sessionUsers = new ArrayList<>();
+  private List<UserDetail> sessionUsers = synchronizedList(new ArrayList<>());
 
   private static final Properties templateConfiguration = new Properties();
   private static final String USER_ACCOUNT_TEMPLATE_FILE = "userAccount_email";
@@ -316,7 +316,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         StringUtil.isDefined(userRequestData.getPassword())) {
 
       // Send an email notification
-      Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+      Map<String, SilverpeasTemplate> templates = new HashMap<>();
 
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL, "", templates,
@@ -416,7 +416,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           if (lastGroupId != null) {
             Group lastGroup = adminCtrl.getGroupById(lastGroupId);
             lUserIds = Arrays.asList(lastGroup.getUserIds());
-            lNewUserIds = new ArrayList<String>(lUserIds);
+            lNewUserIds = new ArrayList<>(lUserIds);
             lNewUserIds.remove(theUserIdToRegroup);
             newUserIds = lNewUserIds.toArray(new String[lNewUserIds.size()]);
             updateGroupSubUsers(lastGroupId, newUserIds);
@@ -456,7 +456,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         }
 
         lUserIds = Arrays.asList(group.getUserIds());
-        lNewUserIds = new ArrayList<String>(lUserIds);
+        lNewUserIds = new ArrayList<>(lUserIds);
         lNewUserIds.add(theUserIdToRegroup);
         newUserIds = lNewUserIds.toArray(new String[lNewUserIds.size()]);
 
@@ -746,7 +746,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       motDePasse = csvValue[5].getValueString();
 
       // données spécifiques
-      properties = new HashMap<String, String>();
+      properties = new HashMap<>();
       if (csvReader.getSpecificNbCols() > 0) {
         if (getTargetDomain().isMixedOne() || "0".equals(getTargetDomain().getId())) {
           // domaine Silverpeas
@@ -1011,7 +1011,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     String directGroupId;
     String rootGroupId;
-    List<String> groupIdLinksToRemove = new ArrayList<String>();
+    List<String> groupIdLinksToRemove = new ArrayList<>();
     for (GroupDetail directGroup : directGroups) {
       directGroupId = directGroup.getId();
       // get root group of each directGroup
@@ -1119,7 +1119,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     setTargetUser(null);
   }
 
-  private void removeGroupFromPath(String groupId) throws JobDomainPeasException {
+  private void removeGroupFromPath(String groupId) {
     if (StringUtil.isDefined(groupId)) {
       int i = 0;
       while (i < groupsPath.size() && !groupsPath.get(i).isThisGroup(groupId)) {
@@ -1194,9 +1194,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * @throws JobDomainPeasException
    */
   public List<List> getGroupManagers() throws JobDomainPeasException {
-    List<List> usersAndGroups = new ArrayList<List>();
-    List<UserDetail> users = new ArrayList<UserDetail>();
-    List<Group> groups = new ArrayList<Group>();
+    List<List> usersAndGroups = new ArrayList<>();
+    List<UserDetail> users = new ArrayList<>();
+    List<Group> groups = new ArrayList<>();
 
     GroupProfileInst profile = adminCtrl.getGroupProfile(getTargetGroup().getId());
     if (profile != null) {
@@ -1214,7 +1214,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   // user panel de selection de n groupes et n users
   public void initUserPanelForGroupManagers(List<String> userIds,
-      List<String> groupIds) throws SelectionException, JobDomainPeasException {
+      List<String> groupIds) throws SelectionException {
     sel.resetAll();
     sel.setHostSpaceName(getMultilang().getString("JDP.jobDomain"));
     sel.setHostComponentName(new Pair<>(getTargetGroup().getName(), null));
@@ -1239,7 +1239,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     adminCtrl.updateGroupProfile(profile);
   }
 
-  public boolean isGroupRoot(String groupId) throws JobDomainPeasException {
+  public boolean isGroupRoot(String groupId) {
     Group gr = adminCtrl.getGroupById(groupId);
     return GroupNavigationStock.isGroupValid(gr) && this.refreshDomain && (!StringUtil.isDefined(gr.
         getSuperGroupId()) || "-1".equals(gr.getSuperGroupId()));
@@ -1491,7 +1491,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public List<Domain> getAllDomains() {
-    List<Domain> domains = new ArrayList<Domain>();
+    List<Domain> domains = new ArrayList<>();
     UserDetail ud = getUserDetail();
 
     if (ud.isAccessDomainManager()) {

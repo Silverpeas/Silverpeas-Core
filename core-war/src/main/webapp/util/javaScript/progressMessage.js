@@ -103,6 +103,9 @@
       }
 
       // Please take a look to the Silverpeas Popup Plugin
+      if ($window.spAdminLayout && spAdminLayout.getBody().getContent()) {
+        spAdminLayout.getBody().getContent().forceOnBackground();
+      }
       if ($window.spLayout) {
         spLayout.getBody().getContent().forceOnBackground();
       }
@@ -120,6 +123,9 @@
           // Clean up
           popup.dialog('destroy');
           // Please take a look to the Silverpeas Popup Plugin
+          if ($window.spAdminLayout && spAdminLayout.getBody().getContent()) {
+            spAdminLayout.getBody().getContent().unforceOnBackground();
+          }
           if ($window.spLayout) {
             spLayout.getBody().getContent().unforceOnBackground();
           }

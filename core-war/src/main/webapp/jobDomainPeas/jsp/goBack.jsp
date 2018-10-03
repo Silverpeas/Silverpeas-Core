@@ -23,32 +23,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <%@ include file="check.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<HTML>
-<HEAD>
-<script language='Javascript'>
-function viewDomainBar()
-{
-    <%
-        String URLForContent = (String)request.getAttribute("URLForContent");
-
-        if ((URLForContent != null) && (URLForContent.length() > 0))
-        {
-	%>
-			try {
-				parent.domainBar.location = '<%=URLForContent%>';
-			} catch (err) {
-				location.href = 'domainContent';
-			}
-	<%
-        }
-    %>
-}
-</script>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onload="javascript:viewDomainBar()">
-</BODY>
-</HTML>
+<html>
+<head>
+  <script type='text/javascript'>
+    function reload() {
+      top.window.spAdminWindow.loadDomain('${requestScope.Iddomain}');
+    }
+  </script>
+</head>
+<body onload="reload()">
+</body>
+</html>

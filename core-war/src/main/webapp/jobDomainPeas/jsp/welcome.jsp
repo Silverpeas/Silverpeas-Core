@@ -64,10 +64,12 @@
 <view:looknfeel/>
   <script type="application/javascript">
     function syncIM() {
-      silverpeasAjax(sp.ajaxConfig(webContext + '/chat/users/register').byPostMethod())
-        .catch(function(request) {
-          notyError(request.responseText);
-        });
+      sp.ajaxRequest(webContext + '/chat/users/register')
+          .byPostMethod()
+          .send()
+          .catch(function(request) {
+            notyError(request.responseText);
+          });
     }
   </script>
 </head>

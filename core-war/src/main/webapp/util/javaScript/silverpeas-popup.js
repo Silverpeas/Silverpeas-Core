@@ -26,9 +26,25 @@
  * Silverpeas plugin build upon JQuery to display a modal dialog box.
  * It uses the JQuery UI framework.
  */
-(function($, top$) {
+(function($, $window) {
 
-  var __displayFullscreenModalBackground = (top !== window && top.spLayout);
+  var FS_MANAGER = new function() {
+    this.isWindowCompatible = function() {
+      return top.spLayout && !top.spLayout.isWindowTop($window);
+    };
+    this.getLayoutManager = function() {
+      var _topWindow = top.spLayout.getWindowTopFrom($window).window;
+      return _topWindow.spAdminLayout ? _topWindow.spAdminLayout : spLayout;
+    };
+    this.top$ = function() {
+      return top.spLayout.getWindowTopFrom($window).jQuery;
+    },
+    this.topDocument = function() {
+      return top.spLayout.getWindowTopFrom($window).document;
+    }
+  };
+
+  var __displayFullscreenModalBackground = FS_MANAGER.isWindowCompatible();
 
   $.popup = {
     debug : false,
@@ -619,7 +635,7 @@
         $container.dialog("close");
         $container.dialog("destroy");
         $container.remove();
-        spLayout.getBody().getContent().setOnBackground();
+        FS_MANAGER.getLayoutManager().getBody().getContent().setOnBackground();
       }
     };
     this.increase = function() {
@@ -634,7 +650,7 @@
       }
     };
     this.getContainer = function() {
-      return top$("#spFullscreenModalBackground", top.document);
+      return FS_MANAGER.top$()("#spFullscreenModalBackground", FS_MANAGER.topDocument());
     };
     this.isFirst = function() {
       return __localSpFullscreenModalBackgroundContext.count === 1;
@@ -653,9 +669,9 @@
     spFullscreenModalBackgroundContext.increase();
 
     if (spFullscreenModalBackgroundContext.isFirst()) {
-      var $container = top$("<div>").attr('id', 'spFullscreenModalBackground').attr('style',
+      var $container = FS_MANAGER.top$()("<div>").attr('id', 'spFullscreenModalBackground').attr('style',
           'display: none; border: 0; padding: 0; height: 0; width: 0; overflow: hidden;');
-      top$(top.document.body).append($container);
+      FS_MANAGER.top$()(FS_MANAGER.topDocument().body).append($container);
 
       $container.dialog({
         fullscreenModalBackground : true,
@@ -700,7 +716,7 @@
       });
 
       // Displaying the dialog.
-      spLayout.getBody().getContent().setOnForeground();
+      FS_MANAGER.getLayoutManager().getBody().getContent().setOnForeground();
       $container.dialog("open");
       $container.dialog("widget").css('top', '-1000px').css('left', '-1000px');
     }
@@ -717,13 +733,14 @@
   function __adjustPosition(dialogOptions) {
     var position = dialogOptions.position;
     if (position.my === "center" && position.at === "center" && position.of === window) {
-      var headerHeightOffset = spLayout.getHeader().getContainer().offsetHeight / 2;
-      var isContentFullWidth = !(top$(spLayout.getBody().getContent().getContainer()).position().left);
+      var _layoutManager = FS_MANAGER.getLayoutManager();
+      var headerHeightOffset = _layoutManager.getHeader().getContainer().offsetHeight / 2;
+      var isContentFullWidth = !(FS_MANAGER.top$()(_layoutManager.getBody().getContent().getContainer()).position().left);
       if (isContentFullWidth) {
-        var navigationHeightOffset = spLayout.getBody().getNavigation().getContainer().offsetHeight / 2;
+        var navigationHeightOffset = _layoutManager.getBody().getNavigation().getContainer().offsetHeight / 2;
         position.at = "center center-" + (headerHeightOffset + navigationHeightOffset);
       } else {
-        var navigationWidthOffset = spLayout.getBody().getNavigation().getContainer().offsetWidth / 2;
+        var navigationWidthOffset = _layoutManager.getBody().getNavigation().getContainer().offsetWidth / 2;
         position.at = "center-" + navigationWidthOffset + " center-" + headerHeightOffset;
       }
     }
@@ -766,7 +783,7 @@
     spFullscreenModalBackgroundContext.clear();
   }
 
-})(jQuery, top.jQuery);
+})(jQuery, window);
 
 /**
  * Some helpers

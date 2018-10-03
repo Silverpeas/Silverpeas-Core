@@ -656,7 +656,7 @@ if (!window.SilverpeasAjaxConfig) {
       return this;
     },
     getUrl : function() {
-      return (this.method !== 'POST') ? sp.url.format(this.url, this.parameters) : this.url;
+      return (this.method !== 'POST' && this.method !== 'PUT') ? sp.url.format(this.url, this.parameters) : this.url;
     },
     getMethod : function() {
       return this.method;
@@ -1085,6 +1085,21 @@ if (typeof window.sp === 'undefined') {
         }
       }
     },
+    param : {
+      singleToObject : function(defaultName, params) {
+        var paramsType = typeof params;
+        if (Array.isArray(params)
+            || paramsType === 'string'
+            || paramsType === 'boolean'
+            || paramsType === 'number'
+            || sp.promise.isOne(params)) {
+          var result = {};
+          result[defaultName] = params;
+          return result;
+        }
+        return params;
+      }
+    },
     base64 : {
       encode : function(str) {
         return window.btoa(str);
@@ -1496,6 +1511,11 @@ if (typeof window.sp === 'undefined') {
       querySelectorAll: function(cssSelector, fromElement) {
         var from = typeof fromElement !== 'undefined' ? fromElement : document;
         return [].slice.call(from.querySelectorAll(cssSelector), 0);
+      },
+      scrollToIfNotFullyInView : function(elementOrCssSelector, $view, options) {
+        if (!sp.element.isInView(elementOrCssSelector, true, $view)) {
+          sp.element.scrollTo(elementOrCssSelector, $view, options);
+        }
       },
       scrollTo: function(elementOrCssSelector, $view, options) {
         options = extendsObject({

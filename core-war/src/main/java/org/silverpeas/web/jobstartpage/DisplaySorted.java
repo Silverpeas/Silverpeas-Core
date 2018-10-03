@@ -76,4 +76,32 @@ public class DisplaySorted implements Comparable<DisplaySorted> {
   public boolean isAdmin() {
     return isAdmin;
   }
+
+  public String getName() {
+    return name;
+  }
+
+  public int getOrderNum() {
+    return orderNum;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public String getHtmlLine() {
+    return htmlLine;
+  }
+
+  public int getType() {
+    return type;
+  }
+
+  public int getDeep() {
+    return deep;
+  }
+
+  public boolean isVisible() {
+    return isVisible;
+  }
 }

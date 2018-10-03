@@ -35,6 +35,7 @@ import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
@@ -61,6 +62,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -73,6 +75,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = -8055016885655445663L;
+  private static final String MANUAL_JSON_RESPONSE_PREFIX = "MANUAL_JSON_RESPONSE_";
   @Inject
   private UserAndGroupSelectionProcessor selectionProcessor;
   @Inject
@@ -304,11 +307,24 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     return userAllowed[0];
   }
 
+  protected String emptyJsonResponse() {
+    return sendJson(JSONCodec.encodeObject(o -> o));
+  }
+
+  protected String sendJson(String jsonContent) {
+    return MANUAL_JSON_RESPONSE_PREFIX + jsonContent;
+  }
+
   private void redirectService(HttpServletRequest request, HttpServletResponse response,
       String destination) {
     // Open the destination page
     try {
-      if (destination.startsWith("PRODUCES_")) {
+      if (destination.startsWith(MANUAL_JSON_RESPONSE_PREFIX)) {
+        response.setHeader("Content-Type", MediaType.APPLICATION_JSON + "; charset=UTF-8");
+        response.getWriter().append(destination.substring(MANUAL_JSON_RESPONSE_PREFIX.length()));
+        response.flushBuffer();
+      }
+      else if (destination.startsWith("PRODUCES_")) {
         response.flushBuffer();
       } else if (destination.startsWith("http") || destination.startsWith("ftp")) {
         response.sendRedirect(destination);

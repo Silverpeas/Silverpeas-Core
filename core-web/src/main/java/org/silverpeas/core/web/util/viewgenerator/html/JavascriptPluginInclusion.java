@@ -58,14 +58,11 @@ import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombinati
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.displayableAsContentComponentNames;
 import static org.silverpeas.core.html.SupportedWebPlugins.*;
 import static org.silverpeas.core.notification.user.UserNotificationServerEvent.getNbUnreadFor;
-import static org.silverpeas.core.notification.user.client.NotificationManagerSettings
-    .getUserNotificationDesktopIconUrl;
+import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getUserNotificationDesktopIconUrl;
 import static org.silverpeas.core.reminder.ReminderSettings.getDefaultReminder;
 import static org.silverpeas.core.reminder.ReminderSettings.getPossibleReminders;
-import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptBundleProducer
-    .bundleVariableName;
-import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptSettingProducer
-    .settingVariableName;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptBundleProducer.bundleVariableName;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptSettingProducer.settingVariableName;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -914,13 +911,23 @@ public class JavascriptPluginInclusion {
             .add("layout.pdc.baseUrl", URLUtil.getApplicationURL() + "/RpdcSearch/jsp/")
             .add("layout.pdc.action.default", "ChangeSearchTypeToExpert")
             .produce()));
+      xhtml.addElement(scriptContent(settingVariableName("AdminLayoutSettings")
+            .add("layout.header.url", URLUtil.getApplicationURL() + "/RjobManagerPeas/jsp/TopBarManager")
+            .add("layout.body.url", "")
+            .add("layout.body.navigation.url", "")
+            .produce()));
       final LocalizationBundle errorBundle = ResourceLocator
           .getLocalizationBundle("org.silverpeas.common.multilang.errors",lookHelper.getLanguage());
       xhtml.addElement(scriptContent(bundleVariableName("WindowBundle")
             .add("e.t.r", errorBundle.getString("error.technical.responsive"))
             .produce()));
+      xhtml.addElement(scriptContent(bundleVariableName("AdminWindowBundle")
+            .add("e.t.r", errorBundle.getString("error.technical.responsive"))
+            .produce()));
       xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-window.js"));
       xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_LAYOUT));
+      xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-admin-window.js"));
+      xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-admin-layout.js"));
     }
     return xhtml;
   }
