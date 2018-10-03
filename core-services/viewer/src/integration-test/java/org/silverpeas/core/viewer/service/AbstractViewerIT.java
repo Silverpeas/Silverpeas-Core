@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.converter.openoffice.OpenOfficeService;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.io.media.image.imagemagick.Im4javaManager;
+import org.silverpeas.core.io.media.image.option.DimensionOption;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.test.util.SilverProperties;
 import org.silverpeas.core.util.ServiceProvider;
@@ -53,6 +54,8 @@ public abstract class AbstractViewerIT {
   private static final String DOC_ID = "doc-id";
   private static final String LANG = "fr";
 
+  static final DimensionOption IMG_PORTRAIT = DimensionOption.widthAndHeight(595, 842);
+  static final DimensionOption IMG_LANDSCAPE = DimensionOption.widthAndHeight(612, 792);
 
   @Deployment
   public static Archive<?> createTestArchive() {

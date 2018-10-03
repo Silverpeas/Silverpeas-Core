@@ -30,13 +30,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.viewer.model.Preview;
-import org.silverpeas.core.viewer.model.ViewerSettings;
+import org.silverpeas.core.io.media.image.option.DimensionOption;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.util.ImageUtil;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.viewer.model.Preview;
+import org.silverpeas.core.viewer.model.ViewerSettings;
 
 import javax.inject.Inject;
+
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -297,40 +300,49 @@ public class PreviewServiceWithoutSwfrenderIT extends AbstractViewerIT {
   }
 
   private void assertPptDocumentPreview(Preview preview) {
-    assertDocumentPreview(preview, 720, 540, false, "jpg");
+    assertDocumentPreview(preview, false, DimensionOption.widthAndHeight(720, 540));
   }
 
   private void assertPptDocumentPreviewWithCacheManagement(Preview preview) {
-    assertDocumentPreview(preview, 720, 540, true, "jpg");
+    assertDocumentPreview(preview, true, DimensionOption.widthAndHeight(720, 540));
   }
 
   private void assertImageDocumentPreview(Preview preview) {
-    assertDocumentPreview(preview, 1000, 750, false, "jpg");
+    assertDocumentPreview(preview, false, DimensionOption.widthAndHeight(1000, 750));
   }
 
   private void assertImageDocumentPreviewWithCacheManagement(Preview preview) {
-    assertDocumentPreview(preview, 1000, 750, true, "jpg");
+    assertDocumentPreview(preview, true, DimensionOption.widthAndHeight(1000, 750));
   }
 
   private void assertOfficeOrPdfDocumentPreview(Preview preview) {
-    assertDocumentPreview(preview, 595, 842, false, "jpg");
+    assertDocumentPreview(preview, false, IMG_PORTRAIT, IMG_LANDSCAPE);
   }
 
   private void assertOfficeOrPdfDocumentPreviewWithCacheManagement(Preview preview) {
-    assertDocumentPreview(preview, 595, 842, true, "jpg");
+    assertDocumentPreview(preview, true, IMG_PORTRAIT, IMG_LANDSCAPE);
   }
 
-  private void assertDocumentPreview(Preview preview, int width, int height,
-      final boolean cacheUsed, final String fileExtension) {
+  private void assertDocumentPreview(Preview preview, final boolean cacheUsed,
+      final DimensionOption... dimensions) {
     assertThat(preview, notNullValue());
-    int nbFilesAtTempRoot = cacheUsed ? 2 : 1;
+    final String fileExtension = "jpg";
+    final int nbFilesAtTempRoot = cacheUsed ? 2 : 1;
+    String[] widths = Stream.of(dimensions)
+        .map(DimensionOption::getWidth)
+        .map(String::valueOf)
+        .toArray(String[]::new);
+    String[] heights = Stream.of(dimensions)
+        .map(DimensionOption::getHeight)
+        .map(String::valueOf)
+        .toArray(String[]::new);
     assertThat(getTemporaryPath().listFiles(), arrayWithSize(nbFilesAtTempRoot));
     assertThat(preview.getPhysicalFile().getParentFile().listFiles(), arrayWithSize(1));
     assertThat(preview.getPhysicalFile().getName(), is("file." + fileExtension));
-    assertThat(preview.getWidth(), is(String.valueOf(width)));
-    assertThat(preview.getHeight(), is(String.valueOf(height)));
+    assertThat(preview.getWidth(), isIn(widths));
+    assertThat(preview.getHeight(), isIn(heights));
     final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
-    assertThat(previewSize[0], is(String.valueOf(width)));
-    assertThat(previewSize[1], is(String.valueOf(height)));
+    assertThat(previewSize[0], isIn(widths));
+    assertThat(previewSize[1], isIn(heights));
   }
 }
