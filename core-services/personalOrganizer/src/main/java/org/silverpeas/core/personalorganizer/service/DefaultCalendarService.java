@@ -294,7 +294,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   }
 
   @Override
-  @Transactional
+  @Transactional(Transactional.TxType.REQUIRED)
   public void removeToDo(String id) {
     // get the detail for desindexation
     ToDoHeader todo = getToDoHeader(id);
@@ -309,6 +309,8 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     removeIndex(todo, todo.getDelegatorId());
   }
 
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
   public void removeToDoFromExternal(String spaceId, String componentId, String externalId) {
     try {
       Collection<ToDoHeader> headers = getExternalTodos(spaceId, componentId, externalId);
@@ -320,6 +322,8 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     }
   }
 
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
   public void removeAttendeeInToDoFromExternal(String componentId, String externalId,
       String userId) {
     try {

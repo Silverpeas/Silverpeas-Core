@@ -170,7 +170,7 @@
       if (currentParams.length > 1) {
         url += '&' + currentParams[1];
       }
-      sp.load('#myContacts', url, true).then(function() {
+      sp.ajaxRequest(url).loadTarget('#myContacts', true).then(function() {
         $.closeProgressMessage();
         activateUserZoom();
       });
