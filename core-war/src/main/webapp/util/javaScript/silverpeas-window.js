@@ -538,7 +538,7 @@
     };
 
     this.setupComponent = function(componentId) {
-      spLayout.getSplash().load(
+      spLayout.getBody().getContent().load(
           webContext + "/RjobStartPagePeas/jsp/SetupComponent?ComponentId=" + componentId)['catch'](__loadErrorListener);
     };
 

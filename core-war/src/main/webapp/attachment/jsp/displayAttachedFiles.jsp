@@ -208,7 +208,7 @@
 <div class="attachments bgDegradeGris attachmentDragAndDrop${fn:replace(param.Id,'=','_')}">
   <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
   <c:if test="${contextualMenuEnabled}">
-  <div id="attachment-creation-actions"><a class="menubar-creation-actions-item" href="javascript:addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
+  <div id="attachment-creation-actions"><a class="menubar-creation-actions-item menubar-creation-actions-move-ignored" href="javascript:addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
   </c:if>
     <ul id="attachmentList">
       <c:forEach items="${pageScope.attachments}" var="varAttachment" >

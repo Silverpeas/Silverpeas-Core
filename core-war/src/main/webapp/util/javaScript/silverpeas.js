@@ -736,6 +736,15 @@ if (!window.SilverpeasAjaxConfig) {
       return this.send(content).then(function(request) {
         return request.responseAsJson();
       });
+    },
+    loadTarget : function(targetOrArrayOfTargets, isGettingFullHtmlContent) {
+      return this.send().then(function(request) {
+        sp.updateTargetWithHtmlContent(targetOrArrayOfTargets, request.responseText, isGettingFullHtmlContent);
+        return request;
+      }, function(request) {
+        sp.log.error(request.status + " " + request.statusText);
+        return sp.promise.rejectDirectlyWith(request);
+      });
     }
   });
 }
@@ -1406,14 +1415,14 @@ if (typeof window.sp === 'undefined') {
         return url + (paramPart.length === 1 ? '' : paramPart);
       }
     },
-    load : function(targetOrArrayOfTargets, ajaxConfig, isGettingFullHtmlContent) {
-      return silverpeasAjax(ajaxConfig).then(function(request) {
-        sp.updateTargetWithHtmlContent(targetOrArrayOfTargets, request.responseText, isGettingFullHtmlContent);
-        return request;
-      }, function(request) {
-        sp.log.error(request.status + " " + request.statusText);
-        return sp.promise.rejectDirectlyWith(request);
-      });
+    /**
+     * @deprecated use instead sp.ajaxRequest(...).loadTarget(...)
+     */
+    load : function(targetOrArrayOfTargets, ajaxRequest, isGettingFullHtmlContent) {
+      if (typeof ajaxRequest === 'string') {
+        ajaxRequest = sp.ajaxRequest(ajaxRequest);
+      }
+      return ajaxRequest.loadTarget(targetOrArrayOfTargets, isGettingFullHtmlContent);
     },
     updateTargetWithHtmlContent : function(targetOrArrayOfTargets, html, isGettingFullHtmlContent) {
       var targetIsArrayOfCssSelector = typeof targetOrArrayOfTargets === 'object' && Array.isArray(targetOrArrayOfTargets);
