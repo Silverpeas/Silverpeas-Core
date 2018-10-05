@@ -369,18 +369,17 @@ public class IndexSearcher {
    */
   private Query getQuery(String fieldName, String queryStr, Set<String> languages, Analyzer analyzer)
       throws ParseException {
-    Map<String, BooleanClause.Occur> fieldNames = new HashMap<>();
+    BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
     for (String language : languages) {
-      fieldNames.put(getFieldName(fieldName, language), BooleanClause.Occur.SHOULD);
+      QueryParser parser = new QueryParser(getFieldName(fieldName, language), analyzer);
+      parser.setDefaultOperator(defaultOperator);
+      try {
+        booleanQueryBuilder.add(parser.parse(queryStr), BooleanClause.Occur.SHOULD);
+      } catch (org.apache.lucene.queryparser.classic.ParseException e) {
+        throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, e);
+      }
     }
-    Query query;
-    try {
-      query = MultiFieldQueryParser.parse(queryStr, fieldNames.keySet().toArray(new String[0]),
-          fieldNames.values().toArray(new BooleanClause.Occur[0]), analyzer);
-    } catch (org.apache.lucene.queryparser.classic.ParseException e) {
-      throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, e);
-    }
-    return query;
+    return booleanQueryBuilder.build();
   }
 
   private String getFieldName(String name, String language) {
