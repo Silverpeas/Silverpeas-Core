@@ -105,6 +105,9 @@ public class SilverLoggerProvider {
       namespace = namespace.substring(namespace.indexOf('.') + 1);
     }
     Logger annotation = pkg.getAnnotation(Logger.class);
+    if (annotation == null && object instanceof Class) {
+      annotation = (Logger) ((Class) object).getAnnotation(Logger.class);
+    }
     if (annotation != null) {
       namespace = annotation.value();
     }
