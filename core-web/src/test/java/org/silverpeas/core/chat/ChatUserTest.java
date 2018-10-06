@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.chat;
 
-import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

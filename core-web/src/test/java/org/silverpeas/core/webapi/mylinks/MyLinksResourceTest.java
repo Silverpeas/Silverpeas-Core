@@ -52,7 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.apache.commons.lang.reflect.FieldUtils.writeDeclaredField;
+import static org.apache.commons.lang3.reflect.FieldUtils.writeDeclaredField;
 import static org.apache.commons.lang3.tuple.Pair.of;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
