@@ -28,7 +28,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -284,18 +283,8 @@ public class IndexSearcher {
     try {
       if (I18NHelper.isI18nContentActivated && "*".equals(language)) {
         // search over all languages
-        String[] fields = new String[I18NHelper.getNumberOfLanguages()];
-
-        int l = 0;
         Set<String> languages = I18NHelper.getAllSupportedLanguages();
-        for (String lang : languages) {
-          fields[l] = getFieldName(searchField, lang);
-          l++;
-        }
-
-        MultiFieldQueryParser mfqp = new MultiFieldQueryParser(fields, analyzer);
-        mfqp.setDefaultOperator(defaultOperator);
-        parsedQuery = mfqp.parse(query.getQuery());
+        parsedQuery = getQuery(searchField, query.getQuery(), languages, analyzer);
       } else {
         // search only specified language
         String fieldName = searchField;
