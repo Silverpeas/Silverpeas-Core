@@ -61,7 +61,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.silverpeas.core.i18n.I18NHelper.defaultLocale;
 import static org.silverpeas.core.index.indexing.model.IndexProcessor.doRemoveAll;
 import static org.silverpeas.core.index.indexing.model.IndexProcessor.doFlush;
 
@@ -450,47 +449,44 @@ public class IndexManager {
 
   private void setContentFields(final FullIndexEntry indexEntry, final Document doc) {
     final Iterator<String> languages;
-    if (indexEntry.getObjectType() != null && indexEntry.getObjectType().startsWith(
-        ATTACHMENT_PREFIX)) {
+    if (indexEntry.getObjectType() != null &&
+        indexEntry.getObjectType().startsWith(ATTACHMENT_PREFIX)) {
       String lang = indexEntry.getLang();
       if (indexEntry.getTitle(lang) != null) {
-        addTitleToDocContent(indexEntry.getTitle(lang), doc, lang);
+        addToDocContent(indexEntry.getTitle(lang), doc, lang);
       }
-      addTitleToDocContent(indexEntry.getFilename(), doc, lang);
+      addToDocContent(indexEntry.getFilename(), doc, lang);
     } else {
-      addTitleToDocContent(indexEntry.getTitle(), doc);
+      addToDocContent(indexEntry.getTitle(), doc);
     }
     languages = indexEntry.getLanguages();
     while (languages.hasNext()) {
       String language = languages.next();
 
       if (indexEntry.getTitle(language) != null) {
-        addTitleToDocContent(indexEntry.getTitle(language), doc, language);
+        addToDocContent(indexEntry.getTitle(language), doc, language);
       }
       if (indexEntry.getPreview(language) != null) {
-        doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getPreview(language),
-            TextField.TYPE_NOT_STORED));
+        addToDocContent(indexEntry.getPreview(language), doc, language);
       }
       if (indexEntry.getKeywords(language) != null) {
-        doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getKeywords(language),
-            TextField.TYPE_NOT_STORED));
+        addToDocContent(indexEntry.getKeywords(language), doc, language);
       }
     }
   }
 
-  private void addTitleToDocContent(String title, Document doc) {
-    addTitleToDocContent(CONTENT, title, doc);
+  private void addToDocContent(String value, Document doc) {
+    addToDocContent(CONTENT, value, doc);
   }
 
-  private void addTitleToDocContent(String title, Document doc, String lang) {
+  private void addToDocContent(String value, Document doc, String lang) {
     String fieldName = getFieldName(CONTENT, lang);
-    addTitleToDocContent(fieldName, title, doc);
+    addToDocContent(fieldName, value, doc);
   }
 
-  private void addTitleToDocContent(String fieldName, String title, Document doc) {
-    doc.add(new Field(fieldName, title, TextField.TYPE_NOT_STORED));
-    doc.add(new Field(fieldName, title.replaceAll("_", " ").replaceAll("-", " "),
-        TextField.TYPE_NOT_STORED));
+  private void addToDocContent(String fieldName, String value, Document doc) {
+    doc.add(new Field(fieldName, value, TextField.TYPE_NOT_STORED));
+    doc.add(new Field(fieldName, value.replaceAll("[_-]", " "), TextField.TYPE_NOT_STORED));
   }
 
   private void setHeaderFields(final FullIndexEntry indexEntry, final Document doc) {
