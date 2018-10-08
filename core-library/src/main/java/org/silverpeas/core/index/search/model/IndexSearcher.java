@@ -28,7 +28,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -284,18 +283,8 @@ public class IndexSearcher {
     try {
       if (I18NHelper.isI18nContentActivated && "*".equals(language)) {
         // search over all languages
-        String[] fields = new String[I18NHelper.getNumberOfLanguages()];
-
-        int l = 0;
         Set<String> languages = I18NHelper.getAllSupportedLanguages();
-        for (String lang : languages) {
-          fields[l] = getFieldName(searchField, lang);
-          l++;
-        }
-
-        MultiFieldQueryParser mfqp = new MultiFieldQueryParser(fields, analyzer);
-        mfqp.setDefaultOperator(defaultOperator);
-        parsedQuery = mfqp.parse(query.getQuery());
+        parsedQuery = getQuery(searchField, query.getQuery(), languages, analyzer);
       } else {
         // search only specified language
         String fieldName = searchField;
@@ -357,18 +346,17 @@ public class IndexSearcher {
    */
   private Query getQuery(String fieldName, String queryStr, Set<String> languages, Analyzer analyzer)
       throws ParseException {
-    Map<String, BooleanClause.Occur> fieldNames = new HashMap<>();
+    BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
     for (String language : languages) {
-      fieldNames.put(getFieldName(fieldName, language), BooleanClause.Occur.SHOULD);
+      QueryParser parser = new QueryParser(getFieldName(fieldName, language), analyzer);
+      parser.setDefaultOperator(defaultOperator);
+      try {
+        booleanQueryBuilder.add(parser.parse(queryStr), BooleanClause.Occur.SHOULD);
+      } catch (org.apache.lucene.queryparser.classic.ParseException e) {
+        throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, e);
+      }
     }
-    Query query;
-    try {
-      query = MultiFieldQueryParser.parse(queryStr, fieldNames.keySet().toArray(new String[fieldNames.size()]),
-          fieldNames.values().toArray(new BooleanClause.Occur[fieldNames.size()]), analyzer);
-    } catch (org.apache.lucene.queryparser.classic.ParseException e) {
-      throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, e);
-    }
-    return query;
+    return booleanQueryBuilder.build();
   }
 
   private String getFieldName(String name, String language) {
