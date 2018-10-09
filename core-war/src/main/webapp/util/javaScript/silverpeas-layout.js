@@ -619,7 +619,7 @@
       sp.log.debugActivated = mainDebugStatus;
     }
   }
-})(top.window);
+})(window.opener ? window.opener.top.window : top.window);
 
 function initializeSilverpeasLayout(bodyLoadParameters) {
   if (top === window) {
