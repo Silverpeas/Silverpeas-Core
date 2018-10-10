@@ -29,7 +29,8 @@ Silverpeas plugin which handles the behaviour about the connected users informat
 
 (function() {
 
-  var $window = top.spLayout ? top.window : window;
+  var $window = window.opener ? window.opener.top.window : top.window;
+  $window = $window.spLayout ? $window : window;
 
   /**
    * The instance of the plugin must be attached to the top window.
