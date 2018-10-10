@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.viewer.service;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -31,6 +32,7 @@ import org.junit.runners.Suite;
  */
 
 @RunWith(Suite.class)
+@Ignore
 @Suite.SuiteClasses({
     ViewServiceNoCacheDemonstrationBefore.class,
     ViewServiceNoCacheDemonstrationAfter.class
