@@ -24,10 +24,10 @@
 package org.silverpeas.web.silverstatistics.control;
 
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class DocPieChartBuilder extends AbstractPieChartBuilder {
   private final String spaceId;
   private final LocalizationBundle message;
 
-  public DocPieChartBuilder(String spaceId, LocalizationBundle message) {
+  DocPieChartBuilder(String spaceId, LocalizationBundle message) {
     this.spaceId = spaceId;
     this.message = message;
   }
@@ -57,8 +57,7 @@ public class DocPieChartBuilder extends AbstractPieChartBuilder {
         title += message.getString("silverStatisticsPeas.FromSpace") + " [" + space.getName() + "]";
       }
     } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas", "DocPieChartBuilder.getChartTitle()",
-          "root.EX_SQL_QUERY_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return title;
   }
@@ -73,9 +72,8 @@ public class DocPieChartBuilder extends AbstractPieChartBuilder {
     try {
       return SilverStatisticsPeasDAOVolumeServer.getStatsVentil();
     } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas", "DocPieChartBuilder.getCmpStats()",
-          "root.EX_SQL_QUERY_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     }
-    return new HashMap<String, String[]>(0);
+    return new HashMap<>(0);
   }
 }

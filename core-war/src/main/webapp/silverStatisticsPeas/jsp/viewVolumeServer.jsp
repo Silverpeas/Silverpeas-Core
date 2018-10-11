@@ -49,7 +49,7 @@ if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
 	tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServices",false);
 }
 tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
-tabbedPane.addTab(resources.getString("GML.attachments"),"javascript:displayVolumes();",true);
+tabbedPane.addTab(resources.getString("GML.files"),"javascript:displayVolumes();",true);
 
 ArrayPane arrayPane = gef.getArrayPane("List", "ViewVolumeServer"+( (spaceId==null) ? "" : ("?SpaceId="+spaceId) ), request,session);
 arrayPane.setVisibleLineNumber(50);

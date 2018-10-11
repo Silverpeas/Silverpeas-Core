@@ -112,6 +112,10 @@ function getFooterHeight() {
 	return "<%=helper.getSettings("footerHeight", "26")%>";
 }
 
+function goToMyProfile() {
+  spWindow.loadLink(webContext + '/RMyProfil/jsp/Main');
+}
+
 window.USERSESSION_PROMISE.then(function() {
   spUserSession.addEventListener('connectedUsersChanged', function(event) {
     var nb = event.detail.data.nb;
@@ -151,7 +155,7 @@ window.USERNOTIFICATION_PROMISE.then(function() {
 	    <div id="outils">
 		<% if (!isAnonymousAccess) { %>
 			<div class="avatarName">
-				<a href="<%=m_sContext%>/RMyProfil/jsp/Main" target="MyMain" title="<%=helper.getString("lookSilverpeasV5.userlink")%>"><view:image src="<%=helper.getUserDetail().getAvatar()%>" type="avatar" alt="avatar"/> <%=helper.getUserFullName() %></a>
+				<a href="javascript:goToMyProfile()" title="<%=helper.getString("lookSilverpeasV5.userlink")%>"><view:image src="<%=helper.getUserDetail().getAvatar()%>" type="avatar" alt="avatar"/> <%=helper.getUserFullName() %></a>
 			</div>
 		<% } %>
 		<div class="userNav">

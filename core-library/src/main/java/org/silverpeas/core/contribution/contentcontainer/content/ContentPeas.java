@@ -52,7 +52,7 @@ public class ContentPeas {
     } else if ("kmelia".equals(sContentDescriptorPath)) {
       this.init("kmelia", "org.silverpeas.components.kmelia.KmeliaContentManager");
     } else if ("survey".equals(sContentDescriptorPath)) {
-      this.init("survey", "com.stratelia.webactiv.survey.SurveyContentManager");
+      this.init("survey", "org.silverpeas.components.survey.SurveyContentManager");
     } else if ("toolbox".equals(sContentDescriptorPath)) {
       this.init("toolbox", "org.silverpeas.components.kmelia.KmeliaContentManager");
     } else if ("quickinfo".equals(sContentDescriptorPath)) {
@@ -64,7 +64,7 @@ public class ContentPeas {
     } else if ("forums".equals(sContentDescriptorPath)) {
       this.init("forums", "org.silverpeas.components.forums.ForumsContentManager");
     } else if ("pollingStation".equals(sContentDescriptorPath)) {
-      this.init("pollingStation", "com.stratelia.webactiv.survey.SurveyContentManager");
+      this.init("pollingStation", "org.silverpeas.components.survey.SurveyContentManager");
     } else if ("bookmark".equals(sContentDescriptorPath)) {
       this.init("bookmark", "org.silverpeas.components.websites.WebSitesContentManager");
     } else if ("infoLetter".equals(sContentDescriptorPath)) {

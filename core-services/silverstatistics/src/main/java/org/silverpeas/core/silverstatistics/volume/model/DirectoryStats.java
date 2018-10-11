@@ -23,42 +23,35 @@
  */
 package org.silverpeas.core.silverstatistics.volume.model;
 
-import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.core.util.memory.MemoryUnit;
-
 /**
  * Statistics of a directory.
  */
 public class DirectoryStats {
   private final String directoryName;
-  private Long directorySize;
-  private Long numberOfFiles;
+  private long directorySize = 0L;
+  private long numberOfFiles = 0L;
 
-  public DirectoryStats(String name, long sizeOfDirectory, long numberOfFiles) {
-    this.numberOfFiles = numberOfFiles;
+  public DirectoryStats(String name) {
     this.directoryName = name;
-    this.directorySize = sizeOfDirectory;
   }
 
   public String getDirectoryName() {
     return directoryName;
   }
 
-  public Long getDirectorySize() {
+  public long getDirectorySize() {
     return directorySize;
   }
 
-  public String getFormattedDirectorySize() {
-    return UnitUtil.formatValue(directorySize, MemoryUnit.B, MemoryUnit.MB);
-  }
-
-  public Long getNumberOfFiles() {
+  public long getNumberOfFiles() {
     return numberOfFiles;
   }
 
-  public void addFile(long size) {
-    numberOfFiles++;
-    directorySize = directorySize + size;
+  public void addDirectorySize(final long directorySize) {
+    this.directorySize += directorySize;
   }
 
+  public void addFileNumber(final long numberOfFiles) {
+    this.numberOfFiles += numberOfFiles;
+  }
 }

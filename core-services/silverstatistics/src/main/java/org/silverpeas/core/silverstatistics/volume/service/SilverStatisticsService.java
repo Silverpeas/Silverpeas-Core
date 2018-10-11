@@ -23,22 +23,20 @@
  */
 package org.silverpeas.core.silverstatistics.volume.service;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-
-import javax.inject.Singleton;
-
+import org.apache.commons.lang3.text.StrTokenizer;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.volume.dao.SilverStatisticsDAO;
 import org.silverpeas.core.silverstatistics.volume.dao.SilverStatisticsManagerDAO;
 import org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConfigException;
+import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsRuntimeException;
-import org.silverpeas.core.silverstatistics.volume.model.StatType;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import org.apache.commons.lang3.text.StrTokenizer;
+import javax.inject.Singleton;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 import static org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConstants.SEPARATOR;
 
@@ -68,13 +66,11 @@ public class SilverStatisticsService implements SilverStatistics {
           myCon.commit();
         }
       } catch (SQLException | StatisticsRuntimeException e) {
-        SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
-            "silverstatistics.MSG_ALIMENTATION_BD",
-            "typeOfStats = " + type + ", dataArray = " + dataArray, e);
+        SilverLogger.getLogger(this)
+            .error("typeOfStats={0}, dataArray={1}", new Object[]{type, dataArray}, e);
       }
     } else {
-      SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
-          "MSG_CONFIG_DATAS", "data en entree=" + data + " pour " + type);
+      SilverLogger.getLogger(this).error("input data={0} for {1}", data, type);
     }
   }
 
@@ -98,8 +94,7 @@ public class SilverStatisticsService implements SilverStatistics {
     try {
       myStatsConfig.init();
     } catch (SilverStatisticsConfigException e) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsEJB.setSessionContext",
-          "silverstatistics.MSG_CONFIG_FILE", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
