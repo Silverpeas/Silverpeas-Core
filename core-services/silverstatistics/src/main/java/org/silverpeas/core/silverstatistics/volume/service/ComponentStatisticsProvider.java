@@ -23,9 +23,14 @@
  */
 package org.silverpeas.core.silverstatistics.volume.service;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * A provider of statistics data about some resources managed in a given Silverpeas Component.
@@ -42,6 +47,59 @@ public interface ComponentStatisticsProvider {
    */
   String QUALIFIER_SUFFIX = "Statistics";
 
-  Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) throws
-      Exception;
+  static Optional<ComponentStatisticsProvider> getByComponentName(final String componentName) {
+    /*
+     * Gets the component statistics qualifier defined into SilverStatistics.properties file
+     * associated to the component identified by the given name.
+     * If no qualifier is defined for the component, a default conventional one is computed.
+     */
+    final String qualifier = ResourceLocator
+        .getSettingBundle("org.silverpeas.silverstatistics.SilverStatistics")
+        .getString(componentName, componentName + QUALIFIER_SUFFIX);
+
+    try {
+      return Optional.of(ServiceProvider.getService(qualifier));
+    } catch (Exception e) {
+      SilverLogger.getLogger(e).silent(e);
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * Gets by user the number of owned contributions.
+   * @param spaceId the identifier of space which the component represented by componentId
+   * parameter is linked to.
+   * @param componentId the identifier of the current looked component instance.
+   * @return a collection of {@link UserIdCountVolumeCouple}. The collection can contains several
+   * {@link UserIdCountVolumeCouple} with the same user identifier.
+   * @throws SilverpeasException on technical error.
+   */
+  Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
+      throws SilverpeasException;
+
+  /**
+   * Gets the memory size of documents of the application instance by taking into account only
+   * the specific files handled by the application.
+   * <p>
+   * The files handled by transverse services are taken into account by other statistic services.
+   * </p>
+   * @param componentId the identifier of the current looked component instance.
+   * @return a long.
+   */
+  default long memorySizeOfSpecificFiles(final String componentId) {
+    return 0L;
+  }
+
+  /**
+   * Counts the number of document the application instance uses by taking into account only the
+   * specific files handled by the application.
+   * <p>
+   * The files handled by transverse services are taken into account by other statistic services.
+   * </p>
+   * @param componentId the identifier of the current looked component instance.
+   * @return a long.
+   */
+  default long countSpecificFiles(final String componentId) {
+    return 0L;
+  }
 }

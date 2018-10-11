@@ -92,12 +92,14 @@ import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_MIXED_GROUPS;
+import static org.silverpeas.core.util.StringUtil.isLong;
 
 /**
  * The class Admin is the main class of the Administrator.
@@ -788,6 +790,9 @@ class Admin implements Administration {
     try {
       ComponentInst componentInst = getComponentInst(getDriverComponentId(sClientComponentId),
           null);
+      componentInst = checkComponentInstanceById(componentInst, sClientComponentId,
+          nullComponentInstSupplier);
+      Objects.requireNonNull(componentInst);
       componentInst.setDomainFatherId(getClientSpaceId(componentInst.getDomainFatherId()));
       return componentInst;
     } catch (Exception e) {
@@ -798,12 +803,38 @@ class Admin implements Administration {
   @Override
   public ComponentInstLight getComponentInstLight(String componentId) throws AdminException {
     try {
-      int driverComponentId = getDriverComponentId(componentId);
-      return componentManager.getComponentInstLight(driverComponentId);
+      final int driverComponentId = getDriverComponentId(componentId);
+      final ComponentInstLight instance = componentManager.getComponentInstLight(driverComponentId);
+      return checkComponentInstanceById(instance, componentId, null);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting(COMPONENT, componentId), e);
     }
   }
+
+  private <T extends SilverpeasComponentInstance> T checkComponentInstanceById(
+      final T componentInstance, final String componentId,
+      final Supplier<T> nullComponentInstance) {
+    if (componentInstance != null) {
+      if (componentInstance.getId().equals(componentId)
+          || "-1".equals(componentInstance.getId())
+          || isLong(componentId)) {
+        return componentInstance;
+      }
+      SilverLogger.getLogger(this).error("{0}. Wrong component {1} has been found!!",
+          failureOnGetting(COMPONENT, componentId), componentInstance.getId());
+      return nullComponentInstance != null ? nullComponentInstance.get() : null;
+    }
+    return null;
+  }
+
+  private final Supplier<ComponentInst> nullComponentInstSupplier = () -> {
+    try {
+      return getComponentInst(-1, -1);
+    } catch (AdminException e) {
+      SilverLogger.getLogger(this).error(e);
+      return null;
+    }
+  };
 
   /**
    * Return the component Inst corresponding to the given ID.
@@ -1008,6 +1039,9 @@ class Admin implements Administration {
 
       // Get the component to delete
       ComponentInst componentInst = getComponentInst(sDriverComponentId, null);
+      componentInst = checkComponentInstanceById(componentInst, componentId,
+          nullComponentInstSupplier);
+      Objects.requireNonNull(componentInst);
 
       // Get the father id
       String sFatherClientId = componentInst.getDomainFatherId();
@@ -1580,12 +1614,16 @@ class Admin implements Administration {
   public String addProfileInst(ProfileInst profileInst, String userId)
       throws AdminException {
     try {
-      int driverFatherId = getDriverComponentId(profileInst.getComponentFatherId());
+      final String componentFatherId = profileInst.getComponentFatherId();
+      int driverFatherId = getDriverComponentId(componentFatherId);
       String sProfileId = profileManager.createProfileInst(profileInst, driverFatherId);
       profileInst.setId(sProfileId);
 
       if (profileInst.getObjectId() == -1 || profileInst.getObjectId() == 0) {
         ComponentInst componentInstFather = getComponentInst(driverFatherId, null);
+        componentInstFather = checkComponentInstanceById(componentInstFather, componentFatherId,
+            nullComponentInstSupplier);
+        Objects.requireNonNull(componentInstFather);
         componentInstFather.addProfileInst(profileInst);
         if (StringUtil.isDefined(userId)) {
           componentInstFather.setUpdaterUserId(userId);
@@ -1621,10 +1659,14 @@ class Admin implements Administration {
     ProfileInst profile = profileManager.getProfileInst(profileId);
     try {
       profileManager.deleteProfileInst(profile);
-      if (StringUtil.isDefined(
-          userId) && (profile.getObjectId() == -1 || profile.getObjectId() == 0)) {
-        int driverFatherId = getDriverComponentId(profile.getComponentFatherId());
+      if (StringUtil.isDefined(userId)
+          && (profile.getObjectId() == -1 || profile.getObjectId() == 0)) {
+        final String componentFatherId = profile.getComponentFatherId();
+        int driverFatherId = getDriverComponentId(componentFatherId);
         ComponentInst component = getComponentInst(driverFatherId, null);
+        component = checkComponentInstanceById(component, componentFatherId,
+            nullComponentInstSupplier);
+        Objects.requireNonNull(component);
 
         component.setUpdaterUserId(userId);
         updateComponentInst(component);
@@ -1668,8 +1710,12 @@ class Admin implements Administration {
       profileManager.updateProfileInst(newProfile);
       if (StringUtil.isDefined(
           userId) && (newProfile.getObjectId() == -1 || newProfile.getObjectId() == 0)) {
-        int driverFatherId = getDriverComponentId(newProfile.getComponentFatherId());
+        final String componentFatherId = newProfile.getComponentFatherId();
+        int driverFatherId = getDriverComponentId(componentFatherId);
         ComponentInst component = getComponentInst(driverFatherId, null);
+        component = checkComponentInstanceById(component, componentFatherId,
+            nullComponentInstSupplier);
+        Objects.requireNonNull(component);
         component.setUpdaterUserId(userId);
         updateComponentInst(component);
       }
@@ -3719,6 +3765,9 @@ class Admin implements Administration {
     try {
       ComponentInst componentInst = getComponentInst(
           getDriverComponentId(sClientComponentId), getDriverSpaceId(sClientSpaceId));
+      componentInst = checkComponentInstanceById(componentInst, sClientComponentId,
+          nullComponentInstSupplier);
+      Objects.requireNonNull(componentInst);
 
       for (ProfileInst profile : componentInst.getAllProfilesInst()) {
         if (profile != null && (profile.getName().equals(sProfile) || bAllProfiles)) {

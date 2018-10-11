@@ -26,6 +26,7 @@ package org.silverpeas.core.viewer.service;
 import org.apache.commons.exec.CommandLine;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.exec.ExternalExecution;
+import org.silverpeas.core.util.exec.ExternalExecution.Config;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Map;
@@ -46,7 +47,7 @@ public class SwfToolManager implements Initialization {
         try {
           CommandLine commandLine = new CommandLine("pdf2swf");
           commandLine.addArgument("--version");
-          ExternalExecution.exec(commandLine);
+          ExternalExecution.exec(commandLine, Config.init().doNotDisplayErrorTrace());
           isActivated = true;
         } catch (final Exception e) {
           // SwfTool is not installed

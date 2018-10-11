@@ -23,36 +23,37 @@
  */
 package org.silverpeas.core.silverstatistics.volume.service;
 
-import java.io.File;
-import java.util.concurrent.Callable;
-
-import org.apache.commons.io.FileUtils;
-
 import org.silverpeas.core.silverstatistics.volume.model.DirectoryStats;
-import org.silverpeas.core.silvertrace.SilverTrace;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 
 /**
  * Compute the total size of a directory.
  */
-public class DirectorySizeComputer implements Callable<DirectoryStats> {
+public class DirectorySizeComputer extends AbstractComputer {
 
-  private final File directory;
+  private long size = 0L;
 
-
-  public DirectorySizeComputer(File directory) {
-    this.directory = directory;
+  DirectorySizeComputer(File directory, final boolean onlyComponentData) {
+    super(directory, onlyComponentData);
   }
 
   @Override
-  public DirectoryStats call() throws Exception {
-    long size = 0L;
-    try {
-      size = FileUtils.sizeOfDirectory(directory);
-    } catch (Exception e) {
-      // preventing bug http://tracker.silverpeas.org/issues/5340
-      SilverTrace.error("silverstatistics", "DirectorySizeComputer.call", "root.EX_CANT_READ_FILE",
-          "Directory : " + directory.getAbsolutePath(), e);
-    }
-    return new DirectoryStats(directory.getName(), size, 0L);
+  protected void handleTransverseFile(final Path file, final BasicFileAttributes attrs) {
+    size += attrs.size();
+  }
+
+  @Override
+  protected void setTransverseResult(final DirectoryStats result) {
+    result.addDirectorySize(size);
+  }
+
+  @Override
+  protected void setSpecificResult(final DirectoryStats result,
+      final ComponentStatisticsProvider componentStatistics) {
+    result
+        .addDirectorySize(componentStatistics.memorySizeOfSpecificFiles(result.getDirectoryName()));
   }
 }

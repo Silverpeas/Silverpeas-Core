@@ -23,26 +23,36 @@
  */
 package org.silverpeas.core.silverstatistics.volume.service;
 
-import java.io.File;
-import java.util.concurrent.Callable;
-
-import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.silverstatistics.volume.model.DirectoryStats;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 
 /**
  * Compute the size in terms of number of files.
  */
-public class FileNumberComputer implements Callable<DirectoryStats> {
+public class FileNumberComputer extends AbstractComputer {
 
-  private final File directory;
+  private long count = 0L;
 
-  public FileNumberComputer(File directory) {
-    this.directory = directory;
+  FileNumberComputer(File directory, final boolean onlyComponentData) {
+    super(directory, onlyComponentData);
   }
 
   @Override
-  public DirectoryStats call() throws Exception {
-    return new DirectoryStats(directory.getName(), 0L, FileUtils.listFiles(directory, null, true)
-        .size());
+  protected void handleTransverseFile(final Path file, final BasicFileAttributes attrs) {
+    count++;
+  }
+
+  @Override
+  protected void setTransverseResult(final DirectoryStats result) {
+    result.addFileNumber(count);
+  }
+
+  @Override
+  protected void setSpecificResult(final DirectoryStats result,
+      final ComponentStatisticsProvider componentStatistics) {
+    result.addFileNumber(componentStatistics.countSpecificFiles(result.getDirectoryName()));
   }
 }

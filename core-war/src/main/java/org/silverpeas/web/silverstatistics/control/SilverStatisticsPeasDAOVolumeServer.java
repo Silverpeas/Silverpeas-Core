@@ -23,86 +23,69 @@
  */
 package org.silverpeas.web.silverstatistics.control;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.silverstatistics.volume.service.DirectoryVolumeService;
-import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.core.util.memory.MemoryUnit;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
+import static org.silverpeas.core.util.UnitUtil.convertTo;
+import static org.silverpeas.core.util.memory.MemoryUnit.B;
+import static org.silverpeas.core.util.memory.MemoryUnit.KB;
 
 /**
  * Class declaration Get stat size directory data from database
- * <p>
- * @author
  */
-public class SilverStatisticsPeasDAOVolumeServer {
+class SilverStatisticsPeasDAOVolumeServer {
 
-  public static final int INDICE_DATE = 0;
-  public static final int INDICE_LIB = 1;
-  public static final int INDICE_SIZE = 2;
-  private static final String selectQuery =
-      " SELECT dateStat, fileDir, sizeDir FROM SB_Stat_SizeDirCumul ORDER BY dateStat";
+  private SilverStatisticsPeasDAOVolumeServer() {
+    throw new IllegalStateException("Stateless DAO class");
+  }
 
   /**
-   * donne les stats global pour l'ensemble de tous les users cad 2 infos, la collection contient
-   * donc un seul element
-   *
-   * @return
-   * @throws SQLException
+   * Gives global stats for all users.
+   * @return Collection of array of string.
+   * @throws SQLException on technical error with database.
    *
    */
-  public static Collection<String[]> getStatsVolumeServer() throws SQLException {
-    Statement stmt = null;
-    ResultSet rs = null;
-    Connection myCon = null;
+  static Collection<String[]> getStatsVolumeServer() throws SQLException {
+    return JdbcSqlQuery
+        .createSelect("dateStat, fileDir, sizeDir")
+        .from("SB_Stat_SizeDirCumul")
+        .orderBy("dateStat")
+        .execute(r -> {
+          final String date = r.getString(1);
+          final String repository = r.getString(2);
+          final String size = String.valueOf(convertTo(r.getLong(3), B, KB));
+          return new String[]{date, repository, size};
+        });
+  }
+
+  static Map<String, String[]> getStatsSizeVentil() throws SilverpeasException {
+    final DirectoryVolumeService service = new DirectoryVolumeService();
     try {
-      myCon = DBUtil.openConnection();
-      stmt = myCon.createStatement();
-      rs = stmt.executeQuery(selectQuery);
-      return getStatsVolumeServerFromResultSet(rs);
-    } finally {
-      DBUtil.close(rs, stmt);
-      DBUtil.close(myCon);
+      return service.getSizeVentilation(UserDetail.getCurrentRequester().getId());
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new SilverpeasException(e);
+    } catch (ExecutionException e) {
+      throw new SilverpeasException(e);
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @param rs
-   * @return
-   * @throws SQLException
-   *
-   */
-  private static Collection<String[]> getStatsVolumeServerFromResultSet(ResultSet rs)
-      throws SQLException {
-    List<String[]> myList = new ArrayList<String[]>();
-    while (rs.next()) {
-      String[] stat = new String[3];
-      stat[INDICE_DATE] = rs.getString(1);
-      stat[INDICE_LIB] = rs.getString(2);
-      stat[INDICE_SIZE] = String.valueOf(UnitUtil.convertTo(rs.getLong(3), MemoryUnit.B,
-          MemoryUnit.KB));
-      myList.add(stat);
+  static Map<String, String[]> getStatsVentil() throws SilverpeasException {
+    final DirectoryVolumeService service = new DirectoryVolumeService();
+    try {
+      return service.getFileNumberVentilation(UserDetail.getCurrentRequester().getId());
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new SilverpeasException(e);
+    } catch (ExecutionException e) {
+      throw new SilverpeasException(e);
     }
-    return myList;
-  }
-
-  public static Map<String, String[]> getStatsSizeVentil() throws Exception {
-    DirectoryVolumeService service = new DirectoryVolumeService();
-    return service.getSizeVentilation(UserDetail.getCurrentRequester().getId());
-  }
-
-  public static Map<String, String[]> getStatsVentil() throws Exception {
-    DirectoryVolumeService service = new DirectoryVolumeService();
-    return service.getFileNumberVentilation(UserDetail.getCurrentRequester().getId());
   }
 }

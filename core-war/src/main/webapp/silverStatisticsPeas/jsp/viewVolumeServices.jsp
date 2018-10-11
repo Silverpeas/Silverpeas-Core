@@ -44,7 +44,7 @@
         + "/RsilverStatisticsPeas/jsp/ViewVolumeServices", true);
   tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"),
         m_context + "/RsilverStatisticsPeas/jsp/ViewVolumePublication", false);
-  tabbedPane.addTab(resources.getString("GML.attachments"), "javascript:displayVolumes();", false);
+  tabbedPane.addTab(resources.getString("GML.files"), "javascript:displayVolumes();", false);
 %>
 
 <c:set var="pieChart" value="${requestScope.Chart}"/>

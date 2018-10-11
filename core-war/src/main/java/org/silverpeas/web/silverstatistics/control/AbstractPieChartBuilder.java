@@ -23,12 +23,14 @@
  */
 package org.silverpeas.web.silverstatistics.control;
 
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chart.pie.PieChart;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -65,28 +67,25 @@ public abstract class AbstractPieChartBuilder {
   }
 
   private void buildStatItems(final Map<String, String[]> cmpStats) {
-    String[] tabValue = null;
+    Mutable<String[]> tabValue = Mutable.empty();
     for (Map.Entry<String, String[]> stat : cmpStats.entrySet()) {
       String componentId = stat.getKey();
-      tabValue = stat.getValue();
-      ComponentInstLight cmp = getComponentInstLight(componentId);
-      if (cmp != null) {
-        addStateItemForComponentInstance(tabValue, cmp);
-      }
+      tabValue.set(stat.getValue());
+      OrganizationController.get().getComponentInstance(componentId)
+          .ifPresent(i -> addStateItemForComponentInstance(tabValue.get(), i));
     }
-
-    if (tabValue != null) {
-      if (tabValue[1] != null) {
+    if (tabValue.isPresent()) {
+      if (tabValue.get()[1] != null) {
         niveauFinesse = FINESSE_GROUPE;
       }
-      if (tabValue[2] != null) {
+      if (tabValue.get()[2] != null) {
         niveauFinesse = FINESSE_USER;
       }
     }
   }
 
   private void addStateItemForComponentInstance(final String[] tabValue,
-      final ComponentInstLight cmp) {
+      final SilverpeasComponentInstance cmp) {
     long[] countValues = new long[3];
     countValues[0] = 0;
     countValues[1] = 0;
@@ -104,16 +103,6 @@ public abstract class AbstractPieChartBuilder {
 
     StatItem item = new StatItem(cmp.getId(), cmp.getLabel(), countValues);
     statsByInstance.put(cmp.getId(), item);
-  }
-
-  private ComponentInstLight getComponentInstLight(final String componentId) {
-    ComponentInstLight cmp = null;
-    try {
-      cmp = AdministrationServiceProvider.getAdminService().getComponentInstLight(componentId);
-    } catch (AdminException e) {
-      SilverLogger.getLogger(this).error(e);
-    }
-    return cmp;
   }
 
   private boolean isIdBelongsTo(String spaceId, String[] tabAllSpaceIds) {

@@ -27,37 +27,30 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This is the alimentation for the statistics on volume. It gets the number of elements from each
  * components from each space. All components must implements the ComponentStatisticsInterface.
  * @author sleroux
  */
-public class SilverStatisticsVolumeAlimentation {
+class SilverStatisticsVolumeAlimentation {
 
-  private static final SettingBundle settings =
-      ResourceLocator.getSettingBundle("org.silverpeas.silverstatistics.SilverStatistics");
-
-  /**
-   * Method declaration
-   * @see
-   */
-  public static void makeVolumeAlimentationForAllComponents() {
+  static void makeVolumeAlimentationForAllComponents() {
     java.util.Date now = new java.util.Date();
     // get all spaces
-    List<String> listAllSpacesId = getAllSpacesAndAllSubSpacesId();
+    final List<String> listAllSpacesId = getAllSpacesAndAllSubSpacesId();
 
-    if (listAllSpacesId != null && !listAllSpacesId.isEmpty()) {
+    if (!listAllSpacesId.isEmpty()) {
 
       for (String currentSpaceId : listAllSpacesId) {
         // get all components from a space
@@ -66,30 +59,18 @@ public class SilverStatisticsVolumeAlimentation {
         for (ComponentInst ci : listAllComponentsInst) {
           String currentComponentsId = ci.getId();
           // get all elements from a component
-          Collection<UserIdCountVolumeCouple> collectionUserIdCountVolume =
-              getCollectionUserIdCountVolume(currentSpaceId, ci);
-
-          if (collectionUserIdCountVolume != null) {
-            for (UserIdCountVolumeCouple currentUserIdCountVolume : collectionUserIdCountVolume) {
+          getCollectionUserIdCountVolume(currentSpaceId, ci).forEach(v ->
               // notify statistics
-              SilverStatisticsManager.getInstance().addStatVolume(
-                  currentUserIdCountVolume.getUserId(),
-                  currentUserIdCountVolume.getCountVolume(), now, ci.getName(), currentSpaceId,
-                  currentComponentsId);
-            }
-          }
+              SilverStatisticsManager.getInstance()
+                  .addStatVolume(v.getUserId(), v.getCountVolume(), now, ci.getName(),
+                      currentSpaceId, currentComponentsId));
         }
       }
     }
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   private static List<String> getAllSpacesAndAllSubSpacesId() {
-    List<String> resultList = new ArrayList<String>();
+    List<String> resultList = new ArrayList<>();
     String[] spaceIds = getAdminController().getAllSpaceIds();
     if (spaceIds != null) {
       resultList.addAll(Arrays.asList(spaceIds));
@@ -97,70 +78,43 @@ public class SilverStatisticsVolumeAlimentation {
     return resultList;
   }
 
-  /**
-   * Method declaration
-   * @param spaceId
-   * @return
-   * @see
-   */
   private static List<ComponentInst> getAllComponentsInst(String spaceId) {
     SpaceInst mySpaceInst = getAdminController().getSpaceInstById(spaceId);
     return mySpaceInst.getAllComponentsInst();
   }
 
-  /**
-   * Method declaration
-   * @param spaceId
-   * @param ci
-   * @return
-   * @see
-   */
   private static Collection<UserIdCountVolumeCouple> getCollectionUserIdCountVolume(String spaceId,
       ComponentInst ci) {
-    Collection<UserIdCountVolumeCouple> c = null;
+    Collection<UserIdCountVolumeCouple> result = Collections.emptyList();
     try {
-      String qualifier = getComponentStatisticsQualifier(ci.getName());
-      if (StringUtil.isDefined(qualifier)) {
-        ComponentStatisticsProvider statistics = ServiceProvider.getService(qualifier);
-        Collection<UserIdCountVolumeCouple> v = statistics.getVolume(spaceId, ci.getId());
-        c = agregateUser(v);
+      final Optional<ComponentStatisticsProvider> statistics = ComponentStatisticsProvider
+          .getByComponentName(ci.getName());
+      if (statistics.isPresent()) {
+        Collection<UserIdCountVolumeCouple> v = statistics.get().getVolume(spaceId, ci.getId());
+        result = aggregateUser(v);
       }
     } catch (Exception e) {
       SilverLogger.getLogger(SilverStatisticsVolumeAlimentation.class).warn(e.getMessage(), e);
     }
-    return c;
+    return result;
   }
 
-  /**
-   * Gets the component statistics qualifier defined into SilverStatistics.properties file
-   * associated to the component identified by the given name.<br>
-   * If no qualifier is defined for the component, that is because it does not exist statistics
-   * treatment for the component.
-   * @param componentName the name of the component for which the qualifier is searched.
-   * @return a string that represents the qualifier name of the implementation of the statistic
-   * treatment associated to the aimed component, empty if no qualifier.
-   */
-  private static String getComponentStatisticsQualifier(String componentName) {
-    return settings.getString(componentName, "");
-  }
-
-  private static Collection<UserIdCountVolumeCouple> agregateUser(
+  private static Collection<UserIdCountVolumeCouple> aggregateUser(
       Collection<UserIdCountVolumeCouple> in) {
 
-    if (in == null) {
-      return null;
+    if (CollectionUtil.isEmpty(in)) {
+      return Collections.emptyList();
     }
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(in.size());
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(in.size());
 
-    // parcours collection initiale
+    // loop on initial collection
     for (UserIdCountVolumeCouple eltIn : in) {
-      // lecture d'un userId
-      // s'il n'existe pas dans la collection finale alors on l'ajoute
-      // sinon on modifie le countVolume et on passe au suivant
       UserIdCountVolumeCouple eltOut = getCouple(myArrayList, eltIn);
       if (eltOut == null) {
+        // no user matching
         myArrayList.add(eltIn);
       } else {
+        // user matching
         eltOut.setCountVolume(eltIn.getCountVolume() + eltOut.getCountVolume());
       }
     }
