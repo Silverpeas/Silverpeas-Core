@@ -26,6 +26,7 @@
 <%@ page import="org.silverpeas.core.util.Pair" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarElement" %>
+<%@ page import="org.silverpeas.core.util.CollectionUtil" %>
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -54,8 +55,10 @@
     <%
           browseBar.setDomainName(hostSpaceName);
           browseBar.setComponentName(hostComponentName);
-          for (String pathItem : hostPath) {
-            browseBar.addElement(new BrowseBarElement(pathItem, null));
+          if (CollectionUtil.isNotEmpty(hostPath)) {
+            for (String pathItem : hostPath) {
+              browseBar.addElement(new BrowseBarElement(pathItem, null));
+            }
           }
 
           out.println(window.printBefore());
