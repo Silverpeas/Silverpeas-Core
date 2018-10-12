@@ -23,14 +23,15 @@
  */
 package org.silverpeas.core.admin;
 
-import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.silverpeas.core.test.extention.FieldMocker;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.SettingBundle;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,23 +39,21 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(SilverTestEnv.class)
 public class UserManualNotificationUserReceiverLimitUserDetailTest {
 
   private static final int NOT_LIMITED = 0;
   private static final int LIMITED = 5;
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
+  @RegisterExtension
+  FieldMocker mocker = new FieldMocker();
 
   private SettingBundle mockedSettings;
   private UserDetail currentUser;
 
-  @Before
+  @BeforeEach
   public void setup() {
-    mockedSettings = reflectionRule.mockField(NotificationManagerSettings.class,
+    mockedSettings = mocker.mockField(NotificationManagerSettings.class,
         SettingBundle.class, "settings");
     currentUser = spy(new UserDetail());
     // By default, a user is not an anonymous one

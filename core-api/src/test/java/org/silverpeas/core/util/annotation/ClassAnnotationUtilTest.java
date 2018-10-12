@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.util.annotation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.persistence.Table;
 

@@ -24,9 +24,9 @@
 package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.ical4j.ICal4JCalendarEventOccurrenceGenerator;
@@ -36,13 +36,12 @@ import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.persistence.datasource.PersistOperation;
-import org.silverpeas.core.persistence.datasource.UpdateOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 
-import javax.enterprise.util.AnnotationLiteral;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.OffsetDateTime;
@@ -65,7 +64,6 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.core.date.TimeUnit.MONTH;
 import static org.silverpeas.core.date.TimeUnit.WEEK;
@@ -74,6 +72,7 @@ import static org.silverpeas.core.date.TimeUnit.WEEK;
  * Unit tests on the generation of event occurrences between two given datetimes.
  * @author mmoquillon
  */
+@ExtendWith(SilverTestEnv.class)
 public class CalendarEventOccurrenceGenerationTest {
 
   private static final String EVENT_TITLE = "an event title";
@@ -86,19 +85,15 @@ public class CalendarEventOccurrenceGenerationTest {
       new ICal4JCalendarEventOccurrenceGenerator(new ICal4JDateCodec(),
           new ICal4JRecurrenceCodec(new ICal4JDateCodec()));
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  @TestManagedBean
+  private JpaPersistOperation persist;
+  @TestManagedBean
+  private JpaUpdateOperation update;
 
-  @Before
-  public void mockCalendarOccurrenceRepository() {
-    CalendarEventOccurrenceRepository repository = mock(CalendarEventOccurrenceRepository.class);
-    OrganizationController organizationController = mock(OrganizationController.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(), new AnnotationLiteral<PersistOperation>() {
-    });
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(), new AnnotationLiteral<UpdateOperation>() {
-    });
-    commonAPI4Test.injectIntoMockedBeanContainer(repository);
-    commonAPI4Test.injectIntoMockedBeanContainer(organizationController);
+  @BeforeEach
+  public void mockCalendarOccurrenceRepository(
+      @MockedBean CalendarEventOccurrenceRepository repository,
+      @MockedBean OrganizationController organizationController) {
     when(organizationController.getUserDetail(anyString())).thenAnswer(a -> {
       String id = a.getArgument(0);
       UserDetail user = new UserDetail();
@@ -108,7 +103,6 @@ public class CalendarEventOccurrenceGenerationTest {
     when(repository.getAll(anyCollection(), any(Period.class))).thenReturn(Collections.emptyList());
 
     OperationContext.fromUser("0");
-
   }
 
   @Test

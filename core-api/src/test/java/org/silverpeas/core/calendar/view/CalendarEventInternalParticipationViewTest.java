@@ -1,8 +1,7 @@
 package org.silverpeas.core.calendar.view;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.TestCalendarEventOccurrenceBuilder;
@@ -10,8 +9,8 @@ import org.silverpeas.core.persistence.datasource.PersistOperation;
 import org.silverpeas.core.persistence.datasource.UpdateOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
+import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.TestUserProvider;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import javax.enterprise.util.AnnotationLiteral;
 import java.util.ArrayList;
@@ -19,8 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.when;
 import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 /**
@@ -29,20 +29,19 @@ import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
  */
 public class CalendarEventInternalParticipationViewTest {
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
   private CalendarEventInternalParticipationView view = new CalendarEventInternalParticipationView();
 
-  @Before
+  @BeforeEach
   public void setUpUsers() {
     UserProvider userProvider = TestUserProvider.withoutCurrentRequester();
-    commonAPI4Test.injectIntoMockedBeanContainer(userProvider);
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(),
-        new AnnotationLiteral<PersistOperation>() {
-        });
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(),
-        new AnnotationLiteral<UpdateOperation>() {
-        });
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class)).thenReturn(
+        userProvider);
+    when(TestBeanContainer.getMockedBeanContainer()
+        .getBeanByType(JpaPersistOperation.class, new AnnotationLiteral<PersistOperation>() {
+        })).thenReturn(new JpaPersistOperation());
+    when(TestBeanContainer.getMockedBeanContainer()
+        .getBeanByType(JpaUpdateOperation.class, new AnnotationLiteral<UpdateOperation>() {
+        })).thenReturn(new JpaUpdateOperation());
   }
 
   @Test

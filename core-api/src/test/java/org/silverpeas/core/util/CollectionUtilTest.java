@@ -24,7 +24,7 @@
 package org.silverpeas.core.util;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.util.CollectionUtil.*;
 
 import java.util.ArrayList;
@@ -38,6 +38,7 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.silverpeas.core.util.CollectionUtil.*;
 
 /**
@@ -166,16 +167,18 @@ public class CollectionUtilTest {
     assertThat(context.isTerminated(), is(true));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void findNextRuptureItemWhenTerminatedShouldThrowError() {
-    List<TestElement> ITEMS = createListOfTestElement();
-    RuptureContext<TestElement> context = RuptureContext.newOne(ITEMS);
+    assertThrows(IllegalStateException.class, () -> {
+      List<TestElement> ITEMS = createListOfTestElement();
+      RuptureContext<TestElement> context = RuptureContext.newOne(ITEMS);
 
-    final TestElement item = findNextRupture(context, e -> e.equalsProperty1("none")).orElse(null);
-    assertThat(item, nullValue());
-    assertThat(context.isTerminated(), is(true));
+      final TestElement item = findNextRupture(context, e -> e.equalsProperty1("none")).orElse(null);
+      assertThat(item, nullValue());
+      assertThat(context.isTerminated(), is(true));
 
-    findNextRupture(context, e -> e.equalsProperty1("100"));
+      findNextRupture(context, e -> e.equalsProperty1("100"));
+    });
   }
 
   @Test

@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.cache.service;
 
-import org.junit.Test;
-import org.silverpeas.core.cache.service.ThreadCache;
+import org.junit.jupiter.api.Test;
 
 import java.util.logging.Logger;
 

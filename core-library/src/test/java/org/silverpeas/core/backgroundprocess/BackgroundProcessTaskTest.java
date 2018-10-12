@@ -24,11 +24,16 @@
 
 package org.silverpeas.core.backgroundprocess;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.silverpeas.core.test.extention.LoggerExtension;
+import org.silverpeas.core.test.extention.LoggerLevel;
+import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.Level;
 
@@ -47,24 +52,26 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author silveryocha
  */
+@ExtendWith(SilverTestEnv.class)
+@ExtendWith(LoggerExtension.class)
+@LoggerLevel(Level.DEBUG)
+@Execution(ExecutionMode.SAME_THREAD)
 public class BackgroundProcessTaskTest {
 
   private final static List<AbstractBackgroundProcessRequest> processedRequest =
       synchronizedList(new ArrayList<>());
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  @TestManagedBean
+  private BackgroundProcessTask task;
 
-  @Before
+  @BeforeEach
   public void setup() {
     BackgroundProcessLogger.initLogger();
-    commonAPI4Test.setLoggerLevel(Level.DEBUG);
-    commonAPI4Test.injectIntoMockedBeanContainer(new BackgroundProcessTask());
     BackgroundProcessTask.synchronizedContexts.clear();
     processedRequest.clear();
   }
 
-  @After
+  @AfterEach
   public void clean() {
     await().pollInterval(1, TimeUnit.SECONDS).until(() -> true);
   }

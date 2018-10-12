@@ -23,23 +23,23 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
-import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
 import org.silverpeas.core.io.file.AttachmentUrlLinkProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.test.TestBeanContainer;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -55,6 +55,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(SilverTestEnv.class)
 public class TestWysiwygContentTransformer {
 
   private static final String ODT_NAME = "LibreOffice.odt";
@@ -67,11 +68,8 @@ public class TestWysiwygContentTransformer {
 
   private static final String ODT_ATTACHMENT_ID = "72f56ba9-b089-40c4-b16c-255e93658259";
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
   @SuppressWarnings("unchecked")
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     originalOdt = new File(getClass().getResource("/" + ODT_NAME).getPath());
     assertThat(originalOdt.exists(), is(true));
@@ -126,7 +124,7 @@ public class TestWysiwygContentTransformer {
   }
 
   @SuppressWarnings("unchecked")
-  @After
+  @AfterEach
   public void destroy() throws Exception {
     FileUtils.deleteQuietly(originalImageWithResize100x.getParentFile());
     FileUtils.deleteQuietly(originalImageWithResize100x100.getParentFile());

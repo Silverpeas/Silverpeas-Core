@@ -23,15 +23,16 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.date.Period;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * An event is created for a period of time but it is effective only when setting on the timeline
@@ -84,18 +85,22 @@ public class CalendarEventCreationTest {
     assertDefaultValuesOf(event);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void createADefaultNewEventWithEndDateBeforeStartDate() {
-    LocalDate now = LocalDate.now();
-    LocalDate yesterday = now.minusDays(1);
-    CalendarEvent.on(Period.between(now, yesterday));
+    assertThrows(IllegalArgumentException.class, () -> {
+      LocalDate now = LocalDate.now();
+      LocalDate yesterday = now.minusDays(1);
+      CalendarEvent.on(Period.between(now, yesterday));
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void createADefaultNewEventWithEndDateTimeBeforeStartDateTime() {
-    OffsetDateTime now = OffsetDateTime.now();
-    OffsetDateTime yesterday = now.minusDays(1);
-    CalendarEvent.on(Period.between(now, yesterday));
+    assertThrows(IllegalArgumentException.class, () -> {
+      OffsetDateTime now = OffsetDateTime.now();
+      OffsetDateTime yesterday = now.minusDays(1);
+      CalendarEvent.on(Period.between(now, yesterday));
+    });
   }
 
   private void assertDefaultValuesOf(CalendarEvent event) {

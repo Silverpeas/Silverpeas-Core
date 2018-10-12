@@ -23,17 +23,17 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests on the management of attendees to events.
  * @author mmoquillon
  */
-public class EventAttendeeManagement {
+public class EventAttendeeManagementTest {
 
   @Test
   public void addAnAttendeeToAnEvent() {

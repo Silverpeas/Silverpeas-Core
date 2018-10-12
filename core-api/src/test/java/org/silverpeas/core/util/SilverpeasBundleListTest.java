@@ -23,13 +23,11 @@
  */
 package org.silverpeas.core.util;
 
-import org.junit.Test;
-import org.silverpeas.core.util.SilverpeasBundleList;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.arrayContaining;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyArray;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Yohann Chastagnier
@@ -76,9 +74,11 @@ public class SilverpeasBundleListTest {
     assertThat(list.asIntegerArray(26), arrayContaining(1, 26, 26, 4));
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test
   public void asIntegerArrayFromNotParsableIntegerValue() {
-    SilverpeasBundleList list = SilverpeasBundleList.with("1", "A");
-    list.asIntegerArray();
+    assertThrows(NumberFormatException.class, () -> {
+      SilverpeasBundleList list = SilverpeasBundleList.with("1", "A");
+      list.asIntegerArray();
+    });
   }
 }

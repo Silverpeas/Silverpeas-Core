@@ -29,6 +29,9 @@ import org.silverpeas.core.util.time.Duration;
 import java.util.TimeZone;
 
 /**
+ * WARNING: All the deprecated classes in this package contain failure in their handling of date
+ * times (bad use of Timezone, etc.)
+ *
  * A temporal object is an object that represents an instant in a time line in Silverpeas. This
  * instant can be a date (day in month in year), a time or a datetime.
  * <p>

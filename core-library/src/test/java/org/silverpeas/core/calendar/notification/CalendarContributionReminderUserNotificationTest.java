@@ -25,9 +25,10 @@
 package org.silverpeas.core.calendar.notification;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.user.model.User;
@@ -44,22 +45,21 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.user.UserNotification;
-import org.silverpeas.core.persistence.datasource.PersistOperation;
-import org.silverpeas.core.persistence.datasource.UpdateOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.reminder.DurationReminder;
 import org.silverpeas.core.reminder.Reminder;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.extention.FieldMocker;
+import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 
-import javax.enterprise.util.AnnotationLiteral;
 import javax.ws.rs.core.UriBuilder;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -79,6 +79,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author silveryocha
  */
+@ExtendWith(SilverTestEnv.class)
 public class CalendarContributionReminderUserNotificationTest {
   private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
 
@@ -95,50 +96,33 @@ public class CalendarContributionReminderUserNotificationTest {
   private static final LocalDate DATE_0F_22 = LocalDate.parse("2018-02-22");
   private static final OffsetDateTime DATE_0F_22_AT_01H = OffsetDateTime.parse("2018-02-22T01:00:00Z");
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  @RegisterExtension
+  public FieldMocker reflectionRule = new FieldMocker();
 
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
-
+  @MockedBean
   private ContributionManager contributionManager;
+  @MockedBean
   private CalendarEventOccurrenceRepository calendarEventOccurrenceRepository;
   private User receiver;
+  @MockedBean
   private ComponentInstanceRoutingMap componentInstanceRoutingMap;
+
+  @TestManagedBean
+  private JpaUpdateOperation update;
+  @TestManagedBean
+  private JpaPersistOperation persist;
+  @TestManagedBean
+  private CalendarContributionReminderUserNotification reminderNotif;
 
   private Period currentPeriod;
 
   @SuppressWarnings({"unchecked", "serial"})
-  @Before
-  public void setup() {
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(),
-        new AnnotationLiteral<PersistOperation>() {
-        });
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(),
-        new AnnotationLiteral<UpdateOperation>() {
-        });
-
-    commonAPI4Test
-        .injectIntoMockedBeanContainer(new CalendarContributionReminderUserNotification());
-    commonAPI4Test
-        .injectIntoMockedBeanContainer(new CalendarContributionReminderUserNotification());
-    contributionManager = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(ContributionManager.class));
-    calendarEventOccurrenceRepository = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(CalendarEventOccurrenceRepository.class));
-    UserProvider userProvider = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(UserProvider.class));
-    ComponentInstanceRoutingMapProviderByInstance componentInstanceRoutingMapProviderByInstance =
-        commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(ComponentInstanceRoutingMapProviderByInstance.class));
-    ComponentInstanceRoutingMapProvider componentInstanceRoutingMapProvider = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(ComponentInstanceRoutingMapProvider.class));
-    componentInstanceRoutingMap = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(ComponentInstanceRoutingMap.class));
-    SilverpeasComponentInstanceProvider silverpeasComponentInstanceProvider = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(SilverpeasComponentInstanceProvider.class));
-    SilverpeasComponentInstance componentInstance = mock(SilverpeasComponentInstance.class);
-
+  @BeforeEach
+  public void setup(@MockedBean UserProvider userProvider, @MockedBean
+      ComponentInstanceRoutingMapProviderByInstance componentInstanceRoutingMapProviderByInstance,
+      @MockedBean ComponentInstanceRoutingMapProvider componentInstanceRoutingMapProvider,
+      @MockedBean SilverpeasComponentInstanceProvider silverpeasComponentInstanceProvider,
+      @MockedBean SilverpeasComponentInstance componentInstance) {
     when(componentInstance.getName()).thenReturn(COMPONENT_NAME);
     when(silverpeasComponentInstanceProvider.getById(INSTANCE_ID))
         .thenReturn(Optional.of(componentInstance));

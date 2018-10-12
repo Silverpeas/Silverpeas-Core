@@ -44,9 +44,9 @@ import org.silverpeas.core.util.memory.MemoryUnit;
 
 import javax.inject.Inject;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class SpacesManagersIT {

@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.notification.user.client;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.silverpeas.core.test.extention.FieldMocker;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.util.Arrays;
@@ -41,21 +41,17 @@ import static org.mockito.Mockito.when;
 /**
  * Unit tests on the manager of notifications.
  */
+@ExtendWith(SilverTestEnv.class)
 public class DefaultNotificationManagerTest {
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
-
+  @RegisterExtension
+  FieldMocker mocker = new FieldMocker();
   private SettingBundle mockedSettings;
 
-  @Before
+  @BeforeEach
   public void setUp() {
-
     // Settings
-    mockedSettings = reflectionRule.mockField(NotificationManagerSettings.class,
+    mockedSettings = mocker.mockField(NotificationManagerSettings.class,
         SettingBundle.class, "settings");
   }
 
@@ -101,7 +97,7 @@ public class DefaultNotificationManagerTest {
     DefaultNotificationManager notificationManager = new DefaultNotificationManager();
     List<Integer> actualDefaultChannels = notificationManager.getDefaultNotificationAddresses();
     assertEquals(1, actualDefaultChannels.size());
-    Assert.assertEquals(NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER, (int)actualDefaultChannels.get(0));
+    assertEquals(NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER, (int)actualDefaultChannels.get(0));
   }
 
   /**
@@ -116,6 +112,6 @@ public class DefaultNotificationManagerTest {
     DefaultNotificationManager notificationManager = new DefaultNotificationManager();
     List<Integer> actualDefaultChannels = notificationManager.getDefaultNotificationAddresses();
     assertEquals(1, actualDefaultChannels.size());
-    Assert.assertEquals(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL, (int)actualDefaultChannels.get(0));
+    assertEquals(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL, (int)actualDefaultChannels.get(0));
   }
 }

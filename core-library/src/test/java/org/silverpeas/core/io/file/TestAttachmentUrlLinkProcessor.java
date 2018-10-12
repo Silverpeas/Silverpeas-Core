@@ -23,17 +23,17 @@
  */
 package org.silverpeas.core.io.file;
 
-import org.silverpeas.core.util.URLUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.test.TestBeanContainer;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUtil;
 
 import java.io.File;
@@ -46,10 +46,8 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.core.io.file.ImageResizingProcessor.IMAGE_CACHE_PATH;
 
+@ExtendWith(SilverTestEnv.class)
 public class TestAttachmentUrlLinkProcessor {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   private static final String IMAGE_NAME = "image-test.jpg";
 
@@ -62,7 +60,7 @@ public class TestAttachmentUrlLinkProcessor {
   private String originalImageAttachmentUrlLinkWithoutLang;
   private String originalImageAttachmentUrlLinkWithResizeDirective;
 
-  @Before
+  @BeforeEach
   public void variableInit() throws Exception {
     originalImageNotAnAttachmentUrlLink = "dummy_begin" + URLUtil.getApplicationURL() +
         "uriPart/notAnAttachmentId/09-ab-89/lang/en/whaou";
@@ -75,7 +73,7 @@ public class TestAttachmentUrlLinkProcessor {
             "uriPart/attachmentId/09-ab-89/lang/en/size/250x150/whaou";
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     // get the original path
     originalImage = new File(getClass().getResource("/" + IMAGE_NAME).getPath());
@@ -87,7 +85,7 @@ public class TestAttachmentUrlLinkProcessor {
     processor = new AttachmentUrlLinkProcessor();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     File cache = new File(IMAGE_CACHE_PATH);
     if (cache.exists()) {
@@ -95,14 +93,8 @@ public class TestAttachmentUrlLinkProcessor {
     }
   }
 
-  @Before
-  public void setupAttachmentService() throws Exception {
-
-    // The mock instance
-    AttachmentService mockAttachmentService = mock(AttachmentService.class);
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(AttachmentService.class))
-        .thenReturn(mockAttachmentService);
-
+  @BeforeEach
+  public void setupAttachmentService(@MockedBean AttachmentService mockAttachmentService) {
     /*
     Mocking methods of attachment service instance
      */

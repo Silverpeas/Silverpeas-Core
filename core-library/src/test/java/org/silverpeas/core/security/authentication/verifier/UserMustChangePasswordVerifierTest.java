@@ -23,14 +23,17 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.junit.Rule;
-import org.junit.Test;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+
+
+import org.silverpeas.core.test.extention.SilverTestEnv;
 
 import java.util.Date;
 
@@ -41,13 +44,11 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 15/02/13
  */
+@ExtendWith(SilverTestEnv.class)
 public class UserMustChangePasswordVerifierTest {
 
   private static final int MAX_CONNECTIONS_FORCING = 8;
   private static final int MAX_CONNECTIONS_PROPOSING = 5;
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Test
   public void verifierNotActivated() throws AuthenticationException {
@@ -115,12 +116,14 @@ public class UserMustChangePasswordVerifierTest {
         (MAX_CONNECTIONS_FORCING - MAX_CONNECTIONS_PROPOSING)));
   }
 
-  @Test(expected = AuthenticationPasswordMustBeChangedOnFirstLogin.class)
-  public void verifyUserMustChangePasswordOnFirstLogin() throws AuthenticationException {
-    UserDetail user = createUser(0);
-    user.setLastLoginDate(null);
-    UserMustChangePasswordVerifier verifier = createVerifierInstance(user, true, 0, 0);
-    verifier.verify();
+  @Test
+  public void verifyUserMustChangePasswordOnFirstLogin() {
+    Assertions.assertThrows(AuthenticationPasswordMustBeChangedOnFirstLogin.class, () -> {
+      UserDetail user = createUser(0);
+      user.setLastLoginDate(null);
+      UserMustChangePasswordVerifier verifier = createVerifierInstance(user, true, 0, 0);
+      verifier.verify();
+    });
   }
 
   @Test

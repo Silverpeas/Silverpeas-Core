@@ -23,23 +23,23 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.junit.Rule;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.util.DateUtil;
-import org.junit.Test;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.util.DateUtil;
 
 import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * User: Yohann Chastagnier
  * Date: 10/09/13
  */
+@ExtendWith(SilverTestEnv.class)
 public class UserMustAcceptTermsOfServiceVerifierTest {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Test
   public void testUserHasAlreadyAccepted() throws AuthenticationUserMustAcceptTermsOfService {
@@ -47,10 +47,12 @@ public class UserMustAcceptTermsOfServiceVerifierTest {
     new UserMustAcceptTermsOfServiceVerifier(user).verify();
   }
 
-  @Test(expected = AuthenticationUserMustAcceptTermsOfService.class)
-  public void testUserMustAccept() throws AuthenticationUserMustAcceptTermsOfService {
-    UserDetail user = createUser(null);
-    new UserMustAcceptTermsOfServiceVerifier(user).verify();
+  @Test
+  public void testUserMustAccept() {
+    assertThrows(AuthenticationUserMustAcceptTermsOfService.class, () -> {
+      UserDetail user = createUser(null);
+      new UserMustAcceptTermsOfServiceVerifier(user).verify();
+    });
   }
 
   @Test

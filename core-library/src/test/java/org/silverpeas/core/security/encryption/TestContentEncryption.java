@@ -23,13 +23,14 @@
  */
 package org.silverpeas.core.security.encryption;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.silverpeas.core.security.encryption.cipher.Cipher;
 import org.silverpeas.core.security.encryption.cipher.CipherFactory;
 import org.silverpeas.core.security.encryption.cipher.CipherKey;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
 import org.silverpeas.core.util.StringUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ public class TestContentEncryption extends ContentEncryptionServiceTest {
   private String key;
 
   @Override
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     generateKeyFile();

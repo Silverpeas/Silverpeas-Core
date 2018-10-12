@@ -64,21 +64,25 @@ public class MockByReflectionRule implements TestRule {
         try {
           base.evaluate();
         } finally {
-          if (!entitiesOldValues.isEmpty()) {
-            logger.info("Unset mocked fields...");
-          }
-          for (Map.Entry<Object, Map<FieldInjectionDirective, Object>> objectOldValue :
-              entitiesOldValues
-              .entrySet()) {
-            for (Map.Entry<FieldInjectionDirective, Object> oldValue : objectOldValue.getValue()
-                .entrySet()) {
-              FieldInjectionDirective fieldDirective = oldValue.getKey();
-              fieldDirective.write(oldValue.getValue());
-            }
-          }
+          unsetMockedFields();
         }
       }
     };
+  }
+
+  protected void unsetMockedFields() throws Exception {
+    if (!entitiesOldValues.isEmpty()) {
+      logger.info("Unset mocked fields...");
+    }
+    for (Map.Entry<Object, Map<FieldInjectionDirective, Object>> objectOldValue :
+        entitiesOldValues
+            .entrySet()) {
+      for (Map.Entry<FieldInjectionDirective, Object> oldValue : objectOldValue.getValue()
+          .entrySet()) {
+        FieldInjectionDirective fieldDirective = oldValue.getKey();
+        fieldDirective.write(oldValue.getValue());
+      }
+    }
   }
 
   /**

@@ -23,17 +23,19 @@
  */
 package org.silverpeas.web.mylinks.control;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.ArgumentCaptor;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.mylinks.MyLinksRuntimeException;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.service.MyLinksService;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.extention.FieldMocker;
+import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.webapi.mylinks.MyLinkEntity;
@@ -42,35 +44,33 @@ import static org.apache.commons.lang.reflect.FieldUtils.writeDeclaredField;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(SilverTestEnv.class)
 public class MyLinksPeasSessionControllerTest {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
 
   private static final String CURRENT_USER_ID = "26";
 
+  @RegisterExtension
+  FieldMocker mocker = new FieldMocker();
   private MyLinksPeasSessionController ctrl;
+  @MockedBean
   private MyLinksService ejb;
 
-  @Before
-  public void setup() throws Exception {
-    reflectionRule.setField(I18NHelper.class, false, "isI18nContentActivated");
+  @BeforeEach
+  public void setup() {
+    mocker.setField(I18NHelper.class, false, "isI18nContentActivated");
     MainSessionController mainSessionController = mock(MainSessionController.class);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentName()).thenReturn("myLinks");
     ctrl =
         spy(new MyLinksPeasSessionController(mainSessionController, context));
     doReturn(new UserDetail()).when(mainSessionController).getCurrentUserDetail();
-    reflectionRule.setField(ctrl, mainSessionController, "controller");
+    mocker.setField(ctrl, mainSessionController, "controller");
     doReturn("Bundle value").when(ctrl).getString(anyString());
 
     ctrl.getUserDetail().setId(CURRENT_USER_ID);
-    ejb = commonAPI4Test.injectIntoMockedBeanContainer(mock(MyLinksService.class));
   }
 
   @Test
@@ -107,38 +107,44 @@ public class MyLinksPeasSessionControllerTest {
     assertThat(updatedLink.getUrl(), is("url updated"));
   }
 
-  @Test(expected = MyLinksRuntimeException.class)
-  public void updateLinkWhichTheCurrentUserIsNotTheOwner() throws Exception {
-    LinkDetail linkDetailForVerification = getDummyUserLink();
-    linkDetailForVerification.setUserId("otherUserId");
-    when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
-    MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
-    writeDeclaredField(linkEntityToUpdate, "name", "name updated", true);
-    writeDeclaredField(linkEntityToUpdate, "url", "url updated", true);
+  @Test
+  public void updateLinkWhichTheCurrentUserIsNotTheOwner() {
+    assertThrows(MyLinksRuntimeException.class, () -> {
+      LinkDetail linkDetailForVerification = getDummyUserLink();
+      linkDetailForVerification.setUserId("otherUserId");
+      when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
+      MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
+      writeDeclaredField(linkEntityToUpdate, "name", "name updated", true);
+      writeDeclaredField(linkEntityToUpdate, "url", "url updated", true);
 
-    ctrl.updateLink(linkEntityToUpdate);
+      ctrl.updateLink(linkEntityToUpdate);
+    });
   }
 
-  @Test(expected = MyLinksRuntimeException.class)
-  public void updateLinkButUrlIsMissing() throws Exception {
-    LinkDetail linkDetailForVerification = getDummyUserLink();
-    when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
-    MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
-    writeDeclaredField(linkEntityToUpdate, "name", "name updated", true);
-    writeDeclaredField(linkEntityToUpdate, "url", "", true);
+  @Test
+  public void updateLinkButUrlIsMissing() {
+    assertThrows(MyLinksRuntimeException.class, () -> {
+      LinkDetail linkDetailForVerification = getDummyUserLink();
+      when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
+      MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
+      writeDeclaredField(linkEntityToUpdate, "name", "name updated", true);
+      writeDeclaredField(linkEntityToUpdate, "url", "", true);
 
-    ctrl.updateLink(linkEntityToUpdate);
+      ctrl.updateLink(linkEntityToUpdate);
+    });
   }
 
-  @Test(expected = MyLinksRuntimeException.class)
-  public void updateLinkButNameIsMissing() throws Exception {
-    LinkDetail linkDetailForVerification = getDummyUserLink();
-    when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
-    MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
-    writeDeclaredField(linkEntityToUpdate, "name", "", true);
-    writeDeclaredField(linkEntityToUpdate, "url", "url updated", true);
+  @Test
+  public void updateLinkButNameIsMissing() {
+    assertThrows(MyLinksRuntimeException.class, () -> {
+      LinkDetail linkDetailForVerification = getDummyUserLink();
+      when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
+      MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
+      writeDeclaredField(linkEntityToUpdate, "name", "", true);
+      writeDeclaredField(linkEntityToUpdate, "url", "url updated", true);
 
-    ctrl.updateLink(linkEntityToUpdate);
+      ctrl.updateLink(linkEntityToUpdate);
+    });
   }
 
   @Test
@@ -156,13 +162,15 @@ public class MyLinksPeasSessionControllerTest {
     assertThat(deletedLinkIds, arrayContaining("38", "26"));
   }
 
-  @Test(expected = MyLinksRuntimeException.class)
-  public void deleteLinkWhichTheCurrentUserIsNotTheOwner() throws Exception {
-    LinkDetail linkDetailForVerification = getDummyUserLink();
-    linkDetailForVerification.setUserId("otherUserId");
-    when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
+  @Test
+  public void deleteLinkWhichTheCurrentUserIsNotTheOwner() {
+    assertThrows(MyLinksRuntimeException.class, () -> {
+      LinkDetail linkDetailForVerification = getDummyUserLink();
+      linkDetailForVerification.setUserId("otherUserId");
+      when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
 
-    ctrl.deleteLinks(new String[]{"38", "26"});
+      ctrl.deleteLinks(new String[]{"38", "26"});
+    });
   }
 
   /*

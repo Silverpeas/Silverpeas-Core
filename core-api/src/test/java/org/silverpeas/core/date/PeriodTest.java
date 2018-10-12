@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -32,7 +32,8 @@ import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit test in the {@link Period} objects
@@ -139,58 +140,72 @@ public class PeriodTest {
     assertThat(period.isInDays(), is(false));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void periodInNowShouldFail() {
-    OffsetDateTime now = OffsetDateTime.now();
-    Period.between(now, now);
+    assertThrows(IllegalArgumentException.class, () -> {
+      OffsetDateTime now = OffsetDateTime.now();
+      Period.between(now, now);
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void periodBetweenTwoDifferentTemporalShouldFail1() {
-    LocalDate yesterday = LocalDate.now().minusDays(1);
-    OffsetDateTime tomorrow = OffsetDateTime.now().plusDays(1);
-    Period.between(yesterday, tomorrow);
+    assertThrows(IllegalArgumentException.class, () -> {
+      LocalDate yesterday = LocalDate.now().minusDays(1);
+      OffsetDateTime tomorrow = OffsetDateTime.now().plusDays(1);
+      Period.between(yesterday, tomorrow);
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void periodBetweenTwoDifferentTemporalShouldFail2() {
-    OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
-    LocalDate tomorrow = LocalDate.now().plusDays(1);
-    Period.between(yesterday, tomorrow);
+    assertThrows(IllegalArgumentException.class, () -> {
+      OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
+      LocalDate tomorrow = LocalDate.now().plusDays(1);
+      Period.between(yesterday, tomorrow);
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void periodInDateEndingBeforeStartingShouldFail() {
-    LocalDate yesterday = LocalDate.now().minusDays(1);
-    LocalDate tomorrow = LocalDate.now().plusDays(1);
-    Period.between(tomorrow, yesterday);
+    assertThrows(IllegalArgumentException.class, () -> {
+      LocalDate yesterday = LocalDate.now().minusDays(1);
+      LocalDate tomorrow = LocalDate.now().plusDays(1);
+      Period.between(tomorrow, yesterday);
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void periodInDateTimeEndingBeforeStartingShouldFail() {
-    OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
-    OffsetDateTime tomorrow = OffsetDateTime.now().plusDays(1);
-    Period.between(tomorrow, yesterday);
+    assertThrows(IllegalArgumentException.class, () -> {
+      OffsetDateTime yesterday = OffsetDateTime.now().minusDays(1);
+      OffsetDateTime tomorrow = OffsetDateTime.now().plusDays(1);
+      Period.between(tomorrow, yesterday);
+    });
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void periodStartingAtUndefinedDateShouldFail() {
-    Period.between(null, LocalDate.now());
+    assertThrows(NullPointerException.class, () ->
+    Period.between(null, LocalDate.now()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void periodStartingAtUndefinedDateTimeShouldFail() {
-    Period.between(null, OffsetDateTime.now());
+    assertThrows(NullPointerException.class, () ->
+    Period.between(null, OffsetDateTime.now()));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void periodEndingAtUndefinedDateShouldFail() {
-    Period.between(LocalDate.now(), null);
+    assertThrows(NullPointerException.class, () ->
+    Period.between(LocalDate.now(), null));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void periodEndingAtUndefinedDateTimeShouldFail() {
-    Period.between(OffsetDateTime.now(), null);
+    assertThrows(NullPointerException.class, () ->
+    Period.between(OffsetDateTime.now(), null));
   }
 
   @Test
@@ -317,25 +332,31 @@ public class PeriodTest {
     assertThat(period.isInDays(), is(false));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void periodWithDifferentNullableTypeOfDateTime() {
-    Temporal start = OffsetDateTime.now().minusDays(1);
-    Temporal end = LocalDate.now().plusDays(1);
-    Period.betweenNullable(start, end);
+    assertThrows(IllegalArgumentException.class, () -> {
+      Temporal start = OffsetDateTime.now().minusDays(1);
+      Temporal end = LocalDate.now().plusDays(1);
+      Period.betweenNullable(start, end);
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void periodWithDifferentTypeOfDateTime() {
-    Temporal start = OffsetDateTime.now().minusDays(1);
-    Temporal end = LocalDate.now().plusDays(1);
-    Period.between(start, end);
+    assertThrows(IllegalArgumentException.class, () -> {
+      Temporal start = OffsetDateTime.now().minusDays(1);
+      Temporal end = LocalDate.now().plusDays(1);
+      Period.between(start, end);
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void periodWithDifferentZonedDateTime() {
-    Temporal start = ZonedDateTime.now().minusDays(1);
-    Temporal end = ZonedDateTime.now().plusDays(1);
-    Period.between(start, end);
+    assertThrows(IllegalArgumentException.class, () -> {
+      Temporal start = ZonedDateTime.now().minusDays(1);
+      Temporal end = ZonedDateTime.now().plusDays(1);
+      Period.between(start, end);
+    });
   }
 }
   

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 
@@ -32,9 +32,10 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.silverpeas.core.calendar.Recurrence.NO_RECURRENCE_COUNT;
 
 /**
@@ -88,24 +89,28 @@ public class RecurrentCalendarEventCreationTest {
     assertTitleAndDescriptionOf(event);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void createAHourlyEvent() {
-    aTimelyEvent().recur(Recurrence.every(2, TimeUnit.HOUR));
+    assertThrows(IllegalArgumentException.class, () ->
+        aTimelyEvent().recur(Recurrence.every(2, TimeUnit.HOUR)));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void createAHourlyAllDayEvent() {
-    anAllDayEvent().recur(Recurrence.every(1, TimeUnit.HOUR));
+    assertThrows(IllegalArgumentException.class, () ->
+    anAllDayEvent().recur(Recurrence.every(1, TimeUnit.HOUR)));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void createAMinutelyEvent() {
-    aTimelyEvent().recur(Recurrence.every(30, TimeUnit.MINUTE));
+    assertThrows(IllegalArgumentException.class, () ->
+    aTimelyEvent().recur(Recurrence.every(30, TimeUnit.MINUTE)));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void createASecondlyEvent() {
-    aTimelyEvent().recur(Recurrence.every(65, TimeUnit.SECOND));
+    assertThrows(IllegalArgumentException.class, () ->
+    aTimelyEvent().recur(Recurrence.every(65, TimeUnit.SECOND)));
   }
 
   @Test
@@ -133,22 +138,24 @@ public class RecurrentCalendarEventCreationTest {
     assertTitleAndDescriptionOf(event);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void createAHourlyEventOnSpecificDays() {
-    aTimelyEvent().recur(Recurrence.every(3, TimeUnit.HOUR));
+    assertThrows(IllegalArgumentException.class, () ->
+        aTimelyEvent().recur(Recurrence.every(3, TimeUnit.HOUR)));
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void createADailyEventOnSpecificDays() {
-    CalendarEvent event = aTimelyEvent().recur(
-        Recurrence.every(1, TimeUnit.DAY).on(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
-    assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, TimeUnit.DAY)));
-    assertThat(event.getRecurrence().getDaysOfWeek(),
-        hasItems(DayOfWeekOccurrence.all(DayOfWeek.MONDAY),
-            DayOfWeekOccurrence.all(DayOfWeek.FRIDAY)));
-    assertDefaultValuesOf(event);
-    assertEventTimePeriodOf(event);
-    assertTitleAndDescriptionOf(event);
+    assertThrows(IllegalStateException.class, () -> {
+      CalendarEvent event = aTimelyEvent().recur(
+          Recurrence.every(1, TimeUnit.DAY).on(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
+      assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, TimeUnit.DAY)));
+      assertThat(event.getRecurrence().getDaysOfWeek(),
+          hasItems(DayOfWeekOccurrence.all(DayOfWeek.MONDAY), DayOfWeekOccurrence.all(DayOfWeek.FRIDAY)));
+      assertDefaultValuesOf(event);
+      assertEventTimePeriodOf(event);
+      assertTitleAndDescriptionOf(event);
+    });
   }
 
   @Test
@@ -230,10 +237,11 @@ public class RecurrentCalendarEventCreationTest {
     assertTitleAndDescriptionOf(event);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void createAWeeklyEventOnAnotherThanFirstDayOccurrence() {
+    assertThrows(IllegalArgumentException.class, () ->
     aTimelyEvent().recur(Recurrence.every(1, TimeUnit.WEEK)
-        .on(DayOfWeekOccurrence.nth(2, DayOfWeek.TUESDAY)));
+        .on(DayOfWeekOccurrence.nth(2, DayOfWeek.TUESDAY))));
   }
 
   @Test

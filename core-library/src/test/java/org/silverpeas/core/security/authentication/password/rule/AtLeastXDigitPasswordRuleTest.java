@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.security.authentication.password.rule;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
 
 import java.util.regex.Pattern;

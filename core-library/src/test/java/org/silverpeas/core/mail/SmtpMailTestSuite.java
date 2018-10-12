@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.mail;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test suite to sequence the unit tests on the file processing API.
@@ -32,10 +31,10 @@ import org.junit.runners.Suite;
  * that they work on the filesystem each of their turn.
  * @author mmoquillon
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    TestSmtpMailSendingMassive.class,
-    TestSmtpMailSending.class
-})
 public class SmtpMailTestSuite {
+
+  @Test
+  public void executeSmtpMailSendingTests() {
+
+  }
 }

@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.security.authentication.password.rule;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -56,12 +56,12 @@ public class MinLengthPasswordRuleTest extends AbstractPasswordRuleTest<MinLengt
     assertThat(rule.check("12345678901"), is(true));
   }
 
-  @Ignore
+  @Disabled
   @Override
   public void testDefinedMoreThanOnePropertyValues() {
   }
 
-  @Ignore
+  @Disabled
   @Override
   public void testCombinationDefinedMoreThanOnePropertyValues() {
   }

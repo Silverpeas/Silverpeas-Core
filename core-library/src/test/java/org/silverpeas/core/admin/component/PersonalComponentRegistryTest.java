@@ -28,13 +28,13 @@
  */
 package org.silverpeas.core.admin.component;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import java.io.File;
@@ -48,16 +48,15 @@ import static org.junit.Assert.assertThat;
  * Unit test on the services provided by the PersonalComponentRegistry.
  * @author Yohann Chastagnier
  */
+@ExtendWith(SilverTestEnv.class)
 public class PersonalComponentRegistryTest {
 
   private static File TEMPLATES_PATH;
   private static File TARGET_DIR;
 
-  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
   private PersonalComponentRegistry registry;
 
-  @BeforeClass
+  @BeforeAll
   public static void generalSetup() {
     TARGET_DIR = getFile(
         PersonalComponentRegistryTest.class.getProtectionDomain().getCodeSource().getLocation()
@@ -65,12 +64,7 @@ public class PersonalComponentRegistryTest {
     TEMPLATES_PATH = getFile(TARGET_DIR, "templateRepository");
   }
 
-  @Rule
-  public CommonAPI4Test getCommonAPI4Test() {
-    return commonAPI4Test;
-  }
-
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     // Context
     PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
