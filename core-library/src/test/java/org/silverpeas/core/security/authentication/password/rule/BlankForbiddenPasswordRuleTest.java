@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.security.authentication.password.rule;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
 
 import java.util.regex.Pattern;
@@ -69,12 +69,12 @@ public class BlankForbiddenPasswordRuleTest
     assertThat(Pattern.compile("[ ]+").matcher(rule.random()).find(), is(false));
   }
 
-  @Ignore
+  @Disabled
   @Override
   public void testDefinedMoreThanOnePropertyValues() {
   }
 
-  @Ignore
+  @Disabled
   @Override
   public void testCombinationDefinedMoreThanOnePropertyValues() {
   }

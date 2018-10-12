@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.util.logging.sys;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.util.MavenTestEnv;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.logging.SilverLoggerFactory;
@@ -39,30 +39,23 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
  * Unit test on the SysLoggerFactory implementation of LoggerFactory.
  * @author miguel
  */
+@ExtendWith(SilverTestEnv.class)
 public class SysLoggerFactoryTest {
 
   private static String LOGGER_NAMESPACE = "silverpeas.test";
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public MavenTargetDirectoryRule mavenTargetDirectory = new MavenTargetDirectoryRule(this);
-
-  @Before
-  public void initEnvVariables() {
+  @BeforeEach
+  public void initEnvVariables(MavenTestEnv mavenTestEnv) {
     SystemWrapper.get()
         .getenv()
-        .put("SILVERPEAS_HOME", mavenTargetDirectory.getResourceTestDirFile().getPath());
+        .put("SILVERPEAS_HOME", mavenTestEnv.getResourceTestDirFile().getPath());
   }
 
   @Test

@@ -23,11 +23,13 @@
  */
 package org.silverpeas.core.util.logging.sys;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.silverpeas.core.test.extention.LoggerExtension;
+import org.silverpeas.core.test.extention.LoggerLevel;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.util.MavenTestEnv;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.LoggerConfigurationLoader;
@@ -40,23 +42,19 @@ import static org.junit.Assert.assertThat;
  * Unit test on the SysLogger implementation of Logger.
  * @author miguel
  */
+@ExtendWith(SilverTestEnv.class)
+@ExtendWith(LoggerExtension.class)
+@LoggerLevel(Level.INFO)
 public class SysLoggerTest {
 
   private static String LOGGER_NAMESPACE = "silverpeas.test";
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public MavenTargetDirectoryRule mavenTargetDirectory = new MavenTargetDirectoryRule(this);
-
-  @Before
-  public void initEnvVariables() throws Exception {
+  @BeforeEach
+  public void initEnvVariables(MavenTestEnv mavenTestEnv) {
     SystemWrapper.get()
         .getenv()
-        .put("SILVERPEAS_HOME", mavenTargetDirectory.getResourceTestDirFile().getPath());
+        .put("SILVERPEAS_HOME", mavenTestEnv.getResourceTestDirFile().getPath());
     LoggerConfigurationLoader.load();
-    commonAPI4Test.setLoggerLevel(Level.INFO);
   }
 
   @Test

@@ -33,6 +33,9 @@ import java.util.TimeZone;
 import static java.util.Calendar.*;
 
 /**
+ * WARNING: All the deprecated classes in this package contain failure in their handling of date
+ * times (bad use of Timezone, etc.)
+ *
  * A date on a day of a month and in year. The time isn't represented here. Please refers to
  * DateTime to models also the time.
  * @deprecated Use the java.time API

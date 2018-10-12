@@ -27,7 +27,7 @@ import org.ehcache.config.ResourcePools;
 import org.ehcache.config.ResourceType;
 import org.ehcache.config.SizedResourcePool;
 import org.ehcache.config.units.EntryUnit;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.util.Mutable;
 
 import static org.hamcrest.MatcherAssert.assertThat;

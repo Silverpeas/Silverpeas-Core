@@ -25,9 +25,12 @@
 package org.silverpeas.core.reminder;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.user.model.User;
@@ -40,8 +43,10 @@ import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.extention.FieldMocker;
+import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
@@ -59,12 +64,13 @@ import java.util.TimeZone;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * @author silveryocha
  */
+@ExtendWith(SilverTestEnv.class)
+@ExtendWith(MockitoExtension.class)
 public class ContributionReminderUserNotificationTest {
   private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
 
@@ -78,59 +84,45 @@ public class ContributionReminderUserNotificationTest {
   private static final String DE = "de";
   private static final String COMPONENT_NAME = "componentNameTest";
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
-
+  @RegisterExtension
+  FieldMocker mocker = new FieldMocker();
+  @Mock
   private User receiver;
 
   @SuppressWarnings("unchecked")
-  @Before
-  public void setup() {
-    commonAPI4Test.injectIntoMockedBeanContainer(new DefaultContributionReminderUserNotification());
-    commonAPI4Test
-        .injectIntoMockedBeanContainer(new CalendarContributionReminderUserNotification());
-    final ContributionManager contributionManager = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(ContributionManager.class));
-    UserProvider userProvider = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(UserProvider.class));
-    ComponentInstanceRoutingMapProviderByInstance componentInstanceRoutingMapProviderByInstance =
-        commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(ComponentInstanceRoutingMapProviderByInstance.class));
-    ComponentInstanceRoutingMapProvider componentInstanceRoutingMapProvider = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(ComponentInstanceRoutingMapProvider.class));
-    ComponentInstanceRoutingMap componentInstanceRoutingMap = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(ComponentInstanceRoutingMap.class));
-    SilverpeasComponentInstanceProvider silverpeasComponentInstanceProvider = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(SilverpeasComponentInstanceProvider.class));
-    SilverpeasComponentInstance componentInstance = mock(SilverpeasComponentInstance.class);
+  @BeforeEach
+  public void setup(@TestManagedBean DefaultContributionReminderUserNotification defaultNotif,
+      @TestManagedBean CalendarContributionReminderUserNotification calNotif,
+      @MockedBean ContributionManager contributionManager,
+      @MockedBean ComponentInstanceRoutingMapProviderByInstance routingMap,
+      @MockedBean ComponentInstanceRoutingMapProvider routingMapProvider,
+      @MockedBean ComponentInstanceRoutingMap instanceRoutingMap,
+      @MockedBean SilverpeasComponentInstanceProvider instanceProvider,
+      @Mock SilverpeasComponentInstance componentInstance,
+      @Mock Contribution contribution) {
 
     when(componentInstance.getName()).thenReturn(COMPONENT_NAME);
-    when(silverpeasComponentInstanceProvider.getById(INSTANCE_ID)).thenReturn(Optional.of(componentInstance));
-    when(silverpeasComponentInstanceProvider.getComponentName(INSTANCE_ID)).thenReturn(COMPONENT_NAME);
+    when(instanceProvider.getById(INSTANCE_ID)).thenReturn(Optional.of(componentInstance));
+    when(instanceProvider.getComponentName(INSTANCE_ID)).thenReturn(COMPONENT_NAME);
 
-    when(componentInstanceRoutingMapProviderByInstance.getByInstanceId(INSTANCE_ID))
-        .thenReturn(componentInstanceRoutingMapProvider);
-    when(componentInstanceRoutingMapProvider.absolute()).thenReturn(componentInstanceRoutingMap);
-    when(componentInstanceRoutingMap.getPermalink(CONTRIBUTION_IDENTIFIER))
+    when(routingMap.getByInstanceId(INSTANCE_ID))
+        .thenReturn(routingMapProvider);
+    when(routingMapProvider.absolute()).thenReturn(instanceRoutingMap);
+    when(instanceRoutingMap.getPermalink(CONTRIBUTION_IDENTIFIER))
         .thenReturn(UriBuilder.fromPath("").build());
 
     UserPreferences userPreferences = new UserPreferences("26", "fr", ZoneId.systemDefault(), null,
         null, false, false, false, UserMenuDisplay.DEFAULT);
-    receiver = mock(User.class);
     when(receiver.getId()).thenReturn("26");
     when(receiver.getUserPreferences()).thenReturn(userPreferences);
 
-    final Contribution contribution = mock(Contribution.class);
     when(contribution.getContributionId()).thenReturn(CONTRIBUTION_IDENTIFIER);
     when(contribution.getTitle()).thenReturn("super test");
     when(contributionManager.getById(CONTRIBUTION_IDENTIFIER))
         .thenReturn(Optional.of(contribution));
 
-    when(userProvider.getUser(receiver.getId())).thenReturn(receiver);
-    reflectionRule
+    when(UserProvider.get().getUser(receiver.getId())).thenReturn(receiver);
+    mocker
         .setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(), "defaultLanguage");
   }
 

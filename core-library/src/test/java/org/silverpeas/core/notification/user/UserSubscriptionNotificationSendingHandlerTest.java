@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.notification.user;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.notification.system.UnitTestResource;
 import org.silverpeas.core.notification.system.UnitTestResourceEvent;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -41,22 +41,20 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(SilverTestEnv.class)
 public class UserSubscriptionNotificationSendingHandlerTest {
 
   private static final String SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM =
       "SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION";
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
   private HttpServletRequest request;
   private AbstractResourceEvent resourceEvent;
 
-  @Before
+  @BeforeEach
   public void setup() {
+    request = mock(HttpServletRequest.class);
     CacheServiceProvider.getThreadCacheService().clearAllCaches();
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    request = mock(HttpServletRequest.class);
     resourceEvent = new UnitTestResourceEvent(ResourceEvent.Type.CREATION,
         new UnitTestResource("26", "Toto Chez-les-Papoos", new Date()));
   }

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.mail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.util.Charsets;
 
 import javax.mail.Multipart;

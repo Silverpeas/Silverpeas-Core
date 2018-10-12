@@ -132,7 +132,7 @@ public class CommonAPI4Test implements TestRule {
     }
   }
 
-  public void setLoggerHandler(final Handler handler) {
+  private void setLoggerHandler(final Handler handler) {
     Logger.getLogger(ROOT_NAMESPACE).setUseParentHandlers(false);
     if (Arrays.stream(Logger.getLogger(ROOT_NAMESPACE).getHandlers())
         .filter(h -> handler.getClass().isInstance(h)).count() == 0) {

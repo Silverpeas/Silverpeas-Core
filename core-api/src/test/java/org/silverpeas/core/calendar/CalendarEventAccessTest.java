@@ -23,15 +23,16 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.TestBeanContainer;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -52,6 +53,7 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
  * calendar.
  * @author silveryocha
  */
+@Execution(ExecutionMode.SAME_THREAD)
 public class CalendarEventAccessTest {
 
   private static final String USER_TEST_ID = "26";
@@ -60,10 +62,7 @@ public class CalendarEventAccessTest {
   private CalendarEventStubBuilder eventBuilder;
   private SilverpeasComponentInstanceProvider componentInstanceProvider;
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Before
+  @BeforeEach
   public void setup() {
     CacheServiceProvider.clearAllThreadCaches();
     userTest = aUser();
@@ -75,8 +74,10 @@ public class CalendarEventAccessTest {
     eventBuilder.plannedOn(calendar);
     eventBuilder.withVisibilityLevel(VisibilityLevel.PRIVATE);
 
-    componentInstanceProvider = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(SilverpeasComponentInstanceProvider.class));
+    componentInstanceProvider = mock(SilverpeasComponentInstanceProvider.class);
+    when(TestBeanContainer.getMockedBeanContainer()
+        .getBeanByType(SilverpeasComponentInstanceProvider.class)).thenReturn(
+        componentInstanceProvider);
     when(componentInstanceProvider.getById(anyString())).thenReturn(Optional.empty());
   }
 

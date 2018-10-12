@@ -24,7 +24,8 @@
 package org.silverpeas.core.security.encryption;
 
 import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
 import java.util.Map;
@@ -47,6 +48,7 @@ public class TestConcurrentExecution extends ContentEncryptionServiceTest {
   private String key;
 
   @Override
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     generateKeyFile();

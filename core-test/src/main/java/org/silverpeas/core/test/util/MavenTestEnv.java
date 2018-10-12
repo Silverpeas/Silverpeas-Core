@@ -21,32 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.mail;
 
-import com.icegreen.greenmail.util.ServerSetup;
-import org.silverpeas.core.util.MailUtil;
+package org.silverpeas.core.test.util;
 
-import java.io.IOException;
-import java.util.Properties;
+import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 
 /**
- * Configuration of the SMTP server dedicated to the unit tests.
  * @author mmoquillon
  */
-public class SmtpConfigTest extends ServerSetup {
-
-  private static int getSmtpPort() {
-    Properties configuration = new Properties();
-    try {
-      configuration.load(SmtpConfigTest.class.getResourceAsStream(
-          "/org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties"));
-    } catch (IOException ex) {
-      throw new RuntimeException(ex);
-    }
-    return Integer.valueOf(configuration.getProperty(MailUtil.SMTP_PORT, "25"));
+public class MavenTestEnv extends MavenTargetDirectoryRule {
+  public MavenTestEnv(final Object testInstance) {
+    super(testInstance);
   }
 
-  public SmtpConfigTest() {
-    super(getSmtpPort(), null, PROTOCOL_SMTP);
+  public MavenTestEnv(final Class<?> testInstanceClass) {
+    super(testInstanceClass);
   }
 }
+  

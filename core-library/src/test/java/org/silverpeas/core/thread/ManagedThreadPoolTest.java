@@ -24,11 +24,10 @@
 package org.silverpeas.core.thread;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.time.Duration;
 
@@ -46,6 +45,7 @@ import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.maxThreadPoolSizeOf;
 import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.timeoutOf;
 
+@ExtendWith(SilverTestEnv.class)
 public class ManagedThreadPoolTest {
 
   private final static long OFFSET_TIME = 350;
@@ -55,16 +55,9 @@ public class ManagedThreadPoolTest {
   private final static long LARGE_TIMEOUT = SLEEP_TIME_OF_1_SECOND * 5;
 
   private ThreadEndTag threadEndTag;
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public TestName testName = new TestName();
-
   private ManagedThreadPool managedThreadPool;
 
-  @Before
+  @BeforeEach
   public void setup() {
     threadEndTag = new ThreadEndTag();
     managedThreadPool = ManagedThreadPool.getPool();
@@ -395,7 +388,7 @@ public class ManagedThreadPoolTest {
    */
   private synchronized void log(String message, Object... arguments) {
     Logger.getLogger(ManagedThreadPoolTest.class.getSimpleName())
-        .info(MessageFormat.format(testName.getMethodName() + " - " + message, arguments));
+        .info(MessageFormat.format(message, arguments));
   }
 
   /**

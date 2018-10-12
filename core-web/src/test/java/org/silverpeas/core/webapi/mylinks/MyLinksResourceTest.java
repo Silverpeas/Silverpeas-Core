@@ -24,10 +24,10 @@
 package org.silverpeas.core.webapi.mylinks;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -42,7 +42,7 @@ import org.silverpeas.core.mylinks.model.LinkDetailComparator;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.web.WebResourceUri;
 
 import javax.ws.rs.WebApplicationException;
@@ -57,24 +57,23 @@ import static org.apache.commons.lang3.tuple.Pair.of;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.contains;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(SilverTestEnv.class)
 public class MyLinksResourceTest {
 
   private static final String CURRENT_USER_ID = "26";
   private static final String PATH_BASE = "/test";
   private static final int NOT_VISIBLE_LINK_ID = 12;
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
   private MyLinksResource4Test rest;
   private MyLinksService service;
   private OrganizationController orgaCtrl;
   boolean oldI18nActivationValue;
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     oldI18nActivationValue = I18NHelper.isI18nContentActivated;
     I18NHelper.isI18nContentActivated = false;
@@ -90,13 +89,13 @@ public class MyLinksResourceTest {
     doReturn(mock(MyLinksService.class)).when(rest).getMyLinksService();
     doReturn(mock(OrganizationController.class)).when(rest).getOrganisationController();
 
-    when(rest.getUri().getWebResourcePathBuilder()).thenAnswer(invocationOnMock ->
-        UriBuilder.fromUri(PATH_BASE).path(MyLinksResource.PATH));
+    when(rest.getUri().getWebResourcePathBuilder()).thenAnswer(
+        invocationOnMock -> UriBuilder.fromUri(PATH_BASE).path(MyLinksResource.PATH));
     service = rest.getMyLinksService();
     orgaCtrl = rest.getOrganisationController();
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     I18NHelper.isI18nContentActivated = oldI18nActivationValue;
   }
@@ -158,18 +157,20 @@ public class MyLinksResourceTest {
     assertThat(linkEntity.getPosition(), is(4));
   }
 
-  @Test(expected = WebApplicationException.class)
+  @Test
   public void getMyLinkThatTheCurrentUserIsNotOwner() {
-    LinkDetail link = initLinkPositions(4).get(0);
-    link.setUserId(CURRENT_USER_ID + "_OTHER");
-    when(service.getLink(anyString())).thenReturn(link);
+    assertThrows(WebApplicationException.class, () -> {
+      LinkDetail link = initLinkPositions(4).get(0);
+      link.setUserId(CURRENT_USER_ID + "_OTHER");
+      when(service.getLink(anyString())).thenReturn(link);
 
-    rest.getMyLink("");
+      rest.getMyLink("");
+    });
   }
 
-  @Test(expected = WebApplicationException.class)
+  @Test
   public void getMyLinkThatDoesNotExists() {
-    rest.getMyLink("");
+    assertThrows(WebApplicationException.class, () -> rest.getMyLink(""));
   }
 
   @Test
@@ -207,24 +208,28 @@ public class MyLinksResourceTest {
     assertThat(updatedLink.getUrl(), is("url updated"));
   }
 
-  @Test(expected = WebApplicationException.class)
-  public void updateLinkButUrlIsMissing() throws Exception {
-    doReturn(null).when(rest).getMyLink(anyString());
-    MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
-    writeDeclaredField(linkEntityToUpdate, "name", "name updated", true);
-    writeDeclaredField(linkEntityToUpdate, "url", "", true);
+  @Test
+  public void updateLinkButUrlIsMissing() {
+    assertThrows(WebApplicationException.class, () -> {
+      doReturn(null).when(rest).getMyLink(anyString());
+      MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
+      writeDeclaredField(linkEntityToUpdate, "name", "name updated", true);
+      writeDeclaredField(linkEntityToUpdate, "url", "", true);
 
-    rest.updateLink(linkEntityToUpdate);
+      rest.updateLink(linkEntityToUpdate);
+    });
   }
 
-  @Test(expected = WebApplicationException.class)
-  public void updateLinkButNameIsMissing() throws Exception {
-    doReturn(null).when(rest).getMyLink(anyString());
-    MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
-    writeDeclaredField(linkEntityToUpdate, "name", "", true);
-    writeDeclaredField(linkEntityToUpdate, "url", "url updated", true);
+  @Test
+  public void updateLinkButNameIsMissing() {
+    assertThrows(WebApplicationException.class, () -> {
+      doReturn(null).when(rest).getMyLink(anyString());
+      MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
+      writeDeclaredField(linkEntityToUpdate, "name", "", true);
+      writeDeclaredField(linkEntityToUpdate, "url", "url updated", true);
 
-    rest.updateLink(linkEntityToUpdate);
+      rest.updateLink(linkEntityToUpdate);
+    });
   }
 
   @Test
@@ -323,8 +328,7 @@ public class MyLinksResourceTest {
     verify(service, times(0)).deleteLinks(any(String[].class));
     LinkDetail createdLink = argumentCaptor.getValue();
     assertThat(createdLink.getUserId(), is(CURRENT_USER_ID));
-    assertThat(createdLink.getName(),
-        is("260_name > 380_name > 750_name > new component name"));
+    assertThat(createdLink.getName(), is("260_name > 380_name > 750_name > new component name"));
     assertThat(createdLink.getDescription(), is("new component description"));
     assertThat(createdLink.getUrl(), is("/Component/1050"));
     assertThat(createdLink.isVisible(), is(true));
@@ -507,15 +511,15 @@ public class MyLinksResourceTest {
   }
 
   @SuppressWarnings("unchecked")
-  @Test(expected = WebApplicationException.class)
-  public void saveUserLinksOrderBadRequest() throws Exception {
-    performSortOrderSave(asList(3, null, 4, null, 2),
-        asList(of(13, 0), of(11, 0), of(14, 2), of(10, 3), of(12, 4)), null, -1);
+  @Test
+  public void saveUserLinksOrderBadRequest() {
+    assertThrows(WebApplicationException.class,
+        () -> performSortOrderSave(asList(3, null, 4, null, 2),
+            asList(of(13, 0), of(11, 0), of(14, 2), of(10, 3), of(12, 4)), null, -1));
   }
 
   @SuppressWarnings("unchecked")
-  private List<LinkDetail> performSortOrderSave(List<Integer> positions,
-      List<Pair<Integer, Integer>> initialLinkListOrderToVerifyBeforeSorting,
+  private List<LinkDetail> performSortOrderSave(List<Integer> positions, List<Pair<Integer, Integer>> initialLinkListOrderToVerifyBeforeSorting,
       MyLinkPosition linkPosition, int nbExpectedUpdateCall) {
     when(service.getLink(anyString())).thenReturn(getDummyUserLink());
 

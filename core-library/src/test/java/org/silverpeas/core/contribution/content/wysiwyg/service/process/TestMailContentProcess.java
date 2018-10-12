@@ -23,13 +23,12 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service.process;
 
-import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -38,7 +37,8 @@ import org.silverpeas.core.io.file.AttachmentUrlLinkProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.test.TestBeanContainer;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,10 +56,8 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(SilverTestEnv.class)
 public class TestMailContentProcess {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   private static final String ODT_NAME = "LibreOffice.odt";
   private static final String IMAGE_NAME = "image-test.jpg";
@@ -90,7 +88,7 @@ public class TestMailContentProcess {
       "http://www.toto.fr/silverpeas/File/d07411cc-19af-49f8-af57-16fc9fabf318-bis";
 
   @SuppressWarnings("unchecked")
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     originalOdt = new File(getClass().getResource("/" + ODT_NAME).getPath());
     assertThat(originalOdt.exists(), is(true));
@@ -146,7 +144,7 @@ public class TestMailContentProcess {
   }
 
   @SuppressWarnings("unchecked")
-  @After
+  @AfterEach
   public void destroy() throws Exception {
     FileUtils.deleteQuietly(originalImageWithResize100x.getParentFile());
     FileUtils.deleteQuietly(originalImageWithResize100x100.getParentFile());

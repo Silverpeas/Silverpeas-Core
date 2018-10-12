@@ -26,15 +26,15 @@ package org.silverpeas.core.security.encryption;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.encryption.cipher.Cipher;
 import org.silverpeas.core.security.encryption.cipher.CipherFactory;
 import org.silverpeas.core.security.encryption.cipher.CipherKey;
 import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.EncodingUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -57,10 +57,8 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  * It creates the security directory to receive the key file, but the key file and it constructs
  * a DefaultContentEncryptionService instance ready to be tested.
  */
+@ExtendWith(SilverTestEnv.class)
 public abstract class ContentEncryptionServiceTest {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   String ACTUAL_KEY_FILE_PATH;
   String DEPRECATED_KEY_FILE_PATH;
@@ -68,12 +66,12 @@ public abstract class ContentEncryptionServiceTest {
 
   private DefaultContentEncryptionService service;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     createSecurityDirectoryAndSetupJCEProviders();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     deleteSecurityDirectory();
   }
@@ -122,12 +120,12 @@ public abstract class ContentEncryptionServiceTest {
     }
   }
 
-  @Before
+  @BeforeEach
   public void setUpContentEncryptionService() throws Exception {
     service = new DefaultContentEncryptionService();
   }
 
-  @After
+  @AfterEach
   public void deleteKeyFile() throws Exception {
     File keyFile = new File(ACTUAL_KEY_FILE_PATH);
     if (keyFile.exists()) {

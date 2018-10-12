@@ -33,6 +33,9 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
+ * WARNING: All the deprecated classes in this package contain failure in their handling of date
+ * times (bad use of Timezone, etc.)
+ *
  * A datetime, expressed in a given timezone. If no timezone is specified explicitly, then
  * the one of the JVM is used by default.
  * @deprecated Use the java.time API

@@ -24,14 +24,15 @@
 package org.silverpeas.core.contribution.attachment.model;
 
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavService;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.test.util.RandomGenerator;
 
 import java.io.File;
@@ -48,10 +49,8 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getUploadPath;
 /**
  * @author ehugonnet
  */
+@ExtendWith(SilverTestEnv.class)
 public class TestSimpleDocument {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   private static final String instanceId = "kmelia36";
 
@@ -154,9 +153,8 @@ public class TestSimpleDocument {
   }
 
   @Test
-  public void testGetWebdavContentEditionLanguage() throws Exception {
-    WebdavService mock = commonAPI4Test.injectIntoMockedBeanContainer(mock(WebdavService.class));
-
+  public void testGetWebdavContentEditionLanguage(@MockedBean WebdavService webDavService)
+      throws Exception {
     SimpleDocument document = new SimpleDocument();
     SimpleAttachment attachment = new SimpleAttachment();
     document.setAttachment(attachment);
@@ -166,17 +164,17 @@ public class TestSimpleDocument {
       Current file is not an open office compatible one
        */
 
-    reset(mock);
+    reset(webDavService);
     document.release();
-    when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
+    when(webDavService.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
 
     assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
 
     // Trying a test case that must never happen but that shows that the open office compatible
     // condition is respected.
-    reset(mock);
+    reset(webDavService);
     document.release();
-    when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+    when(webDavService.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
 
     assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
 
@@ -185,30 +183,29 @@ public class TestSimpleDocument {
        */
     attachment.setFilename("file.odp");
 
-    reset(mock);
+    reset(webDavService);
     document.release();
-    when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
+    when(webDavService.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
 
     assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
 
-    reset(mock);
+    reset(webDavService);
     document.release();
-    when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+    when(webDavService.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
 
     assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
 
-    reset(mock);
+    reset(webDavService);
     document.release();
     FieldUtils.writeField(document, "editedBy", "26", true);
-    when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+    when(webDavService.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
 
     assertThat(document.getWebdavContentEditionLanguage(), is("fr"));
   }
 
   @Test
-  public void testGetWebdavContentEditionLanguageWithoutRelease() {
-    WebdavService mock = commonAPI4Test.injectIntoMockedBeanContainer(mock(WebdavService.class));
-
+  public void testGetWebdavContentEditionLanguageWithoutRelease(
+      @MockedBean WebdavService webdavService) {
     SimpleDocument document = new SimpleDocument();
     SimpleAttachment attachment = new SimpleAttachment();
     document.setAttachment(attachment);
@@ -218,15 +215,15 @@ public class TestSimpleDocument {
       Current file is not an open office compatible one
        */
 
-    reset(mock);
-    when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
+    reset(webdavService);
+    when(webdavService.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
 
     assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
 
     // Trying a test case that must never happen but that shows that the open office compatible
     // condition is respected.
-    reset(mock);
-    when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+    reset(webdavService);
+    when(webdavService.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
 
     assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
 
@@ -235,13 +232,13 @@ public class TestSimpleDocument {
        */
     attachment.setFilename("file.odp");
 
-    reset(mock);
-    when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
+    reset(webdavService);
+    when(webdavService.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn(null);
 
     assertThat(document.getWebdavContentEditionLanguage(), isEmptyString());
 
-    reset(mock);
-    when(mock.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
+    reset(webdavService);
+    when(webdavService.getContentEditionLanguage(any(SimpleDocument.class))).thenReturn("fr");
 
     // The result should be "fr", but as the getWebdavContentEditionLanguage method has a lazy
     // behavior, the previous tests has already made the information loaded.

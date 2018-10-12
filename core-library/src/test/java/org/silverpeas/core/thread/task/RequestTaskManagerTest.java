@@ -25,11 +25,14 @@
 package org.silverpeas.core.thread.task;
 
 import org.apache.commons.lang.reflect.FieldUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.silverpeas.core.test.extention.LoggerExtension;
+import org.silverpeas.core.test.extention.LoggerLevel;
+import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.thread.task.RequestTaskManager.RequestTaskMonitor;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -45,13 +48,21 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author silveryocha
  */
+@ExtendWith(SilverTestEnv.class)
+@ExtendWith(LoggerExtension.class)
+@LoggerLevel(Level.DEBUG)
 public class RequestTaskManagerTest {
 
   private static int counter = 0;
   private static int afterNoMoreRequestCounter = 0;
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  @TestManagedBean
+  private TestRequestTask task;
+  @TestManagedBean
+  private TestRequestTaskWithLimit taskWithLimit;
+  @TestManagedBean
+  private TestRequestTaskWithAfterNoMoreRequestLongTreatment
+      taskWithAfterNoMoreRequestLongTreatment;
 
   private static synchronized int getCounter() {
     return counter;
@@ -69,26 +80,18 @@ public class RequestTaskManagerTest {
     afterNoMoreRequestCounter++;
   }
 
-  @Before
-  public void init() {
-    commonAPI4Test.injectIntoMockedBeanContainer(new TestRequestTask());
-    commonAPI4Test.injectIntoMockedBeanContainer(new TestRequestTaskWithLimit());
-    commonAPI4Test.injectIntoMockedBeanContainer(new TestRequestTaskWithAfterNoMoreRequestLongTreatment());
-    commonAPI4Test.setLoggerLevel(Level.DEBUG);
-  }
-
-  @Before
-  @After
+  @BeforeEach
+  @AfterEach
   public synchronized void clean() {
     RequestTaskManager.tasks.clear();
   }
 
-  @Before
+  @BeforeEach
   public synchronized void resetCounter() {
     counter = 0;
   }
 
-  @Before
+  @BeforeEach
   public synchronized void resetAfterNoMoreRequestCounter() {
     afterNoMoreRequestCounter = 0;
   }

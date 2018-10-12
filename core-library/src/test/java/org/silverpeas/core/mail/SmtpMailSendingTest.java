@@ -23,18 +23,25 @@
  */
 package org.silverpeas.core.mail;
 
-import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.base.GreenMailOperations;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.silverpeas.core.mail.engine.MailSender;
 import org.silverpeas.core.mail.engine.MailSenderProvider;
 import org.silverpeas.core.mail.engine.MailSenderTask;
 import org.silverpeas.core.mail.engine.SmtpMailSender;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.GreenMailExtension;
+import org.silverpeas.core.test.extention.LoggerExtension;
+import org.silverpeas.core.test.extention.LoggerLevel;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.SmtpConfig;
+import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.Level;
@@ -50,13 +57,13 @@ import java.util.Date;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class TestSmtpMailSending {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public GreenMailRule greenMailRule = new GreenMailRule(new SmtpConfigTest());
+@ExtendWith(SilverTestEnv.class)
+@ExtendWith(LoggerExtension.class)
+@ExtendWith(GreenMailExtension.class)
+@LoggerLevel(Level.DEBUG)
+@SmtpConfig("/org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties")
+@Execution(ExecutionMode.SAME_THREAD)
+public class SmtpMailSendingTest {
 
   private final static String COMMON_FROM = "from@titi.org";
   private final static String MALFORMED_FROM = "fromATtiti.org";
@@ -65,17 +72,15 @@ public class TestSmtpMailSending {
 
   private MailSender oldMailSender;
 
-  @Before
-  public void setup() throws Exception {
+  @BeforeEach
+  public void setup(@TestManagedBean MailSenderTask task) throws Exception {
     // Injecting by reflection the mock instance
     oldMailSender = MailSenderProvider.get();
     FieldUtils.writeDeclaredStaticField(MailSenderProvider.class, "mailSender",
         new StubbedSmtpMailSender(), true);
-    commonAPI4Test.injectIntoMockedBeanContainer(new MailSenderTask());
-    commonAPI4Test.setLoggerLevel(Level.DEBUG);
   }
 
-  @After
+  @AfterEach
   public void destroy() throws Exception {
     // Replacing by reflection the mock instances by the previous extracted one.
     FieldUtils
@@ -83,7 +88,7 @@ public class TestSmtpMailSending {
   }
 
   @Test
-  public void sendingMailSynchronouslyWithDefaultValues() throws Exception {
+  public void sendingMailSynchronouslyWithDefaultValues(GreenMailOperations mail) throws Exception {
     MailSending mailSending = MailSending.from(null);
 
     // Verifying data
@@ -96,11 +101,11 @@ public class TestSmtpMailSending {
     assertThat(mailSending.getMailToSend().isAsynchronous(), is(true));
 
     // Sending mail and verifying the result
-    sendSynchronouslyAndAssertThatNoSendingDone(mailSending);
+    sendSynchronouslyAndAssertThatNoSendingDone(mailSending, mail);
   }
 
   @Test
-  public void sendingMailSynchronouslyWithFromNoToAndDefaultValues() throws Exception {
+  public void sendingMailSynchronouslyWithFromNoToAndDefaultValues(GreenMailOperations mail) throws Exception {
     MailAddress email = MailAddress.eMail(COMMON_FROM);
     MailSending mailSending = MailSending.from(email);
 
@@ -114,11 +119,11 @@ public class TestSmtpMailSending {
     assertThat(mailSending.getMailToSend().isAsynchronous(), is(true));
 
     // Sending mail and verifying the result
-    sendSynchronouslyAndAssertThatNoSendingDone(mailSending);
+    sendSynchronouslyAndAssertThatNoSendingDone(mailSending, mail);
   }
 
   @Test
-  public void sendingMailSynchronouslyWithFromWithToAndDefaultValues() throws Exception {
+  public void sendingMailSynchronouslyWithFromWithToAndDefaultValues(GreenMailOperations mail) throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail);
@@ -135,11 +140,11 @@ public class TestSmtpMailSending {
     assertThat(mailToSend.getContent().toString(), isEmptyString());
     assertThat(mailToSend.isReplyToRequired(), is(false));
     assertThat(mailToSend.isAsynchronous(), is(false));
-    assertMailSent(mailToSend);
+    assertMailSent(mailToSend, mail);
   }
 
   @Test
-  public void sendingMailSynchronouslyWithMalformedFromWithToAndDefaultValues() throws Exception {
+  public void sendingMailSynchronouslyWithMalformedFromWithToAndDefaultValues(GreenMailOperations mail) throws Exception {
     MailAddress senderEmail = MailAddress.eMail(MALFORMED_FROM);
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail);
@@ -154,11 +159,11 @@ public class TestSmtpMailSending {
     assertThat(mailSending.getMailToSend().isAsynchronous(), is(true));
 
     // Sending mail and verifying the result
-    sendSynchronouslyAndAssertThatNoSendingDone(mailSending);
+    sendSynchronouslyAndAssertThatNoSendingDone(mailSending, mail);
   }
 
   @Test
-  public void sendingMailSynchronouslyWithFromWithMalformedToAndDefaultValues() throws Exception {
+  public void sendingMailSynchronouslyWithFromWithMalformedToAndDefaultValues(GreenMailOperations mail) throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
     MailAddress receiverEmail = MailAddress.eMail(MALFORMED_TO);
     MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail);
@@ -175,11 +180,11 @@ public class TestSmtpMailSending {
     assertThat(mailToSend.getContent().toString(), isEmptyString());
     assertThat(mailToSend.isReplyToRequired(), is(false));
     assertThat(mailToSend.isAsynchronous(), is(false));
-    assertMailSent(mailToSend);
+    assertMailSent(mailToSend, mail);
   }
 
   @Test
-  public void sendingMailSynchronouslyWithFromWithToWithSubjectAndDefaultValues() throws Exception {
+  public void sendingMailSynchronouslyWithFromWithToWithSubjectAndDefaultValues(GreenMailOperations mail) throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     String subject = "A subject";
@@ -197,11 +202,11 @@ public class TestSmtpMailSending {
     assertThat(mailToSend.getContent().toString(), isEmptyString());
     assertThat(mailToSend.isReplyToRequired(), is(false));
     assertThat(mailToSend.isAsynchronous(), is(false));
-    assertMailSent(mailToSend);
+    assertMailSent(mailToSend, mail);
   }
 
   @Test
-  public void sendingMailSynchronouslyWithFromWithToWithStringContentAndDefaultValues()
+  public void sendingMailSynchronouslyWithFromWithToWithStringContentAndDefaultValues(GreenMailOperations mail)
       throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
@@ -220,12 +225,12 @@ public class TestSmtpMailSending {
     assertThat(mailToSend.getContent().toString(), is(content));
     assertThat(mailToSend.isReplyToRequired(), is(false));
     assertThat(mailToSend.isAsynchronous(), is(false));
-    assertMailSent(mailToSend);
+    assertMailSent(mailToSend, mail);
   }
 
   @Test
   public void
-  sendingMailSynchronouslyWithFromPersonalWithToWithSubjectWithMailContentContentAndDefaultValues()
+  sendingMailSynchronouslyWithFromPersonalWithToWithSubjectWithMailContentContentAndDefaultValues(GreenMailOperations mail)
       throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM).withName("From Personal Name");
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
@@ -246,12 +251,12 @@ public class TestSmtpMailSending {
     assertThat(mailToSend.getContent().toString(), isEmptyString());
     assertThat(mailToSend.isReplyToRequired(), is(false));
     assertThat(mailToSend.isAsynchronous(), is(false));
-    assertMailSent(mailToSend);
+    assertMailSent(mailToSend, mail);
   }
 
   @Test
   public void
-  sendingMailSynchronouslyWithFromWithToPersonalWithSubjectWithMultipartContentAndDefaultValues()
+  sendingMailSynchronouslyWithFromWithToPersonalWithSubjectWithMultipartContentAndDefaultValues(GreenMailOperations mail)
       throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO).withName("To Personal Name");
@@ -275,11 +280,11 @@ public class TestSmtpMailSending {
     assertThat(mailToSend.getContent().toString(), is(content.toString()));
     assertThat(mailToSend.isReplyToRequired(), is(false));
     assertThat(mailToSend.isAsynchronous(), is(false));
-    assertMailSent(mailToSend);
+    assertMailSent(mailToSend, mail);
   }
 
   @Test
-  public void sendingMailSynchronouslyValidMailWithReplyTo() throws Exception {
+  public void sendingMailSynchronouslyValidMailWithReplyTo(GreenMailOperations mail) throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM).withName("From Personal Name");
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO).withName("To Personal Name");
     String subject = "A subject";
@@ -303,11 +308,11 @@ public class TestSmtpMailSending {
     assertThat(mailToSend.getContent().toString(), is(content.toString()));
     assertThat(mailToSend.isReplyToRequired(), is(true));
     assertThat(mailToSend.isAsynchronous(), is(false));
-    assertMailSent(mailToSend);
+    assertMailSent(mailToSend, mail);
   }
 
   @Test
-  public void sendingMailAsynchronously() throws Exception {
+  public void sendingMailAsynchronously(GreenMailOperations mail) throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     MailSending mailSending =
@@ -318,25 +323,25 @@ public class TestSmtpMailSending {
     mailSending.send();
 
     // Verifying immediately that the mail is not yet processed and waiting a moment that it will be
-    assertThat(greenMailRule.getReceivedMessages(), emptyArray());
-    greenMailRule.waitForIncomingEmail(60000, 1);
+    assertThat(mail.getReceivedMessages(), emptyArray());
+    mail.waitForIncomingEmail(60000, 1);
 
     // Verifying that the mail has been sent
-    assertThat(greenMailRule.getReceivedMessages(), arrayWithSize(1));
+    assertThat(mail.getReceivedMessages(), arrayWithSize(1));
   }
 
   /*
   Tool methods
    */
 
-  private void sendSynchronouslyAndAssertThatNoSendingDone(MailSending mailSending)
+  private void sendSynchronouslyAndAssertThatNoSendingDone(MailSending mailSending, GreenMailOperations mail)
       throws Exception {
     mailSending.sendSynchronously();
     // Verifying sent data
-    assertThat(greenMailRule.getReceivedMessages(), emptyArray());
+    assertThat(mail.getReceivedMessages(), emptyArray());
   }
 
-  private void assertMailSent(MailToSend verifiedMailToSend)
+  private void assertMailSent(MailToSend verifiedMailToSend, GreenMailOperations mail)
       throws Exception {
     assertThat("assertMailSent is compatible with one receiver only...", verifiedMailToSend.getTo(),
         hasSize(1));
@@ -344,7 +349,7 @@ public class TestSmtpMailSending {
     assertThat(verifiedMailToSend.getTo().getRecipientType().getTechnicalType(),
         is(Message.RecipientType.TO));
 
-    MimeMessage[] messages = greenMailRule.getReceivedMessages();
+    MimeMessage[] messages = mail.getReceivedMessages();
     assertThat(messages, arrayWithSize(1));
 
     MimeMessage sentMessage = messages[0];

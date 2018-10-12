@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.security.authentication.password.rule;
 
-import org.junit.Rule;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.ResourceLocator;
-import org.junit.After;
 
 import java.lang.reflect.ParameterizedType;
 
@@ -34,13 +34,11 @@ import java.lang.reflect.ParameterizedType;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
+@ExtendWith(SilverTestEnv.class)
 public abstract class AbstractPasswordRuleTest<T extends PasswordRule> {
   protected final static int NB_LOOP = 1000;
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @After
+  @AfterEach
   public void afterTest() {
     AbstractPasswordRule.settings =
         ResourceLocator.getSettingBundle("org.silverpeas.password.settings.password");

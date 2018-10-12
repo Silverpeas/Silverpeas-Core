@@ -25,32 +25,28 @@
 package org.silverpeas.core.chat;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * @author silveryocha
  */
+@ExtendWith(SilverTestEnv.class)
 public class ChatUserTest {
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Before
-  public void setup() {
-    final UserProvider mockedUserProvider = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(UserProvider.class));
-    when(mockedUserProvider.getUser(anyString())).then((a) -> {
+  @BeforeEach
+  public void setup(@MockedBean UserProvider userProvider) {
+    when(userProvider.getUser(anyString())).then((a) -> {
       final UserDetail user = new UserDetail();
       user.setId((String) a.getArguments()[0]);
       return user;

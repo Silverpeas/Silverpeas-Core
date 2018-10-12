@@ -23,16 +23,17 @@
  */
 package org.silverpeas.core.security.encryption;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.security.encryption.cipher.Cipher;
 import org.silverpeas.core.security.encryption.cipher.CipherFactory;
 import org.silverpeas.core.security.encryption.cipher.CipherKey;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
 import org.silverpeas.core.util.StringUtil;
+
 import java.io.File;
 import java.util.Map;
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;

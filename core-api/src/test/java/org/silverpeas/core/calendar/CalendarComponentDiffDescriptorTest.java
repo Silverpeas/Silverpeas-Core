@@ -24,21 +24,21 @@
 
 package org.silverpeas.core.calendar;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.PersistOperation;
 import org.silverpeas.core.persistence.datasource.UpdateOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.TestBeanContainer;
 
 import javax.enterprise.util.AnnotationLiteral;
 
 import static java.time.LocalDate.parse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.when;
 import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.ACCEPTED;
 import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.AWAITING;
 import static org.silverpeas.core.calendar.Attendee.PresenceStatus.INFORMATIVE;
@@ -52,17 +52,14 @@ public class CalendarComponentDiffDescriptorTest {
 
   private static final String TITLE_BEFORE = "TITLE BEFORE";
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Before
+  @BeforeEach
   public void prepareInjection() {
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(),
-        new AnnotationLiteral<PersistOperation>() {
-        });
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(),
-        new AnnotationLiteral<UpdateOperation>() {
-        });
+    when(TestBeanContainer.getMockedBeanContainer()
+        .getBeanByType(JpaPersistOperation.class, new AnnotationLiteral<PersistOperation>() {
+        })).thenReturn(new JpaPersistOperation());
+    when(TestBeanContainer.getMockedBeanContainer()
+        .getBeanByType(JpaUpdateOperation.class, new AnnotationLiteral<UpdateOperation>() {
+        })).thenReturn(new JpaUpdateOperation());
   }
 
   @Test
