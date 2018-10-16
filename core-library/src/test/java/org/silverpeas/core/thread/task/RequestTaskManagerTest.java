@@ -25,14 +25,14 @@
 package org.silverpeas.core.thread.task;
 
 import org.apache.commons.lang.reflect.FieldUtils;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
-import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.thread.task.RequestTaskManager.RequestTaskMonitor;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -51,18 +51,12 @@ import static org.hamcrest.Matchers.*;
 @ExtendWith(SilverTestEnv.class)
 @ExtendWith(LoggerExtension.class)
 @LoggerLevel(Level.DEBUG)
+@TestManagedBeans({TestRequestTask.class, TestRequestTaskWithLimit.class,
+    TestRequestTaskWithAfterNoMoreRequestLongTreatment.class})
 public class RequestTaskManagerTest {
 
   private static int counter = 0;
   private static int afterNoMoreRequestCounter = 0;
-
-  @TestManagedBean
-  private TestRequestTask task;
-  @TestManagedBean
-  private TestRequestTaskWithLimit taskWithLimit;
-  @TestManagedBean
-  private TestRequestTaskWithAfterNoMoreRequestLongTreatment
-      taskWithAfterNoMoreRequestLongTreatment;
 
   private static synchronized int getCounter() {
     return counter;

@@ -30,6 +30,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -37,9 +39,12 @@ import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
-import org.silverpeas.core.test.extention.MockedBean;
-import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.extention.TestManagedMocks;
+import org.silverpeas.core.test.extention.RequesterProvider;
 import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.Level;
 
@@ -57,6 +62,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(LoggerExtension.class)
 @LoggerLevel(Level.WARNING)
+@TestManagedMocks({OrganizationController.class, Administration.class})
 public class PoCJUnit5Test {
 
   @RegisterExtension
@@ -68,8 +74,16 @@ public class PoCJUnit5Test {
   @TestManagedBean
   private UserManager userManager;
 
+  @TestedBean
+  private UserManagerFactory factory;
+
+  @RequesterProvider
+  private User getCurrentRequester() {
+    return user;
+  }
+
   @BeforeEach
-  public void setup(@MockedBean final User user) {
+  public void setup(@TestManagedMock final User user) {
     assertThat(user, notNullValue());
     assertThat(userManager, notNullValue());
   }
@@ -81,7 +95,7 @@ public class PoCJUnit5Test {
   }
 
   @Test
-  public void test2(@MockedBean final User user) {
+  public void test2(@TestManagedMock final User user) {
     assertThat(user, notNullValue());
   }
 
@@ -109,6 +123,23 @@ public class PoCJUnit5Test {
     assertThat(registration.getRegisteredUser(), is(registeredUser));
   }
 
+  @Test
+  public void test7() {
+    assertThat(factory, notNullValue());
+    assertThat(factory.getUserManager(), is(userManager));
+  }
+
+  @Test
+  public void test8() {
+    assertThat(User.getCurrentRequester(), is(user));
+  }
+
+  @Test
+  public void test9() {
+    assertThat(ServiceProvider.getService(OrganizationController.class), notNullValue());
+    assertThat(ServiceProvider.getService(Administration.class), notNullValue());
+  }
+
   static class Registration {
     private User user;
 
@@ -116,5 +147,6 @@ public class PoCJUnit5Test {
       return user;
     }
   }
+
 }
   

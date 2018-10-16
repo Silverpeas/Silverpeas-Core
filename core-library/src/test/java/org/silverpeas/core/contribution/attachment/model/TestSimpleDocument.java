@@ -31,7 +31,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavService;
-import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.test.util.RandomGenerator;
 
@@ -153,7 +153,7 @@ public class TestSimpleDocument {
   }
 
   @Test
-  public void testGetWebdavContentEditionLanguage(@MockedBean WebdavService webDavService)
+  public void testGetWebdavContentEditionLanguage(@TestManagedMock WebdavService webDavService)
       throws Exception {
     SimpleDocument document = new SimpleDocument();
     SimpleAttachment attachment = new SimpleAttachment();
@@ -205,7 +205,7 @@ public class TestSimpleDocument {
 
   @Test
   public void testGetWebdavContentEditionLanguageWithoutRelease(
-      @MockedBean WebdavService webdavService) {
+      @TestManagedMock WebdavService webdavService) {
     SimpleDocument document = new SimpleDocument();
     SimpleAttachment attachment = new SimpleAttachment();
     document.setAttachment(attachment);

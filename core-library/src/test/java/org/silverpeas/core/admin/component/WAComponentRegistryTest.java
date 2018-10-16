@@ -28,22 +28,19 @@
 package org.silverpeas.core.admin.component;
 
 import org.apache.commons.io.FileUtils;
-import org.jglue.cdiunit.CdiRunner;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.admin.component.model.Option;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,49 +60,30 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  * @author mmoquillon
  */
-@RunWith(CdiRunner.class)
+@ExtendWith(SilverTestEnv.class)
+@TestManagedBeans(PublicationTemplateManager.class)
 public class WAComponentRegistryTest {
-
-  private static File TEMPLATES_PATH;
-  private static File TARGET_DIR;
-
-  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   private WAComponentRegistry registry;
 
-  @Inject
-  private Provider<PublicationTemplateManager> managerProvider;
-
-  @BeforeClass
+  @BeforeAll
   public static void generalSetup() {
-    TARGET_DIR = getFile(
+    final File resDir = getFile(
         WAComponentRegistryTest.class.getProtectionDomain().getCodeSource().getLocation()
             .getFile());
-    TEMPLATES_PATH = getFile(TARGET_DIR, "templateRepository");
-
     FileUtils.deleteQuietly(
-        Paths.get(TARGET_DIR.getPath(), "xmlcomponents", "workflows", "newWorkflow.xml").toFile());
+        Paths.get(resDir.getPath(), "xmlcomponents", "workflows", "newWorkflow.xml").toFile());
   }
 
-  @Rule
-  public CommonAPI4Test getCommonAPI4Test() {
-    return commonAPI4Test;
-  }
-
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
-    // Context
-    PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
-    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", TARGET_DIR.getPath());
-    commonAPI4Test.injectIntoMockedBeanContainer(managerProvider.get());
     // Tested registry
     registry = new WAComponentRegistry();
     registry.init();
-
   }
 
   @Test
-  public void testLoadComponent() throws Exception {
+  public void testLoadComponent() {
     Optional<WAComponent> result = registry.getWAComponent("almanach");
     assertThat(result.isPresent(), is(true));
 

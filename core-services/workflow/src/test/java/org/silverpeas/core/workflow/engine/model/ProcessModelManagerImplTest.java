@@ -28,56 +28,40 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.File;
-import java.util.List;
-
 import org.apache.commons.io.FileUtils;
-import org.jglue.cdiunit.CdiRunner;
-import org.junit.Rule;
-import org.junit.runner.RunWith;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestedBean;
+import org.silverpeas.core.test.util.MavenTestEnv;
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.Column;
 import org.silverpeas.core.workflow.api.model.Consequence;
-import org.silverpeas.core.workflow.api.model.Consequences;
 import org.silverpeas.core.workflow.api.model.Presentation;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.model.Role;
 import org.silverpeas.core.workflow.api.model.State;
 
-import javax.inject.Inject;
+import java.io.File;
+import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  *
  * @author ehugonnet
  */
-@RunWith(CdiRunner.class)
+@ExtendWith(SilverTestEnv.class)
 public class ProcessModelManagerImplTest {
 
-  @Rule
-  public MavenTargetDirectoryRule getTargetDirectoryRule() {
-    return targetDirectoryRule;
-  }
-
-  private MavenTargetDirectoryRule targetDirectoryRule = new MavenTargetDirectoryRule(this);
-
-  @Rule
-  public CommonAPI4Test getApi4Test() {
-    return api4Test;
-  }
-
-  private CommonAPI4Test api4Test = new CommonAPI4Test();
-
-  @Inject
+  @TestedBean
   private ProcessModelManagerImpl instance;
 
   /**
    * Test of loadProcessModel method, of class ProcessModelManagerImpl.
    */
-  @org.junit.Test
+  @Test
   public void testLoadProcessModel() throws Exception {
     System.out.println("loadProcessModel");
     String processFileName = "DemandeCongesSimple.xml";
@@ -128,7 +112,7 @@ public class ProcessModelManagerImplTest {
   /**
    * Test of saveProcessModel method, of class ProcessModelManagerImpl.
    */
-  @org.junit.Test
+  @Test
   public void testSaveProcessModel() throws Exception {
     System.out.println("saveProcessModel");
     String processFileName = "DemandeCongesSimple.xml";
@@ -141,11 +125,11 @@ public class ProcessModelManagerImplTest {
   /**
    * Test of getProcessModelDir method, of class ProcessModelManagerImpl.
    */
-  @org.junit.Test
-  public void testGetProcessModelDir() {
+  @Test
+  public void testGetProcessModelDir(final MavenTestEnv mavenTestEnv) {
     System.out.println("getProcessModelDir");
     String expResult =
-        new File(targetDirectoryRule.getBuildDirFile(), "test-classes").getPath() + File.separator;
+        new File(mavenTestEnv.getBuildDirFile(), "test-classes").getPath() + File.separator;
     String result = instance.getProcessModelDir();
     assertEquals(expResult, result);
   }

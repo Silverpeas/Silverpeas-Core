@@ -52,9 +52,9 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.reminder.DurationReminder;
 import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.SilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
@@ -80,6 +80,8 @@ import static org.mockito.Mockito.when;
  * @author silveryocha
  */
 @ExtendWith(SilverTestEnv.class)
+@TestManagedBeans({JpaUpdateOperation.class, JpaPersistOperation.class,
+    CalendarContributionReminderUserNotification.class})
 public class CalendarContributionReminderUserNotificationTest {
   private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
 
@@ -99,30 +101,23 @@ public class CalendarContributionReminderUserNotificationTest {
   @RegisterExtension
   public FieldMocker reflectionRule = new FieldMocker();
 
-  @MockedBean
+  @TestManagedMock
   private ContributionManager contributionManager;
-  @MockedBean
+  @TestManagedMock
   private CalendarEventOccurrenceRepository calendarEventOccurrenceRepository;
   private User receiver;
-  @MockedBean
+  @TestManagedMock
   private ComponentInstanceRoutingMap componentInstanceRoutingMap;
-
-  @TestManagedBean
-  private JpaUpdateOperation update;
-  @TestManagedBean
-  private JpaPersistOperation persist;
-  @TestManagedBean
-  private CalendarContributionReminderUserNotification reminderNotif;
 
   private Period currentPeriod;
 
   @SuppressWarnings({"unchecked", "serial"})
   @BeforeEach
-  public void setup(@MockedBean UserProvider userProvider, @MockedBean
+  public void setup(@TestManagedMock UserProvider userProvider, @TestManagedMock
       ComponentInstanceRoutingMapProviderByInstance componentInstanceRoutingMapProviderByInstance,
-      @MockedBean ComponentInstanceRoutingMapProvider componentInstanceRoutingMapProvider,
-      @MockedBean SilverpeasComponentInstanceProvider silverpeasComponentInstanceProvider,
-      @MockedBean SilverpeasComponentInstance componentInstance) {
+      @TestManagedMock ComponentInstanceRoutingMapProvider componentInstanceRoutingMapProvider,
+      @TestManagedMock SilverpeasComponentInstanceProvider silverpeasComponentInstanceProvider,
+      @TestManagedMock SilverpeasComponentInstance componentInstance) {
     when(componentInstance.getName()).thenReturn(COMPONENT_NAME);
     when(silverpeasComponentInstanceProvider.getById(INSTANCE_ID))
         .thenReturn(Optional.of(componentInstance));

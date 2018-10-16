@@ -27,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.ArchivePaths;
+import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -45,6 +46,7 @@ import java.util.EventListener;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 /**
  * This class permits to setup an integration test
@@ -260,10 +262,10 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
         logInfo("Adding completed web.xml");
         war.setWebXML(webXml);
       }
-      File[] libs =
-          Maven.resolver().loadPomFromFile("pom.xml").resolve(mavenDependencies).withTransitivity()
-              .asFile();
+      File[] libs = Stream.of(Maven.resolver().loadPomFromFile("pom.xml").resolve(mavenDependencies).withTransitivity()
+              .asFile()).filter(f -> !f.getName().startsWith("weld") && !f.getName().startsWith("resteasy")).toArray(File[]::new);
       war.addAsLibraries(libs);
+      war.getContent(Filters.include(".*Test.class")).keySet().forEach(a -> war.delete(a));
       war.addAsResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
           "META-INF/services/org.silverpeas.core.util.BeanContainer");
       war.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");

@@ -41,7 +41,7 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.SilverTestEnv;
 
 import java.util.ArrayList;
@@ -117,11 +117,11 @@ public class GroupSynchronizationRuleTest {
 
   @SuppressWarnings({"unchecked", "Duplicates"})
   @BeforeEach
-  public void setup(@MockedBean UserManager userManager, @MockedBean GroupManager groupManager,
-      @MockedBean DomainDriverManager domainDriverManager,
-      @MockedBean DomainDriverManagerProvider domainDriverManagerProvider,
-      @MockedBean Administration admin,
-      @MockedBean PublicationTemplateManager templateManager) throws Exception {
+  public void setup(@TestManagedMock UserManager userManager, @TestManagedMock GroupManager groupManager,
+      @TestManagedMock DomainDriverManager domainDriverManager,
+      @TestManagedMock DomainDriverManagerProvider domainDriverManagerProvider,
+      @TestManagedMock Administration admin,
+      @TestManagedMock PublicationTemplateManager templateManager) throws Exception {
     Collections.shuffle(DOMAIN_A_USERS);
     Collections.shuffle(DOMAIN_B_USERS);
     Collections.shuffle(ALL_USERS);

@@ -24,28 +24,24 @@
 
 package org.silverpeas.core.admin.component.model;
 
-import org.jglue.cdiunit.CdiRunner;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.component.PersonalComponentRegistry;
 import org.silverpeas.core.admin.component.PersonalComponentRegistryTest;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 
-import javax.inject.Inject;
-import java.io.File;
 import java.util.Optional;
 
-import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,36 +50,14 @@ import static org.mockito.Mockito.when;
  * {@link PersonalComponentRegistryTest}.
  * @author Yohann Chastagnier
  */
-@RunWith(CdiRunner.class)
+@ExtendWith(SilverTestEnv.class)
+@TestManagedBeans(PublicationTemplateManager.class)
 public class PersonalComponentInstanceTest {
 
-  private static File TEMPLATES_PATH;
-  private static File TARGET_DIR;
   private static final String USER_CALENDAR_PERSONAL_COMPONENT_NAME = "userCalendar";
 
-  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Inject
-  private PersonalComponentRegistry registry;
-
-  @BeforeClass
-  public static void generalSetup() {
-    TARGET_DIR = getFile(
-        PersonalComponentRegistryTest.class.getProtectionDomain().getCodeSource().getLocation()
-            .getFile());
-    TEMPLATES_PATH = getFile(TARGET_DIR, "templateRepository");
-  }
-
-  @Rule
-  public CommonAPI4Test getCommonAPI4Test() {
-    return commonAPI4Test;
-  }
-
-  @Before
-  public void setup() throws Exception {
-    PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
-    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", TARGET_DIR.getPath());
-    commonAPI4Test.injectIntoMockedBeanContainer(registry);
+  @BeforeEach
+  public void setup(@TestManagedBean PersonalComponentRegistry registry) throws Exception {
     registry.init();
   }
 
@@ -104,17 +78,21 @@ public class PersonalComponentInstanceTest {
     assertThat(instance.getDescription("en"), is("Your personal diaries."));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void getInstanceFromUnknownUserButExistingPersonalComponentShouldThrowAnError() {
-    User user = putInContextMockedUserWithId("26");
-    PersonalComponentInstance.from(user, null);
+    assertThrows(IllegalArgumentException.class, () -> {
+      User user = putInContextMockedUserWithId("26");
+      PersonalComponentInstance.from(user, null);
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void getInstanceFromExistingUserButUnknownPersonalComponentShouldThrowAnError() {
-    PersonalComponent personalComponent =
-        PersonalComponent.getByName(USER_CALENDAR_PERSONAL_COMPONENT_NAME).get();
-    PersonalComponentInstance.from(null, personalComponent);
+    assertThrows(IllegalArgumentException.class, () -> {
+      PersonalComponent personalComponent =
+          PersonalComponent.getByName(USER_CALENDAR_PERSONAL_COMPONENT_NAME).get();
+      PersonalComponentInstance.from(null, personalComponent);
+    });
   }
 
   @Test
@@ -130,9 +108,9 @@ public class PersonalComponentInstanceTest {
     assertThat(instance.getLabel("en"), is("My diaries"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void getInstanceFromNotDefinedInstanceIdentifierShouldThrowError() {
-    PersonalComponentInstance.from("  ");
+    assertThrows(IllegalArgumentException.class, () -> PersonalComponentInstance.from("  "));
   }
 
   @Test

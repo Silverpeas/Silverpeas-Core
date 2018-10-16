@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.SilverTestEnv;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,7 +45,7 @@ public class ThumbnailSettingsTest {
 
   private static final String COMPONENT_INSTANCE_ID = "componentInstanceId";
 
-  @MockedBean
+  @TestManagedMock
   private OrganizationController mockedOrganisationController;
 
   @BeforeEach

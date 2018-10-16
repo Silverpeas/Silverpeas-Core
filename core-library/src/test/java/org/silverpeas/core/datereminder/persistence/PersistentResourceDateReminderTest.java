@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.datereminder.persistence;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
@@ -33,9 +33,9 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
-import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.SilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -46,16 +46,11 @@ import static org.mockito.Mockito.when;
  * @author Cécile Bonin
  */
 @ExtendWith(SilverTestEnv.class)
+@TestManagedBeans({JpaPersistOperation.class, JpaUpdateOperation.class})
 public class PersistentResourceDateReminderTest {
 
-  @TestManagedBean
-  private JpaPersistOperation persistOperation;
-
-  @TestManagedBean
-  private JpaUpdateOperation updateOperation;
-
   @BeforeEach
-  public void prepareInjection(@MockedBean UserProvider userProvider) {
+  public void prepareInjection(@TestManagedMock UserProvider userProvider) {
     when(userProvider.getUser(anyString())).thenAnswer(a -> {
       String id = a.getArgument(0);
       UserDetail user = new UserDetail();

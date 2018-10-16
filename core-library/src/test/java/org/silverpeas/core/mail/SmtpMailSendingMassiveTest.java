@@ -25,9 +25,9 @@ package org.silverpeas.core.mail;
 
 import com.icegreen.greenmail.base.GreenMailOperations;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -40,7 +40,7 @@ import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
 import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.test.extention.SmtpConfig;
-import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.Level;
 
@@ -57,6 +57,7 @@ import static org.hamcrest.Matchers.*;
 @LoggerLevel(Level.DEBUG)
 @SmtpConfig("/org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties")
 @Execution(ExecutionMode.SAME_THREAD)
+@TestManagedBeans(MailSenderTask.class)
 public class SmtpMailSendingMassiveTest {
 
   private final static String COMMON_FROM = "from@titi.org";
@@ -66,7 +67,7 @@ public class SmtpMailSendingMassiveTest {
   private long lastLogTime = -1;
 
   @BeforeEach
-  public void setup(@TestManagedBean MailSenderTask task) throws Exception {
+  public void setup() throws Exception {
     // Injecting by reflection the mock instance
     oldMailSender = MailSenderProvider.get();
     FieldUtils.writeDeclaredStaticField(MailSenderProvider.class, "mailSender",

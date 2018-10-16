@@ -58,7 +58,7 @@ public class FormLayerServlet extends HttpServlet {
     String form = pathInfo.substring(1);
     if (UserDetail.getCurrentRequester().isAccessAdmin()) {
       String filename = request.getParameter("Layer");
-      String dir = PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir, form);
+      String dir = PublicationTemplateManager.getInstance().makePath(form);
       File file = new File(dir, filename);
       response.setContentType(FileUtil.getMimeType(filename));
       response.setHeader("Content-Disposition", "inline; filename=\"" + filename + '"');

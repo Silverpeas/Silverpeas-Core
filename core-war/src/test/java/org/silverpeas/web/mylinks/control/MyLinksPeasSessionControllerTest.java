@@ -34,7 +34,7 @@ import org.silverpeas.core.mylinks.MyLinksRuntimeException;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -55,8 +55,8 @@ public class MyLinksPeasSessionControllerTest {
   @RegisterExtension
   FieldMocker mocker = new FieldMocker();
   private MyLinksPeasSessionController ctrl;
-  @MockedBean
-  private MyLinksService ejb;
+  @TestManagedMock
+  private MyLinksService myLinksService;
 
   @BeforeEach
   public void setup() {
@@ -80,9 +80,9 @@ public class MyLinksPeasSessionControllerTest {
     ctrl.createLink(linkEntityToAdd);
 
     ArgumentCaptor<LinkDetail> argumentCaptor = ArgumentCaptor.forClass(LinkDetail.class);
-    verify(ejb, times(1)).createLink(argumentCaptor.capture());
-    verify(ejb, times(0)).updateLink(any(LinkDetail.class));
-    verify(ejb, times(0)).deleteLinks(any(String[].class));
+    verify(myLinksService, times(1)).createLink(argumentCaptor.capture());
+    verify(myLinksService, times(0)).updateLink(any(LinkDetail.class));
+    verify(myLinksService, times(0)).deleteLinks(any(String[].class));
     LinkDetail createdLink = argumentCaptor.getValue();
     assertThat(createdLink.getUserId(), is(CURRENT_USER_ID));
   }
@@ -90,7 +90,7 @@ public class MyLinksPeasSessionControllerTest {
   @Test
   public void updateLink() throws Exception {
     LinkDetail linkDetailForVerification = getDummyUserLink();
-    when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
+    when(myLinksService.getLink(anyString())).thenReturn(linkDetailForVerification);
     MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
     writeDeclaredField(linkEntityToUpdate, "name", "name updated", true);
     writeDeclaredField(linkEntityToUpdate, "url", "url updated", true);
@@ -98,9 +98,9 @@ public class MyLinksPeasSessionControllerTest {
     ctrl.updateLink(linkEntityToUpdate);
 
     ArgumentCaptor<LinkDetail> argumentCaptor = ArgumentCaptor.forClass(LinkDetail.class);
-    verify(ejb, times(0)).createLink(any(LinkDetail.class));
-    verify(ejb, times(1)).updateLink(argumentCaptor.capture());
-    verify(ejb, times(0)).deleteLinks(any(String[].class));
+    verify(myLinksService, times(0)).createLink(any(LinkDetail.class));
+    verify(myLinksService, times(1)).updateLink(argumentCaptor.capture());
+    verify(myLinksService, times(0)).deleteLinks(any(String[].class));
     LinkDetail updatedLink = argumentCaptor.getValue();
     assertThat(updatedLink.getUserId(), is(CURRENT_USER_ID));
     assertThat(updatedLink.getName(), is("name updated"));
@@ -112,7 +112,7 @@ public class MyLinksPeasSessionControllerTest {
     assertThrows(MyLinksRuntimeException.class, () -> {
       LinkDetail linkDetailForVerification = getDummyUserLink();
       linkDetailForVerification.setUserId("otherUserId");
-      when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
+      when(myLinksService.getLink(anyString())).thenReturn(linkDetailForVerification);
       MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
       writeDeclaredField(linkEntityToUpdate, "name", "name updated", true);
       writeDeclaredField(linkEntityToUpdate, "url", "url updated", true);
@@ -125,7 +125,7 @@ public class MyLinksPeasSessionControllerTest {
   public void updateLinkButUrlIsMissing() {
     assertThrows(MyLinksRuntimeException.class, () -> {
       LinkDetail linkDetailForVerification = getDummyUserLink();
-      when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
+      when(myLinksService.getLink(anyString())).thenReturn(linkDetailForVerification);
       MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
       writeDeclaredField(linkEntityToUpdate, "name", "name updated", true);
       writeDeclaredField(linkEntityToUpdate, "url", "", true);
@@ -138,7 +138,7 @@ public class MyLinksPeasSessionControllerTest {
   public void updateLinkButNameIsMissing() {
     assertThrows(MyLinksRuntimeException.class, () -> {
       LinkDetail linkDetailForVerification = getDummyUserLink();
-      when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
+      when(myLinksService.getLink(anyString())).thenReturn(linkDetailForVerification);
       MyLinkEntity linkEntityToUpdate = MyLinkEntity.fromLinkDetail(new LinkDetail(), null);
       writeDeclaredField(linkEntityToUpdate, "name", "", true);
       writeDeclaredField(linkEntityToUpdate, "url", "url updated", true);
@@ -150,14 +150,14 @@ public class MyLinksPeasSessionControllerTest {
   @Test
   public void deleteLink() throws Exception {
     LinkDetail linkDetailForVerification = getDummyUserLink();
-    when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
+    when(myLinksService.getLink(anyString())).thenReturn(linkDetailForVerification);
 
     ctrl.deleteLinks(new String[]{"38", "26"});
 
     ArgumentCaptor<String[]> argumentCaptor = ArgumentCaptor.forClass(String[].class);
-    verify(ejb, times(0)).createLink(any(LinkDetail.class));
-    verify(ejb, times(0)).updateLink(any(LinkDetail.class));
-    verify(ejb, times(1)).deleteLinks(argumentCaptor.capture());
+    verify(myLinksService, times(0)).createLink(any(LinkDetail.class));
+    verify(myLinksService, times(0)).updateLink(any(LinkDetail.class));
+    verify(myLinksService, times(1)).deleteLinks(argumentCaptor.capture());
     String[] deletedLinkIds = argumentCaptor.getValue();
     assertThat(deletedLinkIds, arrayContaining("38", "26"));
   }
@@ -167,7 +167,7 @@ public class MyLinksPeasSessionControllerTest {
     assertThrows(MyLinksRuntimeException.class, () -> {
       LinkDetail linkDetailForVerification = getDummyUserLink();
       linkDetailForVerification.setUserId("otherUserId");
-      when(ejb.getLink(anyString())).thenReturn(linkDetailForVerification);
+      when(myLinksService.getLink(anyString())).thenReturn(linkDetailForVerification);
 
       ctrl.deleteLinks(new String[]{"38", "26"});
     });

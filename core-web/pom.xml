@@ -212,19 +212,6 @@
       <version>3.0.1</version>
       <scope>test</scope>
     </dependency>
-
-    <!-- CDI JUnit Tests-->
-    <dependency>
-      <groupId>org.jglue.cdi-unit</groupId>
-      <artifactId>cdi-unit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.weld.se</groupId>
-      <artifactId>weld-se</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <reporting>

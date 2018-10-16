@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -53,11 +53,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SilverTestEnv.class)
 public class DirectorySessionControllerTest {
 
-  @MockedBean
+  @TestManagedMock
   private OrganizationController mockOrganizationController;
 
   @BeforeEach
-  public void setup(@MockedBean SilverpeasComponentInstanceProvider mockProvider) {
+  public void setup(@TestManagedMock SilverpeasComponentInstanceProvider mockProvider) {
     when(mockProvider.getComponentName(any())).thenAnswer(i -> {
       String componentName = i.getArgument(0);
       return componentName;

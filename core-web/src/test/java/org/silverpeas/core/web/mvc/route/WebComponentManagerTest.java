@@ -24,20 +24,13 @@
 package org.silverpeas.core.web.mvc.route;
 
 import org.hamcrest.Matchers;
-import org.jglue.cdiunit.AdditionalPackages;
-import org.jglue.cdiunit.CdiRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.*;
 
-import javax.enterprise.inject.Produces;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
 import java.net.URI;
@@ -45,34 +38,27 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Yohann Chastagnier
  */
-@RunWith(CdiRunner.class)
-@AdditionalPackages({WebComponentRequestRouter.class, ComponentRequestRouter.class})
 public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
-  @Produces
-  @Mock
-  private OrganizationController mockedOrganizationController;
-
-  @Produces
-  @Mock
-  private SilverStatisticsManager mockedSilverStatisticsManager;
-
-  @Test(expected = IllegalArgumentException.class)
-  public void webComponentControllerIsNotAnnoted() throws Exception {
-    try {
-      onController(BadTestWebComponentController.class).defaultRequest().perform();
-    } catch (IllegalArgumentException e) {
-      assertThat(e.getMessage(), Matchers.endsWith(
-          "BadTestWebComponentController must specify one, and only one, " +
-              "@WebComponentController annotation"
-      ));
-      throw e;
-    }
+  @Test
+  public void webComponentControllerIsNotAnnoted() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      try {
+        onController(BadTestWebComponentController.class).defaultRequest().perform();
+      } catch (IllegalArgumentException e) {
+        assertThat(e.getMessage(), Matchers.endsWith(
+            "BadTestWebComponentController must specify one, and only one, " +
+                "@WebComponentController annotation"
+        ));
+        throw e;
+      }
+    });
   }
 
   @Test
@@ -130,26 +116,30 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verifyDestination(testResult.router, "/common/deleted.jsp");
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void homepageIsNotSpecified() throws Exception {
-    try {
-      onController(HomePageIsNotSpecifiedController.class).defaultRequest().perform();
-    } catch (IllegalArgumentException e) {
-      assertThat(e.getMessage(), is("The homepage method must be specified with @Homepage"));
-      throw e;
-    }
+  @Test
+  public void homepageIsNotSpecified() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      try {
+        onController(HomePageIsNotSpecifiedController.class).defaultRequest().perform();
+      } catch (IllegalArgumentException e) {
+        assertThat(e.getMessage(), is("The homepage method must be specified with @Homepage"));
+        throw e;
+      }
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void twoHomepageIsSpecified() throws Exception {
-    try {
-      onController(TwoHomepagesController.class).defaultRequest().perform();
-    } catch (IllegalArgumentException e) {
-      System.out.printf(e.getMessage());
-      assertThat(e.getMessage(),
-          is("@Homepage is specified several times while it should be once"));
-      throw e;
-    }
+  @Test
+  public void twoHomepageIsSpecified() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      try {
+        onController(TwoHomepagesController.class).defaultRequest().perform();
+      } catch (IllegalArgumentException e) {
+        System.out.printf(e.getMessage());
+        assertThat(e.getMessage(),
+            is("@Homepage is specified several times while it should be once"));
+        throw e;
+      }
+    });
   }
 
   @SuppressWarnings("unchecked")
@@ -225,50 +215,54 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verifyDestination(testResult.router, "/error");
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void httpMethodWithInvokableAnnotation() throws Exception {
-    try {
-      onController(HttpMethodWithInvokableAnnotationController.class).defaultRequest().perform();
-    } catch (IllegalArgumentException e) {
-      assertThat(e.getMessage(), is("Http Method homeMethod can not be annotated with @Invokable"));
-      throw e;
-    }
+  @Test
+  public void httpMethodWithInvokableAnnotation() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      try {
+        onController(HttpMethodWithInvokableAnnotationController.class).defaultRequest().perform();
+      } catch (IllegalArgumentException e) {
+        assertThat(e.getMessage(), is("Http Method homeMethod can not be annotated with @Invokable"));
+        throw e;
+      }
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void referenceInvokableBeforeThatDoesNotExist() throws Exception {
-    try {
-      onController(InvokeBeforeNoReferenceController.class).defaultRequest().perform();
-    } catch (IllegalArgumentException e) {
-      assertThat(e.getMessage(),
-          is("method behind 'invokable_2' invokable identifier must be performed before the " +
-              "execution of HTTP method homeMethod, but it is not registered")
-      );
-      throw e;
-    }
+  @Test
+  public void referenceInvokableBeforeThatDoesNotExist() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      try {
+        onController(InvokeBeforeNoReferenceController.class).defaultRequest().perform();
+      } catch (IllegalArgumentException e) {
+        assertThat(e.getMessage(), is("method behind 'invokable_2' invokable identifier must be performed before the " +
+            "execution of HTTP method homeMethod, but it is not registered"));
+        throw e;
+      }
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void referenceInvokableAfterThatDoesNotExist() throws Exception {
-    try {
-      onController(InvokeAfterNoReferenceController.class).defaultRequest().perform();
-    } catch (IllegalArgumentException e) {
-      assertThat(e.getMessage(),
-          is("method behind 'invokable_1' invokable identifier must be performed after the " +
-              "execution of HTTP method homeMethod, but it is not registered")
-      );
-      throw e;
-    }
+  @Test
+  public void referenceInvokableAfterThatDoesNotExist() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      try {
+        onController(InvokeAfterNoReferenceController.class).defaultRequest().perform();
+      } catch (IllegalArgumentException e) {
+        assertThat(e.getMessage(), is("method behind 'invokable_1' invokable identifier must be performed after the " +
+            "execution of HTTP method homeMethod, but it is not registered"));
+        throw e;
+      }
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void invokableIdentifierAlreadyExists() throws Exception {
-    try {
-      onController(InvokableIdentifierAlreadyExistsController.class).defaultRequest().perform();
-    } catch (IllegalArgumentException e) {
-      assertThat(e.getMessage(), is("invokable_1 invokable identifier has already been set"));
-      throw e;
-    }
+  @Test
+  public void invokableIdentifierAlreadyExists() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      try {
+        onController(InvokableIdentifierAlreadyExistsController.class).defaultRequest().perform();
+      } catch (IllegalArgumentException e) {
+        assertThat(e.getMessage(), is("invokable_1 invokable identifier has already been set"));
+        throw e;
+      }
+    });
   }
 
   @SuppressWarnings("unchecked")
@@ -351,76 +345,77 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
 
-  @Test(expected = IllegalArgumentException.class)
-  public void missingNavigationOnHttpMethod() throws Exception {
-    try {
-      onController(MissingNavigationController.class).defaultRequest().perform();
-    } catch (IllegalArgumentException e) {
-      assertThat(e.getMessage(),
-          is("home method must, either return a Navigation instance, either be annotated by " +
-              "@Produces, either be annotated by one of @RedirectTo... annotation")
-      );
-      throw e;
-    }
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void twoNavigationsSpecifiedOnHttpMethod() throws Exception {
-    try {
-      onController(TwoNavigationsSpecifiedController.class).defaultRequest().perform();
-    } catch (IllegalArgumentException e) {
-      assertThat(e.getMessage(),
-          is("home method must, either return a Navigation instance, either be annotated by " +
-              "@Produces, either be annotated by one of @RedirectTo... annotation")
-      );
-      throw e;
-    }
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void samePathsWithoutVariable() throws Exception {
-    try {
-      onController(SamePathsWithoutVariableController.class).defaultRequest().perform();
-    } catch (IllegalArgumentException e) {
+  @Test
+  public void missingNavigationOnHttpMethod() {
+    assertThrows(IllegalArgumentException.class, () -> {
       try {
-        assertThat(e.getMessage(),
-            is("specified path for method method2 already exists for method method1 -> /a/b/c/d/"));
-      } catch (AssertionError ae) {
-        assertThat(e.getMessage(),
-            is("specified path for method method1 already exists for method method2 -> a/b/c/d"));
+        onController(MissingNavigationController.class).defaultRequest().perform();
+      } catch (IllegalArgumentException e) {
+        assertThat(e.getMessage(), is("home method must, either return a Navigation instance, either be annotated by " +
+            "@Produces, either be annotated by one of @RedirectTo... annotation"));
+        throw e;
       }
-      throw e;
-    }
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void samePathsWithVariables() throws Exception {
-    try {
-      onController(SamePathsWithVariablesController.class).defaultRequest().perform();
-    } catch (IllegalArgumentException e) {
+  @Test
+  public void twoNavigationsSpecifiedOnHttpMethod() {
+    assertThrows(IllegalArgumentException.class, () -> {
       try {
-      assertThat(e.getMessage(),
-          is("specified path for method method2 already exists for method method1 -> " +
+        onController(TwoNavigationsSpecifiedController.class).defaultRequest().perform();
+      } catch (IllegalArgumentException e) {
+        assertThat(e.getMessage(), is("home method must, either return a Navigation instance, either be annotated by " +
+            "@Produces, either be annotated by one of @RedirectTo... annotation"));
+        throw e;
+      }
+    });
+  }
+
+  @Test
+  public void samePathsWithoutVariable() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      try {
+        onController(SamePathsWithoutVariableController.class).defaultRequest().perform();
+      } catch (IllegalArgumentException e) {
+        try {
+          assertThat(e.getMessage(), is("specified path for method method2 already exists for method method1 -> /a/b/c/d/"));
+        } catch (AssertionError ae) {
+          assertThat(e.getMessage(), is("specified path for method method1 already exists for method method2 -> a/b/c/d"));
+        }
+        throw e;
+      }
+    });
+  }
+
+  @Test
+  public void samePathsWithVariables() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      try {
+        onController(SamePathsWithVariablesController.class).defaultRequest().perform();
+      } catch (IllegalArgumentException e) {
+        try {
+          assertThat(e.getMessage(), is("specified path for method method2 already exists for method method1 -> " +
               "a/b/c/d/resourceId-{anResourceId  :  [0-9]+  }-test"));
-      } catch (AssertionError ae) {
-        assertThat(e.getMessage(),
-            is("specified path for method method1 already exists for method method2 -> " +
-                "a/b/c/d/resourceId-{anResourceId:[0-9]+}-test"));
+        } catch (AssertionError ae) {
+          assertThat(e.getMessage(), is("specified path for method method1 already exists for method method2 -> " +
+              "a/b/c/d/resourceId-{anResourceId:[0-9]+}-test"));
+        }
+        throw e;
       }
-      throw e;
-    }
+    });
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void notHandledProducesSpecifiedOnHttpMethod() throws Exception {
-    try {
-      onController(NotHandledProducesSpecifiedController.class).defaultRequest().perform();
-    } catch (IllegalArgumentException e) {
-      assertThat(e.getMessage(),
-          is("@Produces into WebComponentController can just handle application/json data for now" +
-              " (method producesNotJson)"));
-      throw e;
-    }
+  @Test
+  public void notHandledProducesSpecifiedOnHttpMethod() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      try {
+        onController(NotHandledProducesSpecifiedController.class).defaultRequest().perform();
+      } catch (IllegalArgumentException e) {
+        assertThat(e.getMessage(), is("@Produces into WebComponentController can just handle application/json data for now" +
+            " (method producesNotJson)"));
+        throw e;
+      }
+    });
   }
 
   @SuppressWarnings("unchecked")

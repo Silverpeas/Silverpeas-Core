@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.test.extention;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -31,11 +32,32 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A bean to register into the {@link org.silverpeas.core.util.BeanContainer} used in the unit
- * tests. The bean is set for each test method invocation so any change performed in a previous test
- * is lost once that test is done. If the bean isn't instantiated, then it should have a default
- * constructor (whatever its visibility) so that the JUnit extension handling the annotation is able
- * to instantiate it.
+ * This annotation is used to indicate that a field or a parameter has to be instantiated and then
+ * registered into the bean container used in the test before executing that test. For doing, the
+ * bean type must have a default constructor. Once instantiated, if the bean has a
+ * {@link javax.annotation.PostConstruct} annotated method, then this method will be invoked.
+ * This annotation is for classes for which an instance is preferred to a mock in unit tests.
+ * The difference between such beans and those annotated with {@link TestedBean} is that the
+ * injection points in the former aren't resolved; indeed, {@link TestManagedBean} annotated beans
+ * are considered just like mock but with a true instance (a kind of stub then).
+ * <p>
+ * Any field annotated with this annotation can be explicitly instantiated, in that case it is that
+ * instance that will be registered into the bean container and no
+ * {@link javax.annotation.PostConstruct} annotated method will be invoked. If the test class
+ * declares several annotated fields having a common type among their ancestor, then the fields
+ * will be registered for that type and they could be get by using the
+ * {@link org.silverpeas.core.test.TestBeanContainer#getAllBeansByType(Class, Annotation...)}
+ * method. In that case, the call of
+ * {@link org.silverpeas.core.test.TestBeanContainer#getBeanByType(Class, Annotation...)} method
+ * with that type as parameter will throw an exception.
+ * </p>
+ * <p>
+ * If the annotation is applied to a parameter, then a bean of the parameter type is first looking
+ * for in the bean container used in the tests. If no such bean is found, then the type is
+ * instantiated, the newly created bean is registered into the bean container and finally it is
+ * passed as parameter value. By using this annotation with the parameters, you can get any
+ * previously registered bean.
+ * </p>
  * @author mmoquillon
  */
 @Target({ElementType.FIELD, ElementType.PARAMETER})

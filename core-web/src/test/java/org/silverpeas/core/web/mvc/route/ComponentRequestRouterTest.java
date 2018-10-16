@@ -22,20 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.web.mvc.route;
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
-import org.jglue.cdiunit.CdiRunner;
-import org.jglue.cdiunit.internal.servlet.MockHttpServletRequestImpl;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -43,38 +37,30 @@ import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  *
  * @author ehugonnet
  */
-@RunWith(CdiRunner.class)
+@ExtendWith(SilverTestEnv.class)
 public class ComponentRequestRouterTest {
 
-  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public CommonAPI4Test getCommonAPI4Test() {
-    return commonAPI4Test;
-  }
-
-  @Produces
-  @Mock
+  @TestManagedMock
   private OrganizationController mockedOrganizationController;
 
-  @Inject
+  @TestedBean
   private SilverpeasWebUtil util;
 
   private ComponentRequestRouter router;
 
-  @Before
+  @BeforeEach
   public void setup() {
-    commonAPI4Test.injectIntoMockedBeanContainer(util);
     router = new ComponentRequestRouter() {
 
       private static final long serialVersionUID = 2578618196722321170L;
@@ -100,14 +86,10 @@ public class ComponentRequestRouterTest {
 
   @Test
   public void testGetComponentId() {
-    MockHttpServletRequestImpl request = new MockHttpServletRequestImpl();
-    request.setRemoteHost("localhost");
-    request.setMethod("GET");
-    request.setRemotePort(8000);
-    request.setScheme("http://");
-    request.setContextPath("/silverpeas");
-    request.setPathInfo("/mytests2/ListeContacts");
-    request.setRequestURI("/silverpeas/Rmytests/mytests2/ListeContacts");
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    when(request.getPathInfo()).thenReturn("/mytests2/ListeContacts");
+    when(request.getRequestURI()).thenReturn("/silverpeas/Rmytests/mytests2/ListeContacts");
+
     String[] context = ComponentRequestRouter.getComponentId(request, null);
     assertThat(context, notNullValue());
     assertThat(context[0], nullValue());

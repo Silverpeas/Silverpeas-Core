@@ -25,12 +25,9 @@
 package org.silverpeas.core.calendar.icalendar;
 
 import org.apache.commons.io.IOUtils;
-import org.jglue.cdiunit.AdditionalPackages;
-import org.jglue.cdiunit.CdiRunner;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.calendar.Attendee;
@@ -41,22 +38,22 @@ import org.silverpeas.core.calendar.CalendarMockBuilder;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
+import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JExporter;
+import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.persistence.datasource.PersistOperation;
-import org.silverpeas.core.persistence.datasource.UpdateOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.util.StringUtil;
 
-import javax.enterprise.util.AnnotationLiteral;
-import javax.inject.Inject;
-import javax.inject.Provider;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,9 +70,9 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.core.calendar.Attendee.PresenceStatus.INFORMATIVE;
@@ -88,40 +85,23 @@ import static org.silverpeas.core.util.CollectionUtil.asList;
 /**
  * @author Yohann Chastagnier
  */
-@RunWith(CdiRunner.class)
-@AdditionalPackages({ICal4JExporter.class})
+@ExtendWith(SilverTestEnv.class)
+@TestManagedBeans({JpaPersistOperation.class, JpaUpdateOperation.class})
 public class ICal4JExporterTest {
-
-  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   private static final Calendar calendar = CalendarMockBuilder.from("instanceId")
       .withId("calendarUuid").atZoneId(ZoneId.of("Europe/Paris")).build();
 
-  @Inject
-  private Provider<ICalendarExporter> iCalendarExporterProvider;
-
-  private ICalendarExporter iCalendarExporter;
+  @TestManagedBean
+  private ICal4JDateCodec dateCodec = new ICal4JDateCodec();
+  @TestManagedBean
+  private ICal4JRecurrenceCodec recurrenceCodec = new ICal4JRecurrenceCodec(dateCodec);
+  @TestedBean
+  private ICal4JExporter iCalendarExporter;
   private User creator;
 
-  @Rule
-  public CommonAPI4Test getCommonAPI4Test() {
-    return commonAPI4Test;
-  }
-
-  @SuppressWarnings("Duplicates")
-  @Before
+  @BeforeEach
   public void setup() {
-    iCalendarExporter = iCalendarExporterProvider.get();
-    assertThat(iCalendarExporter, instanceOf(ICal4JExporter.class));
-    commonAPI4Test.injectIntoMockedBeanContainer(iCalendarExporterProvider);
-
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(),
-        new AnnotationLiteral<PersistOperation>() {
-        });
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(),
-        new AnnotationLiteral<UpdateOperation>() {
-        });
-
     creator = mock(User.class);
     when(creator.getId()).thenReturn("creatorId");
     when(creator.getDisplayedName()).thenReturn("Creator Test");
@@ -131,17 +111,21 @@ public class ICal4JExporterTest {
     OperationContext.fromUser("0");
   }
 
-  @Test(expected = ExportException.class)
-  public void undefinedListOfEvents() throws ExportException {
+  @Test
+  public void undefinedListOfEvents() {
+    assertThrows(ExportException.class, () ->
     iCalendarExporter.exports(ExportDescriptor.withOutputStream(new ByteArrayOutputStream())
-        .withParameter(CALENDAR, calendar), () -> null);
+        .withParameter(CALENDAR, calendar), () -> null));
   }
 
-  @Test(expected = ExportException.class)
-  public void undefinedCalendar() throws ExportException {
-    iCalendarExporter.exports(ExportDescriptor.withOutputStream(new ByteArrayOutputStream()), () -> {
-      List<CalendarEvent> calendarEvents = emptyList();
-      return calendarEvents.stream();
+  @Test
+  public void undefinedCalendar() {
+    assertThrows(ExportException.class, () -> {
+      iCalendarExporter.exports(ExportDescriptor.withOutputStream(new ByteArrayOutputStream()),
+          () -> {
+            List<CalendarEvent> calendarEvents = emptyList();
+            return calendarEvents.stream();
+          });
     });
   }
 

@@ -24,27 +24,24 @@
 
 package org.silverpeas.core.test.extention;
 
-import org.silverpeas.core.util.logging.Level;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to specify a logger level. This annotation is managed by the {@link LoggerExtension}
- * JUnit 5 extension. Be cautious: the annotation cannot be used in
- * {@link org.junit.jupiter.api.BeforeEach} and in @{@link org.junit.jupiter.api.BeforeAll}
- * annotated methods.
+ * Annotation to indicate that a field in a unit test class is a bean being tested. This
+ * annotation is taken in charge by the {@link SilverTestEnv} extension. When such an annotation
+ * is discovered by the extension, it will be automatically instantiated (if not yet done) and all
+ * of its dependencies (id est fields annotated with @{@link javax.inject.Inject}) will be either
+ * resolved or mocked.
+ * Finally, the {@link javax.annotation.PostConstruct} annotated method will be invoked.
  * @author mmoquillon
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Inherited
 @Documented
-public @interface LoggerLevel {
+public @interface TestedBean {
 
-  Level value();
 }

@@ -24,14 +24,17 @@
 package org.silverpeas.core.notification.sse;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.sse.ServerEventDispatcherTask.ServerEventStore;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.LoggerLevel;
+import org.silverpeas.core.test.extention.RequesterProvider;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.util.logging.Level;
 
 import javax.servlet.AsyncContext;
@@ -48,21 +51,25 @@ import static org.mockito.Mockito.*;
 /**
  * @author Yohann Chastagnier
  */
-class AbstractServerEventDispatcherTaskTest {
+@ExtendWith(SilverTestEnv.class)
+@LoggerLevel(Level.DEBUG)
+@TestManagedBeans(ServerEventDispatcherTask.class)
+abstract class AbstractServerEventDispatcherTaskTest {
 
   final static String EVENT_SOURCE_REQUEST_URI = "/handled";
-  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   Set<AsyncContext> asyncContextMap;
   private ServerEventStore serverEventStore;
 
-  @Rule
-  public CommonAPI4Test getCommonAPI4Test() {
-    return commonAPI4Test;
+  @RequesterProvider
+  public User getDefaultRequester() {
+    UserDetail user = new UserDetail();
+    user.setId("32");
+    return user;
   }
 
-  @Before
-  @After
+  @BeforeEach
+  @AfterEach
   @SuppressWarnings("unchecked")
   public void setup() throws Exception {
     asyncContextMap = (Set<AsyncContext>) FieldUtils
@@ -72,11 +79,7 @@ class AbstractServerEventDispatcherTaskTest {
     asyncContextMap.clear();
     serverEventStore.clear();
     FieldUtils.writeDeclaredStaticField(AbstractServerEvent.class, "idCounter", 0L, true);
-    commonAPI4Test.injectIntoMockedBeanContainer(new ServerEventDispatcherTask());
-    commonAPI4Test.setLoggerLevel(Level.DEBUG);
-    UserDetail user = new UserDetail();
-    user.setId("32");
-    commonAPI4Test.setCurrentRequester(user);
+
     new SseLogger().init();
   }
 

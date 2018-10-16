@@ -26,18 +26,15 @@ package org.silverpeas.core.contribution.template.publication;
 import org.junit.Assert;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.test.extention.SilverTestEnv;
-
-import java.io.File;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 
 import static java.io.File.separatorChar;
-import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -46,20 +43,9 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  */
 @ExtendWith(SilverTestEnv.class)
+@TestManagedBeans(PublicationTemplateManager.class)
 public class PublicationTemplateImplTest {
   private static final char SEPARATOR = separatorChar;
-
-  private File TEMPLATES_PATH;
-
-  @BeforeEach
-  public void setUpClass() {
-    final File targetDir = getFile(
-        PublicationTemplateImplTest.class.getProtectionDomain().getCodeSource().getLocation()
-            .getFile());
-    TEMPLATES_PATH = getFile(targetDir, "templateRepository");
-
-    PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
-  }
 
   @Test
   public void testGetRecordTemplateSimple() throws Exception {

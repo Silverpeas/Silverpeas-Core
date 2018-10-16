@@ -59,7 +59,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -150,8 +149,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     this.template = (PublicationTemplateImpl) template;
     String fileName = string2fileName(template.getName());
 
-    String templateDirPath =
-        PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir, fileName);
+    String templateDirPath = PublicationTemplateManager.getInstance().makePath(fileName);
     File templateDir = new File(templateDirPath);
     if (templateDir.exists()) {
       WebMessager.getInstance()
@@ -456,8 +454,8 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
         throw e;
       }
 
-      String dir = PublicationTemplateManager
-          .makePath(PublicationTemplateManager.templateDir, getSubdir(template.getFileName()));
+      String dir =
+          PublicationTemplateManager.getInstance().makePath(getSubdir(template.getFileName()));
 
       if (template.isViewLayerDefined() &&
           template.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
@@ -545,13 +543,10 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       }
     }
     if (!result.isEmpty()) {
-      Collections.sort(result, new Comparator<LocalizedComponent>() {
-        @Override
-        public int compare(LocalizedComponent o1, LocalizedComponent o2) {
-          String valcomp1 = o1.getSuite() + o1.getLabel();
-          String valcomp2 = o2.getSuite() + o2.getLabel();
-          return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
-        }
+      Collections.sort(result, (o1, o2) -> {
+        String valcomp1 = o1.getSuite() + o1.getLabel();
+        String valcomp2 = o2.getSuite() + o2.getLabel();
+        return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
       });
     }
     return result;
@@ -568,8 +563,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     newTemplate.setName(duplicatedFormName);
 
     String fileName = string2fileName(duplicatedFormName);
-    String templateDirPath =
-        PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir, fileName);
+    String templateDirPath = PublicationTemplateManager.getInstance().makePath(fileName);
     File templateDir = new File(templateDirPath);
     if (templateDir.exists()) {
       WebMessager.getInstance()
@@ -605,7 +599,9 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   private void copyLayer(PublicationTemplateImpl template, String layerFileName, boolean view)
       throws IOException {
     if (layerFileName != null && layerFileName.endsWith(".html")) {
-      Path layerPath = Paths.get(PublicationTemplateManager.templateDir, layerFileName);
+      Path layerPath =
+          Paths.get(PublicationTemplateManager.getInstance().getTemplateDirectoryPath(),
+              layerFileName);
       File tempDir = new File(FileRepositoryManager.getTemporaryPath() + System.currentTimeMillis());
       Files.createDirectory(tempDir.toPath());
       Path copyPath = tempDir.toPath().resolve(layerPath.getFileName());
@@ -634,12 +630,10 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     String name = string2fileName(template.getName());
     String fileName = template.getFileName();
 
-    String templateDirPath =
-        PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir, name);
+    String templateDirPath = PublicationTemplateManager.getInstance().makePath(name);
     File templateDir = new File(templateDirPath);
 
-    String templateFilePath =
-        PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir, fileName);
+    String templateFilePath = PublicationTemplateManager.getInstance().makePath(fileName);
     File templateFile = new File(templateFilePath);
 
     try {

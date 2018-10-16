@@ -35,7 +35,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -58,7 +58,7 @@ public class NotificationMetaDataTest {
   private SettingBundle mockedSettings;
 
   @BeforeEach
-  public void setup(@MockedBean OrganizationController controller) throws Exception {
+  public void setup(@TestManagedMock OrganizationController controller) throws Exception {
     current = new NotificationMetaData();
 
     // Settings

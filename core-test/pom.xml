@@ -66,6 +66,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.jboss.weld</groupId>
+      <artifactId>weld-junit5</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <scope>compile</scope>
@@ -93,6 +98,16 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-client</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
