@@ -23,31 +23,27 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import org.jglue.cdiunit.AdditionalClasses;
-import org.jglue.cdiunit.CdiRunner;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
+import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
 import org.silverpeas.core.notification.user.server.channel.popup.PopupMessageService;
 import org.silverpeas.core.notification.user.server.channel.server.ServerMessageService;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.session.SessionManagement;
-import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.silverstatistics.volume.service.SilverStatistics;
+import org.silverpeas.core.test.extention.TestManagedMocks;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.session.SessionManager;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -63,37 +59,19 @@ import static org.mockito.Mockito.*;
  *
  * @author ehugonnet
  */
-@RunWith(CdiRunner.class)
-@AdditionalClasses({SilverpeasSessionOpenerTest.SessionManagerStub.class})
+@ExtendWith(SilverTestEnv.class)
+@TestManagedMocks({Scheduler.class, SilverStatistics.class, DefaultServerEventNotifier.class,
+    ServerMessageService.class, PopupMessageService.class})
 public class SilverpeasSessionOpenerTest {
 
-  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  @TestedBean
+  private SessionManagement sessionManagement = new SessionManagerStub();
 
-  @Rule
-  public CommonAPI4Test getCommonAPI4Test() {
-    return commonAPI4Test;
-  }
-
-  @Produces
-  @Mock
-  private Scheduler scheduler;
-
-  @Produces
-  @Mock
-  private SilverStatisticsManager mockedSilverStatisticsManager;
-
-  @Inject
-  private Provider<SessionManagement> sessionManagement;
   private HttpRequest httpRequest;
   private HttpSession session;
 
-  @SuppressWarnings("unchecked")
-  @Before
-  public void setUp() throws Exception {
-    commonAPI4Test.injectIntoMockedBeanContainer(sessionManagement.get());
-    commonAPI4Test.injectIntoMockedBeanContainer(mock(ServerMessageService.class));
-    commonAPI4Test.injectIntoMockedBeanContainer(mock(PopupMessageService.class));
-
+  @BeforeEach
+  public void setUp() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     when(request.isSecure()).thenReturn(false);
     when(request.getScheme()).thenReturn("http");
@@ -168,7 +146,7 @@ public class SilverpeasSessionOpenerTest {
     when(session.getAttributeNames()).thenReturn(Collections.enumeration(CollectionUtil.asList(
         "test1", "test2")));
     httpRequest = HttpRequest.decorate(request);
-    sessionManagement.get().openSession(aUser(), request);
+    sessionManagement.openSession(aUser(), request);
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
     instance.closeSession(session);
     verify(session, times(1)).removeAttribute("test1");

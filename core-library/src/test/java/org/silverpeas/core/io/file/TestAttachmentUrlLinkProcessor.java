@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUtil;
@@ -94,7 +94,7 @@ public class TestAttachmentUrlLinkProcessor {
   }
 
   @BeforeEach
-  public void setupAttachmentService(@MockedBean AttachmentService mockAttachmentService) {
+  public void setupAttachmentService(@TestManagedMock AttachmentService mockAttachmentService) {
     /*
     Mocking methods of attachment service instance
      */

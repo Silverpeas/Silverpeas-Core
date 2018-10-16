@@ -35,7 +35,7 @@ import org.silverpeas.core.mylinks.dao.LinkDAO;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.persistence.jdbc.ConnectionPool;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.RequesterProvider;
 import org.silverpeas.core.test.extention.SilverTestEnv;
 
@@ -67,7 +67,7 @@ public class DefaultMyLinksServiceTest {
   }
 
   @BeforeEach
-  public void setup(@MockedBean ConnectionPool pool) throws Exception {
+  public void setup(@TestManagedMock ConnectionPool pool) throws Exception {
     service = spy(new DefaultMyLinksService());
     when(pool.getDataSourceConnection()).thenReturn(mock(Connection.class));
     dao = mocker.mockField(LinkDAO.class, LinkDAO.class, "linkDAO");

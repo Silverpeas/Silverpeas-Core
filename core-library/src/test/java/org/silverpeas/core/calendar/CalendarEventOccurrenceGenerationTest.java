@@ -24,8 +24,8 @@
 package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -38,9 +38,9 @@ import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
-import org.silverpeas.core.test.extention.TestManagedBean;
-import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -73,6 +73,7 @@ import static org.silverpeas.core.date.TimeUnit.WEEK;
  * @author mmoquillon
  */
 @ExtendWith(SilverTestEnv.class)
+@TestManagedBeans({JpaPersistOperation.class, JpaUpdateOperation.class})
 public class CalendarEventOccurrenceGenerationTest {
 
   private static final String EVENT_TITLE = "an event title";
@@ -85,15 +86,10 @@ public class CalendarEventOccurrenceGenerationTest {
       new ICal4JCalendarEventOccurrenceGenerator(new ICal4JDateCodec(),
           new ICal4JRecurrenceCodec(new ICal4JDateCodec()));
 
-  @TestManagedBean
-  private JpaPersistOperation persist;
-  @TestManagedBean
-  private JpaUpdateOperation update;
-
   @BeforeEach
   public void mockCalendarOccurrenceRepository(
-      @MockedBean CalendarEventOccurrenceRepository repository,
-      @MockedBean OrganizationController organizationController) {
+      @TestManagedMock CalendarEventOccurrenceRepository repository,
+      @TestManagedMock OrganizationController organizationController) {
     when(organizationController.getUserDetail(anyString())).thenAnswer(a -> {
       String id = a.getArgument(0);
       UserDetail user = new UserDetail();

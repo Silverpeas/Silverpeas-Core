@@ -23,14 +23,12 @@
  */
 package org.silverpeas.core.util.logging.sys;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
 import org.silverpeas.core.test.extention.SilverTestEnv;
-import org.silverpeas.core.test.util.MavenTestEnv;
-import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.LoggerConfigurationLoader;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -50,10 +48,7 @@ public class SysLoggerTest {
   private static String LOGGER_NAMESPACE = "silverpeas.test";
 
   @BeforeEach
-  public void initEnvVariables(MavenTestEnv mavenTestEnv) {
-    SystemWrapper.get()
-        .getenv()
-        .put("SILVERPEAS_HOME", mavenTestEnv.getResourceTestDirFile().getPath());
+  public void initEnvVariables() {
     LoggerConfigurationLoader.load();
   }
 

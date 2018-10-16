@@ -32,8 +32,8 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
-import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.Level;
 
@@ -56,13 +56,11 @@ import static org.hamcrest.Matchers.is;
 @ExtendWith(LoggerExtension.class)
 @LoggerLevel(Level.DEBUG)
 @Execution(ExecutionMode.SAME_THREAD)
+@TestManagedBeans(BackgroundProcessTask.class)
 public class BackgroundProcessTaskTest {
 
   private final static List<AbstractBackgroundProcessRequest> processedRequest =
       synchronizedList(new ArrayList<>());
-
-  @TestManagedBean
-  private BackgroundProcessTask task;
 
   @BeforeEach
   public void setup() {

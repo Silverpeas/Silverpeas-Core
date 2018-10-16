@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.notification.sse;
 
-import org.jglue.cdiunit.AdditionalClasses;
-import org.jglue.cdiunit.CdiRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.jboss.weld.junit5.auto.AddBeanClasses;
+import org.jboss.weld.junit5.auto.AddPackages;
+import org.jboss.weld.junit5.auto.EnableAutoWeld;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -43,9 +43,9 @@ import static org.hamcrest.Matchers.*;
  * PLEASE NOTICE THAT IT EXISTS TWO LISTENERS...
  * @author Yohann Chastagnier
  */
-@RunWith(CdiRunner.class)
-@AdditionalClasses({TestServerEventBucket.class, TestServerEventListenerDefault.class,
-    TestServerEventListener.class})
+@EnableAutoWeld
+@AddBeanClasses(DefaultServerEventNotifier.class)
+@AddPackages(AbstractServerEventDispatcherTaskTest.class)
 public class ServerEventListenerPushingServerEventDispatcherTaskTest
     extends AbstractServerEventDispatcherTaskTest {
 
@@ -58,9 +58,9 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
   @Inject
   DefaultServerEventNotifier defaultServerEventNotifier;
 
-  @Before
-  @After
-  public void bucketSetup() {
+  @BeforeEach
+  @AfterEach
+  public void bucketSetup() throws Exception {
     bucket.empty();
   }
 

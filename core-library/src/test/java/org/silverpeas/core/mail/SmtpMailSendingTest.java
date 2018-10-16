@@ -41,7 +41,7 @@ import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
 import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.test.extention.SmtpConfig;
-import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.Level;
@@ -63,6 +63,7 @@ import static org.hamcrest.Matchers.*;
 @LoggerLevel(Level.DEBUG)
 @SmtpConfig("/org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties")
 @Execution(ExecutionMode.SAME_THREAD)
+@TestManagedBeans(MailSenderTask.class)
 public class SmtpMailSendingTest {
 
   private final static String COMMON_FROM = "from@titi.org";
@@ -73,7 +74,7 @@ public class SmtpMailSendingTest {
   private MailSender oldMailSender;
 
   @BeforeEach
-  public void setup(@TestManagedBean MailSenderTask task) throws Exception {
+  public void setup() throws Exception {
     // Injecting by reflection the mock instance
     oldMailSender = MailSenderProvider.get();
     FieldUtils.writeDeclaredStaticField(MailSenderProvider.class, "mailSender",

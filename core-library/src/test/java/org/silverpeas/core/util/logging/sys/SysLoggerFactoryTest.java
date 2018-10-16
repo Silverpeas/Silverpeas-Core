@@ -24,11 +24,8 @@
 package org.silverpeas.core.util.logging.sys;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.test.extention.SilverTestEnv;
-import org.silverpeas.core.test.util.MavenTestEnv;
-import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.logging.SilverLoggerFactory;
 
@@ -50,13 +47,6 @@ import static org.junit.Assert.assertThat;
 public class SysLoggerFactoryTest {
 
   private static String LOGGER_NAMESPACE = "silverpeas.test";
-
-  @BeforeEach
-  public void initEnvVariables(MavenTestEnv mavenTestEnv) {
-    SystemWrapper.get()
-        .getenv()
-        .put("SILVERPEAS_HOME", mavenTestEnv.getResourceTestDirFile().getPath());
-  }
 
   @Test
   public void getALogger() {

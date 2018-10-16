@@ -35,7 +35,7 @@ import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -56,7 +56,7 @@ public class CurrentUserNotificationContextTest {
   private SettingBundle mockedSettings;
 
   @BeforeEach
-  public void setup(@MockedBean OrganizationController ctrl) {
+  public void setup(@TestManagedMock OrganizationController ctrl) {
     currentUser = spy(new UserDetail());
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
     ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(currentUser);

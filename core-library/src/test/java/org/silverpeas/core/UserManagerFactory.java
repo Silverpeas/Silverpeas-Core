@@ -22,29 +22,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.test.extention;
+package org.silverpeas.core;
 
-import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.core.admin.user.UserManager;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.inject.Inject;
 
 /**
- * Annotation to specify a logger level. This annotation is managed by the {@link LoggerExtension}
- * JUnit 5 extension. Be cautious: the annotation cannot be used in
- * {@link org.junit.jupiter.api.BeforeEach} and in @{@link org.junit.jupiter.api.BeforeAll}
- * annotated methods.
  * @author mmoquillon
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-@Documented
-public @interface LoggerLevel {
+public class UserManagerFactory {
 
-  Level value();
+  @Inject
+  private UserManager manager;
+
+  public UserManager getUserManager() {
+    return manager;
+  }
 }
+  

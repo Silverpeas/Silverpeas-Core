@@ -25,8 +25,8 @@
 package org.silverpeas.core.reminder;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mock;
@@ -44,9 +44,9 @@ import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.extention.TestManagedMocks;
 import org.silverpeas.core.test.extention.SilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
@@ -71,6 +71,8 @@ import static org.mockito.Mockito.when;
  */
 @ExtendWith(SilverTestEnv.class)
 @ExtendWith(MockitoExtension.class)
+@TestManagedMocks({DefaultContributionReminderUserNotification.class,
+    CalendarContributionReminderUserNotification.class})
 public class ContributionReminderUserNotificationTest {
   private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
 
@@ -91,13 +93,11 @@ public class ContributionReminderUserNotificationTest {
 
   @SuppressWarnings("unchecked")
   @BeforeEach
-  public void setup(@TestManagedBean DefaultContributionReminderUserNotification defaultNotif,
-      @TestManagedBean CalendarContributionReminderUserNotification calNotif,
-      @MockedBean ContributionManager contributionManager,
-      @MockedBean ComponentInstanceRoutingMapProviderByInstance routingMap,
-      @MockedBean ComponentInstanceRoutingMapProvider routingMapProvider,
-      @MockedBean ComponentInstanceRoutingMap instanceRoutingMap,
-      @MockedBean SilverpeasComponentInstanceProvider instanceProvider,
+  public void setup(@TestManagedMock ContributionManager contributionManager,
+      @TestManagedMock ComponentInstanceRoutingMapProviderByInstance routingMap,
+      @TestManagedMock ComponentInstanceRoutingMapProvider routingMapProvider,
+      @TestManagedMock ComponentInstanceRoutingMap instanceRoutingMap,
+      @TestManagedMock SilverpeasComponentInstanceProvider instanceProvider,
       @Mock SilverpeasComponentInstance componentInstance,
       @Mock Contribution contribution) {
 

@@ -24,8 +24,8 @@
 package org.silverpeas.core.web.mvc.webcomponent;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
@@ -36,18 +36,21 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
-import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.extention.TestManagedMocks;
+import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
+import org.silverpeas.core.web.session.SessionManager;
+import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -69,39 +72,27 @@ import static org.mockito.Mockito.*;
 /**
  * @author: Yohann Chastagnier
  */
-public class WebComponentRequestRouterTest {
+@ExtendWith(SilverTestEnv.class)
+@TestManagedMocks({Administration.class, SessionManager.class, SilverStatisticsManager.class})
+@TestManagedBeans(SynchronizerTokenService.class)
+public abstract class WebComponentRequestRouterTest {
 
-  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public CommonAPI4Test getCommonAPI4Test() {
-    return commonAPI4Test;
-  }
-
-  @Inject
+  @TestManagedMock
   private OrganizationController mockedOrganizationController;
 
-  @Inject
-  private SilverpeasWebUtil silverpeasWebUtil;
+  @TestedBean
+  private WebComponentRequestRouter requestRouter;
 
-  @Inject
-  private Instance<WebComponentRequestRouter<?, ?>> webComponentRequestRouterProducer;
+  @TestedBean
+  private SilverpeasWebUtil silverpeasWebUtil;
 
   private UserDetail user;
 
-  @Before
-  public void setUp() throws Exception {
-    SilverpeasComponentInstanceProvider provider = mock(SilverpeasComponentInstanceProvider.class);
+  @BeforeEach
+  public void setUp(@TestManagedMock SilverpeasComponentInstanceProvider provider) {
     when(provider.getComponentName(any())).thenReturn("componentName");
-    commonAPI4Test.injectIntoMockedBeanContainer(mock(Administration.class));
-    commonAPI4Test.injectIntoMockedBeanContainer(mock(SessionManagement.class));
-    commonAPI4Test.injectIntoMockedBeanContainer(mock(SilverStatisticsManager.class));
-    commonAPI4Test.injectIntoMockedBeanContainer(mockedOrganizationController);
-    commonAPI4Test.injectIntoMockedBeanContainer(silverpeasWebUtil);
-    commonAPI4Test.injectIntoMockedBeanContainer(provider);
     user = new UserDetail();
     user.setId("400");
-
     WebComponentManager.managedWebComponentRouters.clear();
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
   }
@@ -178,9 +169,8 @@ public class WebComponentRequestRouterTest {
    * Initialization of a WebComponentController.
    * @param controller
    */
-  private WebComponentRequestRouter initRequestRouterWith(
+  private WebComponentRequestRouter initRequestRouterWith(WebComponentRequestRouter routerInstance,
       Class<? extends WebComponentController> controller) {
-    WebComponentRequestRouter routerInstance = webComponentRequestRouterProducer.get();
     ServletConfig servletConfig = mock(ServletConfig.class);
     when(servletConfig.getInitParameter(
         org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController.class
@@ -267,7 +257,8 @@ public class WebComponentRequestRouterTest {
         ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
       }
 
-      WebComponentRequestRouter routerInstance = initRequestRouterWith(controller.controllerClass);
+      WebComponentRequestRouter routerInstance =
+          initRequestRouterWith(requestRouter, controller.controllerClass);
       HttpServletResponse response = mock(HttpServletResponse.class);
       when(response.getWriter()).thenReturn(new PrintWriter4Test(new ByteArrayOutputStream()));
       if (HttpMethod.GET.equals(httpMethod)) {
