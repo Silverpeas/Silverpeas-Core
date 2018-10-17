@@ -332,8 +332,8 @@
       __logDebug("loading body content part");
       spLayout.getBody().__nb_subLoads += 1;
       var promise = applyReadyBehaviorOn(this);
-      $window.MyMain.location.assign(url);
       this.dispatchEvent("start-load");
+      $window.MyMain.location.assign(url);
       return promise;
     },
     toggleFullscreen : function(fullscreen) {

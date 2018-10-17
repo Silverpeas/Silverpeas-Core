@@ -65,7 +65,9 @@ function openMySpace(options) {
       }
       refreshPDCFrame();
     });
-    var timeElapsedSinceContentStartLoadInMs = new Date().getTime() - spLayout.getBody().getContent().getLastStartLoadTime();
+    var lastStartLoadTime = Math.max(spLayout.getBody().getContent().getLastStartLoadTime(),
+        spLayout.getBody().getLastStartLoadTime());
+    var timeElapsedSinceContentStartLoadInMs = new Date().getTime() - lastStartLoadTime;
     var isContentLoadedManually = timeElapsedSinceContentStartLoadInMs < 2000;
     if (!isContentLoadedManually) {
       try {
