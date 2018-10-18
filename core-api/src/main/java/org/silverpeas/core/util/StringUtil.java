@@ -54,6 +54,12 @@ public class StringUtil extends StringUtils {
     return !isDefined(parameter);
   }
 
+  public static void requireDefined(final String name) {
+    if (isNotDefined(name)) {
+      throw new AssertionError(name + " isn't defined!");
+    }
+  }
+
   /**
    * Normalizes the given string (which must be encoded into UTF-8) in order that the result
    * contains only unified chars.
