@@ -86,6 +86,9 @@ import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.singletonList;
 
 /**
  * Default implementation of {@code PublicationService} to manage the publications in Silverpeas.
@@ -122,8 +125,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   @Override
   public PublicationDetail getDetail(PublicationPK pubPK) {
-    Connection con = getConnection();
-    try {
+    try (Connection con = getConnection()) {
       PublicationDetail publicationDetail = PublicationDAO.selectByPrimaryKey(con, pubPK);
       if (publicationDetail != null) {
         return loadTranslations(publicationDetail);
@@ -133,30 +135,26 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       throw new PublicationRuntimeException("DefaultPublicationService.getDetail()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_HEADER_FAILED",
           "pubId = " + pubPK.getId(), e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  private void setTranslations(Connection con, PublicationDetail publi) {
-    try {
-      PublicationI18N translation =
-          new PublicationI18N(publi.getLanguage(), publi.getName(), publi.getDescription(),
-              publi.getKeywords());
-      publi.addTranslation(translation);
-      List translations = PublicationI18NDAO.getTranslations(con, publi.getPK());
-      publi.setTranslations(translations);
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException("DefaultPublicationService.setTranslations()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_TRANSLATIONS_FAILED",
-          "pubId = " + publi.getPK().getId(), e);
     }
   }
 
   private void setTranslations(Connection con, Collection<PublicationDetail> publis) {
     if (publis != null && !publis.isEmpty()) {
-      for (PublicationDetail publi : publis) {
-        setTranslations(con, publi);
+      final List<String> publicationIds =
+          publis.stream().map(PublicationDetail::getId).collect(Collectors.toList());
+      try {
+        final Map<String, List<PublicationI18N>> translations = PublicationI18NDAO
+            .getIndexedTranslations(con, publicationIds);
+        publis.forEach(p -> {
+          PublicationI18N translation = new PublicationI18N(p.getLanguage(), p.getName(),
+              p.getDescription(), p.getKeywords());
+          p.addTranslation(translation);
+          p.setTranslations(translations.get(p.getId()));
+        });
+      } catch (SQLException e) {
+        throw new PublicationRuntimeException("DefaultPublicationService.setTranslations()",
+            SilverpeasRuntimeException.ERROR, "publication.GETTING_TRANSLATIONS_FAILED",
+            "pubId list", e);
       }
     }
   }
@@ -928,7 +926,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try {
       PublicationDetail detail = PublicationDAO.loadRow(con, pubPK);
       if (I18NHelper.isI18nContentActivated) {
-        setTranslations(con, detail);
+        setTranslations(con, singletonList(detail));
       }
       List<Link> links = SeeAlsoDAO.getLinks(con, pubPK);
       List<Link> reverseLinks = SeeAlsoDAO.getReverseLinks(con, pubPK);
@@ -945,11 +943,14 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Collection<PublicationDetail> getPublications(Collection<PublicationPK> publicationPKs) {
-    Connection con = getConnection();
-    try {
-      Collection<PublicationDetail> publications =
-          PublicationDAO.selectByPublicationPKs(con, publicationPKs);
+  public List<PublicationDetail> getPublications(Collection<PublicationPK> publicationPKs) {
+    return getByIds(publicationPKs.stream().map(WAPrimaryKey::getId).collect(Collectors.toList()));
+  }
+
+  @Override
+  public List<PublicationDetail> getByIds(final Collection<String> publicationIds) {
+    try (Connection con = getConnection()) {
+      final List<PublicationDetail> publications = PublicationDAO.getByIds(con, publicationIds);
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, publications);
       }
@@ -957,9 +958,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     } catch (Exception e) {
       throw new PublicationRuntimeException("DefaultPublicationService.getPublications()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
-          "publicationPKs = " + publicationPKs, e);
-    } finally {
-      DBUtil.close(con);
+          "publicationPKs = " + publicationIds, e);
     }
   }
 
@@ -1276,7 +1275,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       // set path(s) to publication into the index
         if (!pubDetail.getPK().getInstanceId().startsWith("kmax")) {
           Collection<NodePK> fathers = getAllFatherPK(pubDetail.getPK());
-          List<String> paths = new ArrayList<String>();
+          List<String> paths = new ArrayList<>();
           for (NodePK father : fathers) {
             paths.add(nodeService.getDetail(father).getFullPath());
           }
@@ -1450,7 +1449,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
       Collection<PublicationDetail> detailList =
           PublicationDAO.selectBetweenDate(con, beginDate, endDate, instanceId);
-      List<PublicationDetail> result = new ArrayList<PublicationDetail>(detailList);
+      List<PublicationDetail> result = new ArrayList<>(detailList);
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, result);
       }
