@@ -26,9 +26,11 @@ package org.silverpeas.core.contribution.publication.dao;
 import org.silverpeas.core.contribution.publication.model.PublicationI18N;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
-import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.sql.ResultSetWrapper;
+import org.silverpeas.core.util.MapUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,20 +38,29 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * This is the Publication Data Access Object.
  * @author Nicolas Eysseric
  */
 public class PublicationI18NDAO {
-  private static String TABLENAME = "SB_Publication_PubliI18N";
+
+  private static final String TABLENAME = "SB_Publication_PubliI18N";
+  private static final String FIELDS = "id, pubId, lang, name, description, keywords";
+
+  private PublicationI18NDAO() {
+    throw new IllegalStateException("DAO class");
+  }
 
   /**
    * Deletes all translations of publications linked to the component instance represented by the
    * given identifier.
    * @param componentInstanceId the identifier of the component instance for which the resources
    * must be deleted.
-   * @throws SQLException
+   * @throws SQLException on technical SQL error
    */
   public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
     JdbcSqlQuery.createDeleteFor(TABLENAME).where("pubId in (" +
@@ -59,37 +70,46 @@ public class PublicationI18NDAO {
 
   public static List<PublicationI18N> getTranslations(Connection con, PublicationPK pubPK)
       throws SQLException {
-    StringBuffer selectStatement = new StringBuffer(128);
-    selectStatement.append("select * from ").append(TABLENAME);
-    selectStatement.append(" where pubId = ? ");
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      PublicationI18N pub = null;
-      stmt = con.prepareStatement(selectStatement.toString());
+    final String selectStatement = "select * from " + TABLENAME + " where pubId = ? ";
+    try (PreparedStatement stmt = con.prepareStatement(selectStatement)) {
       stmt.setInt(1, Integer.parseInt(pubPK.getId()));
-      rs = stmt.executeQuery();
-      ArrayList<PublicationI18N> list = new ArrayList<PublicationI18N>();
-      while (rs.next()) {
-        pub = new PublicationI18N();
-        pub.setId(rs.getInt(1));
-        pub.setObjectId(Integer.toString(rs.getInt(2)));
-        pub.setLanguage(rs.getString(3));
-        pub.setName(rs.getString(4));
-        pub.setDescription(rs.getString(5));
-        pub.setKeywords(rs.getString(6));
-        list.add(pub);
+      try (ResultSet rs = stmt.executeQuery()) {
+        final List<PublicationI18N> list = new ArrayList<>();
+        while (rs.next()) {
+          list.add(resultSetToEntity(rs));
+        }
+        return list;
       }
-      return list;
-    } finally {
-      DBUtil.close(rs, stmt);
     }
+  }
+
+  public static Map<String, List<PublicationI18N>> getIndexedTranslations(Connection con,
+      List<String> publicationIds) throws SQLException {
+    return JdbcSqlQuery.executeBySplittingOn(publicationIds, (idBatch, result) -> JdbcSqlQuery
+        .createSelect(FIELDS)
+        .from(TABLENAME)
+        .where("pubId").in(idBatch.stream().map(Integer::parseInt).collect(toList()))
+        .executeWith(con, r -> {
+          final PublicationI18N pub = resultSetToEntity(r);
+          MapUtil.putAddList(result, pub.getObjectId(), pub);
+          return null;
+        }));
+  }
+
+  private static PublicationI18N resultSetToEntity(final ResultSet r) throws SQLException {
+    final PublicationI18N pub = new PublicationI18N();
+    pub.setId(r.getInt(1));
+    pub.setObjectId(Integer.toString(r.getInt(2)));
+    pub.setLanguage(r.getString(3));
+    pub.setName(r.getString(4));
+    pub.setDescription(r.getString(5));
+    pub.setKeywords(r.getString(6));
+    return pub;
   }
 
   public static void addTranslation(Connection con, PublicationI18N translation)
       throws SQLException {
-    StringBuffer insertStatement = new StringBuffer(128);
+    StringBuilder insertStatement = new StringBuilder(128);
     insertStatement.append("insert into ").append(TABLENAME).append(
         " values (?, ?, ?, ?, ?, ?)");
     PreparedStatement prepStmt = null;
@@ -110,9 +130,9 @@ public class PublicationI18NDAO {
 
   public static void updateTranslation(Connection con,
       PublicationI18N translation) throws SQLException {
-    int rowCount = 0;
+    int rowCount;
 
-    StringBuffer updateQuery = new StringBuffer(128);
+    StringBuilder updateQuery = new StringBuilder(128);
     updateQuery.append("update ").append(TABLENAME);
     updateQuery.append(" set name = ? , description = ? , keywords = ? ");
     updateQuery.append(" where id = ? ");
@@ -146,7 +166,7 @@ public class PublicationI18NDAO {
 
   public static void removeTranslation(Connection con, int translationId)
       throws SQLException {
-    StringBuffer deleteStatement = new StringBuffer(128);
+    StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(TABLENAME).append(
         " where id = ? ");
     PreparedStatement stmt = null;
@@ -162,7 +182,7 @@ public class PublicationI18NDAO {
 
   public static void removeTranslations(Connection con, PublicationPK pubPK)
       throws SQLException {
-    StringBuffer deleteStatement = new StringBuffer(128);
+    StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(TABLENAME).append(
         " where pubId = ? ");
     PreparedStatement stmt = null;

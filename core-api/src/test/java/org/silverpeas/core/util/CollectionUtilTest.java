@@ -30,9 +30,11 @@ import org.silverpeas.core.util.CollectionUtil.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -44,7 +46,7 @@ import static org.silverpeas.core.util.CollectionUtil.*;
 public class CollectionUtilTest {
 
   @Test
-  public void testSplit() {
+  public void testSplitList() {
     assertThat(CollectionUtil.split(null, 0).size(), is(0));
     assertThat(CollectionUtil.split(new ArrayList<>(), 0).size(), is(0));
     final List<?> list = createListOfArray();
@@ -57,6 +59,23 @@ public class CollectionUtilTest {
     test = CollectionUtil.split(list, 3);
     assertThat(test.size(), is(1));
     test = CollectionUtil.split(list, 500);
+    assertThat(test.size(), is(1));
+  }
+
+  @Test
+  public void testSplitSet() {
+    assertThat(CollectionUtil.split(null, 0).size(), is(0));
+    assertThat(CollectionUtil.split(new ArrayList<>(), 0).size(), is(0));
+    final Set<?> set = createSetOfArray();
+    Collection<?> test = CollectionUtil.split(set, 0);
+    assertThat(test.size(), is(1));
+    test = CollectionUtil.split(set, 1);
+    assertThat(test.size(), is(3));
+    test = CollectionUtil.split(set, 2);
+    assertThat(test.size(), is(2));
+    test = CollectionUtil.split(set, 3);
+    assertThat(test.size(), is(1));
+    test = CollectionUtil.split(set, 500);
     assertThat(test.size(), is(1));
   }
 
@@ -239,6 +258,24 @@ public class CollectionUtilTest {
 
     // Returning the result
     return arrayList;
+  }
+
+  /**
+   * Creating an array list.
+   * @throws Exception
+   */
+  private Set<Object[]> createSetOfArray() {
+
+    // Initialization
+    final Set<Object[]> arraySet = new HashSet<>();
+
+    // Alimentation
+    arraySet.add(new Object[] { "1_1", "1_2" });
+    arraySet.add(new Object[] { "2_1", "2_2" });
+    arraySet.add(new Object[] { "3_1", "3_2" });
+
+    // Returning the result
+    return arraySet;
   }
 
   /**

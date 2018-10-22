@@ -37,6 +37,7 @@ import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,6 +55,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * This is the Publication Data Access Object.
@@ -70,6 +74,7 @@ public class PublicationDAO {
   private static final String NULL_END_HOUR = "23:59";
 
   private static final String UNDEFINED_ID = "unknown";
+  private static final String PUB_ID = "pubId";
 
   // this object caches last publications availables
   // used only for kmelia
@@ -121,7 +126,7 @@ public class PublicationDAO {
     Collection<PublicationDetail> listLastPublisCache = lastPublis.get(instanceId);
     if (listLastPublisCache != null && listLastPublisCache.size() > 0) {
       // removing not visible publications from the cache
-      ArrayList<PublicationDetail> listLastPublisCacheMAJ = new ArrayList<PublicationDetail>();
+      ArrayList<PublicationDetail> listLastPublisCacheMAJ = new ArrayList<>();
       java.util.Date date = new java.util.Date();
       Calendar cDateHeureNow = Calendar.getInstance();
       cDateHeureNow.setTime(date);
@@ -129,7 +134,7 @@ public class PublicationDAO {
           + cDateHeureNow.get(Calendar.MINUTE);
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
       String sDate = simpleDateFormat.format(date);
-      java.util.Date theDateFormat = null;
+      java.util.Date theDateFormat;
       try {
         theDateFormat = simpleDateFormat.parse(sDate);
       } catch (ParseException e) {
@@ -142,10 +147,10 @@ public class PublicationDAO {
       cDateNow.setTime(theDateFormat);
       Calendar cDateBegin = Calendar.getInstance();
       Calendar cDateEnd = Calendar.getInstance();
-      String sBeginHour = null;
-      String sEndHour = null;
-      int beginHour = 0;
-      int endHour = 0;
+      String sBeginHour;
+      String sEndHour;
+      int beginHour;
+      int endHour;
       for (PublicationDetail pubDetail : listLastPublisCache) {
         if (pubDetail.getBeginDate() != null) {
           cDateBegin.setTime(pubDetail.getBeginDate());
@@ -252,7 +257,7 @@ public class PublicationDAO {
 
   public static Map<String, Integer> getDistributionTree(Connection con, String instanceId,
       String statusSubQuery, boolean checkVisibility) throws SQLException {
-    Map<String, Integer> nodes = new HashMap<String, Integer>();
+    Map<String, Integer> nodes = new HashMap<>();
     StringBuilder selectStatement = new StringBuilder(128);
 
     selectStatement
@@ -507,23 +512,19 @@ public class PublicationDAO {
     return selectByNameAndNodeId(con, primaryKey, name, nodeId);
   }
 
-  private static PublicationDetail resultSet2PublicationDetail(ResultSet rs,
-      PublicationPK pubPK) throws SQLException {
-    return resultSet2PublicationDetail(rs, pubPK, false);
+  private static PublicationDetail resultSet2PublicationDetail(ResultSet rs) throws SQLException {
+    return resultSet2PublicationDetail(rs, false);
   }
 
-  private static PublicationDetail resultSet2PublicationDetail(ResultSet rs,
-      PublicationPK pubPK, boolean getSort) throws SQLException {
-    PublicationDetail pub = null;
+  private static PublicationDetail resultSet2PublicationDetail(ResultSet rs, boolean getSort)
+      throws SQLException {
+    PublicationDetail pub;
     int id = rs.getInt("pubid");
     String componentId = rs.getString(15);
     PublicationPK pk = new PublicationPK(String.valueOf(id), componentId);
     String infoId = rs.getString("infoid");
     String name = rs.getString("pubname");
-    String description = rs.getString("pubDescription");
-    if (description == null) {
-      description = "";
-    }
+    String description = defaultStringIfNotDefined(rs.getString("pubDescription"));
     Date creationDate;
     try {
       creationDate = DateUtil.parseDate(rs.getString("pubCreationDate"));
@@ -584,15 +585,9 @@ public class PublicationDAO {
     } else {
       updateDate = creationDate;
     }
-    String updaterId;
-    String v = rs.getString("pubUpdaterId");
-    if (v != null) {
-      updaterId = v;
-    } else {
-      updaterId = creatorId;
-    }
+    String updaterId = defaultStringIfNotDefined(rs.getString("pubUpdaterId"), creatorId);
 
-    Date validateDate = null;
+    Date validateDate;
     String strValDate = rs.getString("pubValidateDate");
     try {
       validateDate = DateUtil.parseDate(strValDate);
@@ -612,7 +607,7 @@ public class PublicationDAO {
     String cloneStatus = rs.getString("pubCloneStatus");
     String lang = rs.getString("lang");
 
-    Date draftOutDate = null;
+    Date draftOutDate;
     try {
       draftOutDate = DateUtil.parseDate(rs.getString("pubdraftoutdate"));
     } catch (java.text.ParseException e) {
@@ -691,7 +686,7 @@ public class PublicationDAO {
         java.util.Date now = new java.util.Date();
         String dateNow = DateUtil.formatDate(now);
 
-        String hourNow = null;
+        String hourNow;
         hourNow = DateUtil.formatTime(now);
 
         prepStmt.setString(index, dateNow);
@@ -709,10 +704,10 @@ public class PublicationDAO {
       }
 
       rs = prepStmt.executeQuery();
-      List<PublicationDetail> list = new ArrayList<PublicationDetail>();
-      PublicationDetail pub = null;
+      List<PublicationDetail> list = new ArrayList<>();
+      PublicationDetail pub;
       while (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pubPK, true);
+        pub = resultSet2PublicationDetail(rs, true);
         list.add(pub);
       }
       return list;
@@ -761,10 +756,10 @@ public class PublicationDAO {
       prepStmt.setString(14, hourNow);
 
       rs = prepStmt.executeQuery();
-      ArrayList<PublicationDetail> list = new ArrayList<PublicationDetail>();
-      PublicationDetail pub = null;
+      ArrayList<PublicationDetail> list = new ArrayList<>();
+      PublicationDetail pub;
       while (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pubPK);
+        pub = resultSet2PublicationDetail(rs);
         list.add(pub);
       }
       return list;
@@ -777,11 +772,11 @@ public class PublicationDAO {
       List<String> fatherIds, PublicationPK pubPK, String sorting,
       List<String> status, boolean filterOnVisibilityPeriod) throws SQLException {
 
-    ArrayList<PublicationDetail> list = new ArrayList<PublicationDetail>();
+    ArrayList<PublicationDetail> list = new ArrayList<>();
     ResultSet rs = null;
-    PublicationDetail pub = null;
+    PublicationDetail pub;
 
-    String fatherId = "";
+    String fatherId;
     StringBuilder whereClause = new StringBuilder(128);
 
     if (fatherIds != null) {
@@ -835,7 +830,7 @@ public class PublicationDAO {
       Iterator<String> it = status.iterator();
 
       statusBuffer.append("(");
-      String sStatus = null;
+      String sStatus;
       while (it.hasNext()) {
         sStatus = it.next();
         statusBuffer.append(" P.pubStatus = '").append(sStatus).append("'");
@@ -881,7 +876,7 @@ public class PublicationDAO {
       rs = prepStmt.executeQuery();
 
       while (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pubPK);
+        pub = resultSet2PublicationDetail(rs);
         list.add(pub);
       }
     } finally {
@@ -891,23 +886,25 @@ public class PublicationDAO {
     return list;
   }
 
-  public static Collection<PublicationDetail> selectByPublicationPKs(Connection con,
-      Collection<PublicationPK> publicationPKs) {
-    ArrayList<PublicationDetail> publications = new ArrayList<PublicationDetail>();
-    Iterator<PublicationPK> iterator = publicationPKs.iterator();
-
-    while (iterator.hasNext()) {
-      PublicationPK pubPK = iterator.next();
-      PublicationDetail pub;
-      try {
-        pub = loadRow(con, pubPK);
-        publications.add(pub);
-      } catch (Exception e) {
-        SilverTrace.error("publication", "PublicationDAO.selectByPublicationPKs",
-            "publication.GETTING_PUBLICATION_FAILED", "pubPK = " + pubPK.toString());
-      }
+  public static List<PublicationDetail> getByIds(Connection con,
+      Collection<String> publicationIds) {
+    final String tableName = new PublicationPK(null).getTableName();
+    try {
+      final List<PublicationDetail> result = new ArrayList<>(publicationIds.size());
+      JdbcSqlQuery.executeBySplittingOn(publicationIds, (idBatch, ignore) -> JdbcSqlQuery
+        .createSelect(QueryStringFactory.getLoadRowFields())
+        .from(tableName)
+        .where(PUB_ID).in(idBatch.stream().map(Integer::parseInt).collect(Collectors.toList()))
+        .executeWith(con, r -> {
+          result.add(resultSet2PublicationDetail(r));
+          return null;
+        }));
+      return result;
+    } catch (SQLException e) {
+      SilverLogger.getLogger(PublicationDAO.class)
+          .error("failing getting publications from PK list");
     }
-    return publications;
+    return new ArrayList<>();
   }
 
   /**
@@ -932,12 +929,12 @@ public class PublicationDAO {
     ResultSet rs = null;
 
     try {
-      PublicationDetail pub = null;
+      PublicationDetail pub;
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement.toString());
-      List<PublicationDetail> list = new ArrayList<PublicationDetail>();
+      List<PublicationDetail> list = new ArrayList<>();
       while (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pubPK);
+        pub = resultSet2PublicationDetail(rs);
         list.add(pub);
       }
       return list;
@@ -949,7 +946,7 @@ public class PublicationDAO {
   public static Collection<PublicationDetail> selectByStatus(Connection con,
       List<String> componentIds,
       String status) throws SQLException {
-    List<PublicationDetail> list = new ArrayList<PublicationDetail>();
+    List<PublicationDetail> list = new ArrayList<>();
     if (componentIds != null && componentIds.size() > 0) {
       StringBuilder selectStatement = new StringBuilder(128);
       selectStatement
@@ -978,7 +975,7 @@ public class PublicationDAO {
       selectStatement.append(" and F.pubId = P.pubId ");
       selectStatement.append(" and (");
 
-      String componentId = null;
+      String componentId;
       for (int c = 0; c < componentIds.size(); c++) {
         componentId = componentIds.get(c);
         if (c != 0) {
@@ -1018,12 +1015,12 @@ public class PublicationDAO {
         rs = prepStmt.executeQuery();
 
         PublicationPK pubPK = new PublicationPK(UNDEFINED_ID, UNDEFINED_ID);
-        PublicationDetail pub = null;
+        PublicationDetail pub;
         while (rs.next()) {
           componentId = rs.getString(17);
           pubPK.setComponentName(componentId);
 
-          pub = resultSet2PublicationDetail(rs, pubPK);
+          pub = resultSet2PublicationDetail(rs);
           list.add(pub);
         }
       } finally {
@@ -1035,7 +1032,7 @@ public class PublicationDAO {
 
   public static Collection<PublicationPK> selectPKsByStatus(Connection con,
       List<String> componentIds, String status) throws SQLException {
-    List<PublicationPK> list = new ArrayList<PublicationPK>();
+    List<PublicationPK> list = new ArrayList<>();
     if (componentIds != null && componentIds.size() > 0) {
       StringBuilder selectStatement = new StringBuilder(128);
       selectStatement.append("SELECT  DISTINCT(P.pubId), P.instanceId, P.pubUpdateDate ");
@@ -1052,7 +1049,7 @@ public class PublicationDAO {
       selectStatement.append(" ) ");
       selectStatement.append(" and F.pubId = P.pubId ");
       selectStatement.append(" and P.instanceId IN (");
-      String componentId = null;
+      String componentId;
       for (int c = 0; c < componentIds.size(); c++) {
         componentId = componentIds.get(c);
         if (c != 0) {
@@ -1087,9 +1084,9 @@ public class PublicationDAO {
         prepStmt.setString(12, hourNow);
         prepStmt.setString(13, hourNow);
         rs = prepStmt.executeQuery();
-        PublicationPK pubPK = null;
+        PublicationPK pubPK;
         while (rs.next()) {
-          pubPK = new PublicationPK(rs.getString("pubId"), rs.getString("instanceId"));
+          pubPK = new PublicationPK(rs.getString(PUB_ID), rs.getString("instanceId"));
           list.add(pubPK);
         }
       } finally {
@@ -1102,7 +1099,7 @@ public class PublicationDAO {
   public static Collection<PublicationPK> selectUpdatedPublicationsSince(Connection con,
       List<String> componentIds, String status, java.util.Date since, int maxSize) throws
       SQLException {
-    List<PublicationPK> list = new ArrayList<PublicationPK>();
+    List<PublicationPK> list = new ArrayList<>();
     if (componentIds != null && componentIds.size() > 0) {
       StringBuilder selectStatement = new StringBuilder(128);
       selectStatement.append("SELECT  DISTINCT(P.pubId), P.instanceId, P.pubUpdateDate ");
@@ -1119,7 +1116,7 @@ public class PublicationDAO {
       selectStatement.append(" ) ");
       selectStatement.append(" AND F.pubId = P.pubId AND P.pubupdatedate > ? ");
       selectStatement.append(" AND P.instanceId IN (");
-      String componentId = null;
+      String componentId;
       for (int c = 0; c < componentIds.size(); c++) {
         componentId = componentIds.get(c);
         if (c != 0) {
@@ -1155,10 +1152,10 @@ public class PublicationDAO {
         prepStmt.setString(13, hourNow);
         prepStmt.setString(14, DateUtil.date2SQLDate(since));
         rs = prepStmt.executeQuery();
-        PublicationPK pubPK = null;
+        PublicationPK pubPK;
         int i = 0;
         while (rs.next() && (maxSize <= 0 || i <= maxSize)) {
-          pubPK = new PublicationPK(rs.getString("pubId"), rs.getString("instanceId"));
+          pubPK = new PublicationPK(rs.getString(PUB_ID), rs.getString("instanceId"));
           list.add(pubPK);
           i++;
         }
@@ -1199,10 +1196,10 @@ public class PublicationDAO {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement.toString());
 
-      ArrayList<PublicationDetail> list = new ArrayList<PublicationDetail>();
-      PublicationDetail pub = null;
+      ArrayList<PublicationDetail> list = new ArrayList<>();
+      PublicationDetail pub;
       while (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pubPK);
+        pub = resultSet2PublicationDetail(rs);
         list.add(pub);
       }
       return list;
@@ -1262,10 +1259,10 @@ public class PublicationDAO {
 
       rs = prepStmt.executeQuery();
 
-      ArrayList<PublicationDetail> list = new ArrayList<PublicationDetail>();
-      PublicationDetail pub = null;
+      ArrayList<PublicationDetail> list = new ArrayList<>();
+      PublicationDetail pub;
       while (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pubPK);
+        pub = resultSet2PublicationDetail(rs);
         list.add(pub);
       }
 
@@ -1315,10 +1312,10 @@ public class PublicationDAO {
         rs = prepStmt.executeQuery();
 
         int nbFetch = 0;
-        List<PublicationDetail> list = new ArrayList<PublicationDetail>();
-        PublicationDetail pub = null;
+        List<PublicationDetail> list = new ArrayList<>();
+        PublicationDetail pub;
         while (rs.next() && nbFetch < fetchSize) {
-          pub = resultSet2PublicationDetail(rs, pubPK);
+          pub = resultSet2PublicationDetail(rs);
           list.add(pub);
           nbFetch++;
         }
@@ -1376,10 +1373,10 @@ public class PublicationDAO {
       prepStmt.setString(13, hourNow);
 
       rs = prepStmt.executeQuery();
-      List<PublicationDetail> list = new ArrayList<PublicationDetail>();
-      PublicationDetail pub = null;
+      List<PublicationDetail> list = new ArrayList<>();
+      PublicationDetail pub;
       while (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pubPK);
+        pub = resultSet2PublicationDetail(rs);
         list.add(pub);
       }
       return list;
@@ -1409,10 +1406,10 @@ public class PublicationDAO {
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement.toString());
-      List<PublicationDetail> list = new ArrayList<PublicationDetail>();
-      PublicationDetail pub = null;
+      List<PublicationDetail> list = new ArrayList<>();
+      PublicationDetail pub;
       while (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pubPK);
+        pub = resultSet2PublicationDetail(rs);
         list.add(pub);
       }
       return list;
@@ -1467,10 +1464,10 @@ public class PublicationDAO {
       }
 
       rs = prepStmt.executeQuery();
-      List<PublicationDetail> list = new ArrayList<PublicationDetail>();
-      PublicationDetail pub = null;
+      List<PublicationDetail> list = new ArrayList<>();
+      PublicationDetail pub;
       while (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pubPK);
+        pub = resultSet2PublicationDetail(rs);
         list.add(pub);
       }
       return list;
@@ -1494,12 +1491,12 @@ public class PublicationDAO {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      PublicationDetail pub = null;
+      PublicationDetail pub;
       stmt = con.prepareStatement(selectStatement);
       stmt.setInt(1, Integer.parseInt(pk.getId()));
       rs = stmt.executeQuery();
       if (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pk);
+        pub = resultSet2PublicationDetail(rs);
         return pub;
       } else {
         throw new PublicationRuntimeException("PublicationDAO.loadRow()",
@@ -1515,7 +1512,7 @@ public class PublicationDAO {
   public static void changeInstanceId(Connection con, PublicationPK pubPK,
       String newInstanceId) throws SQLException {
 
-    int rowCount = 0;
+    int rowCount;
 
     StringBuilder updateQuery = new StringBuilder(128);
     updateQuery.append("update ").append(PublicationDAO.PUBLICATION_TABLE_NAME);
@@ -1547,7 +1544,7 @@ public class PublicationDAO {
 
   public static void storeRow(Connection con, PublicationDetail detail)
       throws SQLException {
-    int rowCount = 0;
+    int rowCount;
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(UPDATE_PUBLICATION);
@@ -1653,7 +1650,7 @@ public class PublicationDAO {
 
       rs = prepStmt.executeQuery();
       if (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pubPK);
+        pub = resultSet2PublicationDetail(rs);
       }
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -1676,7 +1673,7 @@ public class PublicationDAO {
 
       rs = prepStmt.executeQuery();
       if (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pubPK);
+        pub = resultSet2PublicationDetail(rs);
       }
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -1706,10 +1703,10 @@ public class PublicationDAO {
       prepStmt.setString(3, endDate);
 
       rs = prepStmt.executeQuery();
-      List<PublicationDetail> list = new ArrayList<PublicationDetail>();
-      PublicationDetail pub = null;
+      List<PublicationDetail> list = new ArrayList<>();
+      PublicationDetail pub;
       while (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, null);
+        pub = resultSet2PublicationDetail(rs);
         list.add(pub);
       }
       return list;
@@ -1731,7 +1728,7 @@ public class PublicationDAO {
   public static List<SocialInformation> getAllPublicationsIDbyUserid(Connection con,
       String userId, Date begin, Date end) throws SQLException {
 
-    List<SocialInformation> listPublications = new ArrayList<SocialInformation>();
+    List<SocialInformation> listPublications = new ArrayList<>();
 
     String query =
         "(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type  FROM sb_publication_publi WHERE pubcreatorid = ? and pubstatus = 'Valid' and pubCreationDate >= ? and pubCreationDate <= ? )"
@@ -1775,8 +1772,7 @@ public class PublicationDAO {
   public static List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
       Connection con, List<String> myContactsIds, List<String> options, Date begin, Date end)
       throws SQLException {
-    List<SocialInformationPublication> listPublications =
-        new ArrayList<SocialInformationPublication>();
+    List<SocialInformationPublication> listPublications = new ArrayList<>();
 
     String query =
         "(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type FROM sb_publication_publi WHERE pubcreatorid in(" +
@@ -1845,7 +1841,7 @@ public class PublicationDAO {
       sb.append("and pubstatus = 'Draft' ");
     }
 
-    List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
+    List<PublicationDetail> publications = new ArrayList<>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -1853,7 +1849,7 @@ public class PublicationDAO {
       prepStmt.setString(1, DateUtil.today2SQLDate());
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        publications.add(resultSet2PublicationDetail(rs, null));
+        publications.add(resultSet2PublicationDetail(rs));
       }
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -1874,7 +1870,7 @@ public class PublicationDAO {
     sb.append("and pubclonestatus = ? )) ");
     sb.append("order by pubUpdateDate desc");
 
-    List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
+    List<PublicationDetail> publications = new ArrayList<>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -1884,7 +1880,7 @@ public class PublicationDAO {
       prepStmt.setString(3, PublicationDetail.DRAFT_STATUS);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        publications.add(resultSet2PublicationDetail(rs, null));
+        publications.add(resultSet2PublicationDetail(rs));
       }
     } finally {
       DBUtil.close(rs, prepStmt);
@@ -1898,7 +1894,7 @@ public class PublicationDAO {
     sb.append("select * from sb_publication_publi ");
     sb.append("where pubTargetValidatorId like ?");
 
-    List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
+    List<PublicationDetail> publications = new ArrayList<>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -1909,7 +1905,7 @@ public class PublicationDAO {
         String targetValidatorIds = rs.getString("pubTargetValidatorId");
         String[] userIds = StringUtil.split(targetValidatorIds, ',');
         if (ArrayUtil.contains(userIds, userId)) {
-          publications.add(resultSet2PublicationDetail(rs, null));
+          publications.add(resultSet2PublicationDetail(rs));
         }
       }
     } finally {

@@ -199,7 +199,14 @@ public interface PublicationService {
    * @return
    * @
    */
-  Collection<PublicationDetail> getPublications(Collection<PublicationPK> publicationPKs);
+  List<PublicationDetail> getPublications(Collection<PublicationPK> publicationPKs);
+
+  /**
+   * Gets publications from given identifiers.
+   * @param publicationIds list of identifiers of publications
+   * @return a list of {@link PublicationDetail}.
+   */
+  List<PublicationDetail> getByIds(Collection<String> publicationIds);
 
   /**
    * Method declaration
