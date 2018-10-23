@@ -22,8 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 function openPdc() {
-  chemin = getContext() + "/RpdcSearch/jsp/AxisTree?query=";
-  SP_openWindow(chemin, "Pdc_Pop", "700", "500", "scrollbars=yes,resizable=yes");
+  var path = getContext() + "/RpdcSearch/jsp/AxisTree?query=";
+  SP_openWindow(path, "Pdc_Pop", "700", "500", "scrollbars=yes,resizable=yes");
 }
 
 function notifyAdministrators() {

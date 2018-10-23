@@ -273,7 +273,7 @@
           __getJQueryPdcElement().pdc('used', settings);
         }.bind(this);
 
-        __handleSearchAccess = function () {
+        var __handleSearchAccess = function () {
           $timeout(function() {
             $('select', $element).each(function(index, axis) {
               if (axis.value === '-1') {

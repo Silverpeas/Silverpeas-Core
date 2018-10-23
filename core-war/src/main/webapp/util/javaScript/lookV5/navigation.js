@@ -71,7 +71,7 @@ function openMySpace(options) {
     var isContentLoadedManually = timeElapsedSinceContentStartLoadInMs < 2000;
     if (!isContentLoadedManually) {
       try {
-        homePage = getPersoHomepage();
+        var homePage = getPersoHomepage();
         if (homePage.indexOf('?', 0) > 0) {
           homePage = homePage + '&SpaceId=-10';
         } else {
@@ -453,7 +453,7 @@ function removePDC() {
   if (isPDCContextual()) {
     try {
       var pdc = document.getElementById("pdc");
-      space = pdc.parentNode;
+      var space = pdc.parentNode;
       space.removeChild(pdc);
     }
     catch (e) {
@@ -517,7 +517,7 @@ function openTab(tabId) {
         spaceUpdater.displayTree(xmlResponse.childNodes[0]);
       },
       error: function() {
-        alert("XMLHttpRequest error ");
+        notyError("XMLHttpRequest error ");
       },
       dataType: 'xml'
     });
@@ -565,7 +565,7 @@ function addFavoriteSpace(spaceId) {
       }
     },
     error: function() {
-      alert("XMLHttpRequest error ");
+      notyError("XMLHttpRequest error ");
     },
     dataType: 'json'
   });
@@ -598,7 +598,7 @@ function removeFavoriteSpace(spaceId) {
 
     },
     error: function() {
-      alert("XMLHttpRequest error ");
+      notyError("XMLHttpRequest error ");
     },
     dataType: 'json'
   });
@@ -909,7 +909,7 @@ var SpaceUpdater = SilverpeasClass.extend({
       }
     }
 
-    var nbItems = spaceContent.childNodes.length;
+    //var nbItems = spaceContent.childNodes.length;
     //alert("displaySpace, nbItems = "+nbItems);
 
     try {
@@ -919,7 +919,7 @@ var SpaceUpdater = SilverpeasClass.extend({
       //the div does not exist
     }
 
-    var spaceContentDiv = document.createElement("div");
+    spaceContentDiv = document.createElement("div");
     spaceContentDiv.setAttribute("id", "contentSpace" + currentSpaceId);
     spaceContentDiv.setAttribute("class", "contentSpace");
     spaceContentDiv.setAttribute("className", "contentSpace");
@@ -1019,7 +1019,7 @@ var SpaceUpdater = SilverpeasClass.extend({
 
     var spacePersoId = spaceContent.getAttribute("id");
 
-    var nbItems = spaceContent.childNodes.length;
+    //var nbItems = spaceContent.childNodes.length;
     //alert("displaySpace, nbItems = "+nbItems);
 
     try {
@@ -1029,7 +1029,7 @@ var SpaceUpdater = SilverpeasClass.extend({
       //the div does not exist
     }
 
-    var spaceContentDiv = document.createElement("div");
+    spaceContentDiv = document.createElement("div");
     spaceContentDiv.setAttribute("id", "contentSpace" + spacePersoId);
     spaceContentDiv.setAttribute("class", "contentSpace");
     spaceContentDiv.setAttribute("className", "contentSpace");
@@ -1130,7 +1130,7 @@ var SpaceUpdater = SilverpeasClass.extend({
     }
   },
   displayValue: function(values) {
-    var nbValue = values.childNodes.length;
+    //var nbValue = values.childNodes.length;
     var value = values.firstChild;
     //alert("nb spaces = "+nbSpaces);
 
@@ -1188,7 +1188,7 @@ var SpaceUpdater = SilverpeasClass.extend({
       //alert(motherValuePath);
       if (valueLevel > 1) {
         var ancetre = "/0/";
-        for (v = 0; v < valueIds.length; v++) {
+        for (var v = 0; v < valueIds.length; v++) {
           if (valueIds[v] !== "" && valueIds[v] !== "0") {
             //alert("valueIds[v] = "+valueIds[v]);
 
@@ -1316,7 +1316,7 @@ var AjaxEngine = function() {
     ajaxObjects[name] = url;
   };
   var _createQueryString = function( theArgs, offset ) {
-    var queryList = [];
+    var queryList = {};
     for ( var i = offset ; i < theArgs.length ; i++ ) {
       var anArg = theArgs[i];
 
@@ -1354,7 +1354,7 @@ var AjaxEngine = function() {
       if ( responseType == "object" )
         _processAjaxObjectUpdate(sendParameters, ajaxObjects[ responseId ], responseElement );
       else
-        alert('unrecognized AjaxResponse type : ' + responseType );
+        notyError('unrecognized AjaxResponse type : ' + responseType );
     }
   };
 

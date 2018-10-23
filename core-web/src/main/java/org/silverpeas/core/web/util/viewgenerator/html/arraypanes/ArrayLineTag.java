@@ -37,16 +37,7 @@ public class ArrayLineTag extends TagSupport {
   private static final long serialVersionUID = -5323133574049569236L;
   public static final String ARRAY_LINE_PAGE_ATT = "pageContextArrayLine";
 
-  private String id = null;
   private String classes;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public void setClasses(final String classes) {
     this.classes = classes;

@@ -26,7 +26,7 @@ $(document).ready(function() {
   messageTriggers.attach();
 });
 
-messageTriggers = {
+var messageTriggers = {
   initialized : false,
   doInitialize : function() {
     if (!messageTriggers.initialized) {
@@ -41,7 +41,7 @@ messageTriggers = {
   },
   attach : function() {
     messageTriggers.doInitialize();
-    $warnings = $('div[id^="warning"]');
+    var $warnings = $('div[id^="warning"]');
     $warnings
         .on(
             'addConfirmationMessageEnds',

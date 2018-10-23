@@ -296,6 +296,7 @@
   function __configureVisualButtonAspect(type, isHover, $button) {
 
     // Choosing the right image
+    var iconFileName;
     if (type === 'previousPreview') {
       iconFileName = (!isHover) ? 'arrowUp.gif' : 'arrowUpModal.png';
     } else {
