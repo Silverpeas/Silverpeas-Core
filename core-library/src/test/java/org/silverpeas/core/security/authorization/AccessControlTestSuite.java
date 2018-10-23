@@ -25,12 +25,14 @@ package org.silverpeas.core.security.authorization;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.silverpeas.core.test.UnitTest;
 
 /**
  * Test suite to sequence the unit tests on the Access Control API.
  * As some unit tests works with static fields it is safer to execute them sequentially.
  * @author Yohann Chastagnier
  */
+@UnitTest
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     TestComponentAccessController.class,

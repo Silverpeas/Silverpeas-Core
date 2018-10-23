@@ -23,21 +23,22 @@
  */
 package org.silverpeas.core.util;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.silverpeas.core.test.UnitTest;
+
 import javax.mail.internet.InternetAddress;
 
-import org.junit.After;
-import org.junit.Test;
-import org.silverpeas.core.util.MailUtil;
-
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author ehugonnet
  */
+@UnitTest
 public class MailUtilTest {
 
-  @After
+  @AfterEach
   public void tearDown() {
     MailUtil.reloadConfiguration(null);
   }

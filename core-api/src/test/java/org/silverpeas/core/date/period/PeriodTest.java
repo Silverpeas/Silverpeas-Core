@@ -257,15 +257,18 @@ public class PeriodTest {
 
   @Test
   public void periodNotValid() {
-    Period periodTest = Period.from(Timestamp.valueOf("2013-11-28 12:00:00.010"),
-        Timestamp.valueOf("2013-11-28 12:00:00.009"));
-    assertThat(periodTest.formatPeriodForTests(),
-        is("Period(2013-11-28 12:00:00.010, 2013-11-28 12:00:00.009) -> elapsed time 0 day(s), " +
-            "covered time 1 day(s), unknown type, is not valid"));
+    TimeZone previousTimeZone = TimeZone.getDefault();
+    try {
+      TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+      Period periodTest = Period.from(Timestamp.valueOf("2013-11-28 12:00:00.010"), Timestamp.valueOf("2013-11-28 12:00:00.009"));
+      assertThat(periodTest.formatPeriodForTests(), is("Period(2013-11-28 12:00:00.010, 2013-11-28 12:00:00.009) -> elapsed time 0 day(s), " +
+          "covered time 1 day(s), unknown type, is not valid"));
 
-    assertThat(Period.UNDEFINED.formatPeriodForTests(),
-        is("Period(1900-01-01 00:00:00.000, 2999-12-31 00:00:00.000) -> elapsed time 401 766 day" +
-            "(s), covered time 401 766 day(s), unknown type, is not valid"));
+      assertThat(Period.UNDEFINED.formatPeriodForTests(), is("Period(1900-01-01 00:00:00.000, 2999-12-31 00:00:00.000) -> elapsed time 401 766 day" +
+          "(s), covered time 401 766 day(s), unknown type, is not valid"));
+    } finally {
+      TimeZone.setDefault(previousTimeZone);
+    }
   }
 
   @Test

@@ -35,6 +35,7 @@ abstract class AbstractTransactionIntegrationTest {
     return (WarBuilder4LibCore) warBuilder
         .addAdministrationFeatures()
         .addProcessFeatures()
+        .addPublicationTemplateFeatures()
         .testFocusedOn(war -> {
           war.addClasses(AbstractTransactionIntegrationTest.class);
           war.addClasses(WarBuilder4LibCore.class);

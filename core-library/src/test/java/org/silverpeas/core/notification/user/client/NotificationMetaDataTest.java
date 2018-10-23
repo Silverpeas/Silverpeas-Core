@@ -26,7 +26,6 @@ package org.silverpeas.core.notification.user.client;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -34,9 +33,9 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.util.Arrays;
@@ -47,7 +46,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class NotificationMetaDataTest {
 
   private static final String USER_SENDER = "2406";

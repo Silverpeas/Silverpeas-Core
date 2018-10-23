@@ -25,13 +25,12 @@
 package org.silverpeas.core.chat;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.SilverTestEnv;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -41,7 +40,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author silveryocha
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class ChatUserTest {
 
   @BeforeEach

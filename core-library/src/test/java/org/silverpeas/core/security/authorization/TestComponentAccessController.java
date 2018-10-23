@@ -28,7 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -37,6 +36,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 
@@ -55,6 +55,7 @@ import static org.mockito.Mockito.when;
  *
  * @author ehugonnet
  */
+@UnitTest
 public class TestComponentAccessController {
   private static final String toolId = "toolId";
   private static final String componentAdminId = "ADMIN";

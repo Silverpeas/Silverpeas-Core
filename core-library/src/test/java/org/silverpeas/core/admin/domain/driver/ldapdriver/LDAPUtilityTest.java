@@ -27,38 +27,19 @@
  */
 package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author ehugonnet
  */
+@UnitTest
 public class LDAPUtilityTest {
-
-  public LDAPUtilityTest() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
-  @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
-  }
 
   /**
    * Test of isAGuid method, of class LDAPUtility.
@@ -79,13 +60,13 @@ public class LDAPUtilityTest {
   @Test
   public void testEscapeDN() {
     //escapeDN
-    assertEquals("No special characters to escape", "Helloé", LDAPUtility.escapeDN("Helloé"));
-    assertEquals("leading #", "\\# Helloé", LDAPUtility.escapeDN("# Helloé"));
-    assertEquals("leading space", "\\ Helloé", LDAPUtility.escapeDN(" Helloé"));
-    assertEquals("trailing space", "Helloé\\ ", LDAPUtility.escapeDN("Helloé "));
-    assertEquals("only 3 spaces", "\\  \\ ", LDAPUtility.escapeDN("   "));
-    assertEquals("Christmas Tree DN", "\\ Hello\\\\ \\+ \\, \\\"World\\\" \\;\\ ",
-        LDAPUtility.escapeDN(" Hello\\ + , \"World\" ; "));
+    assertEquals("Helloé", LDAPUtility.escapeDN("Helloé"), "No special characters to escape");
+    assertEquals("\\# Helloé", LDAPUtility.escapeDN("# Helloé"), "leading #");
+    assertEquals("\\ Helloé", LDAPUtility.escapeDN(" Helloé"), "leading space");
+    assertEquals("Helloé\\ ", LDAPUtility.escapeDN("Helloé "), "trailing space");
+    assertEquals("\\  \\ ", LDAPUtility.escapeDN("   "), "only 3 spaces");
+    assertEquals("\\ Hello\\\\ \\+ \\, \\\"World\\\" \\;\\ ",
+        LDAPUtility.escapeDN(" Hello\\ + , \"World\" ; "), "Christmas Tree DN");
   }
 
   /**
@@ -95,13 +76,15 @@ public class LDAPUtilityTest {
   public void testEscapeLDAPSearchFilter() {
     final String expectedEscapedValue = "Hi \\00 \\28This\\29 = is \\2a a \\5c test # ç à ô";
 
-    assertEquals("No special characters to escape", "Hi This is a test #çà",
-        LDAPUtility.escapeLDAPSearchFilter("Hi This is a test #çà"));
-    assertEquals("LDAP Christams Tree", expectedEscapedValue,
-        LDAPUtility.escapeLDAPSearchFilter("Hi \u0000 (This) = is * a \\ test # ç à ô"));
-    assertEquals("LDAP Christams Tree",
+    assertEquals("Hi This is a test #çà",
+        LDAPUtility.escapeLDAPSearchFilter("Hi This is a test #çà"),
+        "No special characters to escape");
+    assertEquals(expectedEscapedValue,
+        LDAPUtility.escapeLDAPSearchFilter("Hi \u0000 (This) = is * a \\ test # ç à ô"),
+        "LDAP Christams Tree");
+    assertEquals(
         "Hi \\5c00 \\5c28This\\5c29 = is \\5c2a a \\5c5c test # ç à ô",
-        LDAPUtility.escapeLDAPSearchFilter(expectedEscapedValue));
+        LDAPUtility.escapeLDAPSearchFilter(expectedEscapedValue), "LDAP Christams Tree");
   }
 
   /**
@@ -111,12 +94,14 @@ public class LDAPUtilityTest {
   public void testUnescapeLDAPSearchFilter() {
     final String expectedUnescapedValue = "Hi \u0000 (This) = is * a \\ test # ç à ô";
 
-    assertEquals("No special characters to escape", "Hi This is a test #çà",
-        LDAPUtility.unescapeLDAPSearchFilter("Hi This is a test #çà"));
-    assertEquals("LDAP Christams Tree", expectedUnescapedValue,
-        LDAPUtility.unescapeLDAPSearchFilter("Hi \\00 \\28This\\29 = is \\2a a \\5c test # ç à ô"));
-    assertEquals("LDAP Christams Tree", expectedUnescapedValue,
-        LDAPUtility.unescapeLDAPSearchFilter(expectedUnescapedValue));
+    assertEquals("Hi This is a test #çà",
+        LDAPUtility.unescapeLDAPSearchFilter("Hi This is a test #çà"),
+        "No special characters to escape");
+    assertEquals(expectedUnescapedValue,
+        LDAPUtility.unescapeLDAPSearchFilter("Hi \\00 \\28This\\29 = is \\2a a \\5c test # ç à ô"),
+        "LDAP Christams Tree");
+    assertEquals(expectedUnescapedValue,
+        LDAPUtility.unescapeLDAPSearchFilter(expectedUnescapedValue), "LDAP Christams Tree");
   }
 
   /**
@@ -127,10 +112,11 @@ public class LDAPUtilityTest {
     final String escapedValue = "Hi \\00 \\28This\\29 = is \\2a a \\5c test # ç à ô";
     final String unescapedValue = "Hi \u0000 (This) = is * a \\ test # ç à ô";
 
-    assertEquals("LDAP Christams Tree", unescapedValue,
-        LDAPUtility.unescapeLDAPSearchFilter(escapedValue));
-    assertEquals("LDAP Christams Tree", escapedValue,
-        LDAPUtility.escapeLDAPSearchFilter(LDAPUtility.unescapeLDAPSearchFilter(escapedValue)));
+    assertEquals(unescapedValue, LDAPUtility.unescapeLDAPSearchFilter(escapedValue),
+        "LDAP Christams Tree");
+    assertEquals(escapedValue,
+        LDAPUtility.escapeLDAPSearchFilter(LDAPUtility.unescapeLDAPSearchFilter(escapedValue)),
+        "LDAP Christams Tree");
 
     final String partiallyEscapedValue =
         "Hi ( ) \\ * \u0000 \\00 \\28This\\29 = is \\2a a \\5c test # ç à ô";
@@ -139,9 +125,9 @@ public class LDAPUtilityTest {
     final String expectedPartiallyEscapedValue =
         "Hi \\28 \\29 \\5c \\2a \\00 \\00 \\28This\\29 = is \\2a a \\5c test # ç à ô";
 
-    assertEquals("LDAP Christams Tree", partiallyUnescapedValue,
-        LDAPUtility.unescapeLDAPSearchFilter(partiallyEscapedValue));
-    assertEquals("LDAP Christams Tree", expectedPartiallyEscapedValue, LDAPUtility
-        .escapeLDAPSearchFilter(LDAPUtility.unescapeLDAPSearchFilter(partiallyEscapedValue)));
+    assertEquals(partiallyUnescapedValue,
+        LDAPUtility.unescapeLDAPSearchFilter(partiallyEscapedValue), "LDAP Christams Tree");
+    assertEquals(expectedPartiallyEscapedValue, LDAPUtility.escapeLDAPSearchFilter(
+        LDAPUtility.unescapeLDAPSearchFilter(partiallyEscapedValue)), "LDAP Christams Tree");
   }
 }

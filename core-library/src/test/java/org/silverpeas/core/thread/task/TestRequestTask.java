@@ -29,7 +29,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 /**
  * @author silveryocha
  */
-class TestRequestTask extends AbstractRequestTask<TestRequestTask.TestProcessContext> {
+public class TestRequestTask extends AbstractRequestTask<TestRequestTask.TestProcessContext> {
 
   protected static SilverLogger getLogger() {
     return SilverLogger.getLogger(TestRequestTask.class);

@@ -51,6 +51,7 @@ public class WarBuilder4Publication extends WarBuilder4LibCore {
     addWysiwygFeatures();
     addSilverpeasContentFeatures();
     addSilverpeasUrlFeatures();
+    addPublicationTemplateFeatures();
     addClasses(FieldTemplate.class, SocialInformationPublication.class,
         AbstractSocialInformation.class, SocialInformation.class, SocialInformationType.class,
         FormException.class);

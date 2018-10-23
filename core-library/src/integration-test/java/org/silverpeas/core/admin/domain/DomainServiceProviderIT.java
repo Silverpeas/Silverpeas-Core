@@ -68,6 +68,7 @@ public class DomainServiceProviderIT {
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
         .addAdministrationFeatures()
+        .addPublicationTemplateFeatures()
         .testFocusedOn(warBuilder -> {
           warBuilder.addPackages(true, "org.silverpeas.core.admin.domain");
         }).build();

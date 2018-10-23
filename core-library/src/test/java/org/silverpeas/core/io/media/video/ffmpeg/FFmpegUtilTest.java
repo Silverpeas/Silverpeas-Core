@@ -25,12 +25,11 @@ package org.silverpeas.core.io.media.video.ffmpeg;
 
 import org.apache.commons.exec.CommandLine;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import java.io.File;
@@ -38,7 +37,7 @@ import java.io.File;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class FFmpegUtilTest {
 
   private static final String OS_KEY = "os.name";

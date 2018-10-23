@@ -33,6 +33,7 @@ import org.silverpeas.core.process.io.IOAccess;
 import org.silverpeas.core.process.io.file.exception.FileHandlerException;
 import org.silverpeas.core.process.session.DefaultProcessSession;
 import org.silverpeas.core.process.session.ProcessSession;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.util.ResourceLocator;
 
@@ -46,6 +47,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 public class TestAbstractFileHandler {
 
   private FileBasePath BASE_PATH_TEST;

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.util.Arrays;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 /**
  * Unit tests on the manager of notifications.
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class DefaultNotificationManagerTest {
 
   @RegisterExtension

@@ -23,14 +23,16 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
 
 /**
  * @author ehugonnet
  */
+@UnitTest
 public class UnlockContextTest {
 
   /**

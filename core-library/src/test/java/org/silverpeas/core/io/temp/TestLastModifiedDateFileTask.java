@@ -29,6 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 
 import java.io.File;
@@ -44,6 +45,7 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPa
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 public class TestLastModifiedDateFileTask {
   private File tempPath;
 

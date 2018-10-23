@@ -25,10 +25,9 @@ package org.silverpeas.web.directory.servlets;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.File;
@@ -37,7 +36,7 @@ import java.io.InputStream;
 
 import static org.junit.Assert.assertEquals;
 
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class ImageProfilTest {
 
   @AfterEach

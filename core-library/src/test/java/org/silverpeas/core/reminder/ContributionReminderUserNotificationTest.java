@@ -46,7 +46,7 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.TestManagedMocks;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
@@ -69,7 +69,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author silveryocha
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 @ExtendWith(MockitoExtension.class)
 @TestManagedMocks({DefaultContributionReminderUserNotification.class,
     CalendarContributionReminderUserNotification.class})

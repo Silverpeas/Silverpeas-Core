@@ -32,7 +32,7 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.Level;
@@ -52,7 +52,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author silveryocha
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 @ExtendWith(LoggerExtension.class)
 @LoggerLevel(Level.DEBUG)
 @Execution(ExecutionMode.SAME_THREAD)

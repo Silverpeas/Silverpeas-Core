@@ -25,10 +25,9 @@ package org.silverpeas.core.web.mvc.route;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -48,7 +47,7 @@ import static org.mockito.Mockito.when;
  *
  * @author ehugonnet
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class ComponentRequestRouterTest {
 
   @TestManagedMock

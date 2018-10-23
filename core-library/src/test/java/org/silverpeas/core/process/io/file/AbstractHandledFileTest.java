@@ -28,6 +28,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.silverpeas.core.process.session.ProcessSession;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.util.ResourceLocator;
 
@@ -40,6 +41,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 public abstract class AbstractHandledFileTest {
 
   protected static final String componentInstanceId = "componentInstanceId";

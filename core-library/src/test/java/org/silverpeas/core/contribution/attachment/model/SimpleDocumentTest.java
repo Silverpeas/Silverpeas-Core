@@ -23,34 +23,33 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavService;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.test.util.RandomGenerator;
 
 import java.io.File;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getUploadPath;
 
 /**
  * @author ehugonnet
  */
-@ExtendWith(SilverTestEnv.class)
-public class TestSimpleDocument {
+@EnableSilverTestEnv
+public class SimpleDocumentTest {
 
   private static final String instanceId = "kmelia36";
 

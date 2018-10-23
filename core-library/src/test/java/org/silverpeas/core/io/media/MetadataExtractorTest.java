@@ -24,12 +24,11 @@
 package org.silverpeas.core.io.media;
 
 import org.apache.tika.Tika;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;
@@ -43,7 +42,7 @@ import static org.junit.Assert.assertThat;
 /**
  * @author ehugonnet
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class MetadataExtractorTest {
 
   private final static Tika tika = new Tika();

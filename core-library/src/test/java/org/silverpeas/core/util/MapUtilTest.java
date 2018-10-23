@@ -23,7 +23,8 @@
  */
 package org.silverpeas.core.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,8 +35,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
+@UnitTest
 public class MapUtilTest {
 
   /**
@@ -68,16 +70,14 @@ public class MapUtilTest {
     Map<Integer, Collection<String>> map = new HashMap<Integer, Collection<String>>(2);
     map.put(1, CollectionUtil.asList("bart"));
     String value = "homer";
-    Collection<String> result =
-        MapUtil.putAddAll(ArrayList.class, map, 1, CollectionUtil.asList(value));
+    Collection<String> result = MapUtil.putAddAll(ArrayList.class, map, 1, CollectionUtil.asList(value));
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(2));
     assertThat(result, contains("bart", "homer"));
     assertThat(map.size(), is(1));
 
     value = "lisa";
-    result =
-        MapUtil.putAddAll(ArrayList.class, map, 2, CollectionUtil.asList(value + 1, value + 2));
+    result = MapUtil.putAddAll(ArrayList.class, map, 2, CollectionUtil.asList(value + 1, value + 2));
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(2));
     assertThat(result, contains("lisa1", "lisa2"));

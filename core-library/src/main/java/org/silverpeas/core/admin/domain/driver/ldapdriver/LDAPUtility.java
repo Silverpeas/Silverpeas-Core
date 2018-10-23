@@ -47,7 +47,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
- * This class contains some usefull static functions to access to LDAP elements
+ * This class contains some useful static functions to access to LDAP elements
  *
  * @author tleroi
  */

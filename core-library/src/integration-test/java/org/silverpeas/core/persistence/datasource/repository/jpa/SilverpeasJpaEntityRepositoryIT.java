@@ -143,6 +143,7 @@ public class SilverpeasJpaEntityRepositoryIT {
         .addDatabaseToolFeatures()
         .addJpaPersistenceFeatures()
         .addStubbedOrganizationController()
+        .addPublicationTemplateFeatures()
         .addAsResource("org/silverpeas/core/persistence/datasource/create_table.sql")
         .testFocusedOn((warBuilder) -> warBuilder.addPackages(true,
             "org.silverpeas.core.persistence.datasource.repository.jpa"))

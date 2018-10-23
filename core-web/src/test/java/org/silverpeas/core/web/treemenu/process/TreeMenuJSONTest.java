@@ -23,18 +23,20 @@
  */
 package org.silverpeas.core.web.treemenu.process;
 
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.web.treemenu.model.MenuItem;
 import org.silverpeas.core.web.treemenu.model.NodeType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Unit tests on the decoding and encoding of menu items in JSON.
  */
+@UnitTest
 public class TreeMenuJSONTest {
 
   @Test

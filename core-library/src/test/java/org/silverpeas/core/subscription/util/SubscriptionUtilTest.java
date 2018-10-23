@@ -25,7 +25,8 @@ package org.silverpeas.core.subscription.util;
 
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import static org.silverpeas.core.subscription.util.SubscriptionUtil.isSameVisibilityAsTheCurrentRequester;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,6 +34,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@UnitTest
 public class SubscriptionUtilTest {
 
   @Test

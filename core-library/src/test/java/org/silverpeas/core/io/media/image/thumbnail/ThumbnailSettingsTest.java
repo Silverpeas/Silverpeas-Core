@@ -24,12 +24,11 @@
 package org.silverpeas.core.io.media.image.thumbnail;
 
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.SilverTestEnv;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -40,7 +39,7 @@ import static org.mockito.Mockito.when;
  * returned in any case.<br>
  * @author Yohann Chastagnier
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class ThumbnailSettingsTest {
 
   private static final String COMPONENT_INSTANCE_ID = "componentInstanceId";

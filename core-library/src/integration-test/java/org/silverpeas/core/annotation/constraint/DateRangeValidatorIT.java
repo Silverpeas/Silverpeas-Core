@@ -61,6 +61,7 @@ public class DateRangeValidatorIT {
         .addAdministrationFeatures()
         .addSilverpeasExceptionBases()
         .addJpaPersistenceFeatures()
+        .addPublicationTemplateFeatures()
         .addPackages(true, "org.silverpeas.core.annotation.constraint")
         .build();
   }

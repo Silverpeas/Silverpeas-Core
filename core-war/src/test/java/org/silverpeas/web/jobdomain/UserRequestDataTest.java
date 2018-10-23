@@ -23,16 +23,15 @@
  */
 package org.silverpeas.web.jobdomain;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -47,7 +46,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class UserRequestDataTest {
 
   @RegisterExtension

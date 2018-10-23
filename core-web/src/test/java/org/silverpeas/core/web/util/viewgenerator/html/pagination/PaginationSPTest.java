@@ -27,13 +27,16 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author ehugonnet
  */
+@UnitTest
 public class PaginationSPTest {
 
   public PaginationSPTest() {

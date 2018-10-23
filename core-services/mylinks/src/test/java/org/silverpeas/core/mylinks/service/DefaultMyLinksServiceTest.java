@@ -26,7 +26,6 @@ package org.silverpeas.core.mylinks.service;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.user.model.User;
@@ -34,10 +33,10 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.mylinks.dao.LinkDAO;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.persistence.jdbc.ConnectionPool;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.RequesterProvider;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -50,7 +49,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class DefaultMyLinksServiceTest {
 
   @RegisterExtension

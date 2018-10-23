@@ -36,14 +36,14 @@ import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
+import org.silverpeas.core.test.extention.RequesterProvider;
+import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.TestManagedMocks;
-import org.silverpeas.core.test.extention.RequesterProvider;
-import org.silverpeas.core.test.extention.SilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.Level;
@@ -58,7 +58,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Unit test to test some JUnit 5 extensions.
  * @author mmoquillon
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(LoggerExtension.class)
 @LoggerLevel(Level.WARNING)

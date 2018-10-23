@@ -23,15 +23,36 @@
  */
 package org.silverpeas.core.persistence.jcr;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.util.DateUtil;
+
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.TimeZone;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+@EnableSilverTestEnv
+@TestManagedBeans(DateUtil.class)
+public class JcrDataConverterTest {
 
-public class TestJcrDataConverter {
+  private static TimeZone previousTimeZone;
+
+  @BeforeAll
+  static void setUpTimeZone() {
+    previousTimeZone = TimeZone.getDefault();
+    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
+  }
+
+  @AfterAll
+  static void restoreTimeZone() {
+    TimeZone.setDefault(previousTimeZone);
+  }
 
   @Test
   public void testConvertToJcrPath() {

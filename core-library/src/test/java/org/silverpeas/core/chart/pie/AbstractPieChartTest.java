@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.chart.pie;
 
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
 
@@ -31,7 +32,8 @@ import java.util.function.Function;
 /**
  * @author Yohann Chastagnier
  */
-public class AbstractPieChartTest {
+@UnitTest
+public abstract class AbstractPieChartTest {
 
   @SuppressWarnings("unchecked")
   protected String expJsChart(String title, Function<JSONObject, JSONObject>... expectedData) {

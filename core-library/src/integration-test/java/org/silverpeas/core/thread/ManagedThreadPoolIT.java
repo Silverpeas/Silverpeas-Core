@@ -403,7 +403,7 @@ public class ManagedThreadPoolIT {
    * Logging easily.
    */
   private synchronized void log(String message, Object... arguments) {
-    Logger.getLogger(ManagedThreadPoolTest.class.getSimpleName())
+    Logger.getLogger(ManagedThreadPoolIT.class.getSimpleName())
         .info(MessageFormat.format(testName.getMethodName() + " - " + message, arguments));
   }
 

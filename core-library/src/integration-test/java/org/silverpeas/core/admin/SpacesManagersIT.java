@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.file.FileFolderManager;
@@ -73,7 +74,7 @@ public class SpacesManagersIT {
         .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.content")
         .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
             MemoryData.class, SpaceServiceProvider.class,
-            AttachmentServiceProvider.class)
+            AttachmentServiceProvider.class, PublicationTemplateManager.class)
         .build();
   }
 

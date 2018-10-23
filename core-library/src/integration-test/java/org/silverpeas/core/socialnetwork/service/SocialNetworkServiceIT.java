@@ -73,6 +73,7 @@ public class SocialNetworkServiceIT {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(SocialNetworkServiceIT.class)
         .addAdministrationFeatures()
+        .addPublicationTemplateFeatures()
         .addMavenDependencies("org.springframework.social:spring-social-linkedin",
             "org.springframework.social:spring-social-facebook").testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.util.exception");

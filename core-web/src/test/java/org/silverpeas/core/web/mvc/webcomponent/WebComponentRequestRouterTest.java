@@ -25,7 +25,6 @@ package org.silverpeas.core.web.mvc.webcomponent;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
@@ -37,10 +36,10 @@ import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.TestManagedMocks;
-import org.silverpeas.core.test.extention.SilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -72,7 +71,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author: Yohann Chastagnier
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 @TestManagedMocks({Administration.class, SessionManager.class, SilverStatisticsManager.class})
 @TestManagedBeans(SynchronizerTokenService.class)
 public abstract class WebComponentRequestRouterTest {

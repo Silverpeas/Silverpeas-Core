@@ -25,18 +25,17 @@ package org.silverpeas.core.notification.user.client;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.SettingBundle;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class NotificationManagerSettingsTest {
 
   @RegisterExtension

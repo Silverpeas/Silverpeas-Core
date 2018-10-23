@@ -83,7 +83,10 @@ public class LDAPDriverIT {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(LDAPDriverIT.class).addLDAPFeatures()
-        .addAdministrationFeatures().addSilverpeasExceptionBases().testFocusedOn((warBuilder) -> {
+        .addAdministrationFeatures()
+        .addSilverpeasExceptionBases()
+        .addPublicationTemplateFeatures()
+        .testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.core.admin.domain.driver.ldapdriver");
           warBuilder
               .addClasses(SensitivityWatchEventModifier.class,

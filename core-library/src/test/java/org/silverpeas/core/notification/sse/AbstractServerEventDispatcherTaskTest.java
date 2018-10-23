@@ -26,14 +26,13 @@ package org.silverpeas.core.notification.sse;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.sse.ServerEventDispatcherTask.ServerEventStore;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.LoggerLevel;
 import org.silverpeas.core.test.extention.RequesterProvider;
-import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.util.logging.Level;
 
@@ -51,7 +50,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author Yohann Chastagnier
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 @LoggerLevel(Level.DEBUG)
 @TestManagedBeans(ServerEventDispatcherTask.class)
 abstract class AbstractServerEventDispatcherTaskTest {

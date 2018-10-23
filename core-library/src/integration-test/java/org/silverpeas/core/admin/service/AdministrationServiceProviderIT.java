@@ -50,6 +50,7 @@ public class AdministrationServiceProviderIT {
     return WarBuilder4LibCore.onWarForTestClass(AdministrationServiceProviderIT.class)
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
+        .addPublicationTemplateFeatures()
         .testFocusedOn((warBuilder) -> {
           ((WarBuilder4LibCore) warBuilder).addAdministrationFeatures();
         }).build();

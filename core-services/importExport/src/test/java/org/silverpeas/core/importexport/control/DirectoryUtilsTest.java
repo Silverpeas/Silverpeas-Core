@@ -23,15 +23,18 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
+
 import static java.io.File.separatorChar;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
  * @author ehugonnet
  */
+@UnitTest
 public class DirectoryUtilsTest {
 
   public DirectoryUtilsTest() {

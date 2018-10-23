@@ -24,7 +24,8 @@
 package org.silverpeas.core.i18n;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ import java.util.Set;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.when;
  *
  * @author ehugonnet
  */
+@UnitTest
 public class I18NHelperTest {
 
   /**

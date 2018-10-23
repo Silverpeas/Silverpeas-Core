@@ -27,7 +27,6 @@ package org.silverpeas.core.calendar.notification;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
@@ -51,10 +50,10 @@ import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.reminder.DurationReminder;
 import org.silverpeas.core.reminder.Reminder;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
@@ -79,7 +78,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author silveryocha
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 @TestManagedBeans({JpaUpdateOperation.class, JpaPersistOperation.class,
     CalendarContributionReminderUserNotification.class})
 public class CalendarContributionReminderUserNotificationTest {

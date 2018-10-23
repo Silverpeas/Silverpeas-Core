@@ -74,6 +74,7 @@ public class PersistentDateReminderServiceIT {
         .addSilverpeasExceptionBases()
         .addJpaPersistenceFeatures()
         .addAdministrationFeatures()
+        .addPublicationTemplateFeatures()
         .testFocusedOn(
             (warBuilder) -> warBuilder.addPackages(true, "org.silverpeas.core.datereminder"))
         .build();

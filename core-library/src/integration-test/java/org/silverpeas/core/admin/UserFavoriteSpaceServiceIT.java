@@ -87,6 +87,7 @@ public class UserFavoriteSpaceServiceIT {
         .addDatabaseToolFeatures()
         .addSilverpeasExceptionBases()
         .addOrganisationFeatures()
+        .addPublicationTemplateFeatures()
         .testFocusedOn((warBuilder) -> {
           warBuilder.addClasses(AdminException.class, PersistenceException.class);
         }).build();

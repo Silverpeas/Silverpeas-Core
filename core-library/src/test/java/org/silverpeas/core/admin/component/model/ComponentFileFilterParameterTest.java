@@ -24,13 +24,12 @@
 package org.silverpeas.core.admin.component.model;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.io.File;
 import java.net.URL;
@@ -47,7 +46,7 @@ import static org.mockito.Mockito.when;
  * /rep1/rep2/file.pptx
  * <p>
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class ComponentFileFilterParameterTest {
   private static final String AUTHORIZED_GLOBALLY = "   *.doc    jpg,*.pptx";
   private static final String PARSED_AUTHORIZED_GLOBALLY = "doc, jpg, pptx";

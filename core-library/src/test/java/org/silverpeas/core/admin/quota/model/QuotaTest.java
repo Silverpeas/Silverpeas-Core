@@ -24,19 +24,18 @@
 package org.silverpeas.core.admin.quota.model;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.quota.constant.QuotaLoad;
 import org.silverpeas.core.admin.quota.constant.QuotaType;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.math.BigDecimal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class QuotaTest {
 
   @Test

@@ -43,7 +43,7 @@ import static org.junit.Assert.fail;
 /**
  * Unit tests on encryption management done by the DefaultContentEncryptionService instances.
  */
-public class TestKeyManagement extends ContentEncryptionServiceTest {
+public class KeyManagementTest extends ContentEncryptionServiceTest {
 
   @Test
   public void testKeyCreation() throws Exception {

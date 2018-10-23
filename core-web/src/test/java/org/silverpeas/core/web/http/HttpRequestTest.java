@@ -23,12 +23,11 @@
  */
 package org.silverpeas.core.web.http;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +39,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class HttpRequestTest {
   private static final String HTTP_PARAMETER = "paramName";
 

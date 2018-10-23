@@ -23,9 +23,8 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
@@ -35,8 +34,8 @@ import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatistics;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedMocks;
-import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -59,7 +58,7 @@ import static org.mockito.Mockito.*;
  *
  * @author ehugonnet
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 @TestManagedMocks({Scheduler.class, SilverStatistics.class, DefaultServerEventNotifier.class,
     ServerMessageService.class, PopupMessageService.class})
 public class SilverpeasSessionOpenerTest {

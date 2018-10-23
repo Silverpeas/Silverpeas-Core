@@ -119,6 +119,7 @@ public class TransactionIT {
     return WarBuilder4LibCore.onWarForTestClass(TransactionIT.class)
         .addJpaPersistenceFeatures()
         .addStubbedOrganizationController()
+        .addPublicationTemplateFeatures()
         .testFocusedOn((warBuilder) -> warBuilder
             .addPackages(true, "org.silverpeas.core.persistence.datasource.repository.jpa"))
         .build();

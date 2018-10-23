@@ -23,24 +23,24 @@
  */
 package org.silverpeas.core.security.encryption.cipher;
 
-import org.silverpeas.core.util.ArrayUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Charsets;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
 import java.security.AlgorithmParameters;
 import java.security.Security;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Unit tests on the CAST5 cipher as implemented in Silverpeas.
@@ -50,6 +50,7 @@ import static org.junit.Assert.assertThat;
  * another CAST5 cipher as well another cipher cannot decrypt the encrypted data computed by the
  * Silverpeas CAST5 cipher.
  */
+@UnitTest
 public class CAST5CipherTest {
 
   private static final String KNOWN_PLAIN_TEXT = "Il était une fois un joli petit pois tout argenté";
@@ -57,12 +58,12 @@ public class CAST5CipherTest {
   private Cipher cast5;
   private CipherKey key;
 
-  @BeforeClass
+  @BeforeAll
   public static final void loadJCRProvider() {
     Security.addProvider(new BouncyCastleProvider());
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     cast5 = initCAST5Cipher();
     key = initCipherKey();

@@ -26,12 +26,11 @@ package org.silverpeas.core.contribution.template.publication;
 import org.junit.Assert;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 
 import static java.io.File.separatorChar;
@@ -42,7 +41,7 @@ import static org.junit.Assert.assertThat;
 /**
  * @author ehugonnet
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 @TestManagedBeans(PublicationTemplateManager.class)
 public class PublicationTemplateImplTest {
   private static final char SEPARATOR = separatorChar;

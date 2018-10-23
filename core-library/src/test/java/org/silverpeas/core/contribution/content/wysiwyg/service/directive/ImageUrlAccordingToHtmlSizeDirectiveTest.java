@@ -30,10 +30,11 @@ import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.contribution.content.wysiwyg.service.TestWysiwygContentTransformer;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +47,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+@UnitTest
 @BenchmarkOptions(benchmarkRounds = 500, warmupRounds = 500)
 public class ImageUrlAccordingToHtmlSizeDirectiveTest {
 
@@ -185,7 +187,7 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
   }
 
   private synchronized static File getDocumentNamed(final String name) {
-    final URL documentLocation = TestWysiwygContentTransformer.class.getResource(name);
+    final URL documentLocation = WysiwygContentTransformerTest.class.getResource(name);
     try {
       return new File(documentLocation.toURI());
     } catch (URISyntaxException e) {

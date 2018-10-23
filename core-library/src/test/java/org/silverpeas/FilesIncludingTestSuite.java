@@ -25,15 +25,13 @@ package org.silverpeas;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.silverpeas.core.contribution.attachment.model.TestSimpleDocument;
+import org.silverpeas.core.io.temp.TestLastModifiedDateFileTask;
+import org.silverpeas.core.io.upload.TestUploadSession;
+import org.silverpeas.core.io.upload.TestUploadSessionFile;
 import org.silverpeas.core.process.io.file.TestAbstractFileHandler;
 import org.silverpeas.core.process.io.file.TestFileHandler;
 import org.silverpeas.core.process.io.file.TestHandledFile;
-import org.silverpeas.core.io.upload.TestUploadSession;
-import org.silverpeas.core.io.upload.TestUploadSessionFile;
-import org.silverpeas.core.util.TestPdfUtil;
-import org.silverpeas.core.io.temp.TestLastModifiedDateFileTask;
-import org.silverpeas.core.io.temp.TestTemporaryWorkspaceTranslation;
+import org.silverpeas.core.test.UnitTest;
 
 /**
  * This test suite is to sequence unit tests that includes access to the filesystem and that could
@@ -41,17 +39,15 @@ import org.silverpeas.core.io.temp.TestTemporaryWorkspaceTranslation;
  * run them sequentially in order to avoid file context overriding.
  * @author miguel
  */
+@UnitTest
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    TestSimpleDocument.class,
-    TestPdfUtil.class,
     TestUploadSession.class,
     TestUploadSessionFile.class,
     TestAbstractFileHandler.class,
     TestHandledFile.class,
     TestFileHandler.class,
-    TestLastModifiedDateFileTask.class,
-    TestTemporaryWorkspaceTranslation.class
+    TestLastModifiedDateFileTask.class
 })
 public class FilesIncludingTestSuite {
 }

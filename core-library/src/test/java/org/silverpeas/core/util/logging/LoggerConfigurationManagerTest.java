@@ -24,8 +24,7 @@
 package org.silverpeas.core.util.logging;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
 
@@ -38,7 +37,7 @@ import static org.junit.Assert.assertThat;
  * Unit test on the loading of the logging configurations (stored in properties files).
  * @author miguel
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class LoggerConfigurationManagerTest {
 
   @TestedBean

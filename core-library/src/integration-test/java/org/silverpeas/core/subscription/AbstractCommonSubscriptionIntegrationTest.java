@@ -63,6 +63,7 @@ public abstract class AbstractCommonSubscriptionIntegrationTest {
         .addAdministrationFeatures()
         .addIndexEngineFeatures()
         .addWysiwygFeatures()
+        .addPublicationTemplateFeatures()
         .addAsResource(DATASET_XML_SCRIPT.substring(1))
         .testFocusedOn(war -> war
             .addPackages(true, "org.silverpeas.core.node", "org.silverpeas.core.subscription")
