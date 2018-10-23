@@ -42,7 +42,7 @@ import static org.junit.Assert.fail;
  * Unit tests on the execution of the different DefaultContentEncryptionService's methods in a concurrent
  * way.
  */
-public class TestConcurrentExecution extends ContentEncryptionServiceTest {
+public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
 
   // the AES key in hexadecimal stored in the key file.
   private String key;

@@ -23,20 +23,22 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.test.UnitTest;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 /**
  *
  * @author ehugonnet
  */
+@UnitTest
 public class HistoryDocumentSorterTest {
 
  /**

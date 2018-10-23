@@ -25,19 +25,21 @@ package org.silverpeas.core.viewer.util;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.FilenameUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import java.io.File;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author ehugonnet
  */
+@UnitTest
 public class SwfUtilTest {
 
   private static final String OS_KEY = "os.name";
@@ -47,12 +49,12 @@ public class SwfUtilTest {
   public SwfUtilTest() {
   }
 
-  @BeforeClass
+  @BeforeAll
   public static void computeRealSystem() {
     realSystem = System.getProperty(OS_KEY);
   }
 
-  @AfterClass
+  @AfterAll
   public static void restoreRealSystem() {
     System.setProperty(OS_KEY, realSystem);
   }

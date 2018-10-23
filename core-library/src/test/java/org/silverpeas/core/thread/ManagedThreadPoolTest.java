@@ -24,10 +24,9 @@
 package org.silverpeas.core.thread;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.time.Duration;
 
@@ -45,7 +44,7 @@ import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.maxThreadPoolSizeOf;
 import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.timeoutOf;
 
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class ManagedThreadPoolTest {
 
   private final static long OFFSET_TIME = 350;

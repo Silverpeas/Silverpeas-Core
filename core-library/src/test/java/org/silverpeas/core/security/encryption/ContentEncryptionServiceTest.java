@@ -28,13 +28,12 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.encryption.cipher.Cipher;
 import org.silverpeas.core.security.encryption.cipher.CipherFactory;
 import org.silverpeas.core.security.encryption.cipher.CipherKey;
 import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.EncodingUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -57,7 +56,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  * It creates the security directory to receive the key file, but the key file and it constructs
  * a DefaultContentEncryptionService instance ready to be tested.
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public abstract class ContentEncryptionServiceTest {
 
   String ACTUAL_KEY_FILE_PATH;

@@ -28,11 +28,10 @@
 package org.silverpeas.core.web.mvc.controller;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.test.extention.TestedBean;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +45,7 @@ import static org.mockito.Mockito.*;
  *
  * @author ehugonnet
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class SilverpeasWebUtilTest {
 
   @TestManagedMock

@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.util;
 
-import org.junit.Test;
-import org.silverpeas.core.util.EncodingUtil;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 public class EncodingUtilTest {
 
   @Test

@@ -23,8 +23,9 @@
  */
 package org.silverpeas.core.util.annotation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.util.CollectionUtil;
 
 import javax.inject.Inject;
@@ -38,8 +39,10 @@ import static org.hamcrest.Matchers.*;
 
 /**
  * User: Yohann Chastagnier
- * Date: 22/10/13
+ * Date:
+ * 22/10/13
  */
+@UnitTest
 public class AnnotationUtilTest {
 
   @Test

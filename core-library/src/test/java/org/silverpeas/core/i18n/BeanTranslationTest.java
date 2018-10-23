@@ -23,7 +23,8 @@
  */
 package org.silverpeas.core.i18n;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,7 @@ import static org.hamcrest.Matchers.sameInstance;
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 public class BeanTranslationTest {
 
   private TestI18NBean testI18NBean = new TestI18NBean();

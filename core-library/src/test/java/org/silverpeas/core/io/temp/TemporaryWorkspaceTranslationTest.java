@@ -27,11 +27,11 @@ package org.silverpeas.core.io.temp;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SerializationUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.io.File;
 import java.io.Serializable;
@@ -39,33 +39,32 @@ import java.io.Serializable;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation.startWithTranslationDescriptorPrefix;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
-import static org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation
-    .startWithTranslationDescriptorPrefix;
 
 /**
  * In the tests below, the last modification time is asserted with split-second accuracy as the
  * test running system is unable to be consistent over the time with the time measurements.
  * @author Yohann Chastagnier
  */
-public class TestTemporaryWorkspaceTranslation {
+@EnableSilverTestEnv
+public class TemporaryWorkspaceTranslationTest {
 
   private static final String TRANSLATION_ID_KEY = "__sptrans_id=";
   private static final String SILVERPEAS_TRANSLATION_PREFIX = "__sptrans_";
   private final static String TEST_WORKSPACE_ID = "workspaceId";
   private File tempPath;
 
-  @Rule
-  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
-
-  @After
+  @BeforeEach
+  @AfterEach
   public void cleanTest() {
     FileUtils.deleteQuietly(new File(getTemporaryPath()));
   }
 
-  @Before
+  @BeforeEach
   public void setup() {
-    cleanTest();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
+    CacheServiceProvider.getThreadCacheService().clearAllCaches();
     tempPath = new File(getTemporaryPath());
   }
 

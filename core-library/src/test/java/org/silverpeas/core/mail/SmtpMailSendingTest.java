@@ -39,7 +39,7 @@ import org.silverpeas.core.mail.engine.SmtpMailSender;
 import org.silverpeas.core.test.extention.GreenMailExtension;
 import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.SmtpConfig;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.util.MimeTypes;
@@ -57,7 +57,7 @@ import java.util.Date;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 @ExtendWith(LoggerExtension.class)
 @ExtendWith(GreenMailExtension.class)
 @LoggerLevel(Level.DEBUG)

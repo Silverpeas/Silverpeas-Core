@@ -24,8 +24,7 @@
 package org.silverpeas.core.mail.extractor;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -36,7 +35,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class MailExtractorTest {
 
   @Test

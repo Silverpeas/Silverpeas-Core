@@ -27,21 +27,21 @@
  */
 package org.silverpeas.core.util;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.util.file.FileServerUtils;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  *
  * @author ehugonnet
  */
+@UnitTest
 public class FileServerUtilsTest {
 
   @Test

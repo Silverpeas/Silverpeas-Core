@@ -31,13 +31,12 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.admin.component.model.Option;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
@@ -60,7 +59,7 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  * @author mmoquillon
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 @TestManagedBeans(PublicationTemplateManager.class)
 public class WAComponentRegistryTest {
 

@@ -24,8 +24,7 @@
 package org.silverpeas.core.security.authentication.password.rule;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.ResourceLocator;
 
 import java.lang.reflect.ParameterizedType;
@@ -34,7 +33,7 @@ import java.lang.reflect.ParameterizedType;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public abstract class AbstractPasswordRuleTest<T extends PasswordRule> {
   protected final static int NB_LOOP = 1000;
 

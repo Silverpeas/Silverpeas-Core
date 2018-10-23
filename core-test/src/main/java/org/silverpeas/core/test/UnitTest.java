@@ -21,23 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.datereminder.persistence;
 
-import org.silverpeas.core.persistence.EntityReference;
+package org.silverpeas.core.test;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- *
- * @author Cécile Bonin
+ * Annotation to mark a test as being a unit test. It is used by the integration tests for example
+ * to avoid of loading any unit tests during a package scanning.
+ * @author mmoquillon
  */
-public class MyEntityReferenceForUnitTest extends EntityReference<String> {
-
-  public MyEntityReferenceForUnitTest(String id) {
-    super(id);
-  }
-
-  @Override
-  public String getEntity() {
-    return "MyEntity";
-  }
-
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface UnitTest {
 }

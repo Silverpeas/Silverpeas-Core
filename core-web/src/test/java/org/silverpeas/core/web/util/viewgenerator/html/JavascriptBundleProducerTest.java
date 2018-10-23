@@ -23,7 +23,8 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.util.SilverpeasBundle;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 public class JavascriptBundleProducerTest {
 
   @Test

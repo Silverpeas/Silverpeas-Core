@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.LoggerConfigurationLoader;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
  * Unit test on the SysLogger implementation of Logger.
  * @author miguel
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 @ExtendWith(LoggerExtension.class)
 @LoggerLevel(Level.INFO)
 public class SysLoggerTest {

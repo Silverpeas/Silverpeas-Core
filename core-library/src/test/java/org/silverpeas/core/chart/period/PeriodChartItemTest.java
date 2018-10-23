@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.chart.period;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.date.period.PeriodType;
 

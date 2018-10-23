@@ -25,9 +25,8 @@ package org.silverpeas.core.util.logging;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.util.MavenTestEnv;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
@@ -43,7 +42,7 @@ import static org.junit.Assert.assertThat;
  * Unit tests on the LogAccessor instances.
  * @author mmoquillon
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class LogsAccessorTest {
 
   private static final String LOG_FILE = "jboss_output.log";

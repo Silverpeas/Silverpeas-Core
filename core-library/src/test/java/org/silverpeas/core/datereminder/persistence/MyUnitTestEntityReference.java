@@ -21,23 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas;
+package org.silverpeas.core.datereminder.persistence;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.silverpeas.core.io.file.TestAttachmentUrlLinkProcessor;
-import org.silverpeas.core.contribution.content.wysiwyg.service.TestWysiwygContentTransformer;
-import org.silverpeas.core.contribution.content.wysiwyg.service.process.TestMailContentProcess;
+import org.silverpeas.core.persistence.EntityReference;
 
 /**
- * Test suite to sequence the unit tests on the file processing API.
- * As each unit tests works on the same file structure, it is required to sequence them so
- * that they work on the filesystem each of their turn.
- * @author mmoquillon
+ *
+ * @author Cécile Bonin
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    TestWysiwygContentTransformer.class,
-    TestMailContentProcess.class,
-    TestAttachmentUrlLinkProcessor.class})
-public class ImageResourceAndResizingTestSuite {}
+public class MyUnitTestEntityReference extends EntityReference<String> {
+
+  public MyUnitTestEntityReference(String id) {
+    super(id);
+  }
+
+  @Override
+  public String getEntity() {
+    return "MyEntity";
+  }
+
+}

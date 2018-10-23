@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
@@ -73,6 +74,7 @@ public class VariablesManagementIT {
         .addSilverpeasExceptionBases()
         .addJpaPersistenceFeatures()
         .addPackages(true, "org.silverpeas.core.variables")
+        .addClasses(PublicationTemplateManager.class)
         .addAsResource(TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .build();

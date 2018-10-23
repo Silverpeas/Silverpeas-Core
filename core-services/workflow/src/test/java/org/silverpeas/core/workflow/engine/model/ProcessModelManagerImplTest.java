@@ -30,8 +30,7 @@ package org.silverpeas.core.workflow.engine.model;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.test.util.MavenTestEnv;
 import org.silverpeas.core.workflow.api.model.Action;
@@ -52,7 +51,7 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author ehugonnet
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class ProcessModelManagerImplTest {
 
   @TestedBean

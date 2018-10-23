@@ -23,19 +23,20 @@
  */
 package org.silverpeas.core.util;
 
-import org.junit.Test;
-import org.silverpeas.core.util.StringDataExtractor;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.silverpeas.core.util.CollectionUtil.asList;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexps;
 
-
+@UnitTest
 public class StringDataRegexpExtractorTest {
 
   private final static String COMMON_STRING =
@@ -94,10 +95,11 @@ public class StringDataRegexpExtractorTest {
     assertThat(result, contains("string/0256/", "StRing/abcd/to"));
   }
 
-  @Test(expected = IndexOutOfBoundsException.class)
+  @Test
   public void extractFromCommonStringWithOneDirectiveButBadGroupIndex() {
+    assertThrows(IndexOutOfBoundsException.class, () ->
     StringDataExtractor.from(COMMON_STRING)
-        .withDirective(regexp(VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE, 3)).extract();
+        .withDirective(regexp(VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE, 3)).extract());
   }
 
   @Test
@@ -150,10 +152,11 @@ public class StringDataRegexpExtractorTest {
     assertThat(result, isEmptyString());
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void extractUniqueFromCommonStringWithOneDirectiveButSeveralValues() {
+    assertThrows(IllegalStateException.class, () ->
     StringDataExtractor.from(COMMON_STRING).withDirective(regexp("(?i).*(string).*", 1))
-        .extractUnique();
+        .extractUnique());
 
   }
 }

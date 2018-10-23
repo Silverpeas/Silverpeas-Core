@@ -27,6 +27,7 @@ import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.junit.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import java.io.File;
 import java.io.InputStream;
@@ -46,6 +47,7 @@ import static org.hamcrest.Matchers.notNullValue;
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 public class TestHandledFile extends AbstractHandledFileTest {
 
   /*

@@ -21,20 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.mail;
+package org.silverpeas.core.util.html;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
-/**
- * Test suite to sequence the unit tests on the file processing API.
- * As each unit tests works on the same file structure, it is required to sequence them so
- * that they work on the filesystem each of their turn.
- * @author mmoquillon
- */
-public class SmtpMailTestSuite {
+@UnitTest
+public class HtmlCleanerTest {
 
   @Test
-  public void executeSmtpMailSendingTests() {
+  public void testBreadCrumbAsString() throws Exception {
+    String html =
+        "<div id=\"breadScrumb\"><a href=\"javascript:goSpace('WA1')\" class=\"space\" id=\"spaceWA1\">test</a> &gt; <a href=\"javascript:goSpace('WA4')\" class=\"space\" id=\"spaceWA4\">Archives</a> > <a href=\"javascript:goSpace('WA5')\" class=\"space\" id=\"spaceWA5\">Tous les composants</a> > <a href=\"Main\" class=\"component\" id=\"gallery74\">Galerie</a> > <a href=\"ViewAlbum?Id=68\" class=\"element\" id=\"68\">Mon Album</a></div>";
 
+    String expectedResult = "test > Archives > Tous les composants > Galerie > Mon Album";
+
+    HtmlCleaner cleaner = new HtmlCleaner();
+    String result = cleaner.cleanHtmlFragment(html);
+    Assertions.assertEquals(expectedResult, result);
   }
+
 }

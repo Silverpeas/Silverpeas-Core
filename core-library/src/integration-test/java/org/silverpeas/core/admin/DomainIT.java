@@ -58,6 +58,7 @@ public class DomainIT {
     return WarBuilder4LibCore.onWarForTestClass(DomainIT.class)
         .addSilverpeasExceptionBases()
         .addAdministrationFeatures()
+        .addPublicationTemplateFeatures()
         .build();
   }
 

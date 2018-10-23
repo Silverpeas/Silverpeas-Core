@@ -24,6 +24,7 @@
 package org.silverpeas.core.mail;
 
 import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.util.Charsets;
 
 import javax.mail.Multipart;
@@ -34,6 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
+@UnitTest
 public class MailContentTest {
 
   private static final String HTML_TYPE = "text/html; charset=\"UTF-8\"";

@@ -25,7 +25,6 @@ package org.silverpeas.core.datereminder.persistence;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.datereminder.exception.DateReminderException;
@@ -33,9 +32,9 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
-import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.extention.TestManagedMock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -45,7 +44,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Cécile Bonin
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 @TestManagedBeans({JpaPersistOperation.class, JpaUpdateOperation.class})
 public class PersistentResourceDateReminderTest {
 
@@ -84,11 +83,11 @@ public class PersistentResourceDateReminderTest {
     assertValidate(dateReminder, true);
 
     dateReminder = initializeDateReminder();
-    dateReminder.setResource(new MyEntityReferenceForUnitTest("42"));
+    dateReminder.setResource(new MyUnitTestEntityReference("42"));
     assertValidate(dateReminder, true);
 
     dateReminder = initializeDateReminder();
-    dateReminder.setResource(new MyEntityReferenceForUnitTest(null));
+    dateReminder.setResource(new MyUnitTestEntityReference(null));
     assertValidate(dateReminder, false);
 
     dateReminder = initializeDateReminder();
@@ -114,7 +113,7 @@ public class PersistentResourceDateReminderTest {
             DateReminderDetail.REMINDER_NOT_PROCESSED, "0", "0");
 
     PersistentResourceDateReminder dateReminder = new PersistentResourceDateReminder();
-    dateReminder.setResource(new MyEntityReferenceForUnitTest("26"));
+    dateReminder.setResource(new MyUnitTestEntityReference("26"));
     dateReminder.setDateReminder(dateReminderDetail);
 
     return dateReminder;

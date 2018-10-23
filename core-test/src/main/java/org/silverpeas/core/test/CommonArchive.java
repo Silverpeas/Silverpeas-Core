@@ -60,6 +60,14 @@ public interface CommonArchive<T extends CommonArchive<T>> {
   T addClasses(Class<?>... classes) throws IllegalArgumentException;
 
   /**
+   * Deletes the {@link Class}es in the {@link Archive}.
+   * @param classes the classes to delete in the archive.
+   * @return this archive.
+   * @throws IllegalArgumentException If no classes were specified
+   */
+  T deleteClasses(Class<?>... classes);
+
+  /**
    * Adds all classes in the specified {@link Package}s to the {@link Archive}.
    * @param recursive Should the sub packages be added
    * @param packages All the packages to add represented by a String ("my/package")

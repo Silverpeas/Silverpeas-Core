@@ -24,7 +24,8 @@
 package org.silverpeas.core.web.http;
 
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.silverpeas.core.web.http.FileResponse.encodeAttachmentFilenameAsUtf8;
@@ -33,6 +34,7 @@ import static org.silverpeas.core.web.http.FileResponse.encodeInlineFilenameAsUt
 /**
  * @author silveryocha
  */
+@UnitTest
 public class FileResponseTest {
 
   @Test

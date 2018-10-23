@@ -23,29 +23,27 @@
  */
 package org.silverpeas.core.template;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.util.MavenTestEnv;
 
 import java.io.File;
 import java.util.Properties;
 
 import static java.io.File.separator;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.silverpeas.core.template.SilverpeasTemplate.TEMPLATE_CUSTOM_DIR;
 import static org.silverpeas.core.template.SilverpeasTemplate.TEMPLATE_ROOT_DIR;
 
+@EnableSilverTestEnv
 public class SilverpeasTemplateTest {
-
-  @Rule
-  public MavenTargetDirectoryRule mavenTargetDirectory = new MavenTargetDirectoryRule(this);
 
   private Properties configuration;
 
-  @Before
-  public void setUp() {
-    final File rootDir = new File(mavenTargetDirectory.getResourceTestDirFile(), "templates");
+  @BeforeEach
+  public void setUp(MavenTestEnv mavenTestEnv) {
+    final File rootDir = new File(mavenTestEnv.getResourceTestDirFile(), "templates");
     configuration = new Properties();
     configuration.setProperty(TEMPLATE_ROOT_DIR, rootDir.getPath() + separator);
     configuration.setProperty(TEMPLATE_CUSTOM_DIR, rootDir.getPath() + separator);

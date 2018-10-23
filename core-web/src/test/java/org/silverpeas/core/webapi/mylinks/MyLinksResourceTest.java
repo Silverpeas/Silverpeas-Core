@@ -27,7 +27,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -42,7 +41,7 @@ import org.silverpeas.core.mylinks.model.LinkDetailComparator;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.web.WebResourceUri;
 
 import javax.ws.rs.WebApplicationException;
@@ -61,7 +60,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class MyLinksResourceTest {
 
   private static final String CURRENT_USER_ID = "26";

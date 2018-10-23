@@ -26,13 +26,12 @@ package org.silverpeas.core.admin.component.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.component.PersonalComponentRegistry;
 import org.silverpeas.core.admin.component.PersonalComponentRegistryTest;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 
@@ -50,7 +49,7 @@ import static org.mockito.Mockito.when;
  * {@link PersonalComponentRegistryTest}.
  * @author Yohann Chastagnier
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 @TestManagedBeans(PublicationTemplateManager.class)
 public class PersonalComponentInstanceTest {
 

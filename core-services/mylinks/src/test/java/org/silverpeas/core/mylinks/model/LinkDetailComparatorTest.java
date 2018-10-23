@@ -24,7 +24,8 @@
 package org.silverpeas.core.mylinks.model;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ import static org.apache.commons.lang3.tuple.Pair.of;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 
+@UnitTest
 public class LinkDetailComparatorTest {
 
   @Test

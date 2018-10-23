@@ -28,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 
 import java.io.File;
@@ -38,6 +39,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 public class TestUploadSessionFile {
 
   @Rule

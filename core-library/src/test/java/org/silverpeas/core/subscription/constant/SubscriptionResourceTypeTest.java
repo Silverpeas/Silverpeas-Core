@@ -24,7 +24,8 @@
 package org.silverpeas.core.subscription.constant;
 
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -33,6 +34,7 @@ import static org.hamcrest.Matchers.*;
  * User: Yohann Chastagnier
  * Date: 20/02/13
  */
+@UnitTest
 public class SubscriptionResourceTypeTest {
 
   @Test

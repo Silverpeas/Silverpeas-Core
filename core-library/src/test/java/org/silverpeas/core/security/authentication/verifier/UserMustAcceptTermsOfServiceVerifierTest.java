@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.exception.AuthenticationUserMustAcceptTermsOfService;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.DateUtil;
 
 import java.util.Date;
@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * User: Yohann Chastagnier
  * Date: 10/09/13
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class UserMustAcceptTermsOfServiceVerifierTest {
 
   @Test

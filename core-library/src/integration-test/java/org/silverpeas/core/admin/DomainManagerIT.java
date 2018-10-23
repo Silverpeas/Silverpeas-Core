@@ -63,6 +63,7 @@ public class DomainManagerIT {
     return WarBuilder4LibCore.onWarForTestClass(DomainManagerIT.class)
         .addSilverpeasExceptionBases()
         .addAdministrationFeatures()
+        .addPublicationTemplateFeatures()
         .addAsResource("org/silverpeas/core/admin/domain/driver")
         .build();
   }

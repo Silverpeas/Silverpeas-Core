@@ -33,6 +33,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 
@@ -51,6 +52,7 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPa
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 public class TestUploadSession {
 
   private static final String SESSION_CACHE_KEY = "@@@_" + UploadSession.class.getName();

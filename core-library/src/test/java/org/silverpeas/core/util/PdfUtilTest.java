@@ -24,11 +24,10 @@
 package org.silverpeas.core.util;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.File;
@@ -45,8 +44,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * User: Yohann Chastagnier
  * Date: 08/07/13
  */
-@ExtendWith(SilverTestEnv.class)
-public class TestPdfUtil {
+@EnableSilverTestEnv
+public class PdfUtilTest {
 
   private final static String STAMP_FILE_NAME = "draft.png";
   private final static String WATERMARK_FILE_NAME = "draft.png";

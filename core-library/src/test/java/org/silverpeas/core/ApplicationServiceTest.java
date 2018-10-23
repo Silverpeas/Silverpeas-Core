@@ -27,6 +27,7 @@ import org.jboss.weld.junit5.EnableWeld;
 import org.jboss.weld.junit5.WeldInitiator;
 import org.jboss.weld.junit5.WeldSetup;
 import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.Any;
@@ -49,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * dealing with typed types
  * @author Yohann Chastagnier
  */
+@UnitTest
 @EnableWeld
 public class ApplicationServiceTest {
 

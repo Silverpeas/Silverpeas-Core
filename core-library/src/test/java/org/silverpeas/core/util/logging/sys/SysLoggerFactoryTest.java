@@ -25,7 +25,7 @@ package org.silverpeas.core.util.logging.sys;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.logging.SilverLoggerFactory;
 
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertThat;
  * Unit test on the SysLoggerFactory implementation of LoggerFactory.
  * @author miguel
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class SysLoggerFactoryTest {
 
   private static String LOGGER_NAMESPACE = "silverpeas.test";

@@ -23,15 +23,17 @@
  */
 package org.silverpeas.core.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  *
  * @author ehugonnet
  */
+@UnitTest
 public class EncodeHelperTest {
 
   /**

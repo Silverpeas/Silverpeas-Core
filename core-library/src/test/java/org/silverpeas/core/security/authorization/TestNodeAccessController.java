@@ -32,6 +32,7 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -47,6 +48,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author ehugonnet
  */
+@UnitTest
 public class TestNodeAccessController {
 
   private final String userId = "5";

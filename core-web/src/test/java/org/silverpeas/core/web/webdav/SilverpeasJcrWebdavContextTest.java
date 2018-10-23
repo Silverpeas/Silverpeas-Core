@@ -25,14 +25,13 @@ package org.silverpeas.core.web.webdav;
 
 import org.apache.jackrabbit.webdav.util.EncodeUtil;
 import org.hamcrest.MatcherAssert;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.silverpeas.core.test.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicationCacheService;
 import static org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext.createWebdavContext;
 import static org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext.getWebdavContext;
@@ -40,19 +39,20 @@ import static org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext.getWebda
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 public class SilverpeasJcrWebdavContextTest {
 
   private static final String AUTH_TOKEN = "tokenWith16Chars";
   private static final String FILENAME_WITH_SPECIAL_CHARS =
       "toto&é'()@ç+^i=¨*µ%ù!§:;.,?&&&?{}][`.doc";
 
-  @Before
+  @BeforeEach
   public void setup() {
     getApplicationCacheService().clearAllCaches();
     getApplicationCacheService().getCache().put(SilverpeasJcrWebdavContext.WEBDAV_JCR_URL_SUFFIX + "dummy", "dummy");
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     assertThat(getApplicationCacheService().getCache().get(
         SilverpeasJcrWebdavContext.WEBDAV_JCR_URL_SUFFIX + "dummy", String.class),

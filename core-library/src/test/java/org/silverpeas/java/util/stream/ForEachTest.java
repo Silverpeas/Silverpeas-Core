@@ -25,12 +25,12 @@ package org.silverpeas.java.util.stream;
 
 import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
 import com.carrotsearch.junitbenchmarks.BenchmarkRule;
-import com.carrotsearch.junitbenchmarks.annotation.AxisRange;
 import com.carrotsearch.junitbenchmarks.annotation.BenchmarkMethodChart;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
+import org.silverpeas.core.test.UnitTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +42,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 @BenchmarkMethodChart
 @BenchmarkOptions(benchmarkRounds = 1000, warmupRounds = 1000)
 public class ForEachTest {

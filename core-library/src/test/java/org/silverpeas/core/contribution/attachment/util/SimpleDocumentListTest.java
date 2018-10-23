@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.contribution.attachment.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.test.UnitTest;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +36,9 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@UnitTest
 public class SimpleDocumentListTest {
 
   @Test
@@ -43,12 +46,14 @@ public class SimpleDocumentListTest {
     new SimpleDocumentList().setQueryLanguage("en").removeLanguageFallbacks();
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void removeLanguageFallbacksOnListWithOneElement() {
-    //noinspection MismatchedQueryAndUpdateOfCollection
-    SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>().setQueryLanguage("en");
-    test.add(new SimpleDocument());
-    test.removeLanguageFallbacks();
+    assertThrows(NullPointerException.class, () -> {
+      //noinspection MismatchedQueryAndUpdateOfCollection
+      SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>().setQueryLanguage("en");
+      test.add(new SimpleDocument());
+      test.removeLanguageFallbacks();
+    });
   }
 
   @Test
@@ -127,13 +132,15 @@ public class SimpleDocumentListTest {
    * This method is to prove that nothing is ordered when it exists only one element in the list.
    * @see #orderByLanguageAndLastUpdateOnListWithOneElement()
    */
-  @Test(expected = NullPointerException.class)
+  @Test
   public void orderByLanguageAndLastUpdateOnListWithTwoElements() {
-    //noinspection MismatchedQueryAndUpdateOfCollection
-    SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>();
-    test.add(new SimpleDocument());
-    test.add(new SimpleDocument());
-    test.orderByLanguageAndLastUpdate("fr", "en");
+    assertThrows(NullPointerException.class, () -> {
+      //noinspection MismatchedQueryAndUpdateOfCollection
+      SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>();
+      test.add(new SimpleDocument());
+      test.add(new SimpleDocument());
+      test.orderByLanguageAndLastUpdate("fr", "en");
+    });
   }
 
   /**
