@@ -242,7 +242,7 @@
                 angular.element(document.body).append($content);
                 $scope.$apply();
                 var $inheritedData = $content.inheritedData();
-                for ($data in $inheritedData) {
+                for (var $data in $inheritedData) {
                   if ($data.endsWith('Controller')) {
                     var data = $inheritedData[$data];
                     data.occurrence = occurrence;

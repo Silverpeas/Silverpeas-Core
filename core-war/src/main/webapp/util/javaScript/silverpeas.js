@@ -469,7 +469,7 @@ function getWindowScrollBarThicknessSize() {
 }
 
 if (!window.SilverpeasPluginBundle) {
-  SilverpeasPluginBundle = function(bundle) {
+  window.SilverpeasPluginBundle = function(bundle) {
     var translations = bundle ? bundle : {};
     this.getAsTextProperties = function() {
       var text = '';
@@ -501,7 +501,7 @@ if (!window.SilverpeasPluginBundle) {
 }
 
 if (!window.SilverpeasPluginSettings) {
-  SilverpeasPluginSettings = function(theSettings) {
+  window.SilverpeasPluginSettings = function(theSettings) {
     var settings = theSettings ? theSettings : {};
     this.get = function() {
       var key = arguments[0];

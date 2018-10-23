@@ -123,7 +123,7 @@ function stripWhitespace (s) {
 // Returns true if single character c (actually a string)
 // is contained within string s.
 function charInString (c, s) {
-	for (i = 0; i < s.length; i++) {
+	for (var i = 0; i < s.length; i++) {
 		if (s.charAt(i) === c) return true;
     }
     return false;
@@ -184,7 +184,7 @@ function isValidTextMaxi(input) {
 
 function warnEmpty (theField, s)
 {   theField.focus();
-    alert(s);
+    notyWarning(s);
     return false;
 }
 
@@ -206,10 +206,10 @@ function checkString (theField, s)
 //return true if the field is numeric
 function isNumericField(field)
 {
-    validChars = "0123456789.,";
-    for( var i=0; i<field.length; i++ )
-		if (validChars.indexOf(field.charAt(i)) < 0)
-			return false;
+    var validChars = "0123456789.,";
+    for( var i=0; i<field.length; i++ ) {
+      if (validChars.indexOf(field.charAt(i)) < 0) return false;
+    }
 	return true;
 }
 
@@ -222,10 +222,10 @@ function formatNumericField(field)
 //return true if the field is an integer
 function isInteger(field)
 {
-    validChars = "0123456789";
-    for( var i=0; i<field.length; i++ )
-	if (validChars.indexOf(field.charAt(i)) < 0)
-		return false;
+    var validChars = "0123456789";
+    for( var i=0; i<field.length; i++ ) {
+      if (validChars.indexOf(field.charAt(i)) < 0) return false;
+    }
     return true;
 }
 
@@ -235,7 +235,7 @@ function checkHour(hour)
 		return true;
 	else
 	{
-		e = new RegExp("(([01][0-9])|(2[0-3]))[:]([0-5][0-9])");
+		var e = new RegExp("(([01][0-9])|(2[0-3]))[:]([0-5][0-9])");
 		return e.test(hour);
 	}
 }
