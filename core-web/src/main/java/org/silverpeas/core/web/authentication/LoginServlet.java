@@ -50,6 +50,7 @@ import static org.silverpeas.core.util.StringUtil.*;
  */
 public class LoginServlet extends SilverpeasHttpServlet {
   private static final long serialVersionUID = 4492227920914085441L;
+  private static final String LOGOUT_PARAM = "logout";
 
   @Inject
   private SilverpeasSessionOpener silverpeasSessionOpener;
@@ -137,7 +138,9 @@ public class LoginServlet extends SilverpeasHttpServlet {
     String loginPage;
     String errorCode = getErrorCode(request);
     final Optional<String> ssoLoginPage = getSsoLoginPage(request);
-    if (ssoLoginPage.isPresent() && (isNotDefined(errorCode) || "3".equals(errorCode))) {
+    if (ssoLoginPage.isPresent()
+        && (isNotDefined(errorCode) || "3".equals(errorCode))
+        && !request.getParameterAsBoolean(LOGOUT_PARAM)) {
       loginPage = ssoLoginPage.get();
       response.sendRedirect(response.encodeRedirectURL(loginPage));
     } else if (isAnonymousAccessActivated() && !request.isWithinAnonymousUserSession() &&
@@ -163,7 +166,7 @@ public class LoginServlet extends SilverpeasHttpServlet {
       UriBuilder uriBuilder = UriBuilder.fromPath(loginPage);
       addParameter(uriBuilder, PARAM_DOMAINID, getDomainId(request));
       addParameter(uriBuilder, "ErrorCode", errorCode);
-      addParameter(uriBuilder, "logout", request.getParameter("logout"));
+      addParameter(uriBuilder, LOGOUT_PARAM, request.getParameter(LOGOUT_PARAM));
 
       response.sendRedirect(response.encodeRedirectURL(uriBuilder.toTemplate()));
     }
