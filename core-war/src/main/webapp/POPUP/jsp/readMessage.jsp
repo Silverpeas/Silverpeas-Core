@@ -72,7 +72,7 @@
         <c:if test="${!empty popupMsgUrl}">
         <c:url value="${popupMsgUrl}" var="url" />
         function goTo() {
-          window.opener.top.spWindow.loadLink('${silfn:escapeJs(url)}');
+          spWindow.loadLink('${silfn:escapeJs(url)}');
           window.close();
         }
         </c:if>

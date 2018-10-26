@@ -54,7 +54,7 @@
 
     <c:if test="${!empty notifLink}">
     function goTo() {
-      window.opener.top.spWindow.loadLink('${silfn:escapeJs(notifLink)}');
+      spWindow.loadLink('${silfn:escapeJs(notifLink)}');
       window.close();
     }
     </c:if>

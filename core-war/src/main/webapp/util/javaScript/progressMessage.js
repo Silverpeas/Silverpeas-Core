@@ -23,8 +23,9 @@
  */
 
 (function () {
-  
-  var $window = top.spLayout ? top.window : window;
+
+  var $isFromPopup = window.opener && !top.__spWindow_main_frame;
+  var $window = top.spLayout && !$isFromPopup ? top.window : window;
 
   /**
    * This two jQuery methods exists because, for now, showing or hiding the progress message is
@@ -103,10 +104,10 @@
       }
 
       // Please take a look to the Silverpeas Popup Plugin
-      if ($window.spAdminLayout && spAdminLayout.getBody().getContent()) {
+      if (!$isFromPopup && $window.spAdminLayout && spAdminLayout.getBody().getContent()) {
         spAdminLayout.getBody().getContent().forceOnBackground();
       }
-      if ($window.spLayout) {
+      if (!$isFromPopup && $window.spLayout) {
         spLayout.getBody().getContent().forceOnBackground();
       }
 
@@ -123,10 +124,10 @@
           // Clean up
           popup.dialog('destroy');
           // Please take a look to the Silverpeas Popup Plugin
-          if ($window.spAdminLayout && spAdminLayout.getBody().getContent()) {
+          if (!$isFromPopup && $window.spAdminLayout && spAdminLayout.getBody().getContent()) {
             spAdminLayout.getBody().getContent().unforceOnBackground();
           }
-          if ($window.spLayout) {
+          if (!$isFromPopup && $window.spLayout) {
             spLayout.getBody().getContent().unforceOnBackground();
           }
         },

@@ -157,12 +157,10 @@ var currentLanguage = "<%=compoInst.getLanguage()%>";
 %>
 
 function viewFrontEndComponent() {
-  var $w = window;
-  if (!$w.spWindow) {
-    $w = window.opener;
+  spWindow.leaveAdmin({fromComponentId : '<%=compoInst.getId()%>'});
+  if (window.opener) {
     window.close();
   }
-  $w.top.window.spWindow.leaveAdmin({fromComponentId : '<%=compoInst.getId()%>'});
 }
 
 function showTranslation(lang) {
