@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function($window) {
+(function($mainWindow) {
 
   /**
    * The instance of the plugin must be attached to the top window.
@@ -32,22 +32,22 @@
    * If the plugin, on top window, is already defined, nothing is done.
    */
 
-  if ($window.spLayout) {
+  if ($mainWindow.spLayout) {
     if (!window.spLayout) {
-      window.spLayout = $window.spLayout;
+      window.spLayout = $mainWindow.spLayout;
     }
     return;
   }
 
-  if (!$window.LayoutSettings) {
-    $window.LayoutSettings = new SilverpeasPluginSettings();
+  if (!$mainWindow.LayoutSettings) {
+    $mainWindow.LayoutSettings = new SilverpeasPluginSettings();
   }
 
   var layoutDebug = false;
 
-  var PDC_ACTIVATED = $window.LayoutSettings.get("layout.pdc.activated");
-  var PDC_URL_BASE = $window.LayoutSettings.get("layout.pdc.baseUrl");
-  var PDC_DEFAULT_ACTION = $window.LayoutSettings.get("layout.pdc.action.default");
+  var PDC_ACTIVATED = $mainWindow.LayoutSettings.get("layout.pdc.activated");
+  var PDC_URL_BASE = $mainWindow.LayoutSettings.get("layout.pdc.baseUrl");
+  var PDC_DEFAULT_ACTION = $mainWindow.LayoutSettings.get("layout.pdc.action.default");
 
   var __eventManager = {};
   applyEventDispatchingBehaviorOn(__eventManager);
@@ -62,7 +62,7 @@
       this.eventNamePrefix =
           selector.replace(/sp-layout-/g, "").replace(/part/g, "").replace(/layout/g, "").replace(
               /[ -\\#]/g, "");
-      this.container = $window.document.querySelector(selector);
+      this.container = $mainWindow.document.querySelector(selector);
       this.lastStartLoadTime = 0;
     },
     getMainLayout : function() {
@@ -115,7 +115,7 @@
   var HeaderPart = Part.extend({
     load : function(urlParameters) {
       __logDebug("loading header part");
-      var headerPartURL = $window.LayoutSettings.get("layout.header.url");
+      var headerPartURL = $mainWindow.LayoutSettings.get("layout.header.url");
       this.dispatchEvent("start-load");
       return sp.load(this.getContainer(), sp.ajaxRequest(headerPartURL).withParams(urlParameters))
           .then(function() {
@@ -134,7 +134,7 @@
       this.__hide_timeout = undefined;
     },
     resize : function() {
-      var bodyLayoutHeight = $window.innerHeight -
+      var bodyLayoutHeight = $mainWindow.innerHeight -
           this.getMainLayout().getHeader().getContainer().offsetHeight;
       if (PDC_ACTIVATED) {
         bodyLayoutHeight -= this.getMainLayout().getFooter().getContainer().offsetHeight;
@@ -175,14 +175,14 @@
     load : function(urlParameters) {
       __logDebug("loading body part");
       applyReadyBehaviorOn(this);
-      var bodyPartURL = $window.LayoutSettings.get("layout.body.url");
+      var bodyPartURL = $mainWindow.LayoutSettings.get("layout.body.url");
       this.__nb_subLoads = 0;
       this.dispatchEvent("start-load");
       var ajaxConfig = sp.ajaxRequest(bodyPartURL).withParams(urlParameters);
       return sp.load(this.getContainer(), ajaxConfig)
           .then(function() {
               __logDebug("... initializing the context of body part instance");
-            this.rootLayout = $window.document.querySelector(this.partSelectors.bodyNavigationAndContentLayout);
+            this.rootLayout = $mainWindow.document.querySelector(this.partSelectors.bodyNavigationAndContentLayout);
             this.resize();
             this.togglePart = new BodyTogglePart(this.getMainLayout(), this.partSelectors.bodyToggles);
             this.navigationPart = new BodyNavigationPart(this.getMainLayout(), this.partSelectors.bodyNavigation);
@@ -227,8 +227,8 @@
   var BodyTogglePart = Part.extend({
     initialize : function(mainLayout, partSelector) {
       this._super(mainLayout, partSelector);
-      this.headerToggle = $window.document.querySelector("#header-toggle");
-      this.navigationToggle = $window.document.querySelector("#navigation-toggle");
+      this.headerToggle = $mainWindow.document.querySelector("#header-toggle");
+      this.navigationToggle = $mainWindow.document.querySelector("#navigation-toggle");
 
       this.headerToggle.addEventListener('click', this.toggleHeader.bind(this), '__click__BodyTogglePart');
       this.navigationToggle.addEventListener('click', this.toggleNavigation.bind(this), '__click__BodyTogglePart');
@@ -297,7 +297,7 @@
       var parameters = extendsObject({
         "privateDomain" : "", "privateSubDomain" : "", "component_id" : ""
       }, urlParameters);
-      var bodyNavigationPartURL = $window.LayoutSettings.get("layout.body.navigation.url");
+      var bodyNavigationPartURL = $mainWindow.LayoutSettings.get("layout.body.navigation.url");
       var ajaxConfig = sp.ajaxRequest(bodyNavigationPartURL).withParams(parameters);
       return sp.load(this.getContainer(), ajaxConfig)
           .then(function() {
@@ -333,7 +333,7 @@
       spLayout.getBody().__nb_subLoads += 1;
       var promise = applyReadyBehaviorOn(this);
       this.dispatchEvent("start-load");
-      $window.MyMain.location.assign(url);
+      $mainWindow.MyMain.location.assign(url);
       return promise;
     },
     toggleFullscreen : function(fullscreen) {
@@ -546,7 +546,7 @@
    * Handling the rendering of the Silverpeas's layout.
    * @constructor
    */
-  $window.SilverpeasLayout = function(partSelectors) {
+  $mainWindow.SilverpeasLayout = function(partSelectors) {
     __logDebug("initializing Silverpeas Layout plugin");
     var headerPart = new HeaderPart(this, partSelectors.header);
     var bodyPart = new BodyPart(this, partSelectors);
@@ -579,7 +579,7 @@
     };
 
     var timer_resize;
-    $window.addEventListener('resize', function() {
+    $mainWindow.addEventListener('resize', function() {
       clearTimeout(timer_resize);
       timer_resize = setTimeout(function() {
         this.getBody().resize();
@@ -619,7 +619,7 @@
       sp.log.debugActivated = mainDebugStatus;
     }
   }
-})(window.opener ? window.opener.top.window : top.window);
+})(_spWindow_getSilverpeasMainWindow());
 
 function initializeSilverpeasLayout(bodyLoadParameters) {
   if (top === window) {

@@ -22,7 +22,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function($window) {
+function _spWindow_getSilverpeasMainWindow() {
+  var currentWindow = window;
+  var silverpeasTopWindow = currentWindow.top.window;
+  if (currentWindow.opener && !currentWindow.__spWindow_main_frame) {
+    silverpeasTopWindow = currentWindow.opener.top.window;
+  }
+  return silverpeasTopWindow;
+}
+
+(function($mainWindow) {
   var __windowDebug = false;
   var __notificationReady = sp.promise.deferred();
 
@@ -97,16 +106,16 @@
    * If the plugin, on top window, is already defined, nothing is done.
    */
 
-  if ($window.spWindow) {
+  if ($mainWindow.spWindow) {
     if (!window.spWindow) {
-      window.spWindow = $window.spWindow;
+      window.spWindow = $mainWindow.spWindow;
     }
     __notificationReady.resolve();
     return;
   }
 
-  if (!$window.WindowBundle) {
-    $window.WindowBundle = new SilverpeasPluginBundle();
+  if (!$mainWindow.WindowBundle) {
+    $mainWindow.WindowBundle = new SilverpeasPluginBundle();
   }
 
   var __loadErrorListener = function(request) {
@@ -279,13 +288,13 @@
    * Handling the rendering of the Silverpeas's window.
    * @constructor
    */
-  $window.SilverpeasWindow = function() {
+  $mainWindow.SilverpeasWindow = function() {
     if (window.spWindow) {
       __logDebug("plugin already initialized");
       return;
     }
     __logDebug("initializing Silverpeas Window plugin");
-    if (!$window.spLayout) {
+    if (!$mainWindow.spLayout) {
       __logError("spLayout is not available, shutdown spWindow");
       return;
     }
@@ -607,4 +616,4 @@
       sp.log.debugActivated = mainDebugStatus;
     }
   }
-})(window.opener ? window.opener.top.window : top.window);
+})(_spWindow_getSilverpeasMainWindow());

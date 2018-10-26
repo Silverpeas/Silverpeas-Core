@@ -27,10 +27,8 @@
 Silverpeas plugin which handles the behaviour about the connected users information.
  */
 
-(function() {
-
-  var $window = window.opener ? window.opener.top.window : top.window;
-  $window = $window.spLayout ? $window : window;
+(function($mainWindow) {
+  $mainWindow = $mainWindow.spLayout ? $mainWindow : window;
 
   /**
    * The instance of the plugin must be attached to the top window.
@@ -40,9 +38,9 @@ Silverpeas plugin which handles the behaviour about the connected users informat
    * If the plugin, on top window, is already defined, nothing is done.
    */
 
-  if ($window.spUserSession) {
+  if ($mainWindow.spUserSession) {
     if (!window.spUserSession) {
-      window.spUserSession = $window.spUserSession;
+      window.spUserSession = $mainWindow.spUserSession;
     }
     whenSilverpeasReady(function() {
       setTimeout(function() {
@@ -54,15 +52,15 @@ Silverpeas plugin which handles the behaviour about the connected users informat
 
   var CONNECTED_USERS_CHANGED_EVENT_NAME = "connectedUsersChanged";
 
-  var NB_CONNECTED_USERS_AT_INIT = $window.UserSessionSettings.get("us.cu.nb.i");
-  var CONNECTED_USERS_URL = $window.UserSessionSettings.get("us.cu.v.u");
+  var NB_CONNECTED_USERS_AT_INIT = $mainWindow.UserSessionSettings.get("us.cu.nb.i");
+  var CONNECTED_USERS_URL = $mainWindow.UserSessionSettings.get("us.cu.v.u");
 
 
   /**
    * Handling the rendering of the Silverpeas's connected users.
    * @constructor
    */
-  $window.spUserSession = new function() {
+  $mainWindow.spUserSession = new function() {
     applyEventDispatchingBehaviorOn(this);
 
     /**
@@ -105,14 +103,14 @@ Silverpeas plugin which handles the behaviour about the connected users informat
 
     // do the specified logout function
     var __doLogout = function(logout) {
-      if ($window.SilverChat) {
+      if ($mainWindow.SilverChat) {
         spProgressMessage.show();
         // creating a timeout for critical network cases
         var __timeout = setTimeout(function() {
           logout.call(this);
         }.bind(this), 5000);
         // stopping the silver chat
-        $window.SilverChat.stop().then(function() {
+        $mainWindow.SilverChat.stop().then(function() {
           // removing the timeout
           clearTimeout(__timeout);
           // performing the logout
@@ -140,4 +138,4 @@ Silverpeas plugin which handles the behaviour about the connected users informat
       }, 'connectedUserListener');
     });
   };
-})();
+})(_spWindow_getSilverpeasMainWindow());

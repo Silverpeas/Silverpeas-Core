@@ -188,8 +188,12 @@ class WebCommonLookAndFeel {
         .append("var silverpeasUrl = '")
         .append(silverpeasUrl)
         .append("';")
-        .append(STR_NEW_LINE)
-        .append(addGlobalJSVariable(controller))
+        .append(STR_NEW_LINE);
+    if (request.getRequestURI().endsWith(lookSettings.getString("FrameJSP"))) {
+      code.append("var __spWindow_main_frame = true;")
+          .append(STR_NEW_LINE);
+    }
+    code.append(addGlobalJSVariable(controller))
         .append("</script>\n");
 
     code.append(getJavaScriptTagWithVersion(contextPath + "/util/javaScript/" + SILVERPEAS_JS));
