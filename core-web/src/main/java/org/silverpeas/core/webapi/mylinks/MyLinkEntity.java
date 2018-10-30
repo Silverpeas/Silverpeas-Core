@@ -23,7 +23,8 @@
  */
 package org.silverpeas.core.webapi.mylinks;
 
-import java.net.URI;
+import org.silverpeas.core.mylinks.model.LinkDetail;
+import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -31,10 +32,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.silverpeas.core.webapi.base.WebEntity;
-
-import org.silverpeas.core.mylinks.model.LinkDetail;
+import java.net.URI;
 
 /**
  * The mylink entity is a mylink object that is exposed in the web as an entity (web entity). As
@@ -137,13 +135,6 @@ public class MyLinkEntity implements WebEntity {
       linkDetail.setHasPosition(false);
     }
     return linkDetail;
-  }
-
-  /**
-   * @return the uri
-   */
-  public URI getUri() {
-    return uri;
   }
 
   /**

@@ -33,7 +33,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -143,7 +142,7 @@ public class MyLinksResourceTest {
     MyLinkEntity linkEntity = rest.getMyLink("");
 
     assertThat(linkEntity.getLinkId(), is(link.getLinkId()));
-    assertThat(linkEntity.getUri().toString(), is(PATH_BASE + "/mylinks/10"));
+    assertThat(linkEntity.getURI().toString(), is(PATH_BASE + "/mylinks/10"));
     assertThat(linkEntity.getPosition(), is(-1));
   }
 
@@ -155,7 +154,7 @@ public class MyLinksResourceTest {
     MyLinkEntity linkEntity = rest.getMyLink("");
 
     assertThat(linkEntity.getLinkId(), is(link.getLinkId()));
-    assertThat(linkEntity.getUri().toString(), is(PATH_BASE + "/mylinks/10"));
+    assertThat(linkEntity.getURI().toString(), is(PATH_BASE + "/mylinks/10"));
     assertThat(linkEntity.getPosition(), is(4));
   }
 

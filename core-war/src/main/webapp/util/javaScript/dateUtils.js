@@ -81,12 +81,12 @@ function getDateSeparator(lang) {
 var defaultEmptyOK = false
 
 function extractYear(date, language) {
-	d = date.split(getDateSeparator(language));
+  var d = date.split(getDateSeparator(language));
     return d[2];
 }
 
 function extractMonth(date, language) {
-    d = date.split(getDateSeparator(language));
+  var d = date.split(getDateSeparator(language));
     if (language == 'en')
         return d[0];
     else
@@ -94,7 +94,7 @@ function extractMonth(date, language) {
 }
 
 function extractDay(date, language) {
-    d = date.split(getDateSeparator(language));
+  var d = date.split(getDateSeparator(language));
     if (language == 'en')
         return d[1];
     else
@@ -102,12 +102,12 @@ function extractDay(date, language) {
 }
 
 function extractHour(hour, language) {
-    d = hour.split(":");
+  var d = hour.split(":");
     return d[0];
 }
 
 function extractMinute(hour, language) {
-    d = hour.split(":");
+  var d = hour.split(":");
     return d[1];
 }
 
@@ -134,13 +134,13 @@ function isDate1AfterDate2(date1, date2, language) {
 }
 
 function isCorrectDate(y, m, d) {
-	Day_char = d;
-	Month_char = m;
-	Year_char = y;
+	var Day_char = d;
+	var Month_char = m;
+	var Year_char = y;
 
 	if (Month_char != null) {
 		if (Month_char.charAt(0) == '0') {
-			Month_char2 = Month_char.charAt(1);
+      var Month_char2 = Month_char.charAt(1);
 			Month_char = Month_char2;
 		}
 	}
@@ -148,7 +148,7 @@ function isCorrectDate(y, m, d) {
 
 	if (Day_char != null) {
 		if (Day_char.charAt(0) == '0') {
-			Day_char2 = Day_char.charAt(1);
+      var Day_char2 = Day_char.charAt(1);
 			Day_char = Day_char2;
 		}
 	}
@@ -168,8 +168,8 @@ function isCorrectDate(y, m, d) {
 // isDate returns true if string arguments year, month, and day
 // form a valid date.
 function isCorrectHour(h, m) {
-	Min_char = m;
-	Hour_char = h;
+	var Min_char = m;
+	var Hour_char = h;
 
 	if (Hour_char != null) {
 		if (Hour_char.length > 2)
@@ -195,23 +195,22 @@ function isCorrectHour(h, m) {
 // to use 4-digit year numbers everywhere.
 //
 // For B.C. compliance, write your own function. ;->
-function isYear (s)
-{   if (isEmpty(s))
-       if (isYear.arguments.length == 1) return defaultEmptyOK;
-       else return (isYear.arguments[1]);
-    if (!isNonnegativeInteger(s)) return false;
-    return ((s.length == 2) || (s.length == 4));
+function isYear(y, canBeEmpty) {
+  if (isEmpty(y)) {
+    return !!canBeEmpty;
+  }
+  if (!isNonnegativeInteger(y, canBeEmpty)) {
+    return false;
+  }
+  return ((y.length == 2) || (y.length == 4));
 }
 
 // isMonth (STRING s [, BOOLEAN emptyOK])
 //
 // isMonth returns true if string s is a valid
 // month number between 1 and 12.
-function isMonth (s) {
-	if (isEmpty(s))
-       if (isMonth.arguments.length == 1) return defaultEmptyOK;
-       else return (isMonth.arguments[1]);
-    return isIntegerInRange (s, 1, 12);
+function isMonth (m, canBeEmpty) {
+  return isIntegerInRange(m, 1, 12, canBeEmpty);
 }
 
 
@@ -219,11 +218,8 @@ function isMonth (s) {
 //
 // isDay returns true if string s is a valid
 // day number between 1 and 31.
-function isDay (s) {
-	if (isEmpty(s))
-       if (isDay.arguments.length == 1) return defaultEmptyOK;
-       else return (isDay.arguments[1]);
-    return isIntegerInRange (s, 1, 31);
+function isDay (s, canBeEmpty) {
+  return isIntegerInRange(s, 1, 31, canBeEmpty);
 }
 
 
@@ -231,11 +227,8 @@ function isDay (s) {
 //
 // isHour returns true if string s is a valid
 // hour number between 0 and 23.
-function isHour (h) {
-	if (isEmpty(h))
-       if (isHour.arguments.length == 1) return defaultEmptyOK;
-       else return (isHour.arguments[1]);
-    return isIntegerInRange (h, 0, 23);
+function isHour(h, canBeEmpty) {
+  return isIntegerInRange(h, 0, 23, canBeEmpty);
 }
 
 
@@ -243,11 +236,8 @@ function isHour (h) {
 //
 // isDay returns true if string s is a valid
 // day number between 0 and 59.
-function isMinute (m) {
-	if (isEmpty(m))
-       if (isMinute.arguments.length == 1) return defaultEmptyOK;
-       else return (isMinute.arguments[1]);
-    return isIntegerInRange (m, 0, 59);
+function isMinute(m, canBeEmpty) {
+  return isIntegerInRange(m, 0, 59, canBeEmpty);
 }
 
 
@@ -297,19 +287,20 @@ function isEmpty(s) {
 //
 // isIntegerInRange returns true if string s is an integer
 // within the range of integer arguments a and b, inclusive.
-function isIntegerInRange (s, a, b)
-{   if (isEmpty(s))
-       if (isIntegerInRange.arguments.length == 1) return defaultEmptyOK;
-       else return (isIntegerInRange.arguments[1]);
+function isIntegerInRange(value, a, b, canBeEmpty) {
+  if (isEmpty(value)) {
+    return !!canBeEmpty;
+  }
 
-    // Catch non-integer strings to avoid creating a NaN below,
-    // which isn't available on JavaScript 1.0 for Windows.
-    if (!isInteger(s, false)) return false;
+  // Catch non-integer strings to avoid creating a NaN below,
+  // which isn't available on JavaScript 1.0 for Windows.
+  if (!isInteger(value, false)) {
+    return false;
+  }
 
-    var num = parseInt (s);
-    return ((num >= a) && (num <= b));
+  var num = parseInt(value);
+  return ((num >= a) && (num <= b));
 }
-
 
 // isInteger (STRING s [, BOOLEAN emptyOK])
 //
@@ -317,24 +308,25 @@ function isIntegerInRange (s, a, b)
 //
 // Accepts non-signed integers only. Does not accept floating
 // point, exponential notation, etc.
-function isInteger (s)
-{   var i;
+function isInteger (value, canBeEmpty)
+{
+  if (isEmpty(value)) {
+    return !!canBeEmpty;
+  }
 
-    if (isEmpty(s))
-       if (isInteger.arguments.length == 1) return defaultEmptyOK;
-       else return (isInteger.arguments[1]);
-
-    // Search through string's characters one by one
-    // until we find a non-numeric character.
-    // When we do, return false; if we don't, return true.
-    for (i = 0; i < s.length; i++) {
-        // Check that current character is number.
-        var c = s.charAt(i);
-        if (!isDigit(c)) return false;
+  // Search through string's characters one by one
+  // until we find a non-numeric character.
+  // When we do, return false; if we don't, return true.
+  for (var i = 0; i < value.length; i++) {
+    // Check that current character is number.
+    var c = value.charAt(i);
+    if (!isDigit(c)) {
+      return false;
     }
+  }
 
-    // All characters are numbers.
-    return true;
+  // All characters are numbers.
+  return true;
 }
 
 // isSignedInteger (STRING s [, BOOLEAN emptyOK])
@@ -347,23 +339,18 @@ function isInteger (s)
 // We don't use parseInt because that would accept a string
 // with trailing non-numeric characters.
 //
-function isSignedInteger (s) {
-	if (isEmpty(s))
-       if (isSignedInteger.arguments.length == 1) return defaultEmptyOK;
-       else return (isSignedInteger.arguments[1]);
+function isSignedInteger(value, canBeEmpty) {
+  if (isEmpty(value)) {
+    return !!canBeEmpty;
+  } else {
+    var startPos = 0;
 
-    else {
-        var startPos = 0;
-        var secondArg = defaultEmptyOK;
-
-        if (isSignedInteger.arguments.length > 1)
-            secondArg = isSignedInteger.arguments[1];
-
-        // skip leading + or -
-        if ( (s.charAt(0) == "-") || (s.charAt(0) == "+") )
-           startPos = 1;
-        return (isInteger(s.substring(startPos, s.length), secondArg))
+    // skip leading + or -
+    if ((value.charAt(0) == "-") || (value.charAt(0) == "+")) {
+      startPos = 1;
     }
+    return (isInteger(value.substring(startPos, value.length), canBeEmpty))
+  }
 }
 
 
@@ -371,14 +358,10 @@ function isSignedInteger (s) {
 //
 // Returns true if string s is an integer >= 0.
 //
-function isNonnegativeInteger (s) {
-	var secondArg = defaultEmptyOK;
-
-    if (isNonnegativeInteger.arguments.length > 1)
-        secondArg = isNonnegativeInteger.arguments[1];
-
-    return (isSignedInteger(s, secondArg)
-         && ( (isEmpty(s) && secondArg)  || (parseInt (s) >= 0) ) );
+function isNonnegativeInteger(value, canBeEmpty) {
+  var _canBeEmpty = !!canBeEmpty;
+  return (isSignedInteger(value, _canBeEmpty) &&
+      ((isEmpty(value) && _canBeEmpty) || (parseInt(value) >= 0)));
 }
 
 
@@ -393,9 +376,9 @@ function isD1AfterD2(year1, month1, day1, year2, month2, day2) {
 	//use isCorrectDate to verify it
 
 	//jj, mm, aa of the first date
-	Day1 = day1;
-	Month1 = month1;
-	Year1 = year1;
+  var Day1 = day1;
+  var Month1 = month1;
+  var Year1 = year1;
 	//Integer Convertion
 	var iDay1 = atoi(Day1);
 	var iMonth1 = atoi(Month1);
@@ -404,9 +387,9 @@ function isD1AfterD2(year1, month1, day1, year2, month2, day2) {
 //	window.alert("Day1 = "+iDay1+"\nMonth1 = "+iMonth1+"\nYear1 = "+iYear1);
 
 	//jj, mm, aa of the current date
-	Day2 = day2;
-	Month2 = month2;
-	Year2 = year2;
+  var Day2 = day2;
+  var Month2 = month2;
+  var Year2 = year2;
 	//Integer Convertion
 	var iDay2 = atoi(Day2);
 	var iMonth2 = atoi(Month2);
@@ -442,11 +425,11 @@ function isD1AfterD2Hour(year1, month1, day1, hour1, minute1, year2, month2, day
 	//use isCorrectDate to verify it
 
 	//jj, mm, aa of the first date
-	Day1 = day1;
-	Month1 = month1;
-	Year1 = year1;
-	Hour1 = hour1;
-	Minute1 = Minute1
+  var Day1 = day1;
+  var Month1 = month1;
+  var Year1 = year1;
+  var Hour1 = hour1;
+  var Minute1 = Minute1
 	//Integer Convertion
 	var iHour1 = atoi(Hour1);
 	var iMinute1 = atoi(Minute1);
@@ -458,18 +441,16 @@ function isD1AfterD2Hour(year1, month1, day1, hour1, minute1, year2, month2, day
 
 	//jj, mm, aa of the current date
 
-	Day2 = day2;
-	Month2 = month2;
-	Year2 = year2;
-	Hour2 = hour2
-	Minute2 = minute2
+  var Day2 = day2;
+  var Month2 = month2;
+  var Year2 = year2;
+  var Hour2 = hour2
+  var Minute2 = minute2
 	//Integer Convertion
 	var iHour2 = atoi(Hour2);
 	var iMinute2 = atoi(Minute2);
 	var iDay2 = atoi(Day2);
 	var iMonth2 = atoi(Month2);
-	var iYear2 = atoi(Year2);
-	var iYear2 = atoi(Year2);
 	var iYear2 = atoi(Year2);
 //	window.alert("Day2 = "+iDay2+"\nMonth2 = "+iMonth2+"\nYear2 = "+iYear2);
 
@@ -531,13 +512,14 @@ function isFutureDate(year, month, day) {
 
 function atoi(str) {
 	var nb = 0;
-	for (i=0;i<str.length;i++) {
+  for (var i = 0; i < str.length; i++) {
 		nb = nb*10 + string2int(str.charAt(i));
 	}
 	return(nb);
 }
 
 function string2int(str) {
+  var nb;
 	switch(str) {
 		case '0' : nb = 0;	break;
 		case '1' : nb = 1;	break;

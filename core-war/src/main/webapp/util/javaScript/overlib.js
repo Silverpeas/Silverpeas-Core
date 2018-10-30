@@ -506,6 +506,7 @@ function ol_content_caption(text,title,close) {
 
 // Sets the background picture,padding and lots more. :)
 function ol_content_background(text,picture,hasfullhtml) {
+	var txt;
 	if (hasfullhtml) {
 		txt=text;
 	} else {
@@ -586,22 +587,22 @@ function placeLayer() {
 
 	// HORIZONTAL PLACEMENT, re-arranged to work in Safari
 	if (o3_frame.innerWidth) widthFix=18;
-	iwidth = windowWidth();
+	var iwidth = windowWidth();
 
 	// Horizontal scroll offset
-	winoffset=(olIe4) ? eval('o3_frame.'+docRoot+'.scrollLeft') : o3_frame.pageXOffset;
+	var winoffset=(olIe4) ? eval('o3_frame.'+docRoot+'.scrollLeft') : o3_frame.pageXOffset;
 
 	placeX = runHook('horizontalPlacement',FCHAIN,iwidth,winoffset,widthFix);
 
 	// VERTICAL PLACEMENT, re-arranged to work in Safari
 	if (o3_frame.innerHeight) {
-		iheight=o3_frame.innerHeight;
+		var iheight=o3_frame.innerHeight;
 	} else if (eval('o3_frame.'+docRoot)&&eval("typeof o3_frame."+docRoot+".clientHeight=='number'")&&eval('o3_frame.'+docRoot+'.clientHeight')) {
 		iheight=eval('o3_frame.'+docRoot+'.clientHeight');
 	}
 
 	// Vertical scroll offset
-	scrolloffset=(olIe4) ? eval('o3_frame.'+docRoot+'.scrollTop') : o3_frame.pageYOffset;
+	var scrolloffset=(olIe4) ? eval('o3_frame.'+docRoot+'.scrollTop') : o3_frame.pageYOffset;
 	placeY = runHook('verticalPlacement',FCHAIN,iheight,scrolloffset);
 
 	// Actually move the object.
@@ -799,9 +800,9 @@ function layerWrite(txt) {
 		if (olIe5 && isMac) over.innerHTML = '';
 		over.innerHTML = txt;
 	} else {
-		range = o3_frame.document.createRange();
+		var range = o3_frame.document.createRange();
 		range.setStartAfter(over);
-		domfrag = range.createContextualFragment(txt);
+		var domfrag = range.createContextualFragment(txt);
 
 		while (over.hasChildNodes()) {
 			over.removeChild(over.lastChild);
@@ -1510,5 +1511,5 @@ if ((olNs4 || olNs6 || olIe4)) {
 } else {
 	overlib = no_overlib;
 	nd = no_overlib;
-	ver3fix = true;
+	var ver3fix = true;
 }

@@ -33,6 +33,7 @@ var gControlKeyDown, gShiftKeyDown, gAltKeyDown;
 
 //-------------------------------------------------------------------------------------isAltKeyDown
 function isAltKeyDown (e) {
+	var isDown;
   if (nav4) {
      isDown = e.modifiers & Event.ALT_MASK;
   } else {
@@ -43,6 +44,7 @@ function isAltKeyDown (e) {
 
 //-------------------------------------------------------------------------------------isControlKeyDown
 function isControlKeyDown (e) {
+  var isDown;
   if (nav4) {
      isDown = e.modifiers & Event.CONTROL_MASK;
   } else {
@@ -53,6 +55,7 @@ function isControlKeyDown (e) {
 
 //-------------------------------------------------------------------------------------isShiftKeyDown
 function isShiftKeyDown (e) {
+  var isDown;
   if (nav4) {
      isDown = e.modifiers & Event.SHIFT_MASK;
   } else {
@@ -82,18 +85,18 @@ function isShiftKeyDown (e) {
 //       onClick="return false" >all</A>
 //
 function SwitchSelection (theForm, itemName, e) {
-	max = theForm.elements.length;
-	L = itemName.length;
+	var max = theForm.elements.length;
+	var L = itemName.length;
 	//status = "";
 	if (isControlKeyDown (e)) {
-		for (i = 0; i < max; i++) {
-			elt = theForm.elements[i];
+		for (var i = 0; i < max; i++) {
+			var elt = theForm.elements[i];
 			//status = status + ", " + elt.name.substring (0,L);
 			if ((elt.type == "checkbox")&& (elt.name.substring (0,L) == itemName))
 				elt.checked = !elt.checked;
 		}
 	} else {
-		allChecked = true
+		var allChecked = true
 		for (i = 0; i < max; i++) {
 			elt = theForm.elements[i];
 			if ((elt.type == "checkbox")&& (elt.name.substring (0,L) == itemName))

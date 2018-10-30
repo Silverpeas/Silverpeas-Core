@@ -100,7 +100,7 @@
 * @param lang the new language
 */
 function changeLanguage(lang) {
-  userLanguage = lang;
+  window.userLanguage = lang;
   $.lang.changeLanguage(lang);
 }
 
