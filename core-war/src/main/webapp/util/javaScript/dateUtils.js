@@ -195,25 +195,22 @@ function isCorrectHour(h, m) {
 // to use 4-digit year numbers everywhere.
 //
 // For B.C. compliance, write your own function. ;->
-function isYear(s, canBeEmpty) {
-  if (isEmpty(h)) {
-    return canBeEmpty;
+function isYear(y, canBeEmpty) {
+  if (isEmpty(y)) {
+    return !!canBeEmpty;
   }
-  if (!isNonnegativeInteger(s)) {
+  if (!isNonnegativeInteger(y, canBeEmpty)) {
     return false;
   }
-  return ((s.length == 2) || (s.length == 4));
+  return ((y.length == 2) || (y.length == 4));
 }
 
 // isMonth (STRING s [, BOOLEAN emptyOK])
 //
 // isMonth returns true if string s is a valid
 // month number between 1 and 12.
-function isMonth (s, canBeEmpty) {
-  if (isEmpty(h)) {
-    return canBeEmpty;
-  }
-  return isIntegerInRange (s, 1, 12);
+function isMonth (m, canBeEmpty) {
+  return isIntegerInRange(m, 1, 12, canBeEmpty);
 }
 
 
@@ -222,10 +219,7 @@ function isMonth (s, canBeEmpty) {
 // isDay returns true if string s is a valid
 // day number between 1 and 31.
 function isDay (s, canBeEmpty) {
-  if (isEmpty(h)) {
-    return canBeEmpty;
-  }
-  return isIntegerInRange (s, 1, 31);
+  return isIntegerInRange(s, 1, 31, canBeEmpty);
 }
 
 
@@ -234,10 +228,7 @@ function isDay (s, canBeEmpty) {
 // isHour returns true if string s is a valid
 // hour number between 0 and 23.
 function isHour(h, canBeEmpty) {
-  if (isEmpty(h)) {
-    return canBeEmpty;
-  }
-  return isIntegerInRange(h, 0, 23);
+  return isIntegerInRange(h, 0, 23, canBeEmpty);
 }
 
 
@@ -246,10 +237,7 @@ function isHour(h, canBeEmpty) {
 // isDay returns true if string s is a valid
 // day number between 0 and 59.
 function isMinute(m, canBeEmpty) {
-  if (isEmpty(h)) {
-    return canBeEmpty;
-  }
-  return isIntegerInRange(m, 0, 59);
+  return isIntegerInRange(m, 0, 59, canBeEmpty);
 }
 
 
@@ -299,19 +287,20 @@ function isEmpty(s) {
 //
 // isIntegerInRange returns true if string s is an integer
 // within the range of integer arguments a and b, inclusive.
-function isIntegerInRange (s, a, b)
-{   if (isEmpty(s))
-       if (isIntegerInRange.arguments.length == 1) return defaultEmptyOK;
-       else return (isIntegerInRange.arguments[1]);
+function isIntegerInRange(value, a, b, canBeEmpty) {
+  if (isEmpty(value)) {
+    return !!canBeEmpty;
+  }
 
-    // Catch non-integer strings to avoid creating a NaN below,
-    // which isn't available on JavaScript 1.0 for Windows.
-    if (!isInteger(s, false)) return false;
+  // Catch non-integer strings to avoid creating a NaN below,
+  // which isn't available on JavaScript 1.0 for Windows.
+  if (!isInteger(value, false)) {
+    return false;
+  }
 
-    var num = parseInt (s);
-    return ((num >= a) && (num <= b));
+  var num = parseInt(value);
+  return ((num >= a) && (num <= b));
 }
-
 
 // isInteger (STRING s [, BOOLEAN emptyOK])
 //
@@ -319,20 +308,18 @@ function isIntegerInRange (s, a, b)
 //
 // Accepts non-signed integers only. Does not accept floating
 // point, exponential notation, etc.
-function isInteger (s, canBeEmpty)
+function isInteger (value, canBeEmpty)
 {
-  var i;
-
-  if (isEmpty(h)) {
-    return canBeEmpty;
+  if (isEmpty(value)) {
+    return !!canBeEmpty;
   }
 
   // Search through string's characters one by one
   // until we find a non-numeric character.
   // When we do, return false; if we don't, return true.
-  for (i = 0; i < s.length; i++) {
+  for (var i = 0; i < value.length; i++) {
     // Check that current character is number.
-    var c = s.charAt(i);
+    var c = value.charAt(i);
     if (!isDigit(c)) {
       return false;
     }
@@ -352,22 +339,17 @@ function isInteger (s, canBeEmpty)
 // We don't use parseInt because that would accept a string
 // with trailing non-numeric characters.
 //
-function isSignedInteger(s, canBeEmpty) {
-  if (isEmpty(h)) {
-    return canBeEmpty;
+function isSignedInteger(value, canBeEmpty) {
+  if (isEmpty(value)) {
+    return !!canBeEmpty;
   } else {
     var startPos = 0;
-    var secondArg = defaultEmptyOK;
-
-    if (isSignedInteger.arguments.length > 1) {
-      secondArg = isSignedInteger.arguments[1];
-    }
 
     // skip leading + or -
-    if ((s.charAt(0) == "-") || (s.charAt(0) == "+")) {
+    if ((value.charAt(0) == "-") || (value.charAt(0) == "+")) {
       startPos = 1;
     }
-    return (isInteger(s.substring(startPos, s.length), secondArg))
+    return (isInteger(value.substring(startPos, value.length), canBeEmpty))
   }
 }
 
@@ -376,14 +358,10 @@ function isSignedInteger(s, canBeEmpty) {
 //
 // Returns true if string s is an integer >= 0.
 //
-function isNonnegativeInteger (s) {
-	var secondArg = defaultEmptyOK;
-
-    if (isNonnegativeInteger.arguments.length > 1)
-        secondArg = isNonnegativeInteger.arguments[1];
-
-    return (isSignedInteger(s, secondArg)
-         && ( (isEmpty(s) && secondArg)  || (parseInt (s) >= 0) ) );
+function isNonnegativeInteger(value, canBeEmpty) {
+  var _canBeEmpty = !!canBeEmpty;
+  return (isSignedInteger(value, _canBeEmpty) &&
+      ((isEmpty(value) && _canBeEmpty) || (parseInt(value) >= 0)));
 }
 
 
