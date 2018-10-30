@@ -37,6 +37,7 @@ public class QueryStringFactory {
   private static String selectByFatherPKAndUserId = null;
   private static String selectByFatherPKPeriodSensitiveAndUserId = null;
   private static String loadRow = null;
+  private static String loadRowFields = null;
   private static final String SELECT_BY_NAME;
   private static final String SELECT_BY_NAME_AND_NODE_ID;
   private static String selectNotInFatherPK = null;
@@ -177,18 +178,21 @@ public class QueryStringFactory {
 
   public static synchronized String getLoadRow(final String tableName) {
     if (loadRow == null) {
-      final StringBuilder query = new StringBuilder();
-      query.append("select pubid, infoid, pubname, pubdescription, pubcreationdate, " +
+      loadRow = "select" + getLoadRowFields() + " from " + tableName + " where pubId = ? ";
+    }
+    return loadRow;
+  }
+
+  public static synchronized String getLoadRowFields() {
+    if (loadRowFields == null) {
+      loadRowFields = " pubid, infoid, pubname, pubdescription, pubcreationdate, " +
           "pubbegindate, pubenddate, pubcreatorid, pubimportance, pubversion, pubkeywords," +
           "pubcontent, pubstatus, pubupdatedate," +
           "instanceid, pubupdaterid, pubvalidatedate, pubvalidatorid, pubbeginhour," +
           "pubendhour, pubauthor, pubtargetvalidatorid, pubcloneid, pubclonestatus," +
-          "lang, pubDraftOutDate ");
-      query.append(" from ").append(tableName);
-      query.append(" where pubId = ? ");
-      loadRow = query.toString();
+          "lang, pubDraftOutDate ";
     }
-    return loadRow;
+    return loadRowFields;
   }
 
   public static String getSelectByName() {

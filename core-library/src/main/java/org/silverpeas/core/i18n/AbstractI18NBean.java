@@ -50,7 +50,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
 
   private String language = null;
   private String translationId = null;
-  private Map<String, T> translations = new HashMap<String, T>(3);
+  private Map<String, T> translations = new HashMap<>(3);
   private boolean removeTranslation = false;
 
 
@@ -139,6 +139,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
     return language;
   }
 
+  @Override
   public void setLanguage(String language) {
     this.language = language;
   }
@@ -147,6 +148,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
     return removeTranslation;
   }
 
+  @Override
   public void setRemoveTranslation(boolean removeTranslation) {
     this.removeTranslation = removeTranslation;
   }
@@ -155,6 +157,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
     return translationId;
   }
 
+  @Override
   public void setTranslationId(String translationId) {
     this.translationId = translationId;
   }
@@ -163,6 +166,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
     return translations.keySet().iterator();
   }
 
+  @Override
   public Map<String, T> getTranslations() {
     return translations;
   }
@@ -174,7 +178,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
    */
   @SuppressWarnings("unchecked")
   public Map<String, T> getClonedTranslations() {
-    Map<String, T> clonedTranslations = new HashMap<String, T>(3);
+    Map<String, T> clonedTranslations = new HashMap<>(3);
     for (Map.Entry<String, T> entry : translations.entrySet()) {
       clonedTranslations.put(entry.getKey(), (T) entry.getValue().clone());
     }
@@ -201,19 +205,21 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
     }
   }
 
+  @Override
   public T getTranslation(String language) {
     return translations.get(language);
   }
 
   public void addTranslation(T translation) {
-    String language = translation.getLanguage();
-    if (!StringUtil.isDefined(language)) {
-      language = I18NHelper.defaultLanguage;
-      translation.setLanguage(language);
+    String lang = translation.getLanguage();
+    if (!StringUtil.isDefined(lang)) {
+      lang = I18NHelper.defaultLanguage;
+      translation.setLanguage(lang);
     }
-    translations.put(language, translation);
+    translations.put(lang, translation);
   }
 
+  @Override
   public T getNextTranslation() {
     Iterator<String> languages = I18NHelper.getLanguages();
     T translation = null;
