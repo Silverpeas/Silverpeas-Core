@@ -165,7 +165,7 @@ public class SilverStatisticsManager implements Initialization {
     try {
       for (String aDirectoryToScan : directoryToScan) {
         DirectoryVolumeService service = new DirectoryVolumeService(new File(aDirectoryToScan));
-        addStatSize(currentDate, aDirectoryToScan, service.getTotalSize(null));
+        addStatSize(currentDate, aDirectoryToScan, service.getTotalSize());
       }
     } catch (Exception ex) {
       SilverLogger.getLogger(this)

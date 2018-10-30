@@ -27,10 +27,9 @@ import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.silverstatistics.volume.model.DirectoryStats;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -43,6 +42,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 /**
  * Compute the size in terms of number of files and total size of all the components available for a
@@ -51,30 +51,23 @@ import java.util.concurrent.Future;
 public class DirectoryVolumeService {
 
   private final File workspace;
+  private boolean onlyComponentData;
 
   public DirectoryVolumeService() {
-    workspace = new File(FileRepositoryManager.getUploadPath());
+    this(new File(FileRepositoryManager.getUploadPath()));
+    onlyComponentData = true;
   }
 
-  public DirectoryVolumeService(File workspace) {
+  DirectoryVolumeService(File workspace) {
     this.workspace = workspace;
-  }
-
-  private List<DirectoryWalkerSizeComputer> buildScanners(File dataDirectory, String userId) {
-    File[] files = listDirectoriesToScan(dataDirectory, userId);
-    List<DirectoryWalkerSizeComputer> result = new ArrayList<>(
-        files.length);
-    for (File componentDir : files) {
-      result.add(new DirectoryWalkerSizeComputer((componentDir)));
-    }
-    return result;
+    onlyComponentData = false;
   }
 
   private List<DirectorySizeComputer> buildSizeScanners(File dataDirectory, String userId) {
     File[] files = listDirectoriesToScan(dataDirectory, userId);
     List<DirectorySizeComputer> result = new ArrayList<>(files.length);
     for (File componentDir : files) {
-      result.add(new DirectorySizeComputer((componentDir)));
+      result.add(new DirectorySizeComputer(componentDir, onlyComponentData));
     }
     return result;
   }
@@ -83,29 +76,13 @@ public class DirectoryVolumeService {
     File[] files = listDirectoriesToScan(dataDirectory, userId);
     List<FileNumberComputer> result = new ArrayList<>(files.length);
     for (File componentDir : files) {
-      result.add(new FileNumberComputer((componentDir)));
+      result.add(new FileNumberComputer(componentDir, onlyComponentData));
     }
     return result;
   }
 
-  public List<DirectoryStats> getVolumes(String userId) throws
-      InterruptedException, ExecutionException {
-    List<DirectoryWalkerSizeComputer> scanners = buildScanners(workspace, userId);
-    List<DirectoryStats> volume = new ArrayList<>(scanners.size());
-    ExecutorService executor = Executors.newFixedThreadPool(getNumberOfThread());
-    List<Future<DirectoryStats>> result = executor.invokeAll(scanners);
-    try {
-      for (Future<DirectoryStats> future : result) {
-        volume.add(future.get());
-      }
-    } finally {
-      executor.shutdown();
-    }
-    return volume;
-  }
-
-  public long getTotalSize(String userId) throws InterruptedException, ExecutionException {
-    List<DirectorySizeComputer> scanners = buildSizeScanners(workspace, userId);
+  long getTotalSize() throws InterruptedException, ExecutionException {
+    List<DirectorySizeComputer> scanners = buildSizeScanners(workspace, null);
     long totalSize = 0L;
     ExecutorService executor = Executors.newFixedThreadPool(getNumberOfThread());
     List<Future<DirectoryStats>> result = executor.invokeAll(scanners);
@@ -157,16 +134,15 @@ public class DirectoryVolumeService {
   }
 
   private File[] listDirectoriesToScan(File dataDirectory, String userId) {
-    FileFilter filter;
-    OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
+    final OrganizationController controller = OrganizationController.get();
+    final FileFilter filter;
     if (!StringUtil.isDefined(userId) || controller.getUserDetail(userId).isAccessAdmin()) {
       filter = DirectoryFileFilter.DIRECTORY;
     } else {
-      String[] spaceIds = controller.getAllSpaceIds(userId);
-      List<String> componentIds = new ArrayList<>(spaceIds.length * 10);
-      for (String spaceId : spaceIds) {
-        componentIds.addAll(Arrays.asList(controller.getAllComponentIdsRecur(spaceId)));
-      }
+      final String[] spaceIds = controller.getAllSpaceIds(userId);
+      final List<String> componentIds = Arrays.stream(spaceIds)
+          .flatMap(i -> Arrays.stream(controller.getAllComponentIdsRecur(i)))
+          .collect(Collectors.toList());
       filter = new AndFileFilter(DirectoryFileFilter.DIRECTORY, new NameFileFilter(componentIds));
     }
     return dataDirectory.listFiles(filter);

@@ -48,25 +48,6 @@ public class PerfVolumeTest {
   private String userId = "9";
   private int forLoop = 10;
 
-  @Test
-  @Ignore
-  public void computeDataFromFs() throws Exception {
-    String dataHomeDir = "/media/DATA/opt/silverpeas/data/workspaces/";
-    File dataDirectory = new File(dataHomeDir);
-    long total = 0L;
-    DirectoryVolumeService service = new DirectoryVolumeService(dataDirectory);
-    for (int i = 0; i < forLoop; i++) {
-      long start = System.currentTimeMillis();
-      service.getVolumes(userId);
-      total = total + (System.currentTimeMillis() - start);
-    }
-    System.out.println("Mean duration for " + forLoop + " is " + (total / forLoop)
-        + " for scanning mode");
-  }
-
-
-
-
   @BeforeClass
   public static void setupDataSource() throws NamingException {
     SimpleMemoryContextFactory.setUpAsInitialContext();
