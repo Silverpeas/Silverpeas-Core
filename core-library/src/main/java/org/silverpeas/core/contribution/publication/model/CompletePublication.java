@@ -99,8 +99,24 @@ public class CompletePublication implements Serializable {
 
   public List<Link> getLinkedPublications(String userId) {
     List<Link> publications = getAuthorizedLinks(userId, linkList);
-    publications.addAll(getAuthorizedLinks(userId, reverseLinkList));
+    // remove reverse link linked by the same publication
+    List<Link> reverseLinkListWithoutDuplicates = new ArrayList<>();
+    for (Link reverseLink : reverseLinkList) {
+      if (!isReverseLinkADuplication(publications, reverseLink)) {
+        reverseLinkListWithoutDuplicates.add(reverseLink);
+      }
+    }
+    publications.addAll(getAuthorizedLinks(userId, reverseLinkListWithoutDuplicates));
     return publications;
+  }
+
+  private boolean isReverseLinkADuplication(List<Link> links, Link linkToTest) {
+    for (Link link : links) {
+      if (link.getTarget().equals(linkToTest.getTarget())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private List<Link> getAuthorizedLinks(String userId, List<Link> links) {
