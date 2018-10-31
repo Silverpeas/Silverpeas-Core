@@ -587,6 +587,91 @@
     }.bind(this));
   };
 
+  /**
+   * Handling EventSource with robustness.
+   * @constructor
+   */
+  $mainWindow.SilverpeasEventSource = function(url) {
+    this.close = function() {
+      __context.sse.close();
+    };
+    var finalUrl = url;
+    if (window.EVENT_SOURCE_POLYFILL_ACTIVATED) {
+      finalUrl += '?heartbeat=true';
+    }
+    var __initContextError = function() {
+      return {
+        nbRetry : 0,
+        nbRetryThreshold : 20,
+        retryTimeout : 5000,
+        retryTimeoutInstance : undefined,
+        retryTimeoutReconnectInstance : undefined
+      }
+    };
+    var __context = {
+      sse : undefined,
+      listeners : {},
+      error : __initContextError()
+    };
+    applyEventDispatchingBehaviorOn(this, {
+      onAdd : function(serverEventName, listener) {
+        if (!__context.listeners[serverEventName]) {
+          __context.listeners[serverEventName] = [];
+        }
+        __context.listeners[serverEventName].addElement(listener);
+        __context.sse.addEventListener(serverEventName, listener);
+      },
+      onRemove : function(serverEventName, listener) {
+        __context.listeners[serverEventName].removeElement(listener);
+        __context.sse.removeEventListener(serverEventName, listener);
+      }
+    });
+    var initCommonEventSource = function() {
+      var serverEventSource = new EventSource(finalUrl);
+      for (var serverEventName in __context.listeners) {
+        __context.listeners[serverEventName].forEach(function(listener) {
+          serverEventSource.addEventListener(serverEventName, listener);
+        });
+      }
+      var __errorListener = function(e) {
+        clearTimeout(__context.error.retryTimeoutReconnectInstance);
+        __context.error.retryTimeoutReconnectInstance = setTimeout(function() {
+          sp.log.warning("SSE - EventSource API does not observe specified behaviour");
+          __context.error.nbRetryThreshold = 1;
+          __errorListener(e);
+        }, 10000);
+        __context.error.nbRetry += 1;
+        if (__context.error.nbRetry >= __context.error.nbRetryThreshold && !__context.error.retryTimeoutInstance) {
+          if (__context.error.nbRetry > 20 && __context.error.retryTimeout < 60000) {
+            __context.error.retryTimeout += 15000;
+          }
+          sp.log.warning("SSE - Try to reconnect " + __context.error.nbRetry +
+              " times, so trying to reinitialize the SSE communication on " + url + " into " +
+              __context.error.retryTimeout + "ms");
+          serverEventSource.close();
+          clearTimeout(__context.error.retryTimeoutReconnectInstance);
+          __context.error.retryTimeoutInstance = setTimeout(function() {
+            sp.log.warning("SSE - reinitializing SSE communication");
+            clearTimeout(__context.error.retryTimeoutInstance);
+            __context.error.retryTimeoutInstance = undefined;
+            __context.error.retryTimeoutReconnectInstance = undefined;
+            __context.sse = initCommonEventSource();
+          }, __context.error.retryTimeout);
+        }
+      };
+      serverEventSource.addEventListener('error', function(e) {
+        __errorListener(e);
+      }, false);
+      serverEventSource.addEventListener('open', function(e) {
+        clearTimeout(__context.error.retryTimeoutInstance);
+        clearTimeout(__context.error.retryTimeoutReconnectInstance);
+        __context.error = __initContextError();
+      }, false);
+      return serverEventSource;
+    }.bind(this);
+    __context.sse = initCommonEventSource();
+  };
+
   function __showProgressPopup() {
     jQuery.progressMessage();
   }
@@ -632,24 +717,7 @@ function initializeSilverpeasLayout(bodyLoadParameters) {
       "bodyContent" : "#sp-layout-body-part-layout-content-part",
       "footer" : "#sp-layout-footer-part"
     };
-    window.spServerEventSource = new function() {
-      var commonSseUrl = webContext + '/sse/common';
-      if (window.EVENT_SOURCE_POLYFILL_ACTIVATED) {
-        commonSseUrl += '?heartbeat=true';
-      }
-      var serverEventSource = new EventSource(commonSseUrl);
-      applyEventDispatchingBehaviorOn(this, {
-        onAdd : function(serverEventName, listener) {
-          serverEventSource.addEventListener(serverEventName, listener);
-        },
-        onRemove : function(serverEventName, listener) {
-          serverEventSource.removeEventListener(serverEventName, listener);
-        }
-      });
-      this.close = function() {
-        serverEventSource.close();
-      };
-    };
+    window.spServerEventSource = new SilverpeasEventSource(webContext + '/sse/common');
     window.spLayout = new SilverpeasLayout(partSelectors);
     spLayout.getHeader().load();
     spLayout.getBody().load(bodyLoadParameters).then(function() {
