@@ -105,7 +105,8 @@ public class LoginServlet extends SilverpeasHttpServlet {
    * @return true if the session must be closed, false otherwise.
    */
   private boolean mustCloseSession(final HttpServletRequest request) {
-    return getSsoLoginPage(request).isPresent() || "Error_SsoNotAllowed".equals(getErrorCode(request));
+    return (getSsoLoginPage(request).isPresent() && general.getBoolean("login.sso.path.newSession", false))
+        || "Error_SsoNotAllowed".equals(getErrorCode(request));
   }
 
   /**
