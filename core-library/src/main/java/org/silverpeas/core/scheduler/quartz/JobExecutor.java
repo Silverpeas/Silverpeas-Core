@@ -25,6 +25,7 @@ package org.silverpeas.core.scheduler.quartz;
 
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.SchedulerEvent;
@@ -61,6 +62,7 @@ public abstract class JobExecutor implements org.quartz.Job {
 
   protected final void execute(final JobExecutionContext context, final Job job,
       final SchedulerEventListener eventListener) {
+    CacheServiceProvider.clearAllThreadCaches();
     if (eventListener == null) {
       try {
         job.execute(context);

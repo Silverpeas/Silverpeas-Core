@@ -468,8 +468,7 @@ public class UserManager {
    */
   public String getUserIdByLoginAndDomain(String sLogin, String sDomainId) throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
-      UserDetail user = userDAO.getUserByLogin(connection, sDomainId, sLogin);
-      return user != null ? user.getId() : null;
+      return userDAO.getUserIdByLoginAndDomain(connection, sLogin, sDomainId);
     } catch (Exception e) {
       throw new AdminException(
           failureOnGetting("users with login " + sLogin, IN_DOMAIN + sDomainId), e);
@@ -545,9 +544,9 @@ public class UserManager {
     try(Connection connection = DBUtil.openConnection()) {
       SynchroDomainReport.info(USERMANAGER_SYNCHRO_REPORT + addUser,
           "Ajout de l'utilisateur " + userDetail.getSpecificId() + " dans la base...");
-      UserDetail user = userDAO.getUserByLogin(connection, userDetail.getDomainId(),
-          userDetail.getLogin());
-      if (user != null) {
+      final String alreadyExistingUserId = userDAO
+          .getUserIdByLoginAndDomain(connection, userDetail.getLogin(), userDetail.getDomainId());
+      if (alreadyExistingUserId != null) {
         SynchroDomainReport.error(USERMANAGER_SYNCHRO_REPORT + addUser,
             "Utilisateur " + userDetail.getLogin() +
                 " déjà présent dans la base avec ce login. Il n'a pas été rajouté", null);
@@ -560,7 +559,7 @@ public class UserManager {
         userDetail.setSpecificId(specificId);
       }
 
-      String userId = userDAO.saveUser(connection, userDetail);
+      final String userId = userDAO.saveUser(connection, userDetail);
       userDetail.setId(userId);
 
       notifier.notifyEventOn(ResourceEvent.Type.CREATION, userDetail);

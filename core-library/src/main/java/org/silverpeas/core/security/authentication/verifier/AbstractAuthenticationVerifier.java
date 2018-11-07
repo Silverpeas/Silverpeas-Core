@@ -24,7 +24,6 @@
 package org.silverpeas.core.security.authentication.verifier;
 
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -33,16 +32,21 @@ import org.silverpeas.core.util.SettingBundle;
 
 import java.util.MissingResourceException;
 
+import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+
 /**
  * Common use or treatments in relation to user verifier.
  * User: Yohann Chastagnier
  * Date: 06/02/13
  */
 class AbstractAuthenticationVerifier {
-  protected final static SettingBundle settings = ResourceLocator.getSettingBundle(
+  protected static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.authentication.settings.authenticationSettings");
-  protected final static SettingBundle otherSettings =
+  protected static final SettingBundle otherSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.authentication.settings.passwordExpiration");
+  private static final String CACHE_KEY_PREFIX =
+      AbstractAuthenticationVerifier.class.getSimpleName() + "_userByLoginDomain_";
 
   private UserDetail user;
 
@@ -75,13 +79,16 @@ class AbstractAuthenticationVerifier {
    * @param credential the credentials
    * @return the user with the specified credentials
    */
-  protected static UserDetail getUserByCredential(AuthenticationCredential credential) {
-    try {
-      return UserDetail.getById(AdministrationServiceProvider.getAdminService()
-          .getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
-    } catch (AdminException ignore) {
-      return null;
-    }
+  static UserDetail getUserByCredential(AuthenticationCredential credential) {
+    final String cacheKey = CACHE_KEY_PREFIX + credential.getLogin() + credential.getDomainId();
+    return getRequestCacheService().getCache().computeIfAbsent(cacheKey, UserDetail.class, () -> {
+      try {
+        return UserDetail.getById(getAdminService()
+            .getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
+      } catch (AdminException ignore) {
+        return null;
+      }
+    });
   }
 
   /**

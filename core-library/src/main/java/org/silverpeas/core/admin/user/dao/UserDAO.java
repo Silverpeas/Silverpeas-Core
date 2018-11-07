@@ -185,13 +185,14 @@ public class UserDAO {
     return query.executeWith(connection, UserDAO::fetchUser);
   }
 
-  public UserDetail getUserByLogin(final Connection connection, final String domainId,
-      final String login) throws SQLException {
-    return JdbcSqlQuery.createSelect(USER_COLUMNS)
+  public String getUserIdByLoginAndDomain(final Connection connection, final String login,
+      final String domainId) throws SQLException {
+    return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE)
         .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
-        .and("lower(login) = lower(?)", login).and(STATE_CRITERION_NOT, UserState.DELETED)
-        .executeUniqueWith(connection, UserDAO::fetchUser);
+        .and("lower(login) = lower(?)", login)
+        .and(STATE_CRITERION_NOT, UserState.DELETED)
+        .executeUniqueWith(connection, r -> Integer.toString(r.getInt(1)));
   }
 
   public boolean isUserEmailExisting(final Connection connection, final String email)

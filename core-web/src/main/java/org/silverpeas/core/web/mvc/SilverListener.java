@@ -140,6 +140,6 @@ public class SilverListener
    * Clears the cache associated to the request.
    */
   private void clearRequestCache() {
-    CacheServiceProvider.getRequestCacheService().getCache().clear();
+    CacheServiceProvider.clearAllThreadCaches();
   }
 }
