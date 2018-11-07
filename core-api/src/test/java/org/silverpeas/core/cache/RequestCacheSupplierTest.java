@@ -24,9 +24,9 @@
 
 package org.silverpeas.core.cache;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 
@@ -42,7 +42,7 @@ import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestC
 /**
  * @author silveryocha
  */
-class RequestCacheSupplierTest {
+public class RequestCacheSupplierTest {
 
   private static final String CACHE_KEY_A = "cache_key_a";
   private static final String CACHE_KEY_B = "cache_key_b";
@@ -58,18 +58,18 @@ class RequestCacheSupplierTest {
     return user;
   }
 
-  @BeforeEach
-  void setup() {
+  @Before
+  public void setup() {
     supplierCallCount = new ArrayList<>();
   }
 
-  @AfterEach
-  void clear() {
+  @After
+  public void clear() {
     getRequestCacheService().clearAllCaches();
   }
 
   @Test
-  void shouldBeCached() {
+  public void shouldBeCached() {
     assertThat(getRequestCache().get(CACHE_KEY_A), nullValue());
     for (int i = 0; i < 10; i++) {
       final User user26 = getRequestCache().computeIfAbsent(CACHE_KEY_A, User.class, () -> {
@@ -83,13 +83,13 @@ class RequestCacheSupplierTest {
   }
 
   @Test
-  void shouldBeCachedAndIsolated() {
+  public void shouldBeCachedAndIsolated() {
     callAllSeveralTimes();
     assertThat(supplierCallCount, hasSize(2));
   }
 
   @Test
-  void clearShouldRemoveOnlyAimedData() {
+  public void clearShouldRemoveOnlyAimedData() {
     // Not yet cached
     callAllSeveralTimes();
     assertThat(supplierCallCount, hasSize(2));
