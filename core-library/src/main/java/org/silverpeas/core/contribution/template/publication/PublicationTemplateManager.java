@@ -128,7 +128,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
   }
 
   private String makeDefaultPath(String fileName) {
-    if (!StringUtil.isDefined(templateDir)) {
+    if (!StringUtil.isDefined(defaultTemplateDir)) {
       return fileName;
     }
     if (!StringUtil.isDefined(fileName)) {
