@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
@@ -890,16 +891,20 @@ public class PublicationDAO {
       Collection<String> publicationIds) {
     final String tableName = new PublicationPK(null).getTableName();
     try {
-      final List<PublicationDetail> result = new ArrayList<>(publicationIds.size());
+      final Map<String, PublicationDetail> result = new HashMap<>(publicationIds.size());
       JdbcSqlQuery.executeBySplittingOn(publicationIds, (idBatch, ignore) -> JdbcSqlQuery
         .createSelect(QueryStringFactory.getLoadRowFields())
         .from(tableName)
         .where(PUB_ID).in(idBatch.stream().map(Integer::parseInt).collect(Collectors.toList()))
         .executeWith(con, r -> {
-          result.add(resultSet2PublicationDetail(r));
+          final PublicationDetail publicationDetail = resultSet2PublicationDetail(r);
+          result.put(publicationDetail.getId(), publicationDetail);
           return null;
         }));
-      return result;
+      return publicationIds.stream()
+          .map(result::get)
+          .filter(Objects::nonNull)
+          .collect(Collectors.toList());
     } catch (SQLException e) {
       SilverLogger.getLogger(PublicationDAO.class)
           .error("failing getting publications from PK list");
