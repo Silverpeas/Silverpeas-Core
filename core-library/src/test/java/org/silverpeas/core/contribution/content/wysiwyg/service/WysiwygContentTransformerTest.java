@@ -21,24 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.contribution.content.wysiwyg.service.process;
+package org.silverpeas.core.contribution.content.wysiwyg.service;
 
-import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.content.wysiwyg.service.TestWysiwygContentTransformer;
+import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
 import org.silverpeas.core.io.file.AttachmentUrlLinkProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.test.TestBeanContainer;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,17 +48,14 @@ import java.net.URL;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TestMailContentProcess {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+@EnableSilverTestEnv
+public class WysiwygContentTransformerTest {
 
   private static final String ODT_NAME = "LibreOffice.odt";
   private static final String IMAGE_NAME = "image-test.jpg";
@@ -71,33 +67,14 @@ public class TestMailContentProcess {
 
   private static final String ODT_ATTACHMENT_ID = "72f56ba9-b089-40c4-b16c-255e93658259";
 
-  private static final String IMAGE_ATTACHMENT_LINK =
-      "/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57" +
-          "-16fc9fabf318/lang/fr/name/Aikido16.jpg";
-  private static final String IMAGE_ATTACHMENT_LINK_WITH_SIZE_100x =
-      "/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57" +
-          "-16fc9fabf318/lang/fr/size/100x/name/Aikido16.jpg";
-  private static final String IMAGE_ATTACHMENT_LINK_WITH_SIZE_100x100 =
-      "/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57" +
-          "-16fc9fabf318/lang/fr/size/100x100/name/Aikido16.jpg";
-  private static final String LINK_ATTACHMENT_LINK =
-      "/silverpeas/attached_file/componentId/infoLetter175/attachmentId/72f56ba9-b089-40c4-b16c" +
-          "-255e93658259/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf";
-  private static final String LINK_ATTACHMENT_LINK_BIS =
-      "https://www.toto.fr/silverpeas/attached_file/componentId/infoLetter175/attachmentId" +
-          "/72f56ba9-b089-40c4-b16c-255e93658259-bis/lang/fr/name/2-2_Formation_Developpeur-Partie-2.pdf";
-  private static final String IMAGE_ATTACHMENT_LINK_BIS =
-      "http://www.toto.fr/silverpeas/File/d07411cc-19af-49f8-af57-16fc9fabf318-bis";
-
   @SuppressWarnings("unchecked")
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     originalOdt = new File(getClass().getResource("/" + ODT_NAME).getPath());
     assertThat(originalOdt.exists(), is(true));
     originalImage = new File(getClass().getResource("/" + IMAGE_NAME).getPath());
     assertThat(originalImage.exists(), is(true));
-    originalImageWithResize100x =
-        new File(originalImage.getParentFile(), "100x/" + IMAGE_NAME);
+    originalImageWithResize100x = new File(originalImage.getParentFile(), "100x/" + IMAGE_NAME);
     FileUtils.touch(originalImageWithResize100x);
     assertThat(originalImageWithResize100x.exists(), is(true));
     originalImageWithResize100x100 =
@@ -120,8 +97,8 @@ public class TestMailContentProcess {
     Mocking methods of attachment service instance
      */
 
-    // searchDocumentById returns always a simple document which the PK is the one specified from
-    // method parameters.
+    // searchDocumentById returns always a simple document which the PK is the one specified
+    // from method parameters.
     when(mockAttachmentService.searchDocumentById(any(SimpleDocumentPK.class), anyString()))
         .then(invocation -> {
           SimpleDocumentPK pk = (SimpleDocumentPK) invocation.getArguments()[0];
@@ -146,7 +123,7 @@ public class TestMailContentProcess {
   }
 
   @SuppressWarnings("unchecked")
-  @After
+  @AfterEach
   public void destroy() throws Exception {
     FileUtils.deleteQuietly(originalImageWithResize100x.getParentFile());
     FileUtils.deleteQuietly(originalImageWithResize100x100.getParentFile());
@@ -159,29 +136,25 @@ public class TestMailContentProcess {
 
   @Test
   public void toMailContent() throws Exception {
-    MailContentProcess mailContentProcess = new MailContentProcess();
-    String wysiwygContentSource = getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt");
+    WysiwygContentTransformer transformer = WysiwygContentTransformer
+        .on(getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt"));
 
-    MailContentProcess.MailResult mailResult = mailContentProcess.execute(wysiwygContentSource);
+    MailContentProcess.MailResult mailResult = transformer.toMailContent();
 
-    assertThat(mailResult.getBodyParts().size(), is(6));
     assertThat(mailResult.getWysiwygContent(), is(getContentOfDocumentNamed(
-        "wysiwygWithSeveralTypesOfLinkTransformedForMailSendingResult.txt")));
+        "wysiwygWithSeveralTypesOfLinkTransformedForMailSendingResultWithImageResizePreProcessing" +
+            ".txt")));
   }
 
   @Test
-  public void extractAttachmentsByLinks() {
-    MailContentProcess mailContentProcess = new MailContentProcess();
-    String wysiwygContentSource = getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt");
+  public void manageImageResizing() throws Exception {
+    WysiwygContentTransformer transformer =
+        WysiwygContentTransformer.on(getContentOfDocumentNamed("wysiwygWithSeveralImages.txt"));
 
-    List<String> attachmentLinks =
-        mailContentProcess.extractAllLinksOfReferencedAttachments(wysiwygContentSource);
+    String result = transformer.modifyImageUrlAccordingToHtmlSizeDirective().transform();
 
-    assertThat(attachmentLinks.size(), is(6));
-    assertThat(attachmentLinks,
-        contains(IMAGE_ATTACHMENT_LINK, IMAGE_ATTACHMENT_LINK_WITH_SIZE_100x,
-            IMAGE_ATTACHMENT_LINK_WITH_SIZE_100x100, LINK_ATTACHMENT_LINK_BIS, LINK_ATTACHMENT_LINK,
-            IMAGE_ATTACHMENT_LINK_BIS));
+    assertThat(result, is(getContentOfDocumentNamed(
+        "wysiwygWithSeveralImagesTransformedForImageResizingResult.txt")));
   }
 
   /*
@@ -197,7 +170,7 @@ public class TestMailContentProcess {
   }
 
   private synchronized static File getDocumentNamed(final String name) {
-    final URL documentLocation = TestWysiwygContentTransformer.class.getResource(name);
+    final URL documentLocation = WysiwygContentTransformerTest.class.getResource(name);
     try {
       return new File(documentLocation.toURI());
     } catch (URISyntaxException e) {

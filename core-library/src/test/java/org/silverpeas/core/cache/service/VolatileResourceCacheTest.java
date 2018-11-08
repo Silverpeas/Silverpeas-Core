@@ -23,14 +23,16 @@
  */
 package org.silverpeas.core.cache.service;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 
+@UnitTest
 public class VolatileResourceCacheTest {
 
   private VolatileResourceCacheService instance = new VolatileResourceCacheService();

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.io.File;
 import java.net.URL;
@@ -46,6 +46,7 @@ import static org.mockito.Mockito.when;
  * /rep1/rep2/file.pptx
  * <p>
  */
+@EnableSilverTestEnv
 public class ComponentFileFilterParameterTest {
   private static final String AUTHORIZED_GLOBALLY = "   *.doc    jpg,*.pptx";
   private static final String PARSED_AUTHORIZED_GLOBALLY = "doc, jpg, pptx";
@@ -57,10 +58,7 @@ public class ComponentFileFilterParameterTest {
   private static final String PARSED_FORBIDDEN_COMPONENT = "gif, pdf, pptx, doc.xml";
   private SilverpeasComponentInstance component = Mockito.mock(SilverpeasComponentInstance.class);
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Before
+  @BeforeEach
   public void beforeTest() {
     ComponentFileFilterParameter.defaultAuthorizedFiles = "";
     ComponentFileFilterParameter.defaultForbiddenFiles = "";
@@ -169,18 +167,19 @@ public class ComponentFileFilterParameterTest {
     }
   }
 
-  @Test(expected = ComponentFileFilterException.class)
-  public void testVerifyFileAuthorizedWithComponentAuthorizedFilterAndForbiddenFile()
-      throws Exception {
+  @Test
+  public void testVerifyFileAuthorizedWithComponentAuthorizedFilterAndForbiddenFile() {
     // Settings
-    ComponentFileFilterParameter.defaultAuthorizedFiles = AUTHORIZED_GLOBALLY;
-    ComponentFileFilterParameter.defaultForbiddenFiles = FORBIDDEN_GLOBALLY;
-    when(component.getParameterValue(ComponentInstanceParameterName.forbiddenFileExtension.name()))
-        .thenReturn(FORBIDDEN_COMPONENT);
-    when(component.getParameterValue(ComponentInstanceParameterName.authorizedFileExtension.name()))
-        .thenReturn(AUTHORIZED_COMPONENT);
-    // Test
-    ComponentFileFilterParameter.from(component).verifyFileAuthorized(getFile("file.pptx"));
+    Assertions.assertThrows(ComponentFileFilterException.class, () -> {
+      ComponentFileFilterParameter.defaultAuthorizedFiles = AUTHORIZED_GLOBALLY;
+      ComponentFileFilterParameter.defaultForbiddenFiles = FORBIDDEN_GLOBALLY;
+      when(component.getParameterValue(ComponentInstanceParameterName.forbiddenFileExtension.name()))
+          .thenReturn(FORBIDDEN_COMPONENT);
+      when(component.getParameterValue(ComponentInstanceParameterName.authorizedFileExtension.name())).thenReturn(
+          AUTHORIZED_COMPONENT);
+      // Test
+      ComponentFileFilterParameter.from(component).verifyFileAuthorized(getFile("file.pptx"));
+    });
   }
 
   @Test

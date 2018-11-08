@@ -24,15 +24,14 @@
 package org.silverpeas.core.io.media.image.thumbnail;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -40,21 +39,18 @@ import static org.mockito.Mockito.when;
  * returned in any case.<br>
  * @author Yohann Chastagnier
  */
+@EnableSilverTestEnv
 public class ThumbnailSettingsTest {
 
   private static final String COMPONENT_INSTANCE_ID = "componentInstanceId";
 
+  @TestManagedMock
   private OrganizationController mockedOrganisationController;
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Before
+  @BeforeEach
   public void setup() {
-    mockedOrganisationController = mock(OrganizationController.class);
     when(mockedOrganisationController
         .getComponentParameterValue(COMPONENT_INSTANCE_ID, ThumbnailSettings.APP_PARAM_WIDTH)).thenReturn("");
-    commonAPI4Test.injectIntoMockedBeanContainer(mockedOrganisationController);
     // the height about component instance parameters is not handled with the mock in order to
     // verify the behavior when null is returned instead of ""
   }

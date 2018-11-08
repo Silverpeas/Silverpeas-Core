@@ -68,6 +68,7 @@ public class ComponentInstanceNodeDeletionIT {
         .addAdministrationFeatures()
         .addIndexEngineFeatures()
         .addWysiwygFeatures()
+        .addPublicationTemplateFeatures()
         .testFocusedOn(
             war -> war.addPackages(true, "org.silverpeas.core.node")
                 .addAsResource("org/silverpeas/node")

@@ -23,15 +23,20 @@
  */
 package org.silverpeas.core.web.util;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TestClientBrowserUtil extends TestCase {
+@UnitTest
+public class TestClientBrowserUtil {
 
+  @Test
   public void testInternetExplorer() {
     // 1.0 sous Windows 95 — Microsoft Internet Explorer/4.0b1 (Windows 95)
     HttpServletRequest request = mockRequest("User-Agent",

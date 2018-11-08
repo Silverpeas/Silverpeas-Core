@@ -25,10 +25,9 @@ package org.silverpeas.web.directory.servlets;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.File;
@@ -37,12 +36,10 @@ import java.io.InputStream;
 
 import static org.junit.Assert.assertEquals;
 
+@EnableSilverTestEnv
 public class ImageProfilTest {
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @After
+  @AfterEach
   public void prepareDir() throws Exception {
     FileUtils.deleteQuietly(new File(FileRepositoryManager.getAvatarPath()));
   }

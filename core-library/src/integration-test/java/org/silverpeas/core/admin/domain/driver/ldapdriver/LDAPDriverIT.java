@@ -23,12 +23,7 @@
  */
 package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.model.UserFull;
+import com.sun.nio.file.SensitivityWatchEventModifier;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -55,12 +50,18 @@ import org.opends.server.types.LDIFImportConfig;
 import org.opends.server.types.LDIFImportResult;
 import org.opends.server.util.EmbeddedUtils;
 import org.opends.server.util.StaticUtils;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.exception.TokenRuntimeException;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -82,10 +83,14 @@ public class LDAPDriverIT {
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(LDAPDriverIT.class).addLDAPFeatures()
-        .addAdministrationFeatures().addSilverpeasExceptionBases().testFocusedOn((warBuilder) -> {
+        .addAdministrationFeatures()
+        .addSilverpeasExceptionBases()
+        .addPublicationTemplateFeatures()
+        .testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.core.admin.domain.driver.ldapdriver");
           warBuilder
-              .addClasses(AuthenticationBadCredentialException.class, AuthenticationException.class,
+              .addClasses(SensitivityWatchEventModifier.class,
+                  AuthenticationBadCredentialException.class, AuthenticationException.class,
                   LdapConfiguration.class, TokenException.class, FieldTemplate.class, Field.class,
                   TokenRuntimeException.class);
           warBuilder.addAsResource("org/silverpeas/domains/domainLDAP.properties");

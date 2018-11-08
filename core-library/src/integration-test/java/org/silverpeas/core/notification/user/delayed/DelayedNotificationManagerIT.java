@@ -85,6 +85,7 @@ public class DelayedNotificationManagerIT {
         .addSilverpeasExceptionBases()
         .addAdministrationFeatures()
         .addNotificationFeatures()
+        .addPublicationTemplateFeatures()
         .testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.core.notification.user");
           warBuilder.addAsResource("org/silverpeas/core/notification/user/delayed");

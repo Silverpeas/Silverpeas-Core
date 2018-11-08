@@ -23,12 +23,11 @@
  */
 package org.silverpeas.core;
 
-import org.jglue.cdiunit.AdditionalClasses;
-import org.jglue.cdiunit.CdiRunner;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.jboss.weld.junit5.EnableWeld;
+import org.jboss.weld.junit5.WeldInitiator;
+import org.jboss.weld.junit5.WeldSetup;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.enterprise.inject.Any;
@@ -44,22 +43,20 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * This Unit test shows a simple method to fetch all implementations of an interface which is
  * dealing with typed types
  * @author Yohann Chastagnier
  */
-@RunWith(CdiRunner.class)
-@AdditionalClasses({TestApplicationServiceImpl1.class, TestApplicationServiceImpl2.class})
+@UnitTest
+@EnableWeld
 public class ApplicationServiceTest {
 
-  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public CommonAPI4Test getCommonAPI4Test() {
-    return commonAPI4Test;
-  }
+  @WeldSetup
+  public WeldInitiator weld =
+      WeldInitiator.of(TestApplicationServiceImpl1.class, TestApplicationServiceImpl2.class);
 
   @Inject
   @Any
@@ -96,11 +93,13 @@ public class ApplicationServiceTest {
     assertThat(result.get(TestApplicationServiceImpl2.class), is(1));
   }
 
-  @Test(expected = AmbiguousResolutionException.class)
+  @Test
   public void
   getInstanceOfTypedInterfaceWithoutPrecisingTheTypeWhereasSeveralImplementationAreProvided() {
-    assertThat(anyApplicationServiceInstanceGetter.isAmbiguous(), is(true));
-    anyApplicationServiceInstanceGetter.get();
+    assertThrows(AmbiguousResolutionException.class, () -> {
+      assertThat(anyApplicationServiceInstanceGetter.isAmbiguous(), is(true));
+      anyApplicationServiceInstanceGetter.get();
+    });
   }
 
   @Test
@@ -111,10 +110,10 @@ public class ApplicationServiceTest {
     assertThat(precised.isAmbiguous(), is(false));
   }
 
-  @Test(expected = AmbiguousResolutionException.class)
+  @Test
   public void
   provideInstanceOfTypedInterfaceWithoutPrecisingTheTypeWhereasSeveralImplementationAreProvided() {
-    anyApplicationServiceProvider.get();
+    assertThrows(AmbiguousResolutionException.class, () -> anyApplicationServiceProvider.get());
   }
 
   @Test

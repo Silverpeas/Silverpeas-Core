@@ -38,8 +38,8 @@ import org.silverpeas.core.test.rule.DbSetupRule;
 
 import javax.inject.Inject;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author ebonnet
@@ -63,6 +63,7 @@ public class DomainManagerIT {
     return WarBuilder4LibCore.onWarForTestClass(DomainManagerIT.class)
         .addSilverpeasExceptionBases()
         .addAdministrationFeatures()
+        .addPublicationTemplateFeatures()
         .addAsResource("org/silverpeas/core/admin/domain/driver")
         .build();
   }

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.test.rule;
 
-import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -64,21 +64,25 @@ public class MockByReflectionRule implements TestRule {
         try {
           base.evaluate();
         } finally {
-          if (!entitiesOldValues.isEmpty()) {
-            logger.info("Unset mocked fields...");
-          }
-          for (Map.Entry<Object, Map<FieldInjectionDirective, Object>> objectOldValue :
-              entitiesOldValues
-              .entrySet()) {
-            for (Map.Entry<FieldInjectionDirective, Object> oldValue : objectOldValue.getValue()
-                .entrySet()) {
-              FieldInjectionDirective fieldDirective = oldValue.getKey();
-              fieldDirective.write(oldValue.getValue());
-            }
-          }
+          unsetMockedFields();
         }
       }
     };
+  }
+
+  protected void unsetMockedFields() throws Exception {
+    if (!entitiesOldValues.isEmpty()) {
+      logger.info("Unset mocked fields...");
+    }
+    for (Map.Entry<Object, Map<FieldInjectionDirective, Object>> objectOldValue :
+        entitiesOldValues
+            .entrySet()) {
+      for (Map.Entry<FieldInjectionDirective, Object> oldValue : objectOldValue.getValue()
+          .entrySet()) {
+        FieldInjectionDirective fieldDirective = oldValue.getKey();
+        fieldDirective.write(oldValue.getValue());
+      }
+    }
   }
 
   /**

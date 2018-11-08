@@ -23,21 +23,20 @@
  */
 package org.silverpeas.core.util;
 
-import org.junit.Rule;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.ExecutionAttempts.Job;
-import static org.silverpeas.core.util.ExecutionAttempts.retry;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.silverpeas.core.util.ExecutionAttempts.retry;
 
 /**
  * Tests the retry mechanism.
  */
+@EnableSilverTestEnv
 public class ExecutionAttemptsTest {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   /**
    * Test of retry method, of class ExecutionAttempts.
@@ -54,38 +53,42 @@ public class ExecutionAttemptsTest {
     assertThat(exectutedCorrectly(), is(true));
   }
 
-  @Test(expected = RuntimeException.class)
-  public void retryNothingWithNoAttemptsWhenAFailureIsOccuring() throws Exception {
-    try {
-      retry(0, new Job() {
+  @Test
+  public void retryNothingWithNoAttemptsWhenAFailureIsOccuring() {
+    assertThrows(RuntimeException.class, () -> {
+      try {
+        retry(0, new Job() {
 
-        @Override
-        public void execute() throws Exception {
-          if (++attempts == 1) {
-            throw new RuntimeException();
+          @Override
+          public void execute() throws Exception {
+            if (++attempts == 1) {
+              throw new RuntimeException();
+            }
           }
-        }
-      });
-    } finally {
-      assertThat(attempts, is(1));
-    }
+        });
+      } finally {
+        assertThat(attempts, is(1));
+      }
+    });
   }
 
-  @Test(expected = RuntimeException.class)
-  public void retrySeveralTimesWhenAFailureIsOccuring() throws Exception {
-    try {
-      retry(3, new Job() {
+  @Test
+  public void retrySeveralTimesWhenAFailureIsOccuring() {
+    assertThrows(RuntimeException.class, () -> {
+      try {
+        retry(3, new Job() {
 
-        @Override
-        public void execute() throws Exception {
-          if (++attempts <= 3) {
-            throw new RuntimeException();
+          @Override
+          public void execute() throws Exception {
+            if (++attempts <= 3) {
+              throw new RuntimeException();
+            }
           }
-        }
-      });
-    } finally {
-      assertThat(attempts, is(3));
-    }
+        });
+      } finally {
+        assertThat(attempts, is(3));
+      }
+    });
   }
 
   @Test

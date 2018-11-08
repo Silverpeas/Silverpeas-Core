@@ -33,6 +33,9 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
+ * WARNING: All the deprecated classes in this package contain failure in their handling of date
+ * times (bad use of Timezone, etc.)
+ *
  * A datetime, expressed in a given timezone. If no timezone is specified explicitly, then
  * the one of the JVM is used by default.
  * @deprecated Use the java.time API
@@ -95,7 +98,7 @@ public class DateTime extends AbstractDateTemporal<DateTime> {
    * @param aDate the Java date from which a datetime is built.
    */
   public DateTime(final java.util.Date aDate) {
-    super(aDate.getTime());
+    this(aDate, TimeZone.getDefault());
   }
 
   /**
@@ -120,7 +123,9 @@ public class DateTime extends AbstractDateTemporal<DateTime> {
 
   @Override
   public java.util.Date asDate() {
-    return new java.util.Date(getTime());
+    Calendar calendar = Calendar.getInstance(getTimeZone());
+    calendar.setTimeInMillis(getTime());
+    return calendar.getTime();
   }
 
   @Override

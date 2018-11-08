@@ -24,12 +24,15 @@
 package org.silverpeas.web.directory.servlets;
 
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.silverpeas.core.test.UnitTest;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@UnitTest
 public class ImageDisplayTest {
 
   @Test
@@ -39,6 +42,6 @@ public class ImageDisplayTest {
     ImageDisplay display = new ImageDisplay();
     String result = display.getAvatar(request);
     String expectedResult = "nbourakbi.jpg";
-    Assert.assertEquals("Verifying avatar name", expectedResult, result);
+    assertEquals(expectedResult, result, "Verifying avatar name");
   }
 }

@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.mail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.util.StringUtil;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+@UnitTest
 public class ReceiverMailAddressSetTest {
 
   @Test

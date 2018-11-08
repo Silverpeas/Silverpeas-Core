@@ -21,21 +21,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.mail;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+package org.silverpeas.core.test.extention;
+
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.silverpeas.core.test.UnitTest;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Test suite to sequence the unit tests on the file processing API.
- * As each unit tests works on the same file structure, it is required to sequence them so
- * that they work on the filesystem each of their turn.
+ * Enables the Silverpeas environment dedicated to the unit tests. It extends the unit test with
+ * the {@link SilverTestEnv} JUnit extension.
+ * @see SilverTestEnv
  * @author mmoquillon
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    TestSmtpMailSendingMassive.class,
-    TestSmtpMailSending.class
-})
-public class SmtpMailTestSuite {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Documented
+@Inherited
+@UnitTest
+@ExtendWith(SilverTestEnv.class)
+public @interface EnableSilverTestEnv {
 }

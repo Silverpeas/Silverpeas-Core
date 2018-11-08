@@ -27,9 +27,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.file.ReversedFileLineReader;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -48,6 +48,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 public class ReversedFileLineReaderTest {
 
   @Rule

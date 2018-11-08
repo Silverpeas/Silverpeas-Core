@@ -23,22 +23,21 @@
  */
 package org.silverpeas.web.jobdomain;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.FieldMocker;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.core.util.SettingBundle;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.time.ZoneId;
 
 import static java.util.Arrays.asList;
@@ -47,25 +46,23 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@EnableSilverTestEnv
 public class UserRequestDataTest {
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
+  @RegisterExtension
+  FieldMocker mocker = new FieldMocker();
 
   private SettingBundle mockedSettings;
   private HttpServletRequest httpServletRequestMock;
   private HttpRequest httpRequest;
 
-  @Before
+  @BeforeEach
   public void setup() {
-    reflectionRule.setField(DisplayI18NHelper.class, asList("fr", "en", "de"), "languages");
-    reflectionRule.setField(DisplayI18NHelper.class, "en", "defaultLanguage");
-    reflectionRule.setField(DisplayI18NHelper.class, asList("Europe/Paris", "Europe/Berlin"), "zoneIds");
-    reflectionRule.setField(DisplayI18NHelper.class, ZoneId.of("Europe/Berlin"), "defaultZoneId");
-    mockedSettings = reflectionRule.mockField(NotificationManagerSettings.class,
+    mocker.setField(DisplayI18NHelper.class, asList("fr", "en", "de"), "languages");
+    mocker.setField(DisplayI18NHelper.class, "en", "defaultLanguage");
+    mocker.setField(DisplayI18NHelper.class, asList("Europe/Paris", "Europe/Berlin"), "zoneIds");
+    mocker.setField(DisplayI18NHelper.class, ZoneId.of("Europe/Berlin"), "defaultZoneId");
+    mockedSettings = mocker.mockField(NotificationManagerSettings.class,
         SettingBundle.class, "settings");
     httpServletRequestMock = mock(HttpServletRequest.class);
     when(httpServletRequestMock.getMethod()).thenReturn("GET");

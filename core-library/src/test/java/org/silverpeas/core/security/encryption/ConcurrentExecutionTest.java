@@ -24,7 +24,8 @@
 package org.silverpeas.core.security.encryption;
 
 import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
 import java.util.Map;
@@ -41,12 +42,13 @@ import static org.junit.Assert.fail;
  * Unit tests on the execution of the different DefaultContentEncryptionService's methods in a concurrent
  * way.
  */
-public class TestConcurrentExecution extends ContentEncryptionServiceTest {
+public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
 
   // the AES key in hexadecimal stored in the key file.
   private String key;
 
   @Override
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     generateKeyFile();

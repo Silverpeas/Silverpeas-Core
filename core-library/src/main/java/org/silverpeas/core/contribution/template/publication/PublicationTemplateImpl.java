@@ -304,8 +304,8 @@ public class PublicationTemplateImpl implements PublicationTemplate {
             "form.EX_CANT_GET_FORM", null, e);
       }
     } else {
-      String htmlFileName = PublicationTemplateManager.makePath(
-          PublicationTemplateManager.templateDir, currentFileName);
+      PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+      String htmlFileName = templateManager.makePath(currentFileName);
       currentFileName = currentFileName.replaceAll(".html", ".xml");
       templateForm = loadRecordTemplate(currentFileName);
       mergeTemplate(templateForm);
@@ -446,9 +446,8 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     if (!StringUtil.isDefined(xmlFileName)) {
       return null;
     }
-
-    String filePath = PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir,
-        xmlFileName);
+    final PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+    String filePath = templateManager.makePath(xmlFileName);
 
     try {
       Unmarshaller unmarshaller = JAXB_CONTEXT.createUnmarshaller();
@@ -503,8 +502,8 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     // save record into XML file
     try {
       // Format this URL
-      String xmlFilePath = PublicationTemplateManager.makePath(
-          PublicationTemplateManager.templateDir, subDir + xmlFileName);
+      PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+      String xmlFilePath = templateManager.makePath(subDir + xmlFileName);
 
       Marshaller marshaller = JAXB_CONTEXT.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");

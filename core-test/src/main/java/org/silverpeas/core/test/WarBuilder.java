@@ -43,8 +43,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashSet;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 /**
  * This class permits to setup an integration test
@@ -172,6 +174,12 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   }
 
   @Override
+  public WarBuilder<T> deleteClasses(final Class<?>... classes) {
+    war.deleteClasses(classes);
+    return this;
+  }
+
+  @Override
   public WarBuilder<T> addClasses(final Class<?>... classes) throws IllegalArgumentException {
     war.addClasses(classes);
     return this;
@@ -260,9 +268,8 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
         logInfo("Adding completed web.xml");
         war.setWebXML(webXml);
       }
-      File[] libs =
-          Maven.resolver().loadPomFromFile("pom.xml").resolve(mavenDependencies).withTransitivity()
-              .asFile();
+      File[] libs = Stream.of(Maven.resolver().loadPomFromFile("pom.xml").resolve(mavenDependencies).withTransitivity()
+              .asFile()).filter(onLibsToInclude()).toArray(File[]::new);
       war.addAsLibraries(libs);
       war.addAsResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
           "META-INF/services/org.silverpeas.core.util.BeanContainer");
@@ -275,6 +282,17 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
       Logger.getAnonymousLogger().log(Level.SEVERE, "WAR BUILD PROBLEM...", e);
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * Gets a predicate on libraries (represented each of them by a file) to indicate if a library
+   * is accepted or not to be included among the dependencies of a WAR to build for integration
+   * tests ran by Arquillian.
+   * @return a predicate on a file (a given library)
+   */
+  protected Predicate<File> onLibsToInclude() {
+    return f -> !f.getName().startsWith("resteasy") && !f.getName().startsWith("javax") &&
+        !f.getName().contains("hibernate");
   }
 
   private void logInfo(String info) {

@@ -24,44 +24,59 @@
 package org.silverpeas.core.util;
 
 import org.apache.commons.lang3.SerializationException;
-import org.junit.Test;
-import org.silverpeas.core.util.SerializationUtil;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.io.Serializable;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Yohann Chastagnier
  */
+@Execution(ExecutionMode.SAME_THREAD)
 public class SerializationUtilTest {
 
-  private static long commonTime = java.sql.Timestamp.valueOf("2015-01-01 11:32:36.365").getTime();
+  private static final long REFERENCE_DATE_TIME =
+      ZonedDateTime.of(2015, 1, 1, 11, 32, 36, 365_000_000, ZoneId.of("Europe/Paris"))
+          .toEpochSecond();
+
+  private static final String SERIALIZED_OBJECT =
+      "rO0ABXNyAEBvcmcuc2lsdmVycGVhcy5jb3JlLnV0aWwuU2VyaWFsaXphdGlvblV0aWxUZXN0JFNlcmlhbGl6YWJsZUNsYXNzVJ0TJNg44nYCAAJMAARkYXRldAAQTGphdmEvdXRpbC9EYXRlO0wAC3N0cmluZ1ZhbHVldAASTGphdmEvbGFuZy9TdHJpbmc7eHBzcgAOamF2YS51dGlsLkRhdGVoaoEBS1l0GQMAAHhwdwgAAAAAVKUiRHh0ABBzZXJpYWxpemVkU3RyaW5n";
+
+  private static final String SERIALIZED_NULL = "rO0ABXA=";
 
   @Test
   public void serializeAsStringNullObject() {
     String serializedValue = SerializationUtil.serializeAsString(null);
-    assertThat(serializedValue, is("rO0ABXA="));
+    assertThat(serializedValue, is(SERIALIZED_NULL));
   }
 
   @Test
   public void deserializeFromStringNullObject() {
-    String deserializedValue = SerializationUtil.deserializeFromString("rO0ABXA=");
+    String deserializedValue = SerializationUtil.deserializeFromString(SERIALIZED_NULL);
     assertThat(deserializedValue, nullValue());
   }
 
-  @Test(expected = SerializationException.class)
+  @Test
   public void serializeAsStringNotSerializableObject() {
-    SerializationUtil.serializeAsString(new NotSerializableClass());
+    assertThrows(SerializationException.class,
+        () -> SerializationUtil.serializeAsString(new NotSerializableClass()));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void deserializeFromStringNullParameter() {
-    String deserializedValue = SerializationUtil.deserializeFromString(null);
-    assertThat(deserializedValue, nullValue());
+    assertThrows(IllegalArgumentException.class, () -> {
+      String deserializedValue = SerializationUtil.deserializeFromString(null);
+      assertThat(deserializedValue, nullValue());
+    });
   }
 
   @Test
@@ -70,11 +85,7 @@ public class SerializationUtilTest {
     assertThat(serializedValue, is("rO0ABXQABXZhbHVl"));
 
     serializedValue = SerializationUtil.serializeAsString(new SerializableClass());
-    assertThat(serializedValue,
-        is("rO0ABXNyAEBvcmcuc2lsdmVycGVhcy5jb3JlLnV0aWwuU2VyaWFsaXphdGlvblV0aWxUZXN0JFNlcmlhbGl6" +
-            "YWJsZUNsYXNzVJ0TJNg44nYCAAJMAARkYXRldAAQTGphdmEvdXRpbC9EYXRlO0wAC3N0cmluZ1ZhbHVldAA" +
-            "STGphdmEvbGFuZy9TdHJpbmc7eHBzcgAOamF2YS51dGlsLkRhdGVoaoEBS1l0GQMAAHhwdwgAAAFKpQ3bDX" +
-            "h0ABBzZXJpYWxpemVkU3RyaW5n"));
+    assertThat(serializedValue, is(SERIALIZED_OBJECT));
   }
 
   @Test
@@ -82,12 +93,9 @@ public class SerializationUtilTest {
     String deserializedValue = SerializationUtil.deserializeFromString("rO0ABXQABXZhbHVl");
     assertThat(deserializedValue, is("value"));
 
-    SerializableClass deserializedInstance = SerializationUtil.deserializeFromString(
-        "rO0ABXNyAEBvcmcuc2lsdmVycGVhcy5jb3JlLnV0aWwuU2VyaWFsaXphdGlvblV0aWxUZXN0JFNlcmlhbGl6" +
-            "YWJsZUNsYXNzVJ0TJNg44nYCAAJMAARkYXRldAAQTGphdmEvdXRpbC9EYXRlO0wAC3N0cmluZ1ZhbHVldAA" +
-            "STGphdmEvbGFuZy9TdHJpbmc7eHBzcgAOamF2YS51dGlsLkRhdGVoaoEBS1l0GQMAAHhwdwgAAAFKpQ3bDX" +
-            "h0ABBzZXJpYWxpemVkU3RyaW5n");
-    assertThat(deserializedInstance.toString(), is("serializedString|" + commonTime));
+    SerializableClass deserializedInstance =
+        SerializationUtil.deserializeFromString(SERIALIZED_OBJECT);
+    assertThat(deserializedInstance.toString(), is("serializedString|" + REFERENCE_DATE_TIME));
   }
 
   /**
@@ -97,7 +105,7 @@ public class SerializationUtilTest {
     private static final long serialVersionUID = 6097050519496876662L;
 
     private String stringValue = "serializedString";
-    private Date date = new Date(commonTime);
+    private Date date = new Date(REFERENCE_DATE_TIME);
 
     @Override
     public String toString() {
@@ -112,10 +120,7 @@ public class SerializationUtilTest {
     private static final long serialVersionUID = 6097050519496876662L;
 
     private String stringValue = "serializedString";
-    private Thread thread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-      }
+    private Thread thread = new Thread(() -> {
     });
 
     @Override

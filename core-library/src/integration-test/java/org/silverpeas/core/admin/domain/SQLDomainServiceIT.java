@@ -136,6 +136,7 @@ public class SQLDomainServiceIT extends DataSetTest {
         .addSilverpeasExceptionBases()
         .addFileRepositoryFeatures()
         .addAdministrationFeatures()
+        .addPublicationTemplateFeatures()
         .addClasses(FileServerUtils.class)
         .testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.core.admin.domain");

@@ -30,6 +30,8 @@ import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.time.Duration;
 
 /**
+ * WARNING: All the deprecated classes in this package contain failure in their handling of date
+ * times (bad use of Timezone, etc.)
  * User: Yohann Chastagnier
  * Date: 06/12/13
  * @deprecated Use the java.time API

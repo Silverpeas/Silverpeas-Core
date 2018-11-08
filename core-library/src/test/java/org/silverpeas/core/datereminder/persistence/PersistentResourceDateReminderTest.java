@@ -23,46 +23,33 @@
  */
 package org.silverpeas.core.datereminder.persistence;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.datereminder.exception.DateReminderException;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.persistence.datasource.PersistOperation;
-import org.silverpeas.core.persistence.datasource.UpdateOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-
-import javax.enterprise.util.AnnotationLiteral;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.extention.TestManagedMock;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Cécile Bonin
  */
+@EnableSilverTestEnv
+@TestManagedBeans({JpaPersistOperation.class, JpaUpdateOperation.class})
 public class PersistentResourceDateReminderTest {
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Before
-  public void prepareInjection() {
-    UserProvider userProvider = mock(UserProvider.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(userProvider);
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(),
-        new AnnotationLiteral<PersistOperation>() {
-        });
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(),
-        new AnnotationLiteral<UpdateOperation>() {
-        });
+  @BeforeEach
+  public void prepareInjection(@TestManagedMock UserProvider userProvider) {
     when(userProvider.getUser(anyString())).thenAnswer(a -> {
       String id = a.getArgument(0);
       UserDetail user = new UserDetail();
@@ -96,11 +83,11 @@ public class PersistentResourceDateReminderTest {
     assertValidate(dateReminder, true);
 
     dateReminder = initializeDateReminder();
-    dateReminder.setResource(new MyEntityReferenceForUnitTest("42"));
+    dateReminder.setResource(new MyUnitTestEntityReference("42"));
     assertValidate(dateReminder, true);
 
     dateReminder = initializeDateReminder();
-    dateReminder.setResource(new MyEntityReferenceForUnitTest(null));
+    dateReminder.setResource(new MyUnitTestEntityReference(null));
     assertValidate(dateReminder, false);
 
     dateReminder = initializeDateReminder();
@@ -126,7 +113,7 @@ public class PersistentResourceDateReminderTest {
             DateReminderDetail.REMINDER_NOT_PROCESSED, "0", "0");
 
     PersistentResourceDateReminder dateReminder = new PersistentResourceDateReminder();
-    dateReminder.setResource(new MyEntityReferenceForUnitTest("26"));
+    dateReminder.setResource(new MyUnitTestEntityReference("26"));
     dateReminder.setDateReminder(dateReminderDetail);
 
     return dateReminder;

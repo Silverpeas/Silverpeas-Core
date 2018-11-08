@@ -23,11 +23,13 @@
  */
 package org.silverpeas.core.io.media;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
+@UnitTest
 public class DefinitionTest {
 
   @Test

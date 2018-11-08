@@ -26,11 +26,10 @@ package org.silverpeas.core.web.http;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 
@@ -42,19 +41,18 @@ import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@EnableSilverTestEnv
 public class RequestParameterDecoderTest {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   private Date TODAY = DateUtil.getNow();
   private HttpRequest httpRequestMock;
 
-  @Before
+  @BeforeEach
   public void setup() throws ParseException {
     httpRequestMock = mock(HttpRequest.class);
 
@@ -96,8 +94,7 @@ public class RequestParameterDecoderTest {
           when(fileItem.getName()).thenReturn("fileName");
           when(fileItem.getSize()).thenReturn(26L);
           when(fileItem.getContentType()).thenReturn(MediaType.TEXT_PLAIN);
-          when(fileItem.getInputStream())
-              .thenReturn(FileUtils.openInputStream(getImageResource()));
+          when(fileItem.getInputStream()).thenReturn(FileUtils.openInputStream(getImageResource()));
           return new RequestFile(fileItem);
         }
       }
@@ -135,8 +132,7 @@ public class RequestParameterDecoderTest {
     PoJo result = RequestParameterDecoder.decode(httpRequestMock, PoJo.class);
     assertThat(result.getaStringWithoutAnnotation(), nullValue());
     try {
-      assertThat(IOUtils.toByteArray(result.getaRequestFile().getInputStream()),
-          is(FileUtils.readFileToByteArray(getImageResource())));
+      assertThat(IOUtils.toByteArray(result.getaRequestFile().getInputStream()), is(FileUtils.readFileToByteArray(getImageResource())));
     } finally {
       IOUtils.closeQuietly(result.getaRequestFile().getInputStream());
     }
@@ -165,8 +161,9 @@ public class RequestParameterDecoderTest {
     assertThat(result.getOffsetDateTime().toString(), is("2009-01-02T23:54:26Z"));
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void decodeWithNotHandledType() {
-    RequestParameterDecoder.decode(httpRequestMock, PoJoWithNotHandledType.class);
+    assertThrows(RuntimeException.class,
+        () -> RequestParameterDecoder.decode(httpRequestMock, PoJoWithNotHandledType.class));
   }
 }

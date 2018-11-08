@@ -21,26 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.util.html;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-
-public class TestHtmlCleaner {
-
-  @Test
-  public void testBreadCrumbAsString() throws Exception {
-    String html =
-        "<div id=\"breadScrumb\"><a href=\"javascript:goSpace('WA1')\" class=\"space\" id=\"spaceWA1\">test</a> &gt; <a href=\"javascript:goSpace('WA4')\" class=\"space\" id=\"spaceWA4\">Archives</a> > <a href=\"javascript:goSpace('WA5')\" class=\"space\" id=\"spaceWA5\">Tous les composants</a> > <a href=\"Main\" class=\"component\" id=\"gallery74\">Galerie</a> > <a href=\"ViewAlbum?Id=68\" class=\"element\" id=\"68\">Mon Album</a></div>";
-
-    String expectedResult = "test > Archives > Tous les composants > Galerie > Mon Album";
-
-    HtmlCleaner cleaner = new HtmlCleaner();
-    String result = cleaner.cleanHtmlFragment(html);
-    Assert.assertEquals(expectedResult, result);
-  }
-
-}
+/**
+ * Provides classes to facilitate the writing of a both unit and integration tests in Silverpeas,
+ * whatever the testing platform used to run them.
+ * @author mmoquillon
+ */
+package org.silverpeas.core.test;

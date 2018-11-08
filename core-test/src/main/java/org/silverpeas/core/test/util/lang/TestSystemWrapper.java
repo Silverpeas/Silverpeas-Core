@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.test.util.lang;
 
+import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
+import java.io.File;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +59,18 @@ public class TestSystemWrapper implements SystemWrapper {
 
     // Adding by default this system parameter
     setProperty("SILVERPEAS_DATA_HOME", "SilverpeasDataHome4Tests");
+  }
+
+  public void initFor(final Object testInstance) {
+    final File testClassesLocation = FileUtils.getFile(
+        testInstance.getClass().getProtectionDomain().getCodeSource().getLocation().getFile());
+
+    env = new HashMap<>();
+    env.putAll(System.getenv());
+    env.put("SILVERPEAS_HOME", testClassesLocation.getPath());
+
+    // Adding by default this system parameter
+    setProperty("SILVERPEAS_DATA_HOME", testClassesLocation.getPath());
   }
 
   @Override

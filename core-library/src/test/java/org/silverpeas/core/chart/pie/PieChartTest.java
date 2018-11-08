@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.chart.pie;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.chart.ChartType;
 
 import static org.hamcrest.MatcherAssert.assertThat;

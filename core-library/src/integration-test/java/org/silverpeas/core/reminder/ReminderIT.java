@@ -35,8 +35,10 @@ import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessLogger;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.calendar.notification.CalendarContributionReminderUserNotification;
 import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
@@ -108,6 +110,8 @@ public class ReminderIT {
         .addStringTemplateFeatures()
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core-api")
         .addMavenDependencies("org.awaitility:awaitility", "org.antlr:stringtemplate")
+        .addClasses(CalendarContributionReminderUserNotification.class,
+            DefaultContributionReminderUserNotification.class, PublicationTemplateManager.class)
         .testFocusedOn((warBuilder) -> {
           warBuilder.addAsResource("org/silverpeas/core/scheduler/create_quartz_tables.sql")
               .addAsResource("org/silverpeas/core/admin/create_space_components_database.sql")

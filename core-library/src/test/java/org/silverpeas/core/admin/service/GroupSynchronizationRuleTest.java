@@ -25,10 +25,10 @@ package org.silverpeas.core.admin.service;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
@@ -40,7 +40,8 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,6 +63,8 @@ import static org.silverpeas.core.util.CollectionUtil.union;
 /**
  * @author Yohann Chastagnier
  */
+@EnableSilverTestEnv
+@Execution(ExecutionMode.SAME_THREAD)
 public class GroupSynchronizationRuleTest {
 
   private static final String GROUP_ID = "26";
@@ -111,24 +114,17 @@ public class GroupSynchronizationRuleTest {
       .asList(DOMAIN_A_GROUP_0, DOMAIN_A_GROUP_1, DOMAIN_A_GROUP_11, DOMAIN_A_GROUP_111,
           DOMAIN_B_GROUP_0);
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
-
   @SuppressWarnings({"unchecked", "Duplicates"})
-  @Before
-  public void setup() throws Exception {
+  @BeforeEach
+  public void setup(@TestManagedMock UserManager userManager, @TestManagedMock GroupManager groupManager,
+      @TestManagedMock DomainDriverManager domainDriverManager,
+      @TestManagedMock DomainDriverManagerProvider domainDriverManagerProvider,
+      @TestManagedMock Administration admin,
+      @TestManagedMock PublicationTemplateManager templateManager) throws Exception {
     Collections.shuffle(DOMAIN_A_USERS);
     Collections.shuffle(DOMAIN_B_USERS);
     Collections.shuffle(ALL_USERS);
 
-    UserManager userManager = commonAPI4Test.injectIntoMockedBeanContainer(mock(UserManager.class));
-    GroupManager groupManager = commonAPI4Test.injectIntoMockedBeanContainer(mock(GroupManager.class));
-    final DomainDriverManager domainDriverManager = commonAPI4Test.injectIntoMockedBeanContainer(mock(DomainDriverManager.class));
-    DomainDriverManagerProvider domainDriverManagerProvider =
-        commonAPI4Test.injectIntoMockedBeanContainer(mock(DomainDriverManagerProvider.class));
     when(domainDriverManagerProvider.getDomainDriverManager())
         .thenReturn(domainDriverManager);
 
@@ -183,7 +179,6 @@ public class GroupSynchronizationRuleTest {
           return Collections.emptyList();
         });
 
-    Administration admin = commonAPI4Test.injectIntoMockedBeanContainer(mock(Administration.class));
     final DomainDriver domainDriverA = mock(DomainDriver.class);
     final DomainDriver domainDriverB = mock(DomainDriver.class);
 
@@ -231,8 +226,6 @@ public class GroupSynchronizationRuleTest {
               Collectors.toList());
         });
 
-    PublicationTemplateManager templateManager =
-        commonAPI4Test.injectIntoMockedBeanContainer(mock(PublicationTemplateManager.class));
     when(templateManager.getDirectoryTemplate()).thenReturn(null);
   }
 
@@ -251,10 +244,12 @@ public class GroupSynchronizationRuleTest {
   @SuppressWarnings("unchecked")
   @Test
   public void notEscapedParenthesesShouldThrowAnError() throws Exception {
-    exception.expect(GroupSynchronizationRule.Error.class);
-    exception.expectCause(Matchers.any((Class)IllegalArgumentException.class));
-    exception.expectMessage(Matchers.endsWith("expression.operation.malformed"));
-    from(group4Rule(DOMAIN_B, "(DC_ville=Va(le)nce)")).getUserIds();
+    try {
+      from(group4Rule(DOMAIN_B, "(DC_ville=Va(le)nce)")).getUserIds();
+    } catch (GroupSynchronizationRule.Error e) {
+      assertThat(e.getCause(), Matchers.any((Class)IllegalArgumentException.class));
+      assertThat(e.getMessage(), Matchers.endsWith("expression.operation.malformed"));
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -399,9 +394,11 @@ public class GroupSynchronizationRuleTest {
   @Test
   public void getUserIdsFromWrongDomainIdFormatRuleShouldThrowAnNumberFormatException()
       throws Exception {
-    exception.expect(GroupSynchronizationRule.Error.class);
-    exception.expectCause(Matchers.any((Class)NumberFormatException.class));
-    from(group4Rule(SHARED_DOMAIN, "DS_domain = A")).getUserIds();
+    try {
+      from(group4Rule(SHARED_DOMAIN, "DS_domain = A")).getUserIds();
+    } catch (GroupSynchronizationRule.Error e) {
+      assertThat(e.getCause(), Matchers.any((Class)NumberFormatException.class));
+    }
   }
 
   @Test

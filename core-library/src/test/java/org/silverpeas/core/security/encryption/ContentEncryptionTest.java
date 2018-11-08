@@ -23,17 +23,19 @@
  */
 package org.silverpeas.core.security.encryption;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.security.encryption.cipher.Cipher;
 import org.silverpeas.core.security.encryption.cipher.CipherFactory;
 import org.silverpeas.core.security.encryption.cipher.CipherKey;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
 import org.silverpeas.core.util.StringUtil;
-import org.junit.Test;
 
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -41,12 +43,13 @@ import static org.junit.Assert.fail;
 /**
  * Unit tests on the encryption of contents done by the DefaultContentEncryptionService instances.
  */
-public class TestContentEncryption extends ContentEncryptionServiceTest {
+public class ContentEncryptionTest extends ContentEncryptionServiceTest {
 
   // the AES key in hexadecimal stored in the key file.
   private String key;
 
   @Override
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     generateKeyFile();

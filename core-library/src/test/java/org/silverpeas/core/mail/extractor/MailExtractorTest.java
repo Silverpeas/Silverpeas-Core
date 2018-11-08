@@ -23,9 +23,8 @@
  */
 package org.silverpeas.core.mail.extractor;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -36,10 +35,8 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+@EnableSilverTestEnv
 public class MailExtractorTest {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Test
   public void testEMLBrut() throws Exception {

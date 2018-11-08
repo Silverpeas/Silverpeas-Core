@@ -21,21 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.security.encryption;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+package org.silverpeas.core.test.extention;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Test suite to sequence the unit tests on security tools.
- * As each unit tests works on the same static data, it is required to sequence them so
- * that they work on the memory each of their turn.
- * @author Yohann Chastagnier
+ * Annotation to indicate that the annotated method is a provider of a user that has to be used as
+ * the current requester in each unit tests of the test class of the provider. This annotation is
+ * used by the {@link SilverTestEnv} extension and cannot be used without this extension.
+ * @author mmoquillon
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    TestConcurrentExecution.class,
-    TestContentEncryption.class,
-    TestKeyManagement.class
-})
-public class SecurityTestSuite {}
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface RequesterProvider {
+}

@@ -38,9 +38,9 @@ import org.silverpeas.core.test.rule.DbSetupRule;
 
 import javax.inject.Inject;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class DomainIT {
@@ -58,6 +58,7 @@ public class DomainIT {
     return WarBuilder4LibCore.onWarForTestClass(DomainIT.class)
         .addSilverpeasExceptionBases()
         .addAdministrationFeatures()
+        .addPublicationTemplateFeatures()
         .build();
   }
 

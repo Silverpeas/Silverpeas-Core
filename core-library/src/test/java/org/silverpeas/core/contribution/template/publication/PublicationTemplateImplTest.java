@@ -24,21 +24,16 @@
 package org.silverpeas.core.contribution.template.publication;
 
 import org.junit.Assert;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 
-import java.io.File;
-
-import static org.silverpeas.core.contribution.template.publication.Assertion.assertEquals;
 import static java.io.File.separatorChar;
-import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -46,23 +41,10 @@ import static org.junit.Assert.assertThat;
 /**
  * @author ehugonnet
  */
+@EnableSilverTestEnv
+@TestManagedBeans(PublicationTemplateManager.class)
 public class PublicationTemplateImplTest {
   private static final char SEPARATOR = separatorChar;
-
-  private File TEMPLATES_PATH;
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Before
-  public void setUpClass() throws Exception {
-    final File targetDir = getFile(
-        PublicationTemplateImplTest.class.getProtectionDomain().getCodeSource().getLocation()
-            .getFile());
-    TEMPLATES_PATH = getFile(targetDir, "templateRepository");
-
-    PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
-  }
 
   @Test
   public void testGetRecordTemplateSimple() throws Exception {
@@ -81,7 +63,7 @@ public class PublicationTemplateImplTest {
   }
 
   @Test
-  @Ignore
+  @Disabled
   public void testTemplateVisibilityOnApplications() throws Exception {
     // template.xml is only applicable to component kmelia
     GlobalContext globalContext = new GlobalContext("WA1");
@@ -97,7 +79,7 @@ public class PublicationTemplateImplTest {
   }
 
   @Test
-  @Ignore
+  @Disabled
   public void testTemplateVisibilityOnInstances() throws Exception {
     // template.xml is only applicable to only both instances
     GlobalContext globalContext = new GlobalContext("WA1");

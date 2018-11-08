@@ -24,13 +24,12 @@
 
 package org.silverpeas.core.web.admin.migration;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -42,16 +41,14 @@ import static org.mockito.Mockito.when;
 /**
  * @author silveryocha
  */
+@EnableSilverTestEnv
 public class UIUserCacheTest {
 
   private static final String USER_ID = "26";
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
   private User aUser;
   private int nbUsersLoadFromPersistence = 0;
 
-  @Before
+  @BeforeEach
   public void setup() {
     CacheServiceProvider.clearAllThreadCaches();
     aUser = mock(User.class);

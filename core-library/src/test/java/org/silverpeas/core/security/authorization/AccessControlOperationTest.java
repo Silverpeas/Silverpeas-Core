@@ -23,25 +23,21 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.util.EnumSet;
 import java.util.Set;
 
-import static org.silverpeas.core.security.authorization.AccessControlOperation.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.silverpeas.core.security.authorization.AccessControlOperation.*;
 
 /**
  * @author Yohann Chastagnier
  */
+@EnableSilverTestEnv
 public class AccessControlOperationTest {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Test
   public void testGeneralities() {

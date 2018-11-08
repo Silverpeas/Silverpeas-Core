@@ -105,7 +105,9 @@ public class AssignRightIT  {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(AssignRightIT.class).addCommonBasicUtilities()
+    return WarBuilder4LibCore.onWarForTestClass(AssignRightIT.class)
+        .addCommonBasicUtilities()
+        .addPublicationTemplateFeatures()
         .addSilverpeasExceptionBases().testFocusedOn(
             (warBuilder) -> ((WarBuilder4LibCore) warBuilder).addAdministrationFeatures()).build();
   }

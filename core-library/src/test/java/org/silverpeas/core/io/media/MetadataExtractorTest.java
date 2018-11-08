@@ -24,12 +24,12 @@
 package org.silverpeas.core.io.media;
 
 import org.apache.tika.Tika;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -42,6 +42,7 @@ import static org.junit.Assert.assertThat;
 /**
  * @author ehugonnet
  */
+@EnableSilverTestEnv
 public class MetadataExtractorTest {
 
   private final static Tika tika = new Tika();
@@ -56,18 +57,15 @@ public class MetadataExtractorTest {
   private static final File flvFile = getDocumentNamed("/video.flv");
   private static final File mp3File = getDocumentNamed("/sound.mp3");
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
+  @RegisterExtension
+  FieldMocker mocker = new FieldMocker();
 
   private MetadataExtractor instance;
 
-  @Before
+  @BeforeEach
   public void setup() {
     instance = new MetadataExtractor();
-    reflectionRule.setField(instance, tika, "tika");
+    mocker.setField(instance, tika, "tika");
   }
 
   /**

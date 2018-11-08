@@ -23,12 +23,11 @@
  */
 package org.silverpeas.core.util.logging;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.util.MavenTestEnv;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import java.io.IOException;
@@ -43,23 +42,18 @@ import static org.junit.Assert.assertThat;
  * Unit tests on the LogAccessor instances.
  * @author mmoquillon
  */
+@EnableSilverTestEnv
 public class LogsAccessorTest {
 
   private static final String LOG_FILE = "jboss_output.log";
   private static final int LOG_FILE_LINE_COUNT = 1058;
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public MavenTargetDirectoryRule mavenTargetDirectory = new MavenTargetDirectoryRule(this);
-
   private LogsAccessor logsAccessor = new LogsAccessor();
 
-  @Before
-  public void initEnvVariables() {
+  @BeforeEach
+  public void initEnvVariables(MavenTestEnv mavenTestEnv) {
     SystemWrapper.get()
-        .setProperty("SILVERPEAS_LOG", mavenTargetDirectory.getResourceTestDirFile().getPath());
+        .setProperty("SILVERPEAS_LOG", mavenTestEnv.getResourceTestDirFile().getPath());
   }
 
   @Test

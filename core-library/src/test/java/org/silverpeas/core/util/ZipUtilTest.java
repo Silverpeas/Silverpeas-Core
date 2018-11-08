@@ -43,46 +43,40 @@
 */
 package org.silverpeas.core.util;
 
+import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.util.MavenTestEnv;
+
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
-import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.util.ZipUtil;
 
+import static java.io.File.separatorChar;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static java.io.File.separatorChar;
 
 /**
 * @author ehugonnet
 */
+@EnableSilverTestEnv
 public class ZipUtilTest {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
 
   private File tempDir;
 
-  @Before
-  public void setUpClass() throws Exception {
-    tempDir = new File(mavenTargetDirectoryRule.getBuildDirFile(), "zipdir");
+  @BeforeEach
+  public void setUpClass(MavenTestEnv mavenTestEnv) throws Exception {
+    tempDir = new File(mavenTestEnv.getBuildDirFile(), "zipdir");
     tempDir.mkdirs();
   }
 
-  @After
+  @AfterEach
   public void tearDownClass() throws Exception {
     FileUtils.deleteQuietly(tempDir);
   }
@@ -93,8 +87,8 @@ public class ZipUtilTest {
 * @throws Exception
 */
   @Test
-  public void testCompressPathToZip() throws Exception {
-    File path = new File(mavenTargetDirectoryRule.getResourceTestDirFile(), "ZipSample");
+  public void testCompressPathToZip(MavenTestEnv mavenTestEnv) throws Exception {
+    File path = new File(mavenTestEnv.getResourceTestDirFile(), "ZipSample");
     File outfile = new File(tempDir, "testCompressPathToZip.zip");
     ZipUtil.compressPathToZip(path, outfile);
     ZipFile zipFile = new ZipFile(outfile, CharEncoding.UTF_8);
@@ -153,8 +147,8 @@ public class ZipUtilTest {
 * @throws Exception
 */
   @Test
-  public void testExtract() throws Exception {
-    File source = new File(mavenTargetDirectoryRule.getResourceTestDirFile(), "testExtract.zip");
+  public void testExtract(MavenTestEnv mavenTestEnv) throws Exception {
+    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtract.zip");
     File dest = new File(tempDir, "extract");
     dest.mkdirs();
     ZipUtil.extract(source, dest);
@@ -167,8 +161,8 @@ public class ZipUtilTest {
 * @throws Exception
 */
   @Test
-  public void testExtractTargz() throws Exception {
-    File source = new File(mavenTargetDirectoryRule.getResourceTestDirFile(), "testExtract.tar.gz");
+  public void testExtractTarGz(MavenTestEnv mavenTestEnv) throws Exception {
+    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtract.tar.gz");
     File dest = new File(tempDir, "extract-tar");
     dest.mkdirs();
     ZipUtil.extract(source, dest);
@@ -185,8 +179,8 @@ public class ZipUtilTest {
 * @throws Exception
 */
   @Test
-  public void testExtractTarBz2() throws Exception {
-    File source = new File(mavenTargetDirectoryRule.getResourceTestDirFile(), "testExtract.tar.bz2");
+  public void testExtractTarBz2(MavenTestEnv mavenTestEnv) throws Exception {
+    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtract.tar.bz2");
     File dest = new File(tempDir, "extract-bz2");
     dest.mkdirs();
     ZipUtil.extract(source, dest);
@@ -203,8 +197,8 @@ public class ZipUtilTest {
 * @throws Exception
 */
   @Test
-  public void testGetNbFiles() throws Exception {
-    File path = new File(mavenTargetDirectoryRule.getResourceTestDirFile(), "ZipSample");
+  public void testGetNbFiles(MavenTestEnv mavenTestEnv) throws Exception {
+    File path = new File(mavenTestEnv.getResourceTestDirFile(), "ZipSample");
     File outfile = new File(tempDir, "testGetNbFiles.zip");
     ZipUtil.compressPathToZip(path, outfile);
     assertThat(outfile, is(notNullValue()));

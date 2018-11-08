@@ -73,6 +73,7 @@ public class CoordinatesDAOIT {
         .addAdministrationFeatures()
         .addIndexEngineFeatures()
         .addWysiwygFeatures()
+        .addPublicationTemplateFeatures()
         .testFocusedOn(
             war -> war.addPackages(true, "org.silverpeas.core.node")
                 .addAsResource("node-create-database.sql")

@@ -24,7 +24,7 @@
 package org.silverpeas.core.test.rule;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -132,7 +132,7 @@ public class CommonAPI4Test implements TestRule {
     }
   }
 
-  public void setLoggerHandler(final Handler handler) {
+  private void setLoggerHandler(final Handler handler) {
     Logger.getLogger(ROOT_NAMESPACE).setUseParentHandlers(false);
     if (Arrays.stream(Logger.getLogger(ROOT_NAMESPACE).getHandlers())
         .filter(h -> handler.getClass().isInstance(h)).count() == 0) {

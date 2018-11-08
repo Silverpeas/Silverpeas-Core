@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.web.http;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,26 +39,23 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@EnableSilverTestEnv
 public class HttpRequestTest {
   private static final String HTTP_PARAMETER = "paramName";
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
-
+  @RegisterExtension
+  FieldMocker mocker = new FieldMocker();
   private HttpServletRequest httpServletRequestMock;
   private HttpRequest httpRequest;
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception{
     httpServletRequestMock = mock(HttpServletRequest.class);
     when(httpServletRequestMock.getMethod()).thenReturn("GET");
 
     httpRequest = HttpRequest.decorate(httpServletRequestMock);
     SettingBundle generalSettings =
-        reflectionRule.mockField(httpRequest, SettingBundle.class, "generalSettings");
+        mocker.mockField(httpRequest, SettingBundle.class, "generalSettings");
     when(generalSettings.getString("tempPath")).thenReturn(
         File.createTempFile("prefix", "suffix").getPath());
   }

@@ -64,6 +64,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -85,21 +86,17 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
   // All of the PublicationTemplates loaded in silverpeas and identified by their XML file.
   // map templateFileName -> PublicationTemplate to avoid multiple marshalling
   private final Map<String, PublicationTemplateImpl> templates = new HashMap<>();
-  public static String templateDir = null;
-  public static String defaultTemplateDir = null;
+  private String templateDir;
+  private String defaultTemplateDir;
   private JAXBContext JAXB_CONTEXT = null;
-
-  static {
-    SettingBundle templateSettings =
-        ResourceLocator.getSettingBundle("org.silverpeas.publicationTemplate.settings.template");
-
-    templateDir = templateSettings.getString("templateDir");
-    defaultTemplateDir =
-        SystemWrapper.get().getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
-  }
 
   @PostConstruct
   private void setup() {
+    final SettingBundle templateSettings =
+        ResourceLocator.getSettingBundle("org.silverpeas.publicationTemplate.settings.template");
+    templateDir = templateSettings.getString("templateDir");
+    defaultTemplateDir =
+        SystemWrapper.get().getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
     try {
       JAXB_CONTEXT = JAXBContext.newInstance(PublicationTemplateImpl.class);
     } catch (JAXBException e) {
@@ -115,18 +112,33 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     return ServiceProvider.getService(PublicationTemplateManager.class);
   }
 
-  public static String makePath(String dirName, String fileName) {
-    if (!StringUtil.isDefined(dirName)) {
+  /**
+   * Makes the path denoted by the specified file name relative to the template directory.
+   * @param fileName the path of a file or a directory
+   * @return the absolute path of the specified file name in the template directory.
+   */
+  public String makePath(String fileName) {
+    if (!StringUtil.isDefined(templateDir)) {
       return fileName;
     }
     if (!StringUtil.isDefined(fileName)) {
-      return dirName;
+      return templateDir;
     }
+    return Paths.get(templateDir, fileName).toString().replace('\\', '/');
+  }
 
-    if (dirName.charAt(dirName.length() - 1) == '/' || dirName.charAt(dirName.length() - 1) == '\\') {
-      return dirName.replace('\\', '/') + fileName.replace('\\', '/');
+  private String makeDefaultPath(String fileName) {
+    if (!StringUtil.isDefined(defaultTemplateDir)) {
+      return fileName;
     }
-    return dirName.replace('\\', '/') + "/" + fileName.replace('\\', '/');
+    if (!StringUtil.isDefined(fileName)) {
+      return defaultTemplateDir;
+    }
+    return Paths.get(defaultTemplateDir, fileName).toString().replace('\\', '/');
+  }
+
+  public String getTemplateDirectoryPath() {
+    return this.templateDir;
   }
 
   public GenericRecordSet addDynamicPublicationTemplate(String externalId, String templateFileName)
@@ -227,12 +239,12 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
       if (publicationTemplate != null) {
         return publicationTemplate.basicClone();
       }
-      String xmlFilePath = makePath(templateDir, xmlFileName);
+      String xmlFilePath = makePath(xmlFileName);
 
       File xmlFile = new File(xmlFilePath);
       if (!xmlFile.exists()) {
         // file does not exist in directory, try to locate it in default one
-        xmlFilePath = makePath(defaultTemplateDir, xmlFileName);
+        xmlFilePath = makeDefaultPath(xmlFileName);
         xmlFile = new File(xmlFilePath);
       }
 
@@ -281,8 +293,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     // save template into XML file
     try {
       // Format this URL
-      String xmlFilePath = makePath(templateDir, xmlFileName);
-
+      String xmlFilePath = makePath(xmlFileName);
       Marshaller marshaller = JAXB_CONTEXT.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

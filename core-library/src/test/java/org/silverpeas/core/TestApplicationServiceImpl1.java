@@ -23,11 +23,8 @@
  */
 package org.silverpeas.core;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
-
-import javax.inject.Named;
 
 /**
  * @author Yohann Chastagnier

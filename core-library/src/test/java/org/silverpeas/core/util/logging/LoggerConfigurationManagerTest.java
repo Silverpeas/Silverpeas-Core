@@ -23,18 +23,10 @@
  */
 package org.silverpeas.core.util.logging;
 
-import org.jglue.cdiunit.CdiRunner;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
@@ -45,35 +37,11 @@ import static org.junit.Assert.assertThat;
  * Unit test on the loading of the logging configurations (stored in properties files).
  * @author miguel
  */
-@RunWith(CdiRunner.class)
+@EnableSilverTestEnv
 public class LoggerConfigurationManagerTest {
 
-  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-  private MavenTargetDirectoryRule mavenTargetDirectory = new MavenTargetDirectoryRule(this);
-
-  @Rule
-  public CommonAPI4Test getCommonAPI4Test() {
-    return commonAPI4Test;
-  }
-
-  @Rule
-  public MavenTargetDirectoryRule getMavenTargetDirectory() {
-    return mavenTargetDirectory;
-  }
-
-  @Inject
-  private Provider<LoggerConfigurationManager> managerProvider;
-
+  @TestedBean
   private LoggerConfigurationManager manager;
-
-  @Before
-  public void initEnvVariables() {
-    SystemWrapper.get()
-        .getenv()
-        .put("SILVERPEAS_HOME", mavenTargetDirectory.getResourceTestDirFile().getPath());
-    System.out.println("INJECT THE TRUE LOGGER CONFIGURATION MANAGER");
-    commonAPI4Test.injectIntoMockedBeanContainer(managerProvider.get());
-  }
 
   @Test
   public void allConfigurationFilesAreLoaded() {

@@ -23,17 +23,17 @@
  */
 package org.silverpeas.core.util;
 
-import org.junit.Rule;
-import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.exception.RelativeFileAccessException;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.util.file.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,20 +43,24 @@ import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author ehugonnet
  */
+@EnableSilverTestEnv
 public class FileUtilTest {
-
-  @Rule
-  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
 
   private File rootFolder;
 
-  @Before
+  @BeforeEach
+  public void cleanUPCaches() {
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
+    CacheServiceProvider.getThreadCacheService().clearAllCaches();
+  }
+
+  @BeforeEach
   public void setUp() throws IOException {
     rootFolder = File.createTempFile("root", "Folder");
     if (rootFolder.exists()) {
@@ -95,7 +99,7 @@ public class FileUtilTest {
     assertThat(actualFiles, containsInAnyOrder(expectedFiles));
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     FileUtils.deleteQuietly(rootFolder);
   }
@@ -155,7 +159,7 @@ public class FileUtilTest {
     assertTrue(FileUtil.isArchive("toto.tgz"));
   }
 
-  @Ignore("This test is not multi-platform compliant")
+  @Disabled("This test is not multi-platform compliant")
   @Test
   public void testConvertFilePath() {
     String result = FileUtil.convertFilePath(new File("/", "file\r \\' - '' .pdf"));
@@ -180,24 +184,24 @@ public class FileUtilTest {
     FileUtil.assertPathNotRelative("klkl/dsdsd/.Sdsd/dlsls.ld..");
   }
 
-  @Test(expected = RelativeFileAccessException.class)
+  @Test
   public void testCheckPathNotRelativeError1() throws RelativeFileAccessException {
-    FileUtil.assertPathNotRelative("../");
+    assertThrows(RelativeFileAccessException.class, () -> FileUtil.assertPathNotRelative("../"));
   }
 
-  @Test(expected = RelativeFileAccessException.class)
+  @Test
   public void testCheckPathNotRelativeError2() throws RelativeFileAccessException {
-    FileUtil.assertPathNotRelative("..\\");
+    assertThrows(RelativeFileAccessException.class, () -> FileUtil.assertPathNotRelative("..\\"));
   }
 
-  @Test(expected = RelativeFileAccessException.class)
+  @Test
   public void testCheckPathNotRelativeError3() throws RelativeFileAccessException {
-    FileUtil.assertPathNotRelative("/..");
+    assertThrows(RelativeFileAccessException.class, () -> FileUtil.assertPathNotRelative("/.."));
   }
 
-  @Test(expected = RelativeFileAccessException.class)
+  @Test
   public void testCheckPathNotRelativeError4() throws RelativeFileAccessException {
-    FileUtil.assertPathNotRelative("\\..");
+    assertThrows(RelativeFileAccessException.class, () -> FileUtil.assertPathNotRelative("\\.."));
   }
 
   @Test
@@ -265,9 +269,10 @@ public class FileUtilTest {
     FileUtil.validateFilename("myFileName", ".");
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testValidateFileNameKo() throws Exception {
-    FileUtil.validateFilename(".." + File.separator, ".");
+    assertThrows(IllegalStateException.class,
+        () -> FileUtil.validateFilename(".." + File.separator, "."));
   }
 
 }

@@ -24,18 +24,17 @@
 
 package org.silverpeas.core.security;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
@@ -58,12 +57,12 @@ public class SecurableRequestCacheTest {
     return user;
   }
 
-  @Before
+  @BeforeEach
   public void setup() {
     authorizedSupplierCallCount = new ArrayList<>();
   }
 
-  @After
+  @AfterEach
   public void clear() {
     getRequestCacheService().clearAllCaches();
   }

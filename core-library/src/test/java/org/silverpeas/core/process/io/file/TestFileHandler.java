@@ -30,6 +30,7 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.junit.Test;
 import org.silverpeas.core.process.io.IOAccess;
 import org.silverpeas.core.process.io.file.exception.FileHandlerException;
+import org.silverpeas.core.test.UnitTest;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -52,6 +53,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 public class TestFileHandler extends AbstractHandledFileTest {
 
   /*

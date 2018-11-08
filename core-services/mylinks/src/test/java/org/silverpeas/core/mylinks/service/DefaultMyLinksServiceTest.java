@@ -24,16 +24,19 @@
 package org.silverpeas.core.mylinks.service;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.mylinks.dao.LinkDAO;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.persistence.jdbc.ConnectionPool;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.FieldMocker;
+import org.silverpeas.core.test.extention.RequesterProvider;
+import org.silverpeas.core.test.extention.TestManagedMock;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -46,27 +49,27 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+@EnableSilverTestEnv
 public class DefaultMyLinksServiceTest {
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
+  @RegisterExtension
+  FieldMocker mocker = new FieldMocker();
 
   private DefaultMyLinksService service;
   private LinkDAO dao;
 
-  @Before
-  public void setup() throws Exception {
-    service = spy(new DefaultMyLinksService());
-    ConnectionPool pool = mock(ConnectionPool.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(pool);
-    when(pool.getDataSourceConnection()).thenReturn(mock(Connection.class));
+  @RequesterProvider
+  public User getCurrentRequester() {
     UserDetail user = new UserDetail();
     user.setId("32");
-    commonAPI4Test.setCurrentRequester(user);
-    dao = reflectionRule.mockField(LinkDAO.class, LinkDAO.class, "linkDAO");
+    return user;
+  }
+
+  @BeforeEach
+  public void setup(@TestManagedMock ConnectionPool pool) throws Exception {
+    service = spy(new DefaultMyLinksService());
+    when(pool.getDataSourceConnection()).thenReturn(mock(Connection.class));
+    dao = mocker.mockField(LinkDAO.class, LinkDAO.class, "linkDAO");
   }
 
   @Test

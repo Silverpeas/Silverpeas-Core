@@ -24,18 +24,18 @@
 package org.silverpeas.core.notification.user.client;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.FieldMocker;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.util.Arrays;
@@ -44,36 +44,29 @@ import java.util.Collection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@EnableSilverTestEnv
 public class NotificationMetaDataTest {
 
   private static final String USER_SENDER = "2406";
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
-
+  @RegisterExtension
+  FieldMocker mocker = new FieldMocker();
   private NotificationMetaData current;
   private SettingBundle mockedSettings;
 
-  @Before
-  public void setup() throws Exception {
+  @BeforeEach
+  public void setup(@TestManagedMock OrganizationController controller) throws Exception {
     current = new NotificationMetaData();
 
     // Settings
-    mockedSettings = reflectionRule.mockField(NotificationManagerSettings.class,
+    mockedSettings = mocker.mockField(NotificationManagerSettings.class,
         SettingBundle.class, "settings");
 
-    // Organization controller
-    final OrganizationController mockedOrganizationController =
-        commonAPI4Test.injectIntoMockedBeanContainer(mock(OrganizationController.class));
     when(UserProvider.get().getUser(anyString())).thenAnswer(
         invocation -> new UserDetail());
-    when(mockedOrganizationController.getUserDetail(anyString())).thenAnswer(
+    when(controller.getUserDetail(anyString())).thenAnswer(
         invocation -> new UserDetail());
     when(GroupProvider.get().getGroup(anyString())).thenAnswer(invocation -> {
       GroupDetail group = new GroupDetail();
@@ -81,7 +74,7 @@ public class NotificationMetaDataTest {
       group.setUserIds(new String[]{"1", "2", "3", "4", "5"});
       return group;
     });
-    when(mockedOrganizationController.getGroup(anyString())).thenAnswer(invocation -> {
+    when(controller.getGroup(anyString())).thenAnswer(invocation -> {
       GroupDetail group = new GroupDetail();
       group.setId((String) invocation.getArguments()[0]);
       group.setUserIds(new String[] {"1", "2", "3", "4", "5"});
@@ -90,17 +83,13 @@ public class NotificationMetaDataTest {
 
     // Notification Manager
     final NotificationManager mockedNotificationManager =
-        reflectionRule.mockField(current, NotificationManager.class, "notificationManager");
+        mocker.mockField(current, NotificationManager.class, "notificationManager");
     when(mockedNotificationManager.getUsersFromGroup(anyString()))
-        .thenAnswer(new Answer<Collection<UserRecipient>>() {
-          @Override
-          public Collection<UserRecipient> answer(final InvocationOnMock invocation)
-              throws Throwable {
-            String groupId = (String) invocation.getArguments()[0];
-            return Arrays
-                .asList(new UserRecipient(groupId + "_1"), new UserRecipient(groupId + "_2"),
-                    new UserRecipient(groupId + "_3"));
-          }
+        .thenAnswer((Answer<Collection<UserRecipient>>) invocation -> {
+          String groupId = (String) invocation.getArguments()[0];
+          return Arrays
+              .asList(new UserRecipient(groupId + "_1"), new UserRecipient(groupId + "_2"),
+                  new UserRecipient(groupId + "_3"));
         });
   }
 

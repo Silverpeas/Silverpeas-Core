@@ -21,23 +21,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.datereminder.persistence;
 
-import org.silverpeas.core.persistence.EntityReference;
+package org.silverpeas.core.test.extention;
+
+import org.silverpeas.core.util.logging.Level;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- *
- * @author Cécile Bonin
+ * Annotation to specify a logger level. This annotation is managed by the {@link LoggerExtension}
+ * JUnit 5 extension. Be cautious: the annotation cannot be used in
+ * {@link org.junit.jupiter.api.BeforeEach} and in @{@link org.junit.jupiter.api.BeforeAll}
+ * annotated methods.
+ * @author mmoquillon
  */
-public class MyEntityReferenceForUnitTest extends EntityReference<String> {
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface LoggerLevel {
 
-  public MyEntityReferenceForUnitTest(String id) {
-    super(id);
-  }
-
-  @Override
-  public String getEntity() {
-    return "MyEntity";
-  }
-
+  Level value();
 }

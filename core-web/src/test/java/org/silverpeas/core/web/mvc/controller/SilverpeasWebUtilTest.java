@@ -27,16 +27,13 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
-import org.jglue.cdiunit.CdiRunner;
-import org.jglue.cdiunit.internal.servlet.MockHttpServletRequestImpl;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.extention.TestedBean;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -48,14 +45,13 @@ import static org.mockito.Mockito.*;
  *
  * @author ehugonnet
  */
-@RunWith(CdiRunner.class)
+@EnableSilverTestEnv
 public class SilverpeasWebUtilTest {
 
-  @Produces
-  @Mock
+  @TestManagedMock
   private OrganizationController mockedOrganizationController;
 
-  @Inject
+  @TestedBean
   private SilverpeasWebUtil util;
 
   private OrganizationController getOrganisationController() {
@@ -81,9 +77,8 @@ public class SilverpeasWebUtilTest {
    */
   @Test
   public void getComponentIdForURLWithFunction() {
-    MockHttpServletRequestImpl request = new MockHttpServletRequestImpl();
-    request.setMethod("GET");
-    request.setPathInfo("/toolbox8/ViewAttachments");
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    when(request.getPathInfo()).thenReturn("/toolbox8/ViewAttachments");
     String[] expResult = new String[]{null, "toolbox8", "ViewAttachments"};
     String[] result = util.getComponentId(request);
     assertArrayEquals(expResult, result);
@@ -91,9 +86,8 @@ public class SilverpeasWebUtilTest {
 
   @Test
   public void getComponentIdForMainURL() {
-    MockHttpServletRequestImpl request = new MockHttpServletRequestImpl();
-    request.setMethod("GET");
-    request.setPathInfo("/toolbox8/Main");
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    when(request.getPathInfo()).thenReturn("/toolbox8/Main");
 
     OrganizationController controller = getOrganisationController();
     ComponentInstLight component = mock(ComponentInstLight.class);
@@ -107,9 +101,9 @@ public class SilverpeasWebUtilTest {
 
   @Test
   public void getComponentIdWithNullPathInfo() {
-    MockHttpServletRequestImpl request = new MockHttpServletRequestImpl();
-    request.setMethod("GET");
-    request.setRequestURL("http://localhost:8000/silverpeas/Rtoolbox/toolbox8/Main");
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    when(request.getRequestURL()).thenReturn(
+        new StringBuffer("http://localhost:8000/silverpeas/Rtoolbox/toolbox8/Main"));
     String[] result = util.getComponentId(request);
     String[] expResult = new String[]{"-1", "-1", "Error"};
     assertArrayEquals(expResult, result);
@@ -117,9 +111,8 @@ public class SilverpeasWebUtilTest {
 
   @Test
   public void getComponentIdWithJspPathInfo() {
-    MockHttpServletRequestImpl request = new MockHttpServletRequestImpl();
-    request.setMethod("GET");
-    request.setPathInfo("/jsp/javaScript/forums.js");
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    when(request.getPathInfo()).thenReturn("/jsp/javaScript/forums.js");
     String[] result = util.getComponentId(request);
     String[] expResult = new String[]{null, null, "javaScript/forums.js"};
     assertArrayEquals(expResult, result);

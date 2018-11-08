@@ -24,11 +24,10 @@
 package org.silverpeas.core.util;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.File;
@@ -39,15 +38,14 @@ import static org.apache.commons.io.FileUtils.listFiles;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * User: Yohann Chastagnier
  * Date: 08/07/13
  */
-public class TestPdfUtil {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+@EnableSilverTestEnv
+public class PdfUtilTest {
 
   private final static String STAMP_FILE_NAME = "draft.png";
   private final static String WATERMARK_FILE_NAME = "draft.png";
@@ -56,13 +54,13 @@ public class TestPdfUtil {
 
   private File rootTempPath;
 
-  @Before
+  @BeforeEach
   public void beforeTest() throws Exception {
     rootTempPath = new File(FileRepositoryManager.getTemporaryPath());
     cleanTest();
   }
 
-  @After
+  @AfterEach
   public void afterTest() throws Exception {
     cleanTest();
   }
@@ -78,34 +76,42 @@ public class TestPdfUtil {
     }
   }
 
-  @Test(expected = RuntimeException.class)
-  public void testStampWithDirectorySource() throws Exception {
-    File pdfSource = getTestFile(STAMP_FILE_NAME).getParentFile();
-    File stamp = getTestFile(STAMP_FILE_NAME);
-    File pdfDestination = FileUtils.getFile(rootTempPath, RESULT_PDF_FILE_NAME);
-    PdfUtil.stamp(pdfSource, stamp, pdfDestination);
+  @Test
+  public void testStampWithDirectorySource() {
+    assertThrows(RuntimeException.class, () -> {
+      File pdfSource = getTestFile(STAMP_FILE_NAME).getParentFile();
+      File stamp = getTestFile(STAMP_FILE_NAME);
+      File pdfDestination = FileUtils.getFile(rootTempPath, RESULT_PDF_FILE_NAME);
+      PdfUtil.stamp(pdfSource, stamp, pdfDestination);
+    });
   }
 
-  @Test(expected = RuntimeException.class)
-  public void testStampWithNonPdfSource() throws Exception {
-    File pdfSource = getTestFile(STAMP_FILE_NAME);
-    File stamp = getTestFile(STAMP_FILE_NAME);
-    File pdfDestination = FileUtils.getFile(rootTempPath, RESULT_PDF_FILE_NAME);
-    PdfUtil.stamp(pdfSource, stamp, pdfDestination);
+  @Test
+  public void testStampWithNonPdfSource() {
+    assertThrows(RuntimeException.class, () -> {
+      File pdfSource = getTestFile(STAMP_FILE_NAME);
+      File stamp = getTestFile(STAMP_FILE_NAME);
+      File pdfDestination = FileUtils.getFile(rootTempPath, RESULT_PDF_FILE_NAME);
+      PdfUtil.stamp(pdfSource, stamp, pdfDestination);
+    });
   }
 
-  @Test(expected = RuntimeException.class)
-  public void testStampWithNullSource() throws Exception {
-    File stamp = getTestFile(STAMP_FILE_NAME);
-    File pdfDestination = FileUtils.getFile(rootTempPath, RESULT_PDF_FILE_NAME);
-    PdfUtil.stamp(null, stamp, pdfDestination);
+  @Test
+  public void testStampWithNullSource() {
+    assertThrows(RuntimeException.class, () -> {
+      File stamp = getTestFile(STAMP_FILE_NAME);
+      File pdfDestination = FileUtils.getFile(rootTempPath, RESULT_PDF_FILE_NAME);
+      PdfUtil.stamp(null, stamp, pdfDestination);
+    });
   }
 
-  @Test(expected = RuntimeException.class)
-  public void testStampWithNonImageFile() throws Exception {
-    File pdfSource = getTestFile(PDF_FILE_NAME);
-    File pdfDestination = FileUtils.getFile(rootTempPath, RESULT_PDF_FILE_NAME);
-    PdfUtil.stamp(pdfSource, pdfSource, pdfDestination);
+  @Test
+  public void testStampWithNonImageFile() {
+    assertThrows(RuntimeException.class, () -> {
+      File pdfSource = getTestFile(PDF_FILE_NAME);
+      File pdfDestination = FileUtils.getFile(rootTempPath, RESULT_PDF_FILE_NAME);
+      PdfUtil.stamp(pdfSource, pdfSource, pdfDestination);
+    });
   }
 
   @Test

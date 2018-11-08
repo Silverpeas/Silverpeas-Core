@@ -26,6 +26,9 @@ package org.silverpeas.web.test;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.test.WarBuilder;
 
+import java.io.File;
+import java.util.function.Predicate;
+
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the
  * definition of common archive part definitions.
@@ -70,4 +73,8 @@ public class WarBuilder4WarCore extends WarBuilder<WarBuilder4WarCore> {
     return warBuilder;
   }
 
+  @Override
+  protected Predicate<File> onLibsToInclude() {
+    return f -> !f.getName().startsWith("javax") && !f.getName().contains("hibernate");
+  }
 }

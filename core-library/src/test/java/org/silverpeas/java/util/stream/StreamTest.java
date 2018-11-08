@@ -30,6 +30,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
+import org.silverpeas.core.test.UnitTest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 @BenchmarkMethodChart
 @BenchmarkOptions(benchmarkRounds = 1000, warmupRounds = 1000)
 public class StreamTest {

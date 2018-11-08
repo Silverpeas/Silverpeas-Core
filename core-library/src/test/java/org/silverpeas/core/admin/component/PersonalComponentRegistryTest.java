@@ -28,19 +28,13 @@
  */
 package org.silverpeas.core.admin.component;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
-import java.io.File;
 import java.util.Optional;
 
-import static org.apache.commons.io.FileUtils.getFile;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -48,46 +42,26 @@ import static org.junit.Assert.assertThat;
  * Unit test on the services provided by the PersonalComponentRegistry.
  * @author Yohann Chastagnier
  */
+@EnableSilverTestEnv
 public class PersonalComponentRegistryTest {
-
-  private static File TEMPLATES_PATH;
-  private static File TARGET_DIR;
-
-  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   private PersonalComponentRegistry registry;
 
-  @BeforeClass
-  public static void generalSetup() {
-    TARGET_DIR = getFile(
-        PersonalComponentRegistryTest.class.getProtectionDomain().getCodeSource().getLocation()
-            .getFile());
-    TEMPLATES_PATH = getFile(TARGET_DIR, "templateRepository");
-  }
-
-  @Rule
-  public CommonAPI4Test getCommonAPI4Test() {
-    return commonAPI4Test;
-  }
-
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
-    // Context
-    PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
-    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", TARGET_DIR.getPath());
     // Tested registry
     registry = new PersonalComponentRegistry();
     registry.init();
   }
 
   @Test
-  public void getAllPersonalComponentShouldWork() throws Exception {
+  public void getAllPersonalComponentShouldWork() {
     assertThat(registry.getAllPersonalComponents().size(), is(2));
   }
 
   @SuppressWarnings("OptionalGetWithoutIsPresent")
   @Test
-  public void getUserCalendarPersonalComponentShouldWork() throws Exception {
+  public void getUserCalendarPersonalComponentShouldWork() {
     Optional<PersonalComponent> result = registry.getPersonalComponent("userCalendar");
     assertThat(result.isPresent(), is(true));
 
@@ -108,7 +82,7 @@ public class PersonalComponentRegistryTest {
   }
 
   @Test
-  public void getUnknownPersonalComponentShouldReturnOptionalEmptyResult() throws Exception {
+  public void getUnknownPersonalComponentShouldReturnOptionalEmptyResult() {
     Optional<PersonalComponent> result = registry.getPersonalComponent("unknown");
     assertThat(result.isPresent(), is(false));
   }

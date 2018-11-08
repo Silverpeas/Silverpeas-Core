@@ -40,6 +40,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.util.CollectionUtil;
@@ -58,6 +59,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author Yohann Chastagnier
  */
+@UnitTest
 public class TestPublicationAccessController {
 
 

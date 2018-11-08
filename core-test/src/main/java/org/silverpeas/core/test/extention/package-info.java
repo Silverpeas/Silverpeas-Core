@@ -21,28 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.contribution.template.publication;
-
-import org.silverpeas.core.contribution.content.form.FormException;
-import java.util.Arrays;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.junit.Assert;
 
 /**
- * Module gathering all of the assertion operation on the objects handled in publication template.
+ * Provides various JUnit 5 extensions to prepare and configure the context of execution of unit
+ * tests.
+ * @author mmoquillon
  */
-public final class Assertion {
-
-  public static void assertEquals(final RecordTemplate expected, final RecordTemplate actual) {
-    Assert.assertEquals(Arrays.asList(expected.getFieldNames()),
-            Arrays.asList(actual.getFieldNames()));
-    try {
-      Assert.assertEquals(Arrays.asList(expected.getFieldTemplates()),
-              Arrays.asList(actual.getFieldTemplates()));
-    } catch (FormException ex) {
-      Assert.fail(ex.getMessage());
-    }
-  }
-
-
-}
+package org.silverpeas.core.test.extention;

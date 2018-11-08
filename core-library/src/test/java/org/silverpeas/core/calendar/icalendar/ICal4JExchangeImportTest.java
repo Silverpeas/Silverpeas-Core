@@ -27,12 +27,8 @@ package org.silverpeas.core.calendar.icalendar;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jglue.cdiunit.AdditionalPackages;
-import org.jglue.cdiunit.CdiRunner;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.calendar.Attendee;
@@ -44,22 +40,22 @@ import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.VisibilityLevel;
+import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JImporter;
+import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.datasource.OperationContext;
-import org.silverpeas.core.persistence.datasource.PersistOperation;
-import org.silverpeas.core.persistence.datasource.UpdateOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBean;
+import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.extention.TestedBean;
 import org.silverpeas.core.util.StringUtil;
 
-import javax.enterprise.util.AnnotationLiteral;
-import javax.inject.Inject;
-import javax.inject.Provider;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -76,9 +72,9 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.core.util.CollectionUtil.asList;
@@ -87,17 +83,17 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 /**
  * @author Yohann Chastagnier
  */
-@RunWith(CdiRunner.class)
-@AdditionalPackages({ICal4JImporter.class})
+@EnableSilverTestEnv
+@TestManagedBeans({JpaPersistOperation.class, JpaUpdateOperation.class})
 public class ICal4JExchangeImportTest {
 
-  private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Inject
-  private Provider<ICalendarImporter> iCalendarImporterProvider;
-
+  @TestManagedBean
+  private ICal4JDateCodec dateCodec = new ICal4JDateCodec();
+  @TestManagedBean
+  private ICal4JRecurrenceCodec recurrenceCodec = new ICal4JRecurrenceCodec(dateCodec);
+  @TestedBean
+  private ICal4JImporter iCalendarImporter;
   private User creator;
-  private ICalendarImporter iCalendarImporter;
 
   private BiConsumer<Pair<CalendarEvent, List<CalendarEventOccurrence>>, Pair<CalendarEvent,
       List<CalendarEventOccurrence>>>
@@ -109,25 +105,8 @@ public class ICal4JExchangeImportTest {
     verify(actualEvent, expectedEvent, actualOccurrences, expectedOccurrences);
   };
 
-  @Rule
-  public CommonAPI4Test getCommonAPI4Test() {
-    return commonAPI4Test;
-  }
-
-  @SuppressWarnings("Duplicates")
-  @Before
+  @BeforeEach
   public void setup() {
-    iCalendarImporter = iCalendarImporterProvider.get();
-    assertThat(iCalendarImporter, instanceOf(ICal4JImporter.class));
-    commonAPI4Test.injectIntoMockedBeanContainer(iCalendarImporter);
-
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(),
-        new AnnotationLiteral<PersistOperation>() {
-        });
-    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(),
-        new AnnotationLiteral<UpdateOperation>() {
-        });
-
     creator = mock(User.class);
     when(creator.getId()).thenReturn("creatorId");
     when(creator.getDisplayedName()).thenReturn("Creator Test");
@@ -137,15 +116,17 @@ public class ICal4JExchangeImportTest {
     OperationContext.fromUser("0");
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void undefinedListOfEvents() throws ImportException {
+  @Test
+  public void undefinedListOfEvents() {
+    assertThrows(IllegalArgumentException.class, () ->
     iCalendarImporter.imports(ImportDescriptor.withInputStream(null),
-        events -> Function.identity());
+        events -> Function.identity()));
   }
 
-  @Test(expected = ImportException.class)
-  public void emptyFile() throws ImportException {
-    importAndVerifyResult("ical4j_import_empty_file.txt", emptyList(), defaultAssert);
+  @Test
+  public void emptyFile() {
+    assertThrows(ImportException.class,
+        () -> importAndVerifyResult("ical4j_import_empty_file.txt", emptyList(), defaultAssert));
   }
 
   @Test

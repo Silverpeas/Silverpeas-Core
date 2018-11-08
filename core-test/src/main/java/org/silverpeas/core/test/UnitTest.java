@@ -21,23 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.silverpeas.core.io.file.TestAttachmentUrlLinkProcessor;
-import org.silverpeas.core.contribution.content.wysiwyg.service.TestWysiwygContentTransformer;
-import org.silverpeas.core.contribution.content.wysiwyg.service.process.TestMailContentProcess;
+package org.silverpeas.core.test;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Test suite to sequence the unit tests on the file processing API.
- * As each unit tests works on the same file structure, it is required to sequence them so
- * that they work on the filesystem each of their turn.
+ * Annotation to mark a test as being a unit test. It is used by the integration tests for example
+ * to avoid of loading any unit tests during a package scanning.
  * @author mmoquillon
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    TestWysiwygContentTransformer.class,
-    TestMailContentProcess.class,
-    TestAttachmentUrlLinkProcessor.class})
-public class ImageResourceAndResizingTestSuite {}
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface UnitTest {
+}

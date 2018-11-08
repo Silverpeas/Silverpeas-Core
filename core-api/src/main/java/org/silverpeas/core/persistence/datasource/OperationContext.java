@@ -28,7 +28,6 @@ import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.enterprise.util.AnnotationLiteral;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -218,24 +217,17 @@ public class OperationContext {
   @SuppressWarnings("unchecked")
   public <T extends PersistenceOperation> T getPersistenceOperation(
       final Class<T> operationType) {
-    final AnnotationLiteral<?> qualifier;
     Annotation annotation = operationType.getAnnotation(UpdateOperation.class);
-    if (annotation != null) {
-      qualifier = new AnnotationLiteral<UpdateOperation>() {
-      };
-    } else {
+    if (annotation == null) {
       annotation = operationType.getAnnotation(PersistOperation.class);
-      if (annotation != null) {
-        qualifier = new AnnotationLiteral<PersistOperation>() {
-        };
-      } else {
+      if (annotation == null) {
         return null;
       }
     }
 
-    final Annotation operation = annotation;
+    final Annotation qualifier = annotation;
     return (T) persistenceOperations.stream()
-        .filter(c -> c.getClass().getAnnotation(operation.annotationType()) != null &&
+        .filter(c -> c.getClass().getAnnotation(qualifier.annotationType()) != null &&
             c.getClass().equals(operationType))
         .findFirst()
         .orElseGet(() -> {

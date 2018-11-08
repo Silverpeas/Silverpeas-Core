@@ -23,11 +23,13 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+@UnitTest
 public class AbstractButtonTest {
 
   @Test

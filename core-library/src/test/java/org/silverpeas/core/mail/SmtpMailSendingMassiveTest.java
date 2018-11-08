@@ -23,17 +23,24 @@
  */
 package org.silverpeas.core.mail;
 
-import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.base.GreenMailOperations;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.silverpeas.core.mail.engine.MailSender;
 import org.silverpeas.core.mail.engine.MailSenderProvider;
 import org.silverpeas.core.mail.engine.MailSenderTask;
 import org.silverpeas.core.mail.engine.SmtpMailSender;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.GreenMailExtension;
+import org.silverpeas.core.test.extention.LoggerExtension;
+import org.silverpeas.core.test.extention.LoggerLevel;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.SmtpConfig;
+import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.Level;
 
@@ -44,13 +51,14 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class TestSmtpMailSendingMassive {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Rule
-  public GreenMailRule greenMailRule = new GreenMailRule(new SmtpConfigTest());
+@EnableSilverTestEnv
+@ExtendWith(LoggerExtension.class)
+@ExtendWith(GreenMailExtension.class)
+@LoggerLevel(Level.DEBUG)
+@SmtpConfig("/org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties")
+@Execution(ExecutionMode.SAME_THREAD)
+@TestManagedBeans(MailSenderTask.class)
+public class SmtpMailSendingMassiveTest {
 
   private final static String COMMON_FROM = "from@titi.org";
   private final static String COMMON_TO = "to@toto.org";
@@ -58,17 +66,16 @@ public class TestSmtpMailSendingMassive {
   private MailSender oldMailSender;
   private long lastLogTime = -1;
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     // Injecting by reflection the mock instance
     oldMailSender = MailSenderProvider.get();
     FieldUtils.writeDeclaredStaticField(MailSenderProvider.class, "mailSender",
         new StubbedSmtpMailSender(), true);
-    commonAPI4Test.injectIntoMockedBeanContainer(new MailSenderTask());
-    commonAPI4Test.setLoggerLevel(Level.DEBUG);
+
   }
 
-  @After
+  @AfterEach
   public void destroy() throws Exception {
     // Replacing by reflection the mock instances by the previous extracted one.
     FieldUtils
@@ -77,7 +84,7 @@ public class TestSmtpMailSendingMassive {
 
   @Test
   public void
-  sendingSeveralMailsSynchronouslyAndAsynchronouslyAndVerifyingSendingPerformedOneByOne()
+  sendingSeveralMailsSynchronouslyAndAsynchronouslyAndVerifyingSendingPerformedOneByOne(GreenMailOperations mail)
       throws Exception {
 
     List<Runnable> runnables = new ArrayList<>();
@@ -108,11 +115,11 @@ public class TestSmtpMailSendingMassive {
     log(runnables.size() + " THREADS STOPPED");
 
     // Verifying that mails has been sent
-    greenMailRule.waitForIncomingEmail(60000, runnables.size());
+    mail.waitForIncomingEmail(60000, runnables.size());
     Thread.sleep(100);
     assertMailSentOneByOne(runnables);
 
-    MimeMessage[] messages = greenMailRule.getReceivedMessages();
+    MimeMessage[] messages = mail.getReceivedMessages();
     assertThat(messages, arrayWithSize(runnables.size()));
 
     System.out.println("Received messages:");
