@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.List;
@@ -60,8 +61,19 @@ public class WindowWithContextualDiv extends AbstractWindow {
 
     if (spaceIds.length() > 0) {
       ComponentInstLight component = oc.getComponentInstLight(componentId);
+
+      // append all profiles of current user
+      String userId = User.getCurrentRequester().getId();
+      String[] profiles = oc.getUserProfiles(userId, componentId);
+      StringBuilder profilesStr = new StringBuilder();
+      if (profiles != null) {
+        for (String profile : profiles) {
+          profilesStr.append(" profile_" + profile);
+        }
+      }
+
       return "<div class=\"" + spaceIds.toString() + component.getName() + " " + componentId +
-          "\">";
+          profilesStr + "\">";
     }
     return null;
   }
