@@ -278,16 +278,55 @@ public class JdbcSqlQueryIT {
 
   private static class TableResultProcess implements SelectResultRowProcess<Pair<Long, String>> {
     private int rowIndex = 0;
+    private boolean assertion = false;
+
+    TableResultProcess() {
+      this(true);
+    }
+
+    TableResultProcess(boolean assertion) {
+      this.assertion = assertion;
+    }
 
     @Override
     public Pair<Long, String> currentRow(final ResultSetWrapper row) throws SQLException {
       try {
-        assertThat(row.getCurrentRowIndex(), is(rowIndex));
+        if (assertion) {
+          assertThat(row.getCurrentRowIndex(), is(rowIndex));
+        }
         return Pair.of(row.getLongObject(1), row.getString(2));
       } finally {
         rowIndex = rowIndex + 1;
       }
     }
+  }
+
+  @Test
+  public void selectWithOffsetAndLimitAll() throws SQLException {
+    List<Pair<Long, String>> rows = createSelect("*").from("a_table").where("value like ?", "%0")
+        .orderBy("id desc").execute(new TableResultProcess());
+    assertThat(rows, hasSize(10));
+    assertThat(rows.get(0).getRight(), is("value_90"));
+    assertThat(rows.get(1).getRight(), is("value_80"));
+
+    int resultLimit = 5;
+
+    rows = createSelect("*").from("a_table").where("value like ?", "%0").orderBy("id desc")
+        .configure(config -> config.withResultLimit(resultLimit)).execute(new TableResultProcess());
+
+    assertThat(rows, hasSize(resultLimit));
+    assertThat(rows.get(0).getRight(), is("value_90"));
+    assertThat(rows.get(1).getRight(), is("value_80"));
+
+    int offset = 2;
+
+    rows = createSelect("*").from("a_table").where("value like ?", "%0").orderBy("id desc")
+        .configure(config -> config.withOffset(offset))
+        .configure(config -> config.withResultLimit(resultLimit)).execute(new TableResultProcess(false));
+
+    assertThat(rows, hasSize(resultLimit));
+    assertThat(rows.get(0).getRight(), is("value_70"));
+    assertThat(rows.get(1).getRight(), is("value_60"));
   }
 
   @Test

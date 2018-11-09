@@ -24,6 +24,7 @@
 package org.silverpeas.core.contribution.publication.service;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -34,6 +35,7 @@ import org.silverpeas.core.node.coordinates.model.Coordinate;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.Collection;
 import java.util.Date;
@@ -219,8 +221,8 @@ public interface PublicationService {
    */
   Collection<PublicationDetail> getPublicationsByStatus(String status, PublicationPK pubPK);
 
-  Collection<PublicationPK> getPublicationPKsByStatus(String status,
-      List<String> componentIds);
+  SilverpeasList<PublicationPK> getPublicationPKsByStatus(String status, List<String> componentIds,
+      final PaginationPage pagination);
 
   /**
    * Return the list of publications with a maxSize as specified, each publication has the specified
@@ -228,13 +230,13 @@ public interface PublicationService {
    *
    * @param status : the publications status.
    * @param since : the last update of the publication
-   * @param maxSize : the maximum size of the list. If 0 is specified, the limit is not used.
    * @param componentIds
+   * @param pagination : the maximum size of the list. If 0 is specified, the limit is not used.
    * @return a list of publications with the specified maxSize or none if 0 or less is specified.
    * @
    */
-  Collection<PublicationPK> getUpdatedPublicationPKsByStatus(String status, Date since,
-      int maxSize, List<String> componentIds);
+  SilverpeasList<PublicationPK> getUpdatedPublicationPKsByStatus(String status, Date since,
+      List<String> componentIds, PaginationPage pagination);
 
   Collection<PublicationDetail> getPublicationsByStatus(String status,
       List<String> componentIds);

@@ -375,9 +375,23 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery withPagination(PaginationCriterion pagination) {
+    return withPagination(pagination, true);
+  }
+
+  /**
+   * Configures the query execution in order to retrieve only items of pagination.<br>
+   * Be careful to execute a SQL query containing an {@code ORDER BY} clause!!!
+   * @param pagination the pagination criterion to apply.
+   * @param needRealOriginalSize true to obtain the real original mas size.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery withPagination(PaginationCriterion pagination, boolean needRealOriginalSize) {
     if (pagination != null && pagination.isDefined()) {
       offset((pagination.getPageNumber() - 1) * pagination.getItemCount());
       limit(pagination.getItemCount());
+      if (!needRealOriginalSize) {
+        this.configuration.ignoreRealOriginalSize();
+      }
     }
     return this;
   }
@@ -729,6 +743,7 @@ public class JdbcSqlQuery {
   public static class Configuration {
     private int limit = 0;
     private int offset = 0;
+    private boolean needRealOriginalSize = true;
 
     int getResultLimit() {
       return limit;
@@ -746,6 +761,10 @@ public class JdbcSqlQuery {
       return limit > 0;
     }
 
+    public boolean isNeedRealOriginalSize() {
+      return needRealOriginalSize;
+    }
+
     public Configuration withResultLimit(final int limit) {
       assert limit >= 0;
       this.limit = limit;
@@ -755,6 +774,11 @@ public class JdbcSqlQuery {
     public Configuration withOffset(final int offset) {
       assert offset >= 0;
       this.offset = offset;
+      return this;
+    }
+
+    public Configuration ignoreRealOriginalSize() {
+      this.needRealOriginalSize = false;
       return this;
     }
   }

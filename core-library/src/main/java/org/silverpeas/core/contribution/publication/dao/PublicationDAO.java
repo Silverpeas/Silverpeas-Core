@@ -30,12 +30,16 @@ import org.silverpeas.core.contribution.publication.model.PublicationWithStatus;
 import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.MapUtil;
+import org.silverpeas.core.util.SilverpeasArrayList;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -76,6 +80,8 @@ public class PublicationDAO {
 
   private static final String UNDEFINED_ID = "unknown";
   private static final String PUB_ID = "pubId";
+  private static final String SB_PUBLICATION_PUBLI_TABLE = "sb_publication_publi";
+  private static final String PUBSTATUS_VALID_CRITERION = "pubstatus = 'Valid'";
 
   // this object caches last publications availables
   // used only for kmelia
@@ -1035,140 +1041,43 @@ public class PublicationDAO {
     return list;
   }
 
-  public static Collection<PublicationPK> selectPKsByStatus(Connection con,
-      List<String> componentIds, String status) throws SQLException {
-    List<PublicationPK> list = new ArrayList<>();
-    if (componentIds != null && componentIds.size() > 0) {
-      StringBuilder selectStatement = new StringBuilder(128);
-      selectStatement.append("SELECT  DISTINCT(P.pubId), P.instanceId, P.pubUpdateDate ");
-      selectStatement.append("FROM SB_Publication_Publi P, SB_Publication_PubliFather F ");
-      selectStatement.append("WHERE P.pubStatus = ? AND F.nodeId <> 1 AND (");
-      selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
-      selectStatement.append(
-          "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      selectStatement
-          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      selectStatement
-          .append(
-          "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
-      selectStatement.append(" ) ");
-      selectStatement.append(" and F.pubId = P.pubId ");
-      selectStatement.append(" and P.instanceId IN (");
-      String componentId;
-      for (int c = 0; c < componentIds.size(); c++) {
-        componentId = componentIds.get(c);
-        if (c != 0) {
-          selectStatement.append(", ");
-        }
-        selectStatement.append("'").append(componentId).append("'");
-      }
-      selectStatement.append(")");
-      selectStatement.append(" order by P.pubUpdateDate desc, P.pubId desc");
-
-      PreparedStatement prepStmt = null;
-      ResultSet rs = null;
-      try {
-        java.util.Date now = new java.util.Date();
-        String dateNow = DateUtil.formatDate(now);
-
-        String hourNow = DateUtil.formatTime(now);
-
-        prepStmt = con.prepareStatement(selectStatement.toString());
-
-        prepStmt.setString(1, status);
-        prepStmt.setString(2, dateNow);
-        prepStmt.setString(3, dateNow);
-        prepStmt.setString(4, dateNow);
-        prepStmt.setString(5, dateNow);
-        prepStmt.setString(6, hourNow);
-        prepStmt.setString(7, dateNow);
-        prepStmt.setString(8, dateNow);
-        prepStmt.setString(9, hourNow);
-        prepStmt.setString(10, dateNow);
-        prepStmt.setString(11, dateNow);
-        prepStmt.setString(12, hourNow);
-        prepStmt.setString(13, hourNow);
-        rs = prepStmt.executeQuery();
-        PublicationPK pubPK;
-        while (rs.next()) {
-          pubPK = new PublicationPK(rs.getString(PUB_ID), rs.getString("instanceId"));
-          list.add(pubPK);
-        }
-      } finally {
-        DBUtil.close(rs, prepStmt);
-      }
-    }
-    return list;
+  public static SilverpeasList<PublicationPK> selectPKsByStatus(final Connection con,
+      final List<String> componentIds, final String status, final PaginationCriterion pagination)
+      throws SQLException {
+    return selectPKsByStatusAndUpdatedSince(con, componentIds, status, null, pagination);
   }
 
-  public static Collection<PublicationPK> selectUpdatedPublicationsSince(Connection con,
-      List<String> componentIds, String status, java.util.Date since, int maxSize) throws
+  public static SilverpeasList<PublicationPK> selectPKsByStatusAndUpdatedSince(Connection con,
+      List<String> componentIds, String status, Date since, PaginationCriterion pagination) throws
       SQLException {
-    List<PublicationPK> list = new ArrayList<>();
-    if (componentIds != null && componentIds.size() > 0) {
-      StringBuilder selectStatement = new StringBuilder(128);
-      selectStatement.append("SELECT  DISTINCT(P.pubId), P.instanceId, P.pubUpdateDate ");
-      selectStatement.append("FROM SB_Publication_Publi P, SB_Publication_PubliFather F ");
-      selectStatement.append("WHERE P.pubStatus = ? AND F.nodeId <> 1 AND (");
-      selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
-      selectStatement.append(
-          "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      selectStatement
-          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      selectStatement
-          .append(
-          "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
-      selectStatement.append(" ) ");
-      selectStatement.append(" AND F.pubId = P.pubId AND P.pubupdatedate > ? ");
-      selectStatement.append(" AND P.instanceId IN (");
-      String componentId;
-      for (int c = 0; c < componentIds.size(); c++) {
-        componentId = componentIds.get(c);
-        if (c != 0) {
-          selectStatement.append(", ");
-        }
-        selectStatement.append("'").append(componentId).append("'");
+    if (componentIds != null && !componentIds.isEmpty()) {
+      final JdbcSqlQuery sqlQuery = JdbcSqlQuery
+          .createSelect("DISTINCT(P.pubId), P.instanceId, P.pubUpdateDate")
+          .from("SB_Publication_Publi P")
+          .join("SB_Publication_PubliFather F").on("F.pubId = P.pubId")
+          .where("F.nodeId <> 1")
+          .and("P.pubStatus = ?", status);
+      if (since != null) {
+        sqlQuery.and("P.pubupdatedate > ?", DateUtil.date2SQLDate(since));
       }
-      selectStatement.append(")");
-      selectStatement.append(" ORDER BY P.pubUpdateDate DESC, P.pubId DESC");
-
-      PreparedStatement prepStmt = null;
-      ResultSet rs = null;
-      try {
-        java.util.Date now = new java.util.Date();
-        String dateNow = DateUtil.formatDate(now);
-
-        String hourNow = DateUtil.formatTime(now);
-
-        prepStmt = con.prepareStatement(selectStatement.toString());
-        prepStmt.setFetchSize(maxSize);
-        prepStmt.setString(1, status);
-        prepStmt.setString(2, dateNow);
-        prepStmt.setString(3, dateNow);
-        prepStmt.setString(4, dateNow);
-        prepStmt.setString(5, dateNow);
-        prepStmt.setString(6, hourNow);
-        prepStmt.setString(7, dateNow);
-        prepStmt.setString(8, dateNow);
-        prepStmt.setString(9, hourNow);
-        prepStmt.setString(10, dateNow);
-        prepStmt.setString(11, dateNow);
-        prepStmt.setString(12, hourNow);
-        prepStmt.setString(13, hourNow);
-        prepStmt.setString(14, DateUtil.date2SQLDate(since));
-        rs = prepStmt.executeQuery();
-        PublicationPK pubPK;
-        int i = 0;
-        while (rs.next() && (maxSize <= 0 || i <= maxSize)) {
-          pubPK = new PublicationPK(rs.getString(PUB_ID), rs.getString("instanceId"));
-          list.add(pubPK);
-          i++;
-        }
-      } finally {
-        DBUtil.close(rs, prepStmt);
-      }
+      return dateFilters(sqlQuery)
+          .and("P.instanceId").in(componentIds)
+          .orderBy("P.pubUpdateDate desc, P.pubId desc")
+          .withPagination(pagination, false)
+          .executeWith(con, r -> new PublicationPK(r.getString(1), r.getString(2)));
     }
-    return list;
+    return new SilverpeasArrayList<>(0);
+  }
+
+  private static JdbcSqlQuery dateFilters(final JdbcSqlQuery sqlQuery) {
+    final java.util.Date now = new java.util.Date();
+    final String dateNow = DateUtil.formatDate(now);
+    final String hourNow = DateUtil.formatTime(now);
+    return sqlQuery
+      .and("((? > P.pubBeginDate", dateNow).and("? < P.pubEndDate)", dateNow)
+      .or("(? = P.pubBeginDate", dateNow).and("? < P.pubEndDate", dateNow).and("? > P.pubBeginHour)", hourNow)
+      .or("(? > P.pubBeginDate", dateNow).and("? = P.pubEndDate", dateNow).and("? < P.pubEndHour)", hourNow)
+      .or("(? = P.pubBeginDate", dateNow).and("? = P.pubEndDate", dateNow).and("? > P.pubBeginHour", hourNow).and("? < P.pubEndHour))", hourNow);
   }
 
   /**
@@ -1730,38 +1639,49 @@ public class PublicationDAO {
    * @return List<SocialInformationPublication>
    * @throws SQLException
    */
+  @SuppressWarnings("unchecked")
   public static List<SocialInformation> getAllPublicationsIDbyUserid(Connection con,
       String userId, Date begin, Date end) throws SQLException {
+  final PaginationCriterion pagination = new PaginationCriterion(1, 500);
+  final Map<String, List<Boolean>> statusMapping = new HashMap<>(pagination.getItemCount());
+  final List<String> pubIds = JdbcSqlQuery
+      .create("(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type")
+      .from(SB_PUBLICATION_PUBLI_TABLE)
+      .where("pubcreatorid = ?", userId)
+      .and(PUBSTATUS_VALID_CRITERION)
+      .and("pubCreationDate >= ?", DateUtil.date2SQLDate(begin))
+      .and("pubCreationDate <= ?)", DateUtil.date2SQLDate(end))
+      .union()
+      .addSqlPart("(SELECT pubupdatedate AS dateinformation, pubid, 'true' as type")
+      .from(SB_PUBLICATION_PUBLI_TABLE)
+      .where("pubupdaterid = ?", userId)
+      .and(PUBSTATUS_VALID_CRITERION)
+      .and("pubupdatedate >= ?", DateUtil.date2SQLDate(begin))
+      .and("pubupdatedate <= ?)", DateUtil.date2SQLDate(end))
+      .orderBy("dateinformation DESC, pubid DESC, type")
+      .withPagination(pagination, false)
+      .executeWith(con, r -> {
+        final String pubId = Integer.toString(r.getInt(2));
+        MapUtil.putAddList(statusMapping, pubId, r.getBoolean(3));
+        return pubId;
+      });
+    return (SilverpeasList) buildSocialInformationResult(con, pubIds, statusMapping);
+  }
 
-    List<SocialInformation> listPublications = new ArrayList<>();
-
-    String query =
-        "(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type  FROM sb_publication_publi WHERE pubcreatorid = ? and pubstatus = 'Valid' and pubCreationDate >= ? and pubCreationDate <= ? )"
-            + "UNION (SELECT pubupdatedate AS dateinformation, pubid, 'true' as type FROM sb_publication_publi WHERE pubupdaterid = ? and pubstatus = 'Valid' and pubupdatedate >= ? and pubupdatedate <= ? )"
-            + "ORDER BY dateinformation DESC, pubid DESC";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, userId);
-      prepStmt.setString(2, DateUtil.date2SQLDate(begin));
-      prepStmt.setString(3, DateUtil.date2SQLDate(end));
-      prepStmt.setString(4, userId);
-      prepStmt.setString(5, DateUtil.date2SQLDate(begin));
-      prepStmt.setString(6, DateUtil.date2SQLDate(end));
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-
-        PublicationDetail pd = loadRow(con, new PublicationPK(Integer.toString(rs.getInt(2))));
-        PublicationWithStatus withStatus = new PublicationWithStatus(pd, rs.getBoolean(3));
-
-        listPublications.add(new SocialInformationPublication(withStatus));
-      }
-
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return listPublications;
+  private static SilverpeasList<SocialInformationPublication> buildSocialInformationResult(
+      final Connection con, final List<String> pubIds,
+      final Map<String, List<Boolean>> statusMapping) {
+    final Map<String, PublicationDetail> publications = new HashMap<>(pubIds.size());
+    getByIds(con, pubIds).forEach(p -> publications.put(p.getId(), p));
+    return pubIds
+        .stream()
+        .map(i -> {
+          final PublicationDetail p = publications.get(i);
+          final Boolean s = statusMapping.get(i).remove(0);
+          final PublicationWithStatus withStatus = new PublicationWithStatus(p, s);
+          return new SocialInformationPublication(withStatus);
+        })
+        .collect(SilverpeasList.collector(pubIds));
   }
 
   /**
@@ -1777,62 +1697,32 @@ public class PublicationDAO {
   public static List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
       Connection con, List<String> myContactsIds, List<String> options, Date begin, Date end)
       throws SQLException {
-    List<SocialInformationPublication> listPublications = new ArrayList<>();
-
-    String query =
-        "(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type FROM sb_publication_publi WHERE pubcreatorid in(" +
-            toSqlString(
-            myContactsIds) +
-            ") and instanceid in(" +
-            toSqlString(options) +
-            ") and pubstatus = 'Valid' and pubCreationDate >= ? and pubCreationDate <= ? )"
-            +
-            "UNION (SELECT  pubupdatedate AS dateinformation, pubid, 'true' as type FROM sb_publication_publi WHERE pubupdaterid in(" +
-            toSqlString(
-            myContactsIds) +
-            ")  and instanceid in(" +
-            toSqlString(options) +
-            ")and pubstatus = 'Valid' and pubupdatedate >= ? and pubupdatedate <= ? )"
-            + "ORDER BY dateinformation DESC, pubid DESC";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, DateUtil.date2SQLDate(begin));
-      prepStmt.setString(2, DateUtil.date2SQLDate(end));
-      prepStmt.setString(3, DateUtil.date2SQLDate(begin));
-      prepStmt.setString(4, DateUtil.date2SQLDate(end));
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        PublicationDetail pd = loadRow(con, new PublicationPK(Integer.toString(rs.getInt(2))));
-        PublicationWithStatus withStatus = new PublicationWithStatus(pd, rs.getBoolean(3));
-        listPublications.add(new SocialInformationPublication(withStatus));
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return listPublications;
-  }
-
-  /**
-   * tronsform the list of string to String for using in query sql
-   * @param list
-   * @return String
-   */
-  private static String toSqlString(List<String> list) {
-    StringBuilder result = new StringBuilder(100);
-    if (list == null || list.isEmpty()) {
-      return "''";
-    }
-    int i = 0;
-    for (String var : list) {
-      if (i != 0) {
-        result.append(",");
-      }
-      result.append("'").append(var).append("'");
-      i++;
-    }
-    return result.toString();
+    final PaginationCriterion pagination = new PaginationCriterion(1, 500);
+    final Map<String, List<Boolean>> statusMapping = new HashMap<>(pagination.getItemCount());
+    final List<String> pubIds = JdbcSqlQuery
+        .create("(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type")
+        .from(SB_PUBLICATION_PUBLI_TABLE)
+        .where("pubcreatorid").in(myContactsIds)
+        .and("instanceid").in(options)
+        .and(PUBSTATUS_VALID_CRITERION)
+        .and("pubCreationDate >= ?", DateUtil.date2SQLDate(begin))
+        .and("pubCreationDate <= ?)", DateUtil.date2SQLDate(end))
+        .union()
+        .addSqlPart("(SELECT pubupdatedate AS dateinformation, pubid, 'true' as type")
+        .from(SB_PUBLICATION_PUBLI_TABLE)
+        .where("pubupdaterid").in(myContactsIds)
+        .and("instanceid").in(options)
+        .and(PUBSTATUS_VALID_CRITERION)
+        .and("pubupdatedate >= ?", DateUtil.date2SQLDate(begin))
+        .and("pubupdatedate <= ?)", DateUtil.date2SQLDate(end))
+        .orderBy("dateinformation DESC, pubid DESC, type")
+        .withPagination(pagination, false)
+        .executeWith(con, r -> {
+          final String pubId = Integer.toString(r.getInt(2));
+          MapUtil.putAddList(statusMapping, pubId, r.getBoolean(3));
+          return pubId;
+        });
+    return buildSocialInformationResult(con, pubIds, statusMapping);
   }
 
   public static Collection<PublicationDetail> getPublicationsToDraftOut(Connection con,

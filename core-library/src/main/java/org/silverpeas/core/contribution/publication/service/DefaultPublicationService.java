@@ -25,6 +25,7 @@ package org.silverpeas.core.contribution.publication.service;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdminException;
@@ -76,6 +77,7 @@ import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -983,17 +985,15 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Collection<PublicationPK> getPublicationPKsByStatus(String status,
-      List<String> componentIds) {
-    Connection con = getConnection();
-    try {
-      return PublicationDAO.selectPKsByStatus(con, componentIds, status);
+  public SilverpeasList<PublicationPK> getPublicationPKsByStatus(final String status,
+      final List<String> componentIds, final PaginationPage pagination) {
+    try (final Connection con = getConnection()) {
+      return PublicationDAO.selectPKsByStatus(con, componentIds, status,
+          pagination != null && pagination.getPageSize() > 0 ? pagination.asCriterion() : null);
     } catch (Exception e) {
       throw new PublicationRuntimeException("DefaultPublicationService.getPublicationPKsByStatus()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
           "status = " + status + ", componentIds = " + componentIds, e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -1652,18 +1652,15 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Collection<PublicationPK> getUpdatedPublicationPKsByStatus(String status, Date since,
-      int maxSize, List<String> componentIds) {
-    Connection con = getConnection();
-    try {
-      return PublicationDAO
-          .selectUpdatedPublicationsSince(con, componentIds, status, since, maxSize);
+  public SilverpeasList<PublicationPK> getUpdatedPublicationPKsByStatus(String status, Date since,
+      List<String> componentIds, PaginationPage pagination) {
+    try (final Connection con = getConnection()) {
+      return PublicationDAO.selectPKsByStatusAndUpdatedSince(con, componentIds, status, since,
+          pagination != null && pagination.getPageSize() > 0 ? pagination.asCriterion() : null);
     } catch (SQLException e) {
       throw new PublicationRuntimeException("DefaultPublicationService.getPublicationPKsByStatus()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
           "status = " + status + ", componentIds = " + componentIds, e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
