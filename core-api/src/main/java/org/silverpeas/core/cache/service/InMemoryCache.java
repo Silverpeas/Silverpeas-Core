@@ -25,17 +25,16 @@ package org.silverpeas.core.cache.service;
 
 import org.silverpeas.core.cache.model.AbstractSimpleCache;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Cache managed in memory.
- * User: Yohann Chastagnier
- * Date: 25/10/13
  */
 class InMemoryCache extends AbstractSimpleCache {
 
-  private final Map<Object, Object> cache = new HashMap<>();
+  private final ConcurrentMap<Object, Object> cache = new ConcurrentHashMap<>();
 
   /**
    * Gets the cache.
@@ -57,24 +56,24 @@ class InMemoryCache extends AbstractSimpleCache {
 
   @Override
   public Object remove(final Object key) {
-    Object value = get(key);
-    if (value != null) {
-      getCache().remove(key);
-    }
-    return value;
+    return getCache().remove(key);
   }
 
   @Override
   public <T> T remove(final Object key, final Class<T> classType) {
     T value = get(key, classType);
     if (value != null) {
-      getCache().remove(key);
+      remove(key);
     }
     return value;
   }
 
   @Override
   public void put(final Object key, final Object value) {
-    getCache().put(key, value);
+    if (value == null) {
+      remove(key);
+    } else {
+      getCache().put(key, value);
+    }
   }
 }

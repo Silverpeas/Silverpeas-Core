@@ -103,7 +103,9 @@ public class ListSlice<T> extends ArrayList<T> implements SilverpeasList<T> {
 
   @Override
   public <U> SilverpeasList<U> newEmptyListWithSameProperties() {
-    return new ListSlice<>(this.start, this.end, this.maxsize);
+    final ListSlice<U> newEmptyList = new ListSlice<>(this.start, this.end);
+    newEmptyList.setOriginalListSize(this.maxsize);
+    return newEmptyList;
   }
 
   /**
@@ -142,7 +144,7 @@ public class ListSlice<T> extends ArrayList<T> implements SilverpeasList<T> {
    * Sets the size of the original list this slice comes from.
    * @param size the size of the original list
    */
-  public void setOriginalListSize(int size) {
+  public void setOriginalListSize(long size) {
     this.maxsize = size;
   }
 

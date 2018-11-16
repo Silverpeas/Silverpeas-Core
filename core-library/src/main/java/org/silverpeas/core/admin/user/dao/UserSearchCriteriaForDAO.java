@@ -263,8 +263,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
 
     if (criteria.isCriterionOnPaginationSet() && userSelection) {
       PaginationPage page = criteria.getCriterionOnPagination();
-      query.offset((page.getPageNumber() - 1) * page.getPageSize());
-      query.limit(page.getPageSize());
+      query.withPagination(page.asCriterion());
     }
   }
 

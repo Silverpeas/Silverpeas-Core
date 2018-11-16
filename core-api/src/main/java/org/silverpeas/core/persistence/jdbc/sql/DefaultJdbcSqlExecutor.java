@@ -26,6 +26,7 @@ package org.silverpeas.core.persistence.jdbc.sql;
 import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.persistence.jdbc.ConnectionPool;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
@@ -103,16 +104,36 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
   @Override
   public <R> ListSlice<R> select(final Connection con, final JdbcSqlQuery selectQuery,
       final SelectResultRowProcess<R> process) throws SQLException {
-    JdbcSqlQuery.Configuration queryConf = selectQuery.getConfiguration();
-    try (PreparedStatement st = queryConf.isFirstResultScrolled() ?
-        con.prepareStatement(selectQuery.getSqlQuery(), ResultSet.TYPE_SCROLL_INSENSITIVE,
-            ResultSet.CONCUR_READ_ONLY) : con.prepareStatement(selectQuery.getSqlQuery())) {
+    final JdbcSqlQuery.Configuration queryConf = selectQuery.getConfiguration();
+    final String sqlQuery;
+    boolean countOverPaginationMethod = isCountOverPaginationMethod(queryConf);
+    if (countOverPaginationMethod) {
+      final int selectIndex = selectQuery.getSqlQuery().indexOf("select");
+      if (selectIndex >= 0 &&
+          selectQuery.getSqlQuery().indexOf("select", selectIndex + 1) < 0) {
+        sqlQuery = selectQuery.getSqlQuery()
+            .replaceFirst("(?i)(select .*)from ", "$1, COUNT(*) OVER() AS SP_MAX_ROW_COUNT FROM ");
+      } else {
+        sqlQuery = selectQuery.getSqlQuery();
+        countOverPaginationMethod = false;
+      }
+    } else {
+      sqlQuery = selectQuery.getSqlQuery();
+    }
+    try (PreparedStatement st = queryConf.isResultCountLimited() || queryConf.isFirstResultScrolled()
+        ? con.prepareStatement(sqlQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)
+        : con.prepareStatement(sqlQuery)) {
+      if (queryConf.isResultCountLimited()) {
+        st.setFetchSize(queryConf.getResultLimit());
+        if (!queryConf.isNeedRealOriginalSize() || countOverPaginationMethod) {
+          st.setMaxRows(queryConf.getOffset() + queryConf.getResultLimit());
+        }
+      }
       setParameters(st, selectQuery.getParameters());
       try (ResultSet rs = st.executeQuery()) {
-        return fetchEntities(rs, process, queryConf);
+        return fetchEntities(rs, process, queryConf, countOverPaginationMethod);
       } catch (SQLException e) {
-        SilverLogger.getLogger(this)
-            .debug(e.getMessage() + SQL_REQUEST + selectQuery.getSqlQuery());
+        SilverLogger.getLogger(this).debug(e.getMessage() + SQL_REQUEST + sqlQuery);
         throw e;
       }
     }
@@ -159,30 +180,75 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
   }
 
   private <R> ListSlice<R> fetchEntities(final ResultSet rs,
-      final SelectResultRowProcess<R> process, final JdbcSqlQuery.Configuration queryConf)
+      final SelectResultRowProcess<R> process, final JdbcSqlQuery.Configuration queryConf,
+      final boolean countOverPaginationMethod)
       throws SQLException {
     final ResultSetWrapper rsw = new ResultSetWrapper(rs);
-    int idx = queryConf.getOffset();
+    int startIndex = queryConf.getOffset();
     if (queryConf.isFirstResultScrolled()) {
       rsw.next();
-      rsw.relative(idx - 1);
+      rsw.relative(startIndex - 1);
     }
-    final int lastIdx =
-        queryConf.isResultCountLimited() ? idx + queryConf.getResultLimit() - 1 : 0;
-    ListSlice<R> entities = new ListSlice<>(idx, lastIdx);
-    int originalSize = idx;
-    for (;rsw.next(); originalSize++) {
-      if (!queryConf.isResultCountLimited() ||
-          (queryConf.isResultCountLimited() && entities.size() < queryConf.getResultLimit())) {
-        rsw.setCurrentRowIndex(idx++);
-        R entity = process.currentRow(rsw);
-        if (entity != null) {
-          entities.add(entity);
-        }
+    final boolean resultCountLimited = queryConf.isResultCountLimited();
+    final int lastIdx = resultCountLimited ? startIndex + queryConf.getResultLimit() - 1 : 0;
+    final ListSlice<R> entities = new ListSlice<>(startIndex, lastIdx);
+    if (!resultCountLimited) {
+      fetchWithoutLimit(startIndex, rsw, process, entities);
+    } else {
+      fetchWithLimit(queryConf, startIndex, rsw, process, entities, countOverPaginationMethod);
+    }
+    return entities;
+  }
+
+  private <R> void fetchWithoutLimit(final int startIdx, final ResultSetWrapper rsw,
+      final SelectResultRowProcess<R> process, final ListSlice<R> entities) throws SQLException {
+    int idx = startIdx;
+    for (; rsw.next(); idx++) {
+      handleRow(idx, rsw, process, entities);
+    }
+    entities.setOriginalListSize(entities.size());
+  }
+
+  private <R> void fetchWithLimit(final JdbcSqlQuery.Configuration queryConf, final int startIdx,
+      final ResultSetWrapper rsw, final SelectResultRowProcess<R> process,
+      final ListSlice<R> entities, final boolean countOverPaginationMethod) throws SQLException {
+    final int offsetCountAtStart = rsw.getRow();
+    int idx = startIdx;
+    int originalSize = (int) entities.originalListSize();
+    if (queryConf.isNeedRealOriginalSize() && countOverPaginationMethod && rsw.next()) {
+      handleRow(idx++, rsw, process, entities);
+      originalSize = rsw.getInt("SP_MAX_ROW_COUNT");
+    }
+    for (; entities.size() < queryConf.getResultLimit() && rsw.next(); idx++) {
+      handleRow(idx, rsw, process, entities);
+    }
+    if (originalSize <= 0 && queryConf.isNeedRealOriginalSize()) {
+      if (rsw.last()) {
+        originalSize = rsw.getRow();
+      } else {
+        originalSize = offsetCountAtStart == 0 ? offsetCountAtStart : idx;
       }
     }
     entities.setOriginalListSize(originalSize);
-    return entities;
+  }
+
+  private <R> void handleRow(final int idx, final ResultSetWrapper rsw,
+      final SelectResultRowProcess<R> process, final ListSlice<R> entities) throws SQLException {
+    rsw.setCurrentRowIndex(idx);
+    R entity = process.currentRow(rsw);
+    if (entity != null) {
+      entities.add(entity);
+    }
+  }
+
+  private boolean isCountOverPaginationMethod(final JdbcSqlQuery.Configuration queryConf) {
+    return queryConf.isResultCountLimited() && queryConf.isNeedRealOriginalSize() &&
+        isCountOverPaginationMethod();
+  }
+
+  private static boolean isCountOverPaginationMethod() {
+    return ResourceLocator.getGeneralSettingBundle()
+        .getBoolean("jdbc.pagination.method.countOver", false);
   }
 
   /**

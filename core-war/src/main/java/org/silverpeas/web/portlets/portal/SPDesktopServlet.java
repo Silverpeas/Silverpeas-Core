@@ -95,7 +95,8 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
 
     String spaceHomePage = null;
     String spaceId = request.getParameter("SpaceId");
-    if (SpaceInst.PERSONAL_SPACE_ID.equals(spaceId) || SpaceInst.DEFAULT_SPACE_ID.equals(spaceId)) {
+    if (StringUtil.isNotDefined(spaceId) || SpaceInst.PERSONAL_SPACE_ID.equals(spaceId) ||
+        SpaceInst.DEFAULT_SPACE_ID.equals(spaceId)) {
       request.getSession().removeAttribute("Silverpeas_Portlet_SpaceId");
     } else if (isDefined(spaceId)) {
       request.getSession().setAttribute("Silverpeas_Portlet_SpaceId", spaceId);

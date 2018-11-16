@@ -285,8 +285,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
     if (criteria.isCriterionOnPaginationSet()) {
       PaginationPage page = criteria.getCriterionOnPagination();
-      query.offset((page.getPageNumber() - 1) * page.getPageSize());
-      query.limit(page.getPageSize());
+      query.withPagination(page.asCriterion());
     }
   }
 }
