@@ -51,20 +51,20 @@ public class SilverPeasExchangeType {
   private String targetComponentId;
   @XmlAttribute
   private boolean usePOI = true;
-  @XmlElementWrapper(name = "publications")
+  @XmlElementWrapper(name = "publications", namespace = "http://www.silverpeas.org/exchange")
   @XmlElement(name = "publication", namespace = "http://www.silverpeas.org/exchange")
   private List<PublicationType> publicationsType;
-  @XmlElementWrapper(name = "repositories")
-  @XmlElement(name = "repository")
+  @XmlElementWrapper(name = "repositories", namespace = "http://www.silverpeas.org/exchange")
+  @XmlElement(name = "repository", namespace = "http://www.silverpeas.org/exchange")
   private List<RepositoryType> repositoriesType;
-  @XmlElementWrapper(name = "topicTrees")
-  @XmlElement(name = "topicTree")
+  @XmlElementWrapper(name = "topicTrees", namespace = "http://www.silverpeas.org/exchange")
+  @XmlElement(name = "topicTree", namespace = "http://www.silverpeas.org/exchange")
   private List<NodeTreeType> nodeTreesType;
-  @XmlElementWrapper(name = "pdc")
-  @XmlElement(name = "axis")
+  @XmlElementWrapper(name = "pdc", namespace = "http://www.silverpeas.org/exchange")
+  @XmlElement(name = "axis", namespace = "http://www.silverpeas.org/exchange")
   private List<AxisType> pdcType;
-  @XmlElementWrapper(name = "components")
-  @XmlElement(name = "component")
+  @XmlElementWrapper(name = "components", namespace = "http://www.silverpeas.org/exchange")
+  @XmlElement(name = "component", namespace = "http://www.silverpeas.org/exchange")
   private List<ComponentInst> componentsType;
 
   public SilverPeasExchangeType() {

@@ -41,11 +41,11 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   private static final long serialVersionUID = 756146888448232764L;
 
   /* Name of the bean */
-  @XmlElement
+  @XmlElement(namespace = "http://www.silverpeas.org/exchange")
   private String name = "";
 
   /* Description of the bean */
-  @XmlElement
+  @XmlElement(namespace = "http://www.silverpeas.org/exchange")
   private String description = "";
 
   private String language = null;

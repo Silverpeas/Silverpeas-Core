@@ -47,20 +47,20 @@ public class PublicationType {
   private int id = -1;
   @XmlAttribute
   private String componentId;
-  @XmlElement(name = "publicationHeader")
+  @XmlElement(name = "publicationHeader", namespace = "http://www.silverpeas.org/exchange")
   private PublicationDetail publicationDetail;
-  @XmlElement(name = "publicationContent")
+  @XmlElement(name = "publicationContent", namespace = "http://www.silverpeas.org/exchange")
   private PublicationContentType publicationContentType;
-  @XmlElementWrapper(name = "attachments")
+  @XmlElementWrapper(name = "attachments", namespace = "http://www.silverpeas.org/exchange")
   @XmlElement(name = "attachment", namespace = "http://www.silverpeas.org/exchange")
   private List<AttachmentDetail> attachmentsType;
-  @XmlElementWrapper(name = "documents")
+  @XmlElementWrapper(name = "documents", namespace = "http://www.silverpeas.org/exchange")
   @XmlElement(name = "document", namespace = "http://www.silverpeas.org/exchange")
   private List<Document> documentsType;
-  @XmlElementWrapper(name = "topicPositions")
+  @XmlElementWrapper(name = "topicPositions", namespace = "http://www.silverpeas.org/exchange")
   @XmlElement(name = "topicPosition", namespace = "http://www.silverpeas.org/exchange")
   private List<NodePositionType> nodePositionsType;
-  @XmlElementWrapper(name = "pdcPositions")
+  @XmlElementWrapper(name = "pdcPositions", namespace = "http://www.silverpeas.org/exchange")
   @XmlElement(name = "pdcPosition", namespace = "http://www.silverpeas.org/exchange")
   private List<ClassifyPosition> pdcPositionsType;
   @XmlElement(name = "coordinatesPositions", namespace = "http://www.silverpeas.org/exchange")

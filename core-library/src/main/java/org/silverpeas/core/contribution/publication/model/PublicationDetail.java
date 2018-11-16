@@ -97,7 +97,7 @@ import static org.silverpeas.core.util.StringUtil.split;
 /**
  * This object contains the description of a publication
  */
-@XmlRootElement
+@XmlRootElement(namespace = "http://www.silverpeas.org/exchange")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     implements I18nContribution, SilverContentInterface, Rateable, Serializable,
@@ -106,27 +106,27 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   private static final long serialVersionUID = 9199848912262605680L;
   private PublicationPK pk;
   private String infoId;
-  @XmlElement(name = "creationDate")
+  @XmlElement(name = "creationDate", namespace = "http://www.silverpeas.org/exchange")
   @XmlJavaTypeAdapter(DateAdapter.class)
   private Date creationDate;
-  @XmlElement(name = "beginDate")
+  @XmlElement(name = "beginDate", namespace = "http://www.silverpeas.org/exchange")
   @XmlJavaTypeAdapter(DateAdapter.class)
   private Date beginDate;
-  @XmlElement(name = "endDate")
+  @XmlElement(name = "endDate", namespace = "http://www.silverpeas.org/exchange")
   @XmlJavaTypeAdapter(DateAdapter.class)
   private Date endDate;
-  @XmlElement(name = "creatorId")
+  @XmlElement(name = "creatorId", namespace = "http://www.silverpeas.org/exchange")
   private String creatorId;
-  @XmlElement(name = "creatorName")
+  @XmlElement(name = "creatorName", namespace = "http://www.silverpeas.org/exchange")
   private String creatorName;
-  @XmlElement(name = "importance")
+  @XmlElement(name = "importance", namespace = "http://www.silverpeas.org/exchange")
   private int importance;
-  @XmlElement(name = "version")
+  @XmlElement(name = "version", namespace = "http://www.silverpeas.org/exchange")
   private String version;
-  @XmlElement(name = "keywords")
+  @XmlElement(name = "keywords", namespace = "http://www.silverpeas.org/exchange")
   private String keywords;
   private String content;
-  @XmlElement(name = "status")
+  @XmlElement(name = "status", namespace = "http://www.silverpeas.org/exchange")
   private String status;
   private Date updateDate;
   private String updaterId;
