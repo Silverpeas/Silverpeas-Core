@@ -592,7 +592,14 @@
    * @constructor
    */
   $mainWindow.SilverpeasEventSource = function(url) {
+    var __isEnabled = $mainWindow.LayoutSettings.get("sse.enabled");
+    this.isEnabled = function() {
+      return __isEnabled;
+    };
     this.close = function() {
+      if (!this.isEnabled()) {
+        return;
+      }
       __context.sse.close();
     };
     var finalUrl = url;
@@ -615,16 +622,22 @@
     };
     applyEventDispatchingBehaviorOn(this, {
       onAdd : function(serverEventName, listener) {
+        if (!this.isEnabled()) {
+          return;
+        }
         if (!__context.listeners[serverEventName]) {
           __context.listeners[serverEventName] = [];
         }
         __context.listeners[serverEventName].addElement(listener);
         __context.sse.addEventListener(serverEventName, listener);
-      },
+      }.bind(this),
       onRemove : function(serverEventName, listener) {
+        if (!this.isEnabled()) {
+          return;
+        }
         __context.listeners[serverEventName].removeElement(listener);
         __context.sse.removeEventListener(serverEventName, listener);
-      }
+      }.bind(this)
     });
     var initCommonEventSource = function() {
       var serverEventSource = new EventSource(finalUrl);
@@ -669,7 +682,9 @@
       }, false);
       return serverEventSource;
     }.bind(this);
-    __context.sse = initCommonEventSource();
+    if (this.isEnabled()) {
+      __context.sse = initCommonEventSource();
+    }
   };
 
   function __showProgressPopup() {

@@ -59,6 +59,7 @@ import static org.silverpeas.core.contribution.attachment.util.AttachmentSetting
 import static org.silverpeas.core.html.SupportedWebPlugins.*;
 import static org.silverpeas.core.notification.user.UserNotificationServerEvent.getNbUnreadFor;
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getUserNotificationDesktopIconUrl;
+import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.isSseEnabled;
 import static org.silverpeas.core.reminder.ReminderSettings.getDefaultReminder;
 import static org.silverpeas.core.reminder.ReminderSettings.getPossibleReminders;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptBundleProducer.bundleVariableName;
@@ -910,6 +911,7 @@ public class JavascriptPluginInclusion {
             .add("layout.pdc.activated", lookHelper.displayPDCFrame())
             .add("layout.pdc.baseUrl", URLUtil.getApplicationURL() + "/RpdcSearch/jsp/")
             .add("layout.pdc.action.default", "ChangeSearchTypeToExpert")
+            .add("sse.enabled", isSseEnabled())
             .produce()));
       xhtml.addElement(scriptContent(settingVariableName("AdminLayoutSettings")
             .add("layout.header.url", URLUtil.getApplicationURL() + "/RjobManagerPeas/jsp/TopBarManager")

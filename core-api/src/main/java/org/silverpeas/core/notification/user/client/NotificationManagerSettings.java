@@ -24,6 +24,7 @@
 package org.silverpeas.core.notification.user.client;
 
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.notification.sse.ServerEvent;
 import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -246,6 +247,26 @@ public class NotificationManagerSettings {
   public static int getSseStoreEventLifeTime() {
     return settings
         .getInteger("notification.see.store.event.lifetime", DEFAULT_SSE_STORE_EVENT_LIFETIME) * MS;
+  }
+
+
+  /**
+   * Indicates if the server event feature is enabled.
+   * @return true in order to enable, false otherwise.
+   */
+  public static boolean isSseEnabled() {
+    return settings.getBoolean("notification.see.enabled", true);
+  }
+
+
+  /**
+   * Indicates if the server event has to be handled.
+   * @return true in order to handle, false otherwise.
+   */
+  public static boolean isSseEnabledFor(final ServerEvent serverEvent) {
+    return isSseEnabled() && settings
+        .getBoolean("notification.see.event." + serverEvent.getName().asString() + ".enabled",
+            true);
   }
 
   /**

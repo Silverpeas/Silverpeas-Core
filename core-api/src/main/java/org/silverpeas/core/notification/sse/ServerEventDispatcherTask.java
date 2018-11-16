@@ -41,8 +41,8 @@ import java.util.List;
 import java.util.Set;
 
 import static java.text.MessageFormat.format;
-import static org.silverpeas.core.notification.user.client.NotificationManagerSettings
-    .getSseStoreEventLifeTime;
+import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getSseStoreEventLifeTime;
+import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.isSseEnabledFor;
 
 /**
  * This task is in charge of dispatching server events without blocking the thread of the emitter.
@@ -148,8 +148,10 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
    * @param serverEventToDispatch the server event to dispatch.
    */
   public static void dispatch(ServerEvent serverEventToDispatch) {
-    ServerEventDispatchRequest request = new ServerEventDispatchRequest(serverEventToDispatch);
-    push(request);
+    if (isSseEnabledFor(serverEventToDispatch)) {
+      ServerEventDispatchRequest request = new ServerEventDispatchRequest(serverEventToDispatch);
+      push(request);
+    }
   }
 
   private static void push(Request request) {
