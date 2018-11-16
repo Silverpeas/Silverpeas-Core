@@ -34,13 +34,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @author tleroi
  */
-@XmlRootElement(name = "publicationContent")
+@XmlRootElement(name = "publicationContent", namespace = "http://www.silverpeas.org/exchange")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PublicationContentType {
 
-  @XmlElement(name = "wysiwyg")
+  @XmlElement(name = "wysiwyg", namespace = "http://www.silverpeas.org/exchange")
   private WysiwygContentType wysiwygContentType;
-  @XmlElement(name = "xmlModel")
+  @XmlElement(name = "xmlModel", namespace = "http://www.silverpeas.org/exchange")
   private XMLModelContentType xmlModelContentType;
 
   public PublicationContentType() {

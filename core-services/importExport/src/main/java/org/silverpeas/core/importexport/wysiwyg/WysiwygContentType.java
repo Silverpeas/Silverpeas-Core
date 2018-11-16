@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @author sdevolder
  */
-@XmlRootElement(name = "wysiwyg")
+@XmlRootElement(name = "wysiwyg", namespace = "http://www.silverpeas.org/exchange")
 @XmlAccessorType(XmlAccessType.NONE)
 public class WysiwygContentType {
 

@@ -32,14 +32,14 @@ import java.io.Serializable;
 /**
  * @author neysseri
  */
-@XmlRootElement(name = "xmlField")
+@XmlRootElement(name = "xmlField", namespace = "http://www.silverpeas.org/exchange")
 @XmlAccessorType(XmlAccessType.NONE)
 public class XMLField implements Serializable {
 
   private static final long serialVersionUID = -825307243077524947L;
-  @XmlElement(name = "name")
+  @XmlElement(name = "name", namespace = "http://www.silverpeas.org/exchange")
   private String name;
-  @XmlElement(name = "value")
+  @XmlElement(name = "value", namespace = "http://www.silverpeas.org/exchange")
   private String value;
 
   public XMLField() {

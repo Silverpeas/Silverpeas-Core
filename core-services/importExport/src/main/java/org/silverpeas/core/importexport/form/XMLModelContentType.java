@@ -36,13 +36,13 @@ import java.util.List;
 /**
  * @author neysseri
  */
-@XmlRootElement(name = "xmlModel")
+@XmlRootElement(name = "xmlModel", namespace = "http://www.silverpeas.org/exchange")
 @XmlAccessorType(XmlAccessType.NONE)
 public class XMLModelContentType {
 
   @XmlAttribute
   private String name;
-  @XmlElement(name = "xmlField")
+  @XmlElement(name = "xmlField", namespace = "http://www.silverpeas.org/exchange")
   private List<XMLField> fields;
 
   public XMLModelContentType() {
