@@ -3101,15 +3101,14 @@ fieldset[disabled]
   .jsxc_in .jsxc_timestamp {
     float: left; }
 
-.jsxc_out {
+.jsxc_out, .jsxc_probably_out {
   float: right;
   position: relative;
   max-width: 76%;
   margin-right: 10px;
   padding-right: 10px;
-  border-radius: 3px;
-  background-color: #e6ffd1; }
-  .jsxc_out:after {
+  border-radius: 3px; }
+  .jsxc_out:after, .jsxc_probably_out:after {
     content: " ";
     position: absolute;
     border-style: solid;
@@ -3120,7 +3119,7 @@ fieldset[disabled]
     z-index: 1;
     right: -6px;
     bottom: 10px; }
-  .jsxc_out.jsxc_received:before {
+  .jsxc_out.jsxc_received:before, .jsxc_probably_out.jsxc_received:before {
     content: "✓";
     position: absolute;
     bottom: 2px;
@@ -3128,10 +3127,13 @@ fieldset[disabled]
     font-size: 12px;
     line-height: 12px;
     color: #008000; }
-  .jsxc_out.jsxc_received .jsxc_timestamp {
+  .jsxc_out.jsxc_received .jsxc_timestamp, .jsxc_probably_out.jsxc_received .jsxc_timestamp {
     margin-right: 4px; }
-  .jsxc_out .jsxc_timestamp {
+  .jsxc_out .jsxc_timestamp, .jsxc_probably_out .jsxc_timestamp {
     float: right; }
+
+.jsxc_out {
+  background-color: #e6ffd1; }
 
 .jsxc_sys {
   width: auto;

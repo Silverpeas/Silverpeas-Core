@@ -60,6 +60,7 @@
         </c:if>
         language : '${chatUser.userPreferences.language}',
         avatar: webContext + '/display/avatar/60x/',
+        notificationLogo: (window.SilverChatSettings ? window.SilverChatSettings.get('un.d.i.u') : ''),
         debug: false,
         selectUser: function(openChatWith) {
           $('#userId').off('change').on('change', function() {
