@@ -267,8 +267,8 @@ public class ManagedThreadPool {
    */
   private ExecutorService getExecutorService(ExecutionConfig config) {
     final ExecutorService executorService;
-    if (config.getMaxThreadPoolSize() > 0) {
-      int maxThreadPoolSize = config.getMaxThreadPoolSize();
+    final int maxThreadPoolSize = config.getMaxThreadPoolSize();
+    if (maxThreadPoolSize > 0) {
       if (maxThreadPoolSize == 1) {
         executorService = Executors.newSingleThreadExecutor(this.managedThreadFactory);
       } else {

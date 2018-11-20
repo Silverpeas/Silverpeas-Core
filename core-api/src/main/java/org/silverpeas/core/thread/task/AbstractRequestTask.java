@@ -165,6 +165,28 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
    * Each request must define a method called process which will process the request.
    */
   public interface Request<C> {
+
+    /**
+     * Gets a replacement identifier.
+     * <p>
+     * In almost cases, it will be null and means there is no replacement to perform into queue.
+     * </p>
+     * <p>
+     * In rare cases, it will not be null and means that if it exists already a request into
+     * queue with a same identifier then this request must be replaced by the new one.
+     * </p>
+     * @return a string representing a unique type. If null, the request behavior is the one of
+     * simple {@link Request}.
+     */
+    default String getReplacementId() {
+      return null;
+    }
+
+    /**
+     * Process the request according to the given context.
+     * @param context the context of the process.
+     * @throws InterruptedException in case of technical error.
+     */
     void process(C context) throws InterruptedException;
   }
 

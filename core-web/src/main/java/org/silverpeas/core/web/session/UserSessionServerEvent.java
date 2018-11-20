@@ -25,6 +25,7 @@ package org.silverpeas.core.web.session;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.CommonServerEvent;
+import org.silverpeas.core.notification.sse.behavior.AfterSentToAllContexts;
 import org.silverpeas.core.notification.sse.behavior.KeepAlwaysLastStored;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
@@ -35,8 +36,10 @@ import org.silverpeas.core.util.JSONCodec;
  * This server event is sent on successful user session opening and on user session ending.
  * @author Yohann Chastagnier.
  */
-public class UserSessionServerEvent extends CommonServerEvent implements KeepAlwaysLastStored {
+public class UserSessionServerEvent extends CommonServerEvent implements KeepAlwaysLastStored,
+    AfterSentToAllContexts {
 
+  private static final Object DATA_MUTEX = new Object();
   private static final String IS_OPENING_ATTR_NAME = "isOpening";
   private static final String IS_CLOSING_ATTR_NAME = "isClosing";
   private static final String NB_CONNECTED_USERS_ATTR_NAME = "nbConnectedUsers";
@@ -46,6 +49,7 @@ public class UserSessionServerEvent extends CommonServerEvent implements KeepAlw
   private final SessionInfo emitterSession;
   private final boolean opening;
   private final SessionManagement sessionManagement;
+  private String data = null;
 
   /**
    * Hidden constructor.
@@ -76,6 +80,24 @@ public class UserSessionServerEvent extends CommonServerEvent implements KeepAlw
     User emitter = emitterSession.getUserDetail();
     return (!this.opening || !emitterSession.getSessionId().equals(receiverSessionId)) &&
         (!emitter.isDomainRestricted() || emitter.getDomainId().equals(receiver.getDomainId()));
+  }
+
+  @Override
+  public String getData(final String receiverSessionId, final User receiver) {
+    synchronized (DATA_MUTEX) {
+      // data computed one time only
+      if (data == null) {
+        data = super.getData(receiverSessionId, receiver);
+      }
+    }
+    return data;
+  }
+
+  @Override
+  public void afterAllContexts() {
+    synchronized (DATA_MUTEX) {
+      data = null;
+    }
   }
 
   /**
