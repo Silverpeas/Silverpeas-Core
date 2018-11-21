@@ -27,6 +27,7 @@
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
+<%@ page import="java.util.stream.Collectors" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkSilverStatistics.jsp" %>
@@ -35,7 +36,7 @@
 // Recuperation des parametres
 ArrayLine arrayLine = null;
 Iterator   iter = null;
-Collection cResultData = (Collection)request.getAttribute("ConnectedUsersList");
+Collection<SessionInfo> cResultData = (Collection)request.getAttribute("ConnectedUsersList");
 UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
 
 %>
@@ -97,8 +98,13 @@ function DoIdle()
           ArrayPane arrayPane = gef.getArrayPane("List", "", request,session);
           arrayPane.setVisibleLineNumber(20);
 
-		  if (cResultData != null)
-			  arrayPane.setTitle(cResultData.size()+" "+resources.getString("silverStatisticsPeas.usersWithSession"));
+  if (cResultData != null) {
+    arrayPane.setTitle(
+        cResultData.size() + " " + resources.getString("silverStatisticsPeas.openedSessions") +
+            ", " + cResultData.stream().map(s -> s.getUserDetail().getId()).distinct()
+            .collect(Collectors.toList()).size() + " " +
+            resources.getString("silverStatisticsPeas.usersWithSession"));
+  }
 
 		  ArrayColumn arrayColumn1 = arrayPane.addArrayColumn("");
 		  arrayColumn1.setSortable(false);
