@@ -228,7 +228,7 @@ public class NotificationManagerSettings {
    * @return the timeout as long (seconds).
    */
   public static int getSseAsyncJobTrigger() {
-    return settings.getInteger("notification.see.job.trigger", DEFAULT_SSE_JOB_TRIGGER);
+    return settings.getInteger("notification.sse.job.trigger", DEFAULT_SSE_JOB_TRIGGER);
   }
 
   /**
@@ -236,7 +236,15 @@ public class NotificationManagerSettings {
    * @return the timeout as long (milliseconds).
    */
   public static int getSseAsyncTimeout() {
-    return settings.getInteger("notification.see.async.timeout", DEFAULT_SSE_ASYNC_TIMEOUT) * MS;
+    return settings.getInteger("notification.sse.async.timeout", DEFAULT_SSE_ASYNC_TIMEOUT) * MS;
+  }
+
+  /**
+   * Gets the number of thread used to perform the send of a server event.
+   * @return the maximum number of thread for send thread pool.
+   */
+  public static int getSseSendMaxThreadPool() {
+    return settings.getInteger("notification.sse.send.thread.pool.max", 8);
   }
 
 
@@ -246,7 +254,7 @@ public class NotificationManagerSettings {
    */
   public static int getSseStoreEventLifeTime() {
     return settings
-        .getInteger("notification.see.store.event.lifetime", DEFAULT_SSE_STORE_EVENT_LIFETIME) * MS;
+        .getInteger("notification.sse.store.event.lifetime", DEFAULT_SSE_STORE_EVENT_LIFETIME) * MS;
   }
 
 
@@ -255,7 +263,7 @@ public class NotificationManagerSettings {
    * @return true in order to enable, false otherwise.
    */
   public static boolean isSseEnabled() {
-    return settings.getBoolean("notification.see.enabled", true);
+    return settings.getBoolean("notification.sse.enabled", true);
   }
 
 
@@ -265,7 +273,7 @@ public class NotificationManagerSettings {
    */
   public static boolean isSseEnabledFor(final ServerEvent serverEvent) {
     return isSseEnabled() && settings
-        .getBoolean("notification.see.event." + serverEvent.getName().asString() + ".enabled",
+        .getBoolean("notification.sse.event." + serverEvent.getName().asString() + ".enabled",
             true);
   }
 

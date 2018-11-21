@@ -33,6 +33,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -143,15 +144,14 @@ public class RequestTaskManager {
    * @param taskClass the class of the {@link AbstractRequestTask} implementation which provides
    * the
    * {@link AbstractRequestTask.Request}.
-   * @param request the request to process.
+   * @param newRequest the request to process.
    * @param <T> the type of the task.
    * @param <C> the type of the task process context.
    */
   @SuppressWarnings("unchecked")
   public static <T extends AbstractRequestTask, C extends AbstractRequestTask.ProcessContext>
-  void push(
-      Class<T> taskClass, Request<C> request) {
-    RequestTaskMonitor<T, C> monitor = tasks.computeIfAbsent(taskClass, c -> {
+  void push(Class<T> taskClass, Request<C> newRequest) {
+    final RequestTaskMonitor<T, C> monitor = tasks.computeIfAbsent(taskClass, c -> {
       AbstractRequestTask<C> taskForInit = (AbstractRequestTask) ServiceProvider.getService(c);
       return new RequestTaskMonitor<>(taskForInit);
     });
@@ -161,8 +161,31 @@ public class RequestTaskManager {
     monitor.acquireAccess();
     synchronized (monitor.requestList) {
       debug(taskClass, "pushing new request {0} ({1} requests queued before push)",
-          request.getClass().getSimpleName(), monitor.requestList.size());
-      monitor.requestList.add(request);
+          newRequest.getClass().getSimpleName(), monitor.requestList.size());
+      final String uniqueType = newRequest.getReplacementId();
+      boolean replaced = false;
+      if (uniqueType != null) {
+        debug(taskClass, "searching awaiting request {0} of type {1} to replace",
+            newRequest.getClass().getSimpleName(), uniqueType);
+        final ListIterator<Request<C>> it = monitor.requestList.listIterator();
+        while (it.hasNext()) {
+          final Request<C> queueRequest = it.next();
+          if (uniqueType.equals(queueRequest.getReplacementId())) {
+            debug(taskClass, "replacing awaiting request {0} of type {1} with new one",
+                newRequest.getClass().getSimpleName(), uniqueType);
+            it.set(newRequest);
+            replaced = true;
+            break;
+          }
+        }
+        if (!replaced) {
+          debug(taskClass, "no awaiting request {0} of type {1} to replace",
+              newRequest.getClass().getSimpleName(), uniqueType);
+        }
+      }
+      if (!replaced) {
+        monitor.requestList.add(newRequest);
+      }
       startIfNecessary(monitor);
     }
   }

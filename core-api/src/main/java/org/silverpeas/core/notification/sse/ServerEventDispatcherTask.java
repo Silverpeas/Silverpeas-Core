@@ -24,9 +24,11 @@
 package org.silverpeas.core.notification.sse;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.notification.sse.behavior.AfterSentToAllContexts;
 import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
 import org.silverpeas.core.notification.sse.behavior.KeepAlwaysLastStored;
 import org.silverpeas.core.notification.sse.behavior.StoreLastOnly;
+import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 
@@ -39,10 +41,14 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import static java.text.MessageFormat.format;
-import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getSseStoreEventLifeTime;
-import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.isSseEnabledFor;
+import static java.util.Collections.emptyList;
+import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.*;
+import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.defaultConfig;
 
 /**
  * This task is in charge of dispatching server events without blocking the thread of the emitter.
@@ -210,14 +216,47 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
     }
 
     @Override
-    public void process(Object context) throws InterruptedException {
+    public String getReplacementId() {
+      return serverEventToDispatch instanceof StoreLastOnly
+          ? serverEventToDispatch.getName().asString()
+          : null;
+    }
+
+    @Override
+    public void process(Object context) {
       final List<SilverpeasAsyncContext> safeContexts = getSafeContexts();
       if (!safeContexts.isEmpty()) {
-        SseLogger.get().debug(() -> format("Sending {0}", serverEventToDispatch));
-        safeContexts.forEach(
-            asyncContext -> push(this.serverEventToDispatch, asyncContext, completeAfterSend()));
+        sendTo(safeContexts);
       }
       serverEventStore.add(serverEventToDispatch);
+    }
+
+    private void sendTo(final List<SilverpeasAsyncContext> safeContexts) {
+      SseLogger.get().debug(() -> format("Sending {0}", serverEventToDispatch));
+      final List<Callable<Void>> threadedSends = safeContexts
+          .stream()
+          .map(c -> (Callable<Void>) () -> {
+            push(this.serverEventToDispatch, c, completeAfterSend());
+            return null;
+          }).collect(Collectors.toList());
+      List<Future<Void>> sendResult;
+      try {
+        sendResult = ManagedThreadPool.getPool().invoke(threadedSends,
+            defaultConfig().withMaxThreadPoolSizeOf(getSseSendMaxThreadPool()));
+      } catch (Exception e) {
+        SseLogger.get().error(e);
+        sendResult = emptyList();
+      }
+      sendResult.forEach(s -> {
+        try {
+          s.get();
+        } catch (Exception e) {
+          SseLogger.get().error(e);
+        }
+      });
+      if (serverEventToDispatch instanceof AfterSentToAllContexts) {
+        ((AfterSentToAllContexts) serverEventToDispatch).afterAllContexts();
+      }
     }
 
     /**
@@ -234,34 +273,6 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
      */
     boolean completeAfterSend() {
       return false;
-    }
-  }
-
-  private static class AimedServerEventDispatchRequest extends ServerEventDispatchRequest {
-    private final SilverpeasAsyncContext silverpeasAsyncContext;
-    private final boolean completeAfterSend;
-
-    /**
-     * @param serverEventToDispatch the server event to dispatch.
-     * @param silverpeasAsyncContext the asynchronous context.
-     * @param completeAfterSend true if the complete async context method must be called after
-     * the send.
-     */
-    AimedServerEventDispatchRequest(final ServerEvent serverEventToDispatch,
-        final SilverpeasAsyncContext silverpeasAsyncContext, final boolean completeAfterSend) {
-      super(serverEventToDispatch);
-      this.silverpeasAsyncContext = silverpeasAsyncContext;
-      this.completeAfterSend = completeAfterSend;
-    }
-
-    @Override
-    List<SilverpeasAsyncContext> getSafeContexts() {
-      return Collections.singletonList(silverpeasAsyncContext);
-    }
-
-    @Override
-    boolean completeAfterSend() {
-      return completeAfterSend;
     }
   }
 
