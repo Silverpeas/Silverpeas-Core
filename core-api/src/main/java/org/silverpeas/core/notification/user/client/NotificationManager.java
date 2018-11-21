@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.client;
 
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.ArrayList;
@@ -43,57 +44,57 @@ public interface NotificationManager {
 
   NotificationManager forLanguage(String language);
 
-  ArrayList<Properties> getNotificationAddresses(int aUserId) throws NotificationManagerException;
+  ArrayList<Properties> getNotificationAddresses(int aUserId) throws NotificationException;
 
   Properties getNotificationAddress(int aNotificationAddressId, int aUserId)
-      throws NotificationManagerException;
+      throws NotificationException;
 
-  ArrayList<Properties> getDefaultAddresses(int aUserId) throws NotificationManagerException;
+  ArrayList<Properties> getDefaultAddresses(int aUserId) throws NotificationException;
 
-  int getDefaultAddress(int aUserId) throws NotificationManagerException;
+  int getDefaultAddress(int aUserId) throws NotificationException;
 
   ArrayList<Properties> getNotifPriorities();
 
   ArrayList<Properties> getNotifUsages();
 
-  ArrayList<Properties> getNotifChannels() throws NotificationManagerException;
+  ArrayList<Properties> getNotifChannels() throws NotificationException;
 
-  ArrayList<Properties> getNotifPreferences(int aUserId) throws NotificationManagerException;
+  ArrayList<Properties> getNotifPreferences(int aUserId) throws NotificationException;
 
-  Properties getNotifPreference(int aPrefId, int aUserId) throws NotificationManagerException;
+  Properties getNotifPreference(int aPrefId, int aUserId) throws NotificationException;
 
   void setDefaultAddress(int aNotificationAddressId, int aUserId)
-      throws NotificationManagerException;
+      throws NotificationException;
 
-  void addAddress(int aNotificationAddressId, int aUserId) throws NotificationManagerException;
+  void addAddress(int aNotificationAddressId, int aUserId) throws NotificationException;
 
   void savePreferences(int aUserId, int aInstanceId, int aMessageType, int aDestinationId)
-      throws NotificationManagerException;
+      throws NotificationException;
 
   void saveNotifAddress(int aNotificationAddressId, int aUserId, String aNotifName, int aChannelId,
-      String aAddress, String aUsage) throws NotificationManagerException;
+      String aAddress, String aUsage) throws NotificationException;
 
-  void deletePreference(int aPreferenceId) throws NotificationManagerException;
+  void deletePreference(int aPreferenceId) throws NotificationException;
 
-  void deleteNotifAddress(int aNotificationAddressId) throws NotificationManagerException;
+  void deleteNotifAddress(int aNotificationAddressId) throws NotificationException;
 
-  void deleteAllAddress(int userId) throws NotificationManagerException;
+  void deleteAllAddress(int userId) throws NotificationException;
 
   void testNotifAddress(int aNotificationAddressId, int aUserId)
-      throws NotificationManagerException;
+      throws NotificationException;
 
   void notifyUsers(NotificationParameters params, String[] userIds)
-      throws NotificationManagerException;
+      throws NotificationException;
 
   void notifyExternals(NotificationParameters params, Collection<ExternalRecipient> externals)
-      throws NotificationManagerException;
+      throws NotificationException;
 
-  Collection<UserRecipient> getUsersFromGroup(String groupId) throws NotificationManagerException;
+  Collection<UserRecipient> getUsersFromGroup(String groupId) throws NotificationException;
 
-  String getComponentFullName(String compInst) throws NotificationManagerException;
+  String getComponentFullName(String compInst) throws NotificationException;
 
   String getComponentFullName(String compInst, String separator, boolean isPathToComponent)
-      throws NotificationManagerException;
+      throws NotificationException;
 
   boolean isMultiChannelNotification();
 }

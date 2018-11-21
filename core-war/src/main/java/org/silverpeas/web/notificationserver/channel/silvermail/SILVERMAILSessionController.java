@@ -26,19 +26,18 @@
 package org.silverpeas.web.notificationserver.channel.silvermail;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.model.SentNotificationDetail;
 import org.silverpeas.core.notification.user.client.model.SentNotificationInterface;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
-    .QUERY_ORDER_BY;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria.QUERY_ORDER_BY;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
@@ -57,8 +56,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
-import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
-    .QUERY_ORDER_BY.*;
+import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria.QUERY_ORDER_BY.*;
 
 public class SILVERMAILSessionController extends AbstractComponentSessionController {
 
@@ -73,18 +71,11 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
       SILVERMAILSessionController.class.getName() + "###space###";
   private static final String UNKNOWN_SOURCE_BUNDLE_KEY = "UnknownSource";
   private static final int DEFAULT_PAGINATION_SIZE = 25;
-  private String currentFunction;
-  private long currentMessageId = -1;
   private Set<String> selectedUserNotificationIds = new HashSet<>();
   private PaginationPage pagination;
   private QUERY_ORDER_BY orderBy;
   private Function<String, String> sourceSupplier = this::getSource;
 
-  /**
-   * Constructor declaration
-   *
-   * @see
-   */
   public SILVERMAILSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
     super(
@@ -110,88 +101,33 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
-  public String getCurrentFunction() {
-    return currentFunction;
-  }
-
-  /**
-   * Method declaration
-   *
-   * @param currentFunction
-   * @see
-   */
-  public void setCurrentFunction(String currentFunction) {
-    this.currentFunction = currentFunction;
-  }
-
   public Set<String> getSelectedUserNotificationIds() {
     return selectedUserNotificationIds;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param folderName
-   * @return
-   * @see
-   */
   public SilverpeasList<UserNotificationUIEntity> getFolderMessageList(String folderName) {
     final SilverpeasList<SILVERMAILMessage> messages;
     try {
       messages =
           SILVERMAILPersistence.getMessageOfFolder(getUserId(), folderName, pagination, orderBy);
-    } catch (SILVERMAILException e) {
-      throw new org.silverpeas.core.SilverpeasRuntimeException(e);
+    } catch (Exception e) {
+      throw new SilverpeasRuntimeException(e);
     }
     final Function<SILVERMAILMessage, UserNotificationUIEntity> converter =
         n -> new UserNotificationUIEntity(n, getSelectedUserNotificationIds());
     return UserNotificationUIEntity.convert(messages, converter);
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @throws NotificationManagerException
-   * @see
-   */
-  public List<SentUserNotificationItem> getUserMessageList()
-      throws NotificationManagerException {
-    try {
+  public List<SentUserNotificationItem> getUserMessageList() throws NotificationException {
       return getNotificationInterface().getAllNotifByUser(getUserId()).stream()
           .map(n -> new SentUserNotificationItem(n, sourceSupplier))
           .collect(Collectors.toList());
-    } catch (NotificationManagerException e) {
-      throw new NotificationManagerException(
-          "SILVERMAILSessionController.getUserMessageList()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @throws NotificationManagerException
-   * @see
-   */
-  public SentNotificationDetail getSentNotification(String notifId)
-      throws NotificationManagerException {
+  public SentNotificationDetail getSentNotification(String notifId) throws NotificationException {
     SentNotificationDetail sentNotification = null;
-    try {
       sentNotification = getNotificationInterface().getNotification(Integer.parseInt(notifId));
       sentNotification.setSource(getSource(sentNotification.getComponentId()));
-    } catch (NotificationManagerException e) {
-      throw new NotificationManagerException(
-          "SILVERMAILSessionController.getSentNotification()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
     return sentNotification;
   }
 
@@ -232,67 +168,23 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
    * Delete the sent message notification
    *
    * @param notifId
-   * @throws NotificationManagerException
+   * @throws NotificationException
    */
-  public void deleteSentNotif(String notifId) throws NotificationManagerException {
-    try {
+  public void deleteSentNotif(String notifId) throws NotificationException {
       getNotificationInterface().deleteNotif(Integer.parseInt(notifId), getUserId());
-    } catch (NotificationManagerException e) {
-      throw new NotificationManagerException(
-          "SILVERMAILSessionController.deleteSentNotif()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
   }
 
-  public void deleteAllSentNotif() throws NotificationManagerException {
-    try {
+  public void deleteAllSentNotif() throws NotificationException {
       getNotificationInterface().deleteNotifByUser(getUserId());
-    } catch (NotificationManagerException e) {
-      throw new NotificationManagerException(
-          "SILVERMAILSessionController.deleteAllSentNotif()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
   }
 
-  private SentNotificationInterface getNotificationInterface()
-      throws NotificationManagerException {
+  private SentNotificationInterface getNotificationInterface() throws NotificationException {
     return SentNotificationInterface.get();
   }
 
-  /**
-   * Method declaration
-   *
-   * @param messageId
-   * @return
-   * @see
-   */
   public SILVERMAILMessage getMessage(long messageId)
       throws SILVERMAILException {
     return SILVERMAILPersistence.getMessage(messageId);
-  }
-
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
-  public long getCurrentMessageId() {
-    return currentMessageId;
-  }
-
-  /**
-   * Method declaration
-   *
-   * @param value
-   * @see
-   */
-  public void setCurrentMessageId(long value) {
-    currentMessageId = value;
-  }
-
-  public SILVERMAILMessage getCurrentMessage() throws SILVERMAILException {
-    return getMessage(currentMessageId);
   }
 
   /**
@@ -306,9 +198,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
       long notificationId = Long.parseLong(notifId);
       SILVERMAILPersistence.deleteMessage(notificationId, getUserId());
     } catch (SILVERMAILException e) {
-      throw new SILVERMAILException(
-          "SILVERMAILSessionController.deleteMessage()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new SILVERMAILException(e);
     }
   }
 

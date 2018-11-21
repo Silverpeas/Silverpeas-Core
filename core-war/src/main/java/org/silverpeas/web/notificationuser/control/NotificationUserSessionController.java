@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.notificationuser.control;
 
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.util.StringUtil;
@@ -55,10 +55,10 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
   /**
    * @param notification the notification to send
-   * @throws NotificationManagerException thrown on error
+   * @throws NotificationException thrown on error
    */
   @SuppressWarnings("StatementWithEmptyBody")
-  public void sendMessage(Notification notification) throws NotificationManagerException {
+  public void sendMessage(Notification notification) throws NotificationException {
     NotificationSender notifSender = new NotificationSender(null);
     NotificationMetaData notifMetaData = notification.toNotificationMetaData();
     notifMetaData.setSender(getUserId());
@@ -77,8 +77,14 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     notifSender.notifyUser(notification.getChannel(), notifMetaData);
   }
 
-  private String[] getIdsArrayFromIdsLine(String src) {
-    return NotificationSender.getIdsArrayFromIdsLine(src);
+  private static String[] lineToArray(String src) {
+    final String[] result;
+    if (StringUtil.isNotDefined(src)) {
+      result = new String[0];
+    } else {
+      result = src.split("_");
+    }
+    return result;
   }
 
   public Notification initTargets(String theTargetsUsers, String theTargetsGroups) {
@@ -94,7 +100,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
       if ("Administrators".equals(theTargetsUsers)) {
         idUsers = getOrganisationController().getAdministratorUserIds(getUserId());
       } else {
-        idUsers = this.getIdsArrayFromIdsLine(theTargetsUsers);
+        idUsers = lineToArray(theTargetsUsers);
       }
     }
     return idUsers;
@@ -103,7 +109,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
   private String[] initTargetsGroups(String theTargetsGroups) {
     String[] idGroups = new String[0];
     if (theTargetsGroups != null && theTargetsGroups.length() > 0) {
-      idGroups = this.getIdsArrayFromIdsLine(theTargetsGroups);
+      idGroups = lineToArray(theTargetsGroups);
     }
     return idGroups;
   }

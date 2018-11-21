@@ -58,7 +58,7 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.exception.UtilTrappedException;
 import org.silverpeas.core.notification.message.MessageNotifier;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -335,7 +335,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       NotificationSender sender = new NotificationSender(null);
       try {
         sender.notifyUser(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL, notifMetaData);
-      } catch (NotificationManagerException e) {
+      } catch (NotificationException e) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }

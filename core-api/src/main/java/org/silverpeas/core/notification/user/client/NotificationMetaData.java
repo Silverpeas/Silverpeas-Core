@@ -25,6 +25,7 @@ package org.silverpeas.core.notification.user.client;
 
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -277,7 +278,7 @@ public class NotificationMetaData implements java.io.Serializable {
           templateMessageFooter
               .setAttribute(notification_receiver_groups.toString(), receiver_groups);
         }
-      } catch (NotificationManagerException e) {
+      } catch (NotificationException e) {
         SilverTrace.warn("notificationManager",
             "NotificationMetaData.getContent()",
             "root.EX_ADD_USERS_FAILED", e);
@@ -686,9 +687,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * If the sender is identified, it is removed from the result.<br>
    * No internal data of the current {@link NotificationMetaData} is updated.
    * @return the complete list of users that will receive the notification.
-   * @throws NotificationManagerException if an error occurs
+   * @throws NotificationException if an error occurs
    */
-  public Set<UserRecipient> getAllUserRecipients() throws NotificationManagerException {
+  public Set<UserRecipient> getAllUserRecipients() throws NotificationException {
     return getAllUserRecipients(false);
   }
 
@@ -700,10 +701,10 @@ public class NotificationMetaData implements java.io.Serializable {
    * recipients to exclude will be updated. This container is provided by {@link
    * #getUserRecipientsToExclude()}. If false, nothing is done.
    * @return the complete list of users that will receive the notification.
-   * @throws NotificationManagerException if an error occurs
+   * @throws NotificationException if an error occurs
    */
   public Set<UserRecipient> getAllUserRecipients(boolean updateInternalUserRecipientsToExclude)
-      throws NotificationManagerException {
+      throws NotificationException {
 
     Set<UserRecipient> allUniqueUserRecipients = new HashSet<>();
     Collection<UserRecipient> userRecipients = getUserRecipients();
@@ -729,7 +730,7 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   private Set<UserRecipient> getUsersForReceiverBlock()
-      throws NotificationManagerException {
+      throws NotificationException {
     HashSet<UserRecipient> usersSet = new HashSet<>();
     usersSet.addAll(getUserRecipients());
     for (GroupRecipient group : getGroupRecipients()) {
@@ -753,7 +754,7 @@ public class NotificationMetaData implements java.io.Serializable {
     return res1 || res2;
   }
 
-  private String getUserReceiverFormattedList() throws NotificationManagerException {
+  private String getUserReceiverFormattedList() throws NotificationException {
     StringBuilder users = new StringBuilder();
     if (NotificationManagerSettings.isDisplayingReceiversInNotificationMessageEnabled() && this.displayReceiversInFooter) {
       Set<UserRecipient> usersSet = getUsersForReceiverBlock();

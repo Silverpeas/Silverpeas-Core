@@ -24,12 +24,11 @@
 package org.silverpeas.core.notification.user;
 
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
 import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
-import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -79,7 +78,7 @@ public class DefaultUserNotification implements UserNotification {
         } else {
           sender.notifyUser(notification);
         }
-      } catch (final NotificationManagerException e) {
+      } catch (final NotificationException e) {
         SilverLogger.getLogger(this).warn(e);
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);

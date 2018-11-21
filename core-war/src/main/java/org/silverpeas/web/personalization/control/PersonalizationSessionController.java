@@ -26,7 +26,7 @@ package org.silverpeas.web.personalization.control;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.notification.user.client.NotificationManager;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
@@ -84,7 +84,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     int userId = Integer.parseInt(getUserId());
     try {
       return notificationManager.getNotificationAddresses(userId);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new PeasCoreException("PersonalizationSessionController.getNotificationAddresses()",
           SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_NOTIFICATION_ADDRESSES", e);
     }
@@ -104,7 +104,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
 
     try {
       return notificationManager.getNotificationAddress(id, userId);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new PeasCoreException("PersonalizationSessionController.getNotificationAddress()",
           SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_NOTIFICATION_ADDRESS", "Id="
           + aNotificationAddressId, e);
@@ -120,7 +120,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   public ArrayList<Properties> getNotifChannels() throws PeasCoreException {
     try {
       return notificationManager.getNotifChannels();
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new PeasCoreException("PersonalizationSessionController.getNotifChannels()",
           SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_NOTIFICATION_CHANNELS", e);
     }
@@ -140,7 +140,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
 
     try {
       return notificationManager.getNotifPreference(id, userId);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new PeasCoreException("PersonalizationSessionController.getNotifPreference()",
           SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_NOTIFICATION_PREFERENCE",
           "Id=" + aPreferenceId, e);
@@ -158,7 +158,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
 
     try {
       return notificationManager.getNotifPreferences(userId);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new PeasCoreException("PersonalizationSessionController.getNotifPreferences()",
           SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_NOTIFICATION_PREFERENCES", e);
     }
@@ -188,7 +188,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     try {
       notificationManager.saveNotifAddress(notifAddressId, userId, aNotifName,
           channelId, aAddress, aUsage);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new PeasCoreException("PersonalizationSessionController.saveNotifAddress()",
           SilverpeasException.ERROR, "personalizationPeas.EX_CANT_SET_NOTIFICATION_ADDRESS",
           "aNotifAddressId=" + aNotifAddressId + "|aNotifName=" + aNotifName + "|aChannelId="
@@ -208,7 +208,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
 
     try {
       notificationManager.deleteNotifAddress(notifAddressId);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new PeasCoreException(
           "PersonalizationSessionController.deleteNotifAddress()",
           SilverpeasException.ERROR,
@@ -226,7 +226,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   public void deletePreference(String aPreferenceId) throws PeasCoreException {
     try {
       notificationManager.deletePreference(Integer.parseInt(aPreferenceId));
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new PeasCoreException(
           "PersonalizationSessionController.deletePreference()",
           SilverpeasException.ERROR,
@@ -247,7 +247,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
 
     try {
       notificationManager.testNotifAddress(notifAddressId, userId);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new PeasCoreException(
           "PersonalizationSessionController.testNotifAddress()",
           SilverpeasException.ERROR,
@@ -267,7 +267,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     try {
       return notificationManager.getNotificationAddress(
           notificationManager.getDefaultAddress(userId), userId);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new PeasCoreException(
           "PersonalizationSessionController.getDefaultAddress()",
           SilverpeasException.ERROR,
@@ -288,7 +288,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     try {
       notificationManager.deleteAllAddress(userId);
       notificationManager.setDefaultAddress(notifAddressId, userId);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new PeasCoreException("PersonalizationSessionController.setDefaultAddress()",
           SilverpeasException.ERROR, "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS",
           "aNotifAddressId=" + aNotifAddressId, e);
@@ -310,7 +310,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     try {
       notificationManager.savePreferences(userId,
           Integer.parseInt(componentId), -1, Integer.parseInt(notificationId));
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new PeasCoreException("PersonalizationSessionController.addPreference()",
           SilverpeasException.ERROR, "personalizationPeas.EX_CANT_ADD_NOTIFICATION_PREFERENCE",
           "componentId=" + componentId + "|priorityId=" + priorityId + "|notificationId="
@@ -504,7 +504,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
           notifAddressId = Integer.parseInt(channel);
           notificationManager.addAddress(notifAddressId, userId);
         }
-      } catch (NotificationManagerException e) {
+      } catch (NotificationException e) {
         throw new PeasCoreException("PersonalizationSessionController.setDefaultAddress()",
             SilverpeasException.ERROR, "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS",
             "aNotifAddressId=" + notifAddressId, e);

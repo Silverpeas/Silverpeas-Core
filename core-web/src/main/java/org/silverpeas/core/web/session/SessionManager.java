@@ -34,7 +34,7 @@ import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
 import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -408,7 +408,7 @@ public class SessionManager implements SessionManagement, Initialization {
       try {
         notifyEndOfSession(si.getUserDetail().getId(), currentTime
             + scheduledSessionManagementTimeStamp, si.getSessionId());
-      } catch (NotificationManagerException ex) {
+      } catch (NotificationException ex) {
         SilverLogger.getLogger(this)
             .error("Unable to notify on the session expiration for user {0}",
                 new String[]{log(si)}, ex);
@@ -430,7 +430,7 @@ public class SessionManager implements SessionManagement, Initialization {
    * @param sessionId the id of the session about to expire.
    */
   private void notifyEndOfSession(String userId, long endOfSession, String sessionId)
-      throws NotificationManagerException {
+      throws NotificationException {
     UserDetail user = UserDetail.getById(userId);
     String userLanguage = DisplayI18NHelper.getDefaultLanguage();
     if (user != null) {

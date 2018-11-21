@@ -29,7 +29,7 @@ import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.notification.user.client.GroupRecipient;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
@@ -192,7 +192,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
     getNotificationMetaData().addExtraMessage(message, language);
   }
 
-  public void sendNotification() throws NotificationManagerException  {
+  public void sendNotification() throws NotificationException {
     notificationSender.notifyUser(getNotificationMetaData().manualUserNotification());
   }
 }

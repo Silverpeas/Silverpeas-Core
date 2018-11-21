@@ -49,7 +49,7 @@ import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -534,10 +534,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @param txtTitle
    * @param txtMessage
    * @param selectedUsers
-   * @throws NotificationManagerException
+   * @throws NotificationException
    */
   public void sendMessage(String compoId, String txtTitle, String txtMessage,
-      UserRecipient[] selectedUsers) throws NotificationManagerException {
+      UserRecipient[] selectedUsers) throws NotificationException {
     NotificationSender notifSender = new NotificationSender(compoId);
     int notifTypeId = NotificationParameters.ADDRESS_DEFAULT;
     int priorityId = 0;

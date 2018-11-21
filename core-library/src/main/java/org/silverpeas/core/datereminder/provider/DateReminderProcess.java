@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.datereminder.provider;
 
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
 import org.silverpeas.core.persistence.EntityReference;
 
@@ -37,6 +37,6 @@ public interface DateReminderProcess {
    * @return the resource
    */
   EntityReference perform(PersistentResourceDateReminder dateReminder)
-      throws NotificationManagerException;
+      throws NotificationException;
 
 }

@@ -28,7 +28,6 @@ package org.silverpeas.web.notificationserver.channel.silvermail;
  * @author eDurand
  */
 
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -36,6 +35,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class declaration
@@ -59,10 +59,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
    * Hash table of RequestHandler instances, keyed by class name. This is used for performance
    * optimization, to avoid the need to load a class by name to process each request.
    */
-  private HashMap handlerHash = new HashMap();
-
-  public SILVERMAILRequestRouter() {
-  }
+  private static final Map<String, SILVERMAILRequestHandler> handlerHash = new HashMap<>();
 
   public SILVERMAILSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
@@ -88,8 +85,6 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
 
     try {
       requestHandler = getHandlerInstance(function);
-      componentSC.setCurrentFunction(function);
-
       // Return the URL of the view the RequestHandler instance
       // chooses after doing the work of processing the request
       destination = requestHandler.handleRequest(componentSC, request);
@@ -106,10 +101,10 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
    * table once instantiated, so after the initial use of Class.forName() this method is very fast
    * and does not rely on reflection.
    */
-  protected SILVERMAILRequestHandler getHandlerInstance(String action) throws SILVERMAILException {
+  private static SILVERMAILRequestHandler getHandlerInstance(String action)
+      throws SILVERMAILException {
     String handlerName = REQUEST_HANDLER_PACKAGE + "." + action;
-    SILVERMAILRequestHandler requestHandler =
-        (SILVERMAILRequestHandler) handlerHash.get(handlerName);
+    SILVERMAILRequestHandler requestHandler = handlerHash.get(handlerName);
 
     if (requestHandler == null) {
       // We don't have a handler instance associated with this action,
@@ -120,9 +115,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
 
         // Check the class we obtained implements the RequestHandler interface
         if (!SILVERMAILRequestHandler.class.isAssignableFrom(handlerClass)) {
-          throw new SILVERMAILException("SILVERMAILRequestRouter.getHandlerInstance()",
-              SilverpeasException.ERROR, "silvermail.EX_NOT_A_REQUESTHANDLER",
-              "Class=" + handlerName);
+          throw new SILVERMAILException("No such request handler " + handlerName);
         }
         // Instantiate the request handler object
         requestHandler = (SILVERMAILRequestHandler) handlerClass.newInstance();
@@ -130,12 +123,10 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
         // further requests from this user
         handlerHash.put(handlerName, requestHandler);
       } catch (ClassNotFoundException ex) {
-        throw new SILVERMAILException("SILVERMAILRequestRouter.getHandlerInstance()",
-            SilverpeasException.ERROR, "silvermail.EX_NO_HANDLER", "Class=" + handlerName, ex);
+        throw new SILVERMAILException("No such request handler " + handlerName, ex);
       } catch (InstantiationException | IllegalAccessException ex) {
         // It probably doesn't have a no-argument constructor
-        throw new SILVERMAILException("SILVERMAILRequestRouter.getHandlerInstance()",
-            SilverpeasException.ERROR, "silvermail.EX_CANT_BE_INSTANCIATED", "Class=" + handlerName,
+        throw new SILVERMAILException("Cannot execute the request handler " + handlerName,
             ex);
       }
     }
@@ -144,11 +135,7 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
     return requestHandler;
   }
 
-  /**
-   * @param action
-   * @return
-   */
-  protected String extractFunctionName(String action) {
+  private static String extractFunctionName(String action) {
     String result = action;
 
     if (action.endsWith(".jsp")) {

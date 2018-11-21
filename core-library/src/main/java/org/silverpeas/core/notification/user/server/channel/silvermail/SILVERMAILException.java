@@ -23,72 +23,24 @@
  */
 package org.silverpeas.core.notification.user.server.channel.silvermail;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 /**
- * Title: Description: Copyright: Copyright (c) 2001 Company:
- * @author eDurand
- * @version 1.0
+ * Exception thrown by the Silver mail processing chain.
  */
 public class SILVERMAILException extends SilverpeasException {
 
-  private static final long serialVersionUID = 1266360603211222081L;
+  private static final long serialVersionUID = 4801319564211794891L;
 
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   */
-  public SILVERMAILException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public SILVERMAILException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   *
-   */
-  public SILVERMAILException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public SILVERMAILException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   *
-   */
-  public SILVERMAILException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   *
-   */
-  public SILVERMAILException(String callingClass, int errorLevel, String message,
-      String extraParams,
-      Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * -------------------------------------------------------------------------- getModule getModule
-   */
-  @Override
-  public String getModule() {
-    return "notificationserver";
+  public SILVERMAILException(final Throwable cause) {
+    super(cause);
   }
 }

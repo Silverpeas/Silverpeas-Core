@@ -44,6 +44,7 @@ public class NotificationUserEventListener extends CDIResourceEventListener<User
   private NotificationSchema notificationSchema;
 
   @Override
+  @Transactional
   public void onDeletion(final UserEvent event) throws Exception {
     dereferenceUserFromUserNotification(event);
   }

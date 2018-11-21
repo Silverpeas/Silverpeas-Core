@@ -28,7 +28,7 @@ package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.model.SentNotificationDetail;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
@@ -58,7 +58,7 @@ public class ReadSentNotification implements SILVERMAILRequestHandler {
     String notifId = request.getParameter("NotifId");
     try {
       sentNotification = silvermailScc.getSentNotification(notifId);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
 
     }
     request.setAttribute("SentNotification", sentNotification);

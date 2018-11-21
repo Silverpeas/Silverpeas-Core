@@ -35,28 +35,14 @@ import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessio
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * Class declaration
- * @author
- * @version %I%, %G%
- */
 public class DeleteAllMessages implements SILVERMAILRequestHandler {
 
-  /**
-   * Method declaration
-   * @param componentSC
-   * @param request
-   * @return
-   * @throws SILVERMAILException
-   *
-   */
   public String handleRequest(ComponentSessionController componentSC,
       HttpServletRequest request) throws SILVERMAILException {
     SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
 
     try {
-      SILVERMAILPersistence.deleteAllMessagesInFolder(componentSC.getUserId(),
-          request.getParameter("folder"));
+      SILVERMAILPersistence.deleteAllMessagesInFolder(componentSC.getUserId());
     } catch (NumberFormatException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }

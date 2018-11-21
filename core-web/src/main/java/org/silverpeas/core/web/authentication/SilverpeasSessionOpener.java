@@ -26,7 +26,7 @@ package org.silverpeas.core.web.authentication;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -357,7 +357,7 @@ public class SilverpeasSessionOpener {
         return null;
       }
       return passwordChangeURL;
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       SilverLogger.getLogger(this)
           .error("Cannot send the password expiration alert for user {0}", new String[]{userId}, e);
       return null;
@@ -365,7 +365,7 @@ public class SilverpeasSessionOpener {
   }
 
   private void sendPopupNotificationAboutPwdExpiration(String userId, String fromUserId,
-      String language) throws NotificationManagerException {
+      String language) throws NotificationException {
     LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.peasCore.multilang.peasCoreBundle", language);
     NotificationSender sender = new NotificationSender(null);

@@ -33,6 +33,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.test.extention.TestManagedMock;
@@ -124,7 +125,7 @@ public class CurrentUserNotificationContextTest {
 
   @Test
   public void checkManualUserNotificationWithNoCurrentUserAndLimitationEnabledAndNbReceiversOverLimit() {
-    assertThrows(NotificationManagerException.class, () -> {
+    assertThrows(NotificationException.class, () -> {
       CacheServiceProvider.getRequestCacheService().clearAllCaches();
       enableLimitationAt(3);
       getCurrentUserNotificationContext().checkManualUserNotification(getManualUserOne(4));
@@ -438,7 +439,7 @@ public class CurrentUserNotificationContextTest {
 
   @Test
   public void checkManualUserNotificationWithCurrentUserAndLimitationEnabledAndNbReceiversOverLimit() {
-    assertThrows(NotificationManagerException.class, () -> {
+    assertThrows(NotificationException.class, () -> {
       currentUser.setAccessLevel(UserAccessLevel.USER);
       assertThat(UserDetail.getCurrentRequester().isAccessUser(), is(true));
       enableLimitationAt(3);
@@ -509,7 +510,7 @@ public class CurrentUserNotificationContextTest {
 
   @Test
   public void checkManualUserNotificationWithCurrentGuestUserAndLimitationEnabledAndNbReceiversOverLimit() {
-    assertThrows(NotificationManagerException.class, () -> {
+    assertThrows(NotificationException.class, () -> {
       currentUser.setAccessLevel(UserAccessLevel.GUEST);
       assertThat(UserDetail.getCurrentRequester().isAccessGuest(), is(true));
       enableLimitationAt(3);
@@ -580,7 +581,7 @@ public class CurrentUserNotificationContextTest {
 
   @Test
   public void checkManualUserNotificationWithCurrentAnonymousUserAndLimitationEnabledAndNbReceiversOverLimit() {
-    assertThrows(NotificationManagerException.class, () -> {
+    assertThrows(NotificationException.class, () -> {
       doReturn(true).when(currentUser).isAnonymous();
       assertThat(UserDetail.getCurrentRequester().isAnonymous(), is(true));
       enableLimitationAt(3);

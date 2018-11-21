@@ -23,32 +23,21 @@
  */
 package org.silverpeas.core.web.external.webconnections.dao;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class WebConnectionsRuntimeException extends SilverpeasRuntimeException {
-  private static final long serialVersionUID = -5698912998591946797L;
 
-  public WebConnectionsRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  private static final long serialVersionUID = -7721995560763853640L;
+
+  public WebConnectionsRuntimeException(final String message) {
+    super(message);
   }
 
-  public WebConnectionsRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public WebConnectionsRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public WebConnectionsRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public WebConnectionsRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public WebConnectionsRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "webConnections";
-  }
-
 }

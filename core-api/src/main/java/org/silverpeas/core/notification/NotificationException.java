@@ -21,23 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.usernotification.mock;
+package org.silverpeas.core.notification;
 
-import javax.inject.Named;
+import org.silverpeas.core.SilverpeasException;
 
-import com.silverpeas.admin.notification.AdminNotificationService;
-import com.silverpeas.admin.notification.ComponentJsonPatch;
+/**
+ * Exception thrown when an error occurs while preparing, sending, or treating a notification in
+ * Silverpeas.
+ */
+public class NotificationException extends SilverpeasException {
 
-@Named("adminNotificationService")
-public class AdminNotificationServiceMock implements AdminNotificationService {
+  private static final long serialVersionUID = 2605612279043382365L;
 
-  @Override
-  public void notifyOnDeletionOf(String spaceId, String userId) {
+  public NotificationException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  @Override
-  public void notifyOfComponentConfigurationChange(String componentId, String userId,
-      ComponentJsonPatch changes) {
+  public NotificationException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
+  public NotificationException(final Throwable cause) {
+    super(cause);
+  }
 }

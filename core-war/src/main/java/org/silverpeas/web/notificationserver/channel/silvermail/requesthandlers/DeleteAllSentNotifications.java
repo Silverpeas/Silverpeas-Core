@@ -26,7 +26,7 @@
 
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
@@ -59,7 +59,7 @@ public class DeleteAllSentNotifications implements SILVERMAILRequestHandler {
       silvermailScc.deleteAllSentNotif();
       List<SentUserNotificationItem> sentNotifs = silvermailScc.getUserMessageList();
       request.setAttribute("SentNotifs", sentNotifs);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       SilverLogger.getLogger(this).error(e);
     }
     return "/SILVERMAIL/jsp/sentUserNotifications.jsp";

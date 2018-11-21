@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
@@ -32,10 +31,8 @@ import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessio
 import javax.servlet.http.HttpServletRequest;
 
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.getOrderByFrom;
-import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
-    .getPaginationPageFrom;
-import static org.silverpeas.web.notificationserver.channel.silvermail
-    .SILVERMAILSessionController.INBOX_ORDER_BIES;
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.getPaginationPageFrom;
+import static org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController.INBOX_ORDER_BIES;
 
 /**
  * Class declaration
@@ -45,8 +42,7 @@ public class Main implements SILVERMAILRequestHandler {
   /**
    * Handles the Main request.
    */
-  public String handleRequest(ComponentSessionController componentSC, HttpServletRequest request)
-      throws SILVERMAILException {
+  public String handleRequest(ComponentSessionController componentSC, HttpServletRequest request) {
     HttpRequest httpRequest = HttpRequest.decorate(request);
     SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
 
