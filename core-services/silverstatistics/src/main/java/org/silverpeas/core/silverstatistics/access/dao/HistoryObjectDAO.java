@@ -26,11 +26,15 @@ package org.silverpeas.core.silverstatistics.access.dao;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
+import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 
 import java.sql.Connection;
@@ -44,10 +48,14 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class HistoryObjectDAO {
 
   private static final String HISTORY_TABLE_NAME = "SB_Statistic_History";
+  private static final String USER_ID = "userId";
 
   private static final String QUERY_STATISTIC_INSERT = "INSERT INTO SB_Statistic_History " +
       "(dateStat, heureStat, userId, resourceId, componentId, actionType, resourceType) " +
@@ -75,36 +83,37 @@ public class HistoryObjectDAO {
   private HistoryObjectDAO() {
   }
 
-  /**
-   * @param rs
-   * @param componentName
-   * @return
-   * @throws SQLException
-   */
-  private static Collection<HistoryObjectDetail> getHistoryDetails(ResultSet rs,
-      String componentName) throws SQLException {
-    List<HistoryObjectDetail> list = new ArrayList<>();
+  private static HistoryByUser getHistoryByUser(final ResultSet rs) throws SQLException {
+    String userId = rs.getString(1);
     Date date;
-    String userId;
-    String foreignId;
-
-    while (rs.next()) {
-      try {
-        // First the date of the day is parsed
-        date = DateUtil.parse(rs.getString(1));
-        // Then the hour is set
-        date = DateUtil.getDate(date, rs.getString(2));
-      } catch (java.text.ParseException e) {
-        throw new StatisticRuntimeException(e);
-      }
-      userId = rs.getString(3);
-      foreignId = rs.getString(4);
-      ResourceReference resourceReference = new ResourceReference(foreignId, componentName);
-      HistoryObjectDetail detail = new HistoryObjectDetail(date, userId, resourceReference);
-
-      list.add(detail);
+    try {
+      // First the date of the day is parsed
+      final String[] dateTime = rs.getString(2).split("T");
+      date = DateUtil.parse(dateTime[0]);
+      // Then the hour is set
+      date = DateUtil.getDate(date, dateTime[1]);
+    } catch (java.text.ParseException e) {
+      throw new StatisticRuntimeException(e);
     }
-    return list;
+    int nbAccess = rs.getInt(3);
+    return new HistoryByUser(userId, date, nbAccess);
+  }
+
+  private static HistoryObjectDetail getHistoryDetail(final ResultSet rs) throws SQLException {
+    Date date;
+    try {
+      // First the date of the day is parsed
+      date = DateUtil.parse(rs.getString(1));
+      // Then the hour is set
+      date = DateUtil.getDate(date, rs.getString(2));
+    } catch (java.text.ParseException e) {
+      throw new StatisticRuntimeException(e);
+    }
+    String userId = rs.getString(3);
+    String foreignId = rs.getString(4);
+    String componentId = rs.getString(5);
+    ResourceReference resourceReference = new ResourceReference(foreignId, componentId);
+    return new HistoryObjectDetail(date, userId, resourceReference);
   }
 
   /**
@@ -137,55 +146,63 @@ public class HistoryObjectDAO {
   }
 
   /**
-   * @param con the database connection
-   * @param resourceReference
-   * @param objectType
-   * @return
-   * @throws SQLException
+   * Finds by user last access date and number of access.
+   * @param con the database connection.
+   * @param criteria search criteria.
+   * @return a {@link SilverpeasList} of {@link HistoryByUser}.
    */
-  public static Collection<HistoryObjectDetail> getHistoryDetailByObject(Connection con,
-      ResourceReference resourceReference, String objectType) throws SQLException {
-
-    String componentName = resourceReference.getComponentName();
-    String selectStatement =
-        "select dateStat, heureStat, userId, resourceId, componentId, actionType, resourceType " +
-        "from " + HISTORY_TABLE_NAME
-        + " where resourceId=? and componentId=? and resourceType=?"
-        + " order by datestat desc, heurestat desc";
-
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = con.prepareStatement(selectStatement);
-      stmt.setString(1, resourceReference.getId());
-      stmt.setString(2, resourceReference.getInstanceId());
-      stmt.setString(3, objectType);
-
-      rs = stmt.executeQuery();
-      return getHistoryDetails(rs, componentName);
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
+  public static SilverpeasList<HistoryByUser> findByUserByCriteria(Connection con,
+      final HistoryCriteria criteria) throws SQLException  {
+    final JdbcSqlQuery sqlQuery = JdbcSqlQuery.createSelect(
+        "userId, max(concat(dateStat, concat('T', heureStat))) as lastAccess, count(userId) as nbAccess");
+    applySqlCriteria(sqlQuery, criteria);
+    return sqlQuery
+        .groupBy(USER_ID)
+        .orderBy("lastAccess desc, nbAccess desc")
+        .withPagination(criteria.getPagination())
+        .executeWith(con, HistoryObjectDAO::getHistoryByUser);
   }
 
-  public static Collection<HistoryObjectDetail> getHistoryDetailByObjectAndUser(Connection con,
-      ResourceReference resourceReference, String objectType, String userId) throws SQLException {
+  /**
+   * Finds all history data satisfying the given criteria.
+   * @param con the database connection.
+   * @param criteria search criteria.
+   * @return a {@link SilverpeasList} of {@link HistoryObjectDetail}.
+   * @throws SQLException on technical error with database.
+   */
+  public static SilverpeasList<HistoryObjectDetail> findByCriteria(Connection con,
+      final HistoryCriteria criteria)
+      throws SQLException {
+    final JdbcSqlQuery sqlQuery = JdbcSqlQuery
+        .createSelect("dateStat, heureStat, userId, resourceId, componentId");
+    applySqlCriteria(sqlQuery, criteria);
+    if (!criteria.getOrderByList().isEmpty()) {
+      sqlQuery.orderBy(criteria.getOrderByList().stream()
+          .map(HistoryCriteria.QUERY_ORDER_BY::getClause)
+          .collect(Collectors.joining(", ")));
+    }
+    return sqlQuery
+        .withPagination(criteria.getPagination())
+        .executeWith(con, HistoryObjectDAO::getHistoryDetail);
+  }
 
-    String componentName = resourceReference.getComponentName();
-    String selectStatement =
-        "select * from " + HISTORY_TABLE_NAME + " where resourceId='" + resourceReference.getId() +
-            "' and componentId='" + resourceReference.getInstanceId() + "'" + " and resourceType='" +
-            objectType + "'" + " and userId ='" + userId + "'" +
-            " order by dateStat desc, heureStat desc";
-
-    Statement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(selectStatement);
-      return getHistoryDetails(rs, componentName);
-    } finally {
-      DBUtil.close(rs, stmt);
+  private static void applySqlCriteria(final JdbcSqlQuery sqlQuery,
+      final HistoryCriteria criteria) {
+    sqlQuery.from(HISTORY_TABLE_NAME).where("actionType = ?", criteria.getActionType());
+    if (!criteria.getComponentInstanceIds().isEmpty()) {
+      sqlQuery.and("componentId").in(criteria.getComponentInstanceIds());
+    }
+    if (!criteria.getResourceIds().isEmpty()) {
+      sqlQuery.and("resourceId").in(criteria.getResourceIds());
+    }
+    if (isDefined(criteria.getResourceType())) {
+      sqlQuery.and("resourceType = ?", criteria.getResourceType());
+    }
+    if (!criteria.getUserIds().isEmpty()) {
+      sqlQuery.and(USER_ID).in(criteria.getUserIds());
+    }
+    if (!criteria.getExcludedUserIds().isEmpty()) {
+      sqlQuery.and(USER_ID).notIn(criteria.getExcludedUserIds());
     }
   }
 

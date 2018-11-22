@@ -158,9 +158,16 @@
     <attribute>
       <description>The unique identifier of the user</description>
       <name>userId</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The user</description>
+      <name>user</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>org.silverpeas.core.admin.user.model.User</type>
     </attribute>
     <attribute>
       <description>Is the userzoom plugin has to be used with this user? By default, it is activated.

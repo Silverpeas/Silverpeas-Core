@@ -38,6 +38,7 @@ public class PaginationCriterion {
 
   private final int pageNumber;
   private final int itemCount;
+  private boolean originalSizeRequired = true;
 
   /**
    * Constructs a new pagination criterion from the specified page number and count of items
@@ -48,6 +49,16 @@ public class PaginationCriterion {
   public PaginationCriterion(int page, int count) {
     this.pageNumber = page;
     this.itemCount = count;
+  }
+
+  /**
+   * Indicates if the original size of rresult mus be computed or not.
+   * @param originalSizeRequired true to compute, false otherwise.
+   * @return itself.
+   */
+  public PaginationCriterion setOriginalSizeRequired(boolean originalSizeRequired) {
+    this.originalSizeRequired = originalSizeRequired;
+    return this;
   }
 
   /**
@@ -64,6 +75,14 @@ public class PaginationCriterion {
    */
   public int getItemCount() {
     return itemCount;
+  }
+
+  /**
+   * Is the original result size required?
+   * @return true if required, false otherwise.
+   */
+  public boolean isOriginalSizeNeeded() {
+    return originalSizeRequired;
   }
 
   /**

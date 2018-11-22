@@ -1063,7 +1063,7 @@ public class PublicationDAO {
       return dateFilters(sqlQuery)
           .and("P.instanceId").in(componentIds)
           .orderBy("P.pubUpdateDate desc, P.pubId desc")
-          .withPagination(pagination, false)
+          .withPagination(pagination)
           .executeWith(con, r -> new PublicationPK(r.getString(1), r.getString(2)));
     }
     return new SilverpeasArrayList<>(0);
@@ -1642,7 +1642,7 @@ public class PublicationDAO {
   @SuppressWarnings("unchecked")
   public static List<SocialInformation> getAllPublicationsIDbyUserid(Connection con,
       String userId, Date begin, Date end) throws SQLException {
-  final PaginationCriterion pagination = new PaginationCriterion(1, 500);
+  final PaginationCriterion pagination = new PaginationCriterion(1, 500).setOriginalSizeRequired(false);
   final Map<String, List<Boolean>> statusMapping = new HashMap<>(pagination.getItemCount());
   final List<String> pubIds = JdbcSqlQuery
       .create("(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type")
@@ -1659,7 +1659,7 @@ public class PublicationDAO {
       .and("pubupdatedate >= ?", DateUtil.date2SQLDate(begin))
       .and("pubupdatedate <= ?)", DateUtil.date2SQLDate(end))
       .orderBy("dateinformation DESC, pubid DESC, type")
-      .withPagination(pagination, false)
+      .withPagination(pagination)
       .executeWith(con, r -> {
         final String pubId = Integer.toString(r.getInt(2));
         MapUtil.putAddList(statusMapping, pubId, r.getBoolean(3));
@@ -1697,7 +1697,7 @@ public class PublicationDAO {
   public static List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
       Connection con, List<String> myContactsIds, List<String> options, Date begin, Date end)
       throws SQLException {
-    final PaginationCriterion pagination = new PaginationCriterion(1, 500);
+    final PaginationCriterion pagination = new PaginationCriterion(1, 500).setOriginalSizeRequired(false);
     final Map<String, List<Boolean>> statusMapping = new HashMap<>(pagination.getItemCount());
     final List<String> pubIds = JdbcSqlQuery
         .create("(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type")
@@ -1716,7 +1716,7 @@ public class PublicationDAO {
         .and("pubupdatedate >= ?", DateUtil.date2SQLDate(begin))
         .and("pubupdatedate <= ?)", DateUtil.date2SQLDate(end))
         .orderBy("dateinformation DESC, pubid DESC, type")
-        .withPagination(pagination, false)
+        .withPagination(pagination)
         .executeWith(con, r -> {
           final String pubId = Integer.toString(r.getInt(2));
           MapUtil.putAddList(statusMapping, pubId, r.getBoolean(3));

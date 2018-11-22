@@ -23,16 +23,18 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.span;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-import java.io.IOException;
-import javax.servlet.jsp.JspException;
+
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.span;
+import java.util.Optional;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * This tag prints out the full name of a given user.
@@ -48,11 +50,11 @@ import org.apache.ecs.xhtml.span;
 public class UserNameTag extends SimpleTagSupport {
 
   private String userId;
+  private User user;
   private boolean zoom = true;
 
   /**
    * Gets the unique identifier of the user concerned by this tag.
-   *
    * @return the user unique identifier.
    */
   public String getUserId() {
@@ -61,11 +63,27 @@ public class UserNameTag extends SimpleTagSupport {
 
   /**
    * Sets the unique identifier of the user whose the name has to be printed out.
-   *
    * @param userId the user unique identifier.
    */
   public void setUserId(String userId) {
     this.userId = userId;
+  }
+
+
+  /**
+   * Gets the user concerned by this tag.
+   * @return the user.
+   */
+  public User getUser() {
+    return user;
+  }
+
+  /**
+   * Sets the user whose the name has to be printed out.
+   * @param user the user.
+   */
+  public void setUser(final User user) {
+    this.user = user;
   }
 
   /**
@@ -88,13 +106,20 @@ public class UserNameTag extends SimpleTagSupport {
   }
 
   @Override
-  public void doTag() throws JspException, IOException {
-    if (isDefined(userId)) {
-      span userName = UserNameGenerator.generate(userId, getCurrentUserIdInSession());
-      ElementContainer container = new ElementContainer();
-      container.addElement(userName);
-      container.output(getOut());
+  public void doTag() {
+    final Optional<span> userName;
+    if (user != null) {
+      userName = Optional.of(UserNameGenerator.generate(user, getCurrentUserIdInSession()));
+    } else if (isDefined(userId)) {
+      userName = Optional.of(UserNameGenerator.generate(userId, getCurrentUserIdInSession()));
+    } else {
+      userName = Optional.empty();
     }
+    userName.ifPresent(u -> {
+      ElementContainer container = new ElementContainer();
+      container.addElement(u);
+      container.output(getOut());
+    });
   }
 
   protected String getCurrentUserIdInSession() {

@@ -36,6 +36,7 @@ public class Pagination<T, R extends SilverpeasList<T>> {
   final PaginationPage pagination;
   private Function<PaginationPage, R> paginatedDataSource;
   private Function<R, R> filter;
+  private int minPerPage = 0;
   private int factor = 5;
 
   public Pagination(final PaginationPage pagination) {
@@ -50,6 +51,16 @@ public class Pagination<T, R extends SilverpeasList<T>> {
    */
   public Pagination<T, R> factor(final int factor) {
     this.factor = factor;
+    return this;
+  }
+
+  /**
+   * The minimum of data per page retrieved from a paginated datasource call.
+   * @param minPerPage a minimum per page.
+   * @return the process instance itself.
+   */
+  public Pagination<T, R> withMinPerPage(final int minPerPage) {
+    this.minPerPage = minPerPage;
     return this;
   }
 
@@ -86,8 +97,11 @@ public class Pagination<T, R extends SilverpeasList<T>> {
     if (factor <= 0) {
       throw new IllegalArgumentException("factor must be positive");
     }
+    if (minPerPage < 0) {
+      throw new IllegalArgumentException("minPerPage must be positive or equal to zero");
+    }
     PaginationPage currentPagination = new PaginationPage(pagination.getPageNumber(),
-        pagination.getPageSize() * factor);
+        Math.max(pagination.getPageSize() * factor, minPerPage));
     R result = null;
     boolean running = true;
     while(running) {

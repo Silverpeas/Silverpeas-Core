@@ -30,17 +30,20 @@ import org.silverpeas.core.util.StringUtil;
 
 public class UserNameGenerator {
 
+  private UserNameGenerator() {
+    throw new IllegalStateException("Utility class");
+  }
+
   public static span generate(String userId, String currentUserId) {
     return generate(User.getById(userId), currentUserId);
   }
 
   public static span generate(User user, String currentUserId) {
     span userName = new span(org.owasp.encoder.Encode.forHtml(user.getDisplayedName()));
-    if (StringUtil.isDefined(currentUserId)) {
-      if (!user.getId().equals(currentUserId) && !UserDetail.isAnonymousUser(currentUserId)) {
-        userName.setClass("userToZoom");
-        userName.addAttribute("rel", user.getId());
-      }
+    if (StringUtil.isDefined(currentUserId) && !user.getId().equals(currentUserId) &&
+        !UserDetail.isAnonymousUser(currentUserId)) {
+      userName.setClass("userToZoom");
+      userName.addAttribute("rel", user.getId());
     }
     return userName;
   }

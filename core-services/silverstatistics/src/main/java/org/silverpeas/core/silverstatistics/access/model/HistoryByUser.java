@@ -26,57 +26,62 @@
 
 package org.silverpeas.core.silverstatistics.access.model;
 
+import org.silverpeas.core.admin.user.model.User;
+
 import java.io.Serializable;
 import java.util.Date;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
-
 /**
  * Class declaration
- * @author
+ * @author silveryocha
  */
 public class HistoryByUser implements Serializable {
+  private static final long serialVersionUID = 2990221033670463787L;
 
-  private static final long serialVersionUID = 1L;
-
-  private UserDetail user;
+  private String userId;
   private Date lastAccess;
   private int nbAccess;
+  private User user;
 
   /**
    * Default constructor
-   * @param user the user detail
+   * @param userId the user identifier
    * @param lastAccess the last access date
    * @param nbAccess the number of access
    */
-  public HistoryByUser(UserDetail user, Date lastAccess, int nbAccess) {
+  public HistoryByUser(String userId, Date lastAccess, int nbAccess) {
+    this.userId = userId;
     this.lastAccess = lastAccess;
-    this.user = user;
     this.nbAccess = nbAccess;
+  }
+
+  /**
+   * Default constructor
+   * @param user the user
+   * @param lastAccess the last access date
+   * @param nbAccess the number of access
+   */
+  public HistoryByUser(User user, Date lastAccess, int nbAccess) {
+    this(user.getId(), lastAccess, nbAccess);
+    this.user = user;
+  }
+
+  public String getUserId() {
+    return userId;
+  }
+
+  public User getUser() {
+    if (user == null) {
+      user = User.getById(userId);
+    }
+    return user;
   }
 
   public Date getLastAccess() {
     return lastAccess;
   }
 
-  public UserDetail getUser() {
-    return user;
-  }
-
   public int getNbAccess() {
     return nbAccess;
   }
-
-  public void setLastAccess(Date lastAccess) {
-    this.lastAccess = lastAccess;
-  }
-
-  public void setNbAccess(int nbAccess) {
-    this.nbAccess = nbAccess;
-  }
-
-  public void setUser(UserDetail user) {
-    this.user = user;
-  }
-
 }
