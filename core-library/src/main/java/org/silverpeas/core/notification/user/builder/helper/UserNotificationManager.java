@@ -25,7 +25,7 @@ package org.silverpeas.core.notification.user.builder.helper;
 
 import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 
 import javax.inject.Singleton;
 
@@ -42,30 +42,29 @@ public class UserNotificationManager {
   /**
    * Builds a notification data container from a given builder. After that, sends the builded
    * notification
-   * @param notificationBuider
+   * @param notificationBuilder the builder to use to construct the notification.
    */
-  public void buildAndSend(final UserNotificationBuilder notificationBuider) {
-    notificationBuider.build().send();
+  public void buildAndSend(final UserNotificationBuilder notificationBuilder) {
+    notificationBuilder.build().send();
   }
 
   /**
-   * Builds a notification data container from a given builder. After that, sends the builded
-   * notification for the given
-   * media type
-   * @param mediaType
-   * @param notificationBuider
+   * Builds a notification data container from a given builder. After that, sends the built
+   * notification to the specified builtin notification address.
+   * @param notificationAddress the address at which the notification should be sent.
+   * @param notificationBuilder the builder to use to construct the notification.
    */
-  public void buildAndSend(final NotifMediaType mediaType,
-      final UserNotificationBuilder notificationBuider) {
-    notificationBuider.build().send(mediaType);
+  public void buildAndSend(final BuiltInNotifAddress notificationAddress,
+      final UserNotificationBuilder notificationBuilder) {
+    notificationBuilder.build().send(notificationAddress);
   }
 
   /**
    * Builds a notification data container from a given builder
-   * @param notificationBuider
-   * @return
+   * @param notificationBuilder the builder to use to construct the notification.
+   * @return the metadata about the notification to send.
    */
-  public NotificationMetaData build(final UserNotificationBuilder notificationBuider) {
-    return notificationBuider.build().getNotificationMetaData();
+  public NotificationMetaData build(final UserNotificationBuilder notificationBuilder) {
+    return notificationBuilder.build().getNotificationMetaData();
   }
 }

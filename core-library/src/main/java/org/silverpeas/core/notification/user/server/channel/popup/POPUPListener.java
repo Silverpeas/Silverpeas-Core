@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.notification.user.server.channel.popup;
 
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.channel.AbstractListener;
@@ -85,8 +84,7 @@ public class POPUPListener extends AbstractListener implements MessageListener {
       PopupMessageService.get().push(message.getTargetReceipt(), message);
 
     } catch (Exception e) {
-      throw new NotificationServerException("POPUPListener.send()", SilverpeasException.ERROR,
-          "popup.EX_CANT_ADD_MESSAGE", e);
+      throw new NotificationServerException(e);
     }
   }
 }

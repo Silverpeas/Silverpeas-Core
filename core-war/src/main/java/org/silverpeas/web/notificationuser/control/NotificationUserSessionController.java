@@ -74,7 +74,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
       // verifications will be skipped).
     }
 
-    notifSender.notifyUser(notification.getChannel(), notifMetaData);
+    notifSender.notifyUser(notification.getAddressId(), notifMetaData);
   }
 
   private static String[] lineToArray(String src) {

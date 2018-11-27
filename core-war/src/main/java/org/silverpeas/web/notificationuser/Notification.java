@@ -23,14 +23,14 @@
  */
 package org.silverpeas.web.notificationuser;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.notification.user.client.GroupRecipient;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.owasp.encoder.Encode;
+import org.silverpeas.core.notification.user.client.GroupRecipient;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
@@ -43,7 +43,7 @@ public class Notification {
   private String subject;
   private String body;
   private int priority = 0;
-  private int channel = NotificationParameters.ADDRESS_COMPONENT_DEFINED;
+  private int addressId = BuiltInNotifAddress.COMPONENT_DEFINED.getId();
   private List<UserDetail> users;
   private List<Group> groups;
 
@@ -81,22 +81,22 @@ public class Notification {
     }
   }
 
-  public int getChannel() {
-    return channel;
+  public int getAddressId() {
+    return addressId;
   }
-  public void setChannel(String channel) {
+  public void setAddressId(String channel) {
     if (StringUtil.isInteger(channel)) {
-      this.channel = Integer.parseInt(channel);
+      this.addressId = Integer.parseInt(channel);
     }
   }
   public List<UserDetail> getUsers() {
     if (users == null) {
-      users = new ArrayList<UserDetail>();
+      users = new ArrayList<>();
     }
     return users;
   }
   public List<String> getUserIds() {
-    List<String> ids = new ArrayList<String>();
+    List<String> ids = new ArrayList<>();
     if (users != null) {
       for (UserDetail user : users) {
         ids.add(user.getId());
@@ -119,12 +119,12 @@ public class Notification {
   }
   public List<Group> getGroups() {
     if (groups == null) {
-      groups = new ArrayList<Group>();
+      groups = new ArrayList<>();
     }
     return groups;
   }
   public List<String> getGroupIds() {
-    List<String> ids = new ArrayList<String>();
+    List<String> ids = new ArrayList<>();
     if (getGroups() != null) {
       for (Group group : groups) {
         ids.add(group.getId());
@@ -150,14 +150,14 @@ public class Notification {
     NotificationMetaData notifMetaData =
         new NotificationMetaData(getPriority(), Encode.forHtml(getSubject()),
             Encode.forHtml(getBody()));
-    List<UserRecipient> userRecipients = new ArrayList<UserRecipient>();
+    List<UserRecipient> userRecipients = new ArrayList<>();
     if (getUsers() != null) {
       for (UserDetail user : getUsers()) {
         userRecipients.add(new UserRecipient(user));
       }
     }
     notifMetaData.addUserRecipients(userRecipients);
-    List<GroupRecipient> groupRecipients = new ArrayList<GroupRecipient>();
+    List<GroupRecipient> groupRecipients = new ArrayList<>();
     if (getGroups() != null) {
       for (Group group : getGroups()) {
         groupRecipients.add(new GroupRecipient(group));

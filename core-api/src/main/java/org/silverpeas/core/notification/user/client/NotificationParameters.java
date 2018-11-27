@@ -26,136 +26,269 @@
 
 package org.silverpeas.core.notification.user.client;
 
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Date;
+import java.util.Optional;
 
 /**
- * This class contents all needed parameters to send a notification with the NotificationManager
+ * All the parameters required to send a notification with the {@link NotificationManager}
  * @author Thierry Leroi
  * @version %I%, %G%
  */
 public class NotificationParameters {
-  static public final int NORMAL = 0;
-  static public final int URGENT = 1;
-  static public final int ERROR = 2;
+  /**
+   * The priority of the message is normal.
+   */
+  public static final int PRIORITY_NORMAL = 0;
+  /**
+   * The message is urgent.
+   */
+  public static final int PRIORITY_URGENT = 1;
+  /**
+   * The message is for an error.
+   */
+  public static final int PRIORITY_ERROR = 2;
 
-  static public final int ADDRESS_DEFAULT = -1;
-  static public final int ADDRESS_COMPONENT_DEFINED = -2; // Send by media :
-  // 1)Component specific
-  // 2)Default
-  // 3)ADDRESS_BASIC_SILVERMAIL
-  /**
-   * The channel used for notifications is the popup.
-   */
-  static public final int ADDRESS_BASIC_POPUP = -10;
-  /**
-   * The channel used for notifications is the trash (recieved notifications are removed).
-   */
-  static public final int ADDRESS_BASIC_REMOVE = -11;
-  /**
-   * The channel used for notifications is the internal Silverpeas messaging system.
-   */
-  static public final int ADDRESS_BASIC_SILVERMAIL = -12;
-  /**
-   * The channel used for notifications is the SMTP mail system.
-   */
-  static public final int ADDRESS_BASIC_SMTP_MAIL = -13;
-  /**
-   * The channel used for notifications is the server one (used by the server to send
-   * notifications).
-   */
-  static public final int ADDRESS_BASIC_SERVER = -14;
-  /**
-   * The channel used for notifications is the peer to peer user communication (chatting).
-   */
-  static public final int ADDRESS_BASIC_COMMUNICATION_USER = -15;
+  static final String USAGE_PRO = "addressUsePro";
+  static final String USAGE_PERSO = "addressUsePerso";
+  static final String USAGE_REP = "addressUseRep";
+  static final String USAGE_URGENT = "addressUseUrgent";
 
-  static public final String USAGE_PRO = "addressUsePro";
-  static public final String USAGE_PERSO = "addressUsePerso";
-  static public final String USAGE_REP = "addressUseRep";
-  static public final String USAGE_URGENT = "addressUseUrgent";
-
-  static public final int MAX_SIZE_TITLE = 1023; // Maximum size of the title in
+  public static final int MAX_SIZE_TITLE = 1023; // Maximum size of the title in
   // tables SILVERMAIL and POPUP
 
-  public int iMessagePriority = NORMAL;
-  public int iMediaType = ADDRESS_COMPONENT_DEFINED;
-  public int iComponentInstance = -1;
-  public int iFromUserId = -1;
+  private int iMessagePriority = PRIORITY_NORMAL;
+  private int addressId = BuiltInNotifAddress.COMPONENT_DEFINED.getId();
+  private int iComponentInstance = -1;
+  private int iFromUserId = -1;
 
-  public String sTitle = "";
-  public String senderName = "";
-  public String sMessage = "";
-  public String sURL = "";
-  public String sLinkLabel = "";
-  public String sSource = "";
-  public String sSessionId = "";
-  public String sOriginalExtraMessage = null;
-  public boolean bAnswerAllowed = false;
-  public boolean bSendImmediately = false;
+  private String sTitle = "";
+  private String senderName = "";
+  private String sMessage = "";
+  private String sURL = "";
+  private String sLinkLabel = "";
+  private String sSource = "";
+  private String sSessionId = "";
+  private String sOriginalExtraMessage = null;
+  private boolean bAnswerAllowed = false;
+  private boolean bSendImmediately = false;
 
-  public Date dDate = new Date();
-  public String sLanguage = null;
+  private Date dDate = new Date();
+  private String sLanguage = null;
 
-  public NotifAction eAction = null;
-  public NotificationResourceData nNotificationResourceData = null;
+  private NotifAction eAction = null;
+  private NotificationResourceData nNotificationResourceData = null;
 
-  public void traceObject() {
+  public int getMessagePriority() {
+    return iMessagePriority;
+  }
+
+  public NotificationParameters setMessagePriority(final int iMessagePriority) {
+    this.iMessagePriority = iMessagePriority;
+    return this;
+  }
+
+  public int getAddressId() {
+    return addressId;
+  }
+
+  public NotificationParameters setAddressId(final int notifMediaType) {
+    this.addressId = notifMediaType;
+    return this;
+  }
+
+  public boolean isAddressDefinedByComponent() {
+    return getAddressId() == BuiltInNotifAddress.COMPONENT_DEFINED.getId();
+  }
+
+  public int getComponentInstance() {
+    return iComponentInstance;
+  }
+
+  public NotificationParameters setComponentInstance(final int iComponentInstance) {
+    this.iComponentInstance = iComponentInstance < 0 ? -1 : iComponentInstance;
+    return this;
+  }
+
+  public boolean isComponentInstanceDefined() {
+    return this.iComponentInstance != -1;
+  }
+
+  public int getFromUserId() {
+    return iFromUserId;
+  }
+
+  public NotificationParameters setFromUserId(final int iFromUserId) {
+    this.iFromUserId = iFromUserId < 0 ? -1 : iFromUserId;
+    return this;
+  }
+
+  public boolean isFromUserIdDefined() {
+    return iFromUserId != -1;
+  }
+
+  public String getTitle() {
+    return sTitle;
+  }
+
+  public NotificationParameters setTitle(final String sTitle) {
+    this.sTitle = sTitle == null ? "" : sTitle;
+    return this;
+  }
+
+  public String getSenderName() {
+    return senderName;
+  }
+
+  public NotificationParameters setSenderName(final String senderName) {
+    this.senderName = senderName;
+    return this;
+  }
+
+  public String getMessage() {
+    return sMessage;
+  }
+
+  public NotificationParameters setMessage(final String sMessage) {
+    this.sMessage = sMessage == null ? "" : sMessage;
+    return this;
+  }
+
+  public String getURL() {
+    return sURL;
+  }
+
+  public NotificationParameters setURL(final String sURL) {
+    this.sURL = sURL;
+    return this;
+  }
+
+  public String getLinkLabel() {
+    return sLinkLabel;
+  }
+
+  public NotificationParameters setLinkLabel(final String sLinkLabel) {
+    this.sLinkLabel = sLinkLabel;
+    return this;
+  }
+
+  public String getSource() {
+    return sSource;
+  }
+
+  public NotificationParameters setSource(final String sSource) {
+    this.sSource = sSource;
+    return this;
+  }
+
+  public String getSessionId() {
+    return sSessionId;
+  }
+
+  public NotificationParameters setSessionId(final String sSessionId) {
+    this.sSessionId = sSessionId;
+    return this;
+  }
+
+  public String getOriginalExtraMessage() {
+    return sOriginalExtraMessage;
+  }
+
+  public NotificationParameters setOriginalExtraMessage(final String sOriginalExtraMessage) {
+    this.sOriginalExtraMessage = sOriginalExtraMessage;
+    return this;
+  }
+
+  public boolean isAnswerAllowed() {
+    return bAnswerAllowed;
+  }
+
+  public NotificationParameters setAnswerAllowed(final boolean bAnswerAllowed) {
+    this.bAnswerAllowed = bAnswerAllowed;
+    return this;
+  }
+
+  public boolean isSendImmediately() {
+    return bSendImmediately;
+  }
+
+  public NotificationParameters setSendImmediately(final boolean bSendImmediately) {
+    this.bSendImmediately = bSendImmediately;
+    return this;
+  }
+
+  public Date getDate() {
+    return dDate;
+  }
+
+  public NotificationParameters setDate(final Date dDate) {
+    this.dDate = dDate;
+    return this;
+  }
+
+  public String getLanguage() {
+    return sLanguage;
+  }
+
+  public NotificationParameters setLanguage(final String sLanguage) {
+    this.sLanguage = sLanguage;
+    return this;
+  }
+
+  public NotifAction getAction() {
+    return eAction;
+  }
+
+  public NotificationParameters setAction(final NotifAction eAction) {
+    this.eAction = eAction;
+    return this;
+  }
+
+  public NotificationResourceData getNotificationResourceData() {
+    return nNotificationResourceData;
+  }
+
+  public NotificationParameters setNotificationResourceData(
+      final NotificationResourceData nNotificationResourceData) {
+    this.nNotificationResourceData = nNotificationResourceData;
+    return this;
+  }
+
+  boolean isTitleExceedsMaxSize() {
+    return getTitle().length() >= MAX_SIZE_TITLE;
+  }
+
+  void trace() {
     StringBuilder trace = new StringBuilder("Notification Parameters Dump: {");
-    switch (iMessagePriority) {
-      case NORMAL:
-        trace.append("MessagePriority: NORMAL, ");
-        break;
-      case URGENT:
-        trace.append("MessagePriority: URGENT, ");
-        break;
-      case ERROR:
-        trace.append("MessagePriority: ERROR, ");
-        break;
+    if (iMessagePriority == PRIORITY_NORMAL) {
+      trace.append("MessagePriority: NORMAL, ");
+    } else if (iMessagePriority == PRIORITY_URGENT) {
+      trace.append("MessagePriority: URGENT, ");
+    } else if (iMessagePriority == PRIORITY_ERROR) {
+      trace.append("MessagePriority: ERROR, ");
     }
-    switch (iMediaType) {
-      case ADDRESS_DEFAULT:
-        trace.append("MediaType: ADDRESS_DEFAULT, ");
-        break;
-      case ADDRESS_COMPONENT_DEFINED:
-        trace.append("MediaType: ADDRESS_COMPONENT_DEFINED, ");
-        break;
-      case ADDRESS_BASIC_POPUP:
-        trace.append("MediaType: ADDRESS_BASIC_POPUP, ");
-        break;
-      case ADDRESS_BASIC_REMOVE:
-        trace.append("MediaType: ADDRESS_BASIC_REMOVE, ");
-        break;
-      case ADDRESS_BASIC_SILVERMAIL:
-        trace.append("MediaType: ADDRESS_BASIC_SILVERMAIL, ");
-        break;
-      case ADDRESS_BASIC_SMTP_MAIL:
-        trace.append("MediaType: ADDRESS_BASIC_SMTP_MAIL, ");
-        break;
-      case ADDRESS_BASIC_SERVER:
-        trace.append("MediaType: ADDRESS_BASIC_SERVER, ");
-        break;
-      case ADDRESS_BASIC_COMMUNICATION_USER:
-        trace.append("MediaType: ADDRESS_BASIC_COMMUNICATION_USER, ");
-        break;
-      default:
-        trace.append("MediaType: ").append(Integer.toString(iMediaType)).append(", ");
-        break;
+    Optional<BuiltInNotifAddress> mediaType = BuiltInNotifAddress.decode(addressId);
+    trace.append("MediaType: ");
+    if (mediaType.isPresent()) {
+      trace.append(mediaType.get().name()).append(", ");
+    } else {
+      trace.append(addressId).append(", ");
     }
-    trace.append("ComponentInstance: " + Integer.toString(iComponentInstance));
-    trace.append(", Title: " + sTitle);
-    trace.append(", Message: " + sMessage);
-    trace.append(", FromUserId: " + Integer.toString(iFromUserId));
-    trace.append(", FromSenderName: " + senderName);
-    trace.append(", AnswerAllowed: " + bAnswerAllowed);
-    trace.append(", SendImmediately: " + bSendImmediately);
-    trace.append(", Source: " + sSource);
-    trace.append(", SessionId: " + sSessionId);
-    trace.append(", Date: " + dDate.toString());
-    trace.append(", Action: " + (eAction != null ? eAction.name() : "N/A"));
+    trace.append("ComponentInstance: ").append(iComponentInstance);
+    trace.append(", Title: ").append(sTitle);
+    trace.append(", Message: ").append(sMessage);
+    trace.append(", FromUserId: ").append(iFromUserId);
+    trace.append(", FromSenderName: ").append(senderName);
+    trace.append(", AnswerAllowed: ").append(bAnswerAllowed);
+    trace.append(", SendImmediately: ").append(bSendImmediately);
+    trace.append(", Source: ").append(sSource);
+    trace.append(", SessionId: ").append(sSessionId);
+    trace.append(", Date: ").append(dDate.toString());
+    trace.append(", Action: ").append((eAction != null ? eAction.name() : "N/A"));
     trace.append("}");
     SilverLogger.getLogger(this).debug(trace.toString());
   }

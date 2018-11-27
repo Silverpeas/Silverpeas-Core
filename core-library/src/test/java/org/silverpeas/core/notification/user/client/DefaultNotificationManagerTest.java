@@ -25,10 +25,10 @@ package org.silverpeas.core.notification.user.client;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.silverpeas.core.test.extention.FieldMocker;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.util.Arrays;
@@ -73,13 +73,12 @@ public class DefaultNotificationManagerTest {
     when(mockedSettings.getBoolean("multiChannelNotification", false)).thenReturn(true);
     when(mockedSettings.getString("notif.defaultChannels", "")).thenReturn(
         "BASIC_SMTP_MAIL   BASIC_SMTP_MAIL   RDFTGT  BASIC_SERVER FFDE    BASIC_SILVERMAIL");
-    List<Integer> expectedDefaultChannels = Arrays.asList(
-        NotificationParameters.ADDRESS_BASIC_SMTP_MAIL,
-        NotificationParameters.ADDRESS_BASIC_SERVER,
-        NotificationParameters.ADDRESS_BASIC_SILVERMAIL);
+    List<NotifChannel> expectedDefaultChannels = Arrays.asList(NotifChannel.SMTP,
+        NotifChannel.SERVER,
+        NotifChannel.SILVERMAIL);
 
     DefaultNotificationManager notificationManager = new DefaultNotificationManager();
-    List<Integer> actualDefaultChannels = notificationManager.getDefaultNotificationAddresses();
+    List<NotifChannel> actualDefaultChannels = notificationManager.getDefaultNotificationChannels();
     assertTrue(expectedDefaultChannels.containsAll(actualDefaultChannels));
   }
 
@@ -91,13 +90,12 @@ public class DefaultNotificationManagerTest {
   public void noMultiSupportChannelSettingSetsOnlyOneSpecifiedDefaultChannel() {
     when(mockedSettings.getBoolean("multiChannelNotification", false)).thenReturn(false);
     when(mockedSettings.getString("notif.defaultChannels", "")).thenReturn(
-        "TOTO BASIC_COMMUNICATION_USER   BASIC_SMTP_MAIL   RDFTGT  BASIC_SERVER FFDE    " +
-            "BASIC_SILVERMAIL");
+        "TOTO BASIC_SMTP_MAIL   RDFTGT  BASIC_SERVER FFDE    BASIC_SILVERMAIL");
 
     DefaultNotificationManager notificationManager = new DefaultNotificationManager();
-    List<Integer> actualDefaultChannels = notificationManager.getDefaultNotificationAddresses();
+    List<NotifChannel> actualDefaultChannels = notificationManager.getDefaultNotificationChannels();
     assertEquals(1, actualDefaultChannels.size());
-    assertEquals(NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER, (int)actualDefaultChannels.get(0));
+    assertEquals(NotifChannel.SMTP, actualDefaultChannels.get(0));
   }
 
   /**
@@ -110,8 +108,8 @@ public class DefaultNotificationManagerTest {
     when(mockedSettings.getString("notif.defaultChannels", "")).thenReturn("");
 
     DefaultNotificationManager notificationManager = new DefaultNotificationManager();
-    List<Integer> actualDefaultChannels = notificationManager.getDefaultNotificationAddresses();
+    List<NotifChannel> actualDefaultChannels = notificationManager.getDefaultNotificationChannels();
     assertEquals(1, actualDefaultChannels.size());
-    assertEquals(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL, (int)actualDefaultChannels.get(0));
+    assertEquals(NotifChannel.SMTP, actualDefaultChannels.get(0));
   }
 }

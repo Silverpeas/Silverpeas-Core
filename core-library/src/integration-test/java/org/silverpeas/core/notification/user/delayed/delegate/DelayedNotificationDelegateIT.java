@@ -109,14 +109,14 @@ public class DelayedNotificationDelegateIT {
 
     // Has to be sent because of a bad from user id
     dndTest = buildValidDelayedNotificationData();
-    dndTest.setFromUserId((Integer) null);
+    dndTest.setFromUserId(null);
     assertNewNotification(dndTest, 1);
 
     // Has to be sent because of a bad channel
     dndTest = buildValidDelayedNotificationData();
     final List<NotifChannel> channels = new ArrayList<>(Arrays.asList(NotifChannel.values()));
     channels.remove(NotifChannel.SMTP);
-    channels.add(null);
+    channels.add(null); //=> I'm sorry but it is a bug! How we can know to send a message if we don't know the channel through which it can be sent!
     for (final NotifChannel channel : channels) {
       dndTest.setChannel(channel);
       assertNewNotification(dndTest, 1);
@@ -129,9 +129,9 @@ public class DelayedNotificationDelegateIT {
 
     // Has to be sent because of a bad priority
     dndTest = buildValidDelayedNotificationData();
-    for (final int priority : new int[]{NotificationParameters.ERROR, NotificationParameters.URGENT,
+    for (final int priority : new int[]{NotificationParameters.PRIORITY_ERROR, NotificationParameters.PRIORITY_URGENT,
         -1, 3, 7, 9}) {
-      dndTest.getNotificationParameters().iMessagePriority = priority;
+      dndTest.getNotificationParameters().setMessagePriority(priority);
       assertNewNotification(dndTest, 1);
     }
 
@@ -347,7 +347,7 @@ public class DelayedNotificationDelegateIT {
     }
 
     @Override
-    protected UserDetail getUserDetail(final Integer userId) throws Exception {
+    protected UserDetail getUserDetail(final Integer userId) {
       final UserDetail userDetailStub = new UserDetail();
       userDetailStub.setId(userId.toString());
       if (userId >= 0) {

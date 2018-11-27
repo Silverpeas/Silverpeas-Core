@@ -23,34 +23,25 @@
  */
 package org.silverpeas.web.personalization.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.web.personalization.control.PersonalizationSessionController;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.PeasCoreException;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.web.personalization.control.PersonalizationSessionController;
 
-import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Properties;
 
-/**
- * Class declaration
- * @author
- */
 public class PersoPeasRequestRouter extends
     ComponentRequestRouter<PersonalizationSessionController> {
 
   private static final long serialVersionUID = 1L;
+  private static final String VALIDATION_MESSAGE = "validationMessage";
+  private static final String VALIDATION_UPDATE_KEY = "GML.validation.update";
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
   @Override
   public PersonalizationSessionController createComponentSessionController(
       final MainSessionController mainSessionCtrl, final ComponentContext componentContext) {
@@ -79,8 +70,7 @@ public class PersoPeasRequestRouter extends
   @Override
   public String getDestination(final String function,
       final PersonalizationSessionController personalizationScc, final HttpRequest request) {
-    String destination = "";
-
+    String destination;
     try {
       if (function.startsWith("SaveChannels")) {
         saveChannels(personalizationScc, request);
@@ -101,20 +91,20 @@ public class PersoPeasRequestRouter extends
   }
 
   private void saveChannels(final PersonalizationSessionController personalizationScc,
-      final HttpServletRequest request) throws Exception {
+      final HttpServletRequest request) throws PeasCoreException {
     final String selectedChannels = request.getParameter("SelectedChannels");
     final String selectedFrequency = request.getParameter("SelectedFrequency");
     personalizationScc.saveChannels(selectedChannels);
     personalizationScc.saveDelayedUserNotificationFrequency(selectedFrequency);
-    request.setAttribute("validationMessage",
-        personalizationScc.getMultilang().getString("GML.validation.update"));
+    request.setAttribute(VALIDATION_MESSAGE,
+        personalizationScc.getMultilang().getString(VALIDATION_UPDATE_KEY));
     setCommonRequestAttributes(personalizationScc, request);
   }
 
   private void parametrizeNotification(final PersonalizationSessionController personalizationScc,
-      final HttpServletRequest request) throws Exception {
-    String action = (String) request.getParameter("Action");
-    String id = (String) request.getParameter("id");
+      final HttpServletRequest request) throws PeasCoreException {
+    String action = request.getParameter("Action");
+    String id = request.getParameter("id");
     NotificationParametrizationAction parametrizationAction =
         NotificationParametrizationAction.from(action);
     LocalizationBundle messages = personalizationScc.getMultilang();
@@ -133,32 +123,29 @@ public class PersoPeasRequestRouter extends
         break;
       case SetDefault:
         personalizationScc.setDefaultAddress(id);
-        request.setAttribute("validationMessage", messages.getString("GML.validation.update"));
+        request.setAttribute(VALIDATION_MESSAGE, messages.getString(VALIDATION_UPDATE_KEY));
         break;
       case SetFrequency:
         personalizationScc.saveDelayedUserNotificationFrequency(id);
-        request.setAttribute("validationMessage", messages.getString("GML.validation.update"));
+        request.setAttribute(VALIDATION_MESSAGE, messages.getString(VALIDATION_UPDATE_KEY));
         break;
       case Delete:
         personalizationScc.deleteNotifAddress(id);
-        request.setAttribute("validationMessage", messages.getString("GML.validation.delete"));
+        request.setAttribute(VALIDATION_MESSAGE, messages.getString("GML.validation.delete"));
+        break;
+      default:
         break;
     }
     setCommonRequestAttributes(personalizationScc, request);
   }
 
   private void setCommonRequestAttributes(final PersonalizationSessionController personalizationScc,
-      final HttpServletRequest request) throws Exception {
-    ArrayList<Properties> notifAddresses = personalizationScc.getNotificationAddresses();
+      final HttpServletRequest request) throws PeasCoreException {
+    List<Properties> notifAddresses = personalizationScc.getNotificationAddresses();
     request.setAttribute("notificationAddresses", notifAddresses);
     request.setAttribute("multichannel", personalizationScc.isMultiChannelNotification());
   }
 
-  /**
-   * This method handles data about delayed notification
-   * @param componentSC
-   * @param request
-   */
   private void performDelayedNotificationFrequency(
       final PersonalizationSessionController componentSC, final HttpServletRequest request) {
     request.setAttribute("delayedNotification", componentSC.getDelayedNotificationBean());

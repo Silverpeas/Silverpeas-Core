@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.notification.user.server.channel.silvermail;
 
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.channel.AbstractListener;
@@ -84,8 +83,7 @@ public class SILVERMAILListener extends AbstractListener implements MessageListe
       sm.setBody(data.getMessage());
       SILVERMAILPersistence.addMessage(sm);
     } catch (Exception e) {
-      throw new NotificationServerException("SILVERMAILListener.send()", SilverpeasException.ERROR,
-          "silvermail.EX_CANT_ADD_MESSAGE", e);
+      throw new NotificationServerException(e);
     }
   }
 }

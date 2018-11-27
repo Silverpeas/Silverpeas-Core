@@ -121,7 +121,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
     Notification notification = new Notification();
     notification.setSubject(request.getParameter("txtTitle"));
     notification.setBody(request.getParameter("txtMessage"));
-    notification.setChannel(request.getParameter("notificationId"));
+    notification.setAddressId(request.getParameter("notificationId"));
     notification.setPriority(request.getParameter("priorityId"));
     final List<String> selectedUsers = request.getParameterAsList("selectedUsers");
     final List<String> selectedGroups = request.getParameterAsList("selectedGroups");

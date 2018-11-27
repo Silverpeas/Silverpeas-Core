@@ -27,7 +27,7 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.notification.NotificationException;
-import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.notification.user.client.model.SentNotificationInterface;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
@@ -63,7 +63,7 @@ public class NotificationSender implements java.io.Serializable {
    * Constructor for a standard component
    * @param instanceId the instance Id of the calling's component
    */
-  public NotificationSender(String instanceId) {
+  public NotificationSender(final String instanceId) {
     this.instanceId = ComponentInst.getComponentLocalId(instanceId);
     notificationManager = NotificationManager.get();
   }
@@ -75,21 +75,20 @@ public class NotificationSender implements java.io.Serializable {
    * @throws NotificationException if an error occurs while sending the notification.
    *
    */
-  public void notifyUser(NotificationMetaData metaData)
+  public void notifyUser(final NotificationMetaData metaData)
       throws NotificationException {
-    notifyUser(NotifMediaType.COMPONENT_DEFINED.getId(), metaData);
+    notifyUser(BuiltInNotifAddress.COMPONENT_DEFINED.getId(), metaData);
   }
 
   /**
-   * Sends in the given media type the notification as defined by the specified {@link NotificationMetaData}
-   * instance.
-   * @param aMediaType the media type in which the notification content has to be encoded.
+   * Sends at the specified address the notification whose definition is given by the specified
+   * {@link NotificationMetaData} instance.
+   * @param addressId the unique identifier of an address at which the notification has to be sent.
    * @param metaData the meta data of the notification. It defines the content of the notification
    * as well as the recipients.
    * @throws NotificationException if an error occurs while sending the notification.
-   *
    */
-  public void notifyUser(int aMediaType, NotificationMetaData metaData)
+  public void notifyUser(final int addressId, final NotificationMetaData metaData)
       throws NotificationException {
     CurrentUserNotificationContext.getCurrentUserNotificationContext().checkManualUserNotification(metaData);
 
@@ -101,7 +100,7 @@ public class NotificationSender implements java.io.Serializable {
     final Set<String> recipientIds =
         recipients.stream().map(UserRecipient::getUserId).collect(Collectors.toSet());
     if (languages.size() == 1) {
-      sendNotification(recipientIds, metaData, aMediaType, languages.iterator().next());
+      sendNotification(recipientIds, metaData, addressId, languages.iterator().next());
     } else {
       final String defaultLanguage = getDefaultLanguage(metaData.getSender(), languages);
       final Map<String, Set<String>> usersPerLanguage = new HashMap<>();
@@ -114,14 +113,14 @@ public class NotificationSender implements java.io.Serializable {
         }
       });
       for (final Map.Entry<String, Set<String>> entry : usersPerLanguage.entrySet()) {
-        sendNotification(entry.getValue(), metaData, aMediaType, entry.getKey());
+        sendNotification(entry.getValue(), metaData, addressId, entry.getKey());
       }
     }
 
     // send the notification to the external recipients who are declared in metaData
-    sendNotification(Collections.emptySet(), metaData, aMediaType, I18NHelper.defaultLanguage);
+    sendNotification(Collections.emptySet(), metaData, addressId, I18NHelper.defaultLanguage);
 
-    if (metaData.isSendByAUser() && aMediaType != NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER) {
+    if (metaData.isSendByAUser()) {
       // save notification for history
       saveNotification(metaData, recipients);
     }
@@ -162,21 +161,21 @@ public class NotificationSender implements java.io.Serializable {
    * {@link NotificationMetaData} object.
    * @param metaData a {@link NotificationMetaData} instance that describes the notification to
    * send.
-   * @param aMediaType the media type in which will be encoded the notification content.
+   * @param addressId the unique identifier of the address at which the notification has to be sent.
    * @param language the language in which the notification content will be written.
    * @throws NotificationException if an error occurs while sending the notification.
    */
   private void sendNotification(final Collection<String> userIds,
-      final NotificationMetaData metaData, final int aMediaType, final String language)
+      final NotificationMetaData metaData, final int addressId, final String language)
       throws NotificationException {
-    final NotificationParameters params = getNotificationParameters(aMediaType, metaData);
-    params.sTitle = metaData.getTitle(language);
-    params.sLinkLabel = metaData.getLinkLabel(language);
-    params.sMessage = metaData.getContent(language);
-    params.sLanguage = language;
+    final NotificationParameters params = getNotificationParameters(addressId, metaData);
+    params.setTitle(metaData.getTitle(language))
+        .setLinkLabel(metaData.getLinkLabel(language))
+        .setMessage(metaData.getContent(language))
+        .setLanguage(language);
     if (!userIds.isEmpty()) {
-      params.nNotificationResourceData = metaData.getNotificationResourceData(language);
-      notificationManager.notifyUsers(params, userIds.toArray(new String[0]));
+      params.setNotificationResourceData(metaData.getNotificationResourceData(language));
+      notificationManager.notifyUsers(params, userIds);
     } else if (CollectionUtil.isNotEmpty(metaData.getExternalRecipients())) {
       notificationManager.notifyExternals(params, metaData.getExternalRecipients());
     }
@@ -204,35 +203,33 @@ public class NotificationSender implements java.io.Serializable {
       NotificationMetaData metaData) {
     NotificationParameters params = new NotificationParameters();
 
-    params.iMessagePriority = metaData.getMessageType();
-    params.dDate = metaData.getDate();
-    params.sTitle = metaData.getTitle();
-    params.sMessage = metaData.getContent();
-    params.sSource = metaData.getSource();
-    params.sURL = metaData.getLink();
-    params.sSessionId = metaData.getSessionId();
-    params.sOriginalExtraMessage = metaData.getOriginalExtraMessage();
-    params.bSendImmediately = metaData.isSendImmediately();
+    params.setMessagePriority(metaData.getMessageType())
+        .setDate(metaData.getDate())
+        .setTitle(metaData.getTitle())
+        .setMessage(metaData.getContent())
+        .setSource(metaData.getSource())
+        .setURL(metaData.getLink())
+        .setSessionId(metaData.getSessionId())
+        .setOriginalExtraMessage(metaData.getOriginalExtraMessage())
+        .setSendImmediately(metaData.isSendImmediately())
+        .setAddressId(aMediaType)
+        .setAnswerAllowed(metaData.isAnswerAllowed())
+        .setAction(metaData.getAction());
     if (instanceId != -1) {
-      params.iComponentInstance = instanceId;
+      params.setComponentInstance(instanceId);
     } else {
-      params.iComponentInstance = ComponentInst.getComponentLocalId(metaData.getComponentId());
+      params.setComponentInstance(ComponentInst.getComponentLocalId(metaData.getComponentId()));
     }
-    params.iMediaType = aMediaType;
-    params.bAnswerAllowed = metaData.isAnswerAllowed();
     String sender = metaData.getSender();
-    if (aMediaType == NotificationParameters.ADDRESS_BASIC_POPUP
-        || aMediaType == NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER) {
-      if (metaData.isAnswerAllowed() && StringUtil.isDefined(sender)) {
-        params.iFromUserId = Integer.parseInt(metaData.getSender());
+    if (aMediaType == BuiltInNotifAddress.BASIC_POPUP.getId()) {
+      if (metaData.isAnswerAllowed() && StringUtil.isInteger(sender)) {
+        params.setFromUserId(Integer.parseInt(metaData.getSender()));
       }
     } else if (StringUtil.isInteger(sender)) {
-      params.iFromUserId = Integer.parseInt(metaData.getSender());
+      params.setFromUserId(Integer.parseInt(metaData.getSender()));
     } else {
-      params.iFromUserId = -1;
-      params.senderName = sender;
+      params.setSenderName(sender);
     }
-    params.eAction = metaData.getAction();
     return params;
   }
 }

@@ -31,6 +31,7 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.UserAuthenticationListener;
@@ -300,7 +301,7 @@ public class SilverpeasSessionOpener {
     String personalWs = controller.getPersonalization().getPersonalWorkSpaceId();
 
     // Put a graphicElementFactory in the session
-    GraphicElementFactory gef = new GraphicElementFactory(controller);
+    final GraphicElementFactory gef = new GraphicElementFactory(controller);
     if (StringUtil.isDefined(personalWs)) {
       gef.setSpaceIdForCurrentRequest(personalWs);
     }
@@ -310,7 +311,7 @@ public class SilverpeasSessionOpener {
     String favoriteFrame = gef.getLookFrame();
     String sDirectAccessSpace = request.getParameter("DirectAccessSpace");
     String sDirectAccessCompo = request.getParameter("DirectAccessCompo");
-    if (controller.isAppInMaintenance() && !controller.getCurrentUserDetail().isAccessAdmin()) {
+    if (MainSessionController.isAppInMaintenance() && !controller.getCurrentUserDetail().isAccessAdmin()) {
       absoluteUrl.append("/admin/jsp/appInMaintenance.jsp");
     } else if (StringUtil.isDefined(redirectURL)) {
       absoluteUrl.append(redirectURL);
@@ -369,12 +370,12 @@ public class SilverpeasSessionOpener {
     LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.peasCore.multilang.peasCoreBundle", language);
     NotificationSender sender = new NotificationSender(null);
-    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
+    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL,
         messages.getString("passwordExpirationAlert"), messages
         .getString("passwordExpirationMessage"));
     notifMetaData.setSender(fromUserId);
     notifMetaData.addUserRecipient(new UserRecipient(userId));
-    sender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP, notifMetaData);
+    sender.notifyUser(BuiltInNotifAddress.BASIC_POPUP.getId(), notifMetaData);
   }
 
   /**

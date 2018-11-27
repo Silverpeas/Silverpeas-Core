@@ -51,9 +51,9 @@ import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
@@ -539,7 +539,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public void sendMessage(String compoId, String txtTitle, String txtMessage,
       UserRecipient[] selectedUsers) throws NotificationException {
     NotificationSender notifSender = new NotificationSender(compoId);
-    int notifTypeId = NotificationParameters.ADDRESS_DEFAULT;
+    int notifTypeId = BuiltInNotifAddress.DEFAULT.getId();
     int priorityId = 0;
     NotificationMetaData notifMetaData = new NotificationMetaData(priorityId, txtTitle, txtMessage);
     notifMetaData.setSender(getUserId());
@@ -880,7 +880,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
     // build the xmlSubQuery according to the dataRecord object
     String templateFileName = extraTemplate.getFileName();
-    String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
+    String templateName = templateFileName.substring(0, templateFileName.lastIndexOf('.'));
     if (xmlData != null) {
       for (String fieldName : xmlData.getFieldNames()) {
         FieldDescription fieldQuery = buildFieldDescription(fieldName, templateName, items);

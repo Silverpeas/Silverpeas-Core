@@ -47,7 +47,7 @@
 package org.silverpeas.core.notification.user;
 
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 
 /**
 * @author Yohann Chastagnier
@@ -69,7 +69,7 @@ public class NullUserNotification implements UserNotification {
   }
 
   @Override
-  public void send(final NotifMediaType mediaType) {
+  public void send(final BuiltInNotifAddress notificationAddress) {
     // Nothing to do
   }
 }

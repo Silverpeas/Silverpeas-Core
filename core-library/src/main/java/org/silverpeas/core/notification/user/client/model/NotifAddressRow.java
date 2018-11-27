@@ -88,7 +88,18 @@ public class NotifAddressRow {
     priority = aPriority;
   }
 
-  public NotifAddressRow(int aId, int aUserId, String aNotifName,
+  public NotifAddressRow(int aId, String aUserId, String aNotifName,
+      int aNotifChannelId, String aAddress, String aUsage, int aPriority) {
+    id = aId;
+    userId = Integer.parseInt(aUserId);
+    notifName = aNotifName;
+    notifChannelId = aNotifChannelId;
+    address = aAddress;
+    usage = aUsage;
+    priority = aPriority;
+  }
+
+  NotifAddressRow(int aId, int aUserId, String aNotifName,
       int aNotifChannelId, String aAddress, String aUsage, int aPriority) {
     id = aId;
     userId = aUserId;

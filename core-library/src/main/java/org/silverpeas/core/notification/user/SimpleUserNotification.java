@@ -27,8 +27,8 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.ui.DisplayI18NHelper;
@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 /**
@@ -52,8 +53,8 @@ public class SimpleUserNotification implements UserNotification {
 
   private User sender = null;
   private NotifAction notifAction = NotifAction.REPORT;
-  private Function<String, String> title = s -> "";
-  private Function<String, String> message = m -> "";
+  private UnaryOperator<String> title = s -> "";
+  private UnaryOperator<String> message = m -> "";
   private Set<String> userIds = new HashSet<>();
   private Set<String> groupIds = new HashSet<>();
   private Set<String> externalMails = new HashSet<>();
@@ -88,7 +89,7 @@ public class SimpleUserNotification implements UserNotification {
    * @param title a {@link Function} which provides a title by applying a language.
    * @return itself.
    */
-  public SimpleUserNotification withTitle(Function<String, String> title) {
+  public SimpleUserNotification withTitle(UnaryOperator<String> title) {
     this.title = title;
     return this;
   }
@@ -98,7 +99,7 @@ public class SimpleUserNotification implements UserNotification {
    * @param message a {@link Function} which provides a message by applying a language.
    * @return itself.
    */
-  public SimpleUserNotification andMessage(Function<String, String> message) {
+  public SimpleUserNotification andMessage(UnaryOperator<String> message) {
     this.message = message;
     return this;
   }
@@ -200,8 +201,8 @@ public class SimpleUserNotification implements UserNotification {
   }
 
   @Override
-  public void send(final NotifMediaType mediaType) {
-    build().send(mediaType);
+  public void send(final BuiltInNotifAddress notificationAddress) {
+    build().send(notificationAddress);
   }
 
   private UserNotification build() {
@@ -225,7 +226,7 @@ public class SimpleUserNotification implements UserNotification {
       final String title = source.title.apply(language);
       final String message = source.message.apply(language);
       final String senderName = source.sender != null ? source.sender.getDisplayedName() : "";
-      getNotificationMetaData().addLanguage(language, title, "");
+      super.getNotificationMetaData().addLanguage(language, title, "");
       template.setAttribute("message", message);
       template.setAttribute("sender", senderName);
     }

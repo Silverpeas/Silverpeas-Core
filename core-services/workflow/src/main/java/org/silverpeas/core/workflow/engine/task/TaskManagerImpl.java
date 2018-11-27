@@ -186,7 +186,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
         text = DataRecordUtil.applySubstitution(text, data, "");
 
         NotificationMetaData notifMetaData = new NotificationMetaData(
-            NotificationParameters.NORMAL, title, text);
+            NotificationParameters.PRIORITY_NORMAL, title, text);
         if (sender != null) {
           notifMetaData.setSender(sender.getUserId());
         } else {

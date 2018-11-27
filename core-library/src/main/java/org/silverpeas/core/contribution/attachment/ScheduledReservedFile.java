@@ -96,7 +96,7 @@ public class ScheduledReservedFile implements Initialization {
                 getFilename()).append("'");
         String body = createMessageBody(message, messageBody, date, false, false);
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
+            new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, body);
 
         createMessage(date, notifMetaData, document, false, false);
         messageBody = new StringBuilder();
@@ -119,7 +119,7 @@ public class ScheduledReservedFile implements Initialization {
                 getFilename()).append("'");
         String body = createMessageBody(message, messageBody, date, true, false);
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
+            new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, body);
 
         createMessage(date, notifMetaData, document, true, false);
         messageBody = new StringBuilder();
@@ -142,7 +142,7 @@ public class ScheduledReservedFile implements Initialization {
                 getFilename()).append("'");
         String body = createMessageBody(message, messageBody, date, false, true);
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
+            new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, body);
 
         createMessage(date, notifMetaData, document, false, true);
         messageBody = new StringBuilder();

@@ -57,12 +57,12 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.exception.UtilTrappedException;
-import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.notification.NotificationException;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.security.authentication.password.service.PasswordCheck;
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider;
@@ -319,7 +319,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       Map<String, SilverpeasTemplate> templates = new HashMap<>();
 
       NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL, "", templates,
+          new NotificationMetaData(BuiltInNotifAddress.BASIC_SMTP.getId(), "", templates,
               USER_ACCOUNT_TEMPLATE_FILE);
 
       String loginUrl = getLoginUrl(user, req);
@@ -334,7 +334,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       notifMetaData.addUserRecipient(new UserRecipient(user.getId()));
       NotificationSender sender = new NotificationSender(null);
       try {
-        sender.notifyUser(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL, notifMetaData);
+        sender.notifyUser(BuiltInNotifAddress.BASIC_SMTP.getId(), notifMetaData);
       } catch (NotificationException e) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);
       }

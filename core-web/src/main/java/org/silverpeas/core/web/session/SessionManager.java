@@ -39,6 +39,7 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.notification.user.server.channel.popup.PopupMessageService;
 import org.silverpeas.core.notification.user.server.channel.server.ServerMessageService;
 import org.silverpeas.core.scheduler.Job;
@@ -446,12 +447,12 @@ public class SessionManager implements SessionManagement, Initialization {
     // Notify user the end of session
     NotificationSender notifSender = new NotificationSender(null);
 
-    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
+    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL,
         msgTitle, bundle.getString("EndOfSessionNotificationMsgText"));
     notifMetaData.setSessionId(sessionId);
     notifMetaData.addUserRecipient(new UserRecipient(userId));
     notifMetaData.setSender(bundle.getString("administrator"));
-    notifSender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP, notifMetaData);
+    notifSender.notifyUser(BuiltInNotifAddress.BASIC_POPUP.getId(), notifMetaData);
   }
 
   /**

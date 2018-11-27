@@ -24,7 +24,7 @@
 package org.silverpeas.core.notification.user;
 
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 
 /**
  * A notification to a user. It is the main entry point in the User Notification API.
@@ -42,15 +42,14 @@ public interface UserNotification {
   NotificationMetaData getNotificationMetaData();
 
   /**
-   * Sends the notification according to the different metadata that were set.
+   * Sends this notification at the specified addresses declared within the metadata of this
+   * notification.
    */
   void send();
 
   /**
-   * Sends the notification according to the different metadata that were set and by forcing
-   * explicitly the type of the media to use with the specified one. The media type preferred by
-   * the user is then overridden by the given one.
-   * @param mediaType the type of the media to vehicle the notification.
+   * Sends this notification to the specified builtin user notification address.
+   * @param notificationAddress the type of the media to vehicle the notification.
    */
-  void send(NotifMediaType mediaType);
+  void send(BuiltInNotifAddress notificationAddress);
 }

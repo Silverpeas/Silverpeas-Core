@@ -28,20 +28,27 @@ import org.silverpeas.core.test.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 
 /**
  * @author Yohann Chastagnier
  */
 @UnitTest
-public class NotifMediaTypeTest {
+public class BuiltInNotifAddressTest {
 
   @Test
-  public void testDecode() {
-    assertThat(NotifMediaType.decode(null), nullValue());
-    assertThat(NotifMediaType.decode(-1000), nullValue());
-    for (final NotifMediaType mediaType : NotifMediaType.values()) {
-      assertThat(NotifMediaType.decode(mediaType.getId()), is(mediaType));
+  public void decodeNull() {
+    assertThat(BuiltInNotifAddress.decode(null).isPresent(), is(false));
+  }
+
+  @Test
+  public void decodeInvalidId() {
+    assertThat(BuiltInNotifAddress.decode(-1000).isPresent(), is(false));
+  }
+
+  @Test
+  public void decodeAllValidIds() {
+    for (final BuiltInNotifAddress mediaType : BuiltInNotifAddress.values()) {
+      assertThat(BuiltInNotifAddress.decode(mediaType.getId()).get(), is(mediaType));
     }
   }
 }

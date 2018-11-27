@@ -69,7 +69,7 @@
   {
         if (! id.equals(""))
         {
-            Properties p = personalizationScc.getNotificationAddress(id) ;
+            Properties p = personalizationScc.getNotificationAddressProperties(id) ;
             notifName = p.getProperty("name") ;
             channelId = p.getProperty("channelId") ;
             address = p.getProperty("address") ;

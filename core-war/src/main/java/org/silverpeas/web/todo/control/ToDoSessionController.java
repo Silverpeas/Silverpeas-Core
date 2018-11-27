@@ -188,7 +188,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     try {
       Collection<Attendee> attendees = getToDoAttendees(id);
       NotificationMetaData notifMetaData = new NotificationMetaData(
-          NotificationParameters.NORMAL, title, text);
+          NotificationParameters.PRIORITY_NORMAL, title, text);
       notifMetaData.setSender(getUserId());
       notifMetaData.setSource(getString("todo"));
       for (Attendee attendee : attendees) {

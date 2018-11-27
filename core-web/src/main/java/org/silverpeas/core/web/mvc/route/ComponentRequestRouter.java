@@ -28,13 +28,13 @@ import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.CoreContributionType;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -349,7 +349,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       try {
         request.setAttribute("javax.servlet.jsp.jspException",
             new PeasCoreException("ComponentRequestRouter.redirectService",
-                SilverpeasException.ERROR, "peasCore.EX_REDIRECT_SERVICE_FAILED",
+                SilverTrace.TRACE_LEVEL_ERROR, "peasCore.EX_REDIRECT_SERVICE_FAILED",
                 "Destination=" + destination, e));
         getServletConfig().getServletContext().getRequestDispatcher("/admin/jsp/errorpageMain.jsp")
             .forward(request, response);

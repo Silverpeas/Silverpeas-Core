@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.delayed.model;
 
+import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -143,7 +144,7 @@ public class DelayedNotificationData
   }
 
   public NotifChannel getChannel() {
-    return NotifChannel.decode(channel);
+    return NotifChannel.decode(channel).orElse(null);
   }
 
   public void setChannel(final NotifChannel channel) {

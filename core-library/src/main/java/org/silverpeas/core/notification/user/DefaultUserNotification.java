@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -69,12 +69,12 @@ public class DefaultUserNotification implements UserNotification {
   }
 
   @Override
-  public void send(final NotifMediaType mediaType) {
+  public void send(final BuiltInNotifAddress notificationAddress) {
     if (notification != null) {
       try {
         final NotificationSender sender = new NotificationSender(notification.getComponentId());
-        if (mediaType != null) {
-          sender.notifyUser(mediaType.getId(), notification);
+        if (notificationAddress != null) {
+          sender.notifyUser(notificationAddress.getId(), notification);
         } else {
           sender.notifyUser(notification);
         }

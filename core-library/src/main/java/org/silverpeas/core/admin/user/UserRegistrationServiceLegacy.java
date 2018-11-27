@@ -156,7 +156,7 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
       Map<String, SilverpeasTemplate> templates = new HashMap<>();
       String subject = multilang.getString("credentialsMail.subject");
       NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+          new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, templates,
           "credentialsMail");
 
       // Retrieve login page URL
