@@ -23,6 +23,54 @@
  */
 package org.silverpeas.core.admin.domain;
 
-public enum DomainType {
-  EXTERNAL, SQL, SCIM;
+import org.silverpeas.core.util.ServiceProvider;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Register of all domain types available into Silverpeas.
+ * <p>
+ *   By default, {@link DomainType#LDAP} and {@link DomainType#SQL} are already registered.
+ * </p>
+ */
+@Singleton
+public class DomainTypeRegistry {
+
+  private final Set<DomainType> registry = new HashSet<>();
+
+  public static DomainTypeRegistry get() {
+    return ServiceProvider.getService(DomainTypeRegistry.class);
+  }
+
+  @PostConstruct
+  protected void setupDefaults() {
+    registry.add(DomainType.LDAP);
+    registry.add(DomainType.SQL);
+  }
+
+  /**
+   * Hidden constructor.
+   */
+  private DomainTypeRegistry() {
+  }
+
+  /**
+   * Adds a domain type into registry.
+   * @param type the domain type.
+   */
+  public void add(final DomainType type) {
+    registry.add(type);
+  }
+
+  /**
+   * Indicates if a domain type is registered.
+   * @param type a domain type.
+   * @return true if registered, false otherwise.
+   */
+  public boolean exists(final DomainType type) {
+    return registry.contains(type);
+  }
 }

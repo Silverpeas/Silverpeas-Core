@@ -126,12 +126,22 @@ public interface DomainDriver {
      * Updates user Silverpeas infos from PUSH action
      * @see #getDriverActions
      */
-    public static final long ACTION_PUSH_USER = 0x00010000;
+    public static final long ACTION_RECEIVE_USER = 0x00010000;
     /**
      * Updates group Silverpeas infos from PUSH action
      * @see #getDriverActions
      */
-    public static final long ACTION_PUSH_GROUP = 0x00020000;
+    public static final long ACTION_RECEIVE_GROUP = 0x00020000;
+    /**
+     * Updates user Silverpeas infos from LDAP DB
+     * @see #getDriverActions
+     */
+    public static final long ACTION_UNSYNCHRO_USER = 0x00040000;
+    /**
+     * Updates group Silverpeas infos from LDAP DB
+     * @see #getDriverActions
+     */
+    public static final long ACTION_UNSYNCHRO_GROUP = 0x00080000;
     /**
      * All available actions Mask
      * @see #getDriverActions
@@ -143,10 +153,12 @@ public interface DomainDriver {
             ACTION_EDIT_USER_IN_GROUP;
     public static final long ACTION_MASK_RO =
         ACTION_READ_USER | ACTION_READ_GROUP | ACTION_IMPORT_USER | ACTION_SYNCHRO_USER |
-            ACTION_REMOVE_USER | ACTION_IMPORT_GROUP | ACTION_SYNCHRO_GROUP | ACTION_REMOVE_GROUP;
-    public static final long ACTION_MASK_RO_FROM_PUSH =
-        ACTION_READ_USER | ACTION_READ_GROUP | ACTION_PUSH_USER | ACTION_REMOVE_USER |
-            ACTION_PUSH_GROUP | ACTION_REMOVE_GROUP;
+            ACTION_UNSYNCHRO_USER | ACTION_REMOVE_USER | ACTION_IMPORT_GROUP |
+            ACTION_SYNCHRO_GROUP | ACTION_UNSYNCHRO_GROUP | ACTION_REMOVE_GROUP;
+    public static final long ACTION_MASK_RO_PULL_USER = ACTION_READ_USER | ACTION_SYNCHRO_USER;
+    public static final long ACTION_MASK_RO_LISTENER =
+        ACTION_READ_USER | ACTION_READ_GROUP | ACTION_RECEIVE_USER | ACTION_REMOVE_USER |
+            ACTION_RECEIVE_GROUP | ACTION_REMOVE_GROUP;
     public static final long ACTION_MASK_MIXED_GROUPS =
         ACTION_READ_GROUP | ACTION_UPDATE_GROUP | ACTION_CREATE_GROUP | ACTION_DELETE_GROUP |
             ACTION_EDIT_USER_IN_GROUP;
@@ -218,16 +230,16 @@ public interface DomainDriver {
 
   void updateUserDetail(UserDetail user) throws AdminException;
 
-  UserDetail getUser(String userId) throws AdminException;
+  UserDetail getUser(String specificId) throws AdminException;
 
   /**
    * Retrieve user information from database
-   * @param userId The user id as stored in the database
+   * @param specificId The user id as stored in the database
    * @return The full User object that contain ALL user informations
    */
-  UserFull getUserFull(String userId) throws AdminException;
+  UserFull getUserFull(String specificId) throws AdminException;
 
-  String[] getUserMemberGroupIds(String userId) throws AdminException;
+  String[] getUserMemberGroupIds(String specificId) throws AdminException;
 
   UserDetail[] getAllUsers() throws AdminException;
 
@@ -247,7 +259,7 @@ public interface DomainDriver {
 
   void updateGroup(GroupDetail group) throws AdminException;
 
-  GroupDetail getGroup(String groupId) throws AdminException;
+  GroupDetail getGroup(String specificId) throws AdminException;
 
   GroupDetail getGroupByName(String groupName) throws AdminException;
 
@@ -264,5 +276,4 @@ public interface DomainDriver {
   void resetPassword(UserDetail user, String password) throws AdminException;
 
   void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws AdminException;
-
 }

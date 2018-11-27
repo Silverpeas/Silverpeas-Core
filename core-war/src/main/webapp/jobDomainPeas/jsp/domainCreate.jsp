@@ -44,6 +44,7 @@
 <fmt:message var="domainsLabel" key="JDP.domains"/>
 <fmt:message var="addDomainLDAPLabel" key="JDP.domainAdd"/>
 <fmt:message var="addDomainSCIMLabel" key="JDP.domainSCIMAdd"/>
+<fmt:message var="addDomainGoogleLabel" key="JDP.domainGoogleAdd"/>
 <fmt:message var="addDomainSQLLabel" key="JDP.domainSQLAdd"/>
 <fmt:message var="modifyDomainLabel" key="JDP.domainUpdate"/>
 
@@ -54,6 +55,7 @@
 <fmt:message var="serverAuthenticationLabel" key="JDP.serverAuthentification"/>
 <fmt:message var="silverpeasServerURLLabel" key="JDP.silverpeasServerURL"/>
 <fmt:message var="serverTimeStampLabel" key="JDP.serverTimeStamp"/>
+<fmt:message var="userDomainQuotaMaxCountLabel" key="JDP.userDomainQuotaMaxCount"/>
 <fmt:message var="userDomainQuotaMaxCountHelpLabel" key="JDP.userDomainQuotaMaxCountHelp"/>
 
 <fmt:message var="missingFieldStartLabel" key="JDP.missingFieldStart"/>
@@ -64,16 +66,22 @@
 <c:set var="domain" value="${requestScope.domainObject}"/>
 <jsp:useBean id="domain" type="org.silverpeas.core.admin.domain.model.Domain"/>
 
+<c:set var="creationDomainType" value="${
+    (action eq 'domainCreate' ? 'domainLDAP' :
+    (action eq 'domainSCIMCreate' ? 'domainSCIM' :
+    (action eq 'domainGoogleCreate' ? 'domainGoogle' : 'domainSQL')))}"/>
 <c:set var="getCreatePathLabel" value="${
-    a -> (a eq 'domainCreate' ? addDomainLDAPLabel :
-         (a eq 'domainSCIMCreate' ? addDomainSCIMLabel : addDomainSQLLabel))}"/>
-
-<c:set var="isSCIMDomain" value="${d -> d != null and d.authenticationServer eq 'autDomainSCIM'}"/>
-<c:set var="technicalDataStyleAttr" value="${d -> isSCIMDomain(d) ? 'style=\"display:none;\"' : ''}"/>
+    t -> (t eq 'domainLDAP' ? addDomainLDAPLabel :
+         (t eq 'domainSCIM' ? addDomainSCIMLabel :
+         (t eq 'domainGoogle' ? addDomainGoogleLabel : addDomainSQLLabel)))}"/>
 
 <c:set var="formatMissingFieldValueMessage" value="${f -> missingFieldStartLabel.concat(f).concat(missingFieldEndLabel)}"/>
 
 <%@ include file="check.jsp" %>
+
+<c:set var="technicalDataStyleAttr" value="${d -> (isSCIMDomain(d) or isGoogleDomain(d)) ? 'style=\"display:none;\"' : ''}"/>
+<c:set var="domainPropertyDataStyleAttr" value="${d -> isSCIMDomain(d) ? 'style=\"display:none;\"' : ''}"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
@@ -108,7 +116,7 @@
 <view:browseBar componentId="${domainsLabel}">
   <c:choose>
     <c:when test="${createMode}">
-      <view:browseBarElt link="" label="${getCreatePathLabel(action)}..."/>
+      <view:browseBarElt link="" label="${getCreatePathLabel(creationDomainType)}..."/>
     </c:when>
     <c:otherwise>
       <view:browseBarElt link="domainContent?Iddomain=${domain.id}" label="<%=getDomainLabel(domain, resource)%>"/>
@@ -119,12 +127,13 @@
 <view:window>
   <view:frame>
     <view:board>
-      <c:if test="${isSCIMDomain(domain)}">
-        <div class="inlineMessage">
-          <view:applyTemplate locationBase="core:admin/domain" name="help">
-            <view:templateParam name="domainSCIM" value="true"/>
-          </view:applyTemplate>
-        </div>
+      <c:set var="domainHelp">
+        <view:applyTemplate locationBase="core:admin/domain" name="help">
+          <view:templateParam name="${creationDomainType}" value="true"/>
+        </view:applyTemplate>
+      </c:set>
+      <c:if test="${createMode and not empty fn:trim(domainHelp)}">
+        <div class="inlineMessage">${domainHelp}</div>
       </c:if>
       <form name="domainForm" action="${action}" method="POST">
       <table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
@@ -146,7 +155,7 @@
             <input type="text" name="domainDriver" size="70" maxlength="99" VALUE="${silfn:escapeHtml(domain.driverClassName)}">&nbsp;<img border="0" src="${mandatoryIconUrl}" width="5" height="5">
           </td>
         </tr>
-        <tr ${technicalDataStyleAttr(domain)}>
+        <tr ${domainPropertyDataStyleAttr(domain)}>
           <td class="txtlibform">${propertiesLabel} :</td>
           <td>
             <input type="text" name="domainProperties" size="70" maxlength="99" VALUE="${silfn:escapeHtml(domain.propFileName)}">&nbsp;<img border="0" src="${mandatoryIconUrl}" width="5" height="5">
@@ -164,24 +173,26 @@
             <input type="text" name="silverpeasServerURL" size="70" maxlength="399" VALUE="${silfn:escapeHtml(domain.silverpeasServerURL)}">&nbsp;<img border="0" src="${mandatoryIconUrl}" width="5" height="5">
           </td>
         </tr>
-        <c:choose>
-          <c:when test="${domain.id != null and not (domain.id eq '0')}">
-            <tr>
-              <td class="txtlibform">${serverTimeStampLabel} :</td>
-              <td>
-                <input type="text" name="domainTimeStamp" size="70" maxlength="99" VALUE="${silfn:escapeHtml(domain.theTimeStamp)}">
-              </td>
-            </tr>
-          </c:when>
-          <c:when test="<%=JobDomainSettings.usersInDomainQuotaActivated%>">
-            <tr>
-              <td class="txtlibform">${userDomainQuotaMaxCountHelpLabel} :</td>
-              <td>
-                <input type="text" name="userDomainQuotaMaxCount" size="40" maxlength="399" value="${domain.userDomainQuota.maxCount}"/>&nbsp;<img src="${mandatoryIconUrl}" width="5" height="5"/> ${userDomainQuotaMaxCountHelpLabel}
-              </td>
-            </tr>
-          </c:when>
-        </c:choose>
+        <c:if test="${not isSCIMDomain(domain) and not isGoogleDomain(domain)}">
+          <c:choose>
+            <c:when test="${createMode or (domain.id != null and not (domain.id eq '0'))}">
+              <tr>
+                <td class="txtlibform">${serverTimeStampLabel} :</td>
+                <td>
+                  <input type="text" name="domainTimeStamp" size="70" maxlength="99" VALUE="${silfn:escapeHtml(domain.theTimeStamp)}">
+                </td>
+              </tr>
+            </c:when>
+            <c:when test="<%=JobDomainSettings.usersInDomainQuotaActivated%>">
+              <tr>
+                <td class="txtlibform">${userDomainQuotaMaxCountLabel} :</td>
+                <td>
+                  <input type="text" name="userDomainQuotaMaxCount" size="40" maxlength="399" value="${domain.userDomainQuota.maxCount}"/>&nbsp;<img src="${mandatoryIconUrl}" width="5" height="5"/> ${userDomainQuotaMaxCountHelpLabel}
+                </td>
+              </tr>
+            </c:when>
+          </c:choose>
+        </c:if>
         <tr>
           <td colspan="2">
             (<img border="0" src="${mandatoryIconUrl}" width="5" height="5"> : ${requiredMessage})

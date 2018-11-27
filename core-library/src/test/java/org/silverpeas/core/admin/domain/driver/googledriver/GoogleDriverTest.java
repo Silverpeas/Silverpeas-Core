@@ -1,0 +1,258 @@
+/*
+ * Copyright (C) 2000 - 2018 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.silverpeas.core.admin.domain.driver.googledriver;
+
+
+import com.google.api.services.admin.directory.model.User;
+import com.google.api.services.admin.directory.model.UserName;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.admin.domain.DomainDriver;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.util.SettingBundle;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.arrayWithSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.silverpeas.core.admin.domain.driver.googledriver.GoogleDriverTest.GoogleUserBuilder.aUser;
+
+/**
+ * @author silveryocha
+ */
+@EnableSilverTestEnv
+class GoogleDriverTest {
+
+  private static List<User> allGoogleUsers = new ArrayList<>();
+
+  @BeforeAll
+  static void setup() {
+    allGoogleUsers.add(aUser("A", "/").withEmail("a@a.a", "work").build());
+    allGoogleUsers.add(aUser("B", "/SIEGE/DRH/ARH").build());
+    allGoogleUsers.add(aUser("C", "/").withEmail("c@c.c", "").build());
+    allGoogleUsers.add(aUser("D", "/").build());
+    allGoogleUsers.add(aUser("E", "/SIEGE/DRH").build());
+    allGoogleUsers.add(aUser("F", "/").build());
+    allGoogleUsers.add(aUser("G", "/SIEGE/EXCLUSION").withCustomEmail("g@g.g", "work").suspended().build());
+    allGoogleUsers.add(aUser("H", "/").withEmail("hh@hh.hh", "work").withCustomEmail("h@h.h", "perso").build());
+    allGoogleUsers.add(aUser("I", "/DSI/AMOA").build());
+    allGoogleUsers.add(aUser("J", "/DSI/ATOA").suspended().build());
+    allGoogleUsers.add(aUser("K", "/").build());
+  }
+
+  @Test
+  void getAllUsersWithDefaultSettings() throws AdminException {
+    final SettingBundle settings = mock(SettingBundle.class);
+    when(settings.getString(anyString(), anyString())).then(i -> i.getArguments()[1]);
+    final UserDetail[] allUsers = getGoogleDriver(settings).getAllUsers();
+    assertThat(allUsers, arrayWithSize(allGoogleUsers.size()));
+
+    assertThat(allUsers[0].getLogin(), is(allGoogleUsers.get(0).getPrimaryEmail()));
+    assertThat(allUsers[0].getLogin(), not(is("a@a.a")));
+    assertThat(allUsers[0].geteMail(), is("a@a.a"));
+    assertThat(allUsers[0].isValidState(), is(true));
+
+    assertThat(allUsers[2].getLogin(), is(allGoogleUsers.get(2).getPrimaryEmail()));
+    assertThat(allUsers[2].geteMail(), is(allGoogleUsers.get(2).getPrimaryEmail()));
+    assertThat(allUsers[2].isValidState(), is(true));
+
+    assertThat(allUsers[5].getLogin(), is(allGoogleUsers.get(5).getPrimaryEmail()));
+    assertThat(allUsers[5].geteMail(), is(allGoogleUsers.get(5).getPrimaryEmail()));
+    assertThat(allUsers[5].isValidState(), is(true));
+
+    assertThat(allUsers[6].getLogin(), is(allGoogleUsers.get(6).getPrimaryEmail()));
+    assertThat(allUsers[6].getLogin(), not(is("g@g.g")));
+    assertThat(allUsers[6].geteMail(), is("g@g.g"));
+    assertThat(allUsers[6].isDeactivatedState(), is(true));
+
+    assertThat(allUsers[7].getLogin(), is(allGoogleUsers.get(7).getPrimaryEmail()));
+    assertThat(allUsers[7].getLogin(), not(is("hh@hh.hh")));
+    assertThat(allUsers[7].geteMail(), is("hh@hh.hh"));
+    assertThat(allUsers[7].isValidState(), is(true));
+
+    assertThat(allUsers[9].getLogin(), is(allGoogleUsers.get(9).getPrimaryEmail()));
+    assertThat(allUsers[9].geteMail(), is(allGoogleUsers.get(9).getPrimaryEmail()));
+    assertThat(allUsers[9].isDeactivatedState(), is(true));
+  }
+
+  @Test
+  void getAllUsersWithOneOuInclusion() throws AdminException {
+    final SettingBundle settings = mock(SettingBundle.class);
+    when(settings.getString(anyString(), anyString())).then(i -> {
+      Object value = i.getArguments()[1];
+      if ("synchro.ou.include".equals(i.getArguments()[0])) {
+        value = "/SIEGE";
+      }
+      return value;
+    });
+    final UserDetail[] allUsers = getGoogleDriver(settings).getAllUsers();
+    assertThat(Arrays.stream(allUsers).map(UserDetail::getSpecificId).collect(Collectors.joining()), is("BEG"));
+  }
+
+  @Test
+  void getAllUsersWithSeveralOuInclusions() throws AdminException {
+    final SettingBundle settings = mock(SettingBundle.class);
+    when(settings.getString(anyString(), anyString())).then(i -> {
+      Object value = i.getArguments()[1];
+      if ("synchro.ou.include".equals(i.getArguments()[0])) {
+        value = "   /SIEGE ;    ;    /DSI/ATOA    ";
+      }
+      return value;
+    });
+    final UserDetail[] allUsers = getGoogleDriver(settings).getAllUsers();
+    assertThat(Arrays.stream(allUsers).map(UserDetail::getSpecificId).collect(Collectors.joining()), is("BEGJ"));
+  }
+
+  @Test
+  void getAllUsersWithOneOuExclusion() throws AdminException {
+    final SettingBundle settings = mock(SettingBundle.class);
+    when(settings.getString(anyString(), anyString())).then(i -> {
+      Object value = i.getArguments()[1];
+      if ("synchro.ou.exclude".equals(i.getArguments()[0])) {
+        value = "  /SIEGE ;; ; /DSI/A";
+      }
+      return value;
+    });
+    final UserDetail[] allUsers = getGoogleDriver(settings).getAllUsers();
+    assertThat(Arrays.stream(allUsers).map(UserDetail::getSpecificId).collect(Collectors.joining()), is("ACDFHK"));
+  }
+
+  @Test
+  void getAllUsersWithSeveralOuExclusions() throws AdminException {
+    final SettingBundle settings = mock(SettingBundle.class);
+    when(settings.getString(anyString(), anyString())).then(i -> {
+      Object value = i.getArguments()[1];
+      if ("synchro.ou.exclude".equals(i.getArguments()[0])) {
+        value = "/SIEGE";
+      }
+      return value;
+    });
+    final UserDetail[] allUsers = getGoogleDriver(settings).getAllUsers();
+    assertThat(Arrays.stream(allUsers).map(UserDetail::getSpecificId).collect(Collectors.joining()), is("ACDFHIJK"));
+  }
+
+  @Test
+  void getAllUsersWithSeveralOuInclusionsAndExclusions() throws AdminException {
+    final SettingBundle settings = mock(SettingBundle.class);
+    when(settings.getString(anyString(), anyString())).then(i -> {
+      Object value = i.getArguments()[1];
+      if ("synchro.ou.include".equals(i.getArguments()[0])) {
+        value = "/SIEGE;/DSI";
+      }
+      if ("synchro.ou.exclude".equals(i.getArguments()[0])) {
+        value = "/SIEGE/EXCLUSION;/DSI/ATOA";
+      }
+      return value;
+    });
+    final UserDetail[] allUsers = getGoogleDriver(settings).getAllUsers();
+    assertThat(Arrays.stream(allUsers).map(UserDetail::getSpecificId).collect(Collectors.joining()), is("BEI"));
+  }
+
+  private DomainDriver getGoogleDriver(SettingBundle settings) throws AdminException {
+    final GoogleDriver driver = new GoogleDriver4Test();
+    driver.initFromProperties(settings);
+    return driver;
+  }
+
+  static class GoogleUserBuilder {
+    final User user = new User();
+
+    static GoogleUserBuilder aUser(final String id, final String ou) {
+      GoogleUserBuilder builder = new GoogleUserBuilder();
+      builder.user.setId(id);
+      final UserName name = new UserName().setFamilyName("FN_" + id).setGivenName("GN_" + id);
+      builder.user.setName(name);
+      builder.user.setEmails(new ArrayList<>());
+      builder.user.setOrgUnitPath(ou);
+      builder.user.setArchived(false);
+      builder.user.setSuspended(false);
+      builder.withPrimaryEmail(name.getGivenName() + "." + name.getFamilyName() + "@silverpeas.org");
+      return builder;
+    }
+
+    @SuppressWarnings("unchecked")
+    private GoogleUserBuilder withPrimaryEmail(final String address) {
+      final Map<String, Object> data = new HashMap<>();
+      data.put("address", address);
+      data.put("primary", true);
+      ((List) user.getEmails()).add(data);
+      user.setPrimaryEmail(address);
+      return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    GoogleUserBuilder withEmail(final String address, final String type) {
+      final Map<String, String> data = new HashMap<>();
+      data.put("address", address);
+      data.put("type", type);
+      ((List) user.getEmails()).add(data);
+      return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    GoogleUserBuilder withCustomEmail(final String address, final String type) {
+      final Map<String, String> data = new HashMap<>();
+      data.put("address", address);
+      data.put("customType", type);
+      ((List) user.getEmails()).add(data);
+      return this;
+    }
+
+    GoogleUserBuilder suspended() {
+      user.setSuspended(true);
+      return this;
+    }
+
+    User build() {
+      return user;
+    }
+  }
+
+  private static class GoogleDriver4Test extends GoogleDriver {
+    private final GoogleDirectoryRequester requester;
+
+    private GoogleDriver4Test() throws AdminException {
+      this.requester = mock(GoogleDirectoryRequester.class);
+      when(requester.users()).thenReturn(allGoogleUsers);
+    }
+
+    @Override
+    GoogleDirectoryRequester request() {
+      return requester;
+    }
+  }
+}

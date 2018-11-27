@@ -184,21 +184,21 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
 
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
-  public UserDetail getUser(String userId) {
-    if (!StringUtil.isInteger(userId)) {
+  public UserDetail getUser(String specificId) {
+    if (!StringUtil.isInteger(specificId)) {
       return null;
     }
-    SPUser spUser = spUserRepository.getById(userId);
+    SPUser spUser = spUserRepository.getById(specificId);
     return convertToUser(spUser, new UserDetail());
   }
 
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
-  public UserFull getUserFull(String userId) {
-    if (!StringUtil.isInteger(userId)) {
+  public UserFull getUserFull(String specificId) {
+    if (!StringUtil.isInteger(specificId)) {
       return null;
     }
-    SPUser user = spUserRepository.getById(userId);
+    SPUser user = spUserRepository.getById(specificId);
     UserFull userFull = new UserFull(this);
     if (user != null) {
       userFull.setFirstName(user.getFirstname());
@@ -222,7 +222,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public String[] getUserMemberGroupIds(String userId) throws AdminException {
+  public String[] getUserMemberGroupIds(String specificId) throws AdminException {
     return new String[0];
   }
 
@@ -369,8 +369,8 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
 
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
-  public GroupDetail getGroup(String groupId) {
-    SPGroup gr = spGroupRepository.getById(groupId);
+  public GroupDetail getGroup(String specificId) {
+    SPGroup gr = spGroupRepository.getById(specificId);
     return convertToGroup(gr);
   }
 

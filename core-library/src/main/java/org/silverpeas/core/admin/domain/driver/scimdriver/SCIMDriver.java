@@ -42,7 +42,8 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
-import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.*;
+import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_RO_LISTENER;
+import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_UPDATE_USER;
 
 public class SCIMDriver extends AbstractDomainDriver {
 
@@ -83,7 +84,7 @@ public class SCIMDriver extends AbstractDomainDriver {
    */
   @Override
   public long getDriverActions() {
-    return ACTION_MASK_RO_FROM_PUSH | ACTION_UPDATE_USER;
+    return ACTION_MASK_RO_LISTENER | ACTION_UPDATE_USER;
   }
 
   @Override
@@ -170,10 +171,10 @@ public class SCIMDriver extends AbstractDomainDriver {
 
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
-  public UserDetail getUser(String userId) throws AdminException {
+  public UserDetail getUser(String specificId) throws AdminException {
     // In this driver, returning Silverpeas user by specific id.
     final List<UserDetail> users = userManager
-        .getUsersBySpecificIdsAndDomainId(singletonList(userId), String.valueOf(domainId));
+        .getUsersBySpecificIdsAndDomainId(singletonList(specificId), String.valueOf(domainId));
     if (users.size() > 1) {
       throw new AdminException("too many users referenced to same identifier");
     }
@@ -189,7 +190,7 @@ public class SCIMDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public String[] getUserMemberGroupIds(String userId) {
+  public String[] getUserMemberGroupIds(String specificId) {
     // In this driver, do nothing
     return new String[0];
   }
@@ -252,7 +253,7 @@ public class SCIMDriver extends AbstractDomainDriver {
 
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
-  public GroupDetail getGroup(String groupId) {
+  public GroupDetail getGroup(String specificId) {
     // In this driver, do nothing
     return null;
   }

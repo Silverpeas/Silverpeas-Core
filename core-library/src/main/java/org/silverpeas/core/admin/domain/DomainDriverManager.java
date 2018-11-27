@@ -188,7 +188,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail getUser(String userId) throws AdminException {
+  public UserDetail getUser(String specificId) throws AdminException {
     return null;
   }
 
@@ -284,12 +284,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   @Override
-  public UserFull getUserFull(String userId) throws AdminException {
-    return loadUserEntity(userId, UserFull.class);
+  public UserFull getUserFull(String specificId) throws AdminException {
+    return loadUserEntity(specificId, UserFull.class);
   }
 
   @Override
-  public String[] getUserMemberGroupIds(String userId) throws AdminException {
+  public String[] getUserMemberGroupIds(String specificId) throws AdminException {
     return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
@@ -453,18 +453,18 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   /**
    * return group with given id (contains list of user ids for this group)
-   * @param groupId
+   * @param specificId
    * @return GroupDetail
    */
   @Override
-  public GroupDetail getGroup(String groupId) throws AdminException {
+  public GroupDetail getGroup(String specificId) throws AdminException {
     GroupDetail group;
 
     try (Connection connection = DBUtil.openConnection()) {
       // Get the user information
-      GroupDetail gr = groupDAO.getGroup(connection, groupId);
+      GroupDetail gr = groupDAO.getGroup(connection, specificId);
       if (gr == null) {
-        throw new AdminException(unknown(GROUP, groupId));
+        throw new AdminException(unknown(GROUP, specificId));
       }
       // Get a DomainDriver instance
       DomainDriver domainDriver = this.getDomainDriver(gr.getDomainId());
@@ -472,11 +472,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
       group = domainDriver.getGroup(gr.getSpecificId());
 
       // Fill silverpeas info of group details
-      group.setId(groupId);
+      group.setId(specificId);
       group.setSpecificId(gr.getSpecificId());
       group.setDomainId(gr.getDomainId());
     } catch (SQLException e) {
-      throw new AdminException(failureOnGetting(GROUP, groupId), e);
+      throw new AdminException(failureOnGetting(GROUP, specificId), e);
     }
     return group;
   }

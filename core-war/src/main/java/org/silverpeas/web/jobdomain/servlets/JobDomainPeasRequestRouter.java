@@ -84,9 +84,11 @@ public class JobDomainPeasRequestRouter extends
 
   private static final String DOMAIN_CREATE_FCT = "domainCreate";
   private static final String DOMAIN_SCIM_CREATE_FCT = "domainSCIMCreate";
+  private static final String DOMAIN_GOOGLE_CREATE_FCT = "domainGoogleCreate";
   private static final String DOMAIN_SQL_CREATE_FCT = "domainSQLCreate";
   private static final String DOMAIN_DELETE_FCT = "domainDelete";
   private static final String DOMAIN_SCIM_DELETE_FCT = "domainSCIMDelete";
+  private static final String DOMAIN_GOOGLE_DELETE_FCT = "domainGoogleDelete";
   private static final String DOMAIN_SQL_DELETE_FCT = "domainSQLDelete";
   private static final String DOMAIN_CONTENT_FCT = "domainContent";
   private static final String USER_CONTENT_FCT = "userContent";
@@ -513,12 +515,19 @@ public class JobDomainPeasRequestRouter extends
         } else {
           if (function.startsWith(DOMAIN_CONTENT_FCT)) {
             jobDomainSC.returnIntoGroup(null);
-          } else if (function.startsWith(DOMAIN_CREATE_FCT) ||
-              function.startsWith(DOMAIN_SCIM_CREATE_FCT)) {
-            String newDomainId = jobDomainSC.createDomain(request2Domain(request),
-                function.startsWith(DOMAIN_CREATE_FCT)
-                    ? DomainType.EXTERNAL
-                    : DomainType.SCIM);
+          } else if (function.startsWith(DOMAIN_CREATE_FCT)
+                    || function.startsWith(DOMAIN_SCIM_CREATE_FCT)
+                    || function.startsWith(DOMAIN_GOOGLE_CREATE_FCT)) {
+            final DomainType domainType;
+            if (function.startsWith(DOMAIN_CREATE_FCT)) {
+              domainType = DomainType.LDAP;
+            } else if (function.startsWith(DOMAIN_SCIM_CREATE_FCT)) {
+              domainType = DomainType.SCIM;
+            } else {
+              domainType = DomainType.GOOGLE;
+            }
+
+            String newDomainId = jobDomainSC.createDomain(request2Domain(request), domainType);
             request.setAttribute(IDDOMAIN_PARAM, newDomainId);
             destination = GO_BACK_DEST;
           } else if (function.startsWith(DOMAIN_SQL_CREATE_FCT)) {
@@ -542,10 +551,13 @@ public class JobDomainPeasRequestRouter extends
             request.setAttribute(IDDOMAIN_PARAM, modifiedDomainId);
             destination = GO_BACK_DEST;
           } else if (function.startsWith(DOMAIN_DELETE_FCT)) {
-            jobDomainSC.deleteDomain(DomainType.EXTERNAL);
+            jobDomainSC.deleteDomain(DomainType.LDAP);
             destination = GO_BACK_DEST;
-          }  else if (function.startsWith(DOMAIN_SCIM_DELETE_FCT)) {
+          } else if (function.startsWith(DOMAIN_SCIM_DELETE_FCT)) {
             jobDomainSC.deleteDomain(DomainType.SCIM);
+            destination = GO_BACK_DEST;
+          } else if (function.startsWith(DOMAIN_GOOGLE_DELETE_FCT)) {
+            jobDomainSC.deleteDomain(DomainType.GOOGLE);
             destination = GO_BACK_DEST;
           } else if (function.startsWith(DOMAIN_SQL_DELETE_FCT)) {
             jobDomainSC.deleteSQLDomain();
@@ -681,6 +693,15 @@ public class JobDomainPeasRequestRouter extends
           theNewDomain.setSilverpeasServerURL(URLUtil.getAbsoluteApplicationURL());
           request.setAttribute(DOMAIN_OBJECT_ATTR, theNewDomain);
           request.setAttribute(ACTION_ATTR, DOMAIN_SCIM_CREATE_FCT);
+          destination = DOMAIN_CREATE_DEST;
+        } else if (function.startsWith("displayDomainGoogleCreate")) {
+          Domain theNewDomain = new Domain();
+          theNewDomain.setDriverClassName("org.silverpeas.core.admin.domain.driver.googledriver.GoogleDriver");
+          theNewDomain.setPropFileName("org.silverpeas.domains.domainGoogle");
+          theNewDomain.setAuthenticationServer("autDomainGoogle");
+          theNewDomain.setSilverpeasServerURL(URLUtil.getAbsoluteApplicationURL());
+          request.setAttribute(DOMAIN_OBJECT_ATTR, theNewDomain);
+          request.setAttribute(ACTION_ATTR, DOMAIN_GOOGLE_CREATE_FCT);
           destination = DOMAIN_CREATE_DEST;
         } else if (function.startsWith("displayDomainSQLCreate")) {
           Domain theNewDomain = new Domain();
@@ -860,8 +881,10 @@ public class JobDomainPeasRequestRouter extends
     request.setAttribute("isUserRW", (domainRight & ACTION_CREATE_USER) != 0);
     request.setAttribute("isDomainSync",
         ((domainRight & ACTION_SYNCHRO_USER) != 0) || ((domainRight & ACTION_SYNCHRO_GROUP) != 0));
-    request.setAttribute("isDomainPush",
-        ((domainRight & ACTION_PUSH_USER) != 0) || ((domainRight & ACTION_PUSH_GROUP) != 0));
+    request.setAttribute("isDomainUnsync",
+        ((domainRight & ACTION_UNSYNCHRO_USER) != 0) || ((domainRight & ACTION_UNSYNCHRO_GROUP) != 0));
+    request.setAttribute("isDomainListener",
+        ((domainRight & ACTION_RECEIVE_USER) != 0) || ((domainRight & ACTION_RECEIVE_GROUP) != 0));
   }
 
   /**
