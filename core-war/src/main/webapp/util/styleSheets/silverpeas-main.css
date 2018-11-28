@@ -6738,6 +6738,21 @@ silverpeas-button {
     border-radius: 5px;
     background-color: #fff !important;
   }
+
+  #gef-tabs, .commentaires #edition-box, .oneComment .action, .sp_buttonPane,
+  .rightContent, .cellBrowseBar, .cellOperation, .sp_goToTop {
+    display: none;
+  }
+
+  .cellBodyWindows, .oneComment pre {
+    border-width: 0;
+  }
+  .principalContent {
+    margin-right: 0;
+  }
+  .principalContent #richContent {
+    padding-left: 0;
+  }
 }
 
 .silverpeas-color-picker-set {
