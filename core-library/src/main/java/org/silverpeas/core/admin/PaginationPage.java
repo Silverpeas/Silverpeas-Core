@@ -42,6 +42,7 @@ public class PaginationPage {
 
   private int page;
   private final int count;
+  private boolean originalSizeRequired = true;
 
   /**
    * Constructs a new page in a pagination mechanism.
@@ -51,6 +52,16 @@ public class PaginationPage {
   public PaginationPage(int pageNumber, int pageSize) {
     this.page = pageNumber;
     this.count = pageSize;
+  }
+
+  /**
+   * Indicates that the caller does not require to use {@link SilverpeasList#originalListSize()}
+   * method, so the original size of a result is not necessary.
+   * @return itself.
+   */
+  public PaginationPage originalSizeIsNotRequired() {
+    this.originalSizeRequired = false;
+    return this;
   }
 
   /**
@@ -75,7 +86,8 @@ public class PaginationPage {
    * @return the corresponding {@link PaginationCriterion} instance.
    */
   public PaginationCriterion asCriterion() {
-    return new PaginationCriterion(getPageNumber(), getPageSize());
+    return new PaginationCriterion(getPageNumber(), getPageSize())
+        .setOriginalSizeRequired(originalSizeRequired);
   }
 
   /**

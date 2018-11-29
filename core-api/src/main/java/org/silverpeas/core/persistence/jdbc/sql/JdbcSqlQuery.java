@@ -346,6 +346,20 @@ public class JdbcSqlQuery {
   }
 
   /**
+   * Group the result of the query by the specified columns. If the statement isn't defined,
+   * then no group by will be done.
+   * @param sqlPart the SQL part that contains the statement over which the result of the query
+   * should be grouped.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery groupBy(String sqlPart) {
+    if (StringUtil.isDefined(sqlPart)) {
+      return addSqlPart("GROUP BY " + sqlPart);
+    }
+    return this;
+  }
+
+  /**
    * Limits the count of result returned by the query. This overrides any previous value of the
    * limit property in the configuration.
    * @param count the size of results to return.
@@ -375,21 +389,10 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery withPagination(PaginationCriterion pagination) {
-    return withPagination(pagination, true);
-  }
-
-  /**
-   * Configures the query execution in order to retrieve only items of pagination.<br>
-   * Be careful to execute a SQL query containing an {@code ORDER BY} clause!!!
-   * @param pagination the pagination criterion to apply.
-   * @param needRealOriginalSize true to obtain the real original mas size.
-   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
-   */
-  public JdbcSqlQuery withPagination(PaginationCriterion pagination, boolean needRealOriginalSize) {
     if (pagination != null && pagination.isDefined()) {
       offset((pagination.getPageNumber() - 1) * pagination.getItemCount());
       limit(pagination.getItemCount());
-      if (!needRealOriginalSize) {
+      if (!pagination.isOriginalSizeNeeded()) {
         this.configuration.ignoreRealOriginalSize();
       }
     }
@@ -426,6 +429,7 @@ public class JdbcSqlQuery {
 
   /**
    * Centralization in order to build easily a SQL in clause.
+   * <p>If one element exists into list, an equality is performed instead of a in</p>
    * @param parameters the parameters to append to the given SQL query.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
@@ -434,13 +438,18 @@ public class JdbcSqlQuery {
       throw new IllegalArgumentException(
           "cannot apply in clause because no value to set ! query=" + sqlQuery);
     }
-    sqlQuery.append(IN_OPERATOR);
-    addListOfParameters(parameters, true);
+    if (parameters.size() == 1) {
+      addSqlPart("= ?", parameters);
+    } else {
+      sqlQuery.append(IN_OPERATOR);
+      addListOfParameters(parameters, true);
+    }
     return this;
   }
 
   /**
    * Centralization in order to build easily a SQL in clause.
+   * <p>If one element exists into list, an equality is performed instead of a in</p>
    * @param parameters the parameters to append to the given SQL query.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
@@ -449,13 +458,18 @@ public class JdbcSqlQuery {
       throw new IllegalArgumentException(
           "cannot apply in clause because no value to set ! query=" + sqlQuery);
     }
-    sqlQuery.append(IN_OPERATOR);
-    addListOfParameters(Arrays.asList(parameters), true);
+    if (parameters.length == 1) {
+      addSqlPart("= ?", parameters);
+    } else {
+      sqlQuery.append(IN_OPERATOR);
+      addListOfParameters(Arrays.asList(parameters), true);
+    }
     return this;
   }
 
   /**
    * Centralization in order to build easily a SQL in clause.
+   * <p>If one element exists into list, a non equality is performed instead of a not in</p>
    * @param parameters the parameters to append to the given SQL query.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
@@ -464,13 +478,18 @@ public class JdbcSqlQuery {
       throw new IllegalArgumentException(
           "cannot apply not in clause because no value to set ! query=" + sqlQuery);
     }
-    sqlQuery.append(NOT_IN_OPERATOR);
-    addListOfParameters(parameters, true);
+    if (parameters.size() == 1) {
+      addSqlPart("<> ?", parameters);
+    } else {
+      sqlQuery.append(NOT_IN_OPERATOR);
+      addListOfParameters(parameters, true);
+    }
     return this;
   }
 
   /**
    * Centralization in order to build easily a SQL in clause.
+   * <p>If one element exists into list, a non equality is performed instead of a not in</p>
    * @param parameters the parameters to append to the given SQL query.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
@@ -479,8 +498,12 @@ public class JdbcSqlQuery {
       throw new IllegalArgumentException(
           "cannot apply not in clause because no value to set ! query=" + sqlQuery);
     }
-    sqlQuery.append(NOT_IN_OPERATOR);
-    addListOfParameters(Arrays.asList(parameters), true);
+    if (parameters.length == 1) {
+      addSqlPart("<> ?", parameters);
+    } else {
+      sqlQuery.append(NOT_IN_OPERATOR);
+      addListOfParameters(Arrays.asList(parameters), true);
+    }
     return this;
   }
 

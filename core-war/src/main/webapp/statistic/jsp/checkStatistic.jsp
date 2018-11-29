@@ -31,31 +31,21 @@ response.setHeader( "Pragma", "no-cache" );
 response.setHeader( "Cache-control", "no-cache" );
 response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 %>
-<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
-<%@ page import="org.silverpeas.core.util.URLUtil"%>
-<%@ page import="org.silverpeas.core.silverstatistics.access.service.StatisticService"%>
-<%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser "%>
-<%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail"%>
-<%@ page import="org.silverpeas.core.util.DateUtil"%>
 <%@ page import="org.silverpeas.core.ResourceReference"%>
+<%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser"%>
+<%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail"%>
+<%@ page import="org.silverpeas.core.silverstatistics.access.service.StatisticService "%>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.util.ServiceProvider"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
+<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
-<%@ page import="java.util.Collection"%>
-<%@ page import="java.util.Iterator" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 

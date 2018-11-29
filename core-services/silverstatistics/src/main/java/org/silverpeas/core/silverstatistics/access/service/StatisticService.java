@@ -24,10 +24,13 @@
 package org.silverpeas.core.silverstatistics.access.service;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
+import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria.QUERY_ORDER_BY;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.Collection;
 import java.util.Date;
@@ -42,16 +45,21 @@ public interface StatisticService {
 
   void addStat(String userId, SilverpeasContent content);
 
-  Collection<HistoryObjectDetail> getHistoryByAction(ResourceReference resourceReference, int action,
+  List<HistoryByUser> getHistoryByUser(ResourceReference resourceReference, int action,
       String objectType);
 
-  Collection<HistoryObjectDetail> getHistoryByObjectAndUser(ResourceReference resourceReference, int action,
-      String objectType, String userId);
+  SilverpeasList<HistoryObjectDetail> getHistoryByAction(ResourceReference resourceReference,
+      int action, String objectType, final Collection<String> excludedUserIds,
+      PaginationPage pagination);
 
-  Collection<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
+  SilverpeasList<HistoryObjectDetail> getHistoryByObjectAndUser(ResourceReference resourceReference,
+      int action, String objectType, String userId, final PaginationPage paginationPage,
+      final QUERY_ORDER_BY orderBy);
+
+  List<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
       String objectType);
 
-  Collection<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
+  List<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
       String objectType, List<String> userIds);
 
   void deleteStats(ResourceReference resourceReference, String objectType);

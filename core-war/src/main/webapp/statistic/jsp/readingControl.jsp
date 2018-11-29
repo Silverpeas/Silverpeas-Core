@@ -1,105 +1,111 @@
 <%--
+  ~ Copyright (C) 2000 - 2018 Silverpeas
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ As a special exception to the terms and conditions of version 3.0 of
+  ~ the GPL, you may redistribute this Program in connection with Free/Libre
+  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-    Copyright (C) 2000 - 2018 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "https://www.silverpeas.org/legal/floss_exception.html"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
---%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.UserNameGenerator"%>
-<%@ page import="java.util.Date"%>
+<%@ page import="org.silverpeas.core.cache.model.SimpleCache" %>
+<%@ page import="org.silverpeas.core.cache.service.CacheServiceProvider" %>
 <%@ page import="java.util.List" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
-<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
-<%@ page import="org.silverpeas.core.ResourceReference" %>
 
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<%-- Set resource bundle --%>
+<c:set var="currentUserLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<fmt:setLocale value="${currentUserLanguage}"/>
+<view:setBundle basename="org.silverpeas.statistic.multilang.statistic"/>
 
 <%@ include file="checkStatistic.jsp" %>
 
+<fmt:message var="userLabel" key="GML.user"/>
+<fmt:message var="lastAccessLabel" key="statistic.lastAccess"/>
+<fmt:message var="nbAccessLabel" key="statistic.nbAccess"/>
+<fmt:message var="detailLabel" key="statistic.detail"/>
+<c:url var="infoIconUrl" value="/util/icons/info.gif"/>
+
+<c:set var="currentUserId" value="${sessionScope['SilverSessionController'].userId}"/>
+<c:set var="id" value="${param.id}"/>
+<jsp:useBean id="id" type="java.lang.String"/>
+<c:set var="componentId" value="${param.componentId}"/>
+<jsp:useBean id="componentId" type="java.lang.String"/>
+<c:set var="objectType" value="${param.objectType}"/>
+<jsp:useBean id="objectType" type="java.lang.String"/>
+
 <%
-    //initialisation des variables
-    String currentUserId = m_MainSessionCtrl.getUserId();
-    String id 			= request.getParameter("id");
-    String userId 		= request.getParameter("userId");
-    String url 			= request.getParameter("url");
-    String componentId 	= request.getParameter("componentId");
-    String objectType	= request.getParameter("objectType");
-    List<String> 	userIds 	= (List<String>) request.getAttribute("UserIds");
-    %>
-
-    <script language="javascript">
-    function editDetail(userId, actorName)
-    {
-        SP_openWindow("<%=m_context%>/statistic/jsp/detailByUser.jsp?id=<%=id%>&userId="+userId+"&userName="+actorName+"&componentId=<%=componentId%>&objectType=<%=objectType%>", "blank", "280", "330","scrollbars=no, resizable, alwaysRaised");
-    }
-    </script>
-    <%
-    StatisticService statisticService =  ServiceProvider.getService(StatisticService.class);
-
-    ResourceReference resourceReference = new ResourceReference(id, componentId);
-    Collection<HistoryByUser> readingState = statisticService.getHistoryByObject(resourceReference, 1, objectType, userIds);
-
-    // displaying reading control
-    ArrayPane arrayPane = gef.getArrayPane("readingControl", "ReadingControl", request, session);
-
-    arrayPane.addArrayColumn(generalMessage.getString("GML.user"));
-    arrayPane.addArrayColumn(messages.getString("statistic.lastAccess"));
-    arrayPane.addArrayColumn(messages.getString("statistic.nbAccess"));
-    ArrayColumn columnDetail = arrayPane.addArrayColumn(messages.getString("statistic.detail"));
-    columnDetail.setSortable(false);
-
-    for (HistoryByUser historyByUser : readingState) {
-      ArrayLine ligne = arrayPane.addArrayLine();
-      UserDetail user = historyByUser.getUser();
-      ArrayCellText cell0 = ligne.addArrayCellText(UserNameGenerator.toString(user, currentUserId));
-      cell0.setCompareOn(user);
-      Date haveRead = historyByUser.getLastAccess();
-      String readingDate = "";
-        if (haveRead == null) {
-		readingDate = "&nbsp;";
-        } else {
-            readingDate = resource.getOutputDateAndHour(haveRead);
-        }
-        ArrayCellText cell1 = ligne.addArrayCellText(readingDate);
-        if (haveRead != null) {
-		cell1.setCompareOn(haveRead);
-        }
-        int nbAccess = historyByUser.getNbAccess();
-        ArrayCellText cell2 = ligne.addArrayCellText(nbAccess);
-        cell2.setCompareOn(Integer.valueOf(nbAccess));
-
-        if (haveRead != null)
-        {
-        String historyUserId = historyByUser.getUser().getId();
-        IconPane iconPane = gef.getIconPane();
-		Icon detailIcon = iconPane.addIcon();
-
-		detailIcon.setProperties(m_context + "/util/icons/info.gif", messages.getString("statistic.detail"), "javascript:editDetail('"+historyUserId+"','"+historyByUser.getUser().getDisplayedName()+"')");
-
-		ligne.addArrayCellIconPane(iconPane);
-        }
-     }
-
-    out.println(arrayPane.print());
+  final String cacheKey = "statistic_readingControl_list";
+  final SimpleCache sessionCache = CacheServiceProvider.getSessionCacheService().getCache();
+  if (request.getParameter("fromArrayPane") == null) {
+    sessionCache.remove(cacheKey);
+  }
+  final ResourceReference resourceReference = new ResourceReference(id, componentId);
+  final String resourceType = objectType;
+  final List<HistoryByUser> readingState = sessionCache.computeIfAbsent(cacheKey, List.class, () -> {
+    final StatisticService statisticService = ServiceProvider.getService(StatisticService.class);
+    final List<String> userIds = (List) request.getAttribute("UserIds");
+    return statisticService.getHistoryByObject(resourceReference, 1, resourceType, userIds);
+  });
 %>
+<c:set var="readingState" value="<%=readingState%>"/>
+
+<script language="javascript">
+  function editDetail(userId, actorName) {
+    SP_openWindow(
+        "<%=m_context%>/statistic/jsp/detailByUser.jsp?id=${id}&userId=" + userId + "&userName=" +
+        actorName + "&componentId=${componentId}&objectType=${objectType}", "blank", "280", "330",
+        "scrollbars=no, resizable, alwaysRaised");
+  }
+</script>
+<div id="dynamic-container">
+  <view:arrayPane var="readingControl" routingAddress="ReadingControl?fromArrayPane=true" numberLinesPerPage="25">
+    <view:arrayColumn title="${userLabel}" compareOn="${h -> h.user}"/>
+    <view:arrayColumn title="${lastAccessLabel}" compareOn="${h ->h.lastAccess}"/>
+    <view:arrayColumn title="${nbAccessLabel}" compareOn="${h ->h.nbAccess}"/>
+    <view:arrayColumn title="${detailLabel}" sortable="false"/>
+    <view:arrayLines var="entity" items="${readingState}">
+      <view:arrayLine>
+        <view:arrayCellText><view:username user="${entity.user}"/></view:arrayCellText>
+        <view:arrayCellText text="${entity.lastAccess != null
+                                ?  silfn:formatDateAndHour(entity.lastAccess, currentUserLanguage)
+                                : ''}"/>
+        <view:arrayCellText text="${entity.nbAccess}"/>
+        <view:arrayCellText>
+          <c:if test="${entity.lastAccess != null}">
+            <view:icons>
+              <view:icon iconName="${infoIconUrl}"
+                         action="javascript:editDetail('${entity.user.id}','${entity.user.displayedName}')"
+                         altText="${detailLabel}"/>
+            </view:icons>
+          </c:if>
+        </view:arrayCellText>
+      </view:arrayLine>
+    </view:arrayLines>
+  </view:arrayPane>
+  <script type="text/javascript">
+    whenSilverpeasReady(function() {
+      sp.arrayPane.ajaxControls('#dynamic-container');
+    });
+  </script>
+</div>

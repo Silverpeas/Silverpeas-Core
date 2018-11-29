@@ -26,6 +26,7 @@ package org.silverpeas.core.silverstatistics.access.service;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -33,14 +34,24 @@ import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.access.dao.HistoryObjectDAO;
 import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
+import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria;
+import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria.QUERY_ORDER_BY;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.SilverpeasList;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation of Statistic service layer which manage statistics
@@ -121,35 +132,59 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public Collection<HistoryObjectDetail> getHistoryByAction(ResourceReference resourceReference, int action,
+  public List<HistoryByUser> getHistoryByUser(ResourceReference resourceReference, int action,
       String objectType) {
-
-    Connection con = getConnection();
-    try {
-      return HistoryObjectDAO.getHistoryDetailByObject(con, resourceReference, objectType);
+    try (Connection con = getConnection()) {
+      final HistoryCriteria criteria = new HistoryCriteria(action)
+          .onResource(resourceReference)
+          .ofType(objectType);
+      return HistoryObjectDAO.findByUserByCriteria(con, criteria);
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
-  public Collection<HistoryObjectDetail> getHistoryByObjectAndUser(ResourceReference
-      resourceReference, int action,
-      String objectType, String userId) {
-    Connection con = getConnection();
-    try {
-      return HistoryObjectDAO.getHistoryDetailByObjectAndUser(con, resourceReference, objectType, userId);
+  public SilverpeasList<HistoryObjectDetail> getHistoryByAction(
+      final ResourceReference resourceReference, final int action, final String objectType,
+      final Collection<String> excludedUserIds, final PaginationPage pagination) {
+    try (Connection con = getConnection()) {
+      final HistoryCriteria criteria = new HistoryCriteria(action)
+          .onResource(resourceReference)
+          .ofType(objectType)
+          .paginatedBy(pagination);
+      if (excludedUserIds != null) {
+        criteria
+          .byExcludingUsers(excludedUserIds);
+      }
+      return HistoryObjectDAO.findByCriteria(con, criteria);
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
-  public Collection<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
+  public SilverpeasList<HistoryObjectDetail> getHistoryByObjectAndUser(
+      ResourceReference resourceReference, int action, String objectType, String userId,
+      final PaginationPage paginationPage, final QUERY_ORDER_BY orderBy) {
+    try (Connection con = getConnection()) {
+      final HistoryCriteria criteria = new HistoryCriteria(action)
+          .onResource(resourceReference)
+          .ofType(objectType)
+          .aboutUsers(userId)
+          .paginatedBy(paginationPage);
+      if (orderBy != null) {
+        criteria
+          .orderedBy(orderBy);
+      }
+      return HistoryObjectDAO.findByCriteria(con, criteria);
+    } catch (Exception e) {
+      throw new StatisticRuntimeException(e);
+    }
+  }
+
+  @Override
+  public List<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
       String objectType) {
     UserDetail[] allUsers = OrganizationControllerProvider.getOrganisationController()
         .getAllUsers(resourceReference.getInstanceId());
@@ -157,126 +192,26 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public Collection<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
+  public List<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
       String objectType, List<String> userIds) {
     if (userIds == null || userIds.isEmpty()) {
       return getHistoryByObject(resourceReference, action, objectType);
     }
     UserDetail[] users = OrganizationControllerProvider.getOrganisationController()
-        .getUserDetails(userIds.toArray(new String[userIds.size()]));
+        .getUserDetails(userIds.toArray(new String[0]));
     return getHistoryByObject(resourceReference, action, objectType, users);
   }
 
-  private Collection<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
+  private List<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
       String objectType, UserDetail[] users) {
-    Collection<HistoryObjectDetail> list =
-        getHistoryByAction(resourceReference, action, objectType);
-    String[] readerIds = new String[list.size()];
-    Date[] date = new Date[list.size()];
-    getHistoryReadersAndDates(list, readerIds, date);
-    UserDetail[] controlledUsers = OrganizationControllerProvider.getOrganisationController().getUserDetails(readerIds);
-
-    // ajouter à la liste "allUsers" (liste des users des rôles) les users ayant lu mais ne faisant
-    // pas partis d'un rôle
-    Collection<UserDetail> allUsers = getReadingUsersWithoutRoles(users, controlledUsers);
-
-    // création de la liste de tous les utilisateur ayant le droit de lecture
-    Collection<HistoryByUser> statByUser = getUsersWithReadRights(allUsers);
-
-    // création d'une liste des accès par utilisateur
-    Map<UserDetail, Date> byUser = new HashMap<>(controlledUsers.length);
-    Map<UserDetail, Integer> nbAccessbyUser = new HashMap<>(controlledUsers.length);
-    getAccessRightsPerUser(date, controlledUsers, byUser, nbAccessbyUser);
-
-    // mise à jour de la date de dernier accès et du nombre d'accès pour les utilisateurs ayant lu
-    updateAccessDateForReadingUsers(statByUser, byUser, nbAccessbyUser);
-
-    // Sort list to get readers first
-    LastAccessComparatorDesc comparator = new LastAccessComparatorDesc();
-    Collections.sort((List<HistoryByUser>) statByUser, comparator);
-    return statByUser;
-  }
-
-  private void updateAccessDateForReadingUsers(final Collection<HistoryByUser> statByUser,
-      final Map<UserDetail, Date> byUser, final Map<UserDetail, Integer> nbAccessbyUser) {
-    for (final HistoryByUser historyByUser : statByUser) {
-      UserDetail user = historyByUser.getUser();
-      // recherche de la date de dernier accès
-      Date lastAccess = byUser.get(user);
-      if (lastAccess != null) {
-        historyByUser.setLastAccess(lastAccess);
-      }
-      // retrieve access number
-      Integer nbAccess = nbAccessbyUser.get(user);
-      if (nbAccess != null) {
-        historyByUser.setNbAccess(nbAccess);
-      }
+    final List<HistoryByUser> allStatsByUser = new ArrayList<>(getHistoryByUser(resourceReference, action, objectType));
+    if (users != null && users.length > 0) {
+      final Set<String> userIds = allStatsByUser.stream().map(HistoryByUser::getUserId).collect(Collectors.toSet());
+      Arrays.stream(users)
+          .filter(u -> !userIds.contains(u.getId()))
+          .forEach(u -> allStatsByUser.add(new HistoryByUser(u, null, 0)));
     }
-  }
-
-  private void getAccessRightsPerUser(final Date[] date, final UserDetail[] controlledUsers,
-      final Map<UserDetail, Date> byUser, final Map<UserDetail, Integer> nbAccessbyUser) {
-    for (int j = 0; j < controlledUsers.length; j++) {
-      if (controlledUsers[j] == null) {
-        continue;
-      }
-      // regarder si la date en cours est > à la date enregistrée...
-      Object obj = byUser.get(controlledUsers[j]);
-      if (obj != null && !obj.toString().equals("Never")) {
-        Date dateTab = (Date) obj;
-        if (date[j].after(dateTab)) {
-          byUser.put(controlledUsers[j], date[j]);
-        }
-        Object objNb = nbAccessbyUser.get(controlledUsers[j]);
-        int nbAccess = 0;
-        if (objNb != null) {
-          nbAccess = (Integer) objNb;
-          nbAccess = nbAccess + 1;
-        }
-        nbAccessbyUser.put(controlledUsers[j], nbAccess);
-      } else {
-        byUser.put(controlledUsers[j], date[j]);
-        nbAccessbyUser.put(controlledUsers[j], 1);
-      }
-    }
-  }
-
-  private Collection<HistoryByUser> getUsersWithReadRights(final Collection<UserDetail> allUsers) {
-    Collection<HistoryByUser> statByUser = new ArrayList<>(allUsers.size());
-    for (UserDetail user : allUsers) {
-      if (user != null) {
-        HistoryByUser historyByUser = new HistoryByUser(user, null, 0);
-        statByUser.add(historyByUser);
-      }
-    }
-    return statByUser;
-  }
-
-  private Collection<UserDetail> getReadingUsersWithoutRoles(final UserDetail[] users,
-      final UserDetail[] controlledUsers) {
-    int compteur = 0;
-    Collection<UserDetail> allUsers = new ArrayList<>(users.length + controlledUsers.length);
-    for (int j = 0; j < users.length; j++) {
-      allUsers.add(users[j]);
-      compteur = j + 1;
-    }
-    for (int j = compteur; j < controlledUsers.length; j++) {
-      if (!allUsers.contains(controlledUsers[j])) {
-        allUsers.add(controlledUsers[j]);
-      }
-    }
-    return allUsers;
-  }
-
-  private void getHistoryReadersAndDates(final Collection<HistoryObjectDetail> list,
-      final String[] readerIds, final Date[] date) {
-    Iterator<HistoryObjectDetail> iterator = list.iterator();
-    int i = 0;
-    while (iterator.hasNext()) {
-      HistoryObjectDetail historyObject = iterator.next();
-      readerIds[i] = historyObject.getUserId();
-      date[i++] = historyObject.getDate();
-    }
+    return allStatsByUser;
   }
 
   @Override

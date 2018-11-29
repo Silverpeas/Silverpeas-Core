@@ -23,73 +23,122 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="java.util.Date"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+
+<%@ page import="org.apache.commons.lang3.tuple.Pair" %>
+<%@ page import="org.silverpeas.core.admin.PaginationPage" %>
+<%@ page import="org.silverpeas.core.cache.model.SimpleCache" %>
+<%@ page import="org.silverpeas.core.cache.service.CacheServiceProvider" %>
+<%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryCriteria.QUERY_ORDER_BY" %>
+<%@ page import="org.silverpeas.core.util.SilverpeasList" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="static org.silverpeas.core.silverstatistics.access.model.HistoryCriteria.QUERY_ORDER_BY.ACCESS_DATE_ASC" %>
+<%@ page import="static org.silverpeas.core.silverstatistics.access.model.HistoryCriteria.QUERY_ORDER_BY.ACCESS_DATE_DESC" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<%-- Set resource bundle --%>
+<c:set var="currentUserLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<fmt:setLocale value="${currentUserLanguage}"/>
+<view:setBundle basename="org.silverpeas.statistic.multilang.statistic"/>
+
 <%@ include file="checkStatistic.jsp" %>
 
+<fmt:message var="popupLabel" key="GML.popupTitle"/>
+<fmt:message var="userLabel" key="GML.user"/>
+<fmt:message var="closeLabel" key="GML.close"/>
+<fmt:message var="detailLabel" key="statistic.detail"/>
+
+<c:set var="currentUserId" value="${sessionScope['SilverSessionController'].userId}"/>
+<c:set var="id" value="${param.id}"/>
+<jsp:useBean id="id" type="java.lang.String"/>
+<c:set var="componentId" value="${param.componentId}"/>
+<jsp:useBean id="componentId" type="java.lang.String"/>
+<c:set var="userId" value="${param.userId}"/>
+<jsp:useBean id="userId" type="java.lang.String"/>
+<c:set var="userName" value="${param.userName}"/>
+<c:set var="objectType" value="${param.objectType}"/>
+<jsp:useBean id="objectType" type="java.lang.String"/>
+<c:set var="routingAddress" value="detailByUser.jsp?id=${id}&componentId=${componentId}&objectType=${objectType}&userId=${userId}&userName=${userName}"/>
+
+<%
+  final SimpleCache sessionCache = CacheServiceProvider.getSessionCacheService().getCache();
+  final Map<Integer, Pair<QUERY_ORDER_BY, QUERY_ORDER_BY>> ORDER_BIES = sessionCache
+      .computeIfAbsent("statistic_readingControl_byUser_orerBies", Map.class, () -> {
+        Map<Integer, Pair<QUERY_ORDER_BY, QUERY_ORDER_BY>> mapping = new HashMap<>();
+        mapping.put(1, Pair.of(ACCESS_DATE_ASC, ACCESS_DATE_DESC));
+        return mapping;
+      });
+
+  final String orderByCacheKey = "statistic_readingControl_byUser_orerBies_choice";
+  QUERY_ORDER_BY orderBy = sessionCache.computeIfAbsent(orderByCacheKey, QUERY_ORDER_BY.class, () -> QUERY_ORDER_BY.ACCESS_DATE_DESC);
+  final QUERY_ORDER_BY requestOrderBy = ArrayPane.getOrderByFrom(request, ORDER_BIES);
+  if (requestOrderBy != null) {
+    orderBy = requestOrderBy;
+    sessionCache.put(orderByCacheKey, orderBy);
+  }
+
+  final String paginationCacheKey = "statistic_readingControl_byUser_pagination";
+  final PaginationPage currentPagination = sessionCache.get(paginationCacheKey, PaginationPage.class);
+  final PaginationPage newPagination = Pagination.getPaginationPageFrom(request, currentPagination);
+  sessionCache.put(paginationCacheKey, newPagination);
+
+  final StatisticService statisticService = ServiceProvider.getService(StatisticService.class);
+  final ResourceReference resourceReference = new ResourceReference(id, componentId);
+  final SilverpeasList<HistoryObjectDetail> readingState = statisticService
+      .getHistoryByObjectAndUser(resourceReference, 1, objectType, userId, newPagination, orderBy);
+%>
+<c:set var="readingState" value="<%=readingState%>"/>
+
 <html>
-	<head>
-	<title><%=generalMessage.getString("GML.popupTitle")%></title>
-	<view:looknfeel/>
-	</head>
-	<body>
-	<%
-	    //initialisation des variables
-		String objectId		= request.getParameter("id");
-		String componentId 	= request.getParameter("componentId");
-	    String userId 		= request.getParameter("userId");
-	    String userName		= request.getParameter("userName");
-	    String objectType	= request.getParameter("objectType");
-	    StatisticService statisticService = ServiceProvider.getService(StatisticService.class);
-	    ResourceReference resourceReference = new ResourceReference(objectId, componentId);
-	    Collection readingState = statisticService.getHistoryByObjectAndUser(resourceReference, 1, objectType, userId);
-
-	    // affichage du nom de l'utilisateur
-	    %>
-	    <table>
-		<tr>
-			<td class="txtlibform" nowrap><%=generalMessage.getString("GML.user")%> :</td>
-			<td nowrap><%=userName%></td>
-		    </tr>
-		    <tr>
-			<td>
-			<%
-			    // affichage des controles de lecture pour l'utilisateur
-			    ArrayPane arrayPane = gef.getArrayPane("detailByUser.jsp", "detailByUser.jsp?id="+objectId+"&componentId="+componentId+"&objectType="+objectType+"&userId="+userId+"&userName="+userName, request, session);
-
-			    arrayPane.addArrayColumn(messages.getString("statistic.detail"));
-
-			    Iterator it = readingState.iterator();
-			    while (it.hasNext())
-			    {
-				ArrayLine ligne = arrayPane.addArrayLine();
-
-				HistoryObjectDetail historyObject = (HistoryObjectDetail) it.next();
-
-				ArrayCellText cell1 = null;
-				Date haveRead = historyObject.getDate();
-				String readingDate = DateUtil.getOutputDateAndHour(haveRead, language);
-			        cell1 = ligne.addArrayCellText(readingDate);
-			        if (haveRead != null)
-					cell1.setCompareOn(haveRead);
-			     }
-			    %>
-			    </td>
-	       </tr>
-	    </table>
-	    <%
-	    out.println(arrayPane.print());
-
-	%>
-	<br>
-	<center>
-	<%
-	  ButtonPane buttonPane = gef.getButtonPane();
-		buttonPane.addButton(gef.getFormButton(generalMessage.getString("GML.close"), "javascript:window.close()", false));
-		out.println(buttonPane.print());
-	%>
-	</center>
-	</body>
+<head>
+  <title>${popupLabel}</title>
+  <view:looknfeel/>
+  <style type="text/css">
+    .hautFrame {
+      padding-top: 0;
+    }
+    .cellBrowseBar,.cellOperation {
+      display: none;
+    }
+    #header {
+      white-space: nowrap;
+      padding-bottom: 3px;
+    }
+  </style>
+</head>
+<body>
+<view:window popup="true">
+  <view:frame>
+    <div id="header">
+      <span class="txtlibform">${userLabel} :</span><span>${userName}</span>
+    </div>
+    <div id="dynamic-container">
+      <view:arrayPane var="detailByUser" routingAddress="${routingAddress}" numberLinesPerPage="<%=newPagination.getPageSize()%>">
+        <view:arrayColumn title="${detailLabel}" sortable="true"/>
+        <view:arrayLines var="entity" items="${readingState}">
+          <view:arrayLine>
+            <view:arrayCellText text="${silfn:formatDateAndHour(entity.date, currentUserLanguage)}"/>
+          </view:arrayLine>
+        </view:arrayLines>
+      </view:arrayPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          sp.arrayPane.ajaxControls('#dynamic-container');
+        });
+      </script>
+    </div>
+  </view:frame>
+  <view:buttonPane>
+    <view:button label="${closeLabel}" action="javascript:window.close()"/>
+  </view:buttonPane>
+</view:window>
+</body>
 </html>
