@@ -29,6 +29,7 @@ package org.silverpeas.web.notificationserver.channel.silvermail;
  */
 
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -85,6 +86,8 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
 
     try {
       requestHandler = getHandlerInstance(function);
+      componentSC.setCurrentFunction(function);
+
       // Return the URL of the view the RequestHandler instance
       // chooses after doing the work of processing the request
       destination = requestHandler.handleRequest(componentSC, request);
@@ -97,42 +100,17 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
   }
 
   /**
-   * Locate and return the RequestHandler instance for this action. Instances are stored in a hash
-   * table once instantiated, so after the initial use of Class.forName() this method is very fast
-   * and does not rely on reflection.
+   * Locate and return the RequestHandler instance for this action. Request handlers are managed
+   * by the {@link ServiceProvider} subsystem.
    */
   private static SILVERMAILRequestHandler getHandlerInstance(String action)
       throws SILVERMAILException {
-    String handlerName = REQUEST_HANDLER_PACKAGE + "." + action;
-    SILVERMAILRequestHandler requestHandler = handlerHash.get(handlerName);
-
-    if (requestHandler == null) {
-      // We don't have a handler instance associated with this action,
-      // so we need to instantiate one and put in in our hash table
-      try {
-        // Use reflection to load the class by name
-        Class handlerClass = Class.forName(handlerName);
-
-        // Check the class we obtained implements the RequestHandler interface
-        if (!SILVERMAILRequestHandler.class.isAssignableFrom(handlerClass)) {
-          throw new SILVERMAILException("No such request handler " + handlerName);
-        }
-        // Instantiate the request handler object
-        requestHandler = (SILVERMAILRequestHandler) handlerClass.newInstance();
-        // Save the instance so we don't have to load it dynamically to process
-        // further requests from this user
-        handlerHash.put(handlerName, requestHandler);
-      } catch (ClassNotFoundException ex) {
-        throw new SILVERMAILException("No such request handler " + handlerName, ex);
-      } catch (InstantiationException | IllegalAccessException ex) {
-        // It probably doesn't have a no-argument constructor
-        throw new SILVERMAILException("Cannot execute the request handler " + handlerName,
-            ex);
-      }
+    try {
+      return ServiceProvider.getService(action);
+    } catch (IllegalStateException e) {
+      final String handlerName = REQUEST_HANDLER_PACKAGE + "." + action;
+      throw new SILVERMAILException("No such request handler " + handlerName, e);
     }
-    // If we get to here, we have a valid RequestHandler instance,
-    // whether it came from the hash table or from dynamical class loading
-    return requestHandler;
   }
 
   private static String extractFunctionName(String action) {

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server.channel.popup;
 
+import org.silverpeas.core.notification.user.client.NotificationParameterNames;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.channel.AbstractListener;
@@ -71,13 +72,16 @@ public class POPUPListener extends AbstractListener implements MessageListener {
   @Override
   public void send(NotificationData message) throws NotificationServerException {
     try {
-      StringBuilder content = new StringBuilder(500);
-      if (message.getTargetParam().get("SOURCE") != null) {
-        content.append("Source : ").append(message.getTargetParam().get("SOURCE")).append("\n");
+      final StringBuilder content = new StringBuilder(500);
+      final String source =
+          (String) message.getTargetParam().get(NotificationParameterNames.SOURCE);
+      final Date date = (Date) message.getTargetParam().get(NotificationParameterNames.DATE);
+      if (source != null) {
+        content.append("Source : ").append(source).append("\n");
       }
-      if (message.getTargetParam().get("DATE") != null) {
+      if (date != null) {
         content.append("Date : ")
-            .append(DateUtil.dateToString(((Date) message.getTargetParam().get("DATE")), ""))
+            .append(DateUtil.dateToString(date, ""))
             .append("\n");
       }
       content.append(message.getMessage());

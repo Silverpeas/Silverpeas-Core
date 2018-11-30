@@ -56,7 +56,6 @@ public abstract class AbstractListener implements INotificationServerChannel {
     extractData(msg);
     NotificationData nd = NotificationServerUtil.convertXMLToNotificationData(payLoad);
     if (nd != null) {
-
       nd.traceObject();
     }
     send(nd);

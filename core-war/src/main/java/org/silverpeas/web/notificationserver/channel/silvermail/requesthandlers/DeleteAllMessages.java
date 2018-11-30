@@ -26,19 +26,23 @@
 
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
+@Singleton
+@Named("DeleteAllMessages")
 public class DeleteAllMessages implements SILVERMAILRequestHandler {
 
+  @Override
   public String handleRequest(ComponentSessionController componentSC,
-      HttpServletRequest request) throws SILVERMAILException {
+      HttpServletRequest request) {
     SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
 
     try {

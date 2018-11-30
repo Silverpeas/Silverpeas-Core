@@ -272,4 +272,24 @@ public class NotificationManagerSettings {
     return silvermailIconsSettings
         .getString("silvermail.desktop.url", "/util/icons/desktop-user-notification.png");
   }
+
+  /**
+   * Is the space label should be set in the source of a notification when this property isn't set
+   * explicitly.
+   * @return true if the space label should be set in the notification source. False otherwise.
+   */
+  public static boolean isSpaceLabelInNotificationSource() {
+    return settings.getBoolean("notification.source.spaceLabel");
+  }
+
+  /**
+   * Is the component instance label should be set in the source of a notification when this
+   * property isn't set explicitly.
+   * @return true if the component instance label should be set in the notification source. False
+   * otherwise.
+   */
+  public static boolean isComponentInstanceLabelInNotificationSource() {
+    return settings.getBoolean("notification.source.componentLabel");
+  }
+
 }

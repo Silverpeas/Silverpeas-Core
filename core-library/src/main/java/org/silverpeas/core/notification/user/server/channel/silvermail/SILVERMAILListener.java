@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server.channel.silvermail;
 
+import org.silverpeas.core.notification.user.client.NotificationParameterNames;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.channel.AbstractListener;
@@ -66,13 +67,13 @@ public class SILVERMAILListener extends AbstractListener implements MessageListe
     try {
       Map<String, Object> keyValue = data.getTargetParam();
       // retrieves the SUBJECT key value.
-      String tmpSubjectString = (String) keyValue.get("SUBJECT");
+      String tmpSubjectString = (String) keyValue.get(NotificationParameterNames.SUBJECT);
       // retrieves the SOURCE key value.
-      String tmpSourceString = (String) keyValue.get("SOURCE");
+      String tmpSourceString = (String) keyValue.get(NotificationParameterNames.SOURCE);
       // retrieves the URL key value.
-      String tmpUrlString = (String) keyValue.get("URL");
+      String tmpUrlString = (String) keyValue.get(NotificationParameterNames.URL);
       // retrieves the DATE key value.
-      Date tmpDate = (Date) keyValue.get("DATE");
+      Date tmpDate = (Date) keyValue.get(NotificationParameterNames.DATE);
       SILVERMAILMessage sm = new SILVERMAILMessage();
       sm.setUserId(Integer.parseInt(data.getTargetReceipt()));
       sm.setSenderName(data.getSenderName());

@@ -71,6 +71,8 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
       SILVERMAILSessionController.class.getName() + "###space###";
   private static final String UNKNOWN_SOURCE_BUNDLE_KEY = "UnknownSource";
   private static final int DEFAULT_PAGINATION_SIZE = 25;
+  private String currentFunction;
+  private long currentMessageId = -1;
   private Set<String> selectedUserNotificationIds = new HashSet<>();
   private PaginationPage pagination;
   private QUERY_ORDER_BY orderBy;
@@ -99,6 +101,26 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     if (orderBy != null) {
       this.orderBy = orderBy;
     }
+  }
+
+  /**
+   * Method declaration
+   *
+   * @return
+   * @see
+   */
+  public String getCurrentFunction() {
+    return currentFunction;
+  }
+
+  /**
+   * Method declaration
+   *
+   * @param currentFunction
+   * @see
+   */
+  public void setCurrentFunction(String currentFunction) {
+    this.currentFunction = currentFunction;
   }
 
   public Set<String> getSelectedUserNotificationIds() {
@@ -185,6 +207,30 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   public SILVERMAILMessage getMessage(long messageId)
       throws SILVERMAILException {
     return SILVERMAILPersistence.getMessage(messageId);
+  }
+
+  /**
+   * Method declaration
+   *
+   * @return
+   * @see
+   */
+  public long getCurrentMessageId() {
+    return currentMessageId;
+  }
+
+  /**
+   * Method declaration
+   *
+   * @param value
+   * @see
+   */
+  public void setCurrentMessageId(long value) {
+    currentMessageId = value;
+  }
+
+  public SILVERMAILMessage getCurrentMessage() throws SILVERMAILException {
+    return getMessage(currentMessageId);
   }
 
   /**

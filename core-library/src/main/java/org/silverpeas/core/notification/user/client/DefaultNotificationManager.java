@@ -65,6 +65,7 @@ import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +90,6 @@ public class DefaultNotificationManager extends AbstractNotification
   private static final String FROM_EMAIL = "E";
   private static final String FROM_NAME = "N";
   private static final String HTML_BREAK_LINES = "<br><br>";
-  private static final String SUBJECT = "subject";
   private static final String OF_THE_USER = " of the user ";
   private static final String FOR_THE_USER = " for the user ";
   private static final String MESSAGE_PRIORITY = "messagePriority";
@@ -413,20 +413,18 @@ public class DefaultNotificationManager extends AbstractNotification
   @Override
   public void notifyUsers(final NotificationParameters params, final Collection<String> userIds)
       throws NotificationException {
-    // First Tests if the user is a guest
-    // Then notify himself that he cant notify anyone
-    final Collection<String> senderIds;
+    final Collection<String> recipientIds;
     if (UserAccessLevel.GUEST.equals(getUserAccessLevel(params.getFromUserId()))) {
+      // If the user is a guest then notify himself that he can't notify anyone
       params.setMessage(multilang.getString("guestNotAllowedBody1") + "<br>" + params.getTitle() +
           HTML_BREAK_LINES + multilang.getString("guestNotAllowedBody2"))
           .setTitle(multilang.getString("guestNotAllowedTitle"))
           .setMessagePriority(NotificationParameters.PRIORITY_NORMAL)
           .setAddressId(BuiltInNotifAddress.BASIC_POPUP.getId())
           .setComponentInstance(-1);
-      senderIds = new ArrayList<>(1);
-      senderIds.add(String.valueOf(params.getFromUserId()));
+      recipientIds = Collections.singleton(String.valueOf(params.getFromUserId()));
     } else {
-      senderIds = userIds;
+      recipientIds = userIds;
     }
 
     // First Verify that the title is not too long...
@@ -434,7 +432,7 @@ public class DefaultNotificationManager extends AbstractNotification
 
     try {
       params.trace();
-      for (String userId : senderIds) {
+      for (String userId : recipientIds) {
         doNewDelayedNotifications(params, userId);
       }
 
@@ -508,24 +506,52 @@ public class DefaultNotificationManager extends AbstractNotification
     try {
       final StringBuilder sb = new StringBuilder();
       final ComponentInst instance = AdministrationServiceProvider.getAdminService().getComponentInst(compInst);
+      NotificationManagerSettings.isComponentInstanceLabelInNotificationSource();
       if (!isPathToComponent) {
-        final SpaceInst space =
-            AdministrationServiceProvider.getAdminService().getSpaceInstById(instance.getDomainFatherId());
-        sb.append(space.getName());
-        sb.append(separator);
+        sb.append(getSpaceLabelOf(instance)).append(separator);
       } else {
-        final List<SpaceInstLight> spaces =
-            AdministrationServiceProvider.getAdminService().getPathToComponent(compInst);
-        for (final SpaceInstLight space : spaces) {
-          sb.append(space.getName());
-          sb.append(separator);
-        }
+        sb.append(getSpaceLabelPathOf(instance, separator)).append(separator);
       }
       sb.append(instance.getLabel());
       return sb.toString();
     } catch (AdminException e) {
       throw new NotificationException(e);
     }
+  }
+
+  private String computeDefaultSource(final String compInst) throws AdminException {
+    final String separator = " - ";
+    final boolean isSpaceLabelSet = NotificationManagerSettings.isSpaceLabelInNotificationSource();
+    final boolean isCompInstLabelSet =
+        NotificationManagerSettings.isComponentInstanceLabelInNotificationSource();
+    final StringBuilder source = new StringBuilder();
+    if (isSpaceLabelSet || isCompInstLabelSet) {
+      final ComponentInst instance =
+          AdministrationServiceProvider.getAdminService().getComponentInst(compInst);
+      if (isSpaceLabelSet) {
+        source.append(getSpaceLabelOf(instance));
+      }
+      if (isCompInstLabelSet) {
+        if (isSpaceLabelSet) {
+          source.append(separator);
+        }
+        source.append(instance.getLabel());
+      }
+    }
+    return source.toString();
+  }
+
+  private String getSpaceLabelPathOf(final ComponentInst instance, final String pathSeparator)
+      throws AdminException {
+    final List<SpaceInstLight> spaces =
+        AdministrationServiceProvider.getAdminService().getPathToComponent(instance.getId());
+    return spaces.stream().map(SpaceInstLight::getName).collect(Collectors.joining(pathSeparator));
+  }
+
+  private String getSpaceLabelOf(final ComponentInst instance) throws AdminException {
+    final SpaceInst space = AdministrationServiceProvider.getAdminService()
+        .getSpaceInstById(instance.getDomainFatherId());
+    return space.getName();
   }
 
   private String getUserEmail(final String userId) {
@@ -750,34 +776,10 @@ public class DefaultNotificationManager extends AbstractNotification
     }
 
     // Set Source parameter
-    setSource(params, theExtraParams);
-
-    // Set sessionId parameter
-    if (StringUtil.isDefined(params.getSessionId())) {
-      theExtraParams.put(SESSIONID, params.getSessionId());
-    }
+    setSource(params, theExtraParams, null);
 
     // Set date parameter
-    if (params.getDate() != null) {
-      theExtraParams.put(DATE, params.getDate());
-    }
-
-    if (params.getLanguage() != null) {
-      theExtraParams.put(LANGUAGE, params.getLanguage());
-    }
-
-    nd.setSenderName(senderName);
-
-    if (theExtraParams.size() > 0) {
-      nd.setTargetParam(theExtraParams);
-    }
-
-    theMessage.append(params.getMessage());
-
-    nd.setMessage(theMessage.toString());
-    nd.setAnswerAllowed(params.isAnswerAllowed());
-
-    return nd;
+    return setCommonNotifData(params, theExtraParams, theMessage, senderName, nd);
   }
 
   private void setSubject(final NotificationParameters params, final StringBuilder theMessage,
@@ -785,7 +787,7 @@ public class DefaultNotificationManager extends AbstractNotification
     if ("Y".equalsIgnoreCase(ncr.getSubjectAvailable())) {
       theExtraParams.put(SUBJECT, params.getTitle());
     } else if (params.getFromUserId() < 0) {
-      theMessage.append(multilang.getString(SUBJECT)).append(" : ").append(params.getTitle())
+      theMessage.append(multilang.getString("subject")).append(" : ").append(params.getTitle())
           .append(HTML_BREAK_LINES);
     }
   }
@@ -835,14 +837,21 @@ public class DefaultNotificationManager extends AbstractNotification
     }
 
     // Set Source parameter
-    setSource(params, theExtraParams);
+    setSource(params, theExtraParams, null);
 
+    // Set date parameter
+    return setCommonNotifData(params, theExtraParams, theMessage, senderName, nd);
+  }
+
+  @NotNull
+  private NotificationData setCommonNotifData(final NotificationParameters params,
+      final Map<String, Object> theExtraParams, final StringBuilder theMessage,
+      final String senderName, final NotificationData nd) {
     // Set sessionId parameter
     if (StringUtil.isDefined(params.getSessionId())) {
       theExtraParams.put(SESSIONID, params.getSessionId());
     }
 
-    // Set date parameter
     if (params.getDate() != null) {
       theExtraParams.put(DATE, params.getDate());
     }
@@ -867,15 +876,23 @@ public class DefaultNotificationManager extends AbstractNotification
   }
 
   private void setSource(final NotificationParameters params,
-      final Map<String, Object> theExtraParams) {
+      final Map<String, Object> theExtraParams,
+      final DelayedNotificationData delayedNotificationData) {
     if (StringUtil.isDefined(params.getSource())) {
       theExtraParams.put(SOURCE, params.getSource());
     } else {
       if (params.isComponentInstanceDefined()) {
+        final String instanceId = String.valueOf(params.getComponentInstance());
         try {
-          // New feature : if source is not set, we display space's name and
-          // component's label
-          theExtraParams.put(SOURCE, getComponentFullName("" + params.getComponentInstance()));
+          final String source = computeDefaultSource(instanceId);
+          theExtraParams.put(SOURCE, source);
+          if (delayedNotificationData != null && delayedNotificationData.getResource() != null &&
+              StringUtils.isBlank(delayedNotificationData.getResource().getResourceLocation())) {
+            final String resourceLocation =
+                getComponentFullName(instanceId, NotificationResourceData.LOCATION_SEPARATOR, true);
+            delayedNotificationData.getResource().setResourceLocation(resourceLocation);
+
+          }
         } catch (Exception e) {
           SilverLogger.getLogger(this).warn(e);
         }
@@ -901,7 +918,6 @@ public class DefaultNotificationManager extends AbstractNotification
     final List<DelayedNotificationData> dnds = new ArrayList<>(nars.size());
 
     NotifChannelRow notifChannelRow;
-    DelayedNotificationData delayedNotificationData;
     NotificationData notificationData;
     for (final NotifAddressRow curAddresseRow : nars) {
       notifChannelRow = schema.notifChannel().getNotifChannel(curAddresseRow.getNotifChannelId());
@@ -912,7 +928,7 @@ public class DefaultNotificationManager extends AbstractNotification
       // set the destination address
       notificationData.setTargetReceipt(curAddresseRow.getAddress());
 
-      delayedNotificationData =
+      final DelayedNotificationData delayedNotificationData =
           initDelayedNotificationData(aUserId, params, notificationData, curAddresseRow);
       dnds.add(delayedNotificationData);
 
@@ -934,60 +950,11 @@ public class DefaultNotificationManager extends AbstractNotification
       }
 
       // Set Source parameter
-      setSource(params, delayedNotificationData, theExtraParams);
+      setSource(params, theExtraParams, delayedNotificationData);
 
-      // Set sessionId parameter
-      if (StringUtil.isDefined(params.getSessionId())) {
-        theExtraParams.put(SESSIONID, params.getSessionId());
-      }
-
-      // Set date parameter
-      if (params.getDate() != null) {
-        theExtraParams.put(DATE, params.getDate());
-      }
-
-      if (params.getLanguage() != null) {
-        theExtraParams.put(LANGUAGE, params.getLanguage());
-      }
-
-      notificationData.setSenderName(senderName);
-
-      if (theExtraParams.size() > 0) {
-        notificationData.setTargetParam(theExtraParams);
-      }
-
-      theMessage.append(params.getMessage());
-
-      notificationData.setMessage(theMessage.toString());
-      notificationData.setAnswerAllowed(params.isAnswerAllowed());
+      setCommonNotifData(params, theExtraParams, theMessage, senderName, notificationData);
     }
     return dnds;
-  }
-
-  private void setSource(final NotificationParameters params,
-      final DelayedNotificationData delayedNotificationData,
-      final Map<String, Object> theExtraParams) {
-    if (StringUtil.isDefined(params.getSource())) {
-      theExtraParams.put(SOURCE, params.getSource());
-    } else {
-      if (params.isComponentInstanceDefined()) {
-        try {
-          // New feature : if source is not set, we display space's name and component's label
-          final String componentFullName =
-              getComponentFullName(String.valueOf(params.getComponentInstance()));
-          theExtraParams.put(SOURCE, componentFullName);
-          if (delayedNotificationData.getResource() != null &&
-              StringUtils.isBlank(delayedNotificationData.getResource().getResourceLocation())) {
-            delayedNotificationData.getResource()
-                .setResourceLocation(
-                    getComponentFullName(String.valueOf(params.getComponentInstance()),
-                    NotificationResourceData.LOCATION_SEPARATOR, true));
-          }
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).warn(e);
-        }
-      }
-    }
   }
 
   @NotNull
@@ -1012,11 +979,11 @@ public class DefaultNotificationManager extends AbstractNotification
   }
 
   private String getSenderName(final NotificationParameters params) {
-    String senderName;
+    final String senderName;
     if (params.isFromUserIdDefined()) {
-      senderName = params.getSenderName();
-    } else {
       senderName = getUserFullName(params.getFromUserId());
+    } else {
+      senderName = params.getSenderName();
     }
     return senderName;
   }
@@ -1048,7 +1015,7 @@ public class DefaultNotificationManager extends AbstractNotification
     return valret;
   }
 
-  protected String getSureString(String s) {
+  private String getSureString(String s) {
     if (s != null) {
       return s;
     } else {
@@ -1071,4 +1038,9 @@ public class DefaultNotificationManager extends AbstractNotification
     return NotificationManagerSettings.getDefaultChannels();
   }
 
+  @FunctionalInterface
+  private interface Callback {
+
+    void call() throws NotificationException;
+  }
 }

@@ -24,7 +24,6 @@
 package org.silverpeas.core.notification.user.server.channel.remove;
 
 import org.silverpeas.core.notification.user.server.NotificationData;
-import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.channel.AbstractListener;
 
 import javax.ejb.ActivationConfigProperty;
@@ -57,7 +56,7 @@ public class REMOVEListener extends AbstractListener implements MessageListener 
   }
 
   @Override
-  public void send(NotificationData notificationData) throws NotificationServerException {
+  public void send(NotificationData notificationData) {
     // we only remove this message
   }
 

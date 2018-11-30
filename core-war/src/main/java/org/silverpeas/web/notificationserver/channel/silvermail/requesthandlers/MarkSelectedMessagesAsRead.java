@@ -26,7 +26,6 @@
 
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -34,25 +33,16 @@ import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * Class declaration
- * @author
- * @version %I%, %G%
- */
+@Singleton
+@Named("MarkSelectedMessagesAsRead")
 public class MarkSelectedMessagesAsRead implements SILVERMAILRequestHandler {
 
-  /**
-   * Method declaration
-   * @param componentSC
-   * @param request
-   * @return
-   * @throws SILVERMAILException
-   *
-   */
-  public String handleRequest(ComponentSessionController componentSC, HttpServletRequest request)
-      throws SILVERMAILException {
+  @Override
+  public String handleRequest(ComponentSessionController componentSC, HttpServletRequest request) {
     HttpRequest httpRequest = HttpRequest.decorate(request);
     SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
 
