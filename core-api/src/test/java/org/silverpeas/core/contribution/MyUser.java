@@ -187,6 +187,11 @@ public class MyUser implements User {
   }
 
   @Override
+  public boolean isRemovedState() {
+    return getState() == UserState.REMOVED;
+  }
+
+  @Override
   public boolean isBlockedState() {
     return getState() == UserState.BLOCKED;
   }

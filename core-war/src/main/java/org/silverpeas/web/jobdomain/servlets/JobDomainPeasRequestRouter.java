@@ -42,6 +42,7 @@ import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
@@ -69,14 +70,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import static java.util.Collections.emptySet;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.*;
 import static org.silverpeas.core.web.token.SynchronizerTokenService.SESSION_TOKEN_KEY;
+import static org.silverpeas.web.jobdomain.servlets.RemovedUserUIEntity.convertRemovedUserList;
 
-/**
- * Class declaration
- *
- * @author
- */
 public class JobDomainPeasRequestRouter extends
     ComponentRequestRouter<JobDomainPeasSessionController> {
 
@@ -111,6 +109,7 @@ public class JobDomainPeasRequestRouter extends
   private static final String IS_ONLY_GROUP_MANAGER_ATTR = "isOnlyGroupManager";
   private static final String DOMAIN_OBJECT_ATTR = "domainObject";
   private static final String USERS_ATTR = "Users";
+  private static final String THE_USER_ATTR = "theUser";
   private static final String DOMAIN_NAVIGATION_DEST = "domainNavigation.jsp";
   private static final String DOMAIN_SYNCHRO_PING_DEST = "domainSynchroPing.jsp";
   private static final String DOMAIN_CREATE_DEST = "domainCreate.jsp";
@@ -119,15 +118,8 @@ public class JobDomainPeasRequestRouter extends
   private static final String DOMAIN_CONTENT_DEST = "domainContent.jsp";
   private static final String GROUP_CONTENT_DEST = "groupContent.jsp";
   private static final String GO_BACK_DEST = "goBack.jsp";
+  private static final String DISPLAY_REMOVED_USERS_DEST = "displayRemovedUsers";
 
-  /**
-   * Method declaration
-   *
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
   @Override
   public JobDomainPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -149,7 +141,7 @@ public class JobDomainPeasRequestRouter extends
    *
    * @param function The entering request function (ex : "Main.jsp")
    * @param jobDomainSC The component Session Control, build and initialised.
-   * @param request
+   * @param request the current request.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
@@ -183,14 +175,8 @@ public class JobDomainPeasRequestRouter extends
       }
 
       if ("blankUsers".equals(function)) {
-        final Enumeration<String> paramNames = request.getParameterNames();
         final List<String> userIds = new ArrayList<>();
-        while(paramNames.hasMoreElements()) {
-          final String paramName = paramNames.nextElement();
-          if (paramName.startsWith("blank_")) {
-            userIds.add(request.getParameter(paramName));
-          }
-        }
+        request.mergeSelectedItemsInto(userIds);
         if (!userIds.isEmpty()) {
           jobDomainSC.blankDeletedUsers(userIds);
         }
@@ -209,6 +195,20 @@ public class JobDomainPeasRequestRouter extends
         UserDetail user = jobDomainSC.getNext();
         jobDomainSC.setTargetUser(user.getId());
         destination = USER_CONTENT_DEST;
+      } else if ("restoreUsers".equals(function)) {
+        final List<String> userIds = new ArrayList<>();
+        request.mergeSelectedItemsInto(userIds);
+        for (final String u : userIds) {
+          jobDomainSC.restoreUser(u);
+        }
+        destination = getDestination(DISPLAY_REMOVED_USERS_DEST, jobDomainSC, request);
+      } else if ("deleteUsers".equals(function)) {
+        final List<String> userIds = new ArrayList<>();
+        request.mergeSelectedItemsInto(userIds);
+        for (final String u : userIds) {
+          jobDomainSC.deleteUser(u);
+        }
+        destination = getDestination(DISPLAY_REMOVED_USERS_DEST, jobDomainSC, request);
       } else if (function.startsWith("user")) {
         // USER Actions --------------------------------------------
         String userId = request.getParameter("Iduser");
@@ -257,6 +257,8 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.activateUser(userId);
         } else if (function.startsWith("userDelete")) {
           jobDomainSC.deleteUser(userId);
+        } else if (function.startsWith("userRemove")) {
+          jobDomainSC.removeUser(userId);
         } else if (function.startsWith("userAvatarDelete")) {
           jobDomainSC.deleteUserAvatar(userId);
         } else if ("userViewRights".equals(function)) {
@@ -720,11 +722,17 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("displayDynamicSynchroReport")) {
           SynchroDomainReport.setReportLevel(Level.valueOf(request.getParameter("IdTraceLevel")));
           destination = "dynamicSynchroReport.jsp";
+        } else if (function.startsWith(DISPLAY_REMOVED_USERS_DEST)) {
+          final SilverpeasList<UserDetail> removedUsers = SilverpeasList.wrap(jobDomainSC.getRemovedUsers());
+          request.setAttribute("removedUsers", convertRemovedUserList(removedUsers, emptySet()));
+          request.setAttribute("domain", jobDomainSC.getTargetDomain());
+          request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
+          destination = "removedUsers.jsp";
         } else if (function.startsWith("displayDeletedUsers")) {
-          List<UserDetail> deletedUsers = jobDomainSC.getDeletedUsers();
+          final List<UserDetail> deletedUsers = jobDomainSC.getDeletedUsers();
           request.setAttribute("deletedUsers", deletedUsers);
           request.setAttribute("domain", jobDomainSC.getTargetDomain());
-          request.setAttribute("theUser", jobDomainSC.getUserDetail());
+          request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
           destination = "deletedUsers.jsp";
         }
       } else if (function.startsWith("welcome")) {
@@ -797,7 +805,7 @@ public class JobDomainPeasRequestRouter extends
       if (DOMAIN_CONTENT_DEST.equals(destination)) {
         jobDomainSC.refresh();
         long domainRight = jobDomainSC.getDomainActions();
-        request.setAttribute("theUser", jobDomainSC.getUserDetail());
+        request.setAttribute(THE_USER_ATTR, jobDomainSC.getUserDetail());
         request.setAttribute("subGroups", jobDomainSC.getSubGroups(false));
         request.setAttribute("subUsers", jobDomainSC.getSubUsers(false));
         setRightManagementAttributes(request, domainRight);
@@ -949,7 +957,6 @@ public class JobDomainPeasRequestRouter extends
     domain.setPropFileName(properties);
     domain.setAuthenticationServer(authent);
     domain.setSilverpeasServerURL(url);
-    domain.setTheTimeStamp(timeStamp);
 
     return domain;
   }

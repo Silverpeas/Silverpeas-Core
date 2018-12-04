@@ -70,6 +70,9 @@
 <c:set var="displayedLogin"><view:encodeHtml string="${login}" /></c:set>
 <fmt:message key="GML.user.account.state.${userInfos.state.name}" var="stateLabel"/>
 <fmt:message key="JDP.user.state.${userInfos.state.name}" var="stateIcon" bundle="${icons}"/>
+<fmt:message key="JDP.userRemConfirm" var="userRemConfirmMessage"/>
+<fmt:message key="JDP.userDelConfirm" var="userDelConfirmMessage"/>
+<fmt:message key="JDP.userDelConfirmHelp" var="userDelConfirmMessageHelp"/>
 
 <c:set var="userObject" value="${requestScope.userObject}" />
 <jsp:useBean id="userObject" type="org.silverpeas.core.admin.user.model.UserFull"/>
@@ -129,8 +132,8 @@
           .addOperation(resource.getIcon("JDP.userDeactivate"), resource.getString("JDP.userDeactivate"),
               "userDeactivate?Iduser=" + thisUserId);
     }
-    operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.delete"),
-        "javascript:deleteUser()");
+    operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.remove"),
+        "javascript:removeUser()");
   }
   if ((isDomainSync || isDomainListener) && !isGroupManager) {
     operationPane
@@ -162,8 +165,8 @@
         operationPane.addOperation(resource.getIcon("JDP.userUnsynchro"), resource.getString("JDP.userUnsynchro"), "userUnSynchro?Iduser=" + thisUserId);
       }
     } else {
-      operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.delete"),
-          "javascript:deleteUser()");
+      operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.remove"),
+          "javascript:removeUser()");
     }
   }
   operationPane.addLine();
@@ -187,17 +190,40 @@
   <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
   <view:includePlugin name="popup"/>
   <view:includePlugin name="qtip"/>
+  <style type="text/css">
+    #deletionFormDialog .complement {
+      display: flex;
+      padding-top: 5px;
+      vertical-align: middle;
+    }
+    #deletionFormDialog label {
+      padding-left: 5px;
+    }
+    #deletionFormDialog .help {
+      font-size: 0.8em;
+    }
+  </style>
   <script type="text/javascript">
-    function deleteUser() {
-      jQuery.popup.confirm("<%=resource.getString("JDP.userDelConfirm")%>", function() {
-        jQuery('#deletionForm').submit();
+    function removeUser() {
+      var $dialog = jQuery('#deletionFormDialog');
+      $dialog.popup('confirmation', {
+        callback : function() {
+          var $deletionForm = jQuery('#deletionForm');
+          if (jQuery('#definitiveDeletion')[0].checked) {
+            $deletionForm.attr("action", "userDelete");
+          } else {
+            $deletionForm.attr("action", "userRemove");
+          }
+          $deletionForm.submit();
+        }
       });
     }
 
     function deleteAvatar() {
       jQuery.popup.confirm("${labelDeleteAvatar}", function() {
-        jQuery('#deletionForm').attr("action", "userAvatarDelete");
-        jQuery('#deletionForm').submit();
+        var $deletionForm = jQuery('#deletionForm');
+        $deletionForm.attr("action", "userAvatarDelete");
+        $deletionForm.submit();
       });
     }
 
@@ -498,9 +524,18 @@ out.println(window.printBefore());
     </fieldset>
   </c:if>
 
-  <form id="deletionForm" action="userDelete" method="post">
+  <form id="deletionForm" name="deletionForm" action="userDelete" method="post">
     <input id="Iduser" type="hidden" name="Iduser" value="${userInfos.id}"/>
   </form>
+
+  <div id="deletionFormDialog" style="display: none;">
+    ${userRemConfirmMessage}
+    <div class="complement">
+      <input type="checkbox" id="definitiveDeletion">
+      <label for="definitiveDeletion">${userDelConfirmMessage}</label>
+    </div>
+    <div class="help">(${userDelConfirmMessageHelp})</div>
+  </div>
 </view:frame>
 <%
 out.println(window.printAfter());

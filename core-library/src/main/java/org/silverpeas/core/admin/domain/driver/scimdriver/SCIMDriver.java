@@ -88,18 +88,6 @@ public class SCIMDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp) {
-    // In this driver, do nothing
-    return new UserDetail[0];
-  }
-
-  @Override
-  public GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) {
-    // In this driver, do nothing
-    return new GroupDetail[0];
-  }
-
-  @Override
   public UserDetail importUser(String userLogin) {
     // In this driver, do nothing
     return null;
@@ -199,7 +187,7 @@ public class SCIMDriver extends AbstractDomainDriver {
   @Transactional(Transactional.TxType.MANDATORY)
   public UserDetail[] getAllUsers() throws AdminException {
     // In this driver, returning silverpeas data
-    return userManager.getAllUsersInDomain(String.valueOf(domainId));
+    return userManager.getAllUsersInDomain(String.valueOf(domainId), false);
   }
 
   @Override

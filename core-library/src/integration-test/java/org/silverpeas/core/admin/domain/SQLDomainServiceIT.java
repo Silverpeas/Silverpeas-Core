@@ -25,7 +25,6 @@ package org.silverpeas.core.admin.domain;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
-import org.silverpeas.core.admin.domain.driver.sqldriver.SQLSettings;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -35,16 +34,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.DataSetTest;
-import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.admin.domain.driver.sqldriver.SQLSettings;
 import org.silverpeas.core.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;
 import org.silverpeas.core.admin.domain.exception.DomainPropertiesAlreadyExistsException;
 import org.silverpeas.core.admin.domain.exception.NameAlreadyExistsInDatabaseException;
 import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.test.DataSetTest;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Inject;
@@ -89,7 +89,6 @@ public class SQLDomainServiceIT extends DataSetTest {
     newDomain.setDriverClassName(className);
     newDomain.setPropFileName(propFileName);
     newDomain.setSilverpeasServerURL("http://localhost:8000/silverpeas");
-    newDomain.setTheTimeStamp("0");
     return newDomain;
   }
 

@@ -1211,9 +1211,28 @@ public class AdminController implements java.io.Serializable {
     }
   }
 
+  /** Restores the given user */
+  public String restoreUser(String sUserId) {
+    try {
+      return admin.restoreUser(sUserId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
+      return "";
+    }
+  }
+
+  /** Removes the given user */
+  public String removeUser(String sUserId) {
+    try {
+      return admin.removeUser(sUserId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
+      return "";
+    }
+  }
+
   /** Update the given user */
   public String updateUser(UserDetail userDetail) {
-
     try {
       return admin.updateUser(userDetail);
     } catch (Exception e) {
@@ -1531,6 +1550,10 @@ public class AdminController implements java.io.Serializable {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
     return false;
+  }
+
+  public List<UserDetail> getRemovedUsersInDomain(final String domainId) throws AdminException {
+    return admin.getRemovedUsers(domainId);
   }
 
   public List<UserDetail> getDeletedUsersInDomain(final String domainId) throws AdminException {

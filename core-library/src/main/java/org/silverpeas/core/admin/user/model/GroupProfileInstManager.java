@@ -138,7 +138,7 @@ public class GroupProfileInstManager {
             .forEach(groupProfileInst::addGroup);
 
         // set the users
-        userDAO.getDirectUserIdsByGroupUserRole(connection, profileId)
+        userDAO.getDirectUserIdsByGroupUserRole(connection, profileId, false)
             .forEach(groupProfileInst::addUser);
       }
     } catch (Exception e) {

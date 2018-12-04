@@ -260,6 +260,11 @@ public class ChatUser extends UserDetail {
   }
 
   @Override
+  public boolean isRemovedState() {
+    return user.isRemovedState();
+  }
+
+  @Override
   public boolean isBlockedState() {
     return user.isBlockedState();
   }

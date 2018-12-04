@@ -23,12 +23,19 @@
  */
 package org.silverpeas.core.admin.domain.synchro;
 
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
+import org.silverpeas.core.notification.user.SimpleUserNotification;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
@@ -36,13 +43,12 @@ import java.util.List;
 
 public class SynchroDomainScheduler implements SchedulerEventListener {
 
-  public static final String ADMINSYNCHRODOMAIN_JOB_NAME = "AdminSynchroDomainJob";
+  private static final String ADMINSYNCHRODOMAIN_JOB_NAME = "AdminSynchroDomainJob";
   private List<String> domainIds = null;
 
   public void initialize(String cron, List<String> domainIds) {
     try {
       this.domainIds = domainIds;
-
       Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(ADMINSYNCHRODOMAIN_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
@@ -65,18 +71,29 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
     }
   }
 
-  public void doSynchro() {
-
+  private void doSynchro() {
     if (domainIds != null) {
       for (String domainId : domainIds) {
         try {
           AdministrationServiceProvider.getAdminService().synchronizeSilverpeasWithDomain(domainId, true);
         } catch (Exception e) {
           SilverLogger.getLogger(this).error(e.getMessage(), e);
+          final OrganizationController organizationController = OrganizationController.get();
+          final Domain domain = organizationController.getDomain(domainId);
+          final UserDetailsSearchCriteria criteria = new UserDetailsSearchCriteria();
+          criteria.onAccessLevels(UserAccessLevel.ADMINISTRATOR);
+          SimpleUserNotification.fromSystem()
+              .toUsers(organizationController.searchUsers(criteria))
+              .withTitle(l -> bundle(l).getStringWithParams("admin.domain.sync.error.notif.title", domain.getName()))
+              .andMessage(l -> bundle(l).getStringWithParams("admin.domain.sync.error.notif.message", domain.getName()))
+              .send();
         }
       }
     }
+  }
 
+  private LocalizationBundle bundle(final String locale) {
+    return ResourceLocator.getLocalizationBundle("org.silverpeas.admin.multilang.admin", locale);
   }
 
   @Override

@@ -266,7 +266,7 @@ public class AuthenticationService {
       credential.getCapabilities().put(Authentication.PASSWORD_CHANGE_ALLOWED,
           authenticationServer.isPasswordChangeAllowed() ? "yes" : "no");
 
-      // Authentification test
+      // Authentication test
       authenticationServer.authenticate(credential);
 
       // Generate a random key and store it in database

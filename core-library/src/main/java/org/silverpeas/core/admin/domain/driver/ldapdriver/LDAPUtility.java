@@ -503,34 +503,6 @@ public class LDAPUtility {
     }
   }
 
-  public static AbstractLDAPTimeStamp getTimeStamp(String lds, String baseDN,
-      int scope, String filter, String timeStampVar, String minTimeStamp)
-      throws AdminException {
-
-    LDAPSettings driverSettings = connectInfos.get(lds).getSettings();
-    LDAPEntry[] theEntries = search1000Plus(lds, baseDN, scope, "(&("
-        + timeStampVar + ">=" + minTimeStamp + ")" + filter + ")",
-        timeStampVar, null);
-
-    if (theEntries.length > 0) {
-      // Problem is : the search1000Plus function sorts normaly by descending
-      // order. BUT most LDAP server can't performs this type of order (like
-      // Active Directory)
-      // So, it may be ordered in the opposite way....
-      AbstractLDAPTimeStamp firstVal = driverSettings.newLDAPTimeStamp(getFirstAttributeValue(
-          theEntries[0], timeStampVar));
-      AbstractLDAPTimeStamp lastVal = driverSettings.newLDAPTimeStamp(getFirstAttributeValue(
-          theEntries[theEntries.length - 1], timeStampVar));
-      if (firstVal.compareTo(lastVal) >= 0) {
-        return firstVal;
-      } else {
-        return lastVal;
-      }
-    } else {
-      return driverSettings.newLDAPTimeStamp(minTimeStamp);
-    }
-  }
-
   static String[] extractBaseDNs(String baseDN) {
     // if no separator, return a array with only the baseDN
     if (!StringUtil.isDefined(baseDN) || !baseDN.contains(BASEDN_SEPARATOR)) {

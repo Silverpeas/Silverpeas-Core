@@ -200,15 +200,7 @@ public interface DomainDriver {
 
   boolean mustImportUsers();
 
-  String getTimeStamp(String minTimeStamp) throws AdminException;
-
-  String getTimeStampField() throws AdminException;
-
   boolean isX509CertificateEnabled();
-
-  UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp) throws AdminException;
-
-  GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws AdminException;
 
   void beginSynchronization() throws AdminException;
 

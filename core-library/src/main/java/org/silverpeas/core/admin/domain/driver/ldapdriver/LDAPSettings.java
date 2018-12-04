@@ -60,7 +60,6 @@ public class LDAPSettings implements DriverSettings {
   protected boolean SYNCHROautomatic = false;
   protected boolean SYNCHRORecursToGroups = true;
   protected boolean SYNCHROthreaded = false;
-  protected String SYNCHROtimeStampVar = "uSNChanged";
   protected boolean SYNCHROCacheEnabled = true;
   protected boolean SYNCHROImportUsers = true;
   protected String usersClassName = null;
@@ -133,7 +132,6 @@ public class LDAPSettings implements DriverSettings {
     SYNCHROautomatic = rs.getBoolean("synchro.Automatic", SYNCHROautomatic);
     SYNCHRORecursToGroups = rs.getBoolean("synchro.RecursToGroups", SYNCHRORecursToGroups);
     SYNCHROthreaded = rs.getBoolean("synchro.Threaded", SYNCHROthreaded);
-    SYNCHROtimeStampVar = rs.getString("synchro.timeStampVar", SYNCHROtimeStampVar);
     SYNCHROCacheEnabled = rs.getBoolean("synchro.CacheEnabled", SYNCHROCacheEnabled);
     SYNCHROImportUsers = rs.getBoolean("synchro.importUsers", true);
 
@@ -186,24 +184,12 @@ public class LDAPSettings implements DriverSettings {
     return SYNCHROthreaded;
   }
 
-  public String getTimeStampVar() {
-    return SYNCHROtimeStampVar;
-  }
-
   public boolean isSynchroCacheEnabled() {
     return SYNCHROCacheEnabled;
   }
 
   public boolean mustImportUsers() {
     return SYNCHROImportUsers;
-  }
-
-  public AbstractLDAPTimeStamp newLDAPTimeStamp(String theValue) {
-    if (TIME_STAMP_MSAD.equalsIgnoreCase(getTimeStampVar())) {
-      return new LDAPTimeStampMSAD(this, theValue);
-    } else {
-      return new LDAPTimeStampNDS(this, theValue);
-    }
   }
 
   public String getLDAPImpl() {

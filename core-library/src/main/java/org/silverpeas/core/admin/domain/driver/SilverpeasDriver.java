@@ -85,17 +85,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp)
-      throws AdminException {
-    return new UserDetail[0];
-  }
-
-  @Override
-  public GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws AdminException {
-    return new GroupDetail[0];
-  }
-
-  @Override
   public UserDetail importUser(String userLogin) throws AdminException {
     return null;
   }

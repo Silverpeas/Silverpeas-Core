@@ -134,10 +134,16 @@ public class GoogleDirectoryRequester {
   }
 
   public User user(final String id) throws AdminException {
+    final long start = System.currentTimeMillis();
     try {
       return getDirectoryService().users().get(id).execute();
     } catch (IOException e) {
       throw new AdminException(e);
+    } finally {
+      final long end = System.currentTimeMillis();
+      SilverLogger.getLogger(this).debug(() -> MessageFormat
+          .format("Getting account {0} in {1}", id,
+              DurationFormatUtils.formatDurationHMS(end - start)));
     }
   }
 }

@@ -258,6 +258,13 @@ public interface User extends Serializable, Comparable<User> {
   boolean isDeletedState();
 
   /**
+   * This method is the only one able to indicate the user removed state. Please do not use
+   * {@link User#getState()} to retrieve user removed information.
+   * @return true if deleted state, false otherwise.
+   */
+  boolean isRemovedState();
+
+  /**
    * This method is the only one able to indicate the user blocked state. Please do not use
    * {@link User#getState()} to retrieve user blocked information.
    * @return true if blocked state, false otherwise.

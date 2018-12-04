@@ -74,8 +74,11 @@ public class UserManager {
   private static final String IN_DOMAIN = "in domain ";
   private static final String ALL_USERS = "all users";
   private static final String SPECIFIC_ID = "(specificId:";
+  private static final String USER_TABLE_RESTORE_USER = "UserTable.restoreUser()";
   private static final String USER_TABLE_REMOVE_USER = "UserTable.removeUser()";
+  private static final String AWAITING_DELETION_MESSAGE = "En attente de suppression de ";
   private static final String REMOVING_MESSAGE = "Suppression de ";
+  private static final String ID_PART = " (ID=";
 
   @Inject
   private UserDAO userDAO;
@@ -136,9 +139,8 @@ public class UserManager {
   public int getNumberOfUsersInDomain(String domainId) throws
       AdminException {
     try (Connection connection = DBUtil.openConnection()) {
-      return userDAO.getUserCountByCriteria(connection, UserSearchCriteriaForDAO.newCriteria()
-          .onDomainIds(domainId)
-          .onUserStatesToExclude(UserState.DELETED));
+      return userDAO.getUserCountByCriteria(connection,
+          UserSearchCriteriaForDAO.newCriteria().onDomainIds(domainId));
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("user count in domain", domainId), e);
     }
@@ -151,8 +153,7 @@ public class UserManager {
    */
   public int getUserCount() throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
-      return userDAO.getUserCountByCriteria(connection,
-          UserSearchCriteriaForDAO.newCriteria().onUserStatesToExclude(UserState.DELETED));
+      return userDAO.getUserCountByCriteria(connection, UserSearchCriteriaForDAO.newCriteria());
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("total user count", ""), e);
     }
@@ -195,22 +196,6 @@ public class UserManager {
   }
 
   /**
-   * Gets the identifier of the users that are directly in the specified group. The users that are
-   * in the sub groups of the given group aren't taken into account; to take also such users, then
-   * use the method {@link UserManager#getAllUserIdsInGroups(List)}.
-   * @param groupId the unique identifier of the group.
-   * @return a list of user identifiers.
-   * @throws AdminException if the getting of user identifiers fails.
-   */
-  public List<String> getDirectUserIdsInGroup(final String groupId) throws AdminException {
-    try(Connection connection = DBUtil.openConnection()) {
-      return userDAO.getDirectUserIdsInGroup(connection, groupId);
-    } catch(Exception e) {
-      throw new AdminException(failureOnGetting("direct users in group", groupId), e);
-    }
-  }
-
-  /**
    * Gets the identifier of the users that are at least in one of the specified group or one of
    * their sub-groups
    *
@@ -247,7 +232,7 @@ public class UserManager {
 
   public List<String> getDirectUserIdsInGroupRole(final String groupRoleId) throws AdminException {
     try(Connection connection = DBUtil.openConnection()) {
-      return userDAO.getDirectUserIdsByGroupUserRole(connection, groupRoleId);
+      return userDAO.getDirectUserIdsByGroupUserRole(connection, groupRoleId, false);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("users in group role", groupRoleId), e);
     }
@@ -257,19 +242,24 @@ public class UserManager {
    * Gets all the users that belong to the specified domain in order to perform a synchronization
    * with the service backing the domain.
    * @param sDomainId the unique identifier of a domain in Silverpeas.
+   * @param includeRemoved true to include removed users, false otherwise.
    * @return an array with all the users in that domain.
    * @throws AdminException if the getting fails.
    */
-  public UserDetail[] getAllUsersInDomain(String sDomainId) throws AdminException {
+  public UserDetail[] getAllUsersInDomain(String sDomainId, final boolean includeRemoved)
+      throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       final String usersOfDomain = ".getAllUsersInDomain()";
       SynchroDomainReport.info(USERMANAGER_SYNCHRO_REPORT + usersOfDomain,
-          "Recherche des utilisateurs du domaine LDAP (domaine " + sDomainId + ") dans la base...");
+          "Recherche des utilisateurs du domaine (domaine " + sDomainId + ") dans la base...");
       // Get users of domain from Silverpeas database
+      final UserState[] userStatesToExclude = includeRemoved
+          ? new UserState[]{UserState.DELETED}
+          : new UserState[]{UserState.REMOVED, UserState.DELETED};
       ListSlice<UserDetail> users = userDAO.getUsersByCriteria(connection,
           UserSearchCriteriaForDAO.newCriteria()
               .onDomainIds(sDomainId)
-              .onUserStatesToExclude(UserState.DELETED));
+              .onUserStatesToExclude(userStatesToExclude));
 
       UserDetail[] usersInDomain = new UserDetail[users.size()];
       int i = 0;
@@ -280,7 +270,7 @@ public class UserManager {
                 ", " + u.getLastName() + ", " + u.geteMail());
       }
       SynchroDomainReport.info(USERMANAGER_SYNCHRO_REPORT + usersOfDomain,
-          "Récupération de " + users.size() + " utilisateurs du domaine LDAP dans la base");
+          "Récupération de " + users.size() + " utilisateurs du domaine dans la base");
       return usersInDomain;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("users in domain", sDomainId), e);
@@ -502,7 +492,7 @@ public class UserManager {
       userFull.setSpecificId(specificId);
 
       // update user
-      updateUser(userFull);
+      updateUser(userFull, true);
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate("user", userDetail.getId()), e);
     }
@@ -514,11 +504,13 @@ public class UserManager {
    * @param userDetail the detail about the user to add.
    * @param addOnlyInSilverpeas does the user be registered into only Silverpeas? If false, the user
    * will be also registered into the domain the user has to belong to.
+   * @param indexation true to perform indexation.
    * @return the unique identifier of the added user. This identifier is set by the registering
    * process.
    * @throws AdminException if the user registering fails.
    */
-  public String addUser(UserDetail userDetail, boolean addOnlyInSilverpeas) throws AdminException {
+  public String addUser(UserDetail userDetail, boolean addOnlyInSilverpeas,
+      final boolean indexation) throws AdminException {
     final String addUser = ".addUser()";
     final String pbAddUser = "Problème lors de l'ajout de l'utilisateur ";
     if (userDetail == null || !StringUtil.isDefined(userDetail.getLastName())
@@ -563,9 +555,9 @@ public class UserManager {
       userDetail.setId(userId);
 
       notifier.notifyEventOn(ResourceEvent.Type.CREATION, userDetail);
-
-      domainDriverManager.indexUser(userDetail.getId());
-
+      if (indexation) {
+        domainDriverManager.indexUser(userDetail.getId());
+      }
       // X509?
       long domainActions = domainDriverManager.getDomainActions(userDetail.getDomainId());
       boolean isX509Enabled = (domainActions & ACTION_X509_USER) != 0;
@@ -580,6 +572,62 @@ public class UserManager {
           pbAddUser + userDetail.getFirstName() + " " + userDetail.getLastName() + SPECIFIC_ID +
               userDetail.getSpecificId() + ") - " + e.getMessage(), null);
       throw new AdminException(failureOnAdding("user", userDetail.getLogin()), e);
+    }
+  }
+
+  /**
+   * Restores the given user in Silverpeas.
+   * @param user the user to restore.
+   * @param indexation true to perform indexation.
+   * @return the unique identifier of the restored user.
+   * @throws AdminException if the restore fails.
+   */
+  public String restoreUser(UserDetail user, final boolean indexation) throws AdminException {
+    final String restoreUser = ".restoreUser()";
+    try (Connection connection = DBUtil.openConnection()) {
+      SynchroDomainReport
+          .info(USERMANAGER_SYNCHRO_REPORT + restoreUser, "Restauration de l'utilisateur " + user.
+              getSpecificId());
+      restoreUser(connection, user);
+      if (indexation) {
+        // Add index of user information
+        domainDriverManager.indexUser(user.getId());
+      }
+      return user.getId();
+    } catch (Exception e) {
+      SynchroDomainReport.error(USERMANAGER_SYNCHRO_REPORT + restoreUser,
+          "problème à la restauration de l'utilisateur " + user.getFirstName() + " " +
+              user.getLastName() + SPECIFIC_ID + user.getSpecificId() + ") - " + e.getMessage(),
+          null);
+      throw new AdminException(failureOnRestoring("user", user.getId()), e);
+    }
+  }
+
+  /**
+   * Removes the given user in Silverpeas.
+   * @param user the user to remove.
+   * @param indexation true to perform indexation.
+   * @return the unique identifier of the removed user.
+   * @throws AdminException if the remove fails.
+   */
+  public String removeUser(UserDetail user, final boolean indexation) throws AdminException {
+    final String removeUser = ".removeUser()";
+    try (Connection connection = DBUtil.openConnection()) {
+      SynchroDomainReport.info(USERMANAGER_SYNCHRO_REPORT + removeUser,
+          "En attente de suppression de l'utilisateur " + user.
+              getSpecificId() + " de la base...");
+      removeUser(connection, user);
+      if (indexation) {
+        // Delete index of user information
+        domainDriverManager.unindexUser(user.getId());
+      }
+      return user.getId();
+    } catch (Exception e) {
+      SynchroDomainReport.error(USERMANAGER_SYNCHRO_REPORT + removeUser,
+          "problème à la mise en attente de suppression de l'utilisateur " + user.getFirstName() +
+              " " + user.getLastName() + SPECIFIC_ID + user.getSpecificId() + ") - " +
+              e.getMessage(), null);
+      throw new AdminException(failureOnRemoving("user", user.getId()), e);
     }
   }
 
@@ -655,6 +703,18 @@ public class UserManager {
     }
   }
 
+  private void restoreUser(final Connection connection, final UserDetail user) throws SQLException {
+    SynchroDomainReport.debug(USER_TABLE_RESTORE_USER,
+        AWAITING_DELETION_MESSAGE + user.getLogin() + ID_PART + user.getId() + ")");
+    userDAO.restoreUser(connection, user);
+  }
+
+  private void removeUser(final Connection connection, final UserDetail user) throws SQLException {
+    SynchroDomainReport.debug(USER_TABLE_REMOVE_USER,
+        AWAITING_DELETION_MESSAGE + user.getLogin() + ID_PART + user.getId() + ")");
+    userDAO.removeUser(connection, user);
+  }
+
   private void deleteUser(final Connection connection, final UserDetail user) throws SQLException {
     final String userLogin = user.getLogin();
     SynchroDomainReport.info(USER_TABLE_REMOVE_USER,
@@ -698,7 +758,7 @@ public class UserManager {
     }
 
     SynchroDomainReport
-        .debug(USER_TABLE_REMOVE_USER, REMOVING_MESSAGE + userLogin + " (ID=" + userId + ")");
+        .debug(USER_TABLE_REMOVE_USER, REMOVING_MESSAGE + userLogin + ID_PART + userId + ")");
     userDAO.deleteUser(connection, user);
   }
 
@@ -717,10 +777,11 @@ public class UserManager {
    * Updates the given user (only in silverpeas, the user isn't updated in the domain he belongs
    * to).
    * @param user the user to update.
+   * @param indexation true to perform indexation.
    * @return the unique identifier of the user that was updated.
    * @throws AdminException if an error occurs while updating the user.
    */
-  public String updateUser(UserDetail user) throws AdminException {
+  public String updateUser(UserDetail user, final boolean indexation) throws AdminException {
     try(Connection connection = DBUtil.openConnection()) {
       // update the user node in Silverpeas
       SynchroDomainReport.info("UserManager.updateUser()",
@@ -728,7 +789,9 @@ public class UserManager {
       userDAO.updateUser(connection, user);
 
       // index user information
-      domainDriverManager.indexUser(user.getId());
+      if (indexation) {
+        domainDriverManager.indexUser(user.getId());
+      }
       return user.getId();
     } catch (Exception e) {
       SynchroDomainReport.error("UserManager.updateUser()",
@@ -812,6 +875,25 @@ public class UserManager {
   }
 
   /**
+   * Gets all the removed users in the specified domains. If no domains are given, then all the
+   * removed users in Silverpeas are returned.
+   * @param domainIds zero, one or more unique identifiers of user domains in Silverpeas.
+   * @return a list of the removed users in Silverpeas. If no users are removed in the specified
+   * domains, then an empty list is returned.
+   * @throws AdminException if the removed users cannot be fetched or if an unexpected exception
+   * is thrown.
+   */
+  public List<UserDetail> getRemovedUsersOfDomains(final String... domainIds)
+      throws AdminException {
+    try (Connection connection = DBUtil.openConnection()) {
+      return userDAO.getRemovedUsers(connection, domainIds);
+    } catch (Exception e) {
+      throw new AdminException(
+          failureOnGetting("deleted users in domains", String.join(", ", domainIds)), e);
+    }
+  }
+
+  /**
    * Gets all the deleted users in the specified domains. If no domains are given, then all the
    * deleted users in Silverpeas are returned.
    * @param domainIds zero, one or more unique identifiers of user domains in Silverpeas.
@@ -820,7 +902,8 @@ public class UserManager {
    * @throws AdminException if the deleted users cannot be fetched or if an unexpected exception
    * is thrown.
    */
-  public List<UserDetail> getNonBlankedDeletedUserOfDomains(final String... domainIds) throws AdminException {
+  public List<UserDetail> getNonBlankedDeletedUsersOfDomains(final String... domainIds)
+      throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       return userDAO.getNonBlankedDeletedUsers(connection, domainIds);
     } catch (Exception e) {

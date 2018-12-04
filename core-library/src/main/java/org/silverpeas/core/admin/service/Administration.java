@@ -678,6 +678,16 @@ public interface Administration {
   void userAcceptsTermsOfService(String userId) throws AdminException;
 
   /**
+   * Restores the given user from silverpeas and specific domain
+   */
+  String restoreUser(String sUserId) throws AdminException;
+
+  /**
+   * Removes the given user from silverpeas and specific domain
+   */
+  String removeUser(String sUserId) throws AdminException;
+
+  /**
    * Delete the given user from silverpeas and specific domain
    */
   String deleteUser(String sUserId) throws AdminException;
@@ -1263,6 +1273,14 @@ public interface Administration {
 
   SpaceWithSubSpacesAndComponents getAllowedFullTreeview(String userId, String spaceId)
       throws AdminException;
+
+  /**
+   * Gets all the users that were removed in the specified domains.
+   * If no domains are specified, then all the domains are taken into account.
+   * @param domainIds the unique identifiers of the domains.
+   * @return a list of users or an empty list if there is no removed users in the specified domains.
+   */
+  List<UserDetail> getRemovedUsers(String ... domainIds) throws AdminException;
 
   /**
    * Gets all the users that were deleted in the specified domains and that weren't blanked.

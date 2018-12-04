@@ -266,6 +266,27 @@ public class UsersAndGroupsIT {
     assertThat(user.isAccessGuest(), is(false));
   }
 
+  @Test
+  public void shouldRemoveAndRestoreUser() throws Exception {
+    final String userIdToRemove = "1";
+    final String userIdToRestore = "1";
+
+    String userId = admin.removeUser(userIdToRemove);
+    assertThat(userId, is(userIdToRemove));
+    UserDetail user = admin.getUserDetail(userId);
+    assertThat(user.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
+    assertThat(user.getState(), is(UserState.REMOVED));
+    assertThat(user.isRemovedState(), is(true));
+    assertThat(user.isValidState(), is(false));
+
+    userId = admin.restoreUser(userIdToRestore);
+    assertThat(userId, is(userIdToRestore));
+    user = admin.getUserDetail(userId);
+    assertThat(user.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
+    assertThat(user.getState(), is(UserState.VALID));
+    assertThat(user.isRemovedState(), is(false));
+    assertThat(user.isValidState(), is(true));
+  }
 
   @Test
   public void shouldDeleteUser() throws Exception {

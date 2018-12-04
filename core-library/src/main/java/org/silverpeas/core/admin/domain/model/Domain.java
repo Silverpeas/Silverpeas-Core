@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin.domain.model;
 
-import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.core.admin.domain.DomainServiceProvider;
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
@@ -32,20 +31,15 @@ import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 public class Domain implements Serializable {
 
   private static final long serialVersionUID = 7451639218436788229L;
-  private static final FastDateFormat TIMESTAMP_FORMATTER =
-      FastDateFormat.getInstance("yyyyMMddHHmmss");
-  private static final int TIMESTAMP_PATTERN_LENGTH = 14;
 
   public static final String MIXED_DOMAIN_ID = "-1";
   private String id;
@@ -54,7 +48,6 @@ public class Domain implements Serializable {
   private String driverClassName;
   private String propFileName;
   private String authenticationServer;
-  private String theTimeStamp = "0";
   private String silverpeasServerURL = "";
 
   /**
@@ -74,20 +67,6 @@ public class Domain implements Serializable {
    */
   public void setId(String id) {
     this.id = id;
-  }
-
-  /**
-   * @return String
-   */
-  public String getTheTimeStamp() {
-    return this.theTimeStamp;
-  }
-
-  /**
-   * @param tt
-   */
-  public void setTheTimeStamp(String tt) {
-    this.theTimeStamp = tt;
   }
 
   /**
@@ -234,18 +213,6 @@ public class Domain implements Serializable {
     return getSettings().getBoolean(name, defaultValue);
   }
 
-  public Date getLastSyncDate() {
-    if (StringUtil.isDefined(theTimeStamp) && !"0".equals(theTimeStamp)) {
-      try {
-        String normalizedTimeStamp = theTimeStamp.substring(0, TIMESTAMP_PATTERN_LENGTH);
-        return TIMESTAMP_FORMATTER.parse(normalizedTimeStamp);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
-    }
-    return null;
-  }
-
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder();
@@ -261,8 +228,6 @@ public class Domain implements Serializable {
     sb.append(propFileName);
     sb.append(", authenticationServer=");
     sb.append(authenticationServer);
-    sb.append(", theTimeStamp=");
-    sb.append(theTimeStamp);
     sb.append(", silverpeasServerURL=");
     sb.append(silverpeasServerURL);
     if (userDomainQuota != null) {
@@ -287,7 +252,6 @@ public class Domain implements Serializable {
         Objects.equals(driverClassName, domain.driverClassName) &&
         Objects.equals(propFileName, domain.propFileName) &&
         Objects.equals(authenticationServer, domain.authenticationServer) &&
-        Objects.equals(theTimeStamp, domain.theTimeStamp) &&
         Objects.equals(silverpeasServerURL, domain.silverpeasServerURL) &&
         Objects.equals(userDomainQuota, domain.userDomainQuota);
   }
@@ -295,6 +259,6 @@ public class Domain implements Serializable {
   @Override
   public int hashCode() {
     return Objects.hash(id, name, description, driverClassName, propFileName, authenticationServer,
-        theTimeStamp, silverpeasServerURL, userDomainQuota);
+        silverpeasServerURL, userDomainQuota);
   }
 }

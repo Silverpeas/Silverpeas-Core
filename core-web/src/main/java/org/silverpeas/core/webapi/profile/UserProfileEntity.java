@@ -182,6 +182,12 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
 
   @Override
   @XmlElement
+  public boolean isRemovedState() {
+    return this.user.isRemovedState();
+  }
+
+  @Override
+  @XmlElement
   public boolean isDeactivatedState() {
     return this.user.isDeactivatedState();
   }
@@ -292,6 +298,7 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
     this.user.setLogin(sLogin);
   }
 
+  @Override
   @XmlElement(defaultValue = "")
   public String getStatus() {
     return this.user.getStatus();

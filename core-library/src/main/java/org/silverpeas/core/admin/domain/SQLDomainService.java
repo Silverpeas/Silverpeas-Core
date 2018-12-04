@@ -24,22 +24,22 @@
 package org.silverpeas.core.admin.domain;
 
 import org.silverpeas.core.admin.domain.driver.sqldriver.SQLSettings;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;
 import org.silverpeas.core.admin.domain.exception.DomainConflictException;
 import org.silverpeas.core.admin.domain.exception.DomainCreationException;
 import org.silverpeas.core.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.core.admin.domain.exception.DomainPropertiesAlreadyExistsException;
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.repository.SQLDomainRepository;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -170,7 +170,6 @@ public class SQLDomainService extends AbstractDomainService {
       }
       domainToCreate.setPropFileName("org.silverpeas.domains.domain" + technicalDomainName);
       domainToCreate.setAuthenticationServer("autDomain" + technicalDomainName);
-      domainToCreate.setTheTimeStamp("0");
 
       // Enregistre le nom initial dans la table st_domain
       domainToCreate.setName(initialDomainName);

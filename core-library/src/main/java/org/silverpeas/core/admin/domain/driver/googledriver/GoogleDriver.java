@@ -75,14 +75,8 @@ public class GoogleDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp)
-      throws AdminException {
-    return getAllUsers();
-  }
-
-  @Override
-  public GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) {
-    return getAllGroups();
+  public boolean isSynchroThreaded() {
+    return settings.getBoolean("synchro.Threaded", false);
   }
 
   /**

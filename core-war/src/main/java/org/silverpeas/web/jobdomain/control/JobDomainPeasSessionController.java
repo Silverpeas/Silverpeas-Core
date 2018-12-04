@@ -93,15 +93,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import static java.util.Collections.synchronizedList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
@@ -976,6 +968,25 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     adminCtrl.activateUser(userId);
   }
 
+  public void restoreUser(String idUser) throws JobDomainPeasException {
+    final String restoreUserId = adminCtrl.restoreUser(idUser);
+    if (!StringUtil.isDefined(restoreUserId)) {
+      throw new JobDomainPeasException(failureOnRestoring("user", idUser));
+    }
+    refresh();
+  }
+
+  public void removeUser(String idUser) throws JobDomainPeasException {
+    final String removedUserId = adminCtrl.removeUser(idUser);
+    if (!StringUtil.isDefined(removedUserId)) {
+      throw new JobDomainPeasException(failureOnRemoving("user", idUser));
+    }
+    if (targetUserId.equals(idUser)) {
+      targetUserId = null;
+    }
+    refresh();
+  }
+
   public void deleteUser(String idUser) throws JobDomainPeasException {
 
     UserDetail user = getUserDetail(idUser);
@@ -990,9 +1001,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (deleteUser) {
       String idRet = adminCtrl.deleteUser(idUser);
       if (!StringUtil.isDefined(idRet)) {
-        throw new JobDomainPeasException(failureOnUpdate("user", idUser));
+        throw new JobDomainPeasException(failureOnDeleting("user", idUser));
       }
-      if (targetUserId.equals(idUser)) {
+      if (idUser.equals(targetUserId)) {
         targetUserId = null;
       }
 
@@ -1091,8 +1102,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public void unsynchroUser(String idUser) throws JobDomainPeasException {
-
-
     String idRet = adminCtrl.synchronizeRemoveUser(idUser);
     if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException(failureOnDeleting("synchronized user", idUser));
@@ -1674,7 +1683,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     theNewDomain.setPropFileName(domain.getPropFileName());
     theNewDomain.setAuthenticationServer(domain.getAuthenticationServer());
     theNewDomain.setSilverpeasServerURL(domain.getSilverpeasServerURL());
-    theNewDomain.setTheTimeStamp(domain.getTheTimeStamp());
 
     String idRet = reallyUpdateDomain(theNewDomain, usersInDomainQuotaMaxCount);
 
@@ -2310,6 +2318,16 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public UserDetail getNext() {
     return getSessionUsers().get(currentIndex.getNextIndex());
+  }
+
+  public List<UserDetail> getRemovedUsers() throws AdminException {
+    final List<UserDetail> removedUsers = adminCtrl.getRemovedUsersInDomain(this.targetDomainId);
+    removedUsers.sort(Comparator
+        .comparing(UserDetail::getStateSaveDate)
+        .thenComparing(UserDetail::getLastName)
+        .thenComparing(UserDetail::getFirstName)
+        .thenComparing(UserDetail::getId));
+    return removedUsers;
   }
 
   public List<UserDetail> getDeletedUsers() throws AdminException {
