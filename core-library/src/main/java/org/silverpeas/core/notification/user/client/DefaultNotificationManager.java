@@ -786,7 +786,7 @@ public class DefaultNotificationManager extends AbstractNotification
       final Map<String, Object> theExtraParams, final NotifChannelRow ncr) {
     if ("Y".equalsIgnoreCase(ncr.getSubjectAvailable())) {
       theExtraParams.put(SUBJECT, params.getTitle());
-    } else if (params.getFromUserId() < 0) {
+    } else if (! params.isFromUserIdDefined()) {
       theMessage.append(multilang.getString("subject")).append(" : ").append(params.getTitle())
           .append(HTML_BREAK_LINES);
     }

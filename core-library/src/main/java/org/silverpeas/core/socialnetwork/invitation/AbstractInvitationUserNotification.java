@@ -74,6 +74,13 @@ public abstract class AbstractInvitationUserNotification
     return "myProfile.invitations.notification.accept.subject";
   }
 
+  /**
+   * The title is the value of the property defined by {@link #getBundleSubjectKey()} in the
+   * localization bundle referred by  {@link #getBundle()}. If no such property exists, then the
+   * title is the first name of the notification sender.
+   * @return the subject of the notification as defined in the localisation bundle returned by
+   * the {@link #getBundle()} method.
+   */
   @Override
   protected String getTitle() {
     return getBundle()

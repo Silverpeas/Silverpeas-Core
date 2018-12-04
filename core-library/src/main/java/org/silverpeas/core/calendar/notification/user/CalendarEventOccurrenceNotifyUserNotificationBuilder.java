@@ -55,12 +55,6 @@ public class CalendarEventOccurrenceNotifyUserNotificationBuilder
   }
 
   @Override
-  protected String getBundleSubjectKey() {
-    return "event.subject.alert";
-  }
-
-
-  @Override
   protected boolean stopWhenNoUserToNotify() {
     return false;
   }

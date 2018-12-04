@@ -285,10 +285,20 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
     return bundle;
   }
 
+  /**
+   * Gets the title of the notification. By overriding this method, the title can be customized. By
+   * default, the title is the one set explicitly in the constructor of this builder.
+   * @return the title of the notification.
+   */
   protected String getTitle() {
     return title;
   }
 
+  /**
+   * Gets the content of the notification. By overriding this method, the content can be customized.
+   * By default, the content is the one set explicitly in the constructor of this builder.
+   * @return the content of the notification (aka the message itself).
+   */
   protected String getContent() {
     return content;
   }
