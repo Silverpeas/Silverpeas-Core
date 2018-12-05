@@ -40,10 +40,6 @@ import javax.inject.Singleton;
 public class DomainServiceProvider {
 
   @Inject
-  @Named("scimDomainService")
-  private DomainService scimDomainService;
-
-  @Inject
   @Named("externalDomainService")
   private DomainService externalDomainService;
 
@@ -69,8 +65,8 @@ public class DomainServiceProvider {
   public static DomainService getDomainService(final DomainType type) {
     switch (type) {
       case SCIM:
-        return getProvider().scimDomainService;
-      case EXTERNAL:
+      case GOOGLE:
+      case LDAP:
         return getProvider().externalDomainService;
       case SQL:
         return getProvider().sqlDomainService;

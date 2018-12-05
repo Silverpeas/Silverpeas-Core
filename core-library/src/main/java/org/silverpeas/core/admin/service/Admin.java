@@ -4491,7 +4491,7 @@ class Admin implements Administration {
       UserDetail[] distantUDs = domainDriver.getAllChangedUsers(fromTimeStamp, toTimeStamp);
 
       message = distantUDs.length
-          + " user(s) have been changed in LDAP since the last synchronization";
+          + " user(s) have been changed in external repository since the last synchronization";
       sReport.append(message).append("\n");
       SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
 

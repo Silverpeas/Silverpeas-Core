@@ -1860,7 +1860,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
 
     if (getTargetDomain() != null &&
-        "autDomainSCIM".equals(getTargetDomain().getAuthenticationServer())) {
+        ("autDomainSCIM".equals(getTargetDomain().getAuthenticationServer())
+        || "autDomainGoogle".equals(getTargetDomain().getAuthenticationServer()))) {
       selection.setSetSelectable(false);
     }
 

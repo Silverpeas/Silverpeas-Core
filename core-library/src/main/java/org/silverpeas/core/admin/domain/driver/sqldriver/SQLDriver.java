@@ -226,11 +226,11 @@ public class SQLDriver extends AbstractDomainDriver {
 
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
-  public UserDetail getUser(String userId) throws AdminException {
+  public UserDetail getUser(String specificId) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
-      return localUserMgr.getUser(connection, idAsInt(userId));
+      return localUserMgr.getUser(connection, idAsInt(specificId));
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("user", userId), e);
+      throw new AdminException(failureOnGetting("user", specificId), e);
     }
   }
 
@@ -266,7 +266,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public String[] getUserMemberGroupIds(String userId) throws AdminException {
+  public String[] getUserMemberGroupIds(String specificId) throws AdminException {
     return new String[0];
   }
 
@@ -403,18 +403,18 @@ public class SQLDriver extends AbstractDomainDriver {
 
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
-  public GroupDetail getGroup(String groupId) throws AdminException {
+  public GroupDetail getGroup(String specificId) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
-      GroupDetail valret = localGroupMgr.getGroup(connection, idAsInt(groupId));
+      GroupDetail valret = localGroupMgr.getGroup(connection, idAsInt(specificId));
       if (valret != null) {
         // Get the selected users for this group
         List<String> asUsersId =
-            localGroupUserRelMgr.getDirectUserIdsOfGroup(connection, idAsInt(groupId));
+            localGroupUserRelMgr.getDirectUserIdsOfGroup(connection, idAsInt(specificId));
         valret.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
       }
       return valret;
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting(GROUP, groupId), e);
+      throw new AdminException(failureOnGetting(GROUP, specificId), e);
     }
   }
 

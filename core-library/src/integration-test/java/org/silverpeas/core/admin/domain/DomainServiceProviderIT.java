@@ -45,10 +45,6 @@ import static org.junit.Assert.assertThat;
 public class DomainServiceProviderIT {
 
   @Inject
-  @Named("scimDomainService")
-  private DomainService scimDomainService;
-
-  @Inject
   @Named("externalDomainService")
   private DomainService externalDomainService;
 
@@ -77,15 +73,18 @@ public class DomainServiceProviderIT {
   @Test
   public void getDomainService() {
     // It exists two implementations today
-    assertThat(ServiceProvider.getAllServices(DomainService.class),
-        hasSize(DomainType.values().length));
+    assertThat(ServiceProvider.getAllServices(DomainService.class), hasSize(2));
     // Verifying the type for SCIM
     DomainService testScimDomainService = DomainServiceProvider.getDomainService(DomainType.SCIM);
-    assertThat(testScimDomainService, sameInstance(testScimDomainService));
-    assertThat(testScimDomainService, instanceOf(ScimDomainService.class));
+    assertThat(testScimDomainService, sameInstance(externalDomainService));
+    assertThat(testScimDomainService, instanceOf(ExternalDomainService.class));
+    // Verifying the type for Google
+    DomainService testGoogleDomainService = DomainServiceProvider.getDomainService(DomainType.GOOGLE);
+    assertThat(testGoogleDomainService, sameInstance(externalDomainService));
+    assertThat(testGoogleDomainService, instanceOf(ExternalDomainService.class));
     // Verifying the type for EXTERNAL
     DomainService testExternalDomainService =
-        DomainServiceProvider.getDomainService(DomainType.EXTERNAL);
+        DomainServiceProvider.getDomainService(DomainType.LDAP);
     assertThat(testExternalDomainService, sameInstance(externalDomainService));
     assertThat(testExternalDomainService, instanceOf(ExternalDomainService.class));
     // Verifying the type for SQL (internal)

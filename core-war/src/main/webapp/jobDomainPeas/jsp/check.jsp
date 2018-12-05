@@ -31,21 +31,18 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.web.jobdomain.JobDomainSettings"%>
-
 <%@ page import="org.silverpeas.core.admin.domain.model.Domain"%>
+
 <%@ page import="org.silverpeas.core.admin.domain.model.DomainProperty"%>
 <%@ page import="org.silverpeas.core.admin.user.model.Group"%>
-<%@ page import="org.silverpeas.core.admin.domain.synchro.SynchroDomainReport"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
-
-<%// En fonction de ce dont vous avez besoin %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.core.util.SettingBundle"%>
+
+<%// En fonction de ce dont vous avez besoin %>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellLink"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText"%>
@@ -55,18 +52,19 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
-
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane"%>
+
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
-
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
-<%@ page import="java.util.Collection" %>
-<%@ page import="java.util.Date" %>
+
+<%@ page import="org.silverpeas.web.jobdomain.JobDomainSettings"%>
+<%@ page import="java.util.Collection"%>
+<%@ page import="java.util.Date"%>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.Hashtable" %>
 <%@ page import="java.util.Iterator" %>
@@ -98,3 +96,7 @@ browseBar.setDomainName(resource.getString("JDP.domains"));
 OperationPane operationPane = window.getOperationPane();
 Frame frame = gef.getFrame();
 %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<c:set var="isSCIMDomain" value="${d -> d != null and d.authenticationServer eq 'autDomainSCIM'}"/>
+<c:set var="isGoogleDomain" value="${d -> d != null and d.authenticationServer eq 'autDomainGoogle'}"/>

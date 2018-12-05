@@ -43,8 +43,10 @@
 <c:set var="domObject" value="${requestScope.domainObject}"/>
 <jsp:useBean id="domObject" type="org.silverpeas.core.admin.domain.model.Domain"/>
 
-<c:set var="isSCIMDomain" value="${d -> d != null and d.authenticationServer eq 'autDomainSCIM'}"/>
-<c:set var="isGroupHandled" value="${not isSCIMDomain(domObject)}"/>
+<c:set var="isUserImportHandled" value="${not (isSCIMDomain(domObject) or isGoogleDomain(domObject))}"/>
+<jsp:useBean id="isUserImportHandled" type="java.lang.Boolean"/>
+<c:set var="isGroupHandled" value="${not (isSCIMDomain(domObject) or isGoogleDomain(domObject))}"/>
+<jsp:useBean id="isGroupHandled" type="java.lang.Boolean"/>
 
 <fmt:message var="userPanelAccessLabel" key="JDP.userPanelAccess"><fmt:param value="${not isGroupHandled ? 0 : 2}"/></fmt:message>
 <jsp:useBean id="userPanelAccessLabel" type="java.lang.String"/>
@@ -61,6 +63,7 @@
 
   boolean isDomainSql = "org.silverpeas.core.admin.domain.driver.sqldriver.SQLDriver".equals(domObject.getDriverClassName());
   boolean isDomainScim = "org.silverpeas.core.admin.domain.driver.scimdriver.SCIMDriver".equals(domObject.getDriverClassName());
+  boolean isDomainGoogle = "org.silverpeas.core.admin.domain.driver.googledriver.GoogleDriver".equals(domObject.getDriverClassName());
   boolean mixedDomain = domObject.isMixedOne();
   Date lastSyncDate = domObject.getLastSyncDate();
 
@@ -71,21 +74,35 @@
 
   // Domain operations
 	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),userPanelAccessLabel,"displaySelectUserOrGroup");
-	if (theUser.isAccessAdmin())
-	{
-	    if (!mixedDomain) {
-	      operationPane.addOperation(resource.getIcon("JDP.deletedUserAccess"), resource.getString("JDP.deletedUserAccess"), "displayDeletedUsers");
-		    operationPane.addLine();
-		if(isDomainSql) {
-		        operationPane.addOperation(resource.getIcon("JDP.domainSqlUpdate"),resource.getString("JDP.domainSQLUpdate"),"displayDomainSQLModify");
-		        operationPane.addOperation(resource.getIcon("JDP.domainSqlDel"),resource.getString("JDP.domainSQLDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.domainDelConfirm")+"','domainSQLDelete')");
-		    } else {
-		        operationPane.addOperation(resource.getIcon("JDP.domainUpdate"),resource.getString("JDP.domainUpdate"),"displayDomainModify");
-		        if (!domObject.getId().equals("0"))
-				operationPane.addOperation(resource.getIcon("JDP.domainDel"),resource.getString("JDP.domainDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.domainDelConfirm")+"','"+(isDomainScim ? "domainSCIMDelete" : "domainDelete")+"')");
-		    }
-	    }
-	}
+  if (theUser.isAccessAdmin()) {
+    if (!mixedDomain) {
+      operationPane.addOperation(resource.getIcon("JDP.deletedUserAccess"),
+          resource.getString("JDP.deletedUserAccess"), "displayDeletedUsers");
+      operationPane.addLine();
+      if (isDomainSql) {
+        operationPane.addOperation(resource.getIcon("JDP.domainSqlUpdate"),
+            resource.getString("JDP.domainSQLUpdate"), "displayDomainSQLModify");
+        operationPane.addOperation(resource.getIcon("JDP.domainSqlDel"),
+            resource.getString("JDP.domainSQLDel"),
+            "javascript:ConfirmAndSend('" + resource.getString("JDP.domainDelConfirm") +
+                "','domainSQLDelete')");
+      } else {
+        operationPane.addOperation(resource.getIcon("JDP.domainUpdate"),
+            resource.getString("JDP.domainUpdate"), "displayDomainModify");
+        if (!domObject.getId().equals("0")) {
+          final String deleteAction = isDomainScim
+              ? "domainSCIMDelete"
+              : (isDomainGoogle
+                  ? "domainGoogleDelete"
+                  : "domainDelete");
+          operationPane
+              .addOperation(resource.getIcon("JDP.domainDel"), resource.getString("JDP.domainDel"),
+                  "javascript:ConfirmAndSend('" + resource.getString("JDP.domainDelConfirm") +
+                      "','" + deleteAction + "')");
+        }
+      }
+    }
+  }
 
   if (isDomainRW)
   {
@@ -122,10 +139,15 @@
 	operationPane.addOperation(resource.getIcon("JDP.domainSynchro"),resource.getString("JDP.domainSynchro"),"displayDomainSynchro");
 
 	//User operations
-          operationPane.addOperation(resource.getIcon("JDP.userImport"),resource.getString("JDP.userImport"),"displayUserImport");
+        if (isUserImportHandled) {
+          operationPane.addOperation(resource.getIcon("JDP.userImport"), resource.getString("JDP.userImport"),
+              "displayUserImport");
+        }
 
-          // Group operations
-          operationPane.addOperation(resource.getIcon("JDP.groupImport"),resource.getString("JDP.groupImport"),"displayGroupImport");
+          if (isGroupHandled) {
+            // Group operations
+            operationPane.addOperation(resource.getIcon("JDP.groupImport"), resource.getString("JDP.groupImport"), "displayGroupImport");
+          }
       }
       else
       {

@@ -23,7 +23,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.chat.servers.ChatServer" %><%--
+<%@ page import="org.silverpeas.core.chat.servers.ChatServer" %>
+<%@ page import="org.silverpeas.core.admin.domain.DomainTypeRegistry" %>
+<%@ page import="org.silverpeas.core.admin.domain.DomainType" %><%--
 
     Copyright (C) 2000 - 2018 Silverpeas
 
@@ -78,7 +80,12 @@
   if (displayOperations) {
     operationPane.addOperationOfCreation(resource.getIcon("JDP.domainSqlAdd"), resource.getString("JDP.domainSQLAdd"), "displayDomainSQLCreate");
     operationPane.addOperationOfCreation(resource.getIcon("JDP.domainAdd"), resource.getString("JDP.domainAdd"), "displayDomainCreate");
-    operationPane.addOperationOfCreation(resource.getIcon("JDP.domainSCIMAdd"), resource.getString("JDP.domainSCIMAdd"), "displayDomainSCIMCreate");
+    if (DomainTypeRegistry.get().exists(DomainType.SCIM)) {
+      operationPane.addOperationOfCreation(resource.getIcon("JDP.domainSCIMAdd"), resource.getString("JDP.domainSCIMAdd"), "displayDomainSCIMCreate");
+    }
+    if (DomainTypeRegistry.get().exists(DomainType.GOOGLE)) {
+      operationPane.addOperationOfCreation(resource.getIcon("JDP.domainGoogleAdd"), resource.getString("JDP.domainGoogleAdd"), "displayDomainGoogleCreate");
+    }
     if (ChatServer.isEnabled()) {
       operationPane.addOperation(resource.getIcon("JDP.IMUserRegistering"), resource.getString("JDP.IMUserRegistering"), "javascript:syncIM();");
     }

@@ -393,15 +393,15 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user information from database
-   * @param userId The user id as stored in the database
+   * @param specificId The user id as stored in the database
    * @return The User object that contain new user information
    * @throws AdminException
    */
   @Override
-  public UserFull getUserFull(String userId) throws AdminException {
+  public UserFull getUserFull(String specificId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
     try {
-      return userTranslator.getUserFull(ld, userId, this.domainId);
+      return userTranslator.getUserFull(ld, specificId, this.domainId);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
@@ -409,16 +409,16 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user information from database
-   * @param userId The user id as stored in the database
+   * @param specificId The user id as stored in the database
    * @return The User object that contain new user information
    * @throws AdminException
    */
   @Override
-  public UserDetail getUser(String userId) throws AdminException {
+  public UserDetail getUser(String specificId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
     try {
-      return userTranslator.getUser(ld, userId);
+      return userTranslator.getUser(ld, specificId);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
@@ -486,14 +486,14 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve user's groups
-   * @param userId The user id as stored in the database
+   * @param specificId The user id as stored in the database
    * @return The User's groups specific Ids
    */
   @Override
-  public String[] getUserMemberGroupIds(String userId) throws AdminException {
+  public String[] getUserMemberGroupIds(String specificId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
     try {
-      return groupTranslator.getUserMemberGroupIds(ld, userId);
+      return groupTranslator.getUserMemberGroupIds(ld, specificId);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
@@ -551,15 +551,15 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Retrieve group information from database
-   * @param groupId The group id as stored in the database
+   * @param specificId The group id as stored in the database
    * @return The GroupDetail object that contains user information
    */
   @Override
-  public GroupDetail getGroup(String groupId) throws AdminException {
+  public GroupDetail getGroup(String specificId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
     try {
-      return groupTranslator.getGroup(ld, groupId);
+      return groupTranslator.getGroup(ld, specificId);
     } finally {
       LDAPUtility.closeConnection(ld);
     }
@@ -641,5 +641,4 @@ public class LDAPDriver extends AbstractDomainDriver {
   public void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws AdminException {
     // Access in read only
   }
-
 }

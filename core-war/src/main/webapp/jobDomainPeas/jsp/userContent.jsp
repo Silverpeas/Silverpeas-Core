@@ -84,7 +84,8 @@
   String groupsPath = (String) request.getAttribute("groupsPath");
   boolean isDomainRW = (Boolean) request.getAttribute("isDomainRW");
   boolean isDomainSync = (Boolean) request.getAttribute("isDomainSync");
-  boolean isDomainPush = (Boolean) request.getAttribute("isDomainPush");
+  boolean isDomainUnsync = (Boolean) request.getAttribute("isDomainUnsync");
+  boolean isDomainListener = (Boolean) request.getAttribute("isDomainListener");
   boolean isUserRW = (Boolean) request.getAttribute("isUserRW");
   boolean isX509Enabled = (Boolean) request.getAttribute("isX509Enabled");
   boolean isGroupManager = (Boolean) request.getAttribute("isOnlyGroupManager");
@@ -131,7 +132,7 @@
     operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.delete"),
         "javascript:deleteUser()");
   }
-  if ((isDomainSync || isDomainPush) && !isGroupManager) {
+  if ((isDomainSync || isDomainListener) && !isGroupManager) {
     operationPane
         .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),
             "displayUserMS?Iduser=" + thisUserId);
@@ -157,7 +158,9 @@
     if (isDomainSync) {
       operationPane.addOperation(resource.getIcon("JDP.userSynchro"), resource.getString("JDP.userSynchro"),
           "userSynchro?Iduser=" + thisUserId);
-      operationPane.addOperation(resource.getIcon("JDP.userUnsynchro"), resource.getString("JDP.userUnsynchro"), "userUnSynchro?Iduser=" + thisUserId);
+      if (isDomainUnsync) {
+        operationPane.addOperation(resource.getIcon("JDP.userUnsynchro"), resource.getString("JDP.userUnsynchro"), "userUnSynchro?Iduser=" + thisUserId);
+      }
     } else {
       operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.delete"),
           "javascript:deleteUser()");
