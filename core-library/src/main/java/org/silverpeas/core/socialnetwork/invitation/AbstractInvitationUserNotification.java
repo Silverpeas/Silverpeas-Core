@@ -41,7 +41,7 @@ public abstract class AbstractInvitationUserNotification
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.social.multilang.socialNetworkBundle";
   }
 
@@ -82,8 +82,8 @@ public abstract class AbstractInvitationUserNotification
    * the {@link #getBundle()} method.
    */
   @Override
-  protected String getTitle() {
-    return getBundle()
+  protected String getTitle(final String language) {
+    return getBundle(language)
         .getStringWithParams(getBundleSubjectKey(), User.getById(getSender()).getFirstName());
   }
 

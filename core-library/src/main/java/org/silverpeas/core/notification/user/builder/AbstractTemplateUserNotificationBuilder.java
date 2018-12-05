@@ -26,6 +26,7 @@ package org.silverpeas.core.notification.user.builder;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.UserNotification;
@@ -97,22 +98,40 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    * the Silverpeas's general localization bundle. The property is valued by a StringTemplate
    * pattern, so that information about the resource concerned by the notification can be passed.
    * <p>
-   * It can be overridden by specifying a property
-   * in the bundle returned by {@link #getBundleSubjectKey()} and under the name given by
+   * It can be overridden by specifying a another property
+   * in the bundle returned by {@link #getBundle()} and under the name given by
    * {@link #getBundleSubjectKey()}. By this way, each component in Silverpeas has a way to
    * customize the title of the notifications for the resources handled by itself.
+   * </p>
+   * <p>
+   *  This method delegates its call to the {@link #getTitle(String)} method with
+   *  {@link I18NHelper#defaultLanguage} as locale. So, to specify a custom implementation of this
+   *  method, please override instead the {@link #getTitle(String)} method.
    * </p>
    * @return the title of the notification. By default, the title is specify globally for all
    * notifications by the <code>GML.st.notification.subject</code> property.
    */
   @Override
-  protected String getTitle() {
+  protected final String getTitle() {
+    return getTitle(I18NHelper.defaultLanguage);
+  }
+
+  /**
+   * Gets the title of the notification to build explicitly in the specified language from the
+   * bundle returned by the {@link #getBundle()} method. This method can be overridden to specify
+   * another implementation.
+   * @see #getTitle()
+   * @param language the ISO-631 code of a language.
+   * @return the title of the notification. By default, the title is specify globally for all
+   * notifications by the <code>GML.st.notification.subject</code> property.
+   */
+  protected String getTitle(final String language) {
     final String subjectKey = getBundleSubjectKey();
     final String subject;
     if (StringUtils.isBlank(subjectKey) || !getBundle().containsKey(subjectKey)) {
-      subject = getBundle().getString(DEFAULT_NOTIFICATION_SUBJECT);
+      subject = getBundle(language).getString(DEFAULT_NOTIFICATION_SUBJECT);
     } else {
-      subject = getBundle().getString(subjectKey);
+      subject = getBundle(language).getString(subjectKey);
     }
     return subject;
   }

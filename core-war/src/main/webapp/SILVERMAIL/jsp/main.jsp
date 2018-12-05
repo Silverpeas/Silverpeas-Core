@@ -46,7 +46,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<c:url var="newUserNotificationUrl" value="/RnotificationUser/jsp/Main.jsp?popupMode=Yes"/>
+<c:url var="newUserNotificationUrl" value="/RnotificationUser/jsp/Main.jsp?popinMode=Yes"/>
 <c:url var="notifyIconUrl" value="/util/icons/create-action/send-notification.png"/>
 <c:url var="userSettingUrl" value='<%=URLUtil.getURL(URLUtil.CMP_PERSONALIZATION, null, null) + "ParametrizeNotification"%>'/>
 <fmt:message var="linkIconUrl" key="silvermail.link" bundle="${icons}"/>
@@ -81,10 +81,6 @@
 
     var arrayPaneAjaxControl;
     var checkboxMonitor = sp.selection.newCheckboxMonitor('#silvermail-list input[name=selection]');
-
-    function newMessage() {
-      SP_openWindow("${newUserNotificationUrl}", 'notifyUserPopup', '900', '430', 'menubar=no,scrollbars=yes,statusbar=no');
-    }
 
     var _handleCheckboxesAndReloadList = function() {
       _reloadList(true);
@@ -154,7 +150,7 @@
   <view:browseBarElt link="#" label="${inboxBrowseBarLabel}"/>
 </view:browseBar>
 <view:operationPane>
-  <view:operationOfCreation icon="${notifyIconUrl}" action="javascript:newMessage()" altText="${notyfyLabel}"/>
+  <view:operationOfCreation icon="${notifyIconUrl}" action="javascript:window.openMessager('${_userLanguage}')" altText="${notyfyLabel}"/>
   <view:operationSeparator/>
   <view:operation action="javascript:markSelectedMessagesAsRead()" altText="${markSelectedReadLabel}"/>
   <view:operation action="javascript:deleteSelectedMessages()" altText="${deleteSelectedLabel}"/>

@@ -289,10 +289,10 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
   /*
    * (non-Javadoc)
    * @see
-   * com.silverpeas.notification.builder.AbstractUserNotificationBuilder#getMultilangPropertyFile()
+   * com.silverpeas.notification.builder.AbstractUserNotificationBuilder#getLocalizationBundlePath()
    */
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.agenda.multilang.agenda";
   }
 

@@ -38,6 +38,8 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
   private static final long serialVersionUID = -5858231857279380747L;
   private static final String POPUP_MODE_PARAM = "popupMode";
   private static final String EDIT_TARGETS_PARAM = "editTargets";
+  private static final String POPIN_MODE_PARAM = "popinMode";
+  private static final String COMPONENT_ID = "componentId";
 
   @Override
   public NotificationUserSessionController createComponentSessionController(
@@ -56,10 +58,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to compute a
-   * destination page
-   *
-   *
+   * Compute a destination page.
    * @param function The entering request function (ex : "Main.jsp")
    * @param nuSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -69,42 +68,41 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
   @Override
   public String getDestination(String function, NotificationUserSessionController nuSC,
       HttpRequest request) {
-    // remarques
-    // tous les paramètres des la jsp sont transferé par la request.
-    // le UserPanel étant unique par session, il est impératif de récupérér
-    // les objets selectionnés via userPanel et de transporter
-    // les id des ses de jsp en jsp en soumettant un formulaire.
-    // En effet, la notification peut être utilisée "en même temps" que le
-    // client utilises userPanelPeas. Cela mélange les objets selectionnée.
     String destination;
-
-
     try {
       request.setCharacterEncoding("UTF-8");
       if (function.startsWith("Main")) {
         String theTargetsUsers = request.getParameter("theTargetsUsers");
         String theTargetsGroups = request.getParameter("theTargetsGroups");
 
-        Notification notification = nuSC.resetNotification();
+        final Notification notification;
         if (theTargetsUsers != null || theTargetsGroups != null) {
           // predefined targets are given
           notification = nuSC.initTargets(theTargetsUsers, theTargetsGroups);
+        } else {
+          notification = nuSC.resetNotification();
         }
         request.setAttribute("Notification", notification);
 
-        boolean popupMode = StringUtil.getBooleanValue(request.getParameter(POPUP_MODE_PARAM));
-        String param = request.getParameter(EDIT_TARGETS_PARAM);
-        boolean editTargets = true;
+        final boolean popupMode = request.getParameterAsBoolean(POPUP_MODE_PARAM);
+        final boolean popinMode = request.getParameterAsBoolean(POPIN_MODE_PARAM);
+        final String instanceId = request.getParameter(COMPONENT_ID);
+        final String param = request.getParameter(EDIT_TARGETS_PARAM);
+        final boolean editTargets;
         if (StringUtil.isDefined(param)) {
           editTargets = StringUtil.getBooleanValue(param);
+        } else {
+          editTargets = true;
         }
         request.setAttribute(POPUP_MODE_PARAM, popupMode);
+        request.setAttribute(POPIN_MODE_PARAM, popinMode);
+        request.setAttribute(COMPONENT_ID, instanceId);
         request.setAttribute(EDIT_TARGETS_PARAM, editTargets);
-
         destination = "/notificationUser/jsp/notificationSender.jsp";
       } else if ("SendNotif".equals(function)) {
-        Notification notification = request2Notification(request);
+        final Notification notification = request2Notification(request);
         nuSC.sendMessage(notification);
+        nuSC.getAlertUser().resetAll();
         destination = "/peasCore/jsp/close.jsp";
       } else {
         destination = "/notificationUser/jsp/" + function;

@@ -1954,3 +1954,55 @@ if (typeof window.sp === 'undefined') {
    */
   sp.ajaxConfig = sp.ajaxRequest;
 }
+
+/**
+ *
+ */
+if (window.openMessager === undefined) {
+  /**
+   * Open the Silverpeas messager popin. This popin is for sending a message by a user to another
+   * user in Silverpeas.
+   * @param lang the ISO-631 code of the language in which the popin should be displayed.
+   * @param [instanceId] the unique identifier of a component instance
+   * @param [url] the URL to request to prepare the messager before opening it. Usually, this URL
+   * is the one at which an old request router or a more modern web controller is listening to
+   * initialize a NotificationMetaData instance ready to be used in the notification sending.
+   */
+  window.openMessager = function(lang, instanceId, url) {
+    function __open(lang, instanceId) {
+      var messager = window.webContext +
+          '/RnotificationUser/jsp/Main.jsp?popinMode=Yes&componentId=' +
+          (instanceId ? instanceId : '');
+      sp.ajaxRequest(messager).send().then(function(response) {
+        window.i18n.properties({
+          name : 'notificationUserBundle',
+          path : window.webContext + '/services/bundles/org/silverpeas/notificationUser/multilang/',
+          language : lang,
+          mode : 'map'
+        });
+        var popin = $('<div>').html(response.responseText);
+        popin.popup('validation', {
+          title : 'Notification',
+          buttonTextYes : window.i18n.prop('Envoyer'),
+          buttonTextNo : window.i18n.prop('GML.cancel'),
+          callback : function() {
+            sendNotification();
+            return true;
+          },
+          callbackOnClose : function() {
+            popin.remove();
+          }
+        });
+      });
+    }
+    if (url) {
+      sp.ajaxRequest(url).send().then(function(response) {
+        __open(lang, instanceId);
+      }, function(error) {
+        notyError(error);
+      });
+    } else {
+      __open(lang, instanceId);
+    }
+  };
+}

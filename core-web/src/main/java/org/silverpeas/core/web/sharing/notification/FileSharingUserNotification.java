@@ -124,7 +124,7 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.sharing.multilang.fileSharingBundle";
   }
 

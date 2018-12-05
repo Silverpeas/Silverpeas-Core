@@ -45,7 +45,9 @@
 <c:set var="notification" value="${requestScope.Notification}"/>
 <jsp:useBean id="notification" type="org.silverpeas.web.notificationuser.Notification"/>
 <c:set var="popupMode" value="${requestScope.popupMode}"/>
+<c:set var="popinMode" value="${requestScope.popinMode}"/>
 <c:set var="editTargets" value="${requestScope.editTargets}"/>
+<c:set var="componentId" value="${requestScope.componentId}"/>
 
 <c:set var="requiredReceiversErrorMessage"><fmt:message key="GML.thefield"/> <fmt:message key="addressees"/> <fmt:message key="GML.isRequired"/></c:set>
 <c:set var="requiredSubjectErrorMessage"><fmt:message key="GML.thefield"/> <fmt:message key="GML.notification.subject"/> <fmt:message key="GML.isRequired"/></c:set>
@@ -54,12 +56,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
+  <c:url var="sendUrl" value="/RnotificationUser/jsp/SendNotif"/>
   <script type="text/javascript">
     var userSelectApi;
     function onPageReady() {
       ${editTargets ? 'userSelectApi.focus();' : 'document.notificationSenderForm.txtTitle.focus();'}
       currentPopupResize();
     }
+
     function sendNotification() {
       var normalizedTitle = stripInitialWhitespace(document.notificationSenderForm.txtTitle.value);
       if (!userSelectApi.existsSelection()) {
@@ -69,8 +73,18 @@
         SilverpeasError.add("${requiredSubjectErrorMessage}");
       }
       if (!SilverpeasError.show()) {
-        document.notificationSenderForm.action = "SendNotif";
+        <c:choose>
+        <c:when test="${popinMode}">
+        var form = $('form[name=notificationSenderForm]');
+        $.post("${sendUrl}", form.serialize(), function(res){
+        });
+        return false;
+        </c:when>
+        <c:otherwise>
+        document.notificationSenderForm.action = "${sendUrl}";
         document.notificationSenderForm.submit();
+        </c:otherwise>
+        </c:choose>
       }
     }
   </script>
@@ -82,6 +96,7 @@
 
   <form name="notificationSenderForm" action="" method="post" accept-charset="UTF-8">
     <input type="hidden" name="popupMode" value="${popupMode}"/>
+    <input type="hidden" name="popinMode" value="${popinMode}"/>
     <input type="hidden" name="editTargets" value="${editTargets}"/>
     <fieldset class="skinFieldset" id="send-notification">
       <legend>Notification</legend>
@@ -91,6 +106,7 @@
           <div class="champs">
             <fmt:message key="Opane_addressees" var="chooseReceiverLabel"/>
             <viewTags:selectUsersAndGroups selectionType="USER_GROUP"
+                                           componentIdFilter="${componentId}"
                                            multiple="true"
                                            mandatory="${editTargets}"
                                            userManualNotificationUserReceiverLimit="${editTargets}"
@@ -122,12 +138,14 @@
     </fieldset>
   </form>
 
-  <view:buttonPane>
-    <fmt:message key="Envoyer" var="msgSend"/>
-    <fmt:message key="GML.cancel" var="msgCancel"/>
-    <view:button label="${msgSend}" action="javascript:sendNotification()"/>
-    <view:button label="${msgCancel}" action="javascript:window.close()"/>
-  </view:buttonPane>
+  <c:if test="${not popinMode}">
+    <view:buttonPane>
+      <fmt:message key="Envoyer" var="msgSend"/>
+      <fmt:message key="GML.cancel" var="msgCancel"/>
+      <view:button label="${msgSend}" action="javascript:sendNotification()"/>
+      <view:button label="${msgCancel}" action="javascript:window.close()"/>
+    </view:buttonPane>
+  </c:if>
 </view:window>
 </body>
 </html>

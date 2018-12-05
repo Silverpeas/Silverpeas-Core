@@ -33,11 +33,11 @@ public class AlertUser {
 
   private static final String URL = "/RalertUserPeas/jsp/Main";
 
-  protected String hostSpaceName;
-  protected String hostComponentId;
-  protected Pair<String, String> hostComponentLabel;
-  protected NotificationMetaData notificationMetaData;
-  protected SelectionUsersGroups extraParams;
+  private String hostSpaceName;
+  private String hostComponentId;
+  private Pair<String, String> hostComponentLabel;
+  private NotificationMetaData notificationMetaData;
+  private SelectionUsersGroups extraParams;
   private List<String> hostPath;
 
   public AlertUser() {

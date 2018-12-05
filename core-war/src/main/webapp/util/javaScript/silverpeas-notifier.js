@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Notification centralizations.
+// Notification centralization.
 
 /**
  * Helper to display a Silverpeas information notification.

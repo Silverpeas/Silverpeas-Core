@@ -36,7 +36,6 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -46,11 +45,10 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
+import java.util.Collections;
 
-import static org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler
-    .getSubscriptionNotificationUserNoteFromCurrentRequest;
-import static org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler
-    .isSubscriptionNotificationEnabledForCurrentRequest;
+import static org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler.getSubscriptionNotificationUserNoteFromCurrentRequest;
+import static org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler.isSubscriptionNotificationEnabledForCurrentRequest;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -74,9 +72,10 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   }
 
   /**
-   * Default constructor
-   * @param title
-   * @param content
+   * Constructs the notification builder and prepares the notification to build with the specified
+   * title and content.
+   * @param title the title of the notification.
+   * @param content the content of the notification.
    */
   protected AbstractUserNotificationBuilder(final String title, final String content) {
     this();
@@ -85,7 +84,8 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   }
 
   /**
-   * Performs common initializations
+   * Performs common initializations. The {@link UserNotification} object is constructed here by
+   * invoking the {@link #createNotification()} method.
    */
   protected void initialize() {
     userNotification = createNotification();
@@ -97,55 +97,58 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   }
 
   /**
-   * Create the user notification container
-   * @return
+   * Creates the user notification. This method is used to construct and initialize a
+   * {@link UserNotification} object in the {@link #build()} method.
+   * @return a {@link UserNotification} object.
    */
   protected abstract UserNotification createNotification();
 
   /**
-   * Gets the type of action on a resource
-   * @return
+   * Gets the type of action on the resource concerned by the notification if any.
+   * @return a value of the {@link NotifAction} enumeration.
    */
   protected abstract NotifAction getAction();
 
   /**
-   * Gets the component instance id
-   * @return
+   * Gets the component instance identifier.
+   * @return the unique identifier of the component instance concerned by the notification to build.
    */
   protected abstract String getComponentInstanceId();
 
   /**
-   * Gets the sender (the user id usually)
-   * @return
+   * Gets the sender (the user identifier usually)
+   * @return the unique identifier of the sender.
    */
   protected abstract String getSender();
 
   /**
-   * Gets the notification meta data container
-   * @return
+   * Gets the notification metadata.
+   * @return the metadata about the notification to build.
    */
   protected final NotificationMetaData getNotificationMetaData() {
     return userNotification.getNotificationMetaData();
   }
 
   /**
-   * Gets the type of notification message
-   * @return
+   * Gets the type of notification message.
+   * @return a value in the {@link NotifMessageType} enumeration.
    */
   protected NotifMessageType getMessageType() {
     return NotifMessageType.NORMAL;
   }
 
   /**
-   * Forces the sending immediatly if true
-   * @return
+   * Is the notification to build has to be sent immediately? If no, then its sending will be
+   * delayed according to the preferences of the users.
+   * @return true if the notification to build has to be sent immediately.
    */
   protected boolean isSendImmediately() {
     return false;
   }
 
   /**
-   * Builds the notification data container
+   * Builds the notification.
+   * @return a {@link UserNotification} object.
    */
   @Override
   public final UserNotification build() {
@@ -178,39 +181,77 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
     return userNotification;
   }
 
+  /**
+   * A collection of user identifiers. All the users in this collection will be notified. This
+   * method requires to be implemented.
+   * @return
+   */
   protected abstract Collection<String> getUserIdsToNotify();
 
   /**
-   * Collection of identifiers of users that don't have to be notified ...
-   * @return
+   * Collection of identifiers of users that don't have to be notified. By default, an empty
+   * collection is returned.
+   * @return a collection of identifiers of the users to exclude from the notification.
    */
   protected Collection<String> getUserIdsToExcludeFromNotifying() {
-    return null;
+    return Collections.emptyList();
   }
 
+  /**
+   * Gets a collection of user group's identifiers. All the users in this collection will be
+   * notified. By default, an empty collection is returned.
+   * @return a collection of user group's identifiers.
+   */
   protected Collection<String> getGroupIdsToNotify() {
-    return null;
+    return Collections.emptyList();
   }
 
+  /**
+   * Gets a collection of email addresses, each of them corresponding to a person external of
+   * Silverpeas. By default, an empty collection is returned.
+   * @return a collection of email addresses.
+   */
   protected Collection<String> getExternalAddressesToNotify() {
-    return null;
+    return Collections.emptyList();
   }
 
-  protected final void performUsersToBeNotified() {
+  private void performUsersToBeNotified() {
     final Collection<String> userIdsToNotify = getUserIdsToNotify();
     final Collection<String> userIdsToExcludeFromNotifying = getUserIdsToExcludeFromNotifying();
     final Collection<String> groupIdsToNotify = getGroupIdsToNotify();
     final Collection<String> emailsToNotify = getExternalAddressesToNotify();
 
     // Stopping the process if no user to notify
-    if (stopWhenNoUserToNotify() &&
-        CollectionUtil.isEmpty(userIdsToNotify) && CollectionUtil.isEmpty(groupIdsToNotify) &&
-        CollectionUtil.isEmpty(emailsToNotify)) {
-      SilverTrace.warn("notification", "IUserNotificationBuider.build()",
-          "IUserNotificationBuider.EX_NO_USER_OR_GROUP_TO_NOTIFY");
+    if (stopWhenNoUserToNotify() && CollectionUtil.isEmpty(userIdsToNotify) &&
+        CollectionUtil.isEmpty(groupIdsToNotify) && CollectionUtil.isEmpty(emailsToNotify)) {
+      SilverLogger.getLogger(this).error("No user or groups to notify!");
       stop();
     }
 
+    addUserRecipients(userIdsToNotify, userIdsToExcludeFromNotifying);
+    addGroupRecipients(groupIdsToNotify);
+    addExternalRecipients(emailsToNotify);
+  }
+
+  private void addExternalRecipients(final Collection<String> emailsToNotify) {
+    if (CollectionUtil.isNotEmpty(emailsToNotify)) {
+      for (String address : emailsToNotify) {
+        getNotificationMetaData().addExternalRecipient(new ExternalRecipient(address));
+      }
+    }
+  }
+
+  private void addGroupRecipients(final Collection<String> groupIdsToNotify) {
+    if (CollectionUtil.isNotEmpty(groupIdsToNotify)) {
+      // There is at least one group to notify
+      for (final String groupId : groupIdsToNotify) {
+        getNotificationMetaData().addGroupRecipient(new GroupRecipient(groupId));
+      }
+    }
+  }
+
+  private void addUserRecipients(final Collection<String> userIdsToNotify,
+      final Collection<String> userIdsToExcludeFromNotifying) {
     if (CollectionUtil.isNotEmpty(userIdsToNotify)) {
       // There is at least one user to notify
       for (final String userId : userIdsToNotify) {
@@ -233,21 +274,14 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
         getNotificationMetaData().addUserRecipientToExclude(new UserRecipient(getSender()));
       }
     }
-
-    if (CollectionUtil.isNotEmpty(groupIdsToNotify)) {
-      // There is at least one group to notify
-      for (final String groupId : groupIdsToNotify) {
-        getNotificationMetaData().addGroupRecipient(new GroupRecipient(groupId));
-      }
-    }
-
-    if (CollectionUtil.isNotEmpty(emailsToNotify)) {
-      for (String address : emailsToNotify) {
-        getNotificationMetaData().addExternalRecipient(new ExternalRecipient(address));
-      }
-    }
   }
 
+  /**
+   * Should the notification treatment be stopped in there is no users to notify? By default true.
+   * This method can be overridden to specify a different or a contextualized answer. In that case,
+   * the recipients setting should be then performed out of the builder.
+   * @return true if no notification has to be done when no recipients are defined.
+   */
   protected boolean stopWhenNoUserToNotify() {
     return true;
   }
@@ -258,29 +292,34 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   protected abstract void performBuild();
 
   /**
-   * Gets the resource locator path
-   * @return
+   * Gets the path of the localization bundle to load. By default, returns the general translations.
+   * For more specific localized text to use in the notification, override this method.
+   * @return the path of the localization bundle.
    */
-  protected String getMultilangPropertyFile() {
-    return null;
+  protected String getLocalizationBundlePath() {
+    return LocalizationBundle.GENERAL_BUNDLE_NAME;
   }
 
   /**
-   * Gets the bundle
-   * @return
+   * Gets the localization bundle from which the localized text to use in the notification can
+   * be get.
+   * @return the localization bundle whose the path is provided by the
+   * {@link #getLocalizationBundlePath()} method.
    */
   protected final LocalizationBundle getBundle() {
     return getBundle(I18NHelper.defaultLanguage);
   }
 
   /**
-   * Gets the bundle
-   * @return
+   * Gets the localization bundle for the specified locale to use in the building the notification.
+   * @param language the ISO-631 code of a language.
+   * @return the localization bundle whose path is provided by the
+   * {@link #getLocalizationBundlePath()} method.
    */
   protected final LocalizationBundle getBundle(final String language) {
     LocalizationBundle bundle = null;
-    if (StringUtils.isNotBlank(getMultilangPropertyFile())) {
-      bundle = ResourceLocator.getLocalizationBundle(getMultilangPropertyFile(), language);
+    if (StringUtils.isNotBlank(getLocalizationBundlePath())) {
+      bundle = ResourceLocator.getLocalizationBundle(getLocalizationBundlePath(), language);
     }
     return bundle;
   }
@@ -304,7 +343,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   }
 
   /**
-   * Stopping the treatment
+   * Stops the treatment
    */
   protected void stop() {
     throw new Stop();

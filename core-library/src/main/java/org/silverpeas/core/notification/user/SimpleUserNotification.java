@@ -31,7 +31,6 @@ import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.ui.DisplayI18NHelper;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -238,8 +237,8 @@ public class SimpleUserNotification implements UserNotification {
     }
 
     @Override
-    protected String getTitle() {
-      return source.title.apply(DisplayI18NHelper.getDefaultLanguage());
+    protected String getTitle(final String language) {
+      return source.title.apply(language);
     }
 
     @Override
