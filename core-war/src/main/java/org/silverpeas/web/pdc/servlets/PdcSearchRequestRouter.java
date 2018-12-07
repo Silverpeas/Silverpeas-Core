@@ -55,6 +55,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -233,15 +234,47 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         PdcSearchRequestRouterHelper.saveUserChoices(pdcSC, request);
 
         destination = doGlobalView(pdcSC, request);
+      } else if ("XMLDirectSearch".equals(function)) {
+        pdcSC.clearSearchParameters(true);
+        String templateFileName = request.getParameter("xmlSearchSelectedForm");
+
+        String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
+
+        // build query
+        String fieldParamPrefix = "field_";
+        Enumeration<String> paramNames = request.getParameterNames();
+        while (paramNames.hasMoreElements()) {
+          final String paramName = paramNames.nextElement();
+          if (paramName.startsWith(fieldParamPrefix)) {
+            String fieldQuery = request.getParameter(paramName);
+            String fieldName = paramName.substring(fieldParamPrefix.length());
+            pdcSC.getQueryParameters().addXmlSubQuery(templateName + "$$" + fieldName, fieldQuery);
+          }
+        }
+
+        // launch the search
+        pdcSC.search(null, false);
+        pdcSC.setSearchScope(PdcSearchSessionController.SEARCH_XML);
+        setDefaultDataToNavigation(request, pdcSC);
+
+        destination = "/pdcPeas/jsp/globalResult.jsp";
       } else if ("XMLSearch".equals(function)) {
         pdcSC.getQueryParameters().clearXmlQuery();
+        pdcSC.getQueryParameters().clear();
 
         List<FileItem> items = getRequestItems(request);
 
         String title = getParameterValue(items, "TitleNotInXMLForm");
         pdcSC.getQueryParameters().setXmlTitle(title);
 
-        PublicationTemplateImpl template = pdcSC.getXmlTemplate();
+        PublicationTemplateImpl template;
+        String templateFileName = request.getParameter("xmlSearchSelectedForm");
+        if (StringUtil.isDefined(templateFileName)) {
+          template = pdcSC.setXmlTemplate(templateFileName);
+        } else {
+          template = pdcSC.getXmlTemplate();
+          templateFileName = template.getFileName();
+        }
 
         // build a dataRecord object storing user's entries
         RecordTemplate searchTemplate = template.getSearchTemplate();
@@ -257,7 +290,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         pdcSC.setXmlData(data);
 
         // build the xmlSubQuery according to the dataRecord object
-        String templateFileName = template.getFileName();
         String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
         String[] fieldNames = searchTemplate.getFieldNames();
         for (int f = 0; f < fieldNames.length; f++) {
@@ -272,9 +304,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         // launch the search
         pdcSC.search(null, isOnlyInPdcSearch(request));
-
         pdcSC.setSearchScope(PdcSearchSessionController.SEARCH_XML);
-
         setDefaultDataToNavigation(request, pdcSC);
 
         destination = "/pdcPeas/jsp/globalResult.jsp";
