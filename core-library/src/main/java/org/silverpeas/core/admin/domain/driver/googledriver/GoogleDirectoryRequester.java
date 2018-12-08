@@ -34,13 +34,18 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.admin.directory.Directory;
 import com.google.api.services.admin.directory.DirectoryScopes;
 import com.google.api.services.admin.directory.model.User;
+import com.google.api.services.admin.directory.model.Users;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -48,6 +53,7 @@ import java.util.List;
  */
 public class GoogleDirectoryRequester {
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+  private static final int QUERY_MAX_RESULTS = 500;
   private static final String MY_CUSTOMER = "my_customer";
   private final String serviceAccountUser;
   private final String jsonKeyPath;
@@ -67,9 +73,9 @@ public class GoogleDirectoryRequester {
 
   /**
    * Creates an authorized Credential object.
+   * @param httpTransport the HTTP transport.
    * @return An authorized Credential object.
    * @throws IOException If the credentials.json file cannot be found.
-   * @param httpTransport
    */
   private Credential getServiceAccountCredentials(final HttpTransport httpTransport)
       throws IOException {
@@ -101,12 +107,27 @@ public class GoogleDirectoryRequester {
 
   public List<User> users() throws AdminException {
     try {
-      final List<User> users = getDirectoryService().users().list().setCustomer(MY_CUSTOMER)
-          .execute().getUsers();
-      users.sort(Comparator
+      final List<User> result = new LinkedList<>();
+      final long start = System.currentTimeMillis();
+      final Directory.Users.List users = getDirectoryService().users().list()
+          .setMaxResults(QUERY_MAX_RESULTS).setCustomer(MY_CUSTOMER);
+      String pageToken = null;
+      while (true) {
+        final Users currentUsers = users.setPageToken(pageToken).execute();
+        pageToken = currentUsers.getNextPageToken();
+        final List<User> currentResult = currentUsers.getUsers();
+        result.addAll(currentResult);
+        if (currentResult.size() < QUERY_MAX_RESULTS || pageToken == null) {
+          break;
+        }
+      }
+      result.sort(Comparator
           .comparing((User g) -> g.getName().getFamilyName())
           .thenComparing(g -> g.getName().getGivenName()));
-      return users;
+      final long end = System.currentTimeMillis();
+      SilverLogger.getLogger(this).debug(() -> MessageFormat
+          .format("Getting accounts in {0}", DurationFormatUtils.formatDurationHMS(end - start)));
+      return result;
     } catch (IOException e) {
       throw new AdminException(e);
     }
