@@ -73,11 +73,9 @@ $(function () {
         force_text : false, "data" : {
           "url" : function(node) {
             var nodeId = "";
-            //var url = $("#uri").val();
             var url = rootUri;
             if (node && node.id !== '#') {
-              url = node.original.attr["childrenURI"];
-              //alert(url);
+              url = node.original.attr["uri"];
             }
             return url;
           }, "success" : function(new_data) {
@@ -86,6 +84,15 @@ $(function () {
               $("#breadcrumb .path").html(new_data.data);
               // store instanceId
               $("#instanceId").val(new_data.attr.componentId);
+
+              // browse children to add sub-child behavior
+              if (new_data.children) {
+                for(var i = 0; i < new_data.children.length; i++) {
+                  var child = new_data.children[i];
+                  child.children = true;
+                }
+              }
+
               // display publications
               displayPublications(new_data.attr.id, new_data.attr.componentId);
             } catch (e) {

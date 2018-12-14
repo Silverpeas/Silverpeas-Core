@@ -35,6 +35,10 @@
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="org.silverpeas.core.admin.service.OrganizationController" %>
+<%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
@@ -45,19 +49,23 @@ if (mainSessionCtrl == null) {
   getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
   return;
 }
-LocalizationBundle message = ResourceLocator.getGeneralLocalizationBundle(mainSessionCtrl.getFavoriteLanguage());
-String m_context = URLUtil.getApplicationURL();
+String language = mainSessionCtrl.getFavoriteLanguage();
+LocalizationBundle message = ResourceLocator.getGeneralLocalizationBundle(language);
 
 Button btn = gef.getFormButton(message.getString("GML.validate"), "javascript:setPath()", false);
 
 String targetElementIdHidden = request.getParameter("elementHidden");
 String targetElementIdVisible = request.getParameter("elementVisible");
 String scope = request.getParameter("scope");
-String resultType = request.getParameter("resultType");
-if (!StringUtil.isDefined(resultType)) {
-  resultType = "default";
+String[] componentIds = scope.split(",");
+
+// retain only available instances for current user
+List<ComponentInstLight> availableComponents = new ArrayList<>();
+for (String componentId : componentIds) {
+  if (OrganizationController.get().isComponentAvailable(componentId, mainSessionCtrl.getUserId())) {
+    availableComponents.add(OrganizationController.get().getComponentInstLight(componentId));
+  }
 }
-boolean dedicatedToWriters = StringUtil.getBooleanValue(request.getParameter("DedicatedToWriters"));
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -65,20 +73,22 @@ boolean dedicatedToWriters = StringUtil.getBooleanValue(request.getParameter("De
 <head>
 <view:looknfeel/>
 <style type="text/css">
-.selection table,
 .selection input {
 	display:inline-table;
 	display:inline\9;
 	vertical-align:middle
 }
 
-.selection table {
-	margin-top: 4px;
-}
-
 .selection {
 	padding: 10px 5px;
 	border-bottom: 1px solid #EAEAEA;
+}
+
+.selection a {
+  padding: 1px 10px;
+  font-size: 9pt !important;
+  height: 17px;
+  line-height: 17px;
 }
 
 #explorer {
@@ -91,24 +101,43 @@ boolean dedicatedToWriters = StringUtil.getBooleanValue(request.getParameter("De
   <view:link href="/util/javaScript/jquery/themes/default/explorer.css"/>
 <script type="text/javascript">
 $(function () {
-  // TO CREATE AN INSTANCE
-  // select the tree container using jQuery
+  <% if (!availableComponents.isEmpty()) { %>
+    var firstComponentId = "<%=availableComponents.get(0).getId()%>";
+    initTree(firstComponentId);
+  <% } %>
+
+  $("select").change(function() {
+    initTree($(this).val());
+  });
+});
+
+function initTree(instanceId) {
+  $("#explorer").jstree('destroy');
+  var rootId = "0";
   $("#explorer").jstree({
     "core" : {
       force_text : false,
       "data" : {
         "url" : function(node) {
-          var nodeId = "";
-          var url = "<%=URLUtil.getFullApplicationURL(request)%>/Explorer/scope/<%=scope%>";
+          var url = webContext + "/services/folders/" + instanceId + "/" + rootId;
           if (node && node.id !== '#') {
-            url = "<%=URLUtil.getFullApplicationURL(request)%>/Explorer";
-            nodeId = node.id;
-            url += "/componentid/" + node.original.attr['instanceId'] + "/id/" + nodeId;
+            url = webContext + "/services/folders/" + node.original.attr['componentId'] + "/" + node.id;
           }
           return url;
-        }, "success" : function(new_data) {
-          new_data.children = true;
-          return new_data;
+        }, "success" : function(newData) {
+          if (newData) {
+            if (newData.children) {
+              for (var i = 0; i < newData.children.length; i++) {
+                var child = newData.children[i];
+                if (child.id === '1' || child.id === 'tovalidate') {
+                  child.state.hidden = true;
+                } else {
+                  child.children = true;
+                }
+              }
+            }
+          }
+          return newData;
         }
       },
       "check_callback" : false,
@@ -117,34 +146,7 @@ $(function () {
         "icons" : true
       },
       "multiple" : false
-    },
-    "types" : {
-      "default" : {
-        "valid_children" : ["default"]
-      },
-      <% if (dedicatedToWriters) { %>
-      "user" : {
-        "max_children" : -1,
-        "max_depth" : -1,
-        "icon" : "silverpeas-locked"
-      }, <% } %>
-      "user-root" : {
-        "max_children" : -1,
-        "max_depth" : -1,
-        "icon" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
-      },
-      "admin-root" : {
-        "icon" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
-      },
-      "publisher-root" : {
-        "icon" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
-      },
-      "writer-root" : {
-        "icon" : "<%=URLUtil.getFullApplicationURL(request)%>/util/icons/folder.gif"
-      }
-    },
-    // the `plugins` array allows you to configure the active plugins on this instance
-    "plugins" : ["types"]
+    }
   });
 
   $("#explorer").on("select_node.jstree", function(e, data) {
@@ -158,14 +160,13 @@ $(function () {
         newPath += path[i];
       }
       $("#explicitPath").val(newPath);
-      <% if ("path".equals(resultType)) { %>
-      $("#result").val(data.node.original.attr["path"]);
-      <% } else { %>
       $("#result").val(data.node.original.attr["instanceId"] + "-" + data.node.id);
-      <% } %>
+
+      //open folder in treeview
+      data.instance.open_node(data.node);
     }
   });
-});
+}
 
 function setPath() {
 	window.opener.document.getElementById("<%=targetElementIdVisible%>").value = $("#explicitPath").val();
@@ -175,9 +176,17 @@ function setPath() {
 </script>
 </head>
 <body>
-<div class="selection"><%=message.getString("GML.selection") %> : <input type="text" id="explicitPath" size="40"/> <%=btn.print() %></div>
-<div id="explorer" class="demo" style="height:100px;">
+<% if (availableComponents.size() > 1) {%>
+<div class="selection"><%=message.getString("GML.component")%> :
+  <select>
+    <% for (ComponentInstLight availableComponent : availableComponents) { %>
+    <option value="<%=availableComponent.getId()%>"><%=availableComponent.getLabel(language)%></option>
+    <% } %>
+  </select>
 </div>
+<% } %>
+<div class="selection"><%=message.getString("GML.selection") %> : <input type="text" id="explicitPath" size="80"/> <%=btn.print() %></div>
+<div id="explorer" class="demo" style="height:100px;"/>
 <input type="hidden" id="result"/>
 </body>
 </html>
