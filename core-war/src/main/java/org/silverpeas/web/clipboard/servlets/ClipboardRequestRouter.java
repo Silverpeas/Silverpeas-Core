@@ -105,7 +105,6 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
 
   @Override
   public void updateSessionManagement(HttpSession session, String destination) {
-
     SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     SessionInfo sessionInfo = sessionManagement.getSessionInfo(session.getId());
     if (sessionInfo.isDefined()) {

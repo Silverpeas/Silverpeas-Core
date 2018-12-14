@@ -49,6 +49,9 @@
   $.popup = {
     debug : false,
     initialized: false,
+    /**
+     * Initializes the popup by setting some required properties before loading and using it.
+     */
     doInitialize: function() {
       if (!$.popup.initialized) {
         window.i18n.properties({
@@ -60,6 +63,10 @@
         $.popup.initialized = true;
       }
     },
+    /**
+     * Shows a waiting information. Usually used while the popup is rendering or when the treatment
+     * fired by the popup is being processed.
+     */
     showWaiting: function() {
       var $waiting = $("#spWaiting");
       if ($waiting.length === 0) {
@@ -78,6 +85,10 @@
       }
       $waiting.dialog("open");
     },
+    /**
+     * Hides the waiting information. Usually used once the popup is fully rendered or once the
+     * treatment fired by the popin is done.
+     */
     hideWaiting: function() {
       var $waiting = $("#spWaiting");
       if ($waiting.length > 0) {
@@ -86,6 +97,11 @@
         $waiting.remove();
       }
     },
+    /**
+     * Shows a confirmation popup with the specified message and the popup parameters.
+     * @param message the message to display in the popup.
+     * @param params the parameters to parametrize the popup window.
+     */
     confirm: function(message, params) {
       var options = params;
       var $confirm = $('<div>').append($('<p>').append(message));
@@ -96,6 +112,11 @@
       }
       $confirm.popup('confirmation', options);
     },
+    /**
+     * Shows an error popup with the specified message and the popup parameters.
+     * @param message the error message to display in the popup.
+     * @param params the parameters to parametrize the popup window.
+     */
     error: function(message, params) {
       var options = params;
       message = message.replaceAll('\n', '<br/>');
@@ -106,6 +127,61 @@
         }
       }
       $error.popup('error', options);
+    },
+    /**
+     * Loads the popup from the specified URL.
+     * @param {string} url the url at which the popup's content is loaded.
+     * @param {object} [context] the HTTP context to use when requesting the popup's content: it is
+     * an object with as attributes:
+     * <ul>
+     * <li> method: the HTTP method to use. By default, if not set, 'GET'. Either 'GET' or 'POST'
+     * <li> params: the HTTP parameters to pass with the HTTP request.
+     * </ul>
+     * @return a wrapper of the loaded popup.
+     */
+    load: function(url, context) {
+      return {
+        /**
+         * Shows the loaded popup by using the specified rendering type and popup parameters.
+         * @param type the popup rendering type.
+         * @param params the parameters to parametrize the popup window.
+         * @return a promise within which the popup is being rendered. Once the popup is rendered,
+         * any treatment declared in the then() function is then invoked.
+         */
+        show: function(type, params) {
+          return new Promise(function(resolve, reject) {
+            var options = params;
+            var $popup = $('<div>', {id: 'popupHelperContainer'});
+            var request = sp.ajaxRequest(url);
+            if (context) {
+              if (context.method === 'POST') {
+                request = request.byPostMethod();
+              }
+              if (context.params) {
+                request = request.withParams(context.params);
+              }
+            }
+            request.loadTarget($popup, true).then(function() {
+              if (typeof params === 'function') {
+                options = {
+                  callback: params
+                }
+              }
+              var onClose = options.callbackOnClose;
+              options.callbackOnClose = function(arg) {
+                if (typeof onClose === 'function') {
+                  onClose.call(arg);
+                }
+                $popup.remove();
+              };
+              $popup.popup(type, options);
+              resolve();
+            }, function() {
+              reject();
+            });
+          });
+        }
+      }
     }
   };
 
@@ -784,91 +860,3 @@
   }
 
 })(jQuery, window);
-
-/**
- * Some helpers
- */
-
-/**
- * Load html from URL and display it in a popup.
- * If this method is called several times from a same Page,
- * the previous load is trashed and replaced by the new one.
- * @param url
- * @param options
- * @return promise with the html data loaded.
- */
-function displaySingleFreePopupFrom(url, options) {
-  var deferred = new jQuery.Deferred();
-  jQuery.popup.showWaiting();
-  jQuery.ajax({
-    url: url,
-    type: 'GET',
-    dataType: 'html',
-    cache : false
-  }).success(function(data, status, jqXHR) {
-    var $popup = jQuery('#popupHelperContainer');
-    if ($popup.length == 0) {
-      $popup = jQuery('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
-      $popup.appendTo(document.body);
-    }
-    $popup.empty();
-    $popup.append(data);
-    $popup.popup('free', options);
-    deferred.resolve(data);
-  }).error(function(jqXHR, textStatus, errorThrown) {
-    notyError(errorThrown);
-    deferred.reject();
-  }).always(function(data, status, jqXHR) {
-    jQuery.popup.hideWaiting();
-  });
-  return deferred.promise();
-}
-
-/**
- * Closes the single free popup.
- */
-function closeSingleFreePopup() {
-  jQuery('#popupHelperContainer').popup('close');
-}
-
-/**
- * Load html from URL and display it in a popup.
- * If this method is called several times from a same Page,
- * the previous load is trashed and replaced by the new one.
- * @param url
- * @param options
- * @return promise with the html data loaded.
- */
-function displaySingleConfirmationPopupFrom(url, options) {
-  var deferred = new jQuery.Deferred();
-  jQuery.popup.showWaiting();
-  jQuery.ajax({
-    url: url,
-    type: 'GET',
-    dataType: 'html',
-    cache : false
-  }).success(function(data, status, jqXHR) {
-    var $popup = jQuery('#popupHelperContainer');
-    if ($popup.length == 0) {
-      $popup = jQuery('<div>', {'id' : 'popupHelperContainer', 'style' : 'display: none'});
-      $popup.appendTo(document.body);
-    }
-    $popup.empty();
-    $popup.append(data);
-    $popup.popup('confirmation', options);
-    deferred.resolve(data);
-  }).error(function(jqXHR, textStatus, errorThrown) {
-    notyError(errorThrown);
-    deferred.reject();
-  }).always(function(data, status, jqXHR) {
-    jQuery.popup.hideWaiting();
-  });
-  return deferred.promise();
-}
-
-/**
- * Closes the single confirmation popup.
- */
-function closeSingleConfirmationPopup() {
-  jQuery('#popupHelperContainer').popup('close');
-}

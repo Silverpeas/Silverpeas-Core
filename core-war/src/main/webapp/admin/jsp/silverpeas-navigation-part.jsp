@@ -104,11 +104,6 @@ int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.min
       searchEngine();
   }
 
-    function notifyAdministrators(context,compoId,users,groups)
-  {
-      SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main?popupMode=Yes&editTargets=No&theTargetsUsers=Administrators', 'notifyUserPopup', '900', '400', 'menubar=no,scrollbars=no,statusbar=no');
-  }
-
   function openClipboard() {
     sp.formRequest('${silfn:applicationURL()}<%=URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp')
         .withParam('message','SHOWCLIPBOARD')

@@ -23,156 +23,72 @@
  */
 package org.silverpeas.web.notificationuser;
 
-import org.owasp.encoder.Encode;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.notification.user.client.GroupRecipient;
+import org.silverpeas.core.notification.NotificationException;
+import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.ArrayList;
-import java.util.List;
+/**
+ * User notification defined in the Notification User personal component.
+ */
+public class Notification extends DefaultUserNotification {
 
-public class Notification {
+  private final NotificationMetaData metaData;
+  private String addressId;
 
-  private String subject;
-  private String body;
-  private int priority = 0;
-  private int addressId = BuiltInNotifAddress.COMPONENT_DEFINED.getId();
-  private List<UserDetail> users;
-  private List<Group> groups;
-
+  /**
+   * Constructs an empty user notification.
+   */
   public Notification() {
-
+    metaData = new NotificationMetaData();
   }
 
-  public Notification(String subject, String body) {
-    setSubject(subject);
-    setBody(body);
+  /**
+   * Sets the priority of this notification.
+   * @param priority the priority level.
+   */
+  public void setPriority(final int priority) {
+    metaData.setMessageType(priority);
   }
 
-  public String getSubject() {
-    return subject;
-  }
-  public void setSubject(String subject) {
-    this.subject = subject;
-  }
-  public String getBody() {
-    return body;
-  }
-  public void setBody(String body) {
-    this.body = body;
-  }
-  public int getPriority() {
-    return priority;
-  }
-  public void setPriority(int priority) {
-    this.priority = priority;
+  /**
+   * Sets the source of this notification. The source is the component from which this notification
+   * is sent.
+   * @param source the name of the source of this notification.
+   */
+  public void setSource(final String source) {
+    this.metaData.setSource(source);
   }
 
-  public void setPriority(String priority) {
-    if (StringUtil.isInteger(priority)) {
-      this.priority = Integer.parseInt(priority);
-    }
+  @Override
+  public NotificationMetaData getNotificationMetaData() {
+    return metaData;
   }
 
-  public int getAddressId() {
-    return addressId;
+  /**
+   * Sets the identifier of a notification address to which this notification has to be sent.
+   * @param addressId the unique identifier of a notification address.
+   */
+  public void setAddressId(final String addressId) {
+    this.addressId = addressId;
   }
-  public void setAddressId(String channel) {
-    if (StringUtil.isInteger(channel)) {
-      this.addressId = Integer.parseInt(channel);
-    }
-  }
-  public List<UserDetail> getUsers() {
-    if (users == null) {
-      users = new ArrayList<>();
-    }
-    return users;
-  }
-  public List<String> getUserIds() {
-    List<String> ids = new ArrayList<>();
-    if (users != null) {
-      for (UserDetail user : users) {
-        ids.add(user.getId());
+
+  @Override
+  public void send() {
+    try {
+      final NotificationSender sender = new NotificationSender(metaData.getComponentId());
+      if (StringUtil.isDefined(addressId) && StringUtil.isInteger(addressId)) {
+        sender.notifyUser(Integer.parseInt(addressId), metaData);
+      } else {
+        sender.notifyUser(metaData);
       }
-    }
-    return ids;
-  }
-
-  public void setUsers(List<UserDetail> users) {
-    this.users = users;
-  }
-  public void setUsers(String... ids) {
-    getUsers().clear();
-    for (String id : ids) {
-      UserDetail user = UserDetail.getById(id);
-      if (user != null) {
-        getUsers().add(user);
-      }
+    } catch (final NotificationException e) {
+      SilverLogger.getLogger(this).warn(e);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
     }
   }
-  public List<Group> getGroups() {
-    if (groups == null) {
-      groups = new ArrayList<>();
-    }
-    return groups;
-  }
-  public List<String> getGroupIds() {
-    List<String> ids = new ArrayList<>();
-    if (getGroups() != null) {
-      for (Group group : groups) {
-        ids.add(group.getId());
-      }
-    }
-    return ids;
-  }
-  public void setGroups(List<Group> groups) {
-    this.groups = groups;
-  }
-
-  public void setGroups(String... groupIds) {
-    getGroups().clear();
-    for (String id : groupIds) {
-      Group group = Group.getById(id);
-      if (group != null) {
-        getGroups().add(group);
-      }
-    }
-  }
-
-  public NotificationMetaData toNotificationMetaData() {
-    NotificationMetaData notifMetaData =
-        new NotificationMetaData(getPriority(), Encode.forHtml(getSubject()),
-            Encode.forHtml(getBody()));
-    List<UserRecipient> userRecipients = new ArrayList<>();
-    if (getUsers() != null) {
-      for (UserDetail user : getUsers()) {
-        userRecipients.add(new UserRecipient(user));
-      }
-    }
-    notifMetaData.addUserRecipients(userRecipients);
-    List<GroupRecipient> groupRecipients = new ArrayList<>();
-    if (getGroups() != null) {
-      for (Group group : getGroups()) {
-        groupRecipients.add(new GroupRecipient(group));
-      }
-    }
-    notifMetaData.addGroupRecipients(groupRecipients);
-    for (String language : DisplayI18NHelper.getLanguages()) {
-      LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
-          "org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle", language);
-      notifMetaData.addLanguage(language, getSubject(), bundle.getString("AuthorMessage") + " :");
-      notifMetaData.addExtraMessage(getBody(), language);
-    }
-    return notifMetaData;
-  }
-
-
 
 }

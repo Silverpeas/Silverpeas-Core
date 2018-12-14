@@ -36,15 +36,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.notification_receiver_groups;
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.notification_receiver_users;
@@ -64,10 +56,10 @@ public class NotificationMetaData implements java.io.Serializable {
   private String source;
   private String link;
   private String sessionId;
-  private Collection<UserRecipient> userRecipients;
-  private Collection<UserRecipient> userRecipientsToExclude;
-  private Collection<GroupRecipient> groupRecipients;
-  private Collection<ExternalRecipient> externalRecipients;
+  private final Collection<UserRecipient> userRecipients = new ArrayList<>();
+  private final Collection<UserRecipient> userRecipientsToExclude = new ArrayList<>();
+  private final Collection<GroupRecipient> groupRecipients = new ArrayList<>();
+  private final Collection<ExternalRecipient> externalRecipients = new ArrayList<>();
   private String componentId;
   private boolean isAnswerAllowed = false;
   private String fileName;
@@ -129,10 +121,6 @@ public class NotificationMetaData implements java.io.Serializable {
     source = "";
     link = "";
     sessionId = "";
-    userRecipients = new ArrayList<>();
-    userRecipientsToExclude = new ArrayList<>();
-    groupRecipients = new ArrayList<>();
-    externalRecipients = new ArrayList<>();
     componentId = "";
     isAnswerAllowed = false;
     fileName = null;
@@ -431,10 +419,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param users the user ids that must receive this message
    */
   public void setUserRecipients(Collection<UserRecipient> users) {
+    this.userRecipients.clear();
     if (users != null) {
-      this.userRecipients = new ArrayList<>(users);
-    } else {
-      this.userRecipients = new ArrayList<>();
+      addUserRecipients(users);
     }
   }
 
@@ -443,7 +430,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * @return the message user recipients
    */
   public Collection<UserRecipient> getUserRecipients() {
-    return userRecipients;
+    return Collections.unmodifiableCollection(userRecipients);
   }
 
   /**
@@ -462,11 +449,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * into account.
    * @param users users to be added
    */
-  public void addUserRecipients(UserRecipient[] users) {
+  public void addUserRecipients(UserRecipient... users) {
     if (users != null) {
-      for (UserRecipient userRecipient : users) {
-        addUserRecipient(userRecipient);
-      }
+      addUserRecipients(Arrays.asList(users));
     }
   }
 
@@ -488,10 +473,11 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param users the user ids that must not receive this message
    */
   public void setUserRecipientsToExclude(Collection<UserRecipient> users) {
+    this.userRecipientsToExclude.clear();
     if (users != null) {
-      this.userRecipientsToExclude = new ArrayList<>(users);
-    } else {
-      this.userRecipientsToExclude = new ArrayList<>();
+      for(UserRecipient recipient: users) {
+        addUserRecipient(recipient);
+      }
     }
   }
 
@@ -500,7 +486,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * @return the message user recipients
    */
   public Collection<UserRecipient> getUserRecipientsToExclude() {
-    return userRecipientsToExclude;
+    return Collections.unmodifiableCollection(userRecipientsToExclude);
   }
 
   /**
@@ -535,15 +521,18 @@ public class NotificationMetaData implements java.io.Serializable {
    * @return the externalAddress
    */
   public Collection<ExternalRecipient> getExternalRecipients() {
-    return externalRecipients;
+    return Collections.unmodifiableCollection(externalRecipients);
   }
 
   /**
    * @param externalRecipients the externalAddress to set
    */
   public void setExternalRecipients(Collection<ExternalRecipient> externalRecipients) {
+    this.externalRecipients.clear();
     if (externalRecipients != null) {
-      this.externalRecipients = externalRecipients;
+      for(ExternalRecipient recipient: externalRecipients) {
+        addExternalRecipient(recipient);
+      }
     }
   }
 
@@ -559,10 +548,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param groups the groups that must receive this message
    */
   public void setGroupRecipients(Collection<GroupRecipient> groups) {
+    this.groupRecipients.clear();
     if (groups != null) {
-      this.groupRecipients = new ArrayList<>(groups);
-    } else {
-      this.groupRecipients = new ArrayList<>();
+      addGroupRecipients(groups);
     }
   }
 

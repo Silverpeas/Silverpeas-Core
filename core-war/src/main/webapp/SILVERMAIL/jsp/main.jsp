@@ -46,7 +46,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<c:url var="newUserNotificationUrl" value="/RnotificationUser/jsp/Main.jsp?popinMode=Yes"/>
+<c:url var="newUserNotificationUrl" value="/RuserNotification/jsp/Main.jsp?popinMode=Yes"/>
 <c:url var="notifyIconUrl" value="/util/icons/create-action/send-notification.png"/>
 <c:url var="userSettingUrl" value='<%=URLUtil.getURL(URLUtil.CMP_PERSONALIZATION, null, null) + "ParametrizeNotification"%>'/>
 <fmt:message var="linkIconUrl" key="silvermail.link" bundle="${icons}"/>
@@ -150,7 +150,7 @@
   <view:browseBarElt link="#" label="${inboxBrowseBarLabel}"/>
 </view:browseBar>
 <view:operationPane>
-  <view:operationOfCreation icon="${notifyIconUrl}" action="javascript:window.openMessager('${_userLanguage}')" altText="${notyfyLabel}"/>
+  <view:operationOfCreation icon="${notifyIconUrl}" action="javascript:sp.messager.open()" altText="${notyfyLabel}"/>
   <view:operationSeparator/>
   <view:operation action="javascript:markSelectedMessagesAsRead()" altText="${markSelectedReadLabel}"/>
   <view:operation action="javascript:deleteSelectedMessages()" altText="${deleteSelectedLabel}"/>

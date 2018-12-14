@@ -48,6 +48,7 @@ package org.silverpeas.core.notification.user;
 
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
 * @author Yohann Chastagnier
@@ -60,7 +61,7 @@ public class NullUserNotification implements UserNotification {
 
   @Override
   public NotificationMetaData getNotificationMetaData() {
-    return null;
+    return new NotificationMetaData();
   }
 
   @Override
@@ -71,5 +72,6 @@ public class NullUserNotification implements UserNotification {
   @Override
   public void send(final BuiltInNotifAddress notificationAddress) {
     // Nothing to do
+    SilverLogger.getLogger(this).warn("No user notification implemented yet");
   }
 }

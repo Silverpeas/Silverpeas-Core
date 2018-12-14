@@ -59,6 +59,11 @@ public class PeasCoreException extends SilverpeasException {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
+  public PeasCoreException(String callingClass, String message, String extraParams,
+      Exception nested) {
+    super(callingClass, SilverpeasException.ERROR, message, extraParams, nested);
+  }
+
   /**
    * Method declaration
    * @return

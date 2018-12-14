@@ -45,6 +45,10 @@ public class DefaultUserNotification implements UserNotification {
     this(null, null);
   }
 
+  public DefaultUserNotification(final NotificationMetaData metaData) {
+    this.notification = metaData;
+  }
+
   public DefaultUserNotification(final String title, final String content) {
     if (StringUtils.isNotBlank(title) && StringUtils.isNotBlank(content)) {
       notification = new NotificationMetaData(NotifMessageType.NORMAL.getId(), title, content);
@@ -70,13 +74,14 @@ public class DefaultUserNotification implements UserNotification {
 
   @Override
   public void send(final BuiltInNotifAddress notificationAddress) {
-    if (notification != null) {
+    final NotificationMetaData notifMetaData = getNotificationMetaData();
+    if (notifMetaData != null) {
       try {
-        final NotificationSender sender = new NotificationSender(notification.getComponentId());
+        final NotificationSender sender = new NotificationSender(notifMetaData.getComponentId());
         if (notificationAddress != null) {
-          sender.notifyUser(notificationAddress.getId(), notification);
+          sender.notifyUser(notificationAddress.getId(), notifMetaData);
         } else {
-          sender.notifyUser(notification);
+          sender.notifyUser(notifMetaData);
         }
       } catch (final NotificationException e) {
         SilverLogger.getLogger(this).warn(e);

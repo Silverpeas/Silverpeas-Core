@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -51,22 +52,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @param <CONTROLLER>
+ * @param <T> The type of the implementation of the {@link WebComponentController} abstract class.
  * @author Yohann Chastagnier
  */
-public class WebComponentRequestContext<CONTROLLER extends WebComponentController> {
-  private final static Pattern REDIRECT_VARIABLE_MATCHER = Pattern.compile("(\\{[\\w_]+\\})+");
+public abstract class WebComponentRequestContext<T extends WebComponentController> {
+  private static final Pattern REDIRECT_VARIABLE_MATCHER = Pattern.compile("(\\{[\\w_]+\\})+");
 
   private Class<? extends Annotation> httpMethodClass;
   private HttpRequest request;
   private HttpServletResponse response;
-  private CONTROLLER controller = null;
+  private T controller = null;
   private boolean comingFromRedirect = false;
   private NavigationContext navigationContext;
   private boolean navigationStepContextPerformed = false;
 
-  private Map<String, String> pathVariables = new LinkedHashMap<String, String>();
-  private Map<String, String> redirectVariables = new LinkedHashMap<String, String>();
+  private Map<String, String> pathVariables = new LinkedHashMap<>();
+  private Map<String, String> redirectVariables = new LinkedHashMap<>();
   private Collection<SilverpeasRole> userRoles;
   private SilverpeasRole highestUserRole;
 
@@ -90,7 +91,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     this.response = response;
   }
 
-  void setController(final CONTROLLER controller) {
+  void setController(final T controller) {
     this.controller = controller;
   }
 
@@ -117,7 +118,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
     return navigationContext;
   }
 
-  CONTROLLER getController() {
+  T getController() {
     return controller;
   }
 
@@ -354,7 +355,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
 
       return redirectTo(routing.getWysiwygEditorPath(context, getRequest()));
     } catch (RoutingException e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 

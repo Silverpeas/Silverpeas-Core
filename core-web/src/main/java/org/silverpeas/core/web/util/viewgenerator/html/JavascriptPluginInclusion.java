@@ -935,6 +935,28 @@ public class JavascriptPluginInclusion {
   }
 
   /**
+   * Includes the Silverpeas Messager plugin that handles the message sending from the current user
+   * to one or more other users in Silverpeas.
+   * @param xhtml the HTML container within which the plugin will be inserted.
+   * @param language the language of the current user.
+   * @return the HTML container with the messager.
+   */
+  static ElementContainer includeMessager(final ElementContainer xhtml, final String language) {
+    final LocalizationBundle notifBundle = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.notificationUser.multilang.notificationUserBundle", language);
+    xhtml.addElement(scriptContent(bundleVariableName("NotificationBundle")
+        .add("send", notifBundle.getString("Envoyer"))
+        .add("cancel", notifBundle.getString("GML.cancel"))
+        .add("theField", notifBundle.getString("GML.theField"))
+        .add("addressees", notifBundle.getString("addressees"))
+        .add("title", notifBundle.getString("GML.notification.subject"))
+        .add("isRequired", notifBundle.getString("GML.isRequired"))
+        .produce()));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-messager.js"));
+    return xhtml;
+  }
+
+  /**
    * Includes the Silverpeas Plugin that handles complex item selection.
    * @return the completed parent container.
    */

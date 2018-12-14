@@ -24,7 +24,6 @@
 
 --%>
 <%@page import="org.silverpeas.core.notification.user.client.NotificationParameters" %>
-<%@page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
@@ -42,12 +41,11 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-<c:set var="notification" value="${requestScope.Notification}"/>
-<jsp:useBean id="notification" type="org.silverpeas.web.notificationuser.Notification"/>
-<c:set var="popupMode" value="${requestScope.popupMode}"/>
-<c:set var="popinMode" value="${requestScope.popinMode}"/>
-<c:set var="editTargets" value="${requestScope.editTargets}"/>
+<c:set var="users" value="${requestScope.recipientUsers}"/>
+<c:set var="groups" value="${requestScope.recipientGroups}"/>
+<c:set var="recipientsEditable" value="${requestScope.recipientEdition}"/>
 <c:set var="componentId" value="${requestScope.componentId}"/>
+<c:set var="subject" value="${requestScope.title}"/>
 
 <c:set var="requiredReceiversErrorMessage"><fmt:message key="GML.thefield"/> <fmt:message key="addressees"/> <fmt:message key="GML.isRequired"/></c:set>
 <c:set var="requiredSubjectErrorMessage"><fmt:message key="GML.thefield"/> <fmt:message key="GML.notification.subject"/> <fmt:message key="GML.isRequired"/></c:set>
@@ -56,35 +54,29 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
-  <c:url var="sendUrl" value="/RnotificationUser/jsp/SendNotif"/>
+  <c:url var="sendUrl" value="/RuserNotification/jsp/SendNotif"/>
   <script type="text/javascript">
     var userSelectApi;
     function onPageReady() {
-      ${editTargets ? 'userSelectApi.focus();' : 'document.notificationSenderForm.txtTitle.focus();'}
+      ${recipientsEditable ? 'userSelectApi.focus();' : 'document.notificationSenderForm.title.focus();'}
       currentPopupResize();
     }
 
-    function sendNotification() {
-      var normalizedTitle = stripInitialWhitespace(document.notificationSenderForm.txtTitle.value);
-      if (!userSelectApi.existsSelection()) {
-        SilverpeasError.add("${requiredReceiversErrorMessage}");
-      }
+    function sendNotification(notification) {
+      var normalizedTitle = stripInitialWhitespace(document.notificationSenderForm.title.value);
       if (isWhitespace(normalizedTitle)) {
         SilverpeasError.add("${requiredSubjectErrorMessage}");
       }
+      if (!userSelectApi.existsSelection()) {
+        SilverpeasError.add("${requiredReceiversErrorMessage}");
+      }
       if (!SilverpeasError.show()) {
-        <c:choose>
-        <c:when test="${popinMode}">
-        var form = $('form[name=notificationSenderForm]');
-        $.post("${sendUrl}", form.serialize(), function(res){
-        });
-        return false;
-        </c:when>
-        <c:otherwise>
-        document.notificationSenderForm.action = "${sendUrl}";
-        document.notificationSenderForm.submit();
-        </c:otherwise>
-        </c:choose>
+        var elements = document.forms['notificationSenderForm'].elements;
+        for (var i = 0; i < elements.length; i++) {
+          var element = elements[i];
+          notification[element.name] = element.value;
+        }
+        sp.messager.send(notification);
       }
     }
   </script>
@@ -95,9 +87,7 @@
 <view:window popup="true">
 
   <form name="notificationSenderForm" action="" method="post" accept-charset="UTF-8">
-    <input type="hidden" name="popupMode" value="${popupMode}"/>
-    <input type="hidden" name="popinMode" value="${popinMode}"/>
-    <input type="hidden" name="editTargets" value="${editTargets}"/>
+    <input type="hidden" name="manual" value="${recipientsEditable}"/>
     <fieldset class="skinFieldset" id="send-notification">
       <legend>Notification</legend>
       <div class="fields">
@@ -108,44 +98,35 @@
             <viewTags:selectUsersAndGroups selectionType="USER_GROUP"
                                            componentIdFilter="${componentId}"
                                            multiple="true"
-                                           mandatory="${editTargets}"
-                                           userManualNotificationUserReceiverLimit="${editTargets}"
+                                           mandatory="${recipientsEditable}"
+                                           userManualNotificationUserReceiverLimit="${recipientsEditable}"
                                            userPanelButtonLabel="${chooseReceiverLabel}"
-                                           users="${notification.users}"
-                                           readOnly="${not editTargets}"
+                                           users="${users}"
+                                           groups="${groups}"
+                                           readOnly="${not recipientsEditable}"
                                            onReadyJsCallback="onPageReady"
                                            onChangeJsCallback="currentPopupResize"
-                                           userInputName="selectedUsers"
-                                           groupInputName="selectedGroups"
+                                           userInputName="recipientUsers"
+                                           groupInputName="recipientGroups"
                                            jsApiVar="userSelectApi"/>
           </div>
         </div>
         <div id="subjectArea" class="field">
           <label class="txtlibform"><fmt:message key="GML.notification.subject"/></label>
           <div class="champs">
-            <input id="subject" type="text" name="txtTitle" size="50" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" value="<%=WebEncodeHelper.javaStringToHtmlString(notification.getSubject())%>"/>
+            <input id="subject" type="text" name="title" size="50" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" value="${subject}"/>
             <img src="<c:url value='/util/icons/mandatoryField.gif' />" width="5" height="5"/>
           </div>
         </div>
         <div id="messageArea" class="field">
           <label class="txtlibform"><fmt:message key="GML.notification.message"/></label>
           <div class="champs">
-              <textarea id="message" name="txtMessage" cols="49" rows="9"><%=WebEncodeHelper
-                  .javaStringToHtmlString(notification.getBody())%></textarea>
+              <textarea id="message" name="content" cols="49" rows="9"></textarea>
           </div>
         </div>
       </div>
     </fieldset>
   </form>
-
-  <c:if test="${not popinMode}">
-    <view:buttonPane>
-      <fmt:message key="Envoyer" var="msgSend"/>
-      <fmt:message key="GML.cancel" var="msgCancel"/>
-      <view:button label="${msgSend}" action="javascript:sendNotification()"/>
-      <view:button label="${msgCancel}" action="javascript:window.close()"/>
-    </view:buttonPane>
-  </c:if>
 </view:window>
 </body>
 </html>

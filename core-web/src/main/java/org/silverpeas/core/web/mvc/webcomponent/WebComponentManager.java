@@ -25,12 +25,10 @@ package org.silverpeas.core.web.mvc.webcomponent;
 
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.annotation.ClassAnnotationUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +40,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -55,8 +54,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.web.mvc.webcomponent.NavigationContext.NavigationStep
-    .PREVIOUS_PAGE_FULL_URI_ID;
+import static org.silverpeas.core.web.mvc.webcomponent.NavigationContext.NavigationStep.PREVIOUS_PAGE_FULL_URI_ID;
 import static org.silverpeas.core.web.mvc.webcomponent.PathExecutionResponse.hasProduced;
 import static org.silverpeas.core.web.mvc.webcomponent.PathExecutionResponse.navigateTo;
 
@@ -85,14 +83,13 @@ public class WebComponentManager {
    * request.
    * @param request the request itself.
    * @param response the response itself.
-   * @param <CONTROLLER> the type of the Web Component Controller that provides a lot of stuff
+   * @param <T> the type of the Web Component Controller that provides a lot of stuff
    * around
    * the component, the user, etc.
-   * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component request context.
+   * @param <R> the type of the web component request context.
    */
-  public static <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
-      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> void manageRequestFor(
-      Class<CONTROLLER> webComponentControllerClass, Class<? extends Annotation> httpMethodClass,
+  public static <T extends WebComponentController<R>, R extends WebComponentRequestContext> void manageRequestFor(
+      Class<T> webComponentControllerClass, Class<? extends Annotation> httpMethodClass,
       HttpRequest request, HttpServletResponse response) {
 
     // If the request is already managed, then bypassing the treatment of this method. This
@@ -111,13 +108,13 @@ public class WebComponentManager {
       }
 
       // Retrieving the class of the web context associated to the given resource.
-      Class<WEB_COMPONENT_REQUEST_CONTEXT> webComponentContextClass = ClassAnnotationUtil
+      Class<R> webComponentContextClass = ClassAnnotationUtil
           .searchParameterizedTypeFrom(WebComponentRequestContext.class,
               webComponentControllerClass);
       try {
 
         // Instantiating, and caching into the request, the web context.
-        WEB_COMPONENT_REQUEST_CONTEXT webComponentContext = webComponentContextClass.newInstance();
+        R webComponentContext = webComponentContextClass.newInstance();
         webComponentContext.setHttpMethodClass(httpMethodClass);
         webComponentContext.setRequest(request);
         webComponentContext.setResponse(response);
@@ -323,20 +320,17 @@ public class WebComponentManager {
    * object instance.
    * @param webComponentController the handled component controller.
    * @param path the path that must be matched in finding of the method to invoke.
-   * @param <CONTROLLER> the type of the resource which hosts the method that must be invoked.
-   * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component context.
+   * @param <T> the type of the resource which hosts the method that must be invoked.
+   * @param <R> the type of the web component context.
    * @return the resulting of processing.
    * @throws Exception
    */
   @SuppressWarnings({"unchecked", "ConstantConditions"})
-  public static <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
-      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> PathExecutionResponse
-  perform(
-      CONTROLLER webComponentController, String path) throws Exception {
+  public static <T extends WebComponentController<R>, R extends WebComponentRequestContext> PathExecutionResponse perform(
+      T webComponentController, String path) throws Exception {
 
     // Retrieving the web component request context
-    WEB_COMPONENT_REQUEST_CONTEXT webComponentRequestContext =
-        (WEB_COMPONENT_REQUEST_CONTEXT) CacheServiceProvider.getRequestCacheService().getCache()
+    R webComponentRequestContext = (R) CacheServiceProvider.getRequestCacheService().getCache()
             .get(WebComponentRequestContext.class.getName());
     webComponentRequestContext.setController(webComponentController);
 
@@ -371,16 +365,13 @@ public class WebComponentManager {
    * @param webComponentController the resource which exposes the method that will be invoked.
    * @param path the path that must be matched in finding of the method to invoke.
    * @param webComponentContext the context of the web component routing.
-   * @param <CONTROLLER> the type of the resource which hosts the method that must be invoked.
-   * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component context.
+   * @param <T> the type of the resource which hosts the method that must be invoked.
+   * @param <R> the type of the web component context.
    * @return the {@link PathExecutionResponse} instance.
    * @throws Exception
    */
-  private <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
-      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> PathExecutionResponse
-  executePath(
-      CONTROLLER webComponentController, String path,
-      WEB_COMPONENT_REQUEST_CONTEXT webComponentContext) throws Exception {
+  private <T extends WebComponentController<R>, R extends WebComponentRequestContext> PathExecutionResponse
+  executePath(T webComponentController, String path, R webComponentContext) throws Exception {
     org.silverpeas.core.web.mvc.webcomponent.Path pathToPerform = null;
 
     // If coming from a redirect, trying to find path to perform in these registred for GET HTTP
@@ -427,10 +418,9 @@ public class WebComponentManager {
       RedirectTo redirectTo = pathToPerform.getLowestRoleAccess().onError();
       if (StringUtil.isNotDefined(redirectTo.value())) {
         // No redirection on access error
-        webComponentContext.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN);
-        throw new AccessForbiddenException("WebRouteManager.executePath", SilverpeasException.ERROR,
+        throw new WebApplicationException(
             "User id " + webComponentContext.getUser().getId() + " has not right access to " +
-                webComponentContext.getRequest().getRequestURI());
+                webComponentContext.getRequest().getRequestURI(), Response.Status.FORBIDDEN);
       }
       // A redirection is asked on an error
       return navigateTo(webComponentContext.redirectTo(redirectTo));
