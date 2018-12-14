@@ -25,19 +25,26 @@ package org.silverpeas.core.webapi.upload;
 
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.time.LocalDateTime;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier
  */
 public class FileUploadData {
 
-  final static String X_COMPONENT_INSTANCE_ID = "X-COMPONENT-INSTANCE-ID";
-  final static String X_UPLOAD_SESSION = "X-UPLOAD-SESSION";
-  final static String X_FULL_PATH = "X-FULL-PATH";
+  static final String X_COMPONENT_INSTANCE_ID = "X-COMPONENT-INSTANCE-ID";
+  static final String X_UPLOAD_SESSION = "X-UPLOAD-SESSION";
+  static final String X_FULL_PATH = "X-FULL-PATH";
 
   private String uploadSessionId;
   private String fullPath;
@@ -46,15 +53,17 @@ public class FileUploadData {
 
   /**
    * Hidden constructor.
-   * @param uploadSessionId
-   * @param fullPath
-   * @param componentInstanceId
    */
   private FileUploadData(String uploadSessionId, String fullPath,
       final String componentInstanceId) {
+    if (isDefined(fullPath) && fullPath.contains("..")) {
+      SilverLogger.getLogger("silverpeas.core.security")
+          .error("Path Traversal attack detected at {0}", LocalDateTime.now().toString());
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
     this.uploadSessionId = uploadSessionId;
     this.fullPath = fullPath;
-    this.name = StringUtil.isDefined(fullPath) ? new File(fullPath).getName() : "";
+    this.name = isDefined(fullPath) ? new File(fullPath).getName() : "";
     this.componentInstanceId = componentInstanceId;
   }
 
@@ -78,9 +87,10 @@ public class FileUploadData {
    * Initializes an instance from the request directly. (OCTET STREAM UPLOAD)
    * @param request the current http request.
    * @return a new initialized instance.
-   * @throws Exception
+   * @throws UnsupportedEncodingException on encoding error.
    */
-  public static FileUploadData from(HttpServletRequest request) throws Exception {
+  public static FileUploadData from(HttpServletRequest request)
+      throws UnsupportedEncodingException {
     String brutFullPath = request.getHeader(X_FULL_PATH);
     if (StringUtil.isNotDefined(brutFullPath)) {
       brutFullPath = "";
@@ -95,7 +105,6 @@ public class FileUploadData {
    * Initializes an instance from {@link UploadedRequestFile}. (FormData)
    * @param uploadedRequestFile the upload file that represents the form data.
    * @return a new initialized instance.
-   * @throws Exception
    */
   public static FileUploadData from(UploadedRequestFile uploadedRequestFile) {
     return new FileUploadData(uploadedRequestFile.getUploadSessionId(),
