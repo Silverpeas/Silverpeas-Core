@@ -74,8 +74,7 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
    * @throws java.io.IOException
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext)
-      throws IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
     String language = pageContext.getLanguage();
 
     if (!ExplorerField.TYPE.equals(template.getTypeName())) {
@@ -118,9 +117,7 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
 
     String fieldName = template.getFieldName();
 
-    if (!field.getTypeName().equals(ExplorerField.TYPE)) {
-
-    } else {
+    if (field.getTypeName().equals(ExplorerField.TYPE)) {
       nodePK = field.getNodePK();
     }
     if (!field.isNull()) {
@@ -143,9 +140,8 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
 
       html += "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('" +
           URLUtil.getApplicationURL() + "/explorer/jsp/explorer.jsp" + "?elementHidden=" +
-          fieldName + "&elementVisible=" + fieldName + "_path" + "&dedicatedToWriters=true" +
-          "&scope=" + scope;
-      html += "','explorer',400,600,'scrollbars=yes');\" >";
+          fieldName + "&elementVisible=" + fieldName + "_path" + "&scope=" + scope;
+      html += "','explorer',800,600,'scrollbars=yes');\" >";
       html += "<img src=\"" + selectImg + "\" width=\"15\" height=\"15\" border=\"0\" alt=\"" +
           selectLabel + "\" align=\"top\" title=\"" + selectLabel + "\"/></a>";
       html +=

@@ -610,10 +610,6 @@
     <servlet-class>org.silverpeas.web.AutoRedirectServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>NodesJSONServlet</servlet-name>
-    <servlet-class>org.silverpeas.web.node.servlets.GetNodes</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>SocialNetworkLoginController</servlet-name>
     <servlet-class>org.silverpeas.web.socialnetwork.authentication.SocialNetworkLoginController</servlet-class>
   </servlet>
@@ -1019,10 +1015,6 @@
   <servlet-mapping>
     <servlet-name>AjaxServletRSS</servlet-name>
     <url-pattern>/RAjaxRSS/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>NodesJSONServlet</servlet-name>
-    <url-pattern>/Explorer/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>TokenWebPageUpdater</servlet-name>
