@@ -23,11 +23,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.apache.commons.lang3.tuple.Pair"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="org.apache.commons.lang3.tuple.Pair"%>
 <%@ page import="org.silverpeas.core.admin.quota.constant.QuotaLoad" %>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserState" %>
 <%@ page import="org.silverpeas.core.util.logging.Level" %>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -35,7 +35,7 @@
 
 <%@ include file="check.jsp" %>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var="domObject" value="${requestScope.domainObject}"/>
@@ -129,6 +129,9 @@
 	operationPane.addLine();
 
 	// Domain operations
+  if (isDomainGoogle) {
+    operationPane.addOperation(resource.getIcon("JDP.domainUserFilterRuleModify"), resource.getString("JDP.domainUserFilterRuleModify"), "domainModifyUserFilter");
+  }
 	operationPane.addOperation(resource.getIcon("JDP.domainSynchro"),resource.getString("JDP.domainSynchro"),"displayDomainSynchro");
 
 	//User operations
@@ -164,6 +167,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title></title>
 <view:looknfeel withFieldsetStyle="true"/>
 <view:includePlugin name="popup"/>
 <script type="text/javascript">

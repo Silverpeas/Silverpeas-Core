@@ -367,9 +367,13 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  static ElementContainer includeQTip(final ElementContainer xhtml) {
+  static ElementContainer includeQTip(final ElementContainer xhtml, final String language) {
     xhtml.addElement(link(JQUERY_CSS_PATH + JQUERY_QTIP + ".min.css"));
     xhtml.addElement(script(JQUERY_PATH + JQUERY_QTIP + ".min.js"));
+    final LocalizationBundle bundle = ResourceLocator.getGeneralLocalizationBundle(language);
+    final JavascriptBundleProducer bundleProducer = bundleVariableName("TipBundle");
+    bundleProducer.add("tip.c", bundle.getString("GML.close"));
+    xhtml.addElement(scriptContent(bundleProducer.produce()));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_TIP));
     return xhtml;
   }
@@ -419,8 +423,9 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  static ElementContainer includeColorPickerWebComponent(final ElementContainer xhtml) {
-    includeQTip(xhtml);
+  static ElementContainer includeColorPickerWebComponent(final ElementContainer xhtml,
+      final String language) {
+    includeQTip(xhtml, language);
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-color-picker.js"));
     return xhtml;
   }
@@ -652,9 +657,9 @@ public class JavascriptPluginInclusion {
     includePanes(xhtml);
     includeCrud(xhtml);
     includeAttachment(xhtml);
-    includeQTip(xhtml);
+    includeQTip(xhtml, language);
     includeTabsWebComponent(xhtml);
-    includeColorPickerWebComponent(xhtml);
+    includeColorPickerWebComponent(xhtml, language);
     includeDatePicker(xhtml, language);
     includeAttendeeWebComponent(xhtml);
     includeDragAndDropUpload(xhtml, language);
@@ -797,7 +802,7 @@ public class JavascriptPluginInclusion {
   static ElementContainer includeChart(final ElementContainer xhtml, final String language) {
     includeHtml2CanvasAndDownload(xhtml);
     includeDatePicker(xhtml, language);
-    includeQTip(xhtml);
+    includeQTip(xhtml, language);
     xhtml.addElement(script(JQUERY_PATH + CHART_JS));
     xhtml.addElement(script(JQUERY_PATH + CHART_PIE_JS));
     xhtml.addElement(script(JQUERY_PATH + CHART_TIME_JS));
@@ -877,7 +882,7 @@ public class JavascriptPluginInclusion {
    */
   static ElementContainer includeDragAndDropUpload(final ElementContainer xhtml,
       final String language) {
-    includeQTip(xhtml);
+    includeQTip(xhtml, language);
     xhtml.addElement(scriptContent(JavascriptBundleProducer
         .fromCoreTemplate("ddUpload", SILVERPEAS_DRAG_AND_DROP_UPLOAD_I18N_ST, language)));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_DRAG_AND_DROP_UPLOAD));
@@ -895,7 +900,7 @@ public class JavascriptPluginInclusion {
   static ElementContainer includeLayout(final ElementContainer xhtml, final LookHelper lookHelper) {
     if (lookHelper != null) {
       LayoutConfiguration layout = lookHelper.getLayoutConfiguration();
-      includeQTip(xhtml);
+      includeQTip(xhtml, lookHelper.getLanguage());
       xhtml.addElement(scriptContent(settingVariableName("LayoutSettings")
             .add("layout.header.url", URLUtil.getApplicationURL() + layout.getHeaderURL())
             .add("layout.body.url", URLUtil.getApplicationURL() + layout.getBodyURL())
@@ -972,7 +977,7 @@ public class JavascriptPluginInclusion {
         User.getCurrentRequester().getUserManualNotificationUserReceiverLimitValue();
     includeSelectize(xhtml);
     includePopup(xhtml);
-    includeQTip(xhtml);
+    includeQTip(xhtml, language);
     xhtml.addElement(scriptContent(settingVariableName("UserGroupListSettings")
         .add("u.m.n.u.r.l.v", userManualNotificationUserReceiverLimitValue)
         .add("d.r", User.getCurrentRequester().isDomainRestricted())

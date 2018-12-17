@@ -71,13 +71,13 @@
 <%
   final SimpleCache sessionCache = CacheServiceProvider.getSessionCacheService().getCache();
   final Map<Integer, Pair<QUERY_ORDER_BY, QUERY_ORDER_BY>> ORDER_BIES = sessionCache
-      .computeIfAbsent("statistic_readingControl_byUser_orerBies", Map.class, () -> {
+      .computeIfAbsent("statistic_readingControl_byUser_orderBies", Map.class, () -> {
         Map<Integer, Pair<QUERY_ORDER_BY, QUERY_ORDER_BY>> mapping = new HashMap<>();
         mapping.put(1, Pair.of(ACCESS_DATE_ASC, ACCESS_DATE_DESC));
         return mapping;
       });
 
-  final String orderByCacheKey = "statistic_readingControl_byUser_orerBies_choice";
+  final String orderByCacheKey = "statistic_readingControl_byUser_orderBies_choice";
   QUERY_ORDER_BY orderBy = sessionCache.computeIfAbsent(orderByCacheKey, QUERY_ORDER_BY.class, () -> QUERY_ORDER_BY.ACCESS_DATE_DESC);
   final QUERY_ORDER_BY requestOrderBy = ArrayPane.getOrderByFrom(request, ORDER_BIES);
   if (requestOrderBy != null) {

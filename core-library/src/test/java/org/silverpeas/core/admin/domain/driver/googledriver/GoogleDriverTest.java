@@ -26,7 +26,6 @@ package org.silverpeas.core.admin.domain.driver.googledriver;
 
 
 import com.google.api.services.admin.directory.model.User;
-import com.google.api.services.admin.directory.model.UserName;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.domain.DomainDriver;
@@ -37,19 +36,15 @@ import org.silverpeas.core.util.SettingBundle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.arrayWithSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.silverpeas.core.admin.domain.driver.googledriver.GoogleDriverTest.GoogleUserBuilder.aUser;
+import static org.silverpeas.core.admin.domain.driver.googledriver.GoogleUserBuilder.aUser;
 
 /**
  * @author silveryocha
@@ -114,8 +109,8 @@ class GoogleDriverTest {
     final SettingBundle settings = mock(SettingBundle.class);
     when(settings.getString(anyString(), anyString())).then(i -> {
       Object value = i.getArguments()[1];
-      if ("synchro.ou.include".equals(i.getArguments()[0])) {
-        value = "/SIEGE";
+      if ("google.user.filter.rule".equals(i.getArguments()[0])) {
+        value = "orgUnitPath^=/SIEGE";
       }
       return value;
     });
@@ -128,8 +123,8 @@ class GoogleDriverTest {
     final SettingBundle settings = mock(SettingBundle.class);
     when(settings.getString(anyString(), anyString())).then(i -> {
       Object value = i.getArguments()[1];
-      if ("synchro.ou.include".equals(i.getArguments()[0])) {
-        value = "   /SIEGE ;    ;    /DSI/ATOA    ";
+      if ("google.user.filter.rule".equals(i.getArguments()[0])) {
+        value = "|(orgUnitPath^=/SIEGE)(orgUnitPath^=/DSI/ATOA)";
       }
       return value;
     });
@@ -142,8 +137,8 @@ class GoogleDriverTest {
     final SettingBundle settings = mock(SettingBundle.class);
     when(settings.getString(anyString(), anyString())).then(i -> {
       Object value = i.getArguments()[1];
-      if ("synchro.ou.exclude".equals(i.getArguments()[0])) {
-        value = "  /SIEGE ;; ; /DSI/A";
+      if ("google.user.filter.rule".equals(i.getArguments()[0])) {
+        value = "!(|(orgUnitPath^=/SIEGE)(orgUnitPath^=/DSI/A))";
       }
       return value;
     });
@@ -156,8 +151,8 @@ class GoogleDriverTest {
     final SettingBundle settings = mock(SettingBundle.class);
     when(settings.getString(anyString(), anyString())).then(i -> {
       Object value = i.getArguments()[1];
-      if ("synchro.ou.exclude".equals(i.getArguments()[0])) {
-        value = "/SIEGE";
+      if ("google.user.filter.rule".equals(i.getArguments()[0])) {
+        value = "!(orgUnitPath^=/SIEGE)";
       }
       return value;
     });
@@ -170,11 +165,8 @@ class GoogleDriverTest {
     final SettingBundle settings = mock(SettingBundle.class);
     when(settings.getString(anyString(), anyString())).then(i -> {
       Object value = i.getArguments()[1];
-      if ("synchro.ou.include".equals(i.getArguments()[0])) {
-        value = "/SIEGE;/DSI";
-      }
-      if ("synchro.ou.exclude".equals(i.getArguments()[0])) {
-        value = "/SIEGE/EXCLUSION;/DSI/ATOA";
+      if ("google.user.filter.rule".equals(i.getArguments()[0])) {
+        value = "&(!(|(orgUnitPath^=/SIEGE/EXCLUSION)(orgUnitPath^=/DSI/ATOA)))(|(orgUnitPath^=/SIEGE)(orgUnitPath^=/DSI))";
       }
       return value;
     });
@@ -188,66 +180,13 @@ class GoogleDriverTest {
     return driver;
   }
 
-  static class GoogleUserBuilder {
-    final User user = new User();
-
-    static GoogleUserBuilder aUser(final String id, final String ou) {
-      GoogleUserBuilder builder = new GoogleUserBuilder();
-      builder.user.setId(id);
-      final UserName name = new UserName().setFamilyName("FN_" + id).setGivenName("GN_" + id);
-      builder.user.setName(name);
-      builder.user.setEmails(new ArrayList<>());
-      builder.user.setOrgUnitPath(ou);
-      builder.user.setArchived(false);
-      builder.user.setSuspended(false);
-      builder.withPrimaryEmail(name.getGivenName() + "." + name.getFamilyName() + "@silverpeas.org");
-      return builder;
-    }
-
-    @SuppressWarnings("unchecked")
-    private GoogleUserBuilder withPrimaryEmail(final String address) {
-      final Map<String, Object> data = new HashMap<>();
-      data.put("address", address);
-      data.put("primary", true);
-      ((List) user.getEmails()).add(data);
-      user.setPrimaryEmail(address);
-      return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    GoogleUserBuilder withEmail(final String address, final String type) {
-      final Map<String, String> data = new HashMap<>();
-      data.put("address", address);
-      data.put("type", type);
-      ((List) user.getEmails()).add(data);
-      return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    GoogleUserBuilder withCustomEmail(final String address, final String type) {
-      final Map<String, String> data = new HashMap<>();
-      data.put("address", address);
-      data.put("customType", type);
-      ((List) user.getEmails()).add(data);
-      return this;
-    }
-
-    GoogleUserBuilder suspended() {
-      user.setSuspended(true);
-      return this;
-    }
-
-    User build() {
-      return user;
-    }
-  }
-
   private static class GoogleDriver4Test extends GoogleDriver {
     private final GoogleDirectoryRequester requester;
 
     private GoogleDriver4Test() throws AdminException {
       this.requester = mock(GoogleDirectoryRequester.class);
-      when(requester.users()).thenReturn(allGoogleUsers);
+      when(requester.users()).then(i -> new GoogleUserFilter<>(allGoogleUsers,
+          settings.getString("google.user.filter.rule", "")).apply());
     }
 
     @Override

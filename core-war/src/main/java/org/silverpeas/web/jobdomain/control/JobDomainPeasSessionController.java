@@ -28,6 +28,8 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.LocalizedComponent;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.DomainDriver;
+import org.silverpeas.core.admin.domain.DomainDriver.UserFilterManager;
+import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.DomainServiceProvider;
 import org.silverpeas.core.admin.domain.DomainType;
 import org.silverpeas.core.admin.domain.exception.DomainConflictException;
@@ -97,6 +99,7 @@ import java.util.*;
 
 import static java.util.Collections.synchronizedList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
+import static org.silverpeas.core.admin.domain.DomainDriverManagerProvider.getCurrentDomainDriverManager;
 import static org.silverpeas.core.personalization.service.PersonalizationServiceProvider.getPersonalizationService;
 
 /**
@@ -2336,5 +2339,26 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public void blankDeletedUsers(final List<String> userIds) throws AdminException {
     adminCtrl.blankDeletedUsers(targetDomainId, userIds);
+  }
+
+  public Optional<UserFilterManager> getUserFilterManager() throws AdminException {
+    final DomainDriverManager driverManager = getCurrentDomainDriverManager();
+    final DomainDriver driver = driverManager.getDomainDriver(getTargetDomain().getId());
+    return driver.getUserFilterManager();
+  }
+
+  public User[] verifyUserFilterRule(final String rule) throws AdminException {
+    final Optional<UserFilterManager> manager = getUserFilterManager();
+    if (manager.isPresent()) {
+      return manager.get().validateRule(rule);
+    }
+    return new User[0];
+  }
+
+  public void saveUserFilterRule(final String rule) throws AdminException {
+    final Optional<UserFilterManager> manager = getUserFilterManager();
+    if (manager.isPresent()) {
+      manager.get().saveRule(rule);
+    }
   }
 }

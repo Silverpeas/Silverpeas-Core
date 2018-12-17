@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 import javax.portlet.RenderRequest;
@@ -32,7 +33,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 import java.util.Map;
+import java.util.function.Supplier;
 
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
 import static org.silverpeas.core.web.portlets.PortletUtil.getHttpServletRequest;
 
 /**
@@ -103,6 +106,30 @@ public interface ArrayPane extends SimpleGraphicElement {
       return null;
     }
     return AbstractArrayPane.getOrderByFrom(state, column, orderBiesByColumnIndex);
+  }
+
+  /**
+   * Gets data from session from a given cache key or compute them from the given supplier if
+   * absent.
+   * <p>
+   *   If the parameter <b>ajaxRequest</b> (set automatically by sp.arrayPane JavaScript API)
+   *   exists, then the data are retrieved from the user session.
+   * </p>
+   * @param request the HTTP request.
+   * @param cacheKey the key into the cache.
+   * @param valueSupplier the data supplier.
+   * @param <T> the type of data.
+   * @return the data.
+   */
+  @SuppressWarnings("unchecked")
+  static <T> T computeDataUserSessionIfAbsent(final HttpServletRequest request, final String cacheKey,
+      final Supplier<T> valueSupplier) {
+    final SimpleCache sessionCache = getSessionCacheService().getCache();
+    if (request.getParameter("ajaxRequest") == null) {
+      sessionCache.remove(cacheKey);
+    }
+    return (T) sessionCache
+        .computeIfAbsent(cacheKey, Object.class, (Supplier<Object>) valueSupplier);
   }
 
   /**

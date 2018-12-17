@@ -26,12 +26,16 @@ package org.silverpeas.core.admin.domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import static java.util.Optional.empty;
 
 public interface DomainDriver {
 
@@ -268,4 +272,54 @@ public interface DomainDriver {
   void resetPassword(UserDetail user, String password) throws AdminException;
 
   void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws AdminException;
+
+  /**
+   * Gets an optional {@link UserFilterManager} which permits to manage a filter to apply on the
+   * user request results obtained from external user account repository.
+   * @return an optional {@link UserFilterManager} implementation.
+   */
+  default Optional<UserFilterManager> getUserFilterManager() {
+    return empty();
+  }
+
+  /**
+   * Definition of a user filter manager.
+   */
+  interface UserFilterManager {
+
+    /**
+     * Gets the rule key.
+     * @return a string.
+     */
+    String getRuleKey();
+
+    /**
+     * Gets the current rule.
+     * @return a string.
+     */
+    String getRule();
+
+    /**
+     * Validates the given rule by performing a request of all users on external repository.
+     * <p>
+     *   In case of success, the filtered users are returned.
+     * </p>
+     * @param rule the rule to validate.
+     * @return an array of {@link User}.
+     * @throws AdminException in case of validation error.
+     */
+    User[] validateRule(final String rule) throws AdminException;
+
+    /**
+     * Validates the given rule by performing a request of all users on external repository and
+     * save it on Silverpeas's domain repository.
+     * <p>
+     *   In case of success, the filtered users of validation processing are returned.
+     * </p>
+     * @param rule the rule to validate.
+     * @return an array of {@link User}.
+     * @throws AdminException in case of validation error.
+     */
+    User[] saveRule(final String rule) throws AdminException;
+  }
 }

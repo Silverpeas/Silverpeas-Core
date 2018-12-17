@@ -124,9 +124,9 @@
       <c:if test="${currentUser.accessAdmin}">
         <view:arrayPane var="listOfRemovedUsers" routingAddress="displayRemovedUsers" numberLinesPerPage="25">
           <view:arrayColumn title="" sortable="false"/>
-          <view:arrayColumn title="${lastName}" compareOn="${u -> u.data.lastName}"/>
-          <view:arrayColumn title="${firstName}" compareOn="${u -> u.data.firstName}"/>
-          <view:arrayColumn title="${login}" compareOn="${u -> u.data.login}"/>
+          <view:arrayColumn title="${lastName}" compareOn="${u -> fn:toLowerCase(u.data.lastName)}"/>
+          <view:arrayColumn title="${firstName}" compareOn="${u -> fn:toLowerCase(u.data.firstName)}"/>
+          <view:arrayColumn title="${login}" compareOn="${u -> fn:toLowerCase(u.data.login)}"/>
           <view:arrayColumn title="${removeDate}" compareOn="${u -> u.data.stateSaveDate}"/>
           <c:if test="${isAutomaticDeletionEnabled}">
             <view:arrayColumn title="${automaticDeleteDate}" compareOn="${u -> u.data.stateSaveDate}"/>

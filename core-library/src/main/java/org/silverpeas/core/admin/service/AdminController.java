@@ -792,7 +792,6 @@ public class AdminController implements java.io.Serializable {
    * Get a domain with given id
    */
   public Domain getDomain(String domainId) {
-
     try {
       return admin.getDomain(domainId);
     } catch (Exception e) {

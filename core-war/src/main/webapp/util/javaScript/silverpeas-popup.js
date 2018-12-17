@@ -113,6 +113,21 @@
       $confirm.popup('confirmation', options);
     },
     /**
+     * Shows an info popup with the specified message and the popup parameters.
+     * @param message the info message to display in the popup.
+     * @param params the parameters to parametrize the popup window.
+     */
+    info: function(message, params) {
+      var options = params;
+      var $info = $('<div>').append($('<p>').append(message));
+      if (typeof params === 'function') {
+        options = {
+          callback: params
+        }
+      }
+      $info.popup('information', options);
+    },
+    /**
      * Shows an error popup with the specified message and the popup parameters.
      * @param message the error message to display in the popup.
      * @param params the parameters to parametrize the popup window.
@@ -156,6 +171,7 @@
               $popup = $('<div>', {id: 'popupHelperContainer', 'style' : 'display:none'});
               $popup.appendTo(document.body);
             }
+            $popup.empty();
             var request = sp.ajaxRequest(url);
             if (context) {
               if (context.method === 'POST') {
