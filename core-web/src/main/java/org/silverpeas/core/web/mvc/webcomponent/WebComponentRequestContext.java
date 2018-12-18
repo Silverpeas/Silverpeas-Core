@@ -31,7 +31,6 @@ import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.mvc.util.RoutingException;
 import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo;
@@ -357,23 +356,5 @@ public abstract class WebComponentRequestContext<T extends WebComponentControlle
     } catch (RoutingException e) {
       throw new SilverpeasRuntimeException(e);
     }
-  }
-
-  /**
-   * Gets an alert user object in order to parameterized it before asking the user to select users
-   * or groups to be manually alerted.
-   * @return the alert user object instance.
-   */
-  public AlertUser getUserManualNotificationForParameterization() {
-    return controller.getAlertUser();
-  }
-
-  /**
-   * Gets the navigation to the centralized mechanism that permits to alert manually users and/or
-   * groups about a contribution.
-   * @return the navigation object to permform the asked navigation.
-   */
-  public Navigation redirectToNotifyManuallyUsers() {
-    return redirectTo(AlertUser.getAlertUserURL());
   }
 }

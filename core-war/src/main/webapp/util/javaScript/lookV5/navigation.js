@@ -270,20 +270,24 @@ var __selectComponentItem = function(componentId) {
 };
 
 function openComponent(componentId, componentLevel, componentURL) {
-  var timeElapsedSinceContentStartLoadInMs = new Date().getTime() - spLayout.getBody().getContent().getLastStartLoadTime();
-  var isContentLoadedManually = timeElapsedSinceContentStartLoadInMs < 200;
-  __selectComponentItem(componentId);
+  if (componentId === 'notifAdmins') {
+    sp.messager.open(null, {recipientUsers: 'Administrators', recipientEdition: false});
+  } else {
+    var timeElapsedSinceContentStartLoadInMs = new Date().getTime() -
+        spLayout.getBody().getContent().getLastStartLoadTime();
+    var isContentLoadedManually = timeElapsedSinceContentStartLoadInMs < 200;
+    __selectComponentItem(componentId);
 
-  //Remove active class on subtree
-  jQuery("#" + componentId).parent().find(".spaceOn").removeClass("spaceOn");
+    //Remove active class on subtree
+    jQuery("#" + componentId).parent().find(".spaceOn").removeClass("spaceOn");
 
-  if (componentURL.substring(0, 11).toLowerCase() !== "javascript:") {
-    if (!isContentLoadedManually) {
-      spWindow.loadContent(getContext() + componentURL);
+    if (componentURL.substring(0, 11).toLowerCase() !== "javascript:") {
+      if (!isContentLoadedManually) {
+        spWindow.loadContent(getContext() + componentURL);
+      }
+    } else {
+      eval(componentURL);
     }
-  }
-  else {
-    eval(componentURL);
   }
 
   //Envoi de la requete pour afficher le plan de classement du composant
@@ -958,7 +962,7 @@ var SpaceUpdater = SilverpeasClass.extend({
 
       if (itemType === "component") {
         newEntryIconSel.setAttribute("id", "img" + itemId);
-        if (itemOpen == "true") {
+        if (itemOpen === "true" || itemOpen === true) {
           newEntry.setAttribute("class", "browseComponentActiv");
           newEntry.setAttribute("className", "browseComponentActiv");
           newEntryIconSel.setAttribute("src", "icons/silverpeasV5/activComponent.gif");

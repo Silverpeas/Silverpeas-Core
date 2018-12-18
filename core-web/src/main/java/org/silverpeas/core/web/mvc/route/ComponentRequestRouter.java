@@ -423,6 +423,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         mainSessionCtrl.createComponentContext(spaceId, componentId);
     // instanciate a new CSC
     T component = createComponentSessionController(mainSessionCtrl, componentContext);
+
     if (componentId == null) {
       session.setAttribute(SESSION_ATTR_PREFIX + getSessionControlBeanName(), component);
     } else {

@@ -124,7 +124,6 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_PROFILE = "silverpeas-profile.js";
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
   private static final String SILVERPEAS_INVITME = "silverpeas-relationship.js";
-  private static final String SILVERPEAS_MESSAGEME = "silverpeas-messageme.js";
   private static final String SILVERPEAS_RESPONSIBLES = "silverpeas-responsibles.js";
   private static final String SILVERPEAS_POPUP = "silverpeas-popup.js";
   private static final String SILVERPEAS_PREVIEW = "silverpeas-preview.js";
@@ -505,7 +504,6 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includeUserZoom(final ElementContainer xhtml, final String language) {
     xhtml.addElement(script(ANGULARJS_SERVICES_PATH + SILVERPEAS_PROFILE));
-    includeMessageMe(xhtml);
     includeRelationship(xhtml, language);
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_USERZOOM));
     return xhtml;
@@ -538,12 +536,6 @@ public class JavascriptPluginInclusion {
         .produce()));
     xhtml.addElement(script(ANGULARJS_SERVICES_PATH + SILVERPEAS_PROFILE));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_INVITME));
-    return xhtml;
-  }
-
-  static ElementContainer includeMessageMe(final ElementContainer xhtml) {
-    xhtml.addElement(script(ANGULARJS_SERVICES_PATH + SILVERPEAS_PROFILE));
-    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_MESSAGEME));
     return xhtml;
   }
 

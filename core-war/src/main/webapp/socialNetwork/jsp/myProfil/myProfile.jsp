@@ -68,7 +68,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
-<view:includePlugin name="messageme"/>
 <view:includePlugin name="password"/>
 <script type="text/javascript">
 function statusPublishFailed() {

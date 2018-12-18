@@ -32,6 +32,11 @@
     window.sp.messager = {
 
       /**
+       * Is the messager window already opened?
+       */
+      opened: false,
+
+      /**
        * @function open
        * Opens the messager window to write a message. The window's content is provided by the
        * userNotification/jsp/notificationSender.jsp JSP. Parameters can be passed to customize the
@@ -49,27 +54,32 @@
        * component instance.
        */
       open : function(instanceId, parameters) {
-        var messager = window.webContext + '/RuserNotification/jsp/Main';
-        var notification = {};
-        if (instanceId !== undefined) {
-          if (typeof parameters === 'object') {
-            notification = parameters;
+        if (! this.opened) {
+          var messager = window.webContext + '/RuserNotification/jsp/Main';
+          var notification = {};
+          if (instanceId !== undefined) {
+            if (typeof parameters === 'object') {
+              notification = parameters;
+            }
+            if (instanceId && instanceId.trim().length > 0) {
+              notification.componentId = instanceId;
+            }
           }
-          notification.componentId = instanceId;
+          this.opened = true;
+          jQuery.popup.load(messager, {method : 'POST', params : notification}).show('validation', {
+            title : 'Notification',
+            buttonTextYes : window.NotificationBundle.get('send'),
+            buttonTextNo : window.NotificationBundle.get('cancel'),
+            callback : function() {
+              sendNotification(notification);
+            },
+            callbackOnClose : function() {
+              var url = window.webContext + '/RuserNotification/jsp/ClearNotif';
+              sp.ajaxRequest(url).byPostMethod().send();
+              this.opened = false;
+            }.bind(this)
+          });
         }
-        notification.popinMode = true;
-        jQuery.popup.load(messager, {method: 'POST', params: notification}).show('validation', {
-          title : 'Notification',
-          buttonTextYes : window.NotificationBundle.get('send'),
-          buttonTextNo : window.NotificationBundle.get('cancel'),
-          callback : function() {
-            sendNotification(notification);
-          },
-          callbackOnClose: function() {
-            var url = window.webContext + '/RuserNotification/jsp/ClearNotif';
-            sp.ajaxRequest(url).byPostMethod().send();
-          }
-        });
       },
 
       /**
@@ -92,7 +102,6 @@
        * @param notification the an object describing the properties of the message to send.
        */
       send : function(notification) {
-        console.log('NOTIF', notification);
         if (!notification || (!notification.recipientUsers && !notification.recipientGroups)) {
           var msg = window.NotificationBundle.get('theField') + ' ' +
               window.NotificationBundle.get('addressees') + ' ' +

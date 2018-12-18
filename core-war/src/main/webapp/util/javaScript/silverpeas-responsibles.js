@@ -211,7 +211,9 @@
         if (userId !== user.id && !user.anonymous) {
           $userName.append($('<a>', {'class': 'userToZoom', rel: user.id}).append(user.fullName));
           $action = $('<div>', {'class': 'action'}).append($('<a>',
-                  {href: '#', 'class': 'link notification'}).append($.responsibles.labels.sendMessage)).messageMe(user);
+                  {href: '#', 'class': 'link notification'}).append($.responsibles.labels.sendMessage)).click(function() {
+            sp.messager.open(null, {recipientUsers: user.id, recipientEdition: false});
+          });
         } else {
           $userName.append($('<a>').append(user.fullName));
         }
@@ -324,13 +326,6 @@
             function() {
               resolve();
             });
-      }));
-    }
-    if (!$.messageMe) {
-      promises.push(new Promise(function(resolve, reject) {
-        $.getScript(webContext + "/util/javaScript/silverpeas-messageme.js", function() {
-          resolve();
-        });
       }));
     }
     return sp.promise.whenAllResolved(promises);

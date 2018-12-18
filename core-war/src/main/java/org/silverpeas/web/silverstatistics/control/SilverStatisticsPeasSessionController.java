@@ -515,26 +515,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       SilverLogger.getLogger(this).error(ex);
     }
   }
-
-  /**
-   * Méthode d'envoi de notification aux utilisateurs connectés
-   * @param listUserDetail - liste des utilisateurs connectés
-   * @param message
-   */
-  public void notifyAllSessions(Collection<SessionInfo> listUserDetail, String message) {
-    List<String> notifiedUsers = new ArrayList<>();
-
-    if (listUserDetail != null) {
-      for (SessionInfo sessionInfo : listUserDetail) {
-        if (!notifiedUsers.contains(sessionInfo.getUserDetail().getId()) ||
-            sessionInfo.getUserDetail().isAccessGuest()) {
-          notifySession(sessionInfo.getUserDetail().getId(), message);
-          notifiedUsers.add(sessionInfo.getUserDetail().getId());
-        }
-      }
-    }
-  }
-
   /*
    * Initialisation du UserPanel
    */

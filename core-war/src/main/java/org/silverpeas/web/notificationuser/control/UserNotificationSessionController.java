@@ -70,7 +70,7 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
       if ("Administrators".equals(userIdsLine)) {
         userIds = getOrganisationController().getAdministratorUserIds(getUserId());
       } else {
-        userIds = userIdsLine.split("_");
+        userIds = userIdsLine.split(",");
       }
       users = Stream.of(userIds).map(User::getById).collect(Collectors.toList());
     } else {
@@ -87,7 +87,7 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
   public List<Group> getGroupsFrom(String groupIdsLine) {
     final List<Group> groups;
     if (StringUtil.isDefined(groupIdsLine)) {
-      final String[] groupIds = groupIdsLine.split("_");
+      final String[] groupIds = groupIdsLine.split(",");
       groups = Stream.of(groupIds).map(Group::getById).collect(Collectors.toList());
     } else {
       groups = Collections.emptyList();

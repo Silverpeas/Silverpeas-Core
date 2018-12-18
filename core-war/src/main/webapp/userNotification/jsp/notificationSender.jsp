@@ -49,21 +49,19 @@
 
 <c:set var="requiredReceiversErrorMessage"><fmt:message key="GML.thefield"/> <fmt:message key="addressees"/> <fmt:message key="GML.isRequired"/></c:set>
 <c:set var="requiredSubjectErrorMessage"><fmt:message key="GML.thefield"/> <fmt:message key="GML.notification.subject"/> <fmt:message key="GML.isRequired"/></c:set>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
+<view:link href="/util/styleSheets/fieldset.css"/>
+<view:loadScript src="/util/javaScript/checkForm.js"/>
   <c:url var="sendUrl" value="/RuserNotification/jsp/SendNotif"/>
   <script type="text/javascript">
     var userSelectApi;
     function onPageReady() {
-      ${recipientsEditable ? 'userSelectApi.focus();' : 'document.notificationSenderForm.title.focus();'}
+      ${recipientsEditable ? 'userSelectApi.focus();' : 'document.querySelector("#notification-data-subject").focus();'}
       currentPopupResize();
     }
 
     function sendNotification(notification) {
-      var normalizedTitle = stripInitialWhitespace(document.notificationSenderForm.title.value);
+      var normalizedTitle = stripInitialWhitespace(
+          document.querySelector("#notification-data-subject").value);
       if (isWhitespace(normalizedTitle)) {
         SilverpeasError.add("${requiredSubjectErrorMessage}");
       }
@@ -71,62 +69,61 @@
         SilverpeasError.add("${requiredReceiversErrorMessage}");
       }
       if (!SilverpeasError.show()) {
-        var elements = document.forms['notificationSenderForm'].elements;
+        var elements = ['#notification-data-manual', 'recipientUsers', 'recipientGroups',
+          '#notification-data-subject', '#notification-data-message'];
         for (var i = 0; i < elements.length; i++) {
-          var element = elements[i];
-          notification[element.name] = element.value;
+          var $input;
+          if (elements[i].indexOf('#') === 0) {
+            $input = document.querySelector(elements[i]);
+          } else {
+            $input = document.querySelector('input[name=' + elements[i]);
+          }
+          notification[$input.name] = $input.value;
         }
         sp.messager.send(notification);
       }
     }
   </script>
-</head>
-<body>
 <fmt:message key="GML.notification.send" var="msgAction"/>
-<view:browseBar extraInformations="${msgAction}"/>
-<view:window popup="true">
-
-  <form name="notificationSenderForm" action="" method="post" accept-charset="UTF-8">
-    <input type="hidden" name="manual" value="${recipientsEditable}"/>
-    <fieldset class="skinFieldset" id="send-notification">
-      <legend>Notification</legend>
-      <div class="fields">
-        <div id="recipientsArea" class="field">
-          <label class="txtlibform"><fmt:message key="addressees"/></label>
-          <div class="champs">
-            <fmt:message key="Opane_addressees" var="chooseReceiverLabel"/>
-            <viewTags:selectUsersAndGroups selectionType="USER_GROUP"
-                                           componentIdFilter="${componentId}"
-                                           multiple="true"
-                                           mandatory="${recipientsEditable}"
-                                           userManualNotificationUserReceiverLimit="${recipientsEditable}"
-                                           userPanelButtonLabel="${chooseReceiverLabel}"
-                                           users="${users}"
-                                           groups="${groups}"
-                                           readOnly="${not recipientsEditable}"
-                                           onReadyJsCallback="onPageReady"
-                                           onChangeJsCallback="currentPopupResize"
-                                           userInputName="recipientUsers"
-                                           groupInputName="recipientGroups"
-                                           jsApiVar="userSelectApi"/>
-          </div>
-        </div>
-        <div id="subjectArea" class="field">
-          <label class="txtlibform"><fmt:message key="GML.notification.subject"/></label>
-          <div class="champs">
-            <input id="subject" type="text" name="title" size="50" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" value="${subject}"/>
-            <img src="<c:url value='/util/icons/mandatoryField.gif' />" width="5" height="5"/>
-          </div>
-        </div>
-        <div id="messageArea" class="field">
-          <label class="txtlibform"><fmt:message key="GML.notification.message"/></label>
-          <div class="champs">
-              <textarea id="message" name="content" cols="49" rows="9"></textarea>
-          </div>
-        </div>
+<div id="notification-data-container">
+  <div class="skinFieldset">
+  <input id="notification-data-manual" type="hidden" name="manual" value="${recipientsEditable}"/>
+  <div class="fields">
+    <div id="notification-data-container-recipients" class="field entireWidth">
+      <label class="txtlibform"><fmt:message key="addressees"/></label>
+      <div class="champs">
+        <fmt:message key="Opane_addressees" var="chooseReceiverLabel"/>
+        <viewTags:selectUsersAndGroups id="messager"
+                                       selectionType="USER_GROUP"
+                                       componentIdFilter="${componentId}"
+                                       multiple="true"
+                                       mandatory="${recipientsEditable}"
+                                       userManualNotificationUserReceiverLimit="${recipientsEditable}"
+                                       userPanelButtonLabel="${chooseReceiverLabel}"
+                                       users="${users}"
+                                       groups="${groups}"
+                                       readOnly="${not recipientsEditable}"
+                                       onReadyJsCallback="onPageReady"
+                                       onChangeJsCallback="currentPopupResize"
+                                       userInputName="recipientUsers"
+                                       groupInputName="recipientGroups"
+                                       jsApiVar="userSelectApi"/>
       </div>
-    </fieldset>
-  </form>
-</view:window>
-</body>
-</html>
+    </div>
+    <div id="notification-data-container-subject" class="field entireWidth">
+      <label class="txtlibform"><fmt:message key="GML.notification.subject"/></label>
+      <div class="champs">
+        <input id="notification-data-subject" type="text" name="title" size="50" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" value="${subject}"/>
+        <img src="<c:url value='/util/icons/mandatoryField.gif' />" width="5" height="5"/>
+      </div>
+    </div>
+    <div id="notification-data-container-message" class="field entireWidth">
+      <label class="txtlibform"><fmt:message key="GML.notification.message"/></label>
+      <div class="champs">
+        <textarea id="notification-data-message" name="content" cols="49" rows="9"></textarea>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+

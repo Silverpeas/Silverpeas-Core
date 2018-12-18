@@ -97,11 +97,9 @@ public class UserNotificationRequestRouter
       } else if (SENDING_FUNCTION.equals(function)) {
         final NotificationContext context = getNotificationContext(request);
         nuSC.sendNotification(context);
-        nuSC.getAlertUser().resetAll();
         nuSC.clearNotification();
         destination = "/peasCore/jsp/close.jsp";
       } else if (RELEASE_FUNCTION.equals(function)) {
-        nuSC.getAlertUser().resetAll();
         nuSC.clearNotification();
         destination = "/peasCore/jsp/close.jsp";
       } else {

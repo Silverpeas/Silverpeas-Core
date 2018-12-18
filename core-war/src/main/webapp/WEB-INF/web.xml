@@ -294,10 +294,6 @@
     <servlet-class>org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>AlertUserPeasRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.web.alertuser.servlets.AlertUserPeasRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>ClipboardRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.web.clipboard.servlets.ClipboardRequestRouter</servlet-class>
   </servlet>
@@ -744,10 +740,6 @@
   <servlet-mapping>
     <servlet-name>SILVERMAILRequestRouter</servlet-name>
     <url-pattern>/RSILVERMAIL/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>AlertUserPeasRequestRouter</servlet-name>
-    <url-pattern>/RalertUserPeas/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ClipboardRequestRouter</servlet-name>

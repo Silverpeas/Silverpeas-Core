@@ -42,7 +42,7 @@ public class SysLogger implements SilverLogger {
   private static final Logger ROOT_LOGGER = Logger.getLogger(SilverLoggerProvider.ROOT_NAMESPACE);
 
   private final Logger logger;
-  private volatile SilverLogger parent; // to keep strong ref to the parent and hence its config
+  private SilverLogger parent; // to keep strong ref to the parent and hence its config
                                         // with logging level and handlers
 
   private static SilverLogger getLoggerByNamespace(String namespace) {

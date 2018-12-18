@@ -113,8 +113,12 @@ public abstract class AbstractCalendarWebRequestContext<T extends AbstractCalend
    * @throw WebApplicationException when calendarId is set but is not linked to the current user.
    */
   public CalendarEventOccurrence getCalendarEventOccurrenceById() {
-    CalendarEventOccurrence event = null;
     String occurrenceId = getPathVariables().get("occurrenceId");
+    return getCalendarEventOccurrence(occurrenceId);
+  }
+
+  static CalendarEventOccurrence getCalendarEventOccurrence(final String occurrenceId) {
+    CalendarEventOccurrence event = null;
     if (isDefined(occurrenceId)) {
       final String decodedId = decodeId(occurrenceId);
       event = CalendarEventOccurrence.getById(decodedId).orElse(null);

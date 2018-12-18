@@ -52,10 +52,10 @@ public class UserNotificationWrapper implements UserNotification {
         !title.equals(getNotificationMetaData().getTitle(this.language))) {
       final NotificationMetaData metaData = notification.getNotificationMetaData();
       metaData.setTitle(Encode.forHtml(title));
-      for (String language : DisplayI18NHelper.getLanguages()) {
+      for (String lang : DisplayI18NHelper.getLanguages()) {
         LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
-            "org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle", language);
-        metaData.addLanguage(language, title, bundle.getString("AuthorMessage") + " :");
+            "org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle", lang);
+        metaData.addLanguage(lang, title, bundle.getString("AuthorMessage") + " :");
       }
     }
     return this;
@@ -70,8 +70,8 @@ public class UserNotificationWrapper implements UserNotification {
     if (StringUtil.isDefined(content)) {
       final NotificationMetaData metaData = notification.getNotificationMetaData();
       metaData.setContent(Encode.forHtml(content));
-      for (String language : DisplayI18NHelper.getLanguages()) {
-        metaData.addExtraMessage(content, language);
+      for (String lang : DisplayI18NHelper.getLanguages()) {
+        metaData.addExtraMessage(content, lang);
       }
     }
     return this;

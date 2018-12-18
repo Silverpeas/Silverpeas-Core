@@ -23,16 +23,10 @@
  */
 package org.silverpeas.web.notificationserver.channel.popup;
 
-import org.owasp.encoder.Encode;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.notification.user.server.channel.popup.POPUPException;
 import org.silverpeas.core.notification.user.server.channel.popup.POPUPMessage;
 import org.silverpeas.core.notification.user.server.channel.popup.POPUPPersistence;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -106,28 +100,6 @@ public class POPUPSessionController extends AbstractComponentSessionController {
    */
   public void setCurrentMessageId(long value) {
     currentMessageId = value;
-  }
-
-  /**
-   * Send message to user
-   * @param userId
-   * @param message
-   */
-  public void notifySession(String userId, String message) {
-    try {
-      NotificationSender notificationSender = new NotificationSender(null);
-      NotificationMetaData notifMetaData = new NotificationMetaData();
-
-      notifMetaData.setTitle("");
-      notifMetaData.setContent(Encode.forHtml(message));
-      notifMetaData.setSource(getUserDetail().getDisplayedName());
-      notifMetaData.setSender(getUserId());
-      notifMetaData.setAnswerAllowed(true);
-      notifMetaData.addUserRecipient(new UserRecipient(userId));
-      notificationSender.notifyUser(BuiltInNotifAddress.BASIC_POPUP.getId(), notifMetaData);
-    } catch (Exception ex) {
-      SilverLogger.getLogger(this).error("Error on session notify", ex);
-    }
   }
 
 }

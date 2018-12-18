@@ -23,23 +23,21 @@
  */
 package org.silverpeas.core.web.sharing.notification;
 
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.MissingResourceException;
-
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
-
-import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.silvertrace.SilverTrace;
 
 public class FileSharingUserNotification extends AbstractTemplateUserNotificationBuilder<Ticket> {
 
@@ -86,14 +84,8 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
       SilverpeasTemplate template) {
     Ticket ticket = getResource();
     String userId = getUserId();
-    String title;
-    try {
-      title = getBundle(language).getString(getBundleSubjectKey());
-    } catch (MissingResourceException ex) {
-      title = getTitle();
-    }
     getNotificationMetaData()
-        .addLanguage(language, title, "");
+        .addLanguage(language, getTitle(language), "");
     template.setAttribute("senderUser", OrganizationControllerProvider.getOrganisationController().
         getUserDetail(userId));
     if (StringUtil.isDefined(fileSharingParam.getAdditionalMessage())) {
@@ -116,6 +108,7 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
   @Override
   protected void performNotificationResource(String language, Ticket resource,
       NotificationResourceData notificationResourceData) {
+    // nothing to do
   }
 
   @Override
@@ -198,14 +191,8 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
       UserNotificationHelper
           .buildAndSend(new FileSharingUserNotification(resource, fileSharingParam));
     } catch (final Exception e) {
-      SilverTrace.warn("sharingTicket", "FileSharingUserNotification.notify()",
-          "fileSharing.EX_ALERT_USERS_ERROR", "tocken = " + resource.getToken(), e);
+      SilverLogger.getLogger(FileSharingUserNotification.class).error(e);
     }
-  }
-
-  @Override
-  protected boolean isSendImmediately() {
-    return super.isSendImmediately();
   }
 
   @Override
