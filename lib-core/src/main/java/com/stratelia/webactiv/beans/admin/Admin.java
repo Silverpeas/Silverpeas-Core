@@ -1447,9 +1447,10 @@ public class Admin {
       // Check if component is used as space homepage
       SpaceInst space = getSpaceInstById(sFatherClientId);
       if (space.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST &&
-          space.getFirstPageExtraParam().equals(componentId)) {
+          space.getFirstPageExtraParam().equals(componentId) && !definitive) {
         space.setFirstPageType(SpaceInst.FP_TYPE_STANDARD);
         space.setFirstPageExtraParam(null);
+        space.setUpdaterUserId(userId);
         updateSpaceInst(space);
       }
 
@@ -7276,6 +7277,7 @@ public class Admin {
       if (StringUtil.isDefined(newFirstPageExtraParam)) {
         SpaceInst space = getSpaceInstById(newSpaceId);
         space.setFirstPageExtraParam(newFirstPageExtraParam);
+        space.setUpdaterUserId(pasteDetail.getUserId());
         updateSpaceInst(space);
       }
     }
