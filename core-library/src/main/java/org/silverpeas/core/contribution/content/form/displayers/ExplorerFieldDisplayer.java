@@ -141,13 +141,13 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
       html += "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('" +
           URLUtil.getApplicationURL() + "/explorer/jsp/explorer.jsp" + "?elementHidden=" +
           fieldName + "&elementVisible=" + fieldName + "_path" + "&scope=" + scope;
-      html += "','explorer',800,600,'scrollbars=yes');\" >";
+      html += "','explorer',800,600,'scrollbars=yes');return false;\" >";
       html += "<img src=\"" + selectImg + "\" width=\"15\" height=\"15\" border=\"0\" alt=\"" +
           selectLabel + "\" align=\"top\" title=\"" + selectLabel + "\"/></a>";
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:" + "document." + pageContext.getFormName() +
               "." + fieldName + ".value='';" + "document." + pageContext.getFormName() + "." +
-              fieldName + "$$path" + ".value='';" + "\">";
+              fieldName + "$$path" + ".value='';return false;" + "\">";
       html += "<img src=\"" + deleteImg + "\" width=\"15\" height=\"15\" border=\"0\" alt=\"" +
           deleteLabel + "\" align=\"top\" title=\"" + deleteLabel + "\"/></a>";
 

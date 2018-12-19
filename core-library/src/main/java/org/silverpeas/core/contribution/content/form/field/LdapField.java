@@ -50,15 +50,15 @@ public class LdapField extends TextField {
   /**
    * The ldap field type name.
    */
-  static public final String TYPE = "ldap";
+  public static final String TYPE = "ldap";
   /**
    * The ldap field dynamic variable login.
    */
-  static public final String VARIABLE_LOGIN = "$$login";
+  public static final String VARIABLE_LOGIN = "$$login";
   /**
    * The ldap field dynamic variable login for regex.
    */
-  static private final String VARIABLE_REGEX_LOGIN = "\\$\\$login";
+  private static final String VARIABLE_REGEX_LOGIN = "\\$\\$login";
   private String value = "";
 
   public LdapField() {
@@ -165,7 +165,7 @@ public class LdapField extends TextField {
     LDAPSearchResults searchResult = null;
 
     // parsing filter -> dynamic variable
-    if (filter.contains(VARIABLE_LOGIN)) {
+    if (filter != null && filter.contains(VARIABLE_LOGIN)) {
       try {
         String valueLogin = OrganizationControllerProvider.getOrganisationController()
             .getUserDetail(currentUserId).getLogin();
@@ -178,7 +178,10 @@ public class LdapField extends TextField {
 
     String[] tabSearchAttribute = null;
     try {
-      int scopeInt = Integer.parseInt(scope);
+      int scopeInt = LDAPConnection.SCOPE_SUB;
+      if (StringUtil.isDefined(scope) && StringUtil.isInteger(scope)) {
+        scopeInt = Integer.parseInt(scope);
+      }
       if (StringUtil.isDefined(attribute)) {
         tabSearchAttribute = new String[1];
         tabSearchAttribute[0] = attribute;

@@ -52,8 +52,8 @@ import java.util.Map;
  */
 public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
 
-  private final static String[] MANAGED_TYPES = new String[]{LdapField.TYPE};
-  private final static String mandatoryImg = Util.getIcon("mandatoryField");
+  private static final String[] MANAGED_TYPES = new String[]{LdapField.TYPE};
+  private static final String mandatoryImg = Util.getIcon("mandatoryField");
 
   /**
    * Constructeur
@@ -80,15 +80,10 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
    * @throws java.io.IOException
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-      throws java.io.IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
 
     String language = pagesContext.getLanguage();
-
-    if (!template.getTypeName().equals(LdapField.TYPE)) {
-
-    }
-
+    
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
@@ -261,7 +256,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer<LdapField> {
       html.append("	this.oAutoComp").append(fieldName).append(" = new YAHOO.widget.AutoComplete('");
       html.append(fieldName).append("','container").append(fieldName).append("', this.oACDS");
       html.append(fieldName).append(");\n").append("	this.oAutoComp").append(fieldName);
-      html.append(".prehighlightClassName = \"yui-ac-prehighlight\");\n");
+      html.append(".prehighlightClassName = \"yui-ac-prehighlight\";\n");
       html.append("	this.oAutoComp").append(fieldName).append(".typeAhead = true;\n");
       html.append("	this.oAutoComp").append(fieldName).append(".useShadow = true;\n");
       html.append("	this.oAutoComp").append(fieldName).append(".minQueryLength = 0;\n");
