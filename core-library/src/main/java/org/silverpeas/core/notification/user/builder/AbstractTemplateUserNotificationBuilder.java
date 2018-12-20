@@ -26,6 +26,7 @@ package org.silverpeas.core.notification.user.builder;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.UserNotification;
@@ -58,6 +59,14 @@ import static org.silverpeas.core.date.TemporalFormatter.toLocalized;
 public abstract class AbstractTemplateUserNotificationBuilder<T> extends
     AbstractResourceUserNotificationBuilder<T> {
 
+  /**
+   * The property in the settings from which the subject of the notification will be set. This
+   * key is to set a custom subject peculiar to a given component. If no such property exists or
+   * if this property isn't valued, then the default notification subject will be taken (it is
+   * defined by the property GML.st.notification.subject).
+   */
+  protected static final String CUSTOM_NOTIFICATION_SUBJECT = "custom.st.notification.subject";
+  protected static final String DEFAULT_NOTIFICATION_SUBJECT = "GML.st.notification.subject";
   private final Map<String, SilverpeasTemplate> templates = new HashMap<>();
   private Pair<Boolean, String> rootTemplatePath;
 
@@ -69,14 +78,62 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
     super(resource);
   }
 
-  protected abstract String getBundleSubjectKey();
+  /**
+   * The name of the property in the bundle returned by the {@link #getBundle()} method and that
+   * specifies a custom subject for the notifications built by this builder. By Default the
+   * custom subject is defined by the property <code>custom.st.notification.subject</code> in the
+   * bundle returned by the {@link #getBundle()} method. So this method doesn't require to be
+   * overridden unless to give a different property name; for example, in case there is a different
+   * subject for several kinds of notifications in a given Silverpeas component (and hence several
+   * notification builders).
+   * @return the name of the property in the {@link #getBundle()} bundle that specifies the subject
+   * to use in the notifications built by this builder.
+   */
+  protected String getBundleSubjectKey() {
+    return CUSTOM_NOTIFICATION_SUBJECT;
+  }
 
+  /**
+   * The title is by default defined by the property <code>GML.st.notification.subject</code> in
+   * the Silverpeas's general localization bundle. The property is valued by a StringTemplate
+   * pattern, so that information about the resource concerned by the notification can be passed.
+   * <p>
+   * It can be overridden by specifying a another property
+   * in the bundle returned by {@link #getBundle()} and under the name given by
+   * {@link #getBundleSubjectKey()}. By this way, each component in Silverpeas has a way to
+   * customize the title of the notifications for the resources handled by itself.
+   * </p>
+   * <p>
+   *  This method delegates its call to the {@link #getTitle(String)} method with
+   *  {@link I18NHelper#defaultLanguage} as locale. So, to specify a custom implementation of this
+   *  method, please override instead the {@link #getTitle(String)} method.
+   * </p>
+   * @return the title of the notification. By default, the title is specify globally for all
+   * notifications by the <code>GML.st.notification.subject</code> property.
+   */
   @Override
-  protected String getTitle() {
-    if (StringUtils.isBlank(getBundleSubjectKey())) {
-      return super.getTitle();
+  protected final String getTitle() {
+    return getTitle(I18NHelper.defaultLanguage);
+  }
+
+  /**
+   * Gets the title of the notification to build explicitly in the specified language from the
+   * bundle returned by the {@link #getBundle()} method. This method can be overridden to specify
+   * another implementation.
+   * @see #getTitle()
+   * @param language the ISO-631 code of a language.
+   * @return the title of the notification. By default, the title is specify globally for all
+   * notifications by the <code>GML.st.notification.subject</code> property.
+   */
+  protected String getTitle(final String language) {
+    final String subjectKey = getBundleSubjectKey();
+    final String subject;
+    if (StringUtils.isBlank(subjectKey) || !getBundle().containsKey(subjectKey)) {
+      subject = getBundle(language).getString(DEFAULT_NOTIFICATION_SUBJECT);
+    } else {
+      subject = getBundle(language).getString(subjectKey);
     }
-    return getBundle().getString(getBundleSubjectKey());
+    return subject;
   }
 
   /**
@@ -109,6 +166,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
 
       template = createTemplate();
       template.setAttribute("silverpeasURL", linkUrl);
+      template.setAttribute("resource", resource);
       templates.put(curLanguage, template);
 
       performTemplateData(curLanguage, resource, template);

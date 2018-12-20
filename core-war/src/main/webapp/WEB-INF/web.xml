@@ -294,10 +294,6 @@
     <servlet-class>org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>AlertUserPeasRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.web.alertuser.servlets.AlertUserPeasRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>ClipboardRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.web.clipboard.servlets.ClipboardRequestRouter</servlet-class>
   </servlet>
@@ -464,8 +460,8 @@
     <servlet-class>org.silverpeas.web.interests.servlets.InterestCenterPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>NotificationUserRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.web.notificationuser.servlets.NotificationUserRequestRouter</servlet-class>
+    <servlet-name>UserNotificationRequestRouter</servlet-name>
+    <servlet-class>org.silverpeas.web.notificationuser.servlets.UserNotificationRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>TemplateDesignerRequestRouter</servlet-name>
@@ -746,10 +742,6 @@
     <url-pattern>/RSILVERMAIL/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>AlertUserPeasRequestRouter</servlet-name>
-    <url-pattern>/RalertUserPeas/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>ClipboardRequestRouter</servlet-name>
     <url-pattern>/Rclipboard/*</url-pattern>
   </servlet-mapping>
@@ -883,8 +875,8 @@
     <url-pattern>/RinterestCenterPeas/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>NotificationUserRequestRouter</servlet-name>
-    <url-pattern>/RnotificationUser/*</url-pattern>
+    <servlet-name>UserNotificationRequestRouter</servlet-name>
+    <url-pattern>/RuserNotification/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>TemplateDesignerRequestRouter</servlet-name>

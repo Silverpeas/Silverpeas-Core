@@ -31,23 +31,15 @@ import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * Class declaration
- * @author
- * @version %I%, %G%
- */
+@Singleton
+@Named("DeleteMessage")
 public class DeleteMessage implements SILVERMAILRequestHandler {
 
-  /**
-   * Method declaration
-   * @param componentSC
-   * @param request
-   * @return
-   * @throws SILVERMAILException
-   *
-   */
+  @Override
   public String handleRequest(ComponentSessionController componentSC, HttpServletRequest request)
       throws SILVERMAILException {
     SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;

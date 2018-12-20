@@ -43,7 +43,6 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.session.SessionCloseable;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
@@ -139,10 +138,9 @@ public abstract class AbstractComponentSessionController implements ComponentSes
 
   public String getString(String resName) {
     String theLanguage = getLanguage();
-    if ((theLanguage != null) || (message == null)) {
-      if (message == null || messageLanguage == null || !messageLanguage.equals(theLanguage)) {
+    if ((theLanguage != null || message == null) &&
+        (message == null || messageLanguage == null || !messageLanguage.equals(theLanguage))) {
         setLocalizationBundle(messageFile);
-      }
     }
     if (message == null) {
       return resName;
@@ -246,7 +244,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   }
 
   /**
-   * return the component Root name : i.e. 'agenda', 'todo', 'kmelia', .... (the name that appears
+   * return the component Root name : i.e. 'calendar', 'kmelia', .... (the name that appears
    * in the URL's root (the 'R' prefix is added later when needed))
    * @return the component root name.
    */
@@ -255,7 +253,8 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   }
 
   /**
-   * Sets the component root name : i.e. 'agenda', 'todo', 'kmelia', .... (the name that appears in
+   * Sets the component root name : i.e. 'agenda', 'calendar', 'kmelia', .... (the name that
+   * appears in
    * the URL's root (the 'R' prefix is added later when needed)) this function is called by the
    * class of non-instanciable components the inherits from this class
    * @param newRootName the new root component.
@@ -342,19 +341,15 @@ public abstract class AbstractComponentSessionController implements ComponentSes
     return controller.getSelection();
   }
 
-  public AlertUser getAlertUser() {
-    return controller.getAlertUser();
-  }
-
   // Maintenance Mode
   @Override
   public boolean isAppInMaintenance() {
-    return controller.isAppInMaintenance();
+    return MainSessionController.isAppInMaintenance();
   }
 
   @Override
   public void setAppModeMaintenance(boolean mode) {
-    controller.setAppModeMaintenance(mode);
+    MainSessionController.setAppModeMaintenance(mode);
   }
 
   @Override
@@ -464,8 +459,6 @@ public abstract class AbstractComponentSessionController implements ComponentSes
       try {
         messageLanguage = getLanguage();
         message = ResourceLocator.getLocalizationBundle(messageFile, messageLanguage);
-        // messageLanguage = getLanguage();
-
       } catch (Exception e) {
         SilverLogger.getLogger(this).error("Localization bundle '" + messageFile +
             "' not found for language " + messageLanguage, e);

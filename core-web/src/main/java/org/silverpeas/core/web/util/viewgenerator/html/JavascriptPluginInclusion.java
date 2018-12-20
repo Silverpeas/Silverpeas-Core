@@ -124,7 +124,6 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_PROFILE = "silverpeas-profile.js";
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
   private static final String SILVERPEAS_INVITME = "silverpeas-relationship.js";
-  private static final String SILVERPEAS_MESSAGEME = "silverpeas-messageme.js";
   private static final String SILVERPEAS_RESPONSIBLES = "silverpeas-responsibles.js";
   private static final String SILVERPEAS_POPUP = "silverpeas-popup.js";
   private static final String SILVERPEAS_PREVIEW = "silverpeas-preview.js";
@@ -505,7 +504,6 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includeUserZoom(final ElementContainer xhtml, final String language) {
     xhtml.addElement(script(ANGULARJS_SERVICES_PATH + SILVERPEAS_PROFILE));
-    includeMessageMe(xhtml);
     includeRelationship(xhtml, language);
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_USERZOOM));
     return xhtml;
@@ -538,12 +536,6 @@ public class JavascriptPluginInclusion {
         .produce()));
     xhtml.addElement(script(ANGULARJS_SERVICES_PATH + SILVERPEAS_PROFILE));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_INVITME));
-    return xhtml;
-  }
-
-  static ElementContainer includeMessageMe(final ElementContainer xhtml) {
-    xhtml.addElement(script(ANGULARJS_SERVICES_PATH + SILVERPEAS_PROFILE));
-    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_MESSAGEME));
     return xhtml;
   }
 
@@ -931,6 +923,28 @@ public class JavascriptPluginInclusion {
       xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-admin-window.js"));
       xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-admin-layout.js"));
     }
+    return xhtml;
+  }
+
+  /**
+   * Includes the Silverpeas Messager plugin that handles the message sending from the current user
+   * to one or more other users in Silverpeas.
+   * @param xhtml the HTML container within which the plugin will be inserted.
+   * @param language the language of the current user.
+   * @return the HTML container with the messager.
+   */
+  static ElementContainer includeMessager(final ElementContainer xhtml, final String language) {
+    final LocalizationBundle notifBundle = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.notificationUser.multilang.notificationUserBundle", language);
+    xhtml.addElement(scriptContent(bundleVariableName("NotificationBundle")
+        .add("send", notifBundle.getString("Envoyer"))
+        .add("cancel", notifBundle.getString("GML.cancel"))
+        .add("theField", notifBundle.getString("GML.theField"))
+        .add("addressees", notifBundle.getString("addressees"))
+        .add("title", notifBundle.getString("GML.notification.subject"))
+        .add("isRequired", notifBundle.getString("GML.isRequired"))
+        .produce()));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-messager.js"));
     return xhtml;
   }
 

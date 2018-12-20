@@ -47,7 +47,6 @@
 <html>
   <head>
     <view:looknfeel withFieldsetStyle="true"/>
-    <view:includePlugin name="messageme"/>
   </head>
   <body id="publicProfile">
     <view:window>

@@ -23,16 +23,12 @@
  */
 package org.silverpeas.core.notification.user.server;
 
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.notification.system.JMSOperation;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;
-import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
-import javax.naming.NamingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,26 +54,23 @@ public class NotificationServer {
    * @throws NotificationServerException
    */
   public long addNotification(NotificationData pData) throws NotificationServerException {
-    long notificationid = 0; // a gerer plus tard (necessite une database)
+    long notificationId = 0;
     mJmsHeaders.clear();
     mJmsHeaders.put(JMS_HEADER_CHANNEL, pData.getTargetChannel());
-    pData.setNotificationId(notificationid);
+    pData.setNotificationId(notificationId);
     String notificationAsXML = NotificationServerUtil.convertNotificationDataToXML(pData);
     try {
       jmsSendToQueue(notificationAsXML, mJmsHeaders);
     } catch (Exception e) {
-      throw new NotificationServerException("NotificationServer.addNotification()",
-          SilverpeasException.ERROR, "notificationServer.EX_CANT_SEND_TO_JMS_QUEUE",
-          notificationAsXML, e);
+      throw new NotificationServerException(e);
     }
-    return notificationid;
+    return notificationId;
   }
 
   /**
    * Send the NotificationMessage in a JMS Queue
    */
-  private void jmsSendToQueue(String notificationMessage, Map<String, String> pJmsHeaders)
-      throws JMSException, NamingException {
+  private void jmsSendToQueue(String notificationMessage, Map<String, String> pJmsHeaders) {
     JMSOperation.realize(context -> {
       // Initialization
       TextMessage textMsg = context.createTextMessage();
@@ -86,13 +79,7 @@ public class NotificationServer {
       for (Map.Entry<String, String> entry : pJmsHeaders.entrySet()) {
         textMsg.setStringProperty(entry.getKey(), entry.getValue());
       }
-      try {
-        context.createProducer().send(queue, textMsg);
-      } catch (Exception exc) {
-        SilverTrace.error("notification", "NotificationServer.jmsSendToQueue",
-            "notificationServer.EX_CANT_SEND_TO_JSM_QUEUE", exc);
-        throw exc;
-      }
+      context.createProducer().send(queue, textMsg);
     });
   }
 }

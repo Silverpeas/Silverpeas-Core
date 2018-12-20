@@ -23,33 +23,21 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class ForbiddenRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = -4953377031915598557L;
+  private static final long serialVersionUID = -3552375508529902088L;
 
-  public ForbiddenRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public ForbiddenRuntimeException(final String message) {
+    super(message);
   }
 
-  public ForbiddenRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public ForbiddenRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public ForbiddenRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public ForbiddenRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public ForbiddenRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "accessController";
-  }
-
 }

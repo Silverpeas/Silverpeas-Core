@@ -26,40 +26,31 @@
 
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.model.SentNotificationDetail;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
+import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 
-/**
- * Class declaration
- * @author
- * @version %I%, %G%
- */
+import javax.inject.Named;
+import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
+
+@Singleton
+@Named("ReadSentNotification")
 public class ReadSentNotification implements SILVERMAILRequestHandler {
 
-  /**
-   * Method declaration
-   * @param componentSC
-   * @param request
-   * @return
-   * @throws SILVERMAILException
-   *
-   */
+  @Override
   public String handleRequest(ComponentSessionController componentSC,
-      HttpServletRequest request) throws SILVERMAILException {
+      HttpServletRequest request) {
 
     SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
-    SentNotificationDetail sentNotification = null;
+    SentNotificationDetail sentNotification;
     String notifId = request.getParameter("NotifId");
     try {
       sentNotification = silvermailScc.getSentNotification(notifId);
-    } catch (NotificationManagerException e) {
-
+    } catch (NotificationException e) {
+      sentNotification = null;
     }
     request.setAttribute("SentNotification", sentNotification);
     return "/SILVERMAIL/jsp/readSentNotification.jsp";

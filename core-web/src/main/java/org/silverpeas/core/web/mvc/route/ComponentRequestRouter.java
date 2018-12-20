@@ -23,13 +23,14 @@
  */
 package org.silverpeas.core.web.mvc.route;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.CoreContributionType;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.notification.user.ManualUserNotificationSuppliers;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
@@ -39,6 +40,7 @@ import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -58,7 +60,6 @@ import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -76,6 +77,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
   private static final long serialVersionUID = -8055016885655445663L;
   private static final String MANUAL_JSON_RESPONSE_PREFIX = "MANUAL_JSON_RESPONSE_";
+  private static final String SESSION_ATTR_PREFIX = "Silverpeas_";
   @Inject
   private UserAndGroupSelectionProcessor selectionProcessor;
   @Inject
@@ -151,7 +153,6 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) {
-
     String destination = computeDestination(request);
     if (!isDefined(destination)) {
       throwHttpNotFoundError();
@@ -160,8 +161,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   }
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) {
     doPost(request, response);
   }
 
@@ -173,7 +173,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     MainSessionController mainSessionCtrl = getMainSessionController(request);
 
     // App in Maintenance ?
-    if (mainSessionCtrl.isAppInMaintenance() && !mainSessionCtrl.getCurrentUserDetail().
+    if (MainSessionController.isAppInMaintenance() && !mainSessionCtrl.getCurrentUserDetail().
         isAccessAdmin()) {
       return ResourceLocator.getGeneralSettingBundle().getString("redirectAppInMaintenance");
     }
@@ -186,58 +186,32 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     // Set gef space space identifier for dynamic look purpose
     setGefSpaceId(request, componentId, spaceId);
-
     boolean isSpaceInMaintenance = mainSessionCtrl.isSpaceInMaintenance(spaceId);
-
     // Space in Maintenance ?
     if (isSpaceInMaintenance && !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {
       return "/admin/jsp/spaceInMaintenance.jsp";
     }
 
-    T component = this.getComponentSessionController(session, componentId);
-    if (component == null) {
+    T ctrl = this.getComponentSessionController(session, componentId);
+    if (ctrl == null) {
       // isUserStateValid that the user has an access to this component instance
       boolean bCompoAllowed = isUserAllowed(mainSessionCtrl, componentId);
       if (!bCompoAllowed) {
         SilverLogger.getLogger(this)
-            .warn("User {0} not allowed to access application {1} in space {2}",
-                mainSessionCtrl.getUserId(), componentId, spaceId);
+            .warn("User {0} not allowed to access application {1} in space {2}", mainSessionCtrl.getUserId(), componentId, spaceId);
         destination = ResourceLocator.getGeneralSettingBundle()
             .getString("accessForbidden", "/admin/jsp/accessForbidden.jsp");
         return destination;
       }
-      component = setComponentSessionController(session, mainSessionCtrl, spaceId, componentId);
+      ctrl = setComponentSessionController(session, mainSessionCtrl, spaceId, componentId);
+      registerManualUserNotificationSupplier(componentId, ctrl);
     }
 
-    MultiSilverpeasBundle resources =
-        new MultiSilverpeasBundle(component.getMultilang(), component.getIcon(), component.getSettings(),
-            component.getLanguage());
-    request.setAttribute("resources", resources);
-    String[] browseContext = new String[]{component.getSpaceLabel(), component.getComponentLabel(),
-        component.getSpaceId(), component.getComponentId(), component.getComponentUrl()};
-    request.setAttribute("browseContext", browseContext);
-    request.setAttribute("myComponentURL", URLUtil.getApplicationURL() + component.
-        getComponentUrl());
+    setNavigationContext(request, ctrl);
 
     HttpRequest httpRequest = HttpRequest.decorate(request);
-    if (!"Idle.jsp".equals(function) && !"ChangeSearchTypeToExpert".equals(function) &&
-        !"markAsRead".equals(function)) {
-      GraphicElementFactory gef = (GraphicElementFactory) session
-          .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-      gef.setComponentIdForCurrentRequest(component.getComponentId());
-      gef.setHttpRequest(httpRequest);
-    }
-
-    // notify silverstatistics
-    if (function.equals("Main") || function.startsWith("searchResult") ||
-        function.startsWith("portlet") || function.equals("GoToFilesTab")) {
-      // only for instanciable components
-      if (componentId != null) {
-        SilverStatisticsManager.getInstance()
-            .addStatAccess(component.getUserId(), new Date(), component.getComponentName(),
-                component.getSpaceId(), component.getComponentId());
-      }
-    }
+    initGraphicElementFactory(httpRequest, session, function, ctrl);
+    updateSilverStatistics(componentId, function, ctrl);
 
     if (selectionProcessor.isComeFromSelectionPanel(request)) {
       destination = selectionProcessor.processSelection(mainSessionCtrl.getSelection(), request);
@@ -248,21 +222,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     // Verifying the subscription notification sending parameters
     UserSubscriptionNotificationSendingHandler.verifyRequest(request);
-
-    // retourne la page jsp de destination et place dans la request les objets
-    // utilises par cette page
-    if (checkUserAuthorization(function, component)) {
-      if ("EditComponentInstanceIntro".equals(function)) {
-        destination = getComponentInstanceIntroDestination(component);
-      } else {
-        destination = getDestination(function, component, httpRequest);
-      }
-    } else {
-      SilverLogger.getLogger(this)
-          .warn("User {0} not allowed to invoke {1} for application {2}",
-              component.getUserId(), function, componentId);
-      destination = "/admin/jsp/accessForbidden.jsp";
-    }
+    destination = computeNextDestination(httpRequest, componentId, function, ctrl);
 
     // Session security token management
     if (isDefined(componentId) && hasTheSessionSecurityTokenToBeRenewed(request, function)) {
@@ -270,7 +230,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     }
 
     // Check existence of a transverse exception
-    SilverpeasTransverseWebErrorUtil.verifyErrorFromRequest(request, component.getLanguage());
+    SilverpeasTransverseWebErrorUtil.verifyErrorFromRequest(request, ctrl.getLanguage());
 
     if (selectionProcessor.isSelectionAsked(destination)) {
       selectionProcessor.prepareSelection(mainSessionCtrl.getSelection(), request);
@@ -283,13 +243,83 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       updateSessionManagement(session, destination);
     }
 
-    request.setAttribute(getSessionControlBeanName(), component);
+    request.setAttribute(getSessionControlBeanName(), ctrl);
 
     return destination;
 
   }
 
+  private void registerManualUserNotificationSupplier(final String componentId, final T ctrl) {
+    if (StringUtil.isNotDefined(componentId)) {
+      final String componentName = getSessionControlBeanName();
+      ManualUserNotificationSuppliers suppliers =
+          ServiceProvider.getService(ManualUserNotificationSuppliers.class);
+      suppliers.set(componentName, ctrl.getManualUserNotificationSupplier());
+    } else if (!PersonalComponentInstance.from(componentId).isPresent()) {
+      final String componentName = ComponentInst.getComponentName(componentId);
+      ManualUserNotificationSuppliers suppliers =
+          ServiceProvider.getService(ManualUserNotificationSuppliers.class);
+      suppliers.set(componentName, ctrl.getManualUserNotificationSupplier());
+    }
+  }
+
+  private String computeNextDestination(final HttpRequest httpRequest, final String componentId,
+      final String function, final T component) {
+    final String
+        destination;// retourne la page jsp de destination et place dans la request les objets
+    // utilises par cette page
+    if (checkUserAuthorization(function, component)) {
+      if ("EditComponentInstanceIntro".equals(function)) {
+        destination = getComponentInstanceIntroDestination(component);
+      } else {
+        destination = getDestination(function, component, httpRequest);
+      }
+    } else {
+      SilverLogger.getLogger(this)
+          .warn("User {0} not allowed to invoke {1} for application {2}", component.getUserId(),
+              function, componentId);
+      destination = "/admin/jsp/accessForbidden.jsp";
+    }
+    return destination;
+  }
+
+  private void updateSilverStatistics(final String componentId, final String function,
+      final T component) {
+    // notify silverstatistics
+    if (componentId != null && function.equals("Main") || function.startsWith("searchResult") ||
+        function.startsWith("portlet") || function.equals("GoToFilesTab")) {
+      // only for instanciable components
+      SilverStatisticsManager.getInstance()
+          .addStatAccess(component.getUserId(), new Date(), component.getComponentName(),
+              component.getSpaceId(), component.getComponentId());
+    }
+  }
+
+  private void initGraphicElementFactory(final HttpRequest httpRequest, final HttpSession session,
+      final String function, final T component) {
+    if (!"Idle.jsp".equals(function) && !"ChangeSearchTypeToExpert".equals(function) &&
+        !"markAsRead".equals(function)) {
+      GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
+          GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      gef.setComponentIdForCurrentRequest(component.getComponentId());
+      gef.setHttpRequest(httpRequest);
+    }
+  }
+
+  private void setNavigationContext(final HttpServletRequest request, final T component) {
+    MultiSilverpeasBundle resources =
+        new MultiSilverpeasBundle(component.getMultilang(), component.getIcon(),
+            component.getSettings(), component.getLanguage());
+    request.setAttribute("resources", resources);
+    String[] browseContext = new String[]{component.getSpaceLabel(), component.getComponentLabel(),
+        component.getSpaceId(), component.getComponentId(), component.getComponentUrl()};
+    request.setAttribute("browseContext", browseContext);
+    request.setAttribute("myComponentURL", URLUtil.getApplicationURL() + component.
+        getComponentUrl());
+  }
+
   public void updateSessionManagement(HttpSession session, String destination) {
+    StringUtil.requireDefined(destination);
     SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     sessionManagement.validateSession(session.getId());
   }
@@ -349,8 +379,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       try {
         request.setAttribute("javax.servlet.jsp.jspException",
             new PeasCoreException("ComponentRequestRouter.redirectService",
-                SilverpeasException.ERROR, "peasCore.EX_REDIRECT_SERVICE_FAILED",
-                "Destination=" + destination, e));
+                "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination=" + destination, e));
         getServletConfig().getServletContext().getRequestDispatcher("/admin/jsp/errorpageMain.jsp")
             .forward(request, response);
       } catch (Exception ex) {
@@ -363,7 +392,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
   // Get the space id and the component id required by the user
   @SuppressWarnings("UnusedParameters")
-  static public String[] getComponentId(HttpServletRequest request,
+  public static String[] getComponentId(HttpServletRequest request,
       MainSessionController mainSessionCtrl) {
     SilverpeasWebUtil webUtil = ServiceProvider.getService(SilverpeasWebUtil.class);
     return webUtil.getComponentId(request);
@@ -381,10 +410,10 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   @SuppressWarnings("unchecked")
   private T getComponentSessionController(HttpSession session, String componentId) {
     if (componentId == null) {
-      return (T) session.getAttribute("Silverpeas_" + getSessionControlBeanName());
+      return (T) session.getAttribute(SESSION_ATTR_PREFIX + getSessionControlBeanName());
     }
-    return (T) session
-        .getAttribute("Silverpeas_" + getSessionControlBeanName() + "_" + componentId);
+    return (T) session.getAttribute(
+        SESSION_ATTR_PREFIX + getSessionControlBeanName() + "_" + componentId);
   }
 
   private T setComponentSessionController(HttpSession session,
@@ -394,11 +423,12 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         mainSessionCtrl.createComponentContext(spaceId, componentId);
     // instanciate a new CSC
     T component = createComponentSessionController(mainSessionCtrl, componentContext);
+
     if (componentId == null) {
-      session.setAttribute("Silverpeas_" + getSessionControlBeanName(), component);
+      session.setAttribute(SESSION_ATTR_PREFIX + getSessionControlBeanName(), component);
     } else {
-      session
-          .setAttribute("Silverpeas_" + getSessionControlBeanName() + "_" + componentId, component);
+      session.setAttribute(SESSION_ATTR_PREFIX + getSessionControlBeanName() + "_" + componentId,
+          component);
     }
     return component;
   }
@@ -422,11 +452,9 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         }
         gef.setSpaceIdForCurrentRequest(helperSpaceId);
       }
-    } else if (isDefined(spaceId)) {
-      if (gef != null && helper != null) {
-        helper.setSpaceId(spaceId);
-        gef.setSpaceIdForCurrentRequest(spaceId);
-      }
+    } else if (isDefined(spaceId) && gef != null && helper != null) {
+      helper.setSpaceId(spaceId);
+      gef.setSpaceIdForCurrentRequest(spaceId);
     }
   }
 

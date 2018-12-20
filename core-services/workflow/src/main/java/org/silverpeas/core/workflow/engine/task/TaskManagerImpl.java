@@ -28,7 +28,7 @@ import org.silverpeas.core.contribution.content.form.DataRecordUtil;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.User;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -186,7 +186,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
         text = DataRecordUtil.applySubstitution(text, data, "");
 
         NotificationMetaData notifMetaData = new NotificationMetaData(
-            NotificationParameters.NORMAL, title, text);
+            NotificationParameters.PRIORITY_NORMAL, title, text);
         if (sender != null) {
           notifMetaData.setSender(sender.getUserId());
         } else {
@@ -200,7 +200,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
             notifMetaData.setLink(link);
         }
         notifSender.notifyUser(notifMetaData);
-      } catch (WorkflowException | NotificationManagerException e) {
+      } catch (WorkflowException | NotificationException e) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     }

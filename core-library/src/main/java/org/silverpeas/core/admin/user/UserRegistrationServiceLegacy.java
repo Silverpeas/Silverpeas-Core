@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -156,7 +156,7 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
       Map<String, SilverpeasTemplate> templates = new HashMap<>();
       String subject = multilang.getString("credentialsMail.subject");
       NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+          new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, templates,
           "credentialsMail");
 
       // Retrieve login page URL
@@ -209,7 +209,7 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
     try {
       NotificationSender notifSender = new NotificationSender(componentId);
       notifSender.notifyUser(notifMetaData);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new AdminException("Fail to notify users", e);
     }
   }

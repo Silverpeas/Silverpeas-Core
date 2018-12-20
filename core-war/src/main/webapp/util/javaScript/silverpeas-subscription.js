@@ -228,9 +228,9 @@
           StringUtil.isDefined($settings.comment.contributionType);
       var urlOfDialogMessage = $settings.subscription.context +
           '/subscription/jsp/messages/confirmSubscriptionNotificationSending.jsp';
-      var ajaxConfig = sp.ajaxConfig(urlOfDialogMessage);
-      ajaxConfig.withParam('saveNoteIntoComment', commentActivated);
-      displaySingleConfirmationPopupFrom(ajaxConfig.getUrl(), {
+      var url = sp.url.format(urlOfDialogMessage,
+          {'saveNoteIntoComment' : commentActivated});
+      jQuery.popup.load(url).show('confirmation', {
         callback : function() {
           var saveNoteIntoComment = $('input.saveNoteIntoComment:checked', this).length;
           var userNoteValue = $('textarea', this).val();

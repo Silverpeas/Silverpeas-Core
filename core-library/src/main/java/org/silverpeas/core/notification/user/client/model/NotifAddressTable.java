@@ -64,8 +64,8 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
-  public static final String SELECT = "select ";
-  static final private String SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_NOTIFCHANNELID = SELECT
+  private static final String SELECT = "select ";
+  private static final String SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_NOTIFCHANNELID = SELECT
       + NOTIFADDRESS_COLUMNS + " from ST_NotifAddress where notifChannelId=?";
 
   /**
@@ -76,7 +76,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID = SELECT
+  private static final String SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID = SELECT
       + NOTIFADDRESS_COLUMNS + " from ST_NotifAddress where userId=?";
 
   /**
@@ -87,7 +87,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_NOTIFADDRESS = SELECT
+  private static final String SELECT_ALL_NOTIFADDRESS = SELECT
       + NOTIFADDRESS_COLUMNS + " from ST_NotifAddress";
 
   /**
@@ -113,7 +113,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
     return notifAddress.getId();
   }
 
-  static final private String INSERT_NOTIFADDRESS = "insert into"
+  private static final String INSERT_NOTIFADDRESS = "insert into"
       + " ST_NotifAddress (id, userId, notifName, notifChannelId, address, usage, priority)"
       + " values  (?, ?, ?, ?, ?, ?, ?)";
 
@@ -124,7 +124,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
     updateRow(UPDATE_NOTIFADDRESS, notifAddress);
   }
 
-  static final private String UPDATE_NOTIFADDRESS = "update ST_NotifAddress set"
+  private static final String UPDATE_NOTIFADDRESS = "update ST_NotifAddress set"
       + " userId = ?,"
       + " notifName = ?,"
       + " notifChannelId = ?,"
@@ -149,7 +149,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
     updateRelation(DELETE_NOTIFADDRESS, id);
   }
 
-  static final private String DELETE_NOTIFADDRESS = "delete from ST_NotifAddress where id=?";
+  private static final String DELETE_NOTIFADDRESS = "delete from ST_NotifAddress where id=?";
 
   /**
    * Removes a reference to NotifChannelId

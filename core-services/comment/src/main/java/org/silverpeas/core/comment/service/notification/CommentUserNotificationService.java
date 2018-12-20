@@ -34,7 +34,7 @@ import org.silverpeas.core.comment.service.CommentUserNotification;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.util.ServiceProvider;
@@ -174,11 +174,11 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
    * Notifies the specified users, identified by their identifier, with the specified notification
    * information.
    * @param notification the notification information.
-   * @throws NotificationManagerException if the
+   * @throws NotificationException if the
    * notification of the recipients fail.
    */
   protected void notifyUsers(final NotificationMetaData notification)
-      throws NotificationManagerException {
+      throws NotificationException {
     getNotificationSender(notification.getComponentId()).notifyUser(notification);
   }
 

@@ -23,17 +23,16 @@
  */
 package org.silverpeas.web.calendar;
 
-import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.security.session.SessionManagementProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.mvc.controller.PeasCoreException;
-import org.silverpeas.core.personalorganizer.service.CalendarException;
-import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.personalorganizer.model.Classification;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
-import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.PeasCoreException;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -65,14 +64,9 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
   private static final int SYNCHRO_ERROR = -1;
   private static final int NB_DAYS_BEFORE = 7;
   @Inject
-  private SilverpeasCalendar calendarBm;
+  private SilverpeasCalendar calendar;
 
-  @Override
-  public void init() throws ServletException {
-    super.init();
-  }
-
-  public List<CalendarEntry> read(InputStream in) throws IOException {
+  public List<CalendarEntry> read(InputStream in) {
     try {
       CalendarEntry[] entries = JSONCodec.decode(in, CalendarEntry[].class);
       return Arrays.asList(entries);
@@ -157,7 +151,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
    * @param headers	Journal Headers
    * @throws	PeasCoreException if session Id is not valid or has expired
    */
-  private void setHeaderDelegators(List<CalendarEntry> headers) throws PeasCoreException {
+  private void setHeaderDelegators(List<CalendarEntry> headers) {
     String userId = null;
     for (CalendarEntry element : headers) {
       if (userId == null) {
@@ -179,9 +173,9 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
   private Map<String, JournalHeader> getExternalEvents(String userId) {
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.DAY_OF_YEAR, -NB_DAYS_BEFORE);
-    Collection<JournalHeader> existingEvents = calendarBm.getExternalJournalHeadersForUserAfterDate(
+    Collection<JournalHeader> existingEvents = calendar.getExternalJournalHeadersForUserAfterDate(
         userId, cal.getTime());
-    Map<String, JournalHeader> events = new HashMap<String, JournalHeader>(existingEvents.size());
+    Map<String, JournalHeader> events = new HashMap<>(existingEvents.size());
     for (JournalHeader event : existingEvents) {
       events.put(event.getExternalId(), event);
     }
@@ -207,7 +201,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
         JournalHeader oldJournal = existingEvents.get(element.getExternalId());
         if (areDifferent(oldJournal, element)) {
           element.setId(oldJournal.getId());
-          calendarBm.updateJournal(convert(element));
+          calendar.updateJournal(convert(element));
           result = ELEMENT_UPDATED;
         } else {
           result = ELEMENT_IGNORED;
@@ -215,7 +209,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
         existingEvents.remove(element.getExternalId());
       } // new journal : create it
       else {
-        calendarBm.addJournal(convert(element));
+        calendar.addJournal(convert(element));
         result = ELEMENT_ADDED;
       }
     } catch (Exception e) {
@@ -226,7 +220,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
     return result;
   }
 
-  private JournalHeader convert(CalendarEntry entry) throws ParseException, CalendarException {
+  private JournalHeader convert(CalendarEntry entry) throws ParseException {
     JournalHeader header = new JournalHeader(entry.getName(), entry.getDelegatorId());
     header.setDescription(entry.getDescription());
     header.setEndDay(entry.getEndDay());
@@ -268,10 +262,8 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
       return true;
     } else if (!oldJournal.getName().equals(element.getName())) {
       return true;
-    } else if (oldJournal.getPriority().getValue() != element.getPriority()) {
-      return true;
     } else {
-      return false;
+      return oldJournal.getPriority().getValue() != element.getPriority();
     }
   }
 
@@ -288,7 +280,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
     if (existingEvents != null) {
       for (JournalHeader event : existingEvents.values()) {
         try {
-          calendarBm.removeJournal(event.getId());
+          calendar.removeJournal(event.getId());
           nbDeletedEvents++;
         } catch (Exception e) {
           SilverLogger.getLogger(this).error(e.getMessage(), e);

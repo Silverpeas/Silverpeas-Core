@@ -24,7 +24,7 @@
 package org.silverpeas.web.directory.servlets;
 
 import org.silverpeas.web.directory.control.DirectorySessionController;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -74,7 +74,7 @@ public class DirectoryJSONServlet extends HttpServlet {
         String message = Encode.forHtml(req.getParameter("Message"));
         dsc.sendMessage(null, title, message, selectedUsers);
         jsonStatus = JSONCodec.encodeObject(o -> o.put("success", true));
-      } catch (NotificationManagerException ex) {
+      } catch (NotificationException ex) {
         SilverTrace.error("directory", "DirectoryRequestRouter.sendMessage", "ERROR", ex);
         jsonStatus =
             JSONCodec.encodeObject(o -> o.put("success", false).put("error", ex.toString()));

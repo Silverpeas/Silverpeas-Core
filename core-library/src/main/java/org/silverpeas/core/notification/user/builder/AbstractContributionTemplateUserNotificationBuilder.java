@@ -24,14 +24,12 @@
 
 package org.silverpeas.core.notification.user.builder;
 
-import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -53,10 +51,7 @@ public abstract class AbstractContributionTemplateUserNotificationBuilder<C exte
       final SilverpeasTemplate template) {
     localizedContribution = LocalizedContribution.from(contribution, language);
     final String contributionType = localizedContribution.getContributionType();
-    String title = getTitle();
-    if (StringUtils.isNotBlank(getMultilangPropertyFile())) {
-      title = defaultStringIfNotDefined(getBundle(language).getString(getBundleSubjectKey()), getTitle());
-    }
+    final String title = getTitle(language);
     getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("contribution", localizedContribution);
     template.setAttribute("contributionType_" + contributionType, contributionType);

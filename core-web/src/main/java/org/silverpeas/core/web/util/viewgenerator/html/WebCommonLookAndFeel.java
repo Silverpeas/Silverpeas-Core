@@ -224,6 +224,7 @@ class WebCommonLookAndFeel {
     code.append(includeUserZoom(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
     code.append(includeCkeditorAddOns(new ElementContainer()).toString()).append(
         STR_NEW_LINE);
+    code.append(includeMessager(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
 
     if (StringUtil.isDefined(specificJS)) {
       code.append(getJavaScriptTag(specificJS));

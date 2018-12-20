@@ -33,17 +33,17 @@ public enum NotifMessageType {
   /**
    * The message is an usual one.
    */
-  NORMAL(NotificationParameters.NORMAL),
+  NORMAL(NotificationParameters.PRIORITY_NORMAL),
 
   /**
    * The message is for an urgency.
    */
-  URGENT(NotificationParameters.URGENT),
+  URGENT(NotificationParameters.PRIORITY_URGENT),
 
   /**
    * The message is about an error.
    */
-  ERROR(NotificationParameters.ERROR);
+  ERROR(NotificationParameters.PRIORITY_ERROR);
 
   private int id;
 

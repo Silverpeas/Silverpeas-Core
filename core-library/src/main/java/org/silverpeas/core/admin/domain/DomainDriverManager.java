@@ -684,25 +684,15 @@ public class DomainDriverManager extends AbstractDomainDriver {
     return getDomainDriver(domainId).getDriverActions();
   }
 
-  public String getNextDomainId() throws AdminException {
-    try {
-      return idAsString(getOrganizationSchema().domain().getNextId());
-    } catch (SQLException e) {
-      throw new AdminException(e.getMessage(), e);
-    }
+  public String getNextDomainId() {
+    return idAsString(getOrganizationSchema().domain().getNextId());
   }
 
   public String createDomain(Domain theDomain) throws AdminException {
     try {
       DomainRow dr = new DomainRow();
       dr.id = StringUtil.isInteger(theDomain.getId()) ? Integer.valueOf(theDomain.getId()) : -1;
-      dr.name = theDomain.getName();
-      dr.description = theDomain.getDescription();
-      dr.className = theDomain.getDriverClassName();
-      dr.propFileName = theDomain.getPropFileName();
-      dr.authenticationServer = theDomain.getAuthenticationServer();
-      dr.theTimeStamp = theDomain.getTheTimeStamp();
-      dr.silverpeasServerURL = theDomain.getSilverpeasServerURL();
+      setDomainRow(theDomain, dr);
 
       // Create domain
       getOrganizationSchema().domain().createDomain(dr);
@@ -713,17 +703,21 @@ public class DomainDriverManager extends AbstractDomainDriver {
     }
   }
 
+  private void setDomainRow(final Domain theDomain, final DomainRow dr) {
+    dr.name = theDomain.getName();
+    dr.description = theDomain.getDescription();
+    dr.className = theDomain.getDriverClassName();
+    dr.propFileName = theDomain.getPropFileName();
+    dr.authenticationServer = theDomain.getAuthenticationServer();
+    dr.theTimeStamp = theDomain.getTheTimeStamp();
+    dr.silverpeasServerURL = theDomain.getSilverpeasServerURL();
+  }
+
   public String updateDomain(Domain theDomain) throws AdminException {
     try {
       DomainRow dr = new DomainRow();
       dr.id = idAsInt(theDomain.getId());
-      dr.name = theDomain.getName();
-      dr.description = theDomain.getDescription();
-      dr.className = theDomain.getDriverClassName();
-      dr.propFileName = theDomain.getPropFileName();
-      dr.authenticationServer = theDomain.getAuthenticationServer();
-      dr.theTimeStamp = theDomain.getTheTimeStamp();
-      dr.silverpeasServerURL = theDomain.getSilverpeasServerURL();
+      setDomainRow(theDomain, dr);
 
       // Create domain
       getOrganizationSchema().domain().updateDomain(dr);

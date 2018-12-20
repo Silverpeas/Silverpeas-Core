@@ -127,7 +127,7 @@ public class PublicationDateReminderUserNotification
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.dateReminder.multilang.dateReminder";
   }
 

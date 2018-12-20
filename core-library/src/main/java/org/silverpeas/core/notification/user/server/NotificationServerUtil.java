@@ -23,6 +23,14 @@
  */
 package org.silverpeas.core.notification.user.server;
 
+import org.silverpeas.core.notification.user.server.xml.NotifyContentHandler;
+import org.silverpeas.core.util.Charsets;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,18 +38,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.silverpeas.core.util.Charsets;
-
-import org.silverpeas.core.notification.user.server.xml.NotifyContentHandler;
-import org.silverpeas.core.exception.SilverpeasException;
-
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 public class NotificationServerUtil {
 
@@ -122,9 +118,7 @@ public class NotificationServerUtil {
       DefaultHandler handler = new NotifyContentHandler(data, parser.getXMLReader());
       parser.parse(xml, handler);
     } catch (SAXException | IOException | ParserConfigurationException e) {
-      throw new NotificationServerException("NotificationDataXML()",
-          SilverpeasException.ERROR,
-          "notificationServer.EX_ERROR_IN_XML_PARSING", e);
+      throw new NotificationServerException(e);
     }
     return data;
   }

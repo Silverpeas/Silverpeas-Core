@@ -26,17 +26,16 @@ package org.silverpeas.core.web.calendar;
 
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.notification.user.CalendarEventOccurrenceNotifyUserNotificationBuilder;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.util.AlertUser;
-import org.silverpeas.core.web.mvc.webcomponent.Navigation;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentController;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo;
@@ -116,28 +115,15 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
     return getCalendarTimeWindowContext();
   }
 
-  @GET
-  @Path("calendars/occurrences/{occurrenceId}/notify")
-  public Navigation notifyManuallyUsersGroups(C context) {
-    CalendarEventOccurrence occurrence = context.getCalendarEventOccurrenceById();
-
-    AlertUser sel = context.getUserManualNotificationForParameterization();
-    sel.resetAll();
-
-    // Browse bar settings
-    sel.setHostSpaceName(context.getSpaceLabel());
-    sel.setHostComponentId(context.getComponentInstanceId());
-    Pair<String, String> hostComponentName = new Pair<>(context.getComponentInstanceLabel(), null);
-    sel.setHostComponentName(hostComponentName);
-
-    // The notification
-    sel.setNotificationMetaData(UserNotificationHelper.build(
-        new CalendarEventOccurrenceNotifyUserNotificationBuilder(occurrence, context.getUser())));
-
-    SelectionUsersGroups sug = new SelectionUsersGroups();
-    sug.setComponentId(context.getComponentInstanceId());
-    sel.setSelectionUsersGroups(sug);
-    return context.redirectToNotifyManuallyUsers();
+  @Override
+  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
+    return c -> {
+      final String occurrenceId = c.get("eventId");
+      final CalendarEventOccurrence occurrence =
+          AbstractCalendarWebRequestContext.getCalendarEventOccurrence(occurrenceId);
+      return new CalendarEventOccurrenceNotifyUserNotificationBuilder(occurrence,
+          UserDetail.getCurrentRequester()).build();
+    };
   }
 
   @POST

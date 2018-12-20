@@ -23,24 +23,21 @@
  */
 package org.silverpeas.core.web.tools.agenda.notification;
 
-import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
+import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.URLUtil;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.MissingResourceException;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -170,16 +167,13 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
   @Override
   protected Collection<String> getUserIdsToNotify() {
     final Collection<String> userIds;
-    switch (action) {
-      case RESPONSE:
-        userIds = Collections.singleton(getResource().getDelegatorId());
-        break;
-      default:
-        userIds = new HashSet<String>();
-        for (final Attendee attendee : getCalendarBm().getJournalAttendees(getResource().getId())) {
-          userIds.add(attendee.getUserId());
-        }
-        break;
+    if (action == NotifAction.RESPONSE) {
+      userIds = Collections.singleton(getResource().getDelegatorId());
+    } else {
+      userIds = new HashSet<>();
+      for (final Attendee attendee : getSilverpeasCalendar().getJournalAttendees(getResource().getId())) {
+        userIds.add(attendee.getUserId());
+      }
     }
     return userIds;
   }
@@ -193,13 +187,7 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
   @Override
   protected void performTemplateData(final String language, final JournalHeader resource,
       final SilverpeasTemplate template) {
-    String title;
-    try {
-      title = getBundle(language).getString(getBundleSubjectKey());
-    } catch (MissingResourceException ex) {
-      title = getTitle();
-    }
-    getNotificationMetaData().addLanguage(language, title, "");
+    getNotificationMetaData().addLanguage(language, getTitle(language), "");
     template.setAttribute("sender", sender.getDisplayedName());
     if (isDefined(attend)) {
       template.setAttribute(attend, attend);
@@ -237,13 +225,10 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
     sb.append("journal.jsp?JournalId=");
     sb.append(resource.getId());
     sb.append("&Action=");
-    switch (action) {
-      case DELETE:
-        return null;
-
-      default:
-        sb.append("Update");
-        break;
+    if (action == NotifAction.DELETE) {
+      return null;
+    } else {
+      sb.append("Update");
     }
     return sb.toString();
   }
@@ -289,10 +274,10 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
   /*
    * (non-Javadoc)
    * @see
-   * com.silverpeas.notification.builder.AbstractUserNotificationBuilder#getMultilangPropertyFile()
+   * com.silverpeas.notification.builder.AbstractUserNotificationBuilder#getLocalizationBundlePath()
    */
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.agenda.multilang.agenda";
   }
 
@@ -309,14 +294,9 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
   /**
    * @return the calendarBm
    */
-  protected SilverpeasCalendar getCalendarBm() {
+  protected SilverpeasCalendar getSilverpeasCalendar() {
     if (calendarBm == null) {
-      try {
-        calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
-      } catch (final Exception e) {
-        throw new AgendaRuntimeException("AgendaUserNotification.getCalendarBm()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
+      calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
     }
     return calendarBm;
   }

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server.channel.server;
 
+import org.silverpeas.core.notification.user.client.NotificationParameterNames;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.channel.AbstractListener;
@@ -64,9 +65,9 @@ public class SERVERListener extends AbstractListener implements MessageListener 
    * @throws NotificationServerException
    */
   @Override
-  public void send(NotificationData notification) throws NotificationServerException {
+  public void send(NotificationData notification) {
     Map<String, Object> params = notification.getTargetParam();
-    String sessionId = (String) params.get("SESSIONID");
+    String sessionId = (String) params.get(NotificationParameterNames.SESSIONID);
     ServerMessageService.get()
         .push(notification.getTargetReceipt(), notification.getMessage(), sessionId);
   }

@@ -24,12 +24,11 @@
 package org.silverpeas.core.notification.user;
 
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
-import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -44,6 +43,10 @@ public class DefaultUserNotification implements UserNotification {
 
   public DefaultUserNotification() {
     this(null, null);
+  }
+
+  public DefaultUserNotification(final NotificationMetaData metaData) {
+    this.notification = metaData;
   }
 
   public DefaultUserNotification(final String title, final String content) {
@@ -70,16 +73,17 @@ public class DefaultUserNotification implements UserNotification {
   }
 
   @Override
-  public void send(final NotifMediaType mediaType) {
-    if (notification != null) {
+  public void send(final BuiltInNotifAddress notificationAddress) {
+    final NotificationMetaData notifMetaData = getNotificationMetaData();
+    if (notifMetaData != null) {
       try {
-        final NotificationSender sender = new NotificationSender(notification.getComponentId());
-        if (mediaType != null) {
-          sender.notifyUser(mediaType.getId(), notification);
+        final NotificationSender sender = new NotificationSender(notifMetaData.getComponentId());
+        if (notificationAddress != null) {
+          sender.notifyUser(notificationAddress.getId(), notifMetaData);
         } else {
-          sender.notifyUser(notification);
+          sender.notifyUser(notifMetaData);
         }
-      } catch (final NotificationManagerException e) {
+      } catch (final NotificationException e) {
         SilverLogger.getLogger(this).warn(e);
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);

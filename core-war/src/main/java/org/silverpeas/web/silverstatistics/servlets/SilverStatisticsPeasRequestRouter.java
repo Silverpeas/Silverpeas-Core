@@ -116,24 +116,6 @@ public class SilverStatisticsPeasRequestRouter extends
         statsSC.kickSession(request.getParameter("theSessionId"));
         request.setAttribute("ConnectedUsersList", statsSC.getConnectedUsersList());
         destination = "/silverStatisticsPeas/jsp/connections.jsp";
-      } else if (function.equals("DisplayNotifySession")) {
-        request.setAttribute("userDetail", statsSC.getTargetUserDetail(request
-            .getParameter("theUserId")));
-        request.setAttribute("action", "NotifyUser");
-        destination = "/silverStatisticsPeas/jsp/writeMessage.jsp";
-      } else if (function.equals("DisplayNotifyAllSessions")) {
-        request.setAttribute("action", "NotifyAllUsers");
-        destination = "/silverStatisticsPeas/jsp/writeMessage.jsp";
-      } else if (function.equals("ToAlert")) {
-        statsSC
-            .notifySession(request.getParameter("theUserId"), request.getParameter("messageAux"));
-        request.setAttribute("action", "Close");
-        destination = "/silverStatisticsPeas/jsp/writeMessage.jsp";
-      } else if (function.equals("ToAlertAllUsers")) {
-        statsSC.notifyAllSessions(statsSC.getConnectedUsersList(), request
-            .getParameter("messageAux"));
-        request.setAttribute("action", "Close");
-        destination = "/silverStatisticsPeas/jsp/writeMessage.jsp";
       } else if (function.startsWith("ViewConnections")) {
         statsSC.setMonthBegin(monthOfLastYear);
         statsSC.setYearBegin(statsSC.checkYearConnection(lastYear));

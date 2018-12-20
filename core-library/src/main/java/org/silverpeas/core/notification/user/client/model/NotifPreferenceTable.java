@@ -52,7 +52,8 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
     return getUniqueRow(SELECT_NOTIFPREFERENCE_BY_ID, id);
   }
 
-  private static final String SELECT_NOTIFPREFERENCE_BY_ID = "select "
+  private static final String SELECT = "select ";
+  private static final String SELECT_NOTIFPREFERENCE_BY_ID = SELECT
       + NOTIFPREFERENCE_COLUMNS + " from ST_NotifPreference where id = ?";
 
   /**
@@ -67,7 +68,7 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
   }
 
   private static final String SELECT_NOTIFPREFERENCE_BY_USERID_AND_COMPONENTINSTANCEID_AND_MESSAGETYPE =
-      "select "
+      SELECT
       + NOTIFPREFERENCE_COLUMNS
       + " from ST_NotifPreference where "
       + "userId=? and componentInstanceId=? and messageType=?";
@@ -82,7 +83,7 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
     return rows.toArray(new NotifPreferenceRow[rows.size()]);
   }
 
-  private static final String SELECT_ALL_NOTIFPREFERENCE_WITH_GIVEN_COMPONENTINSTANCEID = "select "
+  private static final String SELECT_ALL_NOTIFPREFERENCE_WITH_GIVEN_COMPONENTINSTANCEID = SELECT
       + NOTIFPREFERENCE_COLUMNS
       + " from ST_NotifPreference where componentInstanceId=?";
 
@@ -94,7 +95,7 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
     return rows.toArray(new NotifPreferenceRow[rows.size()]);
   }
 
-  private static final String SELECT_ALL_NOTIFPREFERENCE_WITH_GIVEN_USERID = "select "
+  private static final String SELECT_ALL_NOTIFPREFERENCE_WITH_GIVEN_USERID = SELECT
       + NOTIFPREFERENCE_COLUMNS + " from ST_NotifPreference where userId=?";
 
   /**
@@ -105,7 +106,7 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
     return rows.toArray(new NotifPreferenceRow[rows.size()]);
   }
 
-  private static final String SELECT_ALL_NOTIFPREFERENCE = "select "
+  private static final String SELECT_ALL_NOTIFPREFERENCE = SELECT
       + NOTIFPREFERENCE_COLUMNS + " from ST_NotifPreference";
 
   /**

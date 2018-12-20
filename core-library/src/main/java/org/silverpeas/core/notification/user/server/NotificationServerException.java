@@ -23,65 +23,21 @@
  */
 package org.silverpeas.core.notification.user.server;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 public class NotificationServerException extends SilverpeasException {
 
-  private static final long serialVersionUID = 139645218705518410L;
+  private static final long serialVersionUID = 253197259021032551L;
 
-  /**
-   * --------------------------------------------------------------------------
-   * constructor
-   */
-  public NotificationServerException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public NotificationServerException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   *
-   */
-  public NotificationServerException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public NotificationServerException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   *
-   */
-  public NotificationServerException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public NotificationServerException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   *
-   */
-  public NotificationServerException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * -------------------------------------------------------------------------- getModule getModule
-   */
-  public String getModule() {
-    return "notificationserver";
-  }
-
 }

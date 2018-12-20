@@ -46,7 +46,6 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.session.SessionCloseable;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
@@ -82,7 +81,6 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
   private String userLanguage = null;
   private transient Selection selection = null;
   private String userSpace = null;
-  private transient AlertUser alertUser = null;
   private String serverName = null;
   private String serverPort = null;
   private transient SubscriptionContext subscriptionContext = null;
@@ -218,14 +216,6 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
       subscriptionContext = new SubscriptionContext(getCurrentUserDetail(), userPreferences);
     }
     return subscriptionContext;
-  }
-
-  // ------------------- AlertUser Functions -----------------------------
-  public AlertUser getAlertUser() {
-    if (alertUser == null) {
-      alertUser = new AlertUser();
-    }
-    return alertUser;
   }
 
   /**

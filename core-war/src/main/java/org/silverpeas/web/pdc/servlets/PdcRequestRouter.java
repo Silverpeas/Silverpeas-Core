@@ -23,22 +23,21 @@
  */
 package org.silverpeas.web.pdc.servlets;
 
-import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.AxisPK;
 import org.silverpeas.core.pdc.pdc.model.Value;
-import org.silverpeas.web.pdc.control.PdcSessionController;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
+import org.silverpeas.web.pdc.control.PdcSessionController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -202,8 +201,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
 
         // check user rights
         if (!pdcSC.isPDCAdmin() && !pdcSC.isAxisManager(axeId)) {
-          throw new AccessForbiddenException("PdcRequestRouter.EditAxit",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Axis edition forbidden");
         }
 
         String viewType = pdcSC.getCurrentView(); // get the type of the current
@@ -248,8 +246,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
         // the user deletes an axe from the PDC.
 
         if (!pdcSC.isPDCAdmin()) {
-          throw new AccessForbiddenException("PdcRequestRouter." + function,
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Access forbidden");
         }
 
         // get URL parameters
@@ -527,8 +524,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
         boolean isAdmin = pdcSC.isPDCAdmin() || pdcSC.isAxisManager()
             || pdcSC.isInheritedManager();
         if (!isAdmin) {
-          throw new AccessForbiddenException("PdcRequestRouter.DeleteValue",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Axis value deletion forbidden");
         }
 
         // remove the value
@@ -559,8 +555,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
         boolean isAdmin = pdcSC.isPDCAdmin() || pdcSC.isAxisManager()
             || pdcSC.isInheritedManager();
         if (!isAdmin) {
-          throw new AccessForbiddenException("PdcRequestRouter.DeleteValue",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Axis value deletion forbidden");
         }
 
         // remove the value and subtree
@@ -749,9 +744,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
         try {
           pdcSC.updateManager();
         } catch (Exception e) {
-          SilverTrace.warn("jobStartPagePeas",
-              "JobStartPagePeasRequestRouter.getDestination()",
-              "root.EX_USERPANEL_FAILED", "function = " + function, e);
+          SilverLogger.getLogger(this).error(e);
         }
         destination = getDestination("ViewManager", pdcSC, request);
       } else if (function.startsWith("EraseManager")) {
@@ -759,9 +752,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
         try {
           pdcSC.eraseManagers();
         } catch (Exception e) {
-          SilverTrace.warn("jobStartPagePeas",
-              "JobStartPagePeasRequestRouter.getDestination()",
-              "root.EX_USERPANEL_FAILED", "function = " + function, e);
+          SilverLogger.getLogger(this).error(e);
         }
         destination = getDestination("ViewManager", pdcSC, request);
       }

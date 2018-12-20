@@ -34,7 +34,6 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.LocalizationBundle;
 
 import java.util.Collection;
-import java.util.MissingResourceException;
 import java.util.Set;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -91,20 +90,26 @@ public class CommentUserNotification
     return subjectKey;
   }
 
+  /**
+   * The title is the either the default subject of the notifications as defined in the bundle
+   * returned by {@link #getBundle()} method and by the property given by the
+   * {@link #getBundleSubjectKey()} method or the default subject for the notification about the
+   * comments.
+   * @param language the ISO-631 code of the language. It is here not taken into account. Only the
+   * the locale of the component messages bundle is taken into account.
+   * @return the subject of the notification.
+   */
   @Override
-  protected String getTitle() {
-    String subject;
-    try {
+  protected String getTitle(final String language) {
+    final String subject;
+    if (componentMessages.containsKey(getBundleSubjectKey())) {
       subject = componentMessages.getString(getBundleSubjectKey());
-    } catch (MissingResourceException mre) {
+    } else {
       subject = "";
     }
-    if (!isDefined(subject)) {
-      subject =
-          commentService.getComponentMessages(componentMessages.getLocale().getLanguage())
-              .getString(DEFAULT_SUBJECT_COMMENT_ADDING);
-    }
-    return subject;
+    return isDefined(subject) ? subject :
+        commentService.getComponentMessages(componentMessages.getLocale().getLanguage())
+            .getString(DEFAULT_SUBJECT_COMMENT_ADDING);
   }
 
   @Override
@@ -164,7 +169,7 @@ public class CommentUserNotification
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.util.comment.multilang.comment";
   }
 

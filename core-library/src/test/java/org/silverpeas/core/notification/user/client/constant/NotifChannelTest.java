@@ -28,7 +28,6 @@ import org.silverpeas.core.test.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 
 /**
  * @author Yohann Chastagnier
@@ -37,11 +36,29 @@ import static org.hamcrest.Matchers.nullValue;
 public class NotifChannelTest {
 
   @Test
-  public void testDecode() {
-    assertThat(NotifChannel.decode(null), nullValue());
-    assertThat(NotifChannel.decode(-1000), nullValue());
+  public void decodeNullId() {
+    assertThat(NotifChannel.decode((Integer) null).isPresent(), is(false));
+  }
+
+  @Test
+  public void decodeInvalidId() {
+    assertThat(NotifChannel.decode(-1000).isPresent(), is(false));
+  }
+
+  @Test
+  public void decodeNullName() {
+    assertThat(NotifChannel.decode((String) null).isPresent(), is(false));
+  }
+
+  @Test
+  public void decodeInvalidName() {
+    assertThat(NotifChannel.decode("plouf").isPresent(), is(false));
+  }
+
+  @Test
+  public void decodeAllValidIds() {
     for (final NotifChannel channel : NotifChannel.values()) {
-      assertThat(NotifChannel.decode(channel.getId()), is(channel));
+      assertThat(NotifChannel.decode(channel.getId()).orElse(null), is(channel));
     }
   }
 }

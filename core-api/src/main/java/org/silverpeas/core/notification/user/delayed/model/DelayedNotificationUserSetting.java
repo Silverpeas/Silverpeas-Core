@@ -90,7 +90,7 @@ public class DelayedNotificationUserSetting
   }
 
   public NotifChannel getChannel() {
-    return NotifChannel.decode(channel);
+    return NotifChannel.decode(channel).orElse(null);
   }
 
   public void setChannel(NotifChannel channelId) {

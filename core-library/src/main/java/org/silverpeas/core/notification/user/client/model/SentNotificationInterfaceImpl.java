@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.notification.user.client.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
@@ -48,7 +47,7 @@ public class SentNotificationInterfaceImpl implements SentNotificationInterface 
   @Transactional
   @Override
   public void saveNotifUser(NotificationMetaData metaData, Set<UserRecipient> usersSet)
-      throws NotificationManagerException {
+      throws NotificationException {
     try (Connection con = openConnection()) {
 
       List<String> users = new ArrayList<>();
@@ -66,35 +65,32 @@ public class SentNotificationInterfaceImpl implements SentNotificationInterface 
       int id = SentNotificationDAO.saveNotifUser(con, notif);
       notif.setNotifId(id);
     } catch (Exception e) {
-      throw new NotificationManagerException("SentNotificationInterfaceImpl.saveNotifUser()",
-          SilverpeasRuntimeException.ERROR, "notificationManager.EX_CANT_SAVE_NOTIFICATION", e);
+      throw new NotificationException(e);
     }
   }
 
   @Override
   public List<SentNotificationDetail> getAllNotifByUser(String userId)
-      throws NotificationManagerException {
+      throws NotificationException {
     try (Connection con = openConnection()) {
       return SentNotificationDAO.getAllNotifByUser(con, userId);
     } catch (Exception e) {
-      throw new NotificationManagerException("SentNotificationInterfaceImpl.getAllNotifByUser()",
-          SilverpeasRuntimeException.ERROR, "notificationManager.EX_CANT_GET_NOTIFICATIONS", e);
+      throw new NotificationException(e);
     }
   }
 
   @Override
-  public SentNotificationDetail getNotification(int notifId) throws NotificationManagerException {
+  public SentNotificationDetail getNotification(int notifId) throws NotificationException {
     try (Connection con = openConnection()) {
       return SentNotificationDAO.getNotif(con, notifId);
     } catch (Exception e) {
-      throw new NotificationManagerException("SentNotificationInterfaceImpl.getNotification()",
-          SilverpeasRuntimeException.ERROR, "notificationManager.EX_CANT_GET_NOTIFICATION", e);
+      throw new NotificationException(e);
     }
   }
 
   @Transactional
   @Override
-  public void deleteNotif(int notifId, String userId) throws NotificationManagerException {
+  public void deleteNotif(int notifId, String userId) throws NotificationException {
     try (Connection con = openConnection()) {
       SentNotificationDetail toDel = getNotification(notifId);
 
@@ -102,23 +98,21 @@ public class SentNotificationInterfaceImpl implements SentNotificationInterface 
       if(Integer.parseInt(userId) == toDel.getUserId()) {
         SentNotificationDAO.deleteNotif(con, notifId);
       } else {
-        throw new ForbiddenRuntimeException("SentNotificationInterfaceImpl.deleteNotif()",
-            SilverpeasRuntimeException.ERROR, "peasCore.RESOURCE_ACCESS_UNAUTHORIZED", "notifId="+notifId+", userId="+userId);
+        throw new ForbiddenRuntimeException(
+            "Unauthorized to delete the notification " + notifId + " for user " + userId);
       }
     } catch (Exception e) {
-      throw new NotificationManagerException("SentNotificationInterfaceImpl.deleteNotif()",
-          SilverpeasRuntimeException.ERROR, "notificationManager.EX_CANT_DELETE_NOTIFICATION", e);
+      throw new NotificationException(e);
     }
   }
 
   @Transactional
   @Override
-  public void deleteNotifByUser(String userId) throws NotificationManagerException {
+  public void deleteNotifByUser(String userId) throws NotificationException {
     try (Connection con = openConnection()) {
       SentNotificationDAO.deleteNotifByUser(con, userId);
     } catch (Exception e) {
-      throw new NotificationManagerException("SentNotificationInterfaceImpl.deleteNotifByUser()",
-          SilverpeasRuntimeException.ERROR, "notificationManager.EX_CANT_DELETE_NOTIFICATION", e);
+      throw new NotificationException(e);
     }
   }
 }
