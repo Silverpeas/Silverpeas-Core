@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2015 Silverpeas
+ * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,21 +23,33 @@
  */
 package org.silverpeas.upload.web;
 
+import com.silverpeas.calendar.DateTime;
 import com.silverpeas.util.StringUtil;
 import org.silverpeas.util.Charsets;
+import org.silverpeas.web.filter.MassiveWebSecurityFilter;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier
  */
 public class FileUploadData {
 
-  final static String X_COMPONENT_INSTANCE_ID = "X-COMPONENT-INSTANCE-ID";
-  final static String X_UPLOAD_SESSION = "X-UPLOAD-SESSION";
-  final static String X_FULL_PATH = "X-FULL-PATH";
+  private static final Logger logger = Logger.getLogger(MassiveWebSecurityFilter.class.
+      getSimpleName());
+
+  static final String X_COMPONENT_INSTANCE_ID = "X-COMPONENT-INSTANCE-ID";
+  static final String X_UPLOAD_SESSION = "X-UPLOAD-SESSION";
+  static final String X_FULL_PATH = "X-FULL-PATH";
 
   private String uploadSessionId;
   private String fullPath;
@@ -46,15 +58,16 @@ public class FileUploadData {
 
   /**
    * Hidden constructor.
-   * @param uploadSessionId
-   * @param fullPath
-   * @param componentInstanceId
    */
   private FileUploadData(String uploadSessionId, String fullPath,
       final String componentInstanceId) {
+    if (isDefined(fullPath) && fullPath.contains("..")) {
+      logger.log(Level.SEVERE, "Path Traversal attack detected at {0}", DateTime.now().toISO8601());
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
     this.uploadSessionId = uploadSessionId;
     this.fullPath = fullPath;
-    this.name = StringUtil.isDefined(fullPath) ? new File(fullPath).getName() : "";
+    this.name = isDefined(fullPath) ? new File(fullPath).getName() : "";
     this.componentInstanceId = componentInstanceId;
   }
 
@@ -78,9 +91,10 @@ public class FileUploadData {
    * Initializes an instance from the request directly. (OCTET STREAM UPLOAD)
    * @param request the current http request.
    * @return a new initialized instance.
-   * @throws Exception
+   * @throws UnsupportedEncodingException on encoding error.
    */
-  public static FileUploadData from(HttpServletRequest request) throws Exception {
+  public static FileUploadData from(HttpServletRequest request)
+      throws UnsupportedEncodingException {
     String brutFullPath = request.getHeader(X_FULL_PATH);
     if (StringUtil.isNotDefined(brutFullPath)) {
       brutFullPath = "";
@@ -94,7 +108,6 @@ public class FileUploadData {
    * Initializes an instance from {@link UploadedRequestFile}. (FormData)
    * @param uploadedRequestFile the upload file that represents the form data.
    * @return a new initialized instance.
-   * @throws Exception
    */
   public static FileUploadData from(UploadedRequestFile uploadedRequestFile) {
     return new FileUploadData(uploadedRequestFile.getUploadSessionId(),
