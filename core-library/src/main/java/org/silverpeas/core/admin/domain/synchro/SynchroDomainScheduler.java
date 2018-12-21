@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.notification.user.SimpleUserNotification;
 import org.silverpeas.core.scheduler.Scheduler;
@@ -80,10 +81,15 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
           SilverLogger.getLogger(this).error(e.getMessage(), e);
           final OrganizationController organizationController = OrganizationController.get();
           final Domain domain = organizationController.getDomain(domainId);
-          final UserDetailsSearchCriteria criteria = new UserDetailsSearchCriteria();
-          criteria.onAccessLevels(UserAccessLevel.ADMINISTRATOR);
+          UserDetailsSearchCriteria criteria = new UserDetailsSearchCriteria()
+              .onAccessLevels(UserAccessLevel.ADMINISTRATOR);
+          final List<User> admins = organizationController.searchUsers(criteria);
+          criteria = new UserDetailsSearchCriteria()
+              .onDomainIds(domainId)
+              .onAccessLevels(UserAccessLevel.DOMAIN_ADMINISTRATOR);
+          admins.addAll(organizationController.searchUsers(criteria));
           SimpleUserNotification.fromSystem()
-              .toUsers(organizationController.searchUsers(criteria))
+              .toUsers(admins)
               .withTitle(l -> bundle(l).getStringWithParams("admin.domain.sync.error.notif.title", domain.getName()))
               .andMessage(l -> bundle(l).getStringWithParams("admin.domain.sync.error.notif.message", domain.getName()))
               .send();

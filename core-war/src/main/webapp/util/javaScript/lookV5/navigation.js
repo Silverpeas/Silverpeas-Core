@@ -712,6 +712,9 @@ var SpaceUpdater = SilverpeasClass.extend({
   ajaxUpdate: function(ajaxResponse) {
     //alert("ajaxUpdate call, ajaxResponse=" + ajaxResponse);
     var nbElements = ajaxResponse.childNodes.length;
+    if (!nbElements) {
+      return;
+    }
     //console.log("nbElements="+nbElements + ",ajaxResponse.childNodes[0].tagName=" + ajaxResponse.childNodes[0].tagName);
     if (ajaxResponse.childNodes[0].tagName === "spacePerso") {
       this.displayMySpace(ajaxResponse.childNodes[0]);

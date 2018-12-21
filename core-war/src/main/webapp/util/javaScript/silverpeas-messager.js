@@ -54,31 +54,33 @@
        * component instance.
        */
       open : function(instanceId, parameters) {
-        if (! this.opened) {
+        if (!sp.messager.opened) {
           var messager = window.webContext + '/RuserNotification/jsp/Main';
           var notification = {};
           if (instanceId !== undefined) {
             if (typeof parameters === 'object') {
               notification = parameters;
             }
-            if (instanceId && instanceId.trim().length > 0) {
+            if (StringUtil.isDefined(instanceId)) {
               notification.componentId = instanceId;
             }
           }
-          this.opened = true;
+          sp.messager.opened = true;
           jQuery.popup.load(messager, {method : 'POST', params : notification}).show('validation', {
             title : 'Notification',
             width : 800,
             buttonTextYes : window.NotificationBundle.get('send'),
             buttonTextNo : window.NotificationBundle.get('cancel'),
             callback : function() {
-              sendNotification(notification);
+              return sendNotification(notification);
             },
             callbackOnClose : function() {
               var url = window.webContext + '/RuserNotification/jsp/ClearNotif';
               sp.ajaxRequest(url).byPostMethod().send();
-              this.opened = false;
-            }.bind(this)
+              sp.messager.opened = false;
+            }
+          })['catch'](function() {
+            sp.messager.opened = false;
           });
         }
       },
@@ -104,23 +106,25 @@
        */
       send : function(notification) {
         if (!notification || (!notification.recipientUsers && !notification.recipientGroups)) {
-          var msg = window.NotificationBundle.get('theField') + ' ' +
-              window.NotificationBundle.get('addressees') + ' ' +
+          var msg = window.NotificationBundle.get('thefield') + ' <b>' +
+              window.NotificationBundle.get('addressees') + '</b> ' +
               window.NotificationBundle.get('isRequired');
-          notyError(msg);
+          SilverpeasError.add(msg);
         } else if (notification.manual === true && !notification.title) {
-          var msg = window.NotificationBundle.get('theField') + ' ' +
-              window.NotificationBundle.get('title') + ' ' +
+          var msg = window.NotificationBundle.get('thefield') + ' <b>' +
+              window.NotificationBundle.get('title') + '</b> ' +
               window.NotificationBundle.get('isRequired');
-          notyError(msg);
+          SilverpeasError.add(msg);
+        }
+        if (SilverpeasError.show()) {
+          return sp.promise.rejectDirectlyWith();
         }
         if (notification.content === null || notification.content === undefined) {
           notification.content = '';
         }
         var url = window.webContext + '/RuserNotification/jsp/SendNotif';
-        sp.ajaxRequest(url).byPostMethod().withParams(notification).send();
+        return sp.ajaxRequest(url).byPostMethod().withParams(notification).send();
       }
     }
   }
-
 })();

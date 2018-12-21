@@ -944,7 +944,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(scriptContent(bundleVariableName("NotificationBundle")
         .add("send", notifBundle.getString("Envoyer"))
         .add("cancel", notifBundle.getString("GML.cancel"))
-        .add("theField", notifBundle.getString("GML.theField"))
+        .add("thefield", notifBundle.getString("GML.thefield"))
         .add("addressees", notifBundle.getString("addressees"))
         .add("title", notifBundle.getString("GML.notification.subject"))
         .add("isRequired", notifBundle.getString("GML.isRequired"))

@@ -14,6 +14,7 @@ import static org.apache.commons.lang3.StringUtils.split;
  * @author mmoquillon
  */
 public class NotificationContext extends HashMap<String, String> {
+  private static final long serialVersionUID = 341715544034127254L;
 
   public List<String> getAsList(final String key) {
     final String value = get(key);
@@ -22,7 +23,7 @@ public class NotificationContext extends HashMap<String, String> {
 
   public boolean getAsBoolean(final String key) {
     final String value = get(key);
-    return StringUtil.getBooleanValue(key);
+    return StringUtil.getBooleanValue(value);
   }
 }
   
