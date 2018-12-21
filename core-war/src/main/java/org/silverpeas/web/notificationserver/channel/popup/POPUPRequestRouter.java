@@ -76,11 +76,6 @@ public class POPUPRequestRouter extends ComponentRequestRouter<POPUPSessionContr
       long messageId = Long.parseLong(request.getParameter("MessageID"));
       popupSC.setCurrentMessageId(messageId);
       destination = "/POPUP/jsp/readMessage.jsp";
-    } else if (function.startsWith("ToAlert")) {
-      popupSC.notifySession(request.getParameter("theUserId"), request
-          .getParameter("messageAux"));
-      request.setAttribute("action", "Close");
-      destination = "/POPUP/jsp/readMessage.jsp";
     }
     return destination;
   }

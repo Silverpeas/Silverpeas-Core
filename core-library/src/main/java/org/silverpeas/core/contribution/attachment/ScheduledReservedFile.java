@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.attachment;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -96,7 +96,7 @@ public class ScheduledReservedFile implements Initialization {
                 getFilename()).append("'");
         String body = createMessageBody(message, messageBody, date, false, false);
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
+            new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, body);
 
         createMessage(date, notifMetaData, document, false, false);
         messageBody = new StringBuilder();
@@ -119,7 +119,7 @@ public class ScheduledReservedFile implements Initialization {
                 getFilename()).append("'");
         String body = createMessageBody(message, messageBody, date, true, false);
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
+            new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, body);
 
         createMessage(date, notifMetaData, document, true, false);
         messageBody = new StringBuilder();
@@ -142,7 +142,7 @@ public class ScheduledReservedFile implements Initialization {
                 getFilename()).append("'");
         String body = createMessageBody(message, messageBody, date, false, true);
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
+            new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, body);
 
         createMessage(date, notifMetaData, document, false, true);
         messageBody = new StringBuilder();
@@ -226,7 +226,7 @@ public class ScheduledReservedFile implements Initialization {
       }
       NotificationSender notifSender = new NotificationSender(componentId);
       notifSender.notifyUser(notifMetaData);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new AttachmentException(e);
     }
   }

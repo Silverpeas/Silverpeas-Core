@@ -26,6 +26,7 @@ package org.silverpeas.core.notification.user.client;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
@@ -123,37 +124,36 @@ public class NotificationManagerSettingsTest {
   @Test
   public void getDefaultChannelsWithNoValueDefinedAndMultiChannelIsNotEnabled() {
     assertThat(NotificationManagerSettings.getDefaultChannels(),
-        contains(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL));
+        contains(NotifChannel.SMTP));
   }
 
   @Test
   public void getDefaultChannelsWithBadValueDefinedAndMultiChannelIsNotEnabled() {
     setDefaultChannels("BAD_VALUE");
     assertThat(NotificationManagerSettings.getDefaultChannels(),
-        contains(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL));
+        contains(NotifChannel.SMTP));
   }
 
   @Test
   public void getDefaultChannelsWithBasicServerDefinedAndMultiChannelIsNotEnabled() {
     setDefaultChannels("BASIC_SERVER");
     assertThat(NotificationManagerSettings.getDefaultChannels(),
-        contains(NotificationParameters.ADDRESS_BASIC_SERVER));
+        contains(NotifChannel.SERVER));
   }
 
   @Test
   public void getDefaultChannelsWithSeveralDefinedAndMultiChannelIsNotEnabled() {
-    setDefaultChannels("  , hijez ,  BASIC_COMMUNICATION_USER   BAD_VALUE    BASIC_SERVER   ");
+    setDefaultChannels("  , hijez ,  BASIC_SERVER   BAD_VALUE    BASIC_SERVER   ");
     assertThat(NotificationManagerSettings.getDefaultChannels(),
-        contains(NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER));
+        contains(NotifChannel.SERVER));
   }
 
   @Test
   public void getDefaultChannelsWithSeveralDefinedAndMultiChannelIsEnabled() {
     enableMultiChannel();
-    setDefaultChannels("  , hijez ,  BASIC_COMMUNICATION_USER   BAD_VALUE    BASIC_SERVER   ");
+    setDefaultChannels("  , hijez ,  BASIC_SMTP_MAIL   BAD_VALUE    BASIC_SERVER   ");
     assertThat(NotificationManagerSettings.getDefaultChannels(),
-        contains(NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER,
-            NotificationParameters.ADDRESS_BASIC_SERVER));
+        contains(NotifChannel.SMTP, NotifChannel.SERVER));
   }
 
   /*

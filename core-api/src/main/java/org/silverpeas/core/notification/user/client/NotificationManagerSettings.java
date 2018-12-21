@@ -25,6 +25,7 @@ package org.silverpeas.core.notification.user.client;
 
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.notification.sse.ServerEvent;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -33,9 +34,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Centralizing the access to the settings associated to the management of notifications.
@@ -169,41 +172,25 @@ public class NotificationManagerSettings {
    * up, then the previous behaviour is used; the SMTP is used as default channel.
    * @return a set of default notification channels.
    */
-  public static List<Integer> getDefaultChannels() {
-    String defaultChannels = settings.getString("notif.defaultChannels", "");
-    boolean isMultiChannelSupported = isMultiChannelNotificationEnabled();
-    StringTokenizer channelTokenizer =
-        new StringTokenizer(defaultChannels.replaceAll("[ ]{2,}", " "), " ");
-    List<Integer> mediaIds = new ArrayList<>(channelTokenizer.countTokens() + 1);
-    while (channelTokenizer.hasMoreTokens()) {
-      String channel = channelTokenizer.nextToken();
-      if ("BASIC_POPUP".equalsIgnoreCase(channel) &&
-          !mediaIds.contains(NotificationParameters.ADDRESS_BASIC_POPUP)) {
-        mediaIds.add(NotificationParameters.ADDRESS_BASIC_POPUP);
-      } else if ("BASIC_REMOVE".equalsIgnoreCase(channel) &&
-          !mediaIds.contains(NotificationParameters.ADDRESS_BASIC_REMOVE)) {
-        mediaIds.add(NotificationParameters.ADDRESS_BASIC_REMOVE);
-      } else if ("BASIC_SILVERMAIL".equalsIgnoreCase(channel) &&
-          !mediaIds.contains(NotificationParameters.ADDRESS_BASIC_SILVERMAIL)) {
-        mediaIds.add(NotificationParameters.ADDRESS_BASIC_SILVERMAIL);
-      } else if ("BASIC_SMTP_MAIL".equalsIgnoreCase(channel) &&
-          !mediaIds.contains(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL)) {
-        mediaIds.add(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL);
-      } else if ("BASIC_SERVER".equalsIgnoreCase(channel) &&
-          !mediaIds.contains(NotificationParameters.ADDRESS_BASIC_SERVER)) {
-        mediaIds.add(NotificationParameters.ADDRESS_BASIC_SERVER);
-      } else if ("BASIC_COMMUNICATION_USER".equalsIgnoreCase(channel) &&
-          !mediaIds.contains(NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER)) {
-        mediaIds.add(NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER);
-      }
-      if (!(isMultiChannelSupported || mediaIds.isEmpty())) {
-        break;
-      }
+  static List<NotifChannel> getDefaultChannels() {
+    final String defaultChannelSetting = settings.getString("notif.defaultChannels", "");
+    final boolean isMultiChannelSupported = isMultiChannelNotificationEnabled();
+    final String[] defaultChannels = defaultChannelSetting.replaceAll("[ ]{2,}", " ").split(" ");
+    final List<NotifChannel> channels;
+    final Stream<NotifChannel> streamOfChannels = Stream.of(defaultChannels)
+        .map(NotifChannel::decode)
+        .filter(Optional::isPresent)
+        .map(Optional::get);
+    if (!isMultiChannelSupported) {
+      channels = new ArrayList<>(1);
+      channels.add(streamOfChannels.findFirst().orElse(NotifChannel.SMTP));
+    } else {
+      channels = streamOfChannels.distinct().collect(Collectors.toList());
     }
-    if (mediaIds.isEmpty()) {
-      mediaIds.add(NotificationParameters.ADDRESS_BASIC_SMTP_MAIL);
+    if (channels.isEmpty()) {
+      channels.add(NotifChannel.SMTP);
     }
-    return mediaIds;
+    return channels;
   }
 
   /**
@@ -285,4 +272,24 @@ public class NotificationManagerSettings {
     return silvermailIconsSettings
         .getString("silvermail.desktop.url", "/util/icons/desktop-user-notification.png");
   }
+
+  /**
+   * Is the space label should be set in the source of a notification when this property isn't set
+   * explicitly.
+   * @return true if the space label should be set in the notification source. False otherwise.
+   */
+  public static boolean isSpaceLabelInNotificationSource() {
+    return settings.getBoolean("notification.source.spaceLabel");
+  }
+
+  /**
+   * Is the component instance label should be set in the source of a notification when this
+   * property isn't set explicitly.
+   * @return true if the component instance label should be set in the notification source. False
+   * otherwise.
+   */
+  public static boolean isComponentInstanceLabelInNotificationSource() {
+    return settings.getBoolean("notification.source.componentLabel");
+  }
+
 }

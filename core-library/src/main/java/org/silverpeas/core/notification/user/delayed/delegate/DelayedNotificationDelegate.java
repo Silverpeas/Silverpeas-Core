@@ -24,6 +24,7 @@
 package org.silverpeas.core.notification.user.delayed.delegate;
 
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.client.AbstractNotification;
@@ -41,7 +42,6 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServer;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.CollectionUtil;
@@ -59,7 +59,7 @@ import java.util.*;
  */
 public class DelayedNotificationDelegate extends AbstractNotification {
 
-  private final static String LOCATION_SEPARATOR = " &gt; ";
+  private static final String LOCATION_SEPARATOR = " &gt; ";
 
   /**
    * User details cache
@@ -95,7 +95,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @param userId
    * @throws Exception
    */
-  public static void executeUserDeleting(final int userId) throws Exception {
+  public static void executeUserDeleting(final int userId)
+      throws NotificationServerException, AdminException {
 
     // Forcing sending of delayed notification on the aimed channel
     executeForceDelayedNotificationsSending(userId,
@@ -123,7 +124,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @throws Exception
    */
   public static DelayedNotificationUserSetting executeUserSettingsUpdating(final int userId,
-      final NotifChannel channel, final DelayedNotificationFrequency frequency) throws Exception {
+      final NotifChannel channel, final DelayedNotificationFrequency frequency)
+      throws NotificationServerException, AdminException {
     DelayedNotificationUserSetting result = null;
     // Getting old settings
     final DelayedNotificationUserSetting oldSettings =
@@ -150,17 +152,13 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     return result;
   }
 
-  /*
-   * New notification
-   */
-
   /**
    * Easy call of new notification process
    * @param delayedNotificationData
-   * @throws Exception
+   * @throws NotificationServerException
    */
   public static void executeNewNotification(final DelayedNotificationData delayedNotificationData)
-      throws Exception {
+      throws NotificationServerException {
     new DelayedNotificationDelegate().performNewNotificationSending(delayedNotificationData);
   }
 
@@ -170,7 +168,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @throws Exception
    */
   protected void performNewNotificationSending(
-      final DelayedNotificationData delayedNotificationData) throws Exception {
+      final DelayedNotificationData delayedNotificationData) throws NotificationServerException {
     if (!isThatToBeDelayed(delayedNotificationData)) {
       sendNotification(delayedNotificationData.getNotificationData());
     } else {
@@ -197,9 +195,9 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     }
 
     // The notification priority has to be different from URGENT or ERROR and the action type has to
-    // be setted
-    if (NotificationParameters.NORMAL !=
-        delayedNotificationData.getNotificationParameters().iMessagePriority) {
+    // be set
+    if (NotificationParameters.PRIORITY_NORMAL !=
+        delayedNotificationData.getNotificationParameters().getMessagePriority()) {
       return false;
     }
 
@@ -224,7 +222,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @param date
    * @throws Exception
    */
-  public static void executeDelayedNotificationsSending(final Date date) throws Exception {
+  public static void executeDelayedNotificationsSending(final Date date)
+      throws NotificationServerException, AdminException {
     new DelayedNotificationDelegate().performDelayedNotificationsSending(date,
         DelayedNotificationProvider.getDelayedNotification().getWiredChannels());
   }
@@ -234,7 +233,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * saved for all users
    * @throws Exception
    */
-  public static void executeForceDelayedNotificationsSending() throws Exception {
+  public static void executeForceDelayedNotificationsSending()
+      throws NotificationServerException, AdminException {
     new DelayedNotificationDelegate().forceDelayedNotificationsSending();
   }
 
@@ -247,7 +247,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @throws Exception
    */
   public static void executeForceDelayedNotificationsSending(final int userId,
-      final Set<NotifChannel> channels) throws Exception {
+      final Set<NotifChannel> channels) throws NotificationServerException, AdminException {
     executeForceDelayedNotificationsSending(Collections.singletonList(userId), channels);
   }
 
@@ -260,7 +260,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @throws Exception
    */
   public static void executeForceDelayedNotificationsSending(final List<Integer> userIds,
-      final Set<NotifChannel> channels) throws Exception {
+      final Set<NotifChannel> channels) throws NotificationServerException, AdminException {
     new DelayedNotificationDelegate().forceDelayedNotificationsSending(userIds, channels);
   }
 
@@ -268,7 +268,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * Forces the sending of all the delayed notifications saved for all users
    * @throws Exception
    */
-  protected void forceDelayedNotificationsSending() throws Exception {
+  protected void forceDelayedNotificationsSending()
+      throws NotificationServerException, AdminException {
 
     // Searching all the users from delayed notifications
     final List<Integer> usersToBeNotified = DelayedNotificationProvider.getDelayedNotification()
@@ -286,19 +287,13 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @param channels
    * @throws Exception
    */
-  protected void forceDelayedNotificationsSending(final List<Integer> userIds,
-      final Set<NotifChannel> channels) throws Exception {
+  void forceDelayedNotificationsSending(final List<Integer> userIds,
+      final Set<NotifChannel> channels) throws NotificationServerException, AdminException {
     performUsersDelayedNotifications(userIds, channels);
   }
 
-  /**
-   * Handling the saved delayed notifications from a given date and given channels
-   * @param date
-   * @param channels
-   * @throws Exception
-   */
-  protected void performDelayedNotificationsSending(final Date date,
-      final Set<NotifChannel> channels) throws Exception {
+  void performDelayedNotificationsSending(final Date date,
+      final Set<NotifChannel> channels) throws NotificationServerException, AdminException {
 
     // Searching all the users that have to be notify from a given date and given channels
     final List<Integer> usersToBeNotified = DelayedNotificationProvider.getDelayedNotification()
@@ -309,15 +304,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     performUsersDelayedNotifications(usersToBeNotified, channels);
   }
 
-  /**
-   * Performing delayed notifications for given users and channels
-   * @param usersToBeNotified
-   * @param channels
-   * @throws Exception
-   * @throws NotificationServerException
-   */
   private void performUsersDelayedNotifications(final List<Integer> usersToBeNotified,
-      final Set<NotifChannel> channels) throws Exception {
+      final Set<NotifChannel> channels) throws NotificationServerException, AdminException {
 
     // Stopping if no users to notify
     if (CollectionUtil.isEmpty(usersToBeNotified)) {
@@ -351,28 +339,16 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     }
   }
 
-  /**
-   * Performing delayed notifications for a given user and a given channel
-   * @param channel
-   * @param delayedNotifications
-   * @throws Exception
-   * @throws NotificationServerException
-   */
   private Collection<Long> performUserDelayedNotificationsOnChannel(final NotifChannel channel,
-      final List<DelayedNotificationData> delayedNotifications) throws Exception {
+      final List<DelayedNotificationData> delayedNotifications)
+      throws NotificationServerException, AdminException {
     final DelayedNotificationSyntheseData synthese = buildSynthese(delayedNotifications);
     sendNotification(createNotificationData(channel, synthese));
     return synthese.getDelayedNotificationIdProceeded();
   }
 
-  /**
-   * Builds all the elements constituting the synthese of user notifications
-   * @param delayedNotifications
-   * @return
-   * @throws Exception
-   */
   private DelayedNotificationSyntheseData buildSynthese(
-      final List<DelayedNotificationData> delayedNotifications) throws Exception {
+      final List<DelayedNotificationData> delayedNotifications) throws AdminException {
 
     // Result
     final DelayedNotificationSyntheseData synthese = initializeSynthese(delayedNotifications);
@@ -405,15 +381,9 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     return synthese;
   }
 
-  /**
-   * @param synthese
-   * @param resource
-   * @param notifications
-   * @throws Exception
-   */
   private void prepareSyntheseResourceAndNotifications(
       final DelayedNotificationSyntheseData synthese, final NotificationResourceData resource,
-      final List<DelayedNotificationData> notifications) throws Exception {
+      final List<DelayedNotificationData> notifications) throws AdminException {
 
     // Sorting delayed notifications
     Collections.sort(notifications, getDelayedNotificationComparator());
@@ -486,13 +456,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     return StringUtils.isBlank(string) ? null : string;
   }
 
-  /**
-   * Builds the message
-   * @param synthese
-   * @return
-   * @throws Exception
-   */
-  private String buildMessage(final DelayedNotificationSyntheseData synthese) throws Exception {
+  private String buildMessage(final DelayedNotificationSyntheseData synthese)
+      throws AdminException {
     clearTemplate();
     getTemplate().setAttribute("delay",
         getStringTranslation("delay" + synthese.getFrequency().name(), synthese.getLanguage()));
@@ -505,11 +470,6 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     return getTemplate().applyFileTemplate("messageLayout_" + synthese.getLanguage());
   }
 
-  /**
-   * Builds the subject
-   * @param synthese
-   * @return
-   */
   private String buildSubject(final DelayedNotificationSyntheseData synthese) {
     clearTemplate();
     getTemplate().setAttribute("frequency",
@@ -563,7 +523,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @throws Exception
    */
   private NotificationData createNotificationData(final NotifChannel channel,
-      final DelayedNotificationSyntheseData synthese) throws Exception {
+      final DelayedNotificationSyntheseData synthese) throws AdminException {
     final NotificationData notificationData = new NotificationData();
 
     // Receiver user
@@ -672,7 +632,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @return
    * @throws Exception
    */
-  protected UserDetail getUserDetail(final Integer userId) throws Exception {
+  protected UserDetail getUserDetail(final Integer userId) throws AdminException {
     UserDetail userDetail = userDetailCache.get(userId);
     if (userDetail == null) {
       if ((userId >= 0)) {

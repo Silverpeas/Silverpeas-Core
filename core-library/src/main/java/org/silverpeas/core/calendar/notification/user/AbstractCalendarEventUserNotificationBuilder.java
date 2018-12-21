@@ -71,7 +71,7 @@ public abstract class AbstractCalendarEventUserNotificationBuilder<C extends Con
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.calendar.multilang.usernotification";
   }
 

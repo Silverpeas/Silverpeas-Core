@@ -111,7 +111,7 @@ public class SilverpeasHttpServlet extends HttpServlet {
    * method from being applied to a resource other than the one intended.
    */
   protected void throwHttpPreconditionFailedError() {
-    throw new HttpError(HttpServletResponse.SC_PRECONDITION_FAILED);
+    throw preconditionFailed("");
   }
 
   /**
@@ -121,7 +121,7 @@ public class SilverpeasHttpServlet extends HttpServlet {
    * only the LAN machines are authorized to connect).
    */
   protected void throwHttpForbiddenError() {
-    throw new HttpError(HttpServletResponse.SC_FORBIDDEN);
+    throw forbidden("");
   }
 
   /**
@@ -131,7 +131,7 @@ public class SilverpeasHttpServlet extends HttpServlet {
    * right to the left to eventualy retrieve an existing path).
    */
   protected void throwHttpNotFoundError() {
-    throw new HttpError(HttpServletResponse.SC_NOT_FOUND);
+    throw notFound("");
   }
 
   /**
@@ -141,7 +141,7 @@ public class SilverpeasHttpServlet extends HttpServlet {
    * method from being applied to a resource other than the one intended.
    */
   protected void throwHttpPreconditionFailedError(String message) {
-    throw new HttpError(HttpServletResponse.SC_PRECONDITION_FAILED, message);
+    throw preconditionFailed(message);
   }
 
   /**
@@ -151,7 +151,7 @@ public class SilverpeasHttpServlet extends HttpServlet {
    * only the LAN machines are authorized to connect).
    */
   protected void throwHttpForbiddenError(String message) {
-    throw new HttpError(HttpServletResponse.SC_FORBIDDEN, message);
+    throw forbidden(message);
   }
 
   /**
@@ -161,7 +161,7 @@ public class SilverpeasHttpServlet extends HttpServlet {
    * right to the left to eventualy retrieve an existing path).
    */
   protected void throwHttpNotFoundError(String message) {
-    throw new HttpError(HttpServletResponse.SC_NOT_FOUND, message);
+    throw notFound(message);
   }
 
   /**
@@ -190,10 +190,39 @@ public class SilverpeasHttpServlet extends HttpServlet {
       } else {
         response.sendError(status);
       }
-      return;
     } catch (IOException e1) {
       SilverLogger.getLogger(this).error(e1);
     }
+  }
+
+  protected HttpError preconditionFailed(final String msg) {
+    final HttpError error;
+    if (StringUtil.isDefined(msg)) {
+      error = new HttpError(HttpServletResponse.SC_PRECONDITION_FAILED, msg);
+    } else {
+      error = new HttpError(HttpServletResponse.SC_PRECONDITION_FAILED);
+    }
+    return error;
+  }
+
+  protected HttpError forbidden(final String msg) {
+    final HttpError error;
+    if (StringUtil.isDefined(msg)) {
+      error = new HttpError(HttpServletResponse.SC_FORBIDDEN, msg);
+    } else {
+      error = new HttpError(HttpServletResponse.SC_FORBIDDEN);
+    }
+    return error;
+  }
+
+  protected HttpError notFound(final String msg) {
+    final HttpError error;
+    if (StringUtil.isDefined(msg)) {
+      error = new HttpError(HttpServletResponse.SC_NOT_FOUND, msg);
+    } else {
+      error = new HttpError(HttpServletResponse.SC_NOT_FOUND);
+    }
+    return error;
   }
 
   protected static class UserSessionStatus {
@@ -228,7 +257,7 @@ public class SilverpeasHttpServlet extends HttpServlet {
   /**
    * Internal exception class management
    */
-  private class HttpError extends RuntimeException {
+  protected class HttpError extends RuntimeException {
     private static final long serialVersionUID = -4303217388313620495L;
     private final int errorCode;
     private final String message;

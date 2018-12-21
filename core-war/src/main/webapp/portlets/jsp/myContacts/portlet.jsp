@@ -69,7 +69,7 @@
 				</div>
 
 				<a href="#" title="<fmt:message key="ToContact" />" class="contact-user notification"
-					rel="${member.id},${member.displayedName}">
+           onclick="sp.messager.open(null, {recipientUsers: ${member.id}, recipientEdition: false});">
 					<img src="${context}/util/icons/email.gif"
 						alt="<fmt:message key="ToContact" />"
 						title="<fmt:message key="ToContact" />"/>
@@ -96,7 +96,7 @@
 				</div>
 
 				<a href="#" title="<fmt:message key="ToContact" />" class="contact-user notification"
-					rel="${contact.id},${contact.displayedName}">
+           onclick="sp.messager.open(null, {recipientUsers: ${contact.id}, recipientEdition: false});">
 					<img src="${context}/util/icons/email.gif"
 						alt="<fmt:message key="ToContact" />"
 						title="<fmt:message key="ToContact" />"/>

@@ -1852,8 +1852,8 @@ if (typeof window.sp === 'undefined') {
               if (this.existsUnvalidatedContent()) {
                 var confirmationUrl = webContext +
                     '/wysiwyg/jsp/confirmUnvalidatedContentExistence.jsp';
-                var ajaxConfig = sp.ajaxConfig(confirmationUrl);
-                displaySingleConfirmationPopupFrom(ajaxConfig.getUrl(), {
+                var url = sp.url.format(confirmationUrl);
+                jQuery.popup.load(url).show('confirmation', {
                   callback : __unStash,
                   alternativeCallback : function() {this.clear()}.bind(this)
                 }).then(function() {

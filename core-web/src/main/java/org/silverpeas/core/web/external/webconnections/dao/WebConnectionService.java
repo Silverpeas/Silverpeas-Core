@@ -23,11 +23,10 @@
  */
 package org.silverpeas.core.web.external.webconnections.dao;
 
-import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.web.external.webconnections.model.ConnectionDetail;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -63,8 +62,7 @@ public class WebConnectionService implements WebConnectionsInterface, ComponentI
     try {
       dao.deleteByComponentInstanceId(componentInstanceId);
     } catch (SQLException e) {
-      throw new WebConnectionsRuntimeException("WebConnectionsInterface.getConnection()",
-          SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_EXIST", e);
+      throw new WebConnectionsRuntimeException(e);
     }
   }
 
@@ -72,8 +70,7 @@ public class WebConnectionService implements WebConnectionsInterface, ComponentI
     try (Connection con = openConnection()) {
       return dao.getConnection(con, componentId, userId);
     } catch (SQLException e) {
-      throw new WebConnectionsRuntimeException("WebConnectionsInterface.getConnection()",
-          SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_EXIST", e);
+      throw new WebConnectionsRuntimeException(e);
     }
   }
 
@@ -84,14 +81,13 @@ public class WebConnectionService implements WebConnectionsInterface, ComponentI
 
       //check rights : check that the current user has the rights to get the web connection details
       if(!userId.equals(connectionDetail.getUserId())) {
-        throw new ForbiddenRuntimeException("WebConnectionsInterface.getWebConnectionById()",
-          SilverpeasRuntimeException.ERROR, "peasCore.RESOURCE_ACCESS_UNAUTHORIZED", "connectionId="+connectionId+", userId="+userId);
+        throw new ForbiddenRuntimeException(
+            "Web connection " + connectionId + " unauthorized for user " + userId);
       }
       return connectionDetail;
 
     } catch (Exception e) {
-      throw new WebConnectionsRuntimeException("WebConnectionsInterface.getConnectionById()",
-          SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_EXIST", e);
+      throw new WebConnectionsRuntimeException(e);
     }
   }
 
@@ -100,8 +96,7 @@ public class WebConnectionService implements WebConnectionsInterface, ComponentI
     try (Connection con = openConnection()) {
       dao.createConnection(con, connection);
     } catch (Exception e) {
-      throw new WebConnectionsRuntimeException("WebConnectionsInterface.createConnection()",
-          SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_CREATE", e);
+      throw new WebConnectionsRuntimeException(e);
     }
   }
 
@@ -115,8 +110,7 @@ public class WebConnectionService implements WebConnectionsInterface, ComponentI
       dao.deleteConnection(con, connectionId);
 
     } catch (Exception e) {
-      throw new WebConnectionsRuntimeException("WebConnectionsInterface.deleteConnection()",
-          SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_DELETE", e);
+      throw new WebConnectionsRuntimeException(e);
     }
   }
 
@@ -130,8 +124,7 @@ public class WebConnectionService implements WebConnectionsInterface, ComponentI
       dao.updateConnection(con, connectionId, login, password);
 
     } catch (Exception e) {
-      throw new WebConnectionsRuntimeException("WebConnectionsInterface.updateConnection()",
-          SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTION_NOT_UPDATE", e);
+      throw new WebConnectionsRuntimeException(e);
     }
   }
 
@@ -139,8 +132,7 @@ public class WebConnectionService implements WebConnectionsInterface, ComponentI
     try (Connection con = openConnection()) {
       return dao.getConnectionsByUser(con, userId);
     } catch (Exception e) {
-      throw new WebConnectionsRuntimeException("WebConnectionsInterface.getConnectionsByUser()",
-          SilverpeasRuntimeException.ERROR, "webConnections.MSG_CONNECTIONS_NOT_EXIST", e);
+      throw new WebConnectionsRuntimeException(e);
     }
   }
 }

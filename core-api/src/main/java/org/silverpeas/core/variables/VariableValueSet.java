@@ -75,7 +75,10 @@ public class VariableValueSet implements Collection<VariableScheduledValue> {
    */
   public boolean addAll(final Collection<? extends VariableScheduledValue> values) {
     return variable.values()
-        .addAll(values.stream().peek(v -> v.setVariable(variable)).collect(Collectors.toList()));
+        .addAll(values.stream().map(v -> {
+          v.setVariable(variable);
+          return v;
+        }).collect(Collectors.toList()));
   }
 
   @Override

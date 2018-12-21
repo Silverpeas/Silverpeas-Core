@@ -41,7 +41,7 @@ public abstract class AbstractInvitationUserNotification
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.social.multilang.socialNetworkBundle";
   }
 
@@ -74,9 +74,16 @@ public abstract class AbstractInvitationUserNotification
     return "myProfile.invitations.notification.accept.subject";
   }
 
+  /**
+   * The title is the value of the property defined by {@link #getBundleSubjectKey()} in the
+   * localization bundle referred by  {@link #getBundle()}. If no such property exists, then the
+   * title is the first name of the notification sender.
+   * @return the subject of the notification as defined in the localisation bundle returned by
+   * the {@link #getBundle()} method.
+   */
   @Override
-  protected String getTitle() {
-    return getBundle()
+  protected String getTitle(final String language) {
+    return getBundle(language)
         .getStringWithParams(getBundleSubjectKey(), User.getById(getSender()).getFirstName());
   }
 

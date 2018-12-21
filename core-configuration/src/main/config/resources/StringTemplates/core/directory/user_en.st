@@ -54,6 +54,6 @@
     $else$
       <a href="#" rel="$user.id$,$user.firstName$ $user.lastName$" class="link invitation">Send an invitation</a>
     $endif$
-  	<a href="#" rel="$user.id$,$user.lastName$ $user.firstName$" class="link notification">Send a message</a>
+  	<a href="#" onclick="sp.messager.open(null, {recipientUsers: $user.id$, recipientEdition: false});" class="link notification">Send a message</a>
   $endif$
 </div>

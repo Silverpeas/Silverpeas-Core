@@ -23,34 +23,34 @@
  */
 package org.silverpeas.core.notification.user.client;
 
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
+import org.silverpeas.core.notification.NotificationException;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.notification.user.client.model.SentNotificationInterface;
-import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 /**
- * Cette classe est utilisee par les composants pour envoyer une notification a un (ou des)
- * utilisateur(s) (ou groupes) Elle package les appels et appelle la fonction du NotificationManager
- * pour reellement envoyer les notifications
+ * Sender of a notification to both the users in Silverpeas and to external users. The notification
+ * is defined by a {@link NotificationMetaData} instance. It uses the service of a
+ * {@link NotificationManager} object for doing its job.
  */
 public class NotificationSender implements java.io.Serializable {
 
   private static final long serialVersionUID = 4165938893905145809L;
 
-  protected NotificationManager notificationManager = null;
-  protected int instanceId = -1;
+  private NotificationManager notificationManager;
+  private int instanceId;
 
   /**
    * Default constructor
@@ -63,92 +63,133 @@ public class NotificationSender implements java.io.Serializable {
    * Constructor for a standard component
    * @param instanceId the instance Id of the calling's component
    */
-  public NotificationSender(String instanceId) {
-    this.instanceId = extractLastNumber(instanceId);
+  public NotificationSender(final String instanceId) {
+    this.instanceId = ComponentInst.getComponentLocalId(instanceId);
     notificationManager = NotificationManager.get();
   }
 
   /**
-   * Method declaration
-   * @param metaData
-   * @throws NotificationManagerException
+   * Sends the notification as defined by the specified {@link NotificationMetaData} instance.
+   * @param metaData the meta data of the notification. It defines the content of the notification
+   * as well as the recipients.
+   * @throws NotificationException if an error occurs while sending the notification.
    *
    */
-  public void notifyUser(NotificationMetaData metaData)
-      throws NotificationManagerException {
-    notifyUser(NotifMediaType.COMPONENT_DEFINED.getId(), metaData);
+  public void notifyUser(final NotificationMetaData metaData)
+      throws NotificationException {
+    notifyUser(BuiltInNotifAddress.COMPONENT_DEFINED.getId(), metaData);
   }
 
   /**
-   * Method declaration
-   * @param aMediaType
-   * @param metaData
-   * @throws NotificationManagerException
-   *
+   * Sends at the specified address the notification whose definition is given by the specified
+   * {@link NotificationMetaData} instance.
+   * @param addressId the unique identifier of an address at which the notification has to be sent.
+   * @param metaData the meta data of the notification. It defines the content of the notification
+   * as well as the recipients.
+   * @throws NotificationException if an error occurs while sending the notification.
    */
-  public void notifyUser(int aMediaType, NotificationMetaData metaData)
-      throws NotificationManagerException {
+  public void notifyUser(final int addressId, final NotificationMetaData metaData)
+      throws NotificationException {
     CurrentUserNotificationContext.getCurrentUserNotificationContext().checkManualUserNotification(metaData);
 
-    // Getting all the user recipients that represents the user and group recipients
-    Set<UserRecipient> usersSet = metaData.getAllUserRecipients(true);
+    // Getting all the users from the recipients declared in metaData (comes from users and groups)
+    final Set<UserRecipient> recipients = metaData.getAllUserRecipients(true);
+    final Set<String> languages = metaData.getLanguages();
 
-    Set<String> languages = metaData.getLanguages();
-    Map<String, String> usersLanguage = new HashMap<>(usersSet.size());
-    for (UserRecipient user : usersSet) {
-      usersLanguage.put(user.getUserId(),
-          PersonalizationServiceProvider.getPersonalizationService().
-          getUserSettings(user.getUserId()).getLanguage());
+    // send the notification to the internal recipients
+    final Set<String> recipientIds =
+        recipients.stream().map(UserRecipient::getUserId).collect(Collectors.toSet());
+    if (languages.size() == 1) {
+      sendNotification(recipientIds, metaData, addressId, languages.iterator().next());
+    } else {
+      final String defaultLanguage = getDefaultLanguage(metaData.getSender(), languages);
+      final Map<String, Set<String>> usersPerLanguage = new HashMap<>();
+      recipientIds.stream().map(User::getById).forEach(u -> {
+        final String userLang = u.getUserPreferences().getLanguage();
+        if (languages.contains(userLang)) {
+          addUserForLanguage(usersPerLanguage, u, userLang);
+        } else {
+          addUserForLanguage(usersPerLanguage, u, defaultLanguage);
+        }
+      });
+      for (final Map.Entry<String, Set<String>> entry : usersPerLanguage.entrySet()) {
+        sendNotification(entry.getValue(), metaData, addressId, entry.getKey());
+      }
     }
 
-    NotificationParameters params = null;
+    // send the notification to the external recipients who are declared in metaData
+    sendNotification(Collections.emptySet(), metaData, addressId, I18NHelper.defaultLanguage);
 
-    // All usersId to notify
-    Set<String> allUserIds = usersLanguage.keySet();
-
-    for (String language : languages) {
-      params = getNotificationParameters(aMediaType, metaData);
-      params.sTitle = metaData.getTitle(language);
-      params.sLinkLabel = metaData.getLinkLabel(language);
-      params.sMessage = metaData.getContent(language);
-      params.sLanguage = language;
-      params.nNotificationResourceData = metaData.getNotificationResourceData(language);
-
-      // Notify users with their native language
-      List<String> userIds = getUserIds(language, usersLanguage);
-      // remove users already notified in their language
-      allUserIds.removeAll(userIds);
-      notificationManager.notifyUsers(params, userIds.toArray(new String[userIds.size()]));
-    }
-    // Notify other users in language of the sender.
-    notificationManager.notifyUsers(params, allUserIds.toArray(new String[allUserIds.size()]));
-
-    if (CollectionUtil.isNotEmpty(metaData.getExternalRecipients())) {
-      // We only use default language for external notification
-      params.sLanguage = I18NHelper.defaultLanguage;
-      params.sTitle = metaData.getTitle(params.sLanguage);
-      params.sLinkLabel = metaData.getLinkLabel(params.sLanguage);
-      params.sMessage = metaData.getContent(params.sLanguage);
-      notificationManager.notifyExternals(params, metaData.getExternalRecipients());
-    }
-
-    if (metaData.isSendByAUser() &&
-        aMediaType != NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER) {
+    if (metaData.isSendByAUser()) {
       // save notification for history
-      saveNotification(metaData, usersSet);
+      saveNotification(metaData, recipients);
     }
 
 
   }
 
+  private void addUserForLanguage(final Map<String, Set<String>> usersPerLanguage, final User u,
+      final String userLang) {
+    usersPerLanguage.compute(userLang, (l, s) -> {
+      Set<String> users = s;
+      if (users == null) {
+        users = new HashSet<>();
+      }
+      users.add(u.getId());
+      return users;
+    });
+  }
+
+  private String getDefaultLanguage(final String senderId, final Collection<String> languages) {
+    final String defaultLanguage;
+    final String senderLanguage = User.getById(senderId).getUserPreferences().getLanguage();
+    if (languages.contains(senderLanguage)) {
+      defaultLanguage = senderLanguage;
+    } else if (languages.contains(I18NHelper.defaultLanguage)) {
+      defaultLanguage = I18NHelper.defaultLanguage;
+    } else {
+      defaultLanguage = languages.iterator().next();
+    }
+    return defaultLanguage;
+  }
+
   /**
-   * Saving the notification into history if users have been notified.
-   * @param metaData
-   * @param usersSet
-   * @throws NotificationManagerException
+   * Sends to the specified users the notification described by the {@link NotificationMetaData}
+   * by using the given media type and in the specified language.
+   * @param userIds a collection of user identifiers. If the collection is empty, then the
+   * notification will be sent to the external recipients declared within the
+   * {@link NotificationMetaData} object.
+   * @param metaData a {@link NotificationMetaData} instance that describes the notification to
+   * send.
+   * @param addressId the unique identifier of the address at which the notification has to be sent.
+   * @param language the language in which the notification content will be written.
+   * @throws NotificationException if an error occurs while sending the notification.
+   */
+  private void sendNotification(final Collection<String> userIds,
+      final NotificationMetaData metaData, final int addressId, final String language)
+      throws NotificationException {
+    final NotificationParameters params = getNotificationParameters(addressId, metaData);
+    params.setTitle(metaData.getTitle(language))
+        .setLinkLabel(metaData.getLinkLabel(language))
+        .setMessage(metaData.getContent(language))
+        .setLanguage(language);
+    if (!userIds.isEmpty()) {
+      params.setNotificationResourceData(metaData.getNotificationResourceData(language));
+      notificationManager.notifyUsers(params, userIds);
+    } else if (CollectionUtil.isNotEmpty(metaData.getExternalRecipients())) {
+      notificationManager.notifyExternals(params, metaData.getExternalRecipients());
+    }
+  }
+
+  /**
+   * Saves the notification into the history of the sent notifications.
+   * @param metaData the meta data that defines the notification that has been sent.
+   * @param usersSet the recipients that have received the notification.
+   * @throws NotificationException if an error occurs while saving the notification
+   * information.
    */
   private void saveNotification(NotificationMetaData metaData, Set<UserRecipient> usersSet)
-      throws NotificationManagerException {
+      throws NotificationException {
     if (!usersSet.isEmpty()) {
       getNotificationInterface().saveNotifUser(metaData, usersSet);
     }
@@ -158,152 +199,37 @@ public class NotificationSender implements java.io.Serializable {
     return SentNotificationInterface.get();
   }
 
-  private List<String> getUserIds(String lang, Map<String, String> usersLanguage) {
-    List<String> userIds = new ArrayList<>(usersLanguage.keySet());
-    Iterator<String> languages = usersLanguage.values().iterator();
-    List<String> result = new ArrayList<>();
-    String language;
-    int u = 0;
-    while (languages.hasNext()) {
-      language = languages.next();
-      if (lang.equalsIgnoreCase(language)) {
-        result.add(userIds.get(u));
-      }
-      u++;
-    }
-    return result;
-  }
-
   private NotificationParameters getNotificationParameters(int aMediaType,
       NotificationMetaData metaData) {
     NotificationParameters params = new NotificationParameters();
 
-    params.iMessagePriority = metaData.getMessageType();
-    params.dDate = metaData.getDate();
-    params.sTitle = metaData.getTitle();
-    params.sMessage = metaData.getContent();
-    params.sSource = metaData.getSource();
-    params.sURL = metaData.getLink();
-    params.sSessionId = metaData.getSessionId();
-    params.sOriginalExtraMessage = metaData.getOriginalExtraMessage();
-    params.bSendImmediately = metaData.isSendImmediately();
+    params.setMessagePriority(metaData.getMessageType())
+        .setDate(metaData.getDate())
+        .setTitle(metaData.getTitle())
+        .setMessage(metaData.getContent())
+        .setSource(metaData.getSource())
+        .setURL(metaData.getLink())
+        .setSessionId(metaData.getSessionId())
+        .setOriginalExtraMessage(metaData.getOriginalExtraMessage())
+        .setSendImmediately(metaData.isSendImmediately())
+        .setAddressId(aMediaType)
+        .setAnswerAllowed(metaData.isAnswerAllowed())
+        .setAction(metaData.getAction());
     if (instanceId != -1) {
-      params.iComponentInstance = instanceId;
+      params.setComponentInstance(instanceId);
     } else {
-      params.iComponentInstance = extractLastNumber(metaData.getComponentId());
+      params.setComponentInstance(ComponentInst.getComponentLocalId(metaData.getComponentId()));
     }
-    params.iMediaType = aMediaType;
-    params.bAnswerAllowed = metaData.isAnswerAllowed();
     String sender = metaData.getSender();
-    if (aMediaType == NotificationParameters.ADDRESS_BASIC_POPUP
-        || aMediaType == NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER) {
-      if (metaData.isAnswerAllowed() && StringUtil.isDefined(sender)) {
-        params.iFromUserId = Integer.parseInt(metaData.getSender());
+    if (aMediaType == BuiltInNotifAddress.BASIC_POPUP.getId()) {
+      if (metaData.isAnswerAllowed() && StringUtil.isInteger(sender)) {
+        params.setFromUserId(Integer.parseInt(metaData.getSender()));
       }
     } else if (StringUtil.isInteger(sender)) {
-      params.iFromUserId = Integer.parseInt(metaData.getSender());
+      params.setFromUserId(Integer.parseInt(metaData.getSender()));
     } else {
-      params.iFromUserId = -1;
-      params.senderName = sender;
+      params.setSenderName(sender);
     }
-    params.eAction = metaData.getAction();
     return params;
   }
-
-  /**
-   * Extract the last number from the string
-   * @param chaine The String to clean
-   * @return the clean String Example 1 : kmelia47 -> 47 Example 2 : b2b34 -> 34
-   */
-  static int extractLastNumber(String chaine) {
-    String s = "";
-
-    if (chaine != null) {
-      for (int i = 0; i < chaine.length(); i++) {
-        char car = chaine.charAt(i);
-
-        switch (car) {
-          case '0':
-          case '1':
-          case '2':
-          case '3':
-          case '4':
-          case '5':
-          case '6':
-          case '7':
-          case '8':
-          case '9':
-            s = s + car;
-            break;
-          default:
-            s = "";
-        }
-      }
-    }
-    if (s.length() > 0) {
-      return Integer.parseInt(s);
-    } else {
-      return -1;
-    }
-  }
-
-  // The next 4 static functions are for the use of NotificationUser component
-  // as a popup window
-  // -------------------------------------------------------------------------------------------
-  public static String getIdsLineFromIdsArray(String[] asrc) {
-    StringBuilder toIds = new StringBuilder("");
-
-    if (asrc != null) {
-      for (int i = 0; i < asrc.length; i++) {
-        if (i > 0) {
-          toIds.append('_');
-        }
-        toIds.append(asrc[i]);
-      }
-    }
-    return toIds.toString();
-  }
-
-  public static String getIdsLineFromUserArray(UserDetail[] users) {
-    StringBuilder toIds = new StringBuilder("");
-
-    if (users != null) {
-      for (int i = 0; i < users.length; i++) {
-        if (i > 0) {
-          toIds.append('_');
-        }
-        toIds.append(users[i].getId());
-      }
-    }
-    return toIds.toString();
-  }
-
-  public static String getIdsLineFromGroupArray(Group[] groups) {
-    StringBuilder toIds = new StringBuilder("");
-
-    if (groups != null) {
-      for (int i = 0; i < groups.length; i++) {
-        if (i > 0) {
-          toIds.append('_');
-        }
-        toIds.append(groups[i].getId());
-      }
-    }
-    return toIds.toString();
-  }
-
-  public static String[] getIdsArrayFromIdsLine(String src) {
-    if (src == null) {
-      return new String[0];
-    }
-    StringTokenizer strTok = new StringTokenizer(src, "_");
-    int nbElmt = strTok.countTokens();
-    String[] valret = new String[nbElmt];
-
-    for (int i = 0; i < nbElmt; i++) {
-      valret[i] = strTok.nextToken();
-    }
-    return valret;
-  }
-
 }

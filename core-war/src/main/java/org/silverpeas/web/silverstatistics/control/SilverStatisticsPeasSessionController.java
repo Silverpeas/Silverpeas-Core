@@ -36,9 +36,9 @@ import org.silverpeas.core.chart.pie.PieChart;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
@@ -510,31 +510,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       notifMetaData.setSender(getUserId());
       notifMetaData.addUserRecipient(new UserRecipient(userId));
 
-      notificationSender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP, notifMetaData);
+      notificationSender.notifyUser(BuiltInNotifAddress.BASIC_POPUP.getId(), notifMetaData);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex);
     }
   }
-
-  /**
-   * Méthode d'envoi de notification aux utilisateurs connectés
-   * @param listUserDetail - liste des utilisateurs connectés
-   * @param message
-   */
-  public void notifyAllSessions(Collection<SessionInfo> listUserDetail, String message) {
-    List<String> notifiedUsers = new ArrayList<>();
-
-    if (listUserDetail != null) {
-      for (SessionInfo sessionInfo : listUserDetail) {
-        if (!notifiedUsers.contains(sessionInfo.getUserDetail().getId()) ||
-            sessionInfo.getUserDetail().isAccessGuest()) {
-          notifySession(sessionInfo.getUserDetail().getId(), message);
-          notifiedUsers.add(sessionInfo.getUserDetail().getId());
-        }
-      }
-    }
-  }
-
   /*
    * Initialisation du UserPanel
    */

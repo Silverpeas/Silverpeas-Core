@@ -23,22 +23,35 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
+import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Base class for all web component controller.
  * Each implementation must be specified in web component servlet declaration into the linked
  * web.xml.
- * @param <WEB_COMPONENT_REQUEST_CONTEXT>
+ * @param <T> the type of the implementation of the {@link WebComponentRequestContext} class.
  * @author Yohann Chastagnier
  */
-public abstract class WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT extends
-    WebComponentRequestContext>
+public abstract class WebComponentController<T extends WebComponentRequestContext>
     extends AbstractComponentSessionController {
 
   boolean onCreationCalled = false;
+
+  /**
+   * This static method has to be implemented by each web component controller concrete class if
+   * the corresponding Silverpeas component supports the manual notification.
+   * @return a provider of {@link UserNotification} objects for manual notification. By default,
+   * returns null.
+   */
+  public static Function<Map<String, String>, UserNotification> getManualUserNotificationProvider() {
+    return null;
+  }
 
   public WebComponentController(final MainSessionController controller, final String spaceId,
       final String componentId) {
@@ -71,14 +84,14 @@ public abstract class WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT exten
    * the call of the HTTP web controller method.
    * @param context the web request context.
    */
-  protected abstract void onInstantiation(final WEB_COMPONENT_REQUEST_CONTEXT context);
+  protected abstract void onInstantiation(final T context);
 
   /**
    * Permits to perform some common initializations. The method is called just before the method
    * behing the identified path is invoked.
    * @param context the context of the request in relation with the web controller
    */
-  protected void beforeRequestProcessing(WEB_COMPONENT_REQUEST_CONTEXT context) {
+  protected void beforeRequestProcessing(T context) {
     context.getRequest().setAttribute("currentUser", context.getUser());
     context.getRequest().setAttribute("componentUriBase", context.getComponentUriBase());
     context.getRequest().setAttribute("highestUserRole", context.getHighestUserRole());

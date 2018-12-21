@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
 import javax.servlet.ServletConfig;
@@ -36,23 +36,20 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
-import java.io.IOException;
 
 /**
  * This request router is an extension of the historical one. It provides a new way to perform the
  * requests on the server, especially by annoting methods that must be invoked.
  * @param <T> the type of the Component Session Controller that provides a lot of stuff around
  * the component, the user, etc.
- * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component context.
+ * @param <R> the type of the web component context.
  */
-public final class WebComponentRequestRouter<
-    T extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
-    WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
-        WebComponentController>>
+public final class WebComponentRequestRouter<T extends WebComponentController<R>,
+    R extends WebComponentRequestContext<? extends WebComponentController>>
     extends ComponentRequestRouter<T> {
   private static final long serialVersionUID = -3344222078427488724L;
 
-  private final static String WEB_COMPONENT_CONTROLLER_CLASS_NAME_PARAM =
+  private static final String WEB_COMPONENT_CONTROLLER_CLASS_NAME_PARAM =
       org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController.class
           .getSimpleName();
 
@@ -61,8 +58,8 @@ public final class WebComponentRequestRouter<
 
   @SuppressWarnings("unchecked")
   @Override
-  public void init(ServletConfig servletConfig) throws ServletException {
-    super.init(servletConfig);
+  public void init() throws ServletException {
+    ServletConfig servletConfig = getServletConfig();
     String webComponentClassName =
         servletConfig.getInitParameter(WEB_COMPONENT_CONTROLLER_CLASS_NAME_PARAM);
     try {
@@ -78,6 +75,7 @@ public final class WebComponentRequestRouter<
     } catch (ClassNotFoundException e) {
       throw new ServletException(e);
     }
+    super.init();
   }
 
   @Override
@@ -99,16 +97,14 @@ public final class WebComponentRequestRouter<
   }
 
   @Override
-  protected void doPut(final HttpServletRequest request, final HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void doPut(final HttpServletRequest request, final HttpServletResponse response) {
     WebComponentManager
         .manageRequestFor(webComponentControllerClass, PUT.class, (HttpRequest) request, response);
     super.doPost(request, response);
   }
 
   @Override
-  protected void doDelete(final HttpServletRequest request, final HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void doDelete(final HttpServletRequest request, final HttpServletResponse response) {
     WebComponentManager
         .manageRequestFor(webComponentControllerClass, DELETE.class, (HttpRequest) request,
             response);
@@ -123,8 +119,7 @@ public final class WebComponentRequestRouter<
   }
 
   @Override
-  public void doGet(final HttpServletRequest request, final HttpServletResponse response)
-      throws ServletException {
+  public void doGet(final HttpServletRequest request, final HttpServletResponse response) {
     WebComponentManager
         .manageRequestFor(webComponentControllerClass, GET.class, (HttpRequest) request, response);
     super.doGet(request, response);
@@ -133,16 +128,11 @@ public final class WebComponentRequestRouter<
   @Override
   public final String getDestination(final String path, final T componentSC,
       final HttpRequest request) {
-    String destination = null;
+    String destination;
     try {
       PathExecutionResponse response = WebComponentManager.perform(componentSC, path);
-      if (response.produces().isPresent()) {
-        destination = response.produces().get();
-      } else if (response.navigation().isPresent()) {
-        destination = response.navigation().get().getDestination();
-      } else {
-        throwHttpForbiddenError();
-      }
+      destination = response.produces()
+          .orElseGet(() -> response.navigation().orElseThrow(() -> forbidden("")).getDestination());
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";

@@ -52,7 +52,8 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
     return getUniqueRow(SELECT_NOTIFDEFAULTADDRESS_BY_ID, id);
   }
 
-  static final private String SELECT_NOTIFDEFAULTADDRESS_BY_ID = "select "
+  private static final String SELECT = "select ";
+  private static final String SELECT_NOTIFDEFAULTADDRESS_BY_ID = SELECT
       + NOTIFDEFAULTADDRESS_COLUMNS
       + " from ST_NotifDefaultAddress Where id = ?";
 
@@ -66,7 +67,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
     return rows.toArray(new NotifDefaultAddressRow[rows.size()]);
   }
 
-  private static final String SELECT_ALL_NOTIFDEFAULTADDRESS_WITH_GIVEN_USERID = "select "
+  private static final String SELECT_ALL_NOTIFDEFAULTADDRESS_WITH_GIVEN_USERID = SELECT
       + NOTIFDEFAULTADDRESS_COLUMNS
       + " from ST_NotifDefaultAddress where userId=?";
 
@@ -78,7 +79,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
     return rows.toArray(new NotifDefaultAddressRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_NOTIFDEFAULTADDRESS = "select "
+  private static final String SELECT_ALL_NOTIFDEFAULTADDRESS = SELECT
       + NOTIFDEFAULTADDRESS_COLUMNS + " from ST_NotifDefaultAddress";
 
   /**
@@ -107,7 +108,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
     return notifDefaultAddress.getId();
   }
 
-  static final private String INSERT_NOTIFDEFAULTADDRESS = "insert into"
+  private static final String INSERT_NOTIFDEFAULTADDRESS = "insert into"
       + " ST_NotifDefaultAddress (id, userId, notifAddressId)"
       + " values  (?, ?, ?)";
 
@@ -118,7 +119,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
     updateRow(UPDATE_NOTIFDEFAULTADDRESS, notifDefaultAddress);
   }
 
-  static final private String UPDATE_NOTIFDEFAULTADDRESS = "update ST_NotifDefaultAddress set"
+  private static final String UPDATE_NOTIFDEFAULTADDRESS = "update ST_NotifDefaultAddress set"
       + " userId = ?," + " notifAddressId = ?" + " Where id = ?";
 
   /**
@@ -141,7 +142,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
     updateRelation(DELETE_NOTIFDEFAULTADDRESS, id);
   }
 
-  static final private String DELETE_NOTIFDEFAULTADDRESS =
+  private static final String DELETE_NOTIFDEFAULTADDRESS =
       "delete from ST_NotifDefaultAddress where id=?";
 
   /**

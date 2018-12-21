@@ -79,12 +79,6 @@ public enum SupportedWebPlugins {
    */
   RELATIONSHIP,
   /**
-   * Silverpeas plugin to send a message (a user notification) to a given user. The HTML element on
-   * which the plugin is invoked must present the rel attribute valued with the user identifier and
-   * optionally the user full name (comma separated).
-   */
-  MESSAGEME,
-  /**
    * Silverpeas plugin to render a calendar with events. This plugin is based upon a JQuery one and
    * abstracts the way it is used. Its provides also additional features to the used JQuery plugin
    * calendar.

@@ -23,15 +23,19 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.clipboard.ClipboardSelection;
+import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
+import org.silverpeas.core.notification.user.NullUserNotification;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -39,7 +43,7 @@ import java.util.Collection;
  * @author nicolas eysseric and didier wenzek
  */
 
-public interface ComponentSessionController {
+public interface ComponentSessionController extends Serializable {
   /** Return the organizationController */
   OrganizationController getOrganisationController();
 
@@ -119,22 +123,26 @@ public interface ComponentSessionController {
 
   void setSpaceModeMaintenance(String spaceId, boolean mode);
 
-  Collection getClipboardSelectedObjects() throws Exception;
+  Collection getClipboardSelectedObjects() throws SilverpeasException;
 
-  String getClipboardErrorMessage() throws Exception;
+  String getClipboardErrorMessage() throws SilverpeasException;
 
-  Exception getClipboardExceptionError() throws Exception;
+  Exception getClipboardExceptionError() throws SilverpeasException;
 
-  Collection getClipboardObjects() throws Exception;
+  Collection getClipboardObjects() throws SilverpeasException;
 
-  void addClipboardSelection(ClipboardSelection selection) throws Exception;
+  void addClipboardSelection(ClipboardSelection selection) throws SilverpeasException;
 
-  void clipboardPasteDone() throws Exception;
+  void clipboardPasteDone() throws SilverpeasException;
 
-  void setClipboardSelectedElement(int index, boolean selected) throws Exception;
+  void setClipboardSelectedElement(int index, boolean selected) throws SilverpeasException;
 
-  int getClipboardSize() throws Exception;
+  int getClipboardSize() throws SilverpeasException;
 
-  void removeClipboardElement(int index) throws Exception;
+  void removeClipboardElement(int index) throws SilverpeasException;
+
+  default ManualUserNotificationSupplier getManualUserNotificationSupplier() {
+    return c -> new NullUserNotification();
+  }
 
 }

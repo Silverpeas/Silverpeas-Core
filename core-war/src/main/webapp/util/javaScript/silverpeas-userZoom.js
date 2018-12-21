@@ -84,8 +84,8 @@
 
         self.currentUser.onMyInvitations = function() {
           var promises = [];
-          promises.push(silverpeasAjax(sp.ajaxConfig(webContext + '/services/invitations/inbox')));
-          promises.push(silverpeasAjax(sp.ajaxConfig(webContext + '/services/invitations/outbox')));
+          promises.push(silverpeasAjax(sp.ajaxRequest(webContext + '/services/invitations/inbox')));
+          promises.push(silverpeasAjax(sp.ajaxRequest(webContext + '/services/invitations/outbox')));
           return self.currentUser.myInvitationsPromise =
               sp.promise.whenAllResolved(promises).then(function(requests) {
                 var invitations = [];
@@ -155,12 +155,16 @@
     }).addClass('userzoom-tooltip-interaction-accessProfil').append($('<span>').append(window.i18n.prop('myProfile.tab.profile')))).
     append($('<a>', {
       href: '#'
-    }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(window.i18n.prop('ToContact'))).messageMe(user));
+    }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(window.i18n.prop('ToContact'))).click(function() {
+      sp.messager.open(null, {recipientUsers: user.id, recipientEdition: false});
+      $.userZoom.clear();
+    }));
     if (user.chatEnabled) {
       interactionBox.addClass('chat-enabled').append($('<a>', {
         href: '#'
       }).addClass('userzoom-tooltip-interaction-accessChat' + disabledCss).append($('<span>').append(window.i18n.prop('chat'))).click(function() {
         chatWith(user);
+        $.userZoom.clear();
       }));
     }
     interactionBox.append($('<div>').addClass('userzoom-tooltip-arrow'));
@@ -431,7 +435,7 @@
 })(jQuery);
 
 function activateUserZoom() {
-  activateMessageMe();
+  //activateMessageMe();
   activateRelationShip();
   jQuery(document).ready(function() {
     jQuery('.userToZoom').each(function() {

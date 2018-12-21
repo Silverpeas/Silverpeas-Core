@@ -74,7 +74,6 @@
 <head>
   <title></title>
   <view:looknfeel/>
-  <view:includePlugin name="messageme"/>
   <view:includePlugin name="popup"/>
   <link type="text/css" rel="stylesheet" href='<c:url value="/directory/jsp/css/print.css" />' media="print"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.cookie.js"/>"></script>

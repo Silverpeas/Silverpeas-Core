@@ -25,30 +25,21 @@ package org.silverpeas.core.notification.user.client;
 
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static org.silverpeas.core.notification.user.client.NotificationTemplateKey
-    .notification_receiver_groups;
-import static org.silverpeas.core.notification.user.client.NotificationTemplateKey
-    .notification_receiver_users;
+import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.notification_receiver_groups;
+import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.notification_receiver_users;
 import static org.silverpeas.core.ui.DisplayI18NHelper.verifyLanguage;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -65,10 +56,10 @@ public class NotificationMetaData implements java.io.Serializable {
   private String source;
   private String link;
   private String sessionId;
-  private Collection<UserRecipient> userRecipients;
-  private Collection<UserRecipient> userRecipientsToExclude;
-  private Collection<GroupRecipient> groupRecipients;
-  private Collection<ExternalRecipient> externalRecipients;
+  private final Collection<UserRecipient> userRecipients = new ArrayList<>();
+  private final Collection<UserRecipient> userRecipientsToExclude = new ArrayList<>();
+  private final Collection<GroupRecipient> groupRecipients = new ArrayList<>();
+  private final Collection<ExternalRecipient> externalRecipients = new ArrayList<>();
   private String componentId;
   private boolean isAnswerAllowed = false;
   private String fileName;
@@ -124,16 +115,12 @@ public class NotificationMetaData implements java.io.Serializable {
    * reset all attributes
    */
   private void reset() {
-    messageType = NotificationParameters.NORMAL;
+    messageType = NotificationParameters.PRIORITY_NORMAL;
     date = new Date();
     sender = "";
     source = "";
     link = "";
     sessionId = "";
-    userRecipients = new ArrayList<>();
-    userRecipientsToExclude = new ArrayList<>();
-    groupRecipients = new ArrayList<>();
-    externalRecipients = new ArrayList<>();
     componentId = "";
     isAnswerAllowed = false;
     fileName = null;
@@ -207,7 +194,6 @@ public class NotificationMetaData implements java.io.Serializable {
    * @return the message title
    */
   public String getTitle() {
-    // return title;
     return getTitle(DisplayI18NHelper.getDefaultLanguage());
   }
 
@@ -229,7 +215,6 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param content the content to be set
    */
   public void setContent(String content) {
-    // this.content = content;
     contents.put(DisplayI18NHelper.getDefaultLanguage(), content);
   }
 
@@ -247,17 +232,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   public String getContent(String language) {
     StringBuilder result = new StringBuilder();
-    if (templates != null && !templates.isEmpty()) {
-      SilverpeasTemplate template = templates.get(language);
-      if (template != null) {
-        result.append(template.applyFileTemplate(fileName + '_' + language));
-      }
-    } else {
-      String content = contents.get(language);
-      if(content != null) {
-        result.append(content);
-      }
-    }
+    appendMessageContent(result, language);
     appendExtraMessageHtmlFragment(result, language);
 
     // This below TAG permits to next treatments to decorate the message just before this footer
@@ -267,20 +242,18 @@ public class NotificationMetaData implements java.io.Serializable {
     SilverpeasTemplate templateMessageFooter = getTemplateMessageFooter(language);
     if (templateMessageFooter != null && this.displayReceiversInFooter) {
       try {
-        String receiver_users = getUserReceiverFormattedList();
-        if (StringUtil.isDefined(receiver_users)) {
+        String receiverUsers = getUserReceiverFormattedList();
+        if (StringUtil.isDefined(receiverUsers)) {
           templateMessageFooter
-              .setAttribute(notification_receiver_users.toString(), receiver_users);
+              .setAttribute(notification_receiver_users.toString(), receiverUsers);
         }
-        String receiver_groups = getGroupReceiverFormattedList();
-        if (StringUtil.isDefined(receiver_groups)) {
+        String receiverGroups = getGroupReceiverFormattedList();
+        if (StringUtil.isDefined(receiverGroups)) {
           templateMessageFooter
-              .setAttribute(notification_receiver_groups.toString(), receiver_groups);
+              .setAttribute(notification_receiver_groups.toString(), receiverGroups);
         }
-      } catch (NotificationManagerException e) {
-        SilverTrace.warn("notificationManager",
-            "NotificationMetaData.getContent()",
-            "root.EX_ADD_USERS_FAILED", e);
+      } catch (NotificationException e) {
+        SilverLogger.getLogger(this).error(e);
       }
 
       String messageFooter =
@@ -296,6 +269,20 @@ public class NotificationMetaData implements java.io.Serializable {
 
 
     return WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(result.toString());
+  }
+
+  private void appendMessageContent(final StringBuilder result, final String language) {
+    if (templates != null && !templates.isEmpty()) {
+      SilverpeasTemplate template = templates.get(language);
+      if (template != null) {
+        result.append(template.applyFileTemplate(fileName + '_' + language));
+      }
+    } else {
+      String content = contents.get(language);
+      if(content != null) {
+        result.append(content);
+      }
+    }
   }
 
   /**
@@ -432,10 +419,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param users the user ids that must receive this message
    */
   public void setUserRecipients(Collection<UserRecipient> users) {
+    this.userRecipients.clear();
     if (users != null) {
-      this.userRecipients = new ArrayList<>(users);
-    } else {
-      this.userRecipients = new ArrayList<>();
+      addUserRecipients(users);
     }
   }
 
@@ -444,7 +430,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * @return the message user recipients
    */
   public Collection<UserRecipient> getUserRecipients() {
-    return userRecipients;
+    return Collections.unmodifiableCollection(userRecipients);
   }
 
   /**
@@ -463,11 +449,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * into account.
    * @param users users to be added
    */
-  public void addUserRecipients(UserRecipient[] users) {
+  public void addUserRecipients(UserRecipient... users) {
     if (users != null) {
-      for (UserRecipient userRecipient : users) {
-        addUserRecipient(userRecipient);
-      }
+      addUserRecipients(Arrays.asList(users));
     }
   }
 
@@ -489,10 +473,11 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param users the user ids that must not receive this message
    */
   public void setUserRecipientsToExclude(Collection<UserRecipient> users) {
+    this.userRecipientsToExclude.clear();
     if (users != null) {
-      this.userRecipientsToExclude = new ArrayList<>(users);
-    } else {
-      this.userRecipientsToExclude = new ArrayList<>();
+      for(UserRecipient recipient: users) {
+        addUserRecipient(recipient);
+      }
     }
   }
 
@@ -501,7 +486,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * @return the message user recipients
    */
   public Collection<UserRecipient> getUserRecipientsToExclude() {
-    return userRecipientsToExclude;
+    return Collections.unmodifiableCollection(userRecipientsToExclude);
   }
 
   /**
@@ -536,15 +521,18 @@ public class NotificationMetaData implements java.io.Serializable {
    * @return the externalAddress
    */
   public Collection<ExternalRecipient> getExternalRecipients() {
-    return externalRecipients;
+    return Collections.unmodifiableCollection(externalRecipients);
   }
 
   /**
    * @param externalRecipients the externalAddress to set
    */
   public void setExternalRecipients(Collection<ExternalRecipient> externalRecipients) {
+    this.externalRecipients.clear();
     if (externalRecipients != null) {
-      this.externalRecipients = externalRecipients;
+      for(ExternalRecipient recipient: externalRecipients) {
+        addExternalRecipient(recipient);
+      }
     }
   }
 
@@ -560,10 +548,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param groups the groups that must receive this message
    */
   public void setGroupRecipients(Collection<GroupRecipient> groups) {
+    this.groupRecipients.clear();
     if (groups != null) {
-      this.groupRecipients = new ArrayList<>(groups);
-    } else {
-      this.groupRecipients = new ArrayList<>();
+      addGroupRecipients(groups);
     }
   }
 
@@ -686,9 +673,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * If the sender is identified, it is removed from the result.<br>
    * No internal data of the current {@link NotificationMetaData} is updated.
    * @return the complete list of users that will receive the notification.
-   * @throws NotificationManagerException if an error occurs
+   * @throws NotificationException if an error occurs
    */
-  public Set<UserRecipient> getAllUserRecipients() throws NotificationManagerException {
+  public Set<UserRecipient> getAllUserRecipients() throws NotificationException {
     return getAllUserRecipients(false);
   }
 
@@ -700,36 +687,36 @@ public class NotificationMetaData implements java.io.Serializable {
    * recipients to exclude will be updated. This container is provided by {@link
    * #getUserRecipientsToExclude()}. If false, nothing is done.
    * @return the complete list of users that will receive the notification.
-   * @throws NotificationManagerException if an error occurs
+   * @throws NotificationException if an error occurs
    */
   public Set<UserRecipient> getAllUserRecipients(boolean updateInternalUserRecipientsToExclude)
-      throws NotificationManagerException {
+      throws NotificationException {
 
     Set<UserRecipient> allUniqueUserRecipients = new HashSet<>();
-    Collection<UserRecipient> userRecipients = getUserRecipients();
-    Collection<GroupRecipient> groupRecipients = getGroupRecipients();
-    Collection<UserRecipient> userRecipientsToExclude =
+    Collection<UserRecipient> users = getUserRecipients();
+    Collection<GroupRecipient> groups = getGroupRecipients();
+    Collection<UserRecipient> usersToExclude =
         updateInternalUserRecipientsToExclude ? getUserRecipientsToExclude() :
             new HashSet<>(getUserRecipientsToExclude());
 
     // First get direct users
-    allUniqueUserRecipients.addAll(userRecipients);
+    allUniqueUserRecipients.addAll(users);
 
     // Then get users included in groups
-    for (GroupRecipient group : groupRecipients) {
+    for (GroupRecipient group : groups) {
       allUniqueUserRecipients
           .addAll(getNotificationManager().getUsersFromGroup(group.getGroupId()));
     }
 
     // Then exclude users that don't have to be notified
-    allUniqueUserRecipients.removeAll(userRecipientsToExclude);
+    allUniqueUserRecipients.removeAll(usersToExclude);
 
     // Returning the completed list
     return allUniqueUserRecipients;
   }
 
   private Set<UserRecipient> getUsersForReceiverBlock()
-      throws NotificationManagerException {
+      throws NotificationException {
     HashSet<UserRecipient> usersSet = new HashSet<>();
     usersSet.addAll(getUserRecipients());
     for (GroupRecipient group : getGroupRecipients()) {
@@ -753,7 +740,7 @@ public class NotificationMetaData implements java.io.Serializable {
     return res1 || res2;
   }
 
-  private String getUserReceiverFormattedList() throws NotificationManagerException {
+  private String getUserReceiverFormattedList() throws NotificationException {
     StringBuilder users = new StringBuilder();
     if (NotificationManagerSettings.isDisplayingReceiversInNotificationMessageEnabled() && this.displayReceiversInFooter) {
       Set<UserRecipient> usersSet = getUsersForReceiverBlock();

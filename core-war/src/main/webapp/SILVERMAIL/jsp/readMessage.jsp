@@ -55,7 +55,7 @@
   <view:looknfeel/>
   <script type="text/javascript">
     function deleteMessage(id) {
-      var ajaxConfig = sp.ajaxConfig("DeleteMessage").byPostMethod();
+      var ajaxConfig = sp.ajaxRequest("DeleteMessage").byPostMethod();
       ajaxConfig.withParam("ID", id);
       silverpeasAjax(ajaxConfig).then(function() {
         window.close();

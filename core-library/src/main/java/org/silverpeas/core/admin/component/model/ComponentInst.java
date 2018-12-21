@@ -55,7 +55,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   private static final long serialVersionUID = 1L;
   private static final Pattern COMPONENT_INSTANCE_IDENTIFIER =
-      Pattern.compile("^([a-zA-Z-]+)[0-9]+$");
+      Pattern.compile("^([a-zA-Z-]+)([0-9]+)$");
 
   public static final String STATUS_REMOVED = "R";
   @XmlAttribute
@@ -108,6 +108,26 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
       componentName = matcher.group(1);
     }
     return componentName;
+  }
+
+  /**
+   * Gets the local identifier of the multi-user component from which the specified instance was
+   * spawn. By convention, the identifiers of the component instances are made up of the name of the
+   * component followed by a number, the local identifier. This method is a way to get directly
+   * the component local identifier from an instance identifier.
+   * @param componentInstanceId the unique identifier of a component instance.
+   * @return the local identifier of the multi-user component or -1 if the specified identifier
+   * doesn't match the rule of a shared component instance identifier.
+   */
+  public static int getComponentLocalId(final String componentInstanceId) {
+    int componentId = -1;
+    if (StringUtil.isDefined(componentInstanceId)) {
+      Matcher matcher = COMPONENT_INSTANCE_IDENTIFIER.matcher(componentInstanceId);
+      if (matcher.matches()) {
+        componentId = Integer.parseInt(matcher.group(2));
+      }
+    }
+    return componentId;
   }
 
   @Override

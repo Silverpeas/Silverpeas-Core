@@ -27,18 +27,15 @@
  */
 package org.silverpeas.core.pdc.interests.service;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
+import org.silverpeas.core.pdc.interests.model.Interests;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-
-import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
-import org.silverpeas.core.pdc.interests.model.Interests;
-
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Default implementation of the service on the interest centers of users.
@@ -98,8 +95,8 @@ public class DefaultInterestsService implements InterestsService {
         Interests interests = getInterestsById(icPk);
 
         if(userIdInt != interests.getOwnerID()) {
-          throw new ForbiddenRuntimeException("DefaultInterestsService.removeInterestsById(ArrayList pks)",
-            SilverpeasRuntimeException.ERROR, "peasCore.RESOURCE_ACCESS_UNAUTHORIZED", "interest center id="+icPk+", userId="+userId);
+          throw new ForbiddenRuntimeException(
+              "Unauthorized to remove the interest " + icPk + " of user " + userId);
         }
       }
 

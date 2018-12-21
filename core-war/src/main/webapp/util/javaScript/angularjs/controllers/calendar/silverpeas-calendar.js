@@ -79,8 +79,7 @@
           };
 
           $scope.notifyEventOccurrence = function(occurrence) {
-            var uri = occurrence.occurrenceViewUrl + "/notify";
-            $scope.openPage(uri);
+            sp.messager.open(context.component, {eventId: occurrence.id});
           };
           $scope.gotToEventOccurrence = function(occurrence) {
             spWindow.loadPermalink(occurrence.occurrencePermalinkUrl);

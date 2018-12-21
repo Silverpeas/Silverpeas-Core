@@ -27,7 +27,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
-<%  ArrayList notifPreferences = personalizationScc.getNotifPreferences() ; %>
+<%  List notifPreferences = personalizationScc.getNotifPreferences() ; %>
 
 <script>
   function editPref(id){
@@ -48,7 +48,7 @@
 
 <table cellpadding="5" cellspacing="2" border="0" width="98%"><tr><td>
 	<span class="txttitrecol"><%=resource.getString("default")%> :</span>
-     &#149;&nbsp;<%=Encode.forHtml(personalizationScc.getDefaultAddress().getProperty("name"))%>&nbsp;&#149;
+     &#149;&nbsp;<%=Encode.forHtml(personalizationScc.getDefaultAddressProperties().getProperty("name"))%>&nbsp;&#149;
 </td></tr></table>
 <%
 	// Arraypane notif

@@ -637,7 +637,7 @@
           __clearIcon.setAttribute("border", "0");
           __clearIcon.setAttribute("title", this.options.removeButtonLabel);
           __clearIcon.setAttribute("alt", this.options.removeButtonLabel);
-          __clearIcon.setAttribute("src", "../../util/icons/delete.gif");
+          __clearIcon.setAttribute("src", webContext + "/util/icons/delete.gif");
           __clear.appendChild(__clearIcon);
           __searchContainer.appendChild(__clear);
           __clear.addEventListener('click', function() {
@@ -647,7 +647,7 @@
 
         if (this.options.mandatory) {
           var __mandatoryIcon = document.createElement("img");
-          __mandatoryIcon.setAttribute("src", "../../util/icons/mandatoryField.gif");
+          __mandatoryIcon.setAttribute("src", webContext + "/util/icons/mandatoryField.gif");
           __mandatoryIcon.setAttribute("width", "5");
           __mandatoryIcon.setAttribute("height", "5");
           __mandatoryIcon.classList.add('mandatory-icon');
@@ -1235,7 +1235,7 @@
     img.setAttribute("border", "0");
     img.setAttribute("title", label);
     img.setAttribute("alt", label);
-    img.setAttribute("src", "../../util/icons/delete.gif");
+    img.setAttribute("src", webContext + "/util/icons/delete.gif");
     a.appendChild(img);
     op.appendChild(a);
 
@@ -1254,14 +1254,14 @@
           } else {
             item.remove();
             resolve({
-              label : LABEL_KEEP, imgSrc : "../../util/icons/refresh.gif"
+              label : LABEL_KEEP, imgSrc : webContext + "/util/icons/refresh.gif"
             });
           }
         } else {
           item.restore();
           resolve({
             label : (item.instance.context.userPanelSaving ? LABEL_DELETE : LABEL_REMOVE),
-            imgSrc : "../../util/icons/delete.gif"
+            imgSrc : webContext + "/util/icons/delete.gif"
           });
         }
       }).then(function(data) {

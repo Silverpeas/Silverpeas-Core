@@ -45,7 +45,7 @@ public abstract class AbstractPdcSubscriptionUserNotification<T>
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.pdcSubscription.multilang.pdcsubscription";
   }
 

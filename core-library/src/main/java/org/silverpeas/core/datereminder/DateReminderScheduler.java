@@ -32,7 +32,7 @@ import org.silverpeas.core.datereminder.persistence.service.DateReminderServiceP
 import org.silverpeas.core.datereminder.provider.DateReminderProcess;
 import org.silverpeas.core.datereminder.provider.DateReminderProcessRegistration;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.scheduler.Scheduler;
@@ -95,7 +95,7 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
         try {
           entityReference = dateReminderProcess.perform(resourceDateReminder);
           performed = true;
-        } catch (NotificationManagerException e) {
+        } catch (NotificationException e) {
           SilverLogger.getLogger(this).error("Date reminder failure for type = {0}, resource = {1}",
               new String[] {resourceDateReminder.getResourceType(), resourceDateReminder.getId()},
               e);

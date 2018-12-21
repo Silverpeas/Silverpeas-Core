@@ -23,18 +23,21 @@
  */
 package org.silverpeas.core.web.mvc.util;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 public class AccessForbiddenException extends SilverpeasException {
 
-  private static final long serialVersionUID = 24612705927634016L;
+  private static final long serialVersionUID = 6977041309315791234L;
 
-  public AccessForbiddenException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message, null, null);
+  public AccessForbiddenException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  @Override
-  public String getModule() {
-    return "util";
+  public AccessForbiddenException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
+
+  public AccessForbiddenException(final Throwable cause) {
+    super(cause);
   }
 }

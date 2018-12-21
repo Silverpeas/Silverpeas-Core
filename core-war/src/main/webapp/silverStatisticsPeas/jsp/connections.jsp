@@ -61,6 +61,19 @@ UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile
 		SP_openWindow(fonction, windowName, '750', '250','scrollbars=yes, resizable, alwaysRaised');
 	}
 
+  function notifyUser(userId) {
+	  sp.messager.open(null, {recipientUsers: userId, recipientEdition: false});
+  }
+
+  function notifyAll() {
+	  var all = '<%= cResultData.stream().map(s -> s.getUserDetail().getId()).collect(Collectors.joining(","))%>';
+	  console.log('ALL: ', all);
+
+	  if (all.trim().length > 0) {
+      notifyUser(all);
+    }
+  }
+
   function ConfirmAndSend(targetURL,textToDisplay) {
     jQuery.popup.confirm(textToDisplay, function() {
       jQuery('#genericForm').attr('action', targetURL).submit();
@@ -83,7 +96,7 @@ function DoIdle()
     browseBar.setComponentName(resources.getString("silverStatisticsPeas.Connections"));
     browseBar.setPath(resources.getString("silverStatisticsPeas.usersWithSession"));
 
-	operationPane.addOperation(resources.getIcon("silverStatisticsPeas.icoNotifyAll"),resources.getString("silverStatisticsPeas.notifyAllUser"),"javascript:openSPWindow('DisplayNotifyAllSessions','DisplayNotifyAllSessions')");
+	operationPane.addOperation(resources.getIcon("silverStatisticsPeas.icoNotifyAll"),resources.getString("silverStatisticsPeas.notifyAllUser"),"javascript:notifyAll();");
 
     out.println(window.printBefore());
     if (UserAccessLevel.ADMINISTRATOR.equals(userProfile))
@@ -138,7 +151,7 @@ function DoIdle()
 				cellText = arrayLine.addArrayCellText(DateUtil.formatDuration(duration));
 				cellText.setCompareOn(new Long(duration));
 
-                arrayLine.addArrayCellText("<div align=\"left\"><a href=\"#\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoNotifySession")+"\" onclick=\"javascript:openSPWindow('DisplayNotifySession?theUserId=" + item.getUserDetail().getId() + "','DisplayNotifySession')\"></a>&nbsp;<a href=\"javascript:ConfirmAndSend('KickSession?theSessionId=" + URLEncoder.encode(item.getSessionId()) + "','" + Encode
+                arrayLine.addArrayCellText("<div align=\"left\"><a href=\"#\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoNotifySession")+"\" onclick=\"javascript:notifyUser('" + item.getUserDetail().getId() + "')\"></a>&nbsp;<a href=\"javascript:ConfirmAndSend('KickSession?theSessionId=" + URLEncoder.encode(item.getSessionId()) + "','" + Encode
                     .javaStringToJsString(
                         resources.getString("silverStatisticsPeas.ConfirmKickSession") +
                             item.getUserDetail().getLogin() + " (" +

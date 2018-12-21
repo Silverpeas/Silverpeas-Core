@@ -57,12 +57,11 @@ public class URLUtil {
   public static final String CMP_TODO = "todo";
   public static final String CMP_SCHEDULE_EVENT = "scheduleEvent";
   public static final String CMP_CLIPBOARD = "clipboard";
-  public static final String CMP_NOTIFICATIONUSER = "notificationUser";
+  public static final String CMP_NOTIFICATIONUSER = "userNotification";
   public static final String CMP_JOBMANAGERPEAS = "jobManagerPeas";
   public static final String CMP_JOBDOMAINPEAS = "jobDomainPeas";
   public static final String CMP_JOBSTARTPAGEPEAS = "jobStartPagePeas";
   public static final String CMP_JOBSEARCHPEAS = "jobSearchPeas";
-  public static final String CMP_ALERTUSERPEAS = "alertUserPeas";
   public static final String CMP_SILVERSTATISTICSPEAS = "silverStatisticsPeas";
   public static final String CMP_PDC = "pdc";
   public static final String CMP_THESAURUS = "thesaurus";

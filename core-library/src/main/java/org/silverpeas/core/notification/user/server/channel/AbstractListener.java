@@ -23,15 +23,14 @@
  */
 package org.silverpeas.core.notification.user.server.channel;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.TextMessage;
-
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServerConstant;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
 import org.silverpeas.core.notification.user.server.NotificationServerUtil;
-import org.silverpeas.core.exception.SilverpeasException;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.TextMessage;
 
 public abstract class AbstractListener implements INotificationServerChannel {
 
@@ -57,7 +56,6 @@ public abstract class AbstractListener implements INotificationServerChannel {
     extractData(msg);
     NotificationData nd = NotificationServerUtil.convertXMLToNotificationData(payLoad);
     if (nd != null) {
-
       nd.traceObject();
     }
     send(nd);
@@ -73,14 +71,12 @@ public abstract class AbstractListener implements INotificationServerChannel {
     try {
       channel = tm.getStringProperty(NotificationServerConstant.JMS_HEADER_CHANNEL);
     } catch (JMSException e) {
-      throw new NotificationServerException("AbstractListener.extractData()",
-          SilverpeasException.ERROR, "notificationServer.EX_CHANNEL_NOT_DEFINED", e);
+      throw new NotificationServerException(e);
     }
     try {
       payLoad = tm.getText();
     } catch (JMSException e) {
-      throw new NotificationServerException("AbstractListener.extractData()",
-          SilverpeasException.ERROR, "notificationServer.EX_NOTIF_DATA_NOT_DEFINED", e);
+      throw new NotificationServerException(e);
     }
   }
 }

@@ -63,16 +63,15 @@ public abstract class AbstractTable<T> {
   protected String truncate(String value, int maxSize) {
     if (value != null && value.length() > maxSize) {
       return value.substring(0, maxSize - 1);
-    } else
-      return value;
+    }
+    return value;
   }
 
   /**
    * Returns the next id which can be used to create a new row.
    * @return the next identifier value.
-   * @throws SQLException on SQL error.
    */
-  public int getNextId() throws SQLException {
+  public int getNextId() {
     int nextId = DBUtil.getNextId(tableName, "id");
 
     if (nextId == 0) {
@@ -188,15 +187,20 @@ public abstract class AbstractTable<T> {
   protected T getUniqueRow(String query, int[] ids, String[] params) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement select = connection.prepareStatement(query)) {
-      for (int i = 0; i < ids.length; i++) {
-        select.setInt(i + 1, ids[i]);
-      }
-      for (int j = 0; j < params.length; j++) {
-        select.setString(ids.length + j + 1, params[j]);
-      }
+      setStatementParameters(ids, params, select);
       try (ResultSet rs = select.executeQuery()) {
         return getUniqueRow(rs);
       }
+    }
+  }
+
+  private void setStatementParameters(final int[] ids, final String[] params,
+      final PreparedStatement statement) throws SQLException {
+    for (int i = 0; i < ids.length; i++) {
+      statement.setInt(i + 1, ids[i]);
+    }
+    for (int j = 0; j < params.length; j++) {
+      statement.setString(ids.length + j + 1, params[j]);
     }
   }
 
@@ -270,12 +274,7 @@ public abstract class AbstractTable<T> {
   protected List<T> getRows(String query, int[] ids, String[] params) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement select = connection.prepareStatement(query)) {
-      for (int i = 0; i < ids.length; i++) {
-        select.setInt(i + 1, ids[i]);
-      }
-      for (int j = 0; j < params.length; j++) {
-        select.setString(ids.length + j + 1, params[j]);
-      }
+      setStatementParameters(ids, params, select);
       try (ResultSet rs = select.executeQuery()) {
         return getRows(rs);
       }

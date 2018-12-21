@@ -27,12 +27,9 @@ import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
 import org.silverpeas.core.notification.user.UserNotificationServerEvent;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
-    .QUERY_ORDER_BY;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria.QUERY_ORDER_BY;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.LongText;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
@@ -51,9 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Class declaration
- */
 public class SILVERMAILPersistence {
 
   private static final String CACHE_KEY = SILVERMAILPersistence.class + "@userId@";
@@ -76,9 +70,7 @@ public class SILVERMAILPersistence {
                 .getSenderName()));
       }
     } catch (Exception e) {
-      throw new SILVERMAILException(
-          "SILVERMAILPersistence.markMessageAsReaden()",
-          SilverpeasException.ERROR, "silvermail.EX_CANT_READ_MSG", "MsgId=" + smb.getId(), e);
+      throw new SILVERMAILException("Cannot mark the message " + smb.getId() + " as read", e);
     }
   }
 
@@ -91,8 +83,7 @@ public class SILVERMAILPersistence {
    * @return the list of {@link SILVERMAILMessage} instances.
    * @throws SILVERMAILException
    */
-  private static SilverpeasList<SILVERMAILMessage> findByCriteria(SilvermailCriteria criteria)
-      throws SILVERMAILException {
+  private static SilverpeasList<SILVERMAILMessage> findByCriteria(SilvermailCriteria criteria) {
     final SilverpeasList<SILVERMAILMessageBean> messageBeans =
         getRepository().findByCriteria(criteria);
     List<Integer> longTextIds =
@@ -129,10 +120,7 @@ public class SILVERMAILPersistence {
     return login;
   }
 
-  /**
-   *
-   */
-  public static void addMessage(SILVERMAILMessage silverMsg) throws SILVERMAILException {
+  static void addMessage(SILVERMAILMessage silverMsg) throws SILVERMAILException {
     SILVERMAILMessageBean smb = new SILVERMAILMessageBean();
     if (silverMsg != null) {
       try {
@@ -151,8 +139,7 @@ public class SILVERMAILPersistence {
             .creationOf(String.valueOf(smb.getUserId()), smb.getId(), smb.getSubject(),
                 smb.getSenderName()));
       } catch (Exception e) {
-        throw new SILVERMAILException("SILVERMAILPersistence.addMessage()",
-            SilverpeasException.ERROR, "silvermail.EX_CANT_WRITE_MESSAGE", e);
+        throw new SILVERMAILException(e);
       }
     }
   }
@@ -164,44 +151,8 @@ public class SILVERMAILPersistence {
         .unread());
   }
 
-  public static long countReadMessagesOfFolder(String userId, String folderName) {
-    return getRepository().countByCriteria(SilvermailCriteria.get()
-        .aboutUser(userId)
-        .into(folderName)
-        .read());
-  }
-
-  public static long countMessagesOfFolder(String userId, String folderName) {
-    return getRepository().countByCriteria(SilvermailCriteria.get()
-        .aboutUser(userId)
-        .into(folderName));
-  }
-
-  public static SilverpeasList<SILVERMAILMessage> getNotReadMessagesOfFolder(String userId,
-      String folderName, final PaginationPage pagination, final QUERY_ORDER_BY orderBy)
-      throws SILVERMAILException {
-    final SilvermailCriteria criteria =
-        SilvermailCriteria.get().aboutUser(userId).into(folderName).unread()
-            .paginatedBy(pagination);
-    if (orderBy != null) {
-      criteria.orderedBy(orderBy);
-    }
-    return findByCriteria(criteria);
-  }
-
-  public static SilverpeasList<SILVERMAILMessage> getReadMessagesOfFolder(String userId,
-      String folderName, final PaginationPage pagination, final QUERY_ORDER_BY orderBy)
-      throws SILVERMAILException {
-    final SilvermailCriteria criteria =
-        SilvermailCriteria.get().aboutUser(userId).into(folderName).read().paginatedBy(pagination);
-    if (orderBy != null) {
-      criteria.orderedBy(orderBy);
-    }
-    return findByCriteria(criteria);
-  }
-
   public static SilverpeasList<SILVERMAILMessage> getMessageOfFolder(String userId, String folderName,
-      final PaginationPage pagination, final QUERY_ORDER_BY orderBy) throws SILVERMAILException {
+      final PaginationPage pagination, final QUERY_ORDER_BY orderBy) {
     final SilvermailCriteria criteria =
         SilvermailCriteria.get().aboutUser(userId).into(folderName).paginatedBy(pagination);
     if (orderBy != null) {
@@ -244,24 +195,20 @@ public class SILVERMAILPersistence {
           }
           repository.delete(toDel);
         } else {
-          throw new ForbiddenRuntimeException("SILVERMAILPersistence.deleteMessage()",
-              SilverpeasRuntimeException.ERROR, "peasCore.RESOURCE_ACCESS_UNAUTHORIZED",
-              "notifId=" + msgId + ", userId=" + userId);
+          throw new ForbiddenRuntimeException(
+              "Unauthorized deletion of message " + msgId + " for user " + userId);
         }
         return null;
       });
       DefaultServerEventNotifier.get()
           .notify(UserNotificationServerEvent.deletionOf(userId, String.valueOf(msgId)));
     } catch (Exception e) {
-      throw new SILVERMAILException("SILVERMAILPersistence.deleteMessage()",
-          SilverpeasException.ERROR, "silvermail.EX_CANT_DEL_MSG", "MsgId="
-          + Long.toString(msgId), e);
+      throw new SILVERMAILException("Cannot delete the message " + msgId, e);
     }
   }
 
-  public static void deleteAllMessagesInFolder(String currentUserId, String folderName)
-      throws SILVERMAILException {
-    String folderId = "INBOX".equals(folderName) ? "0" : "0";
+  public static void deleteAllMessagesInFolder(String currentUserId) {
+    String folderId = "0";
     long nbDeleted = Transaction.performInOne(() -> getRepository()
         .deleteAllMessagesByUserIdAndFolderId(currentUserId, folderId));
 
@@ -270,7 +217,7 @@ public class SILVERMAILPersistence {
     }
   }
 
-  public static void markAllMessagesAsRead(String currentUserId) throws SILVERMAILException {
+  public static void markAllMessagesAsRead(String currentUserId) {
     long nbUpdated = Transaction.performInOne(() -> getRepository()
         .markAsReadAllMessagesByUserIdAndFolderId(currentUserId, "0"));
     if (nbUpdated > 0) {
@@ -278,8 +225,7 @@ public class SILVERMAILPersistence {
     }
   }
 
-  public static void deleteMessages(String currentUserId, Collection<String> ids)
-      throws SILVERMAILException {
+  public static void deleteMessages(String currentUserId, Collection<String> ids) {
     long nbDeleted = Transaction.performInOne(() -> getRepository()
         .deleteMessagesByUserIdAndByIds(currentUserId, ids));
 
@@ -288,8 +234,7 @@ public class SILVERMAILPersistence {
     }
   }
 
-  public static void markMessagesAsRead(String currentUserId, Collection<String> ids)
-      throws SILVERMAILException {
+  public static void markMessagesAsRead(String currentUserId, Collection<String> ids) {
     long nbUpdated = Transaction.performInOne(() -> getRepository()
         .markAsReadMessagesByUserIdAndByIds(currentUserId, ids));
     if (nbUpdated > 0) {
