@@ -103,7 +103,7 @@ function showEmptyListMessage() {
             <a class="link accept-invitation" href="#" rel="<%=id%>,doOnInvitation"><fmt:message key="myProfile.invitations.accept" /></a>
 					  <a class="link cancel-invitation" href="#" rel="<%=id%>,doOnInvitation"><fmt:message key="myProfile.invitations.ignore" /></a>
 				<% } %>
-				<a rel="<%=senderId %>,<%=invitation.getUserDetail().getDisplayedName()%>" class="link notification" href="#"><fmt:message key="GML.notification.send" /></a>
+				<a onclick="sp.messager.open(null, {recipientUsers: <%=senderId%>, recipientEdition: false});" class="link notification" href="#"><fmt:message key="GML.notification.send" /></a>
 					</div>
 					<div class="txt">
 				<p>

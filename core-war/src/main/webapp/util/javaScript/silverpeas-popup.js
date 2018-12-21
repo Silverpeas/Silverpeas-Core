@@ -151,7 +151,11 @@
         show: function(type, params) {
           return new Promise(function(resolve, reject) {
             var options = params;
-            var $popup = $('<div>', {id: 'popupHelperContainer'});
+            var $popup = $('#popupHelperContainer');
+            if ($popup.length === 0) {
+              $popup = $('<div>', {id: 'popupHelperContainer', 'style' : 'display:none'});
+              $popup.appendTo(document.body);
+            }
             var request = sp.ajaxRequest(url);
             if (context) {
               if (context.method === 'POST') {

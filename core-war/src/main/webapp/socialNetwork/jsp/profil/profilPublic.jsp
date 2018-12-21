@@ -70,7 +70,7 @@
     <div class="action">
 		  <a href="#" class="link invitation" rel="<%=userFull.getId() %>,<%=userFull.getDisplayedName() %>"><fmt:message key="invitation.send" /></a>
       <br />
-      <a href="#" class="link notification" rel="<%=userFull.getId() %>,'<%=userFull.getDisplayedName()%>"><fmt:message key="GML.notification.send" /></a>
+      <a href="#" class="link notification" onclick="sp.messager.open(null, {recipientUsers: <%=userFull.getId() %>, recipientEdition: false});"><fmt:message key="GML.notification.send" /></a>
     </div> <!-- /action  -->
 
         <!-- profilPhoto  -->

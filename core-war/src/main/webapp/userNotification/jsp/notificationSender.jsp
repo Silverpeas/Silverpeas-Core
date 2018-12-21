@@ -56,7 +56,6 @@
     var userSelectApi;
     function onPageReady() {
       ${recipientsEditable ? 'userSelectApi.focus();' : 'document.querySelector("#notification-data-subject").focus();'}
-      currentPopupResize();
     }
 
     function sendNotification(notification) {
@@ -85,6 +84,7 @@
     }
   </script>
 <fmt:message key="GML.notification.send" var="msgAction"/>
+
 <div id="notification-data-container">
   <div class="skinFieldset">
   <input id="notification-data-manual" type="hidden" name="manual" value="${recipientsEditable}"/>

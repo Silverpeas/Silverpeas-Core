@@ -68,6 +68,7 @@
           this.opened = true;
           jQuery.popup.load(messager, {method : 'POST', params : notification}).show('validation', {
             title : 'Notification',
+            width : 800,
             buttonTextYes : window.NotificationBundle.get('send'),
             buttonTextNo : window.NotificationBundle.get('cancel'),
             callback : function() {

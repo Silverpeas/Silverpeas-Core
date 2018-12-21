@@ -79,7 +79,7 @@
     <!-- action  -->
     <div class="action">
       <a href="#" class="link delete-relation" rel="<%=userFull.getId() %>,<%=userFull.getDisplayedName() %>"><fmt:message key="myProfile.relations.delete" /></a>
-      <a href="#" class="link notification" rel="<%=userFull.getId() %>,<%=userFull.getDisplayedName() %>"><fmt:message key="GML.notification.send" /></a>
+      <a href="#" onclick="sp.messager.open(null, {recipientUsers: <%=userFull.getId() %>, recipientEdition: false});" class="link notification"><fmt:message key="GML.notification.send" /></a>
     </div> <!-- /action  -->
     <div class="profilPhoto">
 			<view:image src="<%=userFull.getAvatar()%>" alt="viewUser" type="avatar.profil" css="avatar"/>
