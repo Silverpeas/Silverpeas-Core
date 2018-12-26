@@ -264,7 +264,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         List<FileItem> items = getRequestItems(request);
 
-        String title = getParameterValue(items, "TitleNotInXMLForm");
+        String title = request.getParameter("TitleNotInXMLForm");
         pdcSC.getQueryParameters().setXmlTitle(title);
 
         PublicationTemplateImpl template;
@@ -490,17 +490,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
   private List<FileItem> getRequestItems(HttpServletRequest request) throws UtilException {
     return HttpRequest.decorate(request).getFileItems();
-  }
-
-  private String getParameterValue(List<FileItem> items, String parameterName) {
-    Iterator<FileItem> iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = iter.next();
-      if (item.isFormField() && parameterName.equals(item.getFieldName())) {
-        return item.getString();
-      }
-    }
-    return null;
   }
 
   private List<WAAttributeValuePair> getItemPks(List<GlobalSilverResult> listGR) {

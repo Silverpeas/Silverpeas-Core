@@ -826,18 +826,23 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
               Map<String, String> theSelectedFacetEntries = filter.
                   getFormFieldSelectedFacetEntries();
               for (Map.Entry<String, String> facet : theSelectedFacetEntries.entrySet()) {
-                // get stored value relative to given facet
-                String resultFieldValue = gsrFormFieldsForFacets.get(facet.getKey());
-                Facet uiFacet = getFieldFacets().get(facet.getKey());
-                if (uiFacet instanceof FacetOnDates) {
-                  visible =
-                      resultFieldValue != null && resultFieldValue.startsWith(facet.getValue());
-                } else if (uiFacet instanceof FacetOnCheckboxes) {
-                  String[] resultValues = resultFieldValue.split(" ");
-                  visible = ArrayUtil.contains(resultValues, facet.getValue());
-                } else {
-                  // visible if stored value is equals to selected facet entry
-                  visible = facet.getValue().equalsIgnoreCase(resultFieldValue);
+                if (visible) {
+                  // get stored value relative to given facet
+                  String resultFieldValue = gsrFormFieldsForFacets.get(facet.getKey());
+                  if (resultFieldValue != null) {
+                    Facet uiFacet = getFieldFacets().get(facet.getKey());
+                    if (uiFacet instanceof FacetOnDates) {
+                      visible = resultFieldValue.startsWith(facet.getValue());
+                    } else if (uiFacet instanceof FacetOnCheckboxes) {
+                      String[] resultValues = resultFieldValue.split(" ");
+                      visible = ArrayUtil.contains(resultValues, facet.getValue());
+                    } else {
+                      // visible if stored value is equals to selected facet entry
+                      visible = facet.getValue().equalsIgnoreCase(resultFieldValue);
+                    }
+                  } else {
+                    visible = false;
+                  }
                 }
               }
             }

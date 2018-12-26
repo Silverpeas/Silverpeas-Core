@@ -243,6 +243,7 @@ public class HtmlSearchResultTag extends TagSupport {
     result.append("<li class=\"lineResult ").append(gsr.getSpaceId()).append(" ");
     result.append(componentName).append(" ");
     result.append(gsr.getInstanceId()).append(" ");
+    result.append(gsr.getType()).append(" ");
     result.append(serverName).append("\">");
 
     if (exportEnabled) {

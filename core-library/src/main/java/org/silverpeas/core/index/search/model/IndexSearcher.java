@@ -325,7 +325,7 @@ public class IndexSearcher {
 
       String keyword = query.getQuery();
       if (StringUtil.isDefined(keyword)) {
-        Query headerQuery = getQuery(IndexManager.HEADER, keyword, languages, analyzer);
+        Query headerQuery = getQuery(IndexManager.CONTENT, keyword, languages, analyzer);
         booleanQuery.add(headerQuery, BooleanClause.Occur.MUST);
       }
 
