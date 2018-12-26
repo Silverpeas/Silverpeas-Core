@@ -195,10 +195,10 @@ function deleteSubscription() {
     browseBar.setComponentName(path);
 
 	TabbedPane tabbedPane = gef.getTabbedPane();
-	tabbedPane.addTab(resource.getString("pdc"), "#", true);
 	tabbedPane.addTab(resource.getString("thematique"), "ViewSubscriptionTheme?userId="+userId+"&action="+action, false);
-   tabbedPane.addTab(resource.getString("application"),
+  tabbedPane.addTab(resource.getString("application"),
        "ViewSubscriptionComponent?userId=" + userId + "&action=" + action, false);
+   tabbedPane.addTab(resource.getString("pdc"), "#", true);
 
       if (!isReadOnly) {
           operationPane.addOperationOfCreation(iconAdd , resource.getString("AddSC"),m_context + "/RpdcSubscriptionPeas/jsp/PdcSubscription");

@@ -52,12 +52,12 @@
 <c:choose>
 <c:when test="${!isNewSubscription}">
 	<view:browseBar extraInformations="${updateSubscription}">
-	<view:browseBarElt label="${path}" link="subscriptionList.jsp"></view:browseBarElt>
+	<view:browseBarElt label="${path}" link="ViewSubscriptionTaxonomy"></view:browseBarElt>
 	</view:browseBar>
 </c:when>
 <c:otherwise>
 	<view:browseBar extraInformations="${newSubscription}">
-		<view:browseBarElt label="${path}" link="subscriptionList.jsp"></view:browseBarElt>
+		<view:browseBarElt label="${path}" link="ViewSubscriptionTaxonomy"></view:browseBarElt>
 	</view:browseBar>
 </c:otherwise>
 </c:choose>
@@ -116,7 +116,7 @@
       }
 
       function goBack() {
-        $('#PdcSubscription').attr('action', 'subscriptionList');
+        $('#PdcSubscription').attr('action', 'ViewSubscriptionTaxonomy');
         $('#PdcSubscription').submit();
       }
     </script>

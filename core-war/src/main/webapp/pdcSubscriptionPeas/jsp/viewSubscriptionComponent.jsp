@@ -85,10 +85,10 @@
     browseBar.setComponentName(rootPath);
 
     TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resource.getString("pdc"), (isReadOnly ? "showUserSubscriptions" : "subscriptionList.jsp") + "?userId=" + userId, false);
     tabbedPane.addTab(resource.getString("thematique"),
         "ViewSubscriptionTheme?userId=" + userId + "&action=" + action, false);
     tabbedPane.addTab(resource.getString("application"), "#", true);
+    tabbedPane.addTab(resource.getString("pdc"), (isReadOnly ? "showUserSubscriptions" : "ViewSubscriptionTaxonomy") + "?userId=" + userId, false);
 
     if (!isReadOnly) {
       operationPane.addOperation(resource.getIcon("icoDelete"), resource.getString("DeleteSC"),
@@ -100,7 +100,7 @@
     out.println(frame.printBefore());
 
     ArrayPane arrayPane =
-        gef.getArrayPane("ViewSubscriptionComponent", "ViewSubscriptionComponent", request,
+        gef.getArrayPane("ViewSubscriptionComponent", "ViewSubscriptionComponent?userId=" + userId+"&action="+action, request,
             session);
     arrayPane.addArrayColumn(resource.getString("SubscriptionType"));
     arrayPane.addArrayColumn(resource.getString("application"));

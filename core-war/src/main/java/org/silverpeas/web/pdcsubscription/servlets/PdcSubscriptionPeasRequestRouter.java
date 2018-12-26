@@ -80,6 +80,8 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
 
     try {
       if (function.startsWith("subscriptionList")) {
+        destination = getDestination("ViewSubscriptionTheme", pdcSC, request);
+      } else if ("ViewSubscriptionTaxonomy".equals(function)) {
         destination = rootDest + processSubscriptionList(request, pdcSC);
       } else if (function.startsWith("showUserSubscriptions")) {
         String reqUserId = request.getParameter("userId");
@@ -134,13 +136,13 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
         String values = request.getParameter("AxisValueCouples");
         List<? extends Criteria> criteria = AxisValueCriterion.fromFlattenedAxisValues(values);
         pdcSC.createPDCSubscription(name, criteria);
-        destination = getDestination("subscriptionList", pdcSC, request);
+        destination = getDestination("ViewSubscriptionTaxonomy", pdcSC, request);
       } else if (function.startsWith("updateSubscription")) {
         String name = request.getParameter("SubscriptionName");
         String values = request.getParameter("AxisValueCouples");
         List<? extends Criteria> criteria = AxisValueCriterion.fromFlattenedAxisValues(values);
         pdcSC.updateCurrentSubscription(name, criteria);
-        destination = getDestination("subscriptionList", pdcSC, request);
+        destination = getDestination("ViewSubscriptionTaxonomy", pdcSC, request);
       }
     } catch (Exception e) {
       SilverTrace.error("pdcSubscriptionPeas",
@@ -159,7 +161,7 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
   private String processSubscriptionList(HttpServletRequest request,
       PdcSubscriptionSessionController pdcSC)
       throws Exception {
-    request.setAttribute("action", "subscriptionList");
+    request.setAttribute("action", "ViewSubscriptionTaxonomy");
 
     String mode = request.getParameter("mode");
     if ("delete".equals(mode)) {
@@ -209,10 +211,5 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
     }
     request.setAttribute("PathContext", pathContext);
     return "subscriptionList.jsp";
-  }
-
-  public List<? extends Criteria> criteriasFromAxisValues(String axisValues) {
-    List<? extends Criteria> criteria = AxisValueCriterion.fromFlattenedAxisValues(axisValues);
-    return criteria;
   }
 }
