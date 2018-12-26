@@ -28,15 +28,14 @@
 <%@ include file="checkPersonalization.jsp" %>
 
 <%
-  String action ;
   String notifName = "" ;
   String channelId = "" ;
   String address = "" ;
 
   String id = request.getParameter("id") ;
-  action = (String) request.getParameter("Action");
+  String action = request.getParameter("Action");
 
-  if ((id == null) || (id.equalsIgnoreCase("-1"))) {
+  if (id == null || id.equalsIgnoreCase("-1")) {
     id = "" ;
   }
 
@@ -77,9 +76,10 @@
   }
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withCheckFormScript="true"/>
 <script>
   function validate() {
@@ -89,28 +89,23 @@
 
     if (isWhitespace(title))
     {
-        if (errorMsg != "")
-            errorMsg = errorMsg + "\n";
-        errorMsg = errorMsg + "<% out.print(resource.getString("GML.theField")+" '"+resource.getString("GML.name")+"' "+resource.getString("GML.MustBeFilled")); %>";
+        errorMsg = "<% out.print(resource.getString("GML.theField")+" '"+resource.getString("GML.name")+"' "+resource.getString("GML.MustBeFilled")); %>";
     }
     if (isWhitespace(dest))
     {
-        if (errorMsg != "")
+        if (errorMsg !== "")
             errorMsg = errorMsg + "\n";
         errorMsg = errorMsg + "<% out.print(resource.getString("GML.theField")+" '"+resource.getString("adresse")+"' "+resource.getString("GML.MustBeFilled")); %>";
     }
-    if (errorMsg == "")
-    {
+    if (errorMsg === "") {
         document.personalizationForm.submit() ;
-    }
-    else
-    {
+    } else {
       jQuery.popup.error(errorMsg);
     }
   }
 </script>
-</HEAD>
-<BODY onload="document.personalizationForm.txtNotifName.focus()">
+</head>
+<body onload="document.personalizationForm.txtNotifName.focus()">
 <%
     browseBar.setComponentName(resource.getString("MesNotifications"));
     if (! id.equals("")) //modification
@@ -123,16 +118,15 @@
     out.println(board.printBefore());
 %>
 
-<CENTER>
-      <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
-<form name="personalizationForm" Action="editNotification.jsp?Action=save&id=<%=id%>" Method="POST">
-        <input type="hidden" name="id" value="<%=id%>">
+<form name="personalizationForm" action="editNotification.jsp?Action=save&id=<%=id%>" method="post">
+      <input type="hidden" name="id" value="<%=id%>"/>
+      <table cellpadding="5" cellspacing="0" border="0" width="100%">
         <tr>
           <td valign="baseline" align=left  class="txtlibform">
             <%=resource.getString("GML.name")%> :&nbsp;
           </td>
           <td align=left valign="baseline">
-            <input type="text" name="txtNotifName" size="50" maxlength="20" VALUE="<%=Encode.forHtml(notifName)%>"> <img border="0" src="<%=mandatoryField%>" width="5" height="5">
+            <input type="text" name="txtNotifName" size="50" maxlength="20" value="<%=Encode.forHtml(notifName)%>"/> <img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
           </td>
         </tr>
 
@@ -152,31 +146,27 @@
             <%=resource.getString("adresse")%> :&nbsp;
           </td>
           <td align=left valign="baseline">
-            <input type="text" name="txtAddress" size="50" maxlength="250" VALUE="<%=Encode.forHtml(address)%>"> <img border="0" src="<%=mandatoryField%>" width="5" height="5">
+            <input type="text" name="txtAddress" size="50" maxlength="250" VALUE="<%=Encode.forHtml(address)%>"/> <img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
           </td>
         </tr>
 
 	<tr>
           <td colspan="2">
-	    (<img border="0" src="<%=mandatoryField%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)
+	    <img border="0" src="<%=mandatoryField%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%>
           </td>
         </tr>
-
-</form>
       </table>
-<BR>
+</form>
 <%
 	out.println(board.printAfter());
 
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=validate();", false));
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close();", false));
-    out.println("<BR>"+buttonPane.print());
-%>
-</CENTER>
-<%
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=validate();", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close();", false));
+    out.println("<br/>"+buttonPane.print());
+
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

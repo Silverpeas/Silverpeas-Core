@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.util.StringUtil" %><%--
 
     Copyright (C) 2000 - 2018 Silverpeas
 
@@ -29,34 +29,31 @@
 <%@ include file="checkPersonalization.jsp" %>
 
 <%
-  String action;
   String componentId = "";
   String notificationId = "";
 
-  action = (String) request.getParameter("Action");
+  String action = request.getParameter("Action");
 
   if (action == null) {
     action = "NotificationView";
   }
-  if (action.equals("addPref"))
-  {
+  if (action.equals("addPref")){
     componentId = request.getParameter("componentId");
     notificationId = request.getParameter("notificationId");
-    if ((componentId != null) && (componentId.length() > 0) && (notificationId != null) && (notificationId.length() > 0))
-    {
+    if (StringUtil.isDefined(componentId) && StringUtil.isDefined(notificationId)) {
         personalizationScc.addPreference(componentId,null,notificationId);
     }
     action = "NotificationView";
   }
-  if (action.equals("delete"))
-  {
+  if (action.equals("delete")) {
     String id = request.getParameter("id");
-    if ((id != null) && (id.length() > 0))
-    {
+    if (StringUtil.isDefined(id)) {
         personalizationScc.deletePreference(id);
     }
     action = "NotificationView";
   }
+
+  window.setPopup(true);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -65,7 +62,7 @@
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 </head>
-<body onload="javascript:resizePopup(750,430);">
+<body>
 <%
     browseBar.setComponentName(resource.getString("PersonalizationTitleTab1"));
     browseBar.setPath(resource.getString("browseBar_Path3"));

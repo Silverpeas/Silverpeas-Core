@@ -25,16 +25,13 @@
 --%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
-<%@ page import="java.util.ArrayList" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
+<%@ page import="java.util.List" %>
 <%  List notifPreferences = personalizationScc.getNotifPreferences() ; %>
 
 <script>
   function editPref(id){
     SP_openWindow("editPreference.jsp?id=" + id,"addPrefs","600","250","scrollable=yes");
-  }
-  function resizePopup(largeur,hauteur){
-	  window.resizeTo(largeur,hauteur);
   }
   function deleteRegle(id) {
     jQuery.popup.confirm("<%=resource.getString("MessageSuppressionRegle")%>", function() {
