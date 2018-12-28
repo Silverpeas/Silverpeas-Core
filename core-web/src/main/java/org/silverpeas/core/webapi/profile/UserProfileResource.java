@@ -57,6 +57,7 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -182,8 +183,9 @@ public class UserProfileResource extends RESTWebService {
 
     // Users to exclude by their state
     if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-      criteriaBuilder.withUserStatesToExclude(
-          userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
+      final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
+      statesToExclude.add(UserState.REMOVED);
+      criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
     }
     ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     return Response.ok(
@@ -282,8 +284,9 @@ public class UserProfileResource extends RESTWebService {
 
     // Users to exclude by their state
     if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-      criteriaBuilder.withUserStatesToExclude(
-          userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
+      final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
+      statesToExclude.add(UserState.REMOVED);
+      criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
     }
 
     ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
@@ -348,8 +351,9 @@ public class UserProfileResource extends RESTWebService {
 
       // Users to exclude by their state
       if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-        criteriaBuilder.withUserStatesToExclude(
-            userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
+        final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
+        statesToExclude.add(UserState.REMOVED);
+        criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
       }
 
       contacts = getOrganisationController().searchUsers(criteriaBuilder.build());

@@ -21,26 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
-* Copyright (C) 2000 - 2018 Silverpeas
-*
-* This program is free software: you can redistribute it and/or modify it under the terms of the
-* GNU Affero General Public License as published by the Free Software Foundation, either version 3
-* of the License, or (at your option) any later version.
-*
-* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
-* redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
-* applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
-* text describing the FLOSS exception, and it is also available here:
-* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
-* even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-* Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License along with this program.
-* If not, see <http://www.gnu.org/licenses/>.
-*/
+
 package org.silverpeas.core.admin.domain;
 
 import org.silverpeas.core.admin.domain.model.Domain;
@@ -99,16 +80,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
   private Map<String, DomainDriver> domainDriverInstances = new ConcurrentHashMap<>();
 
   protected DomainDriverManager() {
-  }
-
-  @Override
-  public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp) throws AdminException {
-    return new UserDetail[0];
-  }
-
-  @Override
-  public GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws AdminException {
-    return new GroupDetail[0];
   }
 
   /**
@@ -213,8 +184,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   private String[] getUserIdsOfDomain(String domainId) throws AdminException {
     try(Connection connection = DBUtil.openConnection()) {
-      List<String> domainIds = userDAO.getUserIdsInDomain(connection, domainId);
-      return domainIds.toArray(new String[domainIds.size()]);
+      List<String> userIds = userDAO.getUserIdsInDomain(connection, domainId);
+      return userIds.toArray(new String[0]);
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting("user in domain", domainId), e);
     }
@@ -672,7 +643,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
         valret[i].setDriverClassName(drs[i].className);
         valret[i].setPropFileName(drs[i].propFileName);
         valret[i].setAuthenticationServer(drs[i].authenticationServer);
-        valret[i].setTheTimeStamp(drs[i].theTimeStamp);
       }
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting("all domains", ""), e);
@@ -690,45 +660,38 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   public String createDomain(Domain theDomain) throws AdminException {
     try {
-      DomainRow dr = new DomainRow();
-      dr.id = StringUtil.isInteger(theDomain.getId()) ? Integer.valueOf(theDomain.getId()) : -1;
-      setDomainRow(theDomain, dr);
-
-      // Create domain
+      final DomainRow dr = toDomainRow(theDomain);
       getOrganizationSchema().domain().createDomain(dr);
-
       return idAsString(dr.id);
     } catch (SQLException e) {
       throw new AdminException(failureOnAdding(DOMAIN, theDomain.getName()), e);
     }
   }
 
-  private void setDomainRow(final Domain theDomain, final DomainRow dr) {
-    dr.name = theDomain.getName();
-    dr.description = theDomain.getDescription();
-    dr.className = theDomain.getDriverClassName();
-    dr.propFileName = theDomain.getPropFileName();
-    dr.authenticationServer = theDomain.getAuthenticationServer();
-    dr.theTimeStamp = theDomain.getTheTimeStamp();
-    dr.silverpeasServerURL = theDomain.getSilverpeasServerURL();
-  }
-
   public String updateDomain(Domain theDomain) throws AdminException {
     try {
-      DomainRow dr = new DomainRow();
-      dr.id = idAsInt(theDomain.getId());
-      setDomainRow(theDomain, dr);
-
-      // Create domain
+      final DomainRow dr = toDomainRow(theDomain);
       getOrganizationSchema().domain().updateDomain(dr);
       if (domainDriverInstances.get(theDomain.getId()) != null) {
         domainDriverInstances.remove(theDomain.getId());
       }
-
       return theDomain.getId();
     } catch (SQLException e) {
       throw new AdminException(failureOnUpdate(DOMAIN, theDomain.getName()), e);
     }
+  }
+
+  private DomainRow toDomainRow(final Domain domain) {
+    final DomainRow row = new DomainRow();
+    row.id = idAsInt(domain.getId());
+    row.name = domain.getName();
+    row.description = domain.getDescription();
+    row.className = domain.getDriverClassName();
+    row.propFileName = domain.getPropFileName();
+    row.authenticationServer = domain.getAuthenticationServer();
+    row.theTimeStamp = "0";
+    row.silverpeasServerURL = domain.getSilverpeasServerURL();
+    return row;
   }
 
   public String removeDomain(String domainId) throws AdminException {
@@ -761,7 +724,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
       valret.setDriverClassName(dr.className);
       valret.setPropFileName(dr.propFileName);
       valret.setAuthenticationServer(dr.authenticationServer);
-      valret.setTheTimeStamp(dr.theTimeStamp);
       valret.setSilverpeasServerURL(dr.silverpeasServerURL);
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting(DOMAIN, domainId), e);

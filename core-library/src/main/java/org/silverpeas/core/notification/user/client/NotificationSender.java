@@ -142,7 +142,10 @@ public class NotificationSender implements java.io.Serializable {
 
   private String getDefaultLanguage(final String senderId, final Collection<String> languages) {
     final String defaultLanguage;
-    final String senderLanguage = User.getById(senderId).getUserPreferences().getLanguage();
+    String senderLanguage = "";
+    if (StringUtil.isDefined(senderId)) {
+      senderLanguage = User.getById(senderId).getUserPreferences().getLanguage();
+    }
     if (languages.contains(senderLanguage)) {
       defaultLanguage = senderLanguage;
     } else if (languages.contains(I18NHelper.defaultLanguage)) {

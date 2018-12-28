@@ -54,7 +54,6 @@ public class UserDAO {
       + "loginQuestion,loginAnswer,creationDate,saveDate,version,tosAcceptanceDate,"
       + "lastLoginDate,nbSuccessfulLoginAttempts,lastLoginCredentialUpdateDate,expirationDate,"
       + "state,stateSaveDate, notifManualReceiverLimit";
-  private static final String STATE_CRITERION_NOT = "state <> ?";
   private static final String STATE_CRITERION = "state = ?";
   private static final String ID_CRITERION = "id = ?";
   private static final String DOMAIN_ID_CRITERION = "domainId = ?";
@@ -109,6 +108,28 @@ public class UserDAO {
     return String.valueOf(nextId);
   }
 
+  public void restoreUser(final Connection connection, final UserDetail user) throws SQLException {
+    Instant now = new Date().toInstant();
+    JdbcSqlQuery.createUpdateFor(USER_TABLE)
+        .addUpdateParam(STATE, UserState.VALID)
+        .addUpdateParam(STATE_SAVE_DATE, now)
+        .addUpdateParam(SAVE_DATE, now)
+        .where(ID_CRITERION, Integer.parseInt(user.getId()))
+        .and(STATE).in(UserState.REMOVED)
+        .executeWith(connection);
+  }
+
+  public void removeUser(final Connection connection, final UserDetail user) throws SQLException {
+    Instant now = new Date().toInstant();
+    JdbcSqlQuery.createUpdateFor(USER_TABLE)
+        .addUpdateParam(STATE, UserState.REMOVED)
+        .addUpdateParam(STATE_SAVE_DATE, now)
+        .addUpdateParam(SAVE_DATE, now)
+        .where(ID_CRITERION, Integer.parseInt(user.getId()))
+        .and(STATE).notIn(UserState.REMOVED, UserState.DELETED)
+        .executeWith(connection);
+  }
+
   public void deleteUser(final Connection connection, final UserDetail user) throws SQLException {
     Instant now = new Date().toInstant();
     JdbcSqlQuery.createUpdateFor(USER_TABLE)
@@ -139,7 +160,8 @@ public class UserDAO {
       throws SQLException {
     return JdbcSqlQuery.createSelect("COUNT(id)")
         .from(USER_TABLE)
-        .where(ID_CRITERION, Integer.parseInt(id)).and(STATE_CRITERION_NOT, UserState.DELETED)
+        .where(ID_CRITERION, Integer.parseInt(id))
+        .and(STATE).notIn(UserState.DELETED)
         .executeUniqueWith(connection, row -> row.getInt(1)) == 1;
   }
 
@@ -162,6 +184,29 @@ public class UserDAO {
   }
 
   /**
+   * Gets all the users that were removed in the specified domains.
+   * @param connection a connection to the data source.
+   * @param domainIds zero, one or more unique identifiers of Silverpeas domains. If no domains
+   * are passed, then all the domains are taken by the request.
+   * @return a list of user details.
+   * @throws SQLException if an error while requesting the users.
+   */
+  public List<UserDetail> getRemovedUsers(final Connection connection, final String... domainIds)
+      throws SQLException {
+    Objects.requireNonNull(connection);
+    Objects.requireNonNull(domainIds);
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(USER_COLUMNS)
+        .from(USER_TABLE)
+        .where(STATE_CRITERION, UserState.REMOVED);
+    final List<Integer> requestedDomainIds =
+        Stream.of(domainIds).map(Integer::parseInt).collect(Collectors.toList());
+    if (!requestedDomainIds.isEmpty()) {
+      query.and(DOMAIN_ID).in(requestedDomainIds);
+    }
+    return query.executeWith(connection, UserDAO::fetchUser);
+  }
+
+  /**
    * Gets all the users that were deleted in the specified domains and that weren't yet blanked.
    * @param connection a connection to the data source.
    * @param domainIds zero, one or more unique identifiers of Silverpeas domains. If no domains
@@ -173,14 +218,14 @@ public class UserDAO {
       throws SQLException {
     Objects.requireNonNull(connection);
     Objects.requireNonNull(domainIds);
-    JdbcSqlQuery query = JdbcSqlQuery.createSelect(USER_COLUMNS)
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(USER_COLUMNS)
         .from(USER_TABLE)
         .where(STATE_CRITERION, UserState.DELETED)
         .and("firstName <> ?", BLANK_NAME);
     final List<Integer> requestedDomainIds =
         Stream.of(domainIds).map(Integer::parseInt).collect(Collectors.toList());
     if (!requestedDomainIds.isEmpty()) {
-      query = query.and(DOMAIN_ID).in(requestedDomainIds);
+      query.and(DOMAIN_ID).in(requestedDomainIds);
     }
     return query.executeWith(connection, UserDAO::fetchUser);
   }
@@ -191,7 +236,7 @@ public class UserDAO {
         .from(USER_TABLE)
         .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .and("lower(login) = lower(?)", login)
-        .and(STATE_CRITERION_NOT, UserState.DELETED)
+        .and(STATE).notIn(UserState.DELETED)
         .executeUniqueWith(connection, r -> Integer.toString(r.getInt(1)));
   }
 
@@ -215,7 +260,7 @@ public class UserDAO {
       SQLException {
     return JdbcSqlQuery.createSelect("DISTINCT(domainId) AS domain")
         .from(USER_TABLE)
-        .where("state NOT IN ('DELETED', 'UNKNOWN', 'BLOCKED', 'DEACTIVATED', 'EXPIRED')")
+        .where(STATE).notIn(UserState.DELETED)
         .and("login = ?", login)
         .orderBy(DOMAIN_ID)
         .executeWith(connection, row -> row.getString("domain"));
@@ -302,14 +347,15 @@ public class UserDAO {
     return JdbcSqlQuery.createSelect(USER_COLUMNS)
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
         .where(USER_ID_JOINTURE).and("groupid").in(groupIdsAsInt)
-        .and(STATE_CRITERION_NOT, UserState.DELETED)
+        .and(STATE).notIn(UserState.REMOVED, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(con, UserDAO::fetchUser);
   }
 
   public List<String> getAllUserIds(Connection connection) throws SQLException {
     return JdbcSqlQuery.createSelect("id")
-        .from(USER_TABLE).where(STATE_CRITERION_NOT, UserState.DELETED)
+        .from(USER_TABLE)
+        .where(STATE).notIn(UserState.REMOVED, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -318,7 +364,8 @@ public class UserDAO {
       throws SQLException {
     JdbcSqlQuery query = JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE)
-        .where(STATE_CRITERION_NOT, UserState.DELETED);
+        .where(STATE)
+        .notIn(UserState.REMOVED, UserState.DELETED);
     if (fromUser.isAccessAdmin() || fromUser.isAccessDomainManager()) {
       query.and(ACCESS_LEVEL_CRITERION, UserAccessLevel.ADMINISTRATOR.code());
     } else {
@@ -329,12 +376,17 @@ public class UserDAO {
     return query.orderBy(LAST_NAME).executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
 
-  public List<String> getDirectUserIdsInGroup(Connection connection, final String groupId)
+  public List<String> getDirectUserIdsInGroup(Connection connection, final String groupId,
+      final boolean includeRemoved)
       throws SQLException {
+    final Object[] userStatesToExclude = includeRemoved
+        ? new UserState[]{UserState.DELETED}
+        : new UserState[]{UserState.REMOVED, UserState.DELETED};
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
         .where(USER_ID_JOINTURE)
-        .and("groupId = ?", Integer.parseInt(groupId)).and(STATE_CRITERION_NOT, UserState.DELETED)
+        .and("groupId = ?", Integer.parseInt(groupId))
+        .and(STATE).notIn(userStatesToExclude)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -346,7 +398,7 @@ public class UserDAO {
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
         .where(USER_ID_JOINTURE).and("groupid").in(groupIdsAsInt)
-        .and(STATE_CRITERION_NOT, UserState.DELETED)
+        .and(STATE).notIn(UserState.REMOVED, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(con, row -> Integer.toString(row.getInt(1)));
   }
@@ -354,7 +406,8 @@ public class UserDAO {
   public List<String> getUserIdsInDomain(Connection connection, final String domainId)
       throws SQLException {
     return JdbcSqlQuery.createSelect("id")
-        .from(USER_TABLE).where(STATE_CRITERION_NOT, UserState.DELETED)
+        .from(USER_TABLE)
+        .where(STATE).notIn(UserState.REMOVED, UserState.DELETED)
         .and(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
@@ -363,7 +416,8 @@ public class UserDAO {
   public List<String> getUserIdsByAccessLevel(final Connection connection,
       final UserAccessLevel accessLevel) throws SQLException {
     return JdbcSqlQuery.createSelect("id")
-        .from(USER_TABLE).where(STATE_CRITERION_NOT, UserState.DELETED)
+        .from(USER_TABLE)
+        .where(STATE).notIn(UserState.REMOVED, UserState.DELETED)
         .and(ACCESS_LEVEL_CRITERION, accessLevel.code())
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
@@ -372,7 +426,8 @@ public class UserDAO {
   public List<String> getUserIdsByAccessLevelInDomain(Connection connection,
       final UserAccessLevel accessLevel, final String domainId) throws SQLException {
     return JdbcSqlQuery.createSelect("id")
-        .from(USER_TABLE).where(STATE_CRITERION_NOT, UserState.DELETED)
+        .from(USER_TABLE)
+        .where(STATE).notIn(UserState.REMOVED, UserState.DELETED)
         .and(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .and(ACCESS_LEVEL_CRITERION, accessLevel.code())
         .orderBy(LAST_NAME)
@@ -385,7 +440,7 @@ public class UserDAO {
         .from(USER_TABLE, "ST_UserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("userRoleId = ?", Integer.parseInt(userRoleId))
-        .and(STATE_CRITERION_NOT, UserState.DELETED)
+        .and(STATE).notIn(UserState.REMOVED, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -402,18 +457,21 @@ public class UserDAO {
         .from(USER_TABLE, "ST_SpaceUserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("spaceUserRoleId = ?", Integer.parseInt(spaceUserRoleId))
-        .and(STATE_CRITERION_NOT, UserState.DELETED)
+        .and(STATE).notIn(UserState.REMOVED, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
 
   public List<String> getDirectUserIdsByGroupUserRole(final Connection connection,
-      final String groupUserRoleId) throws SQLException {
+      final String groupUserRoleId, final boolean includeRemoved) throws SQLException {
+    final Object[] userStatesToExclude = includeRemoved
+        ? new UserState[]{UserState.DELETED}
+        : new UserState[]{UserState.REMOVED, UserState.DELETED};
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE, "ST_GroupUserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("groupUserRoleId = ?", Integer.parseInt(groupUserRoleId))
-        .and(STATE_CRITERION_NOT, UserState.DELETED)
+        .and(STATE).notIn(userStatesToExclude)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -430,7 +488,8 @@ public class UserDAO {
       throws SQLException {
     final String order = StringUtil.isDefined(orderBy) ? orderBy : LAST_NAME;
     JdbcSqlQuery query = JdbcSqlQuery.createSelect(USER_COLUMNS)
-        .from(USER_TABLE).where(STATE_CRITERION_NOT, UserState.DELETED);
+        .from(USER_TABLE)
+        .where(STATE).notIn(UserState.REMOVED, UserState.DELETED);
     if (domainIds != null && !domainIds.isEmpty()) {
       final List<Integer> domainIdsAsInt =
           domainIds.stream().map(Integer::parseInt).collect(Collectors.toList());

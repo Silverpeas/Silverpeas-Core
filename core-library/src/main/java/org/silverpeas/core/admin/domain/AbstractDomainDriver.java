@@ -239,16 +239,6 @@ public abstract class AbstractDomainDriver implements DomainDriver {
   }
 
   @Override
-  public String getTimeStamp(String minTimeStamp) throws AdminException {
-    return "";
-  }
-
-  @Override
-  public String getTimeStampField() throws AdminException {
-    return null;
-  }
-
-  @Override
   public boolean isX509CertificateEnabled() {
     return false;
   }

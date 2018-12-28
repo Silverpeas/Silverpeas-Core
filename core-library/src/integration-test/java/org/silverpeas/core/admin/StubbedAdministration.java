@@ -588,6 +588,16 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
+  public String restoreUser(final String sUserId) throws AdminException {
+    return null;
+  }
+
+  @Override
+  public String removeUser(final String sUserId) throws AdminException {
+    return null;
+  }
+
+  @Override
   public String deleteUser(final String sUserId) {
     return null;
   }
@@ -1125,6 +1135,11 @@ public class StubbedAdministration implements Administration {
   @Override
   public SpaceWithSubSpacesAndComponents getAllowedFullTreeview(final String userId,
       final String spaceId) {
+    return null;
+  }
+
+  @Override
+  public List<UserDetail> getRemovedUsers(final String... domainIds) throws AdminException {
     return null;
   }
 

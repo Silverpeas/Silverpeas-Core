@@ -28,20 +28,18 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
-import java.time.format.FormatStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.util.Locale;
 import java.util.Objects;
 
 import static java.time.temporal.ChronoField.HOUR_OF_DAY;
 import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static org.silverpeas.core.date.TemporalConverter.asZonedDateTime;
+import static org.silverpeas.core.util.ResourceLocator.getLocalizationBundle;
 
 /**
  * A formatter of date and datetime in String into different formats, both localized and ISO.
@@ -50,6 +48,8 @@ import static org.silverpeas.core.date.TemporalConverter.asZonedDateTime;
  * @author mmoquillon
  */
 public class TemporalFormatter {
+
+  private static final String DATE_BUNDLE = "org.silverpeas.util.date.multilang.date";
 
   private TemporalFormatter() {
   }
@@ -153,14 +153,14 @@ public class TemporalFormatter {
       }
       return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(temporal);
     }
-    DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder().parseCaseInsensitive()
+    final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder().parseCaseInsensitive()
         .append(DateTimeFormatter.ISO_LOCAL_DATE)
         .appendLiteral('T')
         .appendValue(HOUR_OF_DAY, 2)
         .appendLiteral(':')
         .appendValue(MINUTE_OF_HOUR, 2);
     if (temporal.isSupported(ChronoField.OFFSET_SECONDS)) {
-      builder = builder.appendOffsetId();
+      builder.appendOffsetId();
     }
     return builder.toFormatter().format(temporal);
   }
@@ -196,16 +196,29 @@ public class TemporalFormatter {
   public static String toLocalized(final Temporal temporal, final String language) {
     Objects.requireNonNull(temporal);
     Objects.requireNonNull(language);
-    String pattern;
+    final String pattern;
     if (temporal.isSupported(ChronoUnit.HOURS)) {
-      pattern =
-          DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.SHORT, FormatStyle.SHORT,
-              IsoChronology.INSTANCE, Locale.forLanguageTag(language)).replace("yy", "yyyy");
+      pattern = getDateTimePattern(language);
     } else {
-      pattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.SHORT, null,
-          IsoChronology.INSTANCE, Locale.forLanguageTag(language)).replace("yy", "yyyy");
+      pattern = getDatePattern(language);
     }
     return DateTimeFormatter.ofPattern(pattern).format(temporal);
+  }
+
+  /**
+   * @see #toLocalized(Temporal, String)
+   * @return only time part if time exists, empty otherwise.
+   */
+  public static String toLocalizedTime(final Temporal temporal, final String language) {
+    Objects.requireNonNull(temporal);
+    Objects.requireNonNull(language);
+    final String result;
+    if (temporal.isSupported(ChronoUnit.HOURS)) {
+      result = DateTimeFormatter.ofPattern(getTimePattern(language)).format(temporal);
+    } else {
+      result = "";
+    }
+    return result;
   }
 
   /**
@@ -254,21 +267,62 @@ public class TemporalFormatter {
       final String language) {
     if (temporal.isSupported(ChronoUnit.HOURS) && temporal.get(ChronoField.OFFSET_SECONDS) !=
         ZonedDateTime.now(zoneId).get(ChronoField.OFFSET_SECONDS)) {
-      ZoneId actualZoneId = asZonedDateTime(temporal).getZone();
-      String pattern =
-          DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.SHORT, FormatStyle.SHORT,
-              IsoChronology.INSTANCE, Locale.forLanguageTag(language)).replace("yy", "yyyy");
-      return new DateTimeFormatterBuilder().appendPattern(pattern)
-          .appendLiteral(" (")
-          .parseCaseSensitive()
-          .appendZoneRegionId()
-          .appendLiteral(")")
-          .toFormatter()
-          .withZone(actualZoneId)
-          .format(temporal);
+      final ZoneId actualZoneId = asZonedDateTime(temporal).getZone();
+      final String pattern = getDateTimePattern(language);
+      return toZonedFormat(pattern, temporal, actualZoneId);
     } else {
       return toLocalized(temporal, language);
     }
+  }
+
+  /**
+   * @see #toLocalized(Temporal, ZoneId, String)
+   * @return only time part if time exists, empty otherwise.
+   */
+  public static String toLocalizedTime(final Temporal temporal, final ZoneId zoneId,
+      final String language) {
+    if (temporal.isSupported(ChronoUnit.HOURS) && temporal.get(ChronoField.OFFSET_SECONDS) !=
+        ZonedDateTime.now(zoneId).get(ChronoField.OFFSET_SECONDS)) {
+      final ZoneId actualZoneId = asZonedDateTime(temporal).getZone();
+      final String pattern = getTimePattern(language);
+      return toZonedFormat(pattern, temporal, actualZoneId);
+    } else {
+      return toLocalizedTime(temporal, language);
+    }
+  }
+
+  private static String toZonedFormat(final String pattern, final Temporal temporal,
+      final ZoneId actualZoneId) {
+    return new DateTimeFormatterBuilder().appendPattern(pattern).appendLiteral(" (")
+        .parseCaseSensitive().appendZoneRegionId().appendLiteral(")").toFormatter()
+        .withZone(actualZoneId).format(temporal);
+  }
+
+  /**
+   * Gets the date pattern according to given locale.
+   * @param locale the ISO 631-1 locale.
+   * @return the pattern as string.
+   */
+  private static String getDatePattern(final String locale) {
+    return getLocalizationBundle(DATE_BUNDLE, locale).getString("dateOutputFormat");
+  }
+
+  /**
+   * Gets the time pattern according to given locale.
+   * @param locale the ISO 631-1 locale.
+   * @return the pattern as string.
+   */
+  private static String getTimePattern(final String locale) {
+    return getLocalizationBundle(DATE_BUNDLE, locale).getString("hourOutputFormat");
+  }
+
+  /**
+   * Gets the date time pattern according to given locale.
+   * @param locale the ISO 631-1 locale.
+   * @return the pattern as string.
+   */
+  private static String getDateTimePattern(final String locale) {
+    return getLocalizationBundle(DATE_BUNDLE, locale).getString("dateTimeOutputFormat");
   }
 }
   

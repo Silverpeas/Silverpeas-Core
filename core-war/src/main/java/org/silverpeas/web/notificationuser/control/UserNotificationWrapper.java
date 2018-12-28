@@ -69,9 +69,10 @@ public class UserNotificationWrapper implements UserNotification {
   public UserNotificationWrapper setContent(final String content) {
     if (StringUtil.isDefined(content)) {
       final NotificationMetaData metaData = notification.getNotificationMetaData();
-      metaData.setContent(Encode.forHtml(content));
+      final String htmlContent = Encode.forHtml(content);
+      metaData.setContent(htmlContent);
       for (String lang : DisplayI18NHelper.getLanguages()) {
-        metaData.addExtraMessage(content, lang);
+        metaData.addExtraMessage(htmlContent, lang);
       }
     }
     return this;

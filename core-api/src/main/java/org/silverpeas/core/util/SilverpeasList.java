@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -62,6 +63,18 @@ public interface SilverpeasList<T> extends List<T> {
       return left;
     };
     return Collector.of(supplier, consumer, operator, Collector.Characteristics.IDENTITY_FINISH);
+  }
+
+  /**
+   * Gets an array as a {@link SilverpeasList}.
+   * @param arrayToConvert the array to get as {@link SilverpeasList}.
+   * @param <T> the type of the elements into the array.
+   * @return the {@link SilverpeasList} instance.
+   */
+  static <T> SilverpeasList<T> as(final T[] arrayToConvert) {
+    final SilverpeasArrayList<T> list = new SilverpeasArrayList<>(arrayToConvert.length);
+    list.addAll(Arrays.asList(arrayToConvert));
+    return list;
   }
 
   /**

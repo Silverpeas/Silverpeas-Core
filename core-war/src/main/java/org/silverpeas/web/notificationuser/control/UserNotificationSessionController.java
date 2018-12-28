@@ -37,6 +37,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.web.notificationuser.Notification;
 
 import java.util.Collections;
@@ -45,6 +46,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class UserNotificationSessionController extends AbstractComponentSessionController {
+  private static final long serialVersionUID = 4415724531986026943L;
 
   private UserNotificationWrapper currentNotification;
 
@@ -145,6 +147,7 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
         .setRecipientGroups(context.getAsList("recipientGroups"))
         .setAsManual(context.getAsBoolean("manual"))
         .send();
+    WebMessager.getInstance().addSuccess(getString("notification.user.send.success"));
   }
 
   private UserNotificationWrapper supplyUserNotification(final NotificationContext context) {

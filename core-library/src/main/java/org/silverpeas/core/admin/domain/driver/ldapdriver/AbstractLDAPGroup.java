@@ -255,15 +255,6 @@ abstract public class AbstractLDAPGroup {
     return translateGroup(lds, theEntry);
   }
 
-  public AbstractLDAPTimeStamp getMaxTimeStamp(String lds, String minTimeStamp)
-      throws AdminException {
-    AbstractLDAPTimeStamp theTimeStamp = driverSettings.newLDAPTimeStamp(minTimeStamp);
-    theTimeStamp.initFromServer(lds, driverSettings.getGroupsSpecificGroupsBaseDN(), driverSettings.
-        getGroupsFullFilter(),
-        driverSettings.getGroupsNameField());
-    return theTimeStamp;
-  }
-
   /**
    * Translate a group LDAPEntry into a GroupDetail object NOTE : the GroupParentId, the DomainID and the
    * ID are not set. THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING

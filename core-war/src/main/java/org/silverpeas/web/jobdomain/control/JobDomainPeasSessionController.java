@@ -28,6 +28,8 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.LocalizedComponent;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.DomainDriver;
+import org.silverpeas.core.admin.domain.DomainDriver.UserFilterManager;
+import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.DomainServiceProvider;
 import org.silverpeas.core.admin.domain.DomainType;
 import org.silverpeas.core.admin.domain.exception.DomainConflictException;
@@ -93,18 +95,11 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import static java.util.Collections.synchronizedList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
+import static org.silverpeas.core.admin.domain.DomainDriverManagerProvider.getCurrentDomainDriverManager;
 import static org.silverpeas.core.personalization.service.PersonalizationServiceProvider.getPersonalizationService;
 
 /**
@@ -976,6 +971,25 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     adminCtrl.activateUser(userId);
   }
 
+  public void restoreUser(String idUser) throws JobDomainPeasException {
+    final String restoreUserId = adminCtrl.restoreUser(idUser);
+    if (!StringUtil.isDefined(restoreUserId)) {
+      throw new JobDomainPeasException(failureOnRestoring("user", idUser));
+    }
+    refresh();
+  }
+
+  public void removeUser(String idUser) throws JobDomainPeasException {
+    final String removedUserId = adminCtrl.removeUser(idUser);
+    if (!StringUtil.isDefined(removedUserId)) {
+      throw new JobDomainPeasException(failureOnRemoving("user", idUser));
+    }
+    if (targetUserId.equals(idUser)) {
+      targetUserId = null;
+    }
+    refresh();
+  }
+
   public void deleteUser(String idUser) throws JobDomainPeasException {
 
     UserDetail user = getUserDetail(idUser);
@@ -990,9 +1004,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     if (deleteUser) {
       String idRet = adminCtrl.deleteUser(idUser);
       if (!StringUtil.isDefined(idRet)) {
-        throw new JobDomainPeasException(failureOnUpdate("user", idUser));
+        throw new JobDomainPeasException(failureOnDeleting("user", idUser));
       }
-      if (targetUserId.equals(idUser)) {
+      if (idUser.equals(targetUserId)) {
         targetUserId = null;
       }
 
@@ -1091,8 +1105,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public void unsynchroUser(String idUser) throws JobDomainPeasException {
-
-
     String idRet = adminCtrl.synchronizeRemoveUser(idUser);
     if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException(failureOnDeleting("synchronized user", idUser));
@@ -1674,7 +1686,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     theNewDomain.setPropFileName(domain.getPropFileName());
     theNewDomain.setAuthenticationServer(domain.getAuthenticationServer());
     theNewDomain.setSilverpeasServerURL(domain.getSilverpeasServerURL());
-    theNewDomain.setTheTimeStamp(domain.getTheTimeStamp());
 
     String idRet = reallyUpdateDomain(theNewDomain, usersInDomainQuotaMaxCount);
 
@@ -2312,11 +2323,42 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return getSessionUsers().get(currentIndex.getNextIndex());
   }
 
+  public List<UserDetail> getRemovedUsers() throws AdminException {
+    final List<UserDetail> removedUsers = adminCtrl.getRemovedUsersInDomain(this.targetDomainId);
+    removedUsers.sort(Comparator
+        .comparing(UserDetail::getStateSaveDate)
+        .thenComparing(UserDetail::getLastName)
+        .thenComparing(UserDetail::getFirstName)
+        .thenComparing(UserDetail::getId));
+    return removedUsers;
+  }
+
   public List<UserDetail> getDeletedUsers() throws AdminException {
     return adminCtrl.getDeletedUsersInDomain(this.targetDomainId);
   }
 
   public void blankDeletedUsers(final List<String> userIds) throws AdminException {
     adminCtrl.blankDeletedUsers(targetDomainId, userIds);
+  }
+
+  public Optional<UserFilterManager> getUserFilterManager() throws AdminException {
+    final DomainDriverManager driverManager = getCurrentDomainDriverManager();
+    final DomainDriver driver = driverManager.getDomainDriver(getTargetDomain().getId());
+    return driver.getUserFilterManager();
+  }
+
+  public User[] verifyUserFilterRule(final String rule) throws AdminException {
+    final Optional<UserFilterManager> manager = getUserFilterManager();
+    if (manager.isPresent()) {
+      return manager.get().validateRule(rule);
+    }
+    return new User[0];
+  }
+
+  public void saveUserFilterRule(final String rule) throws AdminException {
+    final Optional<UserFilterManager> manager = getUserFilterManager();
+    if (manager.isPresent()) {
+      manager.get().saveRule(rule);
+    }
   }
 }

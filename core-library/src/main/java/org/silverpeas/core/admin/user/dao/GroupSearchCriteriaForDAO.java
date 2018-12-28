@@ -57,7 +57,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   }
 
   public static GroupSearchCriteriaForDAO newCriteria() {
-    return new GroupSearchCriteriaForDAO(new GroupsSearchCriteria());
+    return newCriteriaFrom(new GroupsSearchCriteria());
   }
 
   public static GroupSearchCriteriaForDAO newCriteriaFrom(final GroupsSearchCriteria criteria) {

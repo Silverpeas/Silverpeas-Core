@@ -21,22 +21,39 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
-import org.silverpeas.core.admin.service.AdminException;
+package org.silverpeas.web.jobdomain.servlets;
 
-public abstract class AbstractLDAPTimeStamp implements Comparable {
-  LDAPSettings driverSettings = null;
-  String timeStamp;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.web.util.SelectableUIEntity;
 
-  public abstract String toString();
+import java.util.Set;
+import java.util.function.Function;
 
-  public abstract int compareTo(Object other);
+/**
+ * UI item for a {@link User} instance.
+ */
+public class UserUIEntity extends SelectableUIEntity<User> {
 
-  public abstract boolean equals(final Object other);
+  UserUIEntity(final User data, final Set<String> selectedIds) {
+    super(data, selectedIds);
+  }
 
-  public abstract int hashCode();
+  @Override
+  public String getId() {
+    return String.valueOf(getData().getId());
+  }
 
-  public abstract void initFromServer(String lds, String baseDN, String filter,
-      String fallbackSortBy) throws AdminException;
+  /**
+   * Converts the given data list into a {@link SilverpeasList} of item wrapping the {@link
+   * User}.
+   * @param values the list of {@link User}.
+   * @return the {@link SilverpeasList} of {@link UserUIEntity}.
+   */
+  public static <U extends User> SilverpeasList<UserUIEntity> convertList(
+      final SilverpeasList<U> values, final Set<String> selectedIds) {
+    final Function<User, UserUIEntity> converter = c -> new UserUIEntity(c, selectedIds);
+    return values.stream().map(converter).collect(SilverpeasList.collector(values));
+  }
 }

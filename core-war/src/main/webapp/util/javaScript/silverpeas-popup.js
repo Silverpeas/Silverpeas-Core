@@ -28,6 +28,8 @@
  */
 (function($, $window) {
 
+  var popupDebug = false;
+
   var FS_MANAGER = new function() {
     this.isWindowCompatible = function() {
       return top.spLayout && !top.spLayout.isWindowTop($window);
@@ -38,7 +40,7 @@
     };
     this.top$ = function() {
       return top.spLayout.getWindowTopFrom($window).jQuery;
-    },
+    };
     this.topDocument = function() {
       return top.spLayout.getWindowTopFrom($window).document;
     }
@@ -47,7 +49,6 @@
   var __displayFullscreenModalBackground = FS_MANAGER.isWindowCompatible();
 
   $.popup = {
-    debug : false,
     initialized: false,
     /**
      * Initializes the popup by setting some required properties before loading and using it.
@@ -113,6 +114,21 @@
       $confirm.popup('confirmation', options);
     },
     /**
+     * Shows an info popup with the specified message and the popup parameters.
+     * @param message the info message to display in the popup.
+     * @param params the parameters to parametrize the popup window.
+     */
+    info: function(message, params) {
+      var options = params;
+      var $info = $('<div>').append($('<p>').append(message));
+      if (typeof params === 'function') {
+        options = {
+          callback: params
+        }
+      }
+      $info.popup('information', options);
+    },
+    /**
      * Shows an error popup with the specified message and the popup parameters.
      * @param message the error message to display in the popup.
      * @param params the parameters to parametrize the popup window.
@@ -149,13 +165,9 @@
          * any treatment declared in the then() function is then invoked.
          */
         show: function(type, params) {
+          jQuery.popup.showWaiting();
           return new Promise(function(resolve, reject) {
             var options = params;
-            var $popup = $('#popupHelperContainer');
-            if ($popup.length === 0) {
-              $popup = $('<div>', {id: 'popupHelperContainer', 'style' : 'display:none'});
-              $popup.appendTo(document.body);
-            }
             var request = sp.ajaxRequest(url);
             if (context) {
               if (context.method === 'POST') {
@@ -165,7 +177,15 @@
                 request = request.withParams(context.params);
               }
             }
-            request.loadTarget($popup, true).then(function() {
+            request.send().then(function(request) {
+              var data = request.responseText;
+              var $popup = $('#popupHelperContainer');
+              if ($popup.length !== 0) {
+                $popup.remove();
+              }
+              $popup = $('<div>', {id: 'popupHelperContainer', 'style' : 'display:none'});
+              $popup.appendTo(document.body);
+              $popup.append(data);
               if (typeof params === 'function') {
                 options = {
                   callback: params
@@ -178,10 +198,15 @@
                 }
                 $popup.remove();
               };
-              $popup.popup(type, options);
-              resolve();
-            }, function() {
+              setTimeout(function() {
+                $popup.popup(type, options);
+                resolve(data);
+                jQuery.popup.hideWaiting();
+              }, 0);
+            }, function(request) {
+              notyError(request.responseText);
               reject();
+              jQuery.popup.hideWaiting();
             });
           });
         }
@@ -699,41 +724,60 @@
   }
 
   var spFullscreenModalBackgroundContext = new function() {
-    if (!top.window.__spFullscreenModalBackgroundContext) {
-      top.window.__spFullscreenModalBackgroundContext = {count : 0};
-    }
-    var __localSpFullscreenModalBackgroundContext = {count : 0};
-    this.isValid = function() {
-      return top.window.__spFullscreenModalBackgroundContext.count ===
-          __localSpFullscreenModalBackgroundContext.count;
+    var localDialogs = function(srcDialogElement) {
+      var dialogs = [];
+      $(".ui-dialog:visible").each(function() {
+        var $this = $(this);
+        var ariaDescribedBy = $this.attr('aria-describedby');
+        var srcDialogElementId = srcDialogElement ? srcDialogElement.id : 'unknown-id';
+        if (!ariaDescribedBy) {
+          __debug("no 'aria-describedby' found, looking into dom the dialog " + srcDialogElementId);
+          if ($('#' + srcDialogElementId, $this).length) {
+            __debug(srcDialogElementId + " has been found");
+            ariaDescribedBy = srcDialogElementId;
+          } else {
+            __debug(srcDialogElementId + " has not been found");
+          }
+        }
+        var isEqual = ariaDescribedBy === srcDialogElementId;
+        if (!isEqual) {
+          dialogs.push(this);
+        } else {
+          __debug(srcDialogElementId + " has been filtered");
+        }
+      });
+      return dialogs;
+    };
+    var __debug = function(message) {
+      __logDebug("FSContext -", message)
     };
     this.clear = function() {
-      top.window.__spFullscreenModalBackgroundContext.count = 0;
-      __localSpFullscreenModalBackgroundContext.count = 0;
+      __debug("clearing if necessary");
       var $container = this.getContainer();
       if ($container.length > 0) {
         $container.dialog("close");
         $container.dialog("destroy");
         $container.remove();
         FS_MANAGER.getLayoutManager().getBody().getContent().setOnBackground();
+        __debug("clear done");
       }
     };
-    this.increase = function() {
-      top.window.__spFullscreenModalBackgroundContext.count++;
-      __localSpFullscreenModalBackgroundContext.count++;
+    this.isFirst = function(srcDialogElement) {
+      var $container = this.getContainer();
+      var nbDialogs = localDialogs(srcDialogElement).length;
+      var isFirst = $container.length === 0 && nbDialogs === 0;
+      __debug("Is it the first dialog displayed (" + nbDialogs + ")? " + isFirst);
+      return isFirst;
     };
-    this.decrease = function() {
-      top.window.__spFullscreenModalBackgroundContext.count--;
-      __localSpFullscreenModalBackgroundContext.count--;
-      if (__localSpFullscreenModalBackgroundContext.count < 0) {
-        this.clear();
-      }
+    this.isTheLastOne = function(srcDialogElement) {
+      var $container = this.getContainer();
+      var nbDialogs = localDialogs(srcDialogElement).length;
+      var isTheLastOne = $container.length === 1 && nbDialogs === 0;
+      __debug("Is it the last dialog displayed (" + nbDialogs + ")? " + isTheLastOne);
+      return isTheLastOne;
     };
     this.getContainer = function() {
       return FS_MANAGER.top$()("#spFullscreenModalBackground", FS_MANAGER.topDocument());
-    };
-    this.isFirst = function() {
-      return __localSpFullscreenModalBackgroundContext.count === 1;
     };
   };
 
@@ -743,12 +787,7 @@
    */
   var __lastRegisteredHandler;
   function __openFullscreenModalBackground($dialogInstance) {
-    if (!spFullscreenModalBackgroundContext.isValid()) {
-      spFullscreenModalBackgroundContext.clear();
-    }
-    spFullscreenModalBackgroundContext.increase();
-
-    if (spFullscreenModalBackgroundContext.isFirst()) {
+    if (spFullscreenModalBackgroundContext.isFirst($dialogInstance[0])) {
       var $container = FS_MANAGER.top$()("<div>").attr('id', 'spFullscreenModalBackground').attr('style',
           'display: none; border: 0; padding: 0; height: 0; width: 0; overflow: hidden;');
       FS_MANAGER.top$()(FS_MANAGER.topDocument().body).append($container);
@@ -802,12 +841,10 @@
     }
   }
 
-  function __closeFullscreenModalBackground() {
-    if (spFullscreenModalBackgroundContext.isFirst() ||
-        !spFullscreenModalBackgroundContext.isValid()) {
+  function __closeFullscreenModalBackground($dialogInstance) {
+    if (spFullscreenModalBackgroundContext.isTheLastOne($dialogInstance[0])) {
       spFullscreenModalBackgroundContext.clear();
     }
-    spFullscreenModalBackgroundContext.decrease();
   }
 
   function __adjustPosition(dialogOptions) {
@@ -839,28 +876,39 @@
     close : function() {
       if (__displayFullscreenModalBackground && this._isOpen &&
           !this.options.fullscreenModalBackground) {
-        __closeFullscreenModalBackground();
+        __closeFullscreenModalBackground(this.element);
       }
       return this._super();
     },
     destroy : function() {
       if (__displayFullscreenModalBackground && this._isOpen &&
           !this.options.fullscreenModalBackground) {
-        __closeFullscreenModalBackground();
+        __closeFullscreenModalBackground(this.element);
       }
       return this._super();
     }
   });
 
-  function __logDebug(message) {
-    if ($.popup.debug) {
-      sp.log.debug("Popup - " + message);
+  if (__displayFullscreenModalBackground) {
+    if (spFullscreenModalBackgroundContext.isTheLastOne()) {
+      __logDebug("cleaning popup from iframe, window " + window.name);
+      spFullscreenModalBackgroundContext.clear();
     }
   }
 
-  if (__displayFullscreenModalBackground) {
-    __logDebug("cleaning popup from iframe");
-    spFullscreenModalBackgroundContext.clear();
+  /**
+   * Logs debug messages.
+   * @private
+   */
+  function __logDebug() {
+    if (popupDebug) {
+      var mainDebugStatus = sp.log.debugActivated;
+      sp.log.debugActivated = true;
+      var messages = [];
+      Array.prototype.push.apply(messages, arguments);
+      messages.splice(0, 0, "Popup -");
+      sp.log.debug.apply(this, messages);
+      sp.log.debugActivated = mainDebugStatus;
+    }
   }
-
 })(jQuery, window);

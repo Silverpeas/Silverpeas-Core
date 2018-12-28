@@ -381,11 +381,14 @@ class GroupSynchronizationRule {
         List<DataRecord> records = directoryTemplate.getRecordSet().getRecords(fieldName, fieldValue);
         for (DataRecord record : records) {
           String userId = record.getId();
+          final User user = User.getById(userId);
+          if (user == null || user.isRemovedState()) {
+            continue;
+          }
           if (isSharedDomain) {
             userIds.add(userId);
           } else {
-            User user = User.getById(userId);
-            if (user != null && user.getDomainId().equals(group.getDomainId())) {
+            if (user.getDomainId().equals(group.getDomainId())) {
               userIds.add(userId);
             }
           }
@@ -450,7 +453,10 @@ class GroupSynchronizationRule {
       usersInDomain = getUserManager().getUsersBySpecificIdsAndDomainId(specificIds, domainId);
     }
 
-    return usersInDomain.stream().map(UserDetail::getId).collect(Collectors.toList());
+    return usersInDomain.stream()
+        .filter(u -> !u.isRemovedState())
+        .map(UserDetail::getId)
+        .collect(Collectors.toList());
   }
 
   /**

@@ -30,15 +30,12 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_RO_PULL_USER;
 import static org.silverpeas.core.admin.user.constant.UserAccessLevel.USER;
@@ -53,7 +50,8 @@ import static org.silverpeas.core.admin.user.constant.UserState.VALID;
  */
 public class GoogleDriver extends AbstractDomainDriver {
 
-  private SettingBundle settings;
+  protected SettingBundle settings;
+  private UserFilterManager userFilterManager;
 
   /**
    * Virtual method that performs extra initialization from a properties file. To overload by the
@@ -63,6 +61,7 @@ public class GoogleDriver extends AbstractDomainDriver {
   @Override
   public void initFromProperties(SettingBundle rs) {
     settings = rs;
+    userFilterManager = new GoogleUserFilterManager(this, rs);
   }
 
   /**
@@ -75,14 +74,8 @@ public class GoogleDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp)
-      throws AdminException {
-    return getAllUsers();
-  }
-
-  @Override
-  public GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) {
-    return getAllGroups();
+  public boolean isSynchroThreaded() {
+    return settings.getBoolean("synchro.Threaded", false);
   }
 
   /**
@@ -163,7 +156,7 @@ public class GoogleDriver extends AbstractDomainDriver {
    */
   @Override
   public UserDetail[] getAllUsers() throws AdminException {
-    return request().users().stream().filter(byOU).map(userDetailMapper).toArray(UserDetail[]::new);
+    return request().users().stream().map(userDetailMapper).toArray(UserDetail[]::new);
   }
 
   @Override
@@ -302,22 +295,15 @@ public class GoogleDriver extends AbstractDomainDriver {
     // Access in read only
   }
 
-  GoogleDirectoryRequester request() {
-    return new GoogleDirectoryRequester(settings.getString("service.account.user"),
-        settings.getString("service.account.jsonKey"));
+  @Override
+  public Optional<UserFilterManager> getUserFilterManager() {
+    return Optional.of(userFilterManager);
   }
 
-  private Predicate<User> byOU = u -> {
-    final String userOu = u.getOrgUnitPath();
-    final Stream<String> inclusion = streamSetting("synchro.ou.include", "/");
-    final Stream<String> exclusion = streamSetting("synchro.ou.exclude", "");
-    return inclusion.anyMatch(userOu::startsWith) && exclusion.noneMatch(userOu::startsWith);
-  };
-
-  @Nonnull
-  private Stream<String> streamSetting(final String key, final String defaultValue) {
-    return Stream.of(settings.getString(key, defaultValue).split(";")).map(String::trim)
-        .filter(StringUtil::isDefined);
+  GoogleDirectoryRequester request() {
+    return new GoogleDirectoryRequester(settings.getString("service.account.user"),
+        settings.getString("service.account.jsonKey"),
+        userFilterManager.getRule());
   }
 
   private Function<User, UserDetail> userDetailMapper = u -> {

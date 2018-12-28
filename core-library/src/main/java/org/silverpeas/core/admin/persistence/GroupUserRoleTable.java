@@ -165,7 +165,7 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
 
     try (Connection connection = DBUtil.openConnection()) {
       List<String> userIds =
-          userDAO.getDirectUserIdsByGroupUserRole(connection, String.valueOf(id));
+          userDAO.getDirectUserIdsByGroupUserRole(connection, String.valueOf(id), true);
       for (String userId : userIds) {
         removeUserFromGroupUserRole(Integer.parseInt(userId), id);
       }

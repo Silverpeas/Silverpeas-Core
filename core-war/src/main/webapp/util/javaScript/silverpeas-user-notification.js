@@ -164,13 +164,12 @@ Silverpeas plugin which handles the behaviour about the user notification.
      * @returns {*}
      */
     this.notifyOnDesktop = function(title, options, callback) {
-      if(!this.desktopPermissionAvailable()) {
+      if (!this.desktopPermissionAvailable()) {
+        sp.log.warn("WEB browser does not support desktop notification");
         return;
       }
       // Check if WEB browser supports notifications
-      if (!this.desktopPermissionAvailable()) {
-        sp.log.warn("WEB browser does not support desktop notification");
-      } else if (this.desktopPermissionAuthorized()) {
+      if (this.desktopPermissionAuthorized()) {
         // WEB browser supports desktop notifications and user has accepted it
         __newDesktopNotification(title, options, callback);
       } else if (!this.desktopPermissionDenied()) {

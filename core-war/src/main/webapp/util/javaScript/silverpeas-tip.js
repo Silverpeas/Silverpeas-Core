@@ -24,6 +24,10 @@
 
 (function() {
 
+  if (!window.TipBundle) {
+    window.TipBundle = new SilverpeasPluginBundle();
+  }
+
   /**
    * Tip Manager plugin.
    * It handles the display of tips.
@@ -124,6 +128,43 @@
         }
       }));
       return _performQTip(element, undefined, options, qtipOptions);
+    };
+
+    /**
+     * Displays a simple way rule into represented as a tip.
+     * @param element the element on which the qtip must be applied.
+     * @param title the title.
+     * @param content the content.
+     * @param options TipManager options, see _computeParams private method.
+     */
+    this.simpleRule = function(element, title, content, options) {
+      var params = options ? options : {};
+      var qtipOptions = _computeParams(extendsObject({
+        position: {
+          adjust: {
+            method: "flip flip"
+          },
+          at: "top right",
+          my: "bottom left",
+          viewport: $(window)
+        }
+      }, params, {
+        style : {
+          tip : true,
+          classes : "qtip-shadow qtip-green qtip-default-silverpeas"
+        },
+        hide : {
+          event : false
+        },
+        content : {
+          text : content,
+          title : {
+            text : title,
+            button : TipBundle.get('tip.c')
+          }
+        }
+      }));
+      return _performQTip(element, content, options, qtipOptions);
     };
 
     /**

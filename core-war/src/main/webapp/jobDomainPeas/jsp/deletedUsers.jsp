@@ -28,22 +28,29 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
-<c:set var="language" value="${sessionScope.sessionController.language}"/>
+
+<c:set var="language" value="${sessionScope.SilverSessionController.favoriteLanguage}"/>
 <fmt:setLocale value="${language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+
+<fmt:message var="deletedUserLabel" key="JDP.deletedUsers"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+  <title></title>
   <view:looknfeel withFieldsetStyle="true"/>
   <script type="application/javascript">
+    var checkboxMonitor = sp.selection.newCheckboxMonitor('#dynamic-container input[name=selection]');
+
     function validate() {
-      document.BlankUsers.submit();
+      var formRequest = sp.formRequest("blankUsers").byPostMethod();
+      checkboxMonitor.prepareFormRequest(formRequest);
+      formRequest.submit();
     }
 
     function cancel() {
-      document.BlankUsers.action = 'domainContent';
-      document.BlankUsers.submit();
+      sp.formRequest('domainContent').submit();
     }
   </script>
 </head>
@@ -60,26 +67,27 @@
 <fmt:message var="domainTitle" key="JDP.domains"/>
 <view:browseBar componentId="${domainTitle}">
   <view:browseBarElt label="${domain.name}" link="domainContent?Iddomain=${domain.id}"/>
+  <view:browseBarElt label="${silfn:capitalize(deletedUserLabel)}" link=""/>
 </view:browseBar>
 <view:window>
   <view:frame>
-    <div class="principalContent">
-      <h2 class="principal-content-title sql-domain">${silfn:escapeHtml(domain.name)}</h2>
-      <div id="number-user-group-domainContent">
-        <span id="number-user-domainContent">${deletedUsers.size()} <fmt:message key="JDP.deletedUsers"/></span>
+    <div id="dynamic-container">
+      <div class="principalContent">
+        <h2 class="principal-content-title sql-domain">${silfn:escapeHtml(domain.name)}</h2>
+        <div id="number-user-group-domainContent">
+          <span id="number-user-domainContent">${deletedUsers.size()} ${deletedUserLabel}</span>
+        </div>
+        <c:if test="${fn:length(domain.description) > 0}">
+          <p id="description-domainContent">${silfn:escapeHtml(domain.description)}</p>
+        </c:if>
       </div>
-      <c:if test="${fn:length(domain.description) > 0}">
-        <p id="description-domainContent">${silfn:escapeHtml(domain.description)}</p>
-      </c:if>
-    </div>
-    <c:if test="${currentUser.accessAdmin}">
-      <fmt:message var="firstName"    key="GML.surname"/>
-      <fmt:message var="lastName"     key="GML.lastName"/>
-      <fmt:message var="deletionDate" key="JDP.userDeletionDate"/>
-      <fmt:message var="anonymize"    key="JDP.blankUser"/>
-      <fmt:message var="validate"     key="GML.validate"/>
-      <fmt:message var="cancel"       key="GML.cancel"/>
-      <form name="BlankUsers" action="blankUsers" method="POST">
+      <c:if test="${currentUser.accessAdmin}">
+        <fmt:message var="firstName"    key="GML.surname"/>
+        <fmt:message var="lastName"     key="GML.lastName"/>
+        <fmt:message var="deletionDate" key="JDP.userDeletionDate"/>
+        <fmt:message var="anonymize"    key="JDP.blankUser"/>
+        <fmt:message var="validate"     key="GML.validate"/>
+        <fmt:message var="cancel"       key="GML.cancel"/>
         <view:arrayPane var="deletedUsers" routingAddress="displayDeletedUsers" numberLinesPerPage="25">
           <view:arrayColumn title="${lastName}"     compareOn="${u -> u.lastName}" />
           <view:arrayColumn title="${firstName}"    compareOn="${u -> u.firstName}"/>
@@ -91,17 +99,23 @@
               <view:arrayCellText text="${silfn:escapeHtml(aUser.lastName)}"/>
               <view:arrayCellText text="${silfn:escapeHtml(aUser.firstName)}"/>
               <view:arrayCellText text="${silfn:formatDateAndHour(aUser.stateSaveDate, language)}"/>
-              <view:arrayCellCheckbox name="blank_${aUser.id}" value="${aUser.id}" checked="false"/>
+              <view:arrayCellCheckbox name="selection" value="${aUser.id}" checked="false"/>
             </view:arrayLine>
           </view:arrayLines>
         </view:arrayPane>
+        <script type="text/javascript">
+          whenSilverpeasReady(function() {
+            checkboxMonitor.pageChanged();
+            sp.arrayPane.ajaxControls('#dynamic-container');
+          });
+        </script>
         <span>&nbsp;</span>
         <view:buttonPane>
           <view:button label="${validate}" action="javascript:onClick=validate()"/>
           <view:button label="${cancel}"   action="javascript:onClick=cancel()"/>
         </view:buttonPane>
-      </form>
-    </c:if>
+      </c:if>
+    </div>
   </view:frame>
 </view:window>
 </body>
