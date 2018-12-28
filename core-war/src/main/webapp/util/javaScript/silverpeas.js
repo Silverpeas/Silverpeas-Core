@@ -1632,6 +1632,9 @@ if (typeof window.sp === 'undefined') {
           this.pageChanged = function() {
             __init();
           };
+          this.prepareFormRequest = function(formRequest, options) {
+            this.prepareAjaxRequest(formRequest, options);
+          };
           this.prepareAjaxRequest = function(ajaxRequest, options) {
             var params = extendsObject({
               clear : true,
@@ -1648,7 +1651,9 @@ if (typeof window.sp === 'undefined') {
               __init();
             }
           };
-          __init();
+          whenSilverpeasReady(function() {
+            __init();
+          });
         };
       }
     },

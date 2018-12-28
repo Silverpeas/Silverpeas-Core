@@ -510,7 +510,7 @@ public class GroupManager {
     try (Connection connection = DBUtil.openConnection()) {
       // Get organization
       SynchroDomainReport.info(GROUP_MANAGER_GET_GROUPS_OF_DOMAIN,
-              "Recherche des groupes du domaine LDAP dans la base...");
+              "Recherche des groupes du domaine dans la base...");
       // Get groups of domain from Silverpeas database
       List<GroupDetail> grs = groupDao.getAllGroupsByDomainId(connection, sDomainId);
       // Convert GroupRow objects in GroupDetail Object
@@ -523,7 +523,7 @@ public class GroupManager {
                 + groups[nI].getDescription());
       }
       SynchroDomainReport.info(GROUP_MANAGER_GET_GROUPS_OF_DOMAIN,
-          "Récupération de " + grs.size() + " groupes du domaine LDAP dans la base");
+          "Récupération de " + grs.size() + " groupes du domaine dans la base");
       return groups;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("groups in domain", sDomainId), e);
@@ -686,12 +686,7 @@ public class GroupManager {
       }
     }
     // remove from the group any user.
-    List<String> userIds;
-    try {
-      userIds = UserManager.get().getDirectUserIdsInGroup(group.getId());
-    } catch (AdminException e) {
-      throw new SQLException(e);
-    }
+    final List<String> userIds = userDao.getDirectUserIdsInGroup(connection, group.getId(), true);
     for (String userId : userIds) {
       removeUserFromGroup(userId, group.getId());
     }
@@ -749,7 +744,7 @@ public class GroupManager {
               + group.getName()
               + " avec les utilisateurs qui y sont directement inclus (tables ST_Group_User_Rel)");
 
-      List<String> asOldUsersId = userDao.getDirectUserIdsInGroup(connection, sGroupId);
+      List<String> asOldUsersId = userDao.getDirectUserIdsInGroup(connection, sGroupId, false);
 
       // Compute the remove users list
       List<String> asNewUsersId = Arrays.asList(group.getUserIds());
@@ -856,8 +851,8 @@ public class GroupManager {
 
   private GroupDetail setDirectUsersOfGroup(final Connection connection, final GroupDetail group)
       throws SQLException {
-    List<String> userIds = userDao.getDirectUserIdsInGroup(connection, group.getId());
-    group.setUserIds(userIds.toArray(new String[userIds.size()]));
+    final List<String> userIds = userDao.getDirectUserIdsInGroup(connection, group.getId(), false);
+    group.setUserIds(userIds.toArray(new String[0]));
     return group;
   }
 

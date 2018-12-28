@@ -23,12 +23,16 @@
  */
 package org.silverpeas.core.util;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -153,6 +157,23 @@ public class ResourceLocator {
   }
 
   /**
+   * Save the given properties for {@link SettingBundle} and refreshing its cache.
+   * @param settings a loaded setting bundle.
+   * @param properties the properties, usually initialized from {@link SettingBundle#asProperties()}.
+   */
+  public static synchronized void saveSettingBundle(SettingBundle settings,
+      Properties properties) {
+    try {
+      final String bundleName = "/" + settings.getBaseBundleName().replaceAll("\\.", "/") + ".properties";
+      properties.store(new FileOutputStream(new File(
+          Objects.requireNonNull(loader.getResource(bundleName)).toURI())), null);
+      ResourceBundle.clearCache(loader);
+    } catch (Exception e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
+
+  /**
    * Gets setting resource that is defined in an XML bundle under the specified full qualified name.
    * This resource is set of settings to configure some behaviours of a Silverpeas functionality.
    * <p>
@@ -239,12 +260,12 @@ public class ResourceLocator {
       final boolean mandatory) {
     try {
       checkBundleName(bundleName);
-        return ResourceBundle.getBundle(bundleName, locale, loader, configurationControl);
-      } catch (MissingResourceException mex) {
-        if (mandatory) {
-          SilverLogger.getLogger(ResourceLocator.class).error(mex.getMessage());
-          throw mex;
-        }
+      return ResourceBundle.getBundle(bundleName, locale, loader, configurationControl);
+    } catch (MissingResourceException mex) {
+      if (mandatory) {
+        SilverLogger.getLogger(ResourceLocator.class).error(mex.getMessage());
+        throw mex;
+      }
     }
     return null;
   }

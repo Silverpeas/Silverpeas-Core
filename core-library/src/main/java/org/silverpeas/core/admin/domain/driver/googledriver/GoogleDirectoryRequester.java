@@ -57,6 +57,7 @@ public class GoogleDirectoryRequester {
   private static final String MY_CUSTOMER = "my_customer";
   private final String serviceAccountUser;
   private final String jsonKeyPath;
+  private final String filter;
 
   /**
    * Global instance of the scopes required by this quickstart.
@@ -66,9 +67,11 @@ public class GoogleDirectoryRequester {
       .singletonList(DirectoryScopes.ADMIN_DIRECTORY_USER_READONLY);
   private static final String APPLICATION_NAME = "Silverpeas Google Domain Fetcher";
 
-  GoogleDirectoryRequester(final String serviceAccountUser, final String jsonKeyPath) {
+  GoogleDirectoryRequester(final String serviceAccountUser, final String jsonKeyPath,
+      final String filter) {
     this.serviceAccountUser = serviceAccountUser;
     this.jsonKeyPath = jsonKeyPath;
+    this.filter = filter;
   }
 
   /**
@@ -107,10 +110,11 @@ public class GoogleDirectoryRequester {
 
   public List<User> users() throws AdminException {
     try {
-      final List<User> result = new LinkedList<>();
+      List<User> result = new LinkedList<>();
       final long start = System.currentTimeMillis();
       final Directory.Users.List users = getDirectoryService().users().list()
-          .setMaxResults(QUERY_MAX_RESULTS).setCustomer(MY_CUSTOMER);
+          .setMaxResults(QUERY_MAX_RESULTS).setCustomer(MY_CUSTOMER)
+          .setProjection("full");
       String pageToken = null;
       while (true) {
         final Users currentUsers = users.setPageToken(pageToken).execute();
@@ -121,9 +125,10 @@ public class GoogleDirectoryRequester {
           break;
         }
       }
+      result = applyFilter(result);
       result.sort(Comparator
-          .comparing((User g) -> g.getName().getFamilyName())
-          .thenComparing(g -> g.getName().getGivenName()));
+          .comparing((User g) -> g.getName().getFamilyName().toLowerCase())
+          .thenComparing(g -> g.getName().getGivenName().toLowerCase()));
       final long end = System.currentTimeMillis();
       SilverLogger.getLogger(this).debug(() -> MessageFormat
           .format("Getting accounts in {0}", DurationFormatUtils.formatDurationHMS(end - start)));
@@ -133,11 +138,21 @@ public class GoogleDirectoryRequester {
     }
   }
 
+  private List<User> applyFilter(final List<User> result) {
+    return new GoogleUserFilter<>(result, filter).apply();
+  }
+
   public User user(final String id) throws AdminException {
+    final long start = System.currentTimeMillis();
     try {
       return getDirectoryService().users().get(id).execute();
     } catch (IOException e) {
       throw new AdminException(e);
+    } finally {
+      final long end = System.currentTimeMillis();
+      SilverLogger.getLogger(this).debug(() -> MessageFormat
+          .format("Getting account {0} in {1}", id,
+              DurationFormatUtils.formatDurationHMS(end - start)));
     }
   }
 }

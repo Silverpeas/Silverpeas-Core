@@ -157,7 +157,7 @@ public class RelationShipDao {
 
     ResultSet rs = null;
     PreparedStatement pstmt = null;
-    List<RelationShip> listMyRelation = new ArrayList<RelationShip>();
+    List<RelationShip> listMyRelation = new ArrayList<>();
     try {
       pstmt = connection.prepareStatement(SELECT_ALL_MY_RELATIONSHIP);
       pstmt.setInt(1, myId);
@@ -187,7 +187,7 @@ public class RelationShipDao {
       String userId, Date begin, Date end) throws SQLException {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
-    List<SocialInformation> listMyRelation = new ArrayList<SocialInformation>();
+    List<SocialInformation> listMyRelation = new ArrayList<>();
     String query =
         "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId "
             + "FROM sb_sn_RelationShip  WHERE user1Id = ? and acceptanceDate >= ? and acceptanceDate <= ? order by acceptanceDate desc, id desc ";
@@ -223,7 +223,7 @@ public class RelationShipDao {
       List<String> myContactsIds, Date begin, Date end) throws SQLException {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
-    List<SocialInformation> listMyRelation = new ArrayList<SocialInformation>();
+    List<SocialInformation> listMyRelation = new ArrayList<>();
     String query =
         "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId "
             +
@@ -276,13 +276,13 @@ public class RelationShipDao {
   List<String> getMyContactsIds(Connection connection, int myId) throws SQLException {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
-    List<String> myContactsIds = new ArrayList<String>();
+    List<String> myContactsIds = new ArrayList<>();
     try {
       String query = "SELECT user2Id "+
           "FROM sb_sn_RelationShip, st_user "+
           "WHERE user1Id = ? "+
           "and user2Id = st_user.id " +
-          "and st_user.state <> 'DELETED'";
+          "and st_user.state not in ('DELETED', 'REMOVED')";
       pstmt = connection.prepareStatement(query);
       pstmt.setInt(1, myId);
       rs = pstmt.executeQuery();
@@ -293,14 +293,13 @@ public class RelationShipDao {
       DBUtil.close(rs, pstmt);
     }
     return myContactsIds;
-
   }
 
   List<String> getAllCommonContactsIds(Connection connection, int user1Id, int user2Id) throws
       SQLException {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
-    List<String> myContactsIds = new ArrayList<String>();
+    List<String> myContactsIds = new ArrayList<>();
     try {
       String query = "SELECT user2Id "+
                     "FROM sb_sn_RelationShip, st_user "+
@@ -308,7 +307,7 @@ public class RelationShipDao {
                     "and user2id in (SELECT user2Id "+
                                     "FROM sb_sn_RelationShip WHERE user1Id = ?) "+
                     "and user2Id = st_user.id "+
-                    "and st_user.state <> 'DELETED'";
+                    "and st_user.state not in ('DELETED', 'REMOVED')";
       pstmt = connection.prepareStatement(query);
       pstmt.setInt(1, user1Id);
       pstmt.setInt(2, user2Id);
@@ -320,7 +319,6 @@ public class RelationShipDao {
       DBUtil.close(rs, pstmt);
     }
     return myContactsIds;
-
   }
 
   /**

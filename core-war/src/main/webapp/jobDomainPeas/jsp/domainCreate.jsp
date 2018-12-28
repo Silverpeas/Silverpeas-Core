@@ -54,7 +54,6 @@
 <fmt:message var="propertiesLabel" key="JDP.properties"/>
 <fmt:message var="serverAuthenticationLabel" key="JDP.serverAuthentification"/>
 <fmt:message var="silverpeasServerURLLabel" key="JDP.silverpeasServerURL"/>
-<fmt:message var="serverTimeStampLabel" key="JDP.serverTimeStamp"/>
 <fmt:message var="userDomainQuotaMaxCountLabel" key="JDP.userDomainQuotaMaxCount"/>
 <fmt:message var="userDomainQuotaMaxCountHelpLabel" key="JDP.userDomainQuotaMaxCountHelp"/>
 
@@ -63,6 +62,7 @@
 
 <c:set var="action" value="${requestScope.action}"/>
 <c:set var="createMode" value="${fn:endsWith(action, 'Create')}"/>
+<c:set var="usersInDomainQuotaActivated" value="<%=JobDomainSettings.usersInDomainQuotaActivated%>"/>
 <c:set var="domain" value="${requestScope.domainObject}"/>
 <jsp:useBean id="domain" type="org.silverpeas.core.admin.domain.model.Domain"/>
 
@@ -173,25 +173,13 @@
             <input type="text" name="silverpeasServerURL" size="70" maxlength="399" VALUE="${silfn:escapeHtml(domain.silverpeasServerURL)}">&nbsp;<img border="0" src="${mandatoryIconUrl}" width="5" height="5">
           </td>
         </tr>
-        <c:if test="${not isSCIMDomain(domain) and not isGoogleDomain(domain)}">
-          <c:choose>
-            <c:when test="${createMode or (domain.id != null and not (domain.id eq '0'))}">
-              <tr>
-                <td class="txtlibform">${serverTimeStampLabel} :</td>
-                <td>
-                  <input type="text" name="domainTimeStamp" size="70" maxlength="99" VALUE="${silfn:escapeHtml(domain.theTimeStamp)}">
-                </td>
-              </tr>
-            </c:when>
-            <c:when test="<%=JobDomainSettings.usersInDomainQuotaActivated%>">
-              <tr>
-                <td class="txtlibform">${userDomainQuotaMaxCountLabel} :</td>
-                <td>
-                  <input type="text" name="userDomainQuotaMaxCount" size="40" maxlength="399" value="${domain.userDomainQuota.maxCount}"/>&nbsp;<img src="${mandatoryIconUrl}" width="5" height="5"/> ${userDomainQuotaMaxCountHelpLabel}
-                </td>
-              </tr>
-            </c:when>
-          </c:choose>
+        <c:if test="${usersInDomainQuotaActivated and domain.id eq '0'}">
+          <tr>
+            <td class="txtlibform">${userDomainQuotaMaxCountLabel} :</td>
+            <td>
+              <input type="text" name="userDomainQuotaMaxCount" size="40" maxlength="399" value="${domain.userDomainQuota.maxCount}"/>&nbsp;<img src="${mandatoryIconUrl}" width="5" height="5"/> ${userDomainQuotaMaxCountHelpLabel}
+            </td>
+          </tr>
         </c:if>
         <tr>
           <td colspan="2">

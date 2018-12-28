@@ -99,23 +99,23 @@ public class LDAPUser {
     }
     SynchroDomainReport
         .info("LDAPUser.getAllUsers()", "Recherche des utilisateurs du domaine LDAP distant...");
-    List<UserDetail> usersVector = new ArrayList<>();
+    List<UserDetail> ldapUsers = new ArrayList<>();
     LDAPEntry[] theEntries = LDAPUtility
         .search1000Plus(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
             theFilter, driverSettings.getUsersLoginField(), driverSettings.getUserAttributes());
     for (i = 0; i < theEntries.length; i++) {
-      usersVector.add(translateUser(lds, theEntries[i]));
+      ldapUsers.add(translateUser(lds, theEntries[i]));
 
-      usersVector.get(i).traceUser();// Trace niveau Info ds
+      ldapUsers.get(i).traceUser();// Trace niveau Info ds
       // module 'admin' des infos user courant : ID, domaine, login, e-mail,...
       SynchroDomainReport.debug("LDAPUser.getAllUsers()",
-          "Utilisateur trouvé no : " + i + ", login : " + usersVector.get(i).getLogin() + ", " +
-              usersVector.get(i).getFirstName() + ", " + usersVector.get(i).getLastName() + ", " +
-              usersVector.get(i).geteMail());
+          "Utilisateur trouvé no : " + i + ", login : " + ldapUsers.get(i).getLogin() + ", " +
+              ldapUsers.get(i).getFirstName() + ", " + ldapUsers.get(i).getLastName() + ", " +
+              ldapUsers.get(i).geteMail());
     }
     SynchroDomainReport.info("LDAPUser.getAllUsers()",
         "Récupération de " + theEntries.length + " utilisateurs du domaine LDAP distant");
-    return usersVector.toArray(new UserDetail[usersVector.size()]);
+    return ldapUsers.toArray(new UserDetail[ldapUsers.size()]);
   }
 
   /**
@@ -310,14 +310,6 @@ public class LDAPUser {
     synchroCache.addUser(userEntry);
 
     return userInfos;
-  }
-
-  public AbstractLDAPTimeStamp getMaxTimeStamp(String lds, String minTimeStamp)
-      throws AdminException {
-    AbstractLDAPTimeStamp theTimeStamp = driverSettings.newLDAPTimeStamp(minTimeStamp);
-    theTimeStamp.initFromServer(lds, driverSettings.getLDAPUserBaseDN(),
-        driverSettings.getUsersFullFilter(), driverSettings.getUsersLoginField());
-    return theTimeStamp;
   }
 
   public String[] getUserAttributes() {

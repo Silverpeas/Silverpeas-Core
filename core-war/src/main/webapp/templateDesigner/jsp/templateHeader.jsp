@@ -166,10 +166,10 @@ function toDuplicate() {
     title : "<fmt:message key="GML.action.duplicate"/>",
     callback : function() {
       if (StringUtil.isNotDefined($("#DuplicatedFormName").val())) {
-        jQuery.popup.error("'<fmt:message key="GML.name"/>' <fmt:message key="GML.MustBeFilled"/>");
-      } else {
-        return document.DuplicateForm.submit();
+        SilverpeasError.add("'<fmt:message key="GML.name"/>' <fmt:message key="GML.MustBeFilled"/>");
+        return !SilverpeasError.show();
       }
+      document.DuplicateForm.submit();
     }
   });
 }

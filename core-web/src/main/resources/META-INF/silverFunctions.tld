@@ -246,6 +246,15 @@
     <function-signature>java.lang.String getLanguageLabel( java.lang.String, java.lang.String) </function-signature>
   </function>
   <function>
+    <description>Function to format a Temporal.</description>
+    <name>formatTemporal</name>
+    <function-class>org.silverpeas.core.date.TemporalFormatter</function-class>
+    <function-signature>java.lang.String toLocalized(java.time.temporal.Temporal,java.time.ZoneId,java.lang.String)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatTemporal(temporal, userZoneId, "fr")}">
+    </example>
+  </function>
+  <function>
     <description>Function to format a date.</description>
     <name>formatDate</name>
     <function-class>org.silverpeas.core.util.DateUtil</function-class>

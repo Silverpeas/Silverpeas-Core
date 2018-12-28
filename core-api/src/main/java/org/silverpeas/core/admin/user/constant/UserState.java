@@ -57,6 +57,11 @@ public enum UserState {
   EXPIRED,
 
   /**
+   * The user account is removed.
+   */
+  REMOVED,
+
+  /**
    * The user account is deleted.
    */
   DELETED;

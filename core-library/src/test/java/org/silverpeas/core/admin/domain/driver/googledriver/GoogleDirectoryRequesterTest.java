@@ -65,7 +65,7 @@ class GoogleDirectoryRequesterTest {
 
   @Nonnull
   private GoogleDirectoryRequester getRequester() {
-    return new GoogleDirectoryRequester("directory@silverpeas.com", "auth.json");
+    return new GoogleDirectoryRequester("directory@silverpeas.com", "auth.json", "");
   }
 
   private void trace(final Stream<String> stream) {

@@ -40,17 +40,15 @@ import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.Pair;
 
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.silverpeas.core.date.TemporalConverter.asLocalDate;
 import static org.silverpeas.core.date.TemporalFormatter.toLocalized;
+import static org.silverpeas.core.date.TemporalFormatter.toLocalizedTime;
 
 /**
  * @author Yohann Chastagnier
@@ -320,9 +318,19 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
     public String getDayTime() {
       String hour = "";
       if (isTimeExisting()) {
-        hour = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-            .withLocale(Locale.forLanguageTag(language))
-            .format(temporal);
+        hour = toLocalizedTime(temporal, language);
+      }
+      return hour;
+    }
+
+    /**
+     * Gets the time data if the temporal supports such a chronology unit.
+     * @return a string.
+     */
+    public String getZonedDayTime() {
+      String hour = "";
+      if (isTimeExisting()) {
+        hour = toLocalizedTime(temporal, zoneIdReference, language);
       }
       return hour;
     }

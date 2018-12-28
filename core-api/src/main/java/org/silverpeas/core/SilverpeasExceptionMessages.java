@@ -35,6 +35,7 @@ public class SilverpeasExceptionMessages {
   private static final MessageFormat ADDING_FAILURE = new MessageFormat("Fail to add {0} {1}");
   private static final MessageFormat UPDATE_FAILURE = new MessageFormat("Fail to update {0} {1}");
   private static final MessageFormat DELETION_FAILURE = new MessageFormat("Fail to delete {0} {1}");
+  private static final MessageFormat REMOVE_FAILURE = new MessageFormat("Fail to remove {0} {1}");
   private static final MessageFormat GETTING_FAILURE = new MessageFormat("Fail to get {0} {1}");
   private static final MessageFormat MOVE_FAILURE =
       new MessageFormat("Fail to move {0} {1} to {2} {3}");
@@ -106,6 +107,21 @@ public class SilverpeasExceptionMessages {
    */
   public static String failureOnUpdate(String resource, Object id) {
     return UPDATE_FAILURE.format(new Object[]{resource, id});
+  }
+
+  /**
+   * Computes a message about the failure to remove a given resource with the specified
+   * identifier.
+   * <p>
+   * This message is for when an exception has been caught during the remove of a resource in
+   * Silverpeas.
+   * </p>
+   * @param resource the resource concerned by the failure; for example a user, a file, ...
+   * @param id an identifier of the resource (a name, a unique identifier, ...)
+   * @return an exception message.
+   */
+  public static String failureOnRemoving(String resource, Object id) {
+    return REMOVE_FAILURE.format(new Object[]{resource, id});
   }
 
   /**

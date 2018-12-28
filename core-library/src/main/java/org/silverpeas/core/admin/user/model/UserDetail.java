@@ -544,13 +544,19 @@ public class UserDetail implements User {
 
   @Override
   public boolean isValidState() {
-    return isAnonymous() || (!UserState.UNKNOWN.equals(state) && !isDeletedState()
-        && !isBlockedState() && !isDeactivatedState() && !isExpiredState());
+    return isAnonymous() ||
+        (!UserState.UNKNOWN.equals(state) && !isDeletedState() && !isRemovedState() &&
+            !isBlockedState() && !isDeactivatedState() && !isExpiredState());
   }
 
   @Override
   public boolean isDeletedState() {
     return UserState.DELETED.equals(state);
+  }
+
+  @Override
+  public boolean isRemovedState() {
+    return UserState.REMOVED.equals(state);
   }
 
   @Override
@@ -684,6 +690,7 @@ public class UserDetail implements User {
       Method getter = getClass().getMethod(getterName);
       propertyValue = getter.invoke(this).toString();
     } catch (IllegalAccessException|NoSuchMethodException|InvocationTargetException e) {
+      SilverLogger.getLogger(this).silent(e);
     }
     return propertyValue + "." + AVATAR_EXTENSION;
   }

@@ -44,6 +44,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -121,8 +122,9 @@ public class UserGroupProfileResource extends RESTWebService {
 
     // Users to exclude by their state
     if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-      criteriaBuilder.withUserStatesToExclude(
-          userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
+      final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
+      statesToExclude.add(UserState.REMOVED);
+      criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
     }
 
     // Common parameters
@@ -193,8 +195,9 @@ public class UserGroupProfileResource extends RESTWebService {
 
     // Users to exclude by their state
     if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-      criteriaBuilder.withUserStatesToExclude(
-          userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
+      final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
+      statesToExclude.add(UserState.REMOVED);
+      criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
     }
 
     ListSlice<Group> groups = getOrganisationController().searchGroups(criteriaBuilder.build());
@@ -261,8 +264,9 @@ public class UserGroupProfileResource extends RESTWebService {
 
     // Users to exclude by their state
     if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-      criteriaBuilder.withUserStatesToExclude(
-          userStatesToExclude.toArray(new UserState[userStatesToExclude.size()]));
+      final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
+      statesToExclude.add(UserState.REMOVED);
+      criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
     }
 
     ListSlice<Group> subgroups = getOrganisationController().searchGroups(criteriaBuilder.build());

@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.admin.service;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.admin.RightProfile;
 import org.silverpeas.core.admin.component.ApplicationResourcePasting;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
@@ -65,6 +67,8 @@ import org.silverpeas.core.admin.user.dao.GroupSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.dao.SearchCriteriaDAOFactory;
 import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.model.*;
+import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
+import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -73,18 +77,13 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ListSlice;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.Process;
+import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -97,6 +96,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.text.MessageFormat.format;
+import static java.util.Collections.singletonList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_MIXED_GROUPS;
 import static org.silverpeas.core.util.StringUtil.isLong;
@@ -2351,7 +2352,7 @@ class Admin implements Administration {
   public String addUser(UserDetail userDetail, boolean addOnlyInSilverpeas) throws AdminException {
     try {
       // add user
-      String sUserId = userManager.addUser(userDetail, addOnlyInSilverpeas);
+      String sUserId = userManager.addUser(userDetail, addOnlyInSilverpeas, true);
 
       cache.opAddUser(userManager.getUserDetail(sUserId));
       // return group id
@@ -2435,6 +2436,42 @@ class Admin implements Administration {
   }
 
   @Override
+  public String restoreUser(final String sUserId) throws AdminException {
+    final UserDetail user = getUserDetail(sUserId);
+    if (user == null) {
+      throw new AdminException(unknown("user", sUserId));
+    }
+    try {
+      final String removedUserId = userManager.restoreUser(user, true);
+      cache.resetCache();
+      return removedUserId;
+    } catch (Exception e) {
+      throw new AdminException(failureOnRemoving("user", sUserId), e);
+    }
+  }
+
+  @Override
+  public String removeUser(final String sUserId) throws AdminException {
+    if (ADMIN_ID.equals(sUserId)) {
+      SilverLogger.getLogger(this).warn(
+          "Attempt to remove the main administrator account by user " +
+              User.getCurrentRequester().getId());
+      return null;
+    }
+    final UserDetail user = getUserDetail(sUserId);
+    if (user == null) {
+      throw new AdminException(unknown("user", sUserId));
+    }
+    try {
+      final String removedUserId = userManager.removeUser(user, true);
+      cache.opRemoveUser(user);
+      return removedUserId;
+    } catch (Exception e) {
+      throw new AdminException(failureOnRemoving("user", sUserId), e);
+    }
+  }
+
+  @Override
   public String deleteUser(String sUserId) throws AdminException {
     try {
       if (ADMIN_ID.equals(sUserId)) {
@@ -2474,7 +2511,7 @@ class Admin implements Administration {
   public String updateUser(UserDetail user) throws AdminException {
     try {
       // Update user
-      String sUserId = userManager.updateUser(user);
+      String sUserId = userManager.updateUser(user, true);
 
       cache.opUpdateUser(userManager.getUserDetail(sUserId));
 
@@ -2624,7 +2661,7 @@ class Admin implements Administration {
   public String removeDomain(String domainId) throws AdminException {
     try {
       // Remove all users
-      UserDetail[] toRemoveUDs = userManager.getAllUsersInDomain(domainId);
+      UserDetail[] toRemoveUDs = userManager.getAllUsersInDomain(domainId, true);
       if (toRemoveUDs != null) {
         SilverLogger.getLogger(this).debug("[Domain deletion] Remove all the users...");
         for (final UserDetail user : toRemoveUDs) {
@@ -2731,10 +2768,10 @@ class Admin implements Administration {
   @Override
   public UserDetail[] getUsersOfDomain(String domainId) throws AdminException {
     try {
-      if (domainId != null && "-1".equals(domainId)) {
+      if ("-1".equals(domainId)) {
         return new UserDetail[0];
       }
-      return userManager.getAllUsersInDomain(domainId);
+      return userManager.getAllUsersInDomain(domainId, false);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all users in domain", domainId), e);
     }
@@ -2754,11 +2791,11 @@ class Admin implements Administration {
   @Override
   public String[] getUserIdsOfDomain(String domainId) throws AdminException {
     try {
-      if (domainId != null && "-1".equals(domainId)) {
+      if ("-1".equals(domainId)) {
         return ArrayUtil.EMPTY_STRING_ARRAY;
       }
       List<String> userIds = userManager.getAllUserIdsInDomain(domainId);
-      return userIds.toArray(new String[userIds.size()]);
+      return userIds.toArray(new String[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all users in domain", domainId), e);
     }
@@ -3146,8 +3183,13 @@ class Admin implements Administration {
   }
 
   @Override
+  public List<UserDetail> getRemovedUsers(final String... domainIds) throws AdminException {
+    return userManager.getRemovedUsersOfDomains(domainIds);
+  }
+
+  @Override
   public List<UserDetail> getNonBlankedDeletedUsers(final String... domainIds) throws AdminException {
-    return userManager.getNonBlankedDeletedUserOfDomains(domainIds);
+    return userManager.getNonBlankedDeletedUsersOfDomains(domainIds);
   }
 
   @Override
@@ -4288,8 +4330,8 @@ class Admin implements Administration {
       ud.setDomainId(theUserDetail.getDomainId());
       if (!ud.equals(theUserDetail) ||
           (ud.getState() != UserState.UNKNOWN && ud.getState() != theUserDetail.getState())) {
-        copyDistantUserIntoSilverpeasUser(ud, theUserDetail);
-        userManager.updateUser(theUserDetail);
+        mergeDistantUserIntoSilverpeasUser(ud, theUserDetail);
+        userManager.updateUser(theUserDetail, true);
         cache.opUpdateUser(userManager.getUserDetail(userId));
       }
       // Synchro manuelle : Ajoute ou Met à jour l'utilisateur
@@ -4374,10 +4416,8 @@ class Admin implements Administration {
     UserDetail theUserDetail = getUserDetail(userId);
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theUserDetail.getDomainId());
     synchroDomain.removeUser(theUserDetail.getSpecificId());
-    deleteUser(userId, true);
-    List<UserDetail> listUsersRemove = new ArrayList<>();
-    listUsersRemove.add(theUserDetail);
-    processSpecificSynchronization(theUserDetail.getDomainId(), null, null, listUsersRemove);
+    removeUser(userId);
+    processSpecificSynchronization(theUserDetail.getDomainId(), null, null, singletonList(theUserDetail));
     return userId;
   }
 
@@ -4389,78 +4429,94 @@ class Admin implements Administration {
   @Override
   public String synchronizeSilverpeasWithDomain(String sDomainId, boolean threaded)
       throws AdminException {
-    String sReport = "Starting synchronization...\n\n";
-    synchronized (semaphore) {
-
-      // Démarrage de la synchro avec la Popup d'affichage
-      if (threaded) {
-        SynchroDomainReport.setReportLevel(Level.WARNING);
-      }
-      SynchroDomainReport.startSynchro();
-      try {
-        SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_DOMAIN,
-            "Domain '" + domainDriverManager.getDomain(sDomainId).getName() + "', Id : "
-            + sDomainId);
-        // Start synchronization
-        domainDriverManager.beginSynchronization(sDomainId);
-
-        DomainDriver synchroDomain = domainDriverManager.getDomainDriver(sDomainId);
-        Domain theDomain = domainDriverManager.getDomain(sDomainId);
-        String fromTimeStamp = theDomain.getTheTimeStamp();
-        String toTimeStamp = synchroDomain.getTimeStamp(fromTimeStamp);
-
-        // Synchronize users
-        boolean importUsers = synchroDomain.mustImportUsers() || threaded;
-        sReport += synchronizeUsers(sDomainId, fromTimeStamp, toTimeStamp, threaded, importUsers);
-
-        // Synchronize groups
-        // Get all users of the domain from Silverpeas
-        UserDetail[] silverpeasUDs = userManager.getAllUsersInDomain(sDomainId);
-        HashMap<String, String> userIdsMapping = getUserIdsMapping(silverpeasUDs);
-        sReport += "\n" + synchronizeGroups(sDomainId, userIdsMapping);
-
-        // All the synchro is finished -> set the new timestamp
-        // ----------------------------------------------------
-        theDomain.setTheTimeStamp(toTimeStamp);
-        updateDomain(theDomain);
-
-        // End synchronization
-        String sDomainSpecificErrors = domainDriverManager.endSynchronization(sDomainId, false);
-        SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_DOMAIN, "----------------"
-            + sDomainSpecificErrors);
-        return sReport + "\n----------------\n" + sDomainSpecificErrors;
-      } catch (Exception e) {
-        try {
-          // End synchronization
-          domainDriverManager.endSynchronization(sDomainId, true);
-        } catch (Exception e1) {
-          SilverLogger.getLogger(this).error(e1);
+    try {
+      final Pair<String, List<AbstractBackgroundProcessRequest>> result = Transaction
+          .performInNew(new Process<Pair<String, List<AbstractBackgroundProcessRequest>>>() {
+        @Override
+        public Pair<String, List<AbstractBackgroundProcessRequest>> execute() throws Exception {
+          String sReport = "Starting synchronization...\n\n";
+          synchronized (semaphore) {
+            // Starting synchronization with a status popup
+            if (threaded) {
+              SynchroDomainReport.setReportLevel(Level.WARNING);
+            }
+            SynchroDomainReport.startSynchro();
+            try {
+              SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_DOMAIN,
+                  "Domain '" + domainDriverManager.getDomain(sDomainId).getName() + "', Id : " +
+                      sDomainId);
+              // Start synchronization
+              domainDriverManager.beginSynchronization(sDomainId);
+              final DomainDriver synchroDomain = domainDriverManager.getDomainDriver(sDomainId);
+              // Synchronize users
+              final boolean addUserIntoSilverpeas = synchroDomain.mustImportUsers() || threaded;
+              final SyncOfUsersContext context = new SyncOfUsersContext(sDomainId, threaded,
+                  addUserIntoSilverpeas, delUsersOnDiffSynchro);
+              final SyncOfUsersContext syncOfUsersContext = synchronizeUsers(context);
+              sReport += syncOfUsersContext.getReport();
+              // Synchronize groups
+              // Get all users of the domain from Silverpeas
+              final UserDetail[] silverpeasUDs = userManager.getAllUsersInDomain(sDomainId, true);
+              final Map<String, String> userIdsMapping = getUserIdsMapping(silverpeasUDs);
+              sReport += "\n" + synchronizeGroups(sDomainId, userIdsMapping);
+              // End synchronization
+              final String sDomainSpecificErrors = domainDriverManager.endSynchronization(sDomainId, false);
+              SynchroDomainReport
+                  .warn(ADMIN_SYNCHRONIZE_DOMAIN, "----------------" + sDomainSpecificErrors);
+              return Pair.of(
+                  sReport + "\n----------------\n" + sDomainSpecificErrors,
+                  singletonList(syncOfUsersContext.getIndexationBackgroundProcess()));
+            } catch (Exception e) {
+              try {
+                // End synchronization
+                domainDriverManager.endSynchronization(sDomainId, true);
+              } catch (Exception e1) {
+                SilverLogger.getLogger(this).error(e1);
+              }
+              SynchroDomainReport.error(ADMIN_SYNCHRONIZE_DOMAIN,
+                  "Problème lors de la synchronisation : " + e.getMessage(), null);
+              throw new AdminException(
+                  "Fail to synchronize domain " + sDomainId + ". Report: " + sReport, e);
+            } finally {
+              SynchroDomainReport.stopSynchro();// Fin de synchro avec la Popup d'affichage
+              // Reset the cache
+              cache.resetCache();
+            }
+          }
         }
-        SynchroDomainReport.error(ADMIN_SYNCHRONIZE_DOMAIN,
-            "Problème lors de la synchronisation : " + e.getMessage(), null);
-        throw new AdminException(
-            "Fail to synchronize domain " + sDomainId + ". Report: " + sReport, e);
-      } finally {
-        SynchroDomainReport.stopSynchro();// Fin de synchro avec la Popup d'affichage
-        // Reset the cache
-        cache.resetCache();
+      });
+      result.getSecond().forEach(BackgroundProcessTask::push);
+      return result.getFirst();
+    } catch (Exception e) {
+      if (e.getCause() instanceof AdminException) {
+        throw e;
       }
+      throw new AdminException(e);
     }
   }
 
   /**
    * Merge the data of a distant user into the data of a silverpeas user : - user identifier (the
    * distant one) - first name - last name - e-mail - login
-   *
-   * @param distantUser
-   * @param silverpeasUser
+   * @param distantUser {@link UserDetail} representing data on externam repository.
+   * @param silverpeasUser {@link UserDetail} representing data on silverpeas.
+   * @return true if a data has changed, false otherwise.
    */
-  private void copyDistantUserIntoSilverpeasUser(UserDetail distantUser, UserDetail silverpeasUser) {
+  static boolean mergeDistantUserIntoSilverpeasUser(final UserDetail distantUser,
+      final UserDetail silverpeasUser) {
+    boolean dataUpdated =  !Objects.equals(silverpeasUser.getSpecificId(), distantUser.getSpecificId());
     silverpeasUser.setSpecificId(distantUser.getSpecificId());
+    dataUpdated |= !Objects.equals(silverpeasUser.getFirstName(), distantUser.getFirstName());
     silverpeasUser.setFirstName(distantUser.getFirstName());
+    dataUpdated |= !Objects.equals(silverpeasUser.getLastName(), distantUser.getLastName());
     silverpeasUser.setLastName(distantUser.getLastName());
+    dataUpdated |= !Objects.equals(silverpeasUser.geteMail(), distantUser.geteMail());
     silverpeasUser.seteMail(distantUser.geteMail());
+    dataUpdated |= !Objects.equals(silverpeasUser.getLogin(), distantUser.getLogin());
     silverpeasUser.setLogin(distantUser.getLogin());
+    if (silverpeasUser.isRemovedState()) {
+      return dataUpdated;
+    }
     if (distantUser.isDeactivatedState() ||
         (distantUser.isValidState() && silverpeasUser.isDeactivatedState())) {
       // The user account is deactivated from the LDAP
@@ -4468,105 +4524,175 @@ class Admin implements Administration {
       // The user account is activated from the LDAP, so the Silverpeas user
       // account is again activated only if it was deactivated. Indeed, if it was blocked
       // for example, it is still blocked after a synchronization
+      dataUpdated |= !Objects.equals(silverpeasUser.getState(), distantUser.getState());
       silverpeasUser.setState(distantUser.getState());
+    }
+    return dataUpdated;
+  }
+
+  /**
+   * Synchronize users between cache and domain's datasource
+   */
+  private SyncOfUsersContext synchronizeUsers(final SyncOfUsersContext context)
+      throws AdminException {
+    final String domainId = context.getDomainId();
+    context.appendToReport("User synchronization : \n");
+    String message;
+    SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, "Starting synchronization of users...");
+    final UserDetail[] distantUDs = domainDriverManager.getAllUsers(context.getDomainId());
+    SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS,
+        format("Existing currently {0} users in external repository before synchronization",
+            distantUDs.length));
+    final UserDetail[] silverpeasUDs = userManager.getAllUsersInDomain(domainId, true);
+    SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS,
+        format("Existing currently {0} users in Silverpeas before synchronization",
+            silverpeasUDs.length));
+    try {
+      performRemoveOfUsersDuringSynchronization(context, distantUDs, silverpeasUDs);
+      performSaveOfUsersDuringSynchronization(context, distantUDs, silverpeasUDs);
+      processSpecificSynchronization(domainId, context.getAddedUsers().values(),
+          context.getUpdatedUsers().values(), context.getRemovedUsers().values());
+      message = "Synchronization of users terminated";
+      context.appendToReport(message).appendToReport("\n");
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
+      message = "# of updated users: " + context.getUpdatedUsers().size() +
+          ", added: " + context.getAddedUsers().size() +
+          ", removed: " + context.getRemovedUsers().size() +
+          ", restored: " + context.getRestoredUsers().size() +
+          ", deleted: " + context.getDeletedUsers().size();
+      context.appendToReport(message).appendToReport("\n");
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
+      context.setIndexationBackgroundProcess(
+          new BackgroundUserIndexationProcess(domainDriverManager, context));
+      return context;
+    } catch (Exception e) {
+      SynchroDomainReport.error(ADMIN_SYNCHRONIZE_USERS,
+          "Problem during synchronization of users : " + e.getMessage(), null);
+      throw new AdminException(
+          "Fail to synchronize domain " + domainId + ". Report: " + context.getReport(), e);
+    }
+  }
+
+  private void performRemoveOfUsersDuringSynchronization(final SyncOfUsersContext context,
+      final UserDetail[] distantUDs, final UserDetail[] silverpeasUDs) {
+    if (context.isRemoveOperationToPerform()) {
+      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, "Removing users from database...");
+      final Set<String> indexedDistantUsers = extractUserSpecificIdAndFallbackLogin(distantUDs);
+      for (UserDetail silverpeasUD : silverpeasUDs) {
+        // search for user in distant datasource
+        if (!silverpeasUD.isRemovedState() &&
+            !existsUserBySpecificIdOrFallbackLoginIn(silverpeasUD, indexedDistantUsers)) {
+          removeUserDuringSynchronization(context, silverpeasUD);
+        }
+      }
+    }
+  }
+
+  private void performSaveOfUsersDuringSynchronization(final SyncOfUsersContext context,
+      final UserDetail[] distantUDs, final UserDetail[] silverpeasUDs) {
+    SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, "Saving users in database...");
+    final Map<String, UserDetail> indexedSpUsers = indexUsersBySpecificIdAndLogin(silverpeasUDs);
+    for (final UserDetail distantUD : distantUDs) {
+      final UserDetail userToUpdateFromDistantUser = getUserBySpecificIdOrFallbackLoginFrom(distantUD, indexedSpUsers);
+      if (userToUpdateFromDistantUser != null) {
+        if (userToUpdateFromDistantUser.isRemovedState()) {
+          restoreUserDuringSynchronization(context, distantUD, userToUpdateFromDistantUser);
+        } else if (mergeDistantUserIntoSilverpeasUser(distantUD, userToUpdateFromDistantUser)) {
+          updateUserDuringSynchronization(context, userToUpdateFromDistantUser);
+        }
+      } else if (context.isAddOperationToPerform()) {
+        deleteRemovedUserDuringSynchronization(context, distantUD, indexedSpUsers);
+        distantUD.setDomainId(context.getDomainId());
+        addUserDuringSynchronization(context, distantUD);
+      }
     }
   }
 
   /**
-   * Synchronize users between cache and domain's datastore
+   * Background process request which ensure the reminder scheduler to not be disturbed by user
+   * notification send processing.
    */
-  private String synchronizeUsers(String domainId, String fromTimeStamp, String toTimeStamp,
-      boolean threaded, boolean importUsers) throws AdminException {
-    String specificId;
-    StringBuilder sReport = new StringBuilder("User synchronization : \n");
-    String message;
-    Collection<UserDetail> addedUsers = new ArrayList<>();
-    Collection<UserDetail> updateUsers = new ArrayList<>();
-    Collection<UserDetail> removedUsers = new ArrayList<>();
+  private static class BackgroundUserIndexationProcess extends AbstractBackgroundProcessRequest {
 
-    SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, "Starting users synchronization...");
-    try {
-      // Get all users of the domain from distant datasource
-      DomainDriver domainDriver = domainDriverManager.getDomainDriver(domainId);
-      UserDetail[] distantUDs = domainDriver.getAllChangedUsers(fromTimeStamp, toTimeStamp);
+    private final DomainDriverManager domainDriverManager;
+    private final SyncOfUsersContext context;
 
-      message = distantUDs.length
-          + " user(s) have been changed in external repository since the last synchronization";
-      sReport.append(message).append("\n");
-      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
-
-      // Get all users of the domain from Silverpeas
-      UserDetail[] silverpeasUDs = userManager.getAllUsersInDomain(domainId);
-      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, "Adding or updating users in database...");
-
-      // Add new users or update existing ones from distant datasource
-      for (UserDetail distantUD : distantUDs) {
-        UserDetail userToUpdateFromDistantUser = null;
-        specificId = distantUD.getSpecificId();
-
-
-        // search for user in Silverpeas database
-        for (final UserDetail silverpeasUD : silverpeasUDs) {
-          if (silverpeasUD.getSpecificId().equals(specificId) || (shouldFallbackUserLogins
-              && silverpeasUD.getLogin().equals(distantUD.getLogin()))) {
-            userToUpdateFromDistantUser = silverpeasUD;
-            copyDistantUserIntoSilverpeasUser(distantUD, userToUpdateFromDistantUser);
-            break;
-          }
-        }
-
-        if (userToUpdateFromDistantUser != null) {
-          // update user
-          updateUserDuringSynchronization(userToUpdateFromDistantUser, updateUsers, sReport);
-        } else if (importUsers) {
-          // add user
-          distantUD.setDomainId(domainId);
-          addUserDuringSynchronization(distantUD, addedUsers, sReport);
-        }
-      }
-
-      if (!threaded || (threaded && delUsersOnDiffSynchro)) {
-        // Delete obsolete users from Silverpeas
-        SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, "Removing users from database...");
-        distantUDs = domainDriverManager.getAllUsers(domainId);
-        for (UserDetail silverpeasUD : silverpeasUDs) {
-          boolean bFound = false;
-          specificId = silverpeasUD.getSpecificId();
-
-          // search for user in distant datasource
-          for (final UserDetail distantUD : distantUDs) {
-            if (distantUD.getSpecificId().equals(specificId) || (shouldFallbackUserLogins
-                && silverpeasUD.getLogin().equals(distantUD.getLogin()))) {
-              bFound = true;
-              break;
-            }
-          }
-
-          // if found, do nothing, else delete
-          if (!bFound) {
-            deleteUserDuringSynchronization(silverpeasUD, removedUsers,
-                sReport);
-          }
-        }
-      }
-
-      // traitement spécifique des users selon l'interface implémentée
-      processSpecificSynchronization(domainId, addedUsers, updateUsers, removedUsers);
-
-      message = "Users synchronization terminated";
-      sReport.append(message).append("\n");
-      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
-      message = "# of updated users : " + updateUsers.size() + ", added : " + addedUsers.size()
-          + ", removed : " + removedUsers.size();
-      sReport.append(message).append("\n");
-      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
-      return sReport.toString();
-    } catch (Exception e) {
-      SynchroDomainReport.error(ADMIN_SYNCHRONIZE_USERS, "Problem during synchronization of users : "
-          + e.getMessage(), null);
-      throw new AdminException("Fail to synchronize domain " + domainId
-          + ". Report: " + sReport, e);
+    private BackgroundUserIndexationProcess(final DomainDriverManager domainDriverManager,
+        final SyncOfUsersContext context) {
+      super();
+      this.domainDriverManager = domainDriverManager;
+      this.context = context;
     }
+
+    @Override
+    protected void process() {
+      final SilverLogger logger = SilverLogger.getLogger(this);
+      final long start = System.currentTimeMillis();
+      final String totalOfUsers = String.valueOf(
+          context.getAddedUsers().size() + context.getUpdatedUsers().size() +
+              context.getRemovedUsers().size() + context.getRestoredUsers().size());
+      logger.debug(format("Starting indexation of {0} users on domain id {1}...", totalOfUsers,
+          context.getDomainId()));
+      Transaction.performInOne(() -> {
+        logger.debug(format("unindexation of {0} removed users on domain id {1}...",
+            String.valueOf(context.getRemovedUsers().size()), context.getDomainId()));
+        context.getRemovedUsers().keySet().forEach(domainDriverManager::unindexUser);
+        logger.debug(format("indexation of {0} restored users on domain id {1}...",
+            String.valueOf(context.getRestoredUsers().size()), context.getDomainId()));
+        context.getRestoredUsers().keySet().forEach(domainDriverManager::indexUser);
+        logger.debug(format("indexation of {0} added users on domain id {1}...",
+            String.valueOf(context.getAddedUsers().size()), context.getDomainId()));
+        context.getAddedUsers().keySet().forEach(domainDriverManager::indexUser);
+        logger.debug(format("indexation of {0} updated users on domain id {1}...",
+            String.valueOf(context.getUpdatedUsers().size()), context.getDomainId()));
+        context.getUpdatedUsers().keySet().forEach(domainDriverManager::indexUser);
+        return null;
+      });
+      final long end = System.currentTimeMillis();
+      logger.debug(
+          () -> format("Ending indexation of {0} users on domain id {1} in {2}", totalOfUsers,
+              context.getDomainId(), DurationFormatUtils.formatDurationHMS(end - start)));
+    }
+  }
+
+  @Nullable
+  private UserDetail getUserBySpecificIdOrFallbackLoginFrom(@Nonnull final UserDetail user,
+      final Map<String, UserDetail> indexedUsers) {
+    UserDetail indexedUser = indexedUsers.get(user.getSpecificId());
+    if (indexedUser == null && shouldFallbackUserLogins) {
+      indexedUser = indexedUsers.get(user.getLogin());
+    }
+    return indexedUser;
+  }
+
+  private boolean existsUserBySpecificIdOrFallbackLoginIn(final UserDetail user,
+      final Set<String> indexedUsers) {
+    return indexedUsers.contains(user.getSpecificId()) ||
+        (shouldFallbackUserLogins && indexedUsers.contains(user.getLogin()));
+  }
+
+  @Nonnull
+  private Map<String, UserDetail> indexUsersBySpecificIdAndLogin(
+      final UserDetail[] silverpeasUDs) {
+    final Map<String, UserDetail> indexedSilverpeasUsers = new HashMap<>(silverpeasUDs.length * 2);
+    Arrays.stream(silverpeasUDs).forEach(u -> {
+      indexedSilverpeasUsers.put(u.getSpecificId(), u);
+      indexedSilverpeasUsers.put(u.getLogin(), u);
+    });
+    return indexedSilverpeasUsers;
+  }
+
+  @Nonnull
+  private Set<String> extractUserSpecificIdAndFallbackLogin(final UserDetail[] users) {
+    final Set<String> indexedUsers = new HashSet<>(
+        shouldFallbackUserLogins ? (users.length * 2) : users.length);
+    Arrays.stream(users).forEach(u -> {
+      indexedUsers.add(u.getSpecificId());
+      if (shouldFallbackUserLogins) {
+        indexedUsers.add(u.getLogin());
+      }
+    });
+    return indexedUsers;
   }
 
   /**
@@ -4581,74 +4707,134 @@ class Admin implements Administration {
     return ids;
   }
 
-  private void updateUserDuringSynchronization(UserDetail distantUD,
-      Collection<UserDetail> updatedUsers, StringBuilder sReport) {
-    String specificId = distantUD.getSpecificId();
+  private void updateUserDuringSynchronization(final SyncOfUsersContext context,
+      final UserDetail distantUD) {
+    final String specificId = distantUD.getSpecificId();
     try {
-      String silverpeasId = userManager.updateUser(distantUD);
-      updatedUsers.add(distantUD);
-      String message = USER + distantUD.getDisplayedName() + " updated (id:" + silverpeasId
-          + " / specificId:" + specificId + ")";
+      final String silverpeasId = userManager.updateUser(distantUD, false);
+      context.getUpdatedUsers().put(silverpeasId, distantUD);
+      final String message = format("{0} {1} updated (id:{2} / specificId:{3})", USER,
+          distantUD.getDisplayedName(), silverpeasId, specificId);
       SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
-      sReport.append(message).append("\n");
+      context.appendToReport(message).appendToReport("\n");
     } catch (AdminException aeMaj) {
-      SilverLogger.getLogger(this).error("Full synchro: error while updating user " + specificId,
-          aeMaj);
-      String errorMessage = "problem updating user " + distantUD.getDisplayedName() + " (specificId:"
-          + specificId + ") - " + aeMaj.getMessage();
-      sReport.append(errorMessage).append("\n");
+      SilverLogger.getLogger(this)
+          .error("Full synchro: error while updating user " + specificId, aeMaj);
+      final String errorMessage = format("problem updating user {0} (specificId:{1}) - {2}",
+          distantUD.getDisplayedName(), specificId, aeMaj.getMessage());
+      context.appendToReport(errorMessage).appendToReport("\n");
       SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, errorMessage);
-      sReport.append("user hasn't been updated\n");
+      context.appendToReport("user hasn't been updated\n");
     }
   }
 
-  private void addUserDuringSynchronization(UserDetail distantUD, Collection<UserDetail> addedUsers,
-      StringBuilder sReport) {
-    String specificId = distantUD.getSpecificId();
+  private void addUserDuringSynchronization(final SyncOfUsersContext context,
+      final UserDetail distantUD) {
+    final String specificId = distantUD.getSpecificId();
     try {
-      String silverpeasId = userManager.addUser(distantUD, true);
+      final String silverpeasId = userManager.addUser(distantUD, true, false);
       if (silverpeasId.equals("")) {
-        String message = "problem adding user " + distantUD.getDisplayedName() + "(specificId:"
-            + specificId + ") - Login and LastName must be set !!!";
-        sReport.append(message).append("\n");
+        final String message = format(
+            "problem adding user {0} (specificId:{1}) - Login and LastName must be set !!!",
+            distantUD.getDisplayedName(), specificId);
+        context.appendToReport(message).appendToReport("\n");
         SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
-        sReport.append("user has not been added\n");
+        context.appendToReport("user has not been added\n");
       } else {
-
-        addedUsers.add(distantUD);
-        String message = USER + distantUD.getDisplayedName() + " added (id:" + silverpeasId
-            + " / specificId:" + specificId + ")";
-        sReport.append(message).append("\n");
+        context.getAddedUsers().put(silverpeasId, distantUD);
+        final String message = format("{0} {1} added (id:{2} / specificId:{3})", USER,
+            distantUD.getDisplayedName(), silverpeasId, specificId);
+        context.appendToReport(message).appendToReport("\n");
         SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
       }
     } catch (AdminException ae) {
       SilverLogger.getLogger(this).error("Full synchro: error while adding user " + specificId, ae);
-      String message = "problem adding user " + distantUD.getDisplayedName() + "(specificId:"
-          + specificId + ") - " + ae.getMessage();
+      final String message = format("problem adding user {0}(specificId:{1}) - {2}",
+          distantUD.getDisplayedName(), specificId, ae.getMessage());
       SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
-      sReport.append(message).append("\n");
-      sReport.append("user has not been added\n");
+      context.appendToReport(message).appendToReport("\n");
+      context.appendToReport("user has not been added\n");
     }
   }
 
-  private void deleteUserDuringSynchronization(UserDetail silverpeasUD,
-      Collection<UserDetail> deletedUsers, StringBuilder sReport) {
-    String specificId = silverpeasUD.getSpecificId();
+  private void removeUserDuringSynchronization(final SyncOfUsersContext context,
+      final UserDetail silverpeasUD) {
+    final String specificId = silverpeasUD.getSpecificId();
     try {
-      userManager.deleteUser(silverpeasUD, true);
-      deletedUsers.add(silverpeasUD);
-      String message = USER + silverpeasUD.getDisplayedName() + " deleted (id:" + specificId
-          + ")";
-      sReport.append(message).append("\n");
+      userManager.removeUser(silverpeasUD, false);
+      silverpeasUD.setState(UserState.REMOVED);
+      context.getRemovedUsers().put(silverpeasUD.getId(), silverpeasUD);
+      final String message = format("{0} {1} removed (id:{2} / specificId:{3})", USER,
+          silverpeasUD.getDisplayedName(), silverpeasUD.getId(), specificId);
+      context.appendToReport(message).appendToReport("\n");
       SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
     } catch (AdminException aeDel) {
-      SilverLogger.getLogger(this).error("Full synchro: error while deleting user " + specificId,
-          aeDel);
-      String message = "problem deleting user " + silverpeasUD.getDisplayedName() + " (specificId:"
-          + specificId + ") - " + aeDel.getMessage();
-      sReport.append(message).append("\n");
+      SilverLogger.getLogger(this)
+          .error("Full synchro: error while removing user " + specificId, aeDel);
+      final String message = format("problem removing user {0} (specificId:{1}) - {2}",
+          silverpeasUD.getDisplayedName(), specificId, aeDel.getMessage());
+      context.appendToReport(message).appendToReport("\n");
       SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
-      sReport.append("user has not been deleted\n");
+      context.appendToReport("user has not been removed\n");
+    }
+  }
+
+  private void restoreUserDuringSynchronization(final SyncOfUsersContext context,
+      final UserDetail distantUD, final UserDetail silverpeasUD) {
+    final String specificId = silverpeasUD.getSpecificId();
+    try {
+      userManager.restoreUser(silverpeasUD, false);
+      silverpeasUD.setState(UserState.VALID);
+      if (mergeDistantUserIntoSilverpeasUser(distantUD, silverpeasUD)) {
+        userManager.updateUser(silverpeasUD, false);
+      }
+      context.getRestoredUsers().put(silverpeasUD.getId(), silverpeasUD);
+      final String message = format("{0} {1} restored (id:{2} / specificId:{3})", USER,
+          silverpeasUD.getDisplayedName(), silverpeasUD.getId(), specificId);
+      context.appendToReport(message).appendToReport("\n");
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
+    } catch (AdminException aeDel) {
+      SilverLogger.getLogger(this)
+          .error("Full synchro: error while restoring user " + specificId, aeDel);
+      final String message = format("problem restoring user {0} (specificId:{1}) - {2}",
+          silverpeasUD.getDisplayedName(), specificId, aeDel.getMessage());
+      context.appendToReport(message).appendToReport("\n");
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
+      context.appendToReport("user has not been restored\n");
+    }
+  }
+
+  private void deleteRemovedUserDuringSynchronization(final SyncOfUsersContext context,
+      final UserDetail distantUD, final Map<String, UserDetail> indexedSpUsers) {
+    final String login = distantUD.getLogin();
+    try {
+      if (!shouldFallbackUserLogins) {
+        final UserDetail silverpeasUser = indexedSpUsers.get(login);
+        if (silverpeasUser != null) {
+          if (!distantUD.getSpecificId().equals(silverpeasUser.getSpecificId()) &&
+              silverpeasUser.isRemovedState()) {
+            userManager.deleteUser(silverpeasUser, true);
+            context.getDeletedUsers().put(silverpeasUser.getId(), silverpeasUser);
+            final String message = format("{0} {1} deleted (id:{2} / login:{3})", USER,
+                distantUD.getDisplayedName(), distantUD.getId(), login);
+            context.appendToReport(message).appendToReport("\n");
+            SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
+          } else {
+            final String message = format(
+                "{0} {1} must have 'REMOVED' state for deletion (id:{2} / login:{3})", USER,
+                distantUD.getDisplayedName(), distantUD.getId(), login);
+            throw new AdminException(message);
+          }
+        }
+      }
+    } catch (AdminException aeDel) {
+      SilverLogger.getLogger(this)
+          .error("Full synchro: error while deleting user with login " + login, aeDel);
+      final String message = format("problem deleting user {0} (domainId:{1}, login:{2}) - {3}",
+          distantUD.getDisplayedName(), context.getDomainId(), login, aeDel.getMessage());
+      context.appendToReport(message).appendToReport("\n");
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
+      context.appendToReport("user has not been deleted\n");
     }
   }
 

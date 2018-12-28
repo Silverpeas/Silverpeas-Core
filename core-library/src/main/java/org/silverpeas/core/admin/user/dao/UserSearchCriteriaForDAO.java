@@ -59,7 +59,9 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   }
 
   public static UserSearchCriteriaForDAO newCriteria() {
-    return new UserSearchCriteriaForDAO(new UserDetailsSearchCriteria());
+    final UserSearchCriteriaForDAO newCriteria = newCriteriaFrom(new UserDetailsSearchCriteria());
+    newCriteria.onUserStatesToExclude(UserState.REMOVED);
+    return newCriteria;
   }
 
   public static UserSearchCriteriaForDAO newCriteriaFrom(final UserDetailsSearchCriteria criteria) {
@@ -268,14 +270,13 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   }
 
   private JdbcSqlQuery prepareJdbcSqlQuery(final String fields) {
-    List<UserState> userStatesToExclude = new ArrayList<>();
+    final Set<UserState> userStatesToExclude = new HashSet<>();
     if (criteria.isCriterionOnUserStatesToExcludeSet()) {
       Collections.addAll(userStatesToExclude, criteria.getCriterionOnUserStatesToExclude());
     }
     userStatesToExclude.add(UserState.DELETED);
-
     return JdbcSqlQuery.createSelect(fields)
-        .from(tables.stream().collect(Collectors.joining(",")))
+        .from(String.join(",", tables))
         .where("st_user.state").notIn(userStatesToExclude);
   }
 }

@@ -98,8 +98,8 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
       throw new AuthenticationBadCredentialException(VERIFIER,
           SilverpeasException.ERROR, CANNOT_LOGIN);
     } else if (!isUserStateValid()) {
-      // For now, if user is not valid (BLOCKED, DEACTIVATED, EXPIRED, DELETED, UNKNOWN) he is
-      // considered as BLOCKED.
+      // For now, if user is not valid (BLOCKED, DEACTIVATED, EXPIRED, REMOVED, DELETED, UNKNOWN)
+      // he is considered as BLOCKED.
       if (getUser().isDeactivatedState()) {
         throw new AuthenticationUserAccountDeactivatedException(VERIFIER,
             SilverpeasException.ERROR, CANNOT_LOGIN,

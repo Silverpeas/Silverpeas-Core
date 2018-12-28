@@ -23,13 +23,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.apache.commons.lang3.tuple.Pair"%>
-<%@ page import="org.silverpeas.core.admin.user.constant.UserState" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
-<%@ page import="org.silverpeas.core.util.logging.Level" %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="org.apache.commons.lang3.tuple.Pair"%>
 <%@ page import="org.silverpeas.core.admin.quota.constant.QuotaLoad" %>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="org.silverpeas.core.admin.user.constant.UserState" %>
+<%@ page import="org.silverpeas.core.util.logging.Level" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -37,7 +35,7 @@
 
 <%@ include file="check.jsp" %>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var="domObject" value="${requestScope.domainObject}"/>
@@ -65,7 +63,6 @@
   boolean isDomainScim = "org.silverpeas.core.admin.domain.driver.scimdriver.SCIMDriver".equals(domObject.getDriverClassName());
   boolean isDomainGoogle = "org.silverpeas.core.admin.domain.driver.googledriver.GoogleDriver".equals(domObject.getDriverClassName());
   boolean mixedDomain = domObject.isMixedOne();
-  Date lastSyncDate = domObject.getLastSyncDate();
 
   browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
 
@@ -75,21 +72,17 @@
   // Domain operations
 	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),userPanelAccessLabel,"displaySelectUserOrGroup");
   if (theUser.isAccessAdmin()) {
-    if (!mixedDomain) {
-      operationPane.addOperation(resource.getIcon("JDP.deletedUserAccess"),
-          resource.getString("JDP.deletedUserAccess"), "displayDeletedUsers");
-      operationPane.addLine();
-      if (isDomainSql) {
-        operationPane.addOperation(resource.getIcon("JDP.domainSqlUpdate"),
-            resource.getString("JDP.domainSQLUpdate"), "displayDomainSQLModify");
-        operationPane.addOperation(resource.getIcon("JDP.domainSqlDel"),
-            resource.getString("JDP.domainSQLDel"),
-            "javascript:ConfirmAndSend('" + resource.getString("JDP.domainDelConfirm") +
-                "','domainSQLDelete')");
-      } else {
-        operationPane.addOperation(resource.getIcon("JDP.domainUpdate"),
-            resource.getString("JDP.domainUpdate"), "displayDomainModify");
-        if (!domObject.getId().equals("0")) {
+
+	    if (!mixedDomain) {
+	      operationPane.addOperation(resource.getIcon("JDP.removedUserAccess"), resource.getString("JDP.removedUserAccess"), "displayRemovedUsers");
+	      operationPane.addOperation(resource.getIcon("JDP.deletedUserAccess"), resource.getString("JDP.deletedUserAccess"), "displayDeletedUsers");
+		    operationPane.addLine();
+		if(isDomainSql) {
+		        operationPane.addOperation(resource.getIcon("JDP.domainSqlUpdate"),resource.getString("JDP.domainSQLUpdate"),"displayDomainSQLModify");
+		        operationPane.addOperation(resource.getIcon("JDP.domainSqlDel"),resource.getString("JDP.domainSQLDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.domainDelConfirm")+"','domainSQLDelete')");
+		    } else {
+		        operationPane.addOperation(resource.getIcon("JDP.domainUpdate"),resource.getString("JDP.domainUpdate"),"displayDomainModify");
+		        if (!domObject.getId().equals("0")){
           final String deleteAction = isDomainScim
               ? "domainSCIMDelete"
               : (isDomainGoogle
@@ -136,6 +129,9 @@
 	operationPane.addLine();
 
 	// Domain operations
+  if (isDomainGoogle) {
+    operationPane.addOperation(resource.getIcon("JDP.domainUserFilterRuleModify"), resource.getString("JDP.domainUserFilterRuleModify"), "domainModifyUserFilter");
+  }
 	operationPane.addOperation(resource.getIcon("JDP.domainSynchro"),resource.getString("JDP.domainSynchro"),"displayDomainSynchro");
 
 	//User operations
@@ -171,6 +167,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title></title>
 <view:looknfeel withFieldsetStyle="true"/>
 <view:includePlugin name="popup"/>
 <script type="text/javascript">
@@ -219,12 +216,6 @@ out.println(window.printBefore());
 			<img alt="" src="/silverpeas/util/icons/link.gif"/> <%=resource.getString("JDP.silverpeasServerURL") %> <br/>
 			<input type="text" size="40" value="<%=domObject.getSilverpeasServerURL() %>" onmouseup="return false" onfocus="select();"/>
 		</p>
-    <% if (lastSyncDate != null) { %>
-      <p id="lastSyncDate">
-        <fmt:message key="JDP.domain.lastSyncDate" />
-        <view:formatDateTime value="<%=lastSyncDate%>"/>
-      </p>
-    <% } %>
 	</div>
 </div>
 <% } %>

@@ -34,9 +34,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * @author Yohann Chastagnier
@@ -240,18 +243,46 @@ public class CollectionUtil {
    * @return the intersection between the two collections.
    */
   public static <T> Collection<T> intersection(Collection<T> col1, Collection<T> col2) {
+    return intersection(col1, col2, t -> t);
+  }
+
+  /**
+   * Makes an intersection between both of the given lists.<br>
+   * The result contains unique values.
+   * @param list1 the first list.
+   * @param list2 the second list.
+   * @param discriminator get the discriminator data.
+   * @param <T> the type of the items in the list
+   * @return the intersection between the two lists.
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> List<T> intersection(List<T> list1, List<T> list2, Function<T, Object> discriminator) {
+    return (List) intersection(list1, (Collection) list2, discriminator);
+  }
+
+  /**
+   * Makes an intersection between both of the given collections.<br>
+   * The result contains unique values.
+   * @param col1 the first collection.
+   * @param col2 the second collection.
+   * @param discriminator get the discriminator data.
+   * @param <T> the type of the items in the list
+   * @return the intersection between the two collections.
+   */
+  public static <T> Collection<T> intersection(Collection<T> col1, Collection<T> col2,
+      Function<T, Object> discriminator) {
     Collection<T> smaller = col1;
     Collection<T> larger = col2;
     if (col1.size() > col2.size()) {
       smaller = col2;
       larger = col1;
     }
-    final HashSet<T> matcher = new HashSet<T>(smaller);
-    final Stream<T> intersection = larger.stream().filter(matcher::remove);
+    final Set<Object> matcher = smaller.stream().map(discriminator).collect(toSet());
+    final Stream<T> intersection = larger.stream().filter(o -> matcher.remove(discriminator.apply(o)));
     if (col1 instanceof Set && col2 instanceof Set) {
-      return intersection.collect(Collectors.toSet());
+      return intersection.collect(toSet());
     }
-    return intersection.collect(Collectors.toList());
+    return intersection.collect(toList());
   }
 
   /**

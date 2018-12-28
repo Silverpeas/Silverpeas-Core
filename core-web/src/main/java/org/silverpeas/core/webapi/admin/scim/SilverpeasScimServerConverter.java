@@ -72,12 +72,14 @@ class SilverpeasScimServerConverter {
         : scimUser.getUserName();
     user.seteMail(email);
     user.setPassword(scimUser.getPassword());
-    if (scimUser.getActive()) {
-      if (user.isDeactivatedState() || user.isDeletedState()) {
-        user.setState(UserState.VALID);
+    if (!user.isRemovedState()) {
+      if (scimUser.getActive()) {
+        if (user.isDeactivatedState() || user.isDeletedState()) {
+          user.setState(UserState.VALID);
+        }
+      } else {
+        user.setState(UserState.DEACTIVATED);
       }
-    } else {
-      user.setState(UserState.DEACTIVATED);
     }
   }
 
@@ -108,6 +110,7 @@ class SilverpeasScimServerConverter {
         scimUser.setName(new Name());
         scimUser.getName().setGivenName(user.getFirstName());
         scimUser.getName().setFamilyName(user.getLastName());
+        scimUser.getName().setFormatted(user.getDisplayedName());
       }
       scimUser.setActive(user.isValidState());
     }

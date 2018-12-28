@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
- * UI item if a {@link SILVERMAILMessage} instance.
+ * UI item for a {@link SILVERMAILMessage} instance.
  * @author Yohann Chastagnier
  */
 public class ToDoHeaderUIEntity extends SelectableUIEntity<ToDoHeader> {

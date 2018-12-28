@@ -21,7 +21,7 @@ public class VariableUIEntity extends SelectableUIEntity<Variable> {
 
   private VariableScheduledValue refValue;
 
-  VariableUIEntity(final Variable data, final Set<String> selectedIds) {
+  private VariableUIEntity(final Variable data, final Set<String> selectedIds) {
     super(data, selectedIds);
   }
 

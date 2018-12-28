@@ -33,6 +33,7 @@ import javax.inject.Singleton;
 import java.util.function.BiConsumer;
 
 import static org.silverpeas.core.html.SupportedWebPlugins.*;
+import static org.silverpeas.core.html.WebPluginConsumerRegistry.add;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
 
 /**
@@ -41,51 +42,54 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
 @Singleton
 public class DefaultWebPlugin implements WebPlugin, Initialization {
 
+  /**
+   * Using here {@link WebPluginConsumerRegistry#add}
+   */
   @Override
   public void init() {
-    WebPluginConsumerRegistry.add(POLYFILLS, (xhtml, language) -> includePolyfills(xhtml));
-    WebPluginConsumerRegistry.add(EMBEDPLAYER, (xhtml, language) -> includeEmbedPlayer(xhtml));
-    WebPluginConsumerRegistry.add(MEDIAPLAYER, (xhtml, language) -> includeMediaPlayer(xhtml));
-    WebPluginConsumerRegistry.add(QTIP, (xhtml, language) -> includeQTip(xhtml));
-    WebPluginConsumerRegistry.add(DATEPICKER, JavascriptPluginInclusion::includeDatePicker);
-    WebPluginConsumerRegistry.add(PAGINATION, (xhtml, language) -> includePagination(xhtml));
-    WebPluginConsumerRegistry.add(BREADCRUMB, (xhtml, language) -> includeBreadCrumb(xhtml));
-    WebPluginConsumerRegistry.add(USERZOOM, JavascriptPluginInclusion::includeUserZoom);
-    WebPluginConsumerRegistry.add(RELATIONSHIP, JavascriptPluginInclusion::includeRelationship);
-    WebPluginConsumerRegistry.add(WYSIWYG, JavascriptPluginInclusion::includeWysiwygEditor);
-    WebPluginConsumerRegistry.add(RESPONSIBLES, JavascriptPluginInclusion::includeResponsibles);
-    WebPluginConsumerRegistry.add(POPUP, (xhtml, language) -> includePopup(xhtml));
-    WebPluginConsumerRegistry.add(CALENDAR, JavascriptPluginInclusion::includeCalendar);
-    WebPluginConsumerRegistry.add(IFRAMEAJAXTRANSPORT, (xhtml, language) -> includeIFrameAjaxTransport(xhtml));
-    WebPluginConsumerRegistry.add(PREVIEW, (xhtml, language) -> includePreview(xhtml));
-    WebPluginConsumerRegistry.add(FPVIEWER, (xhtml, language) -> includeFlexPaperViewer(xhtml));
-    WebPluginConsumerRegistry.add(PDFVIEWER, JavascriptPluginInclusion::includePdfViewer);
-    WebPluginConsumerRegistry.add(NOTIFIER, (xhtml, language) -> includeNotifier(xhtml));
-    WebPluginConsumerRegistry.add(PASSWORD, (xhtml, language) -> includePassword(xhtml));
-    WebPluginConsumerRegistry.add(GAUGE, (xhtml, language) -> includeGauge(xhtml));
-    WebPluginConsumerRegistry.add(JQUERY, (xhtml, language) -> includeJQuery(xhtml));
-    WebPluginConsumerRegistry.add(TAGS, (xhtml, language) -> includeTags(xhtml));
-    WebPluginConsumerRegistry.add(PDC, (xhtml, language) -> JavascriptPluginInclusion.includePdc(xhtml, language, false));
-    WebPluginConsumerRegistry.add(PDCDYNAMICALLY, (xhtml, language) -> JavascriptPluginInclusion.includePdc(xhtml, language, true));
-    WebPluginConsumerRegistry.add(TKN, (xhtml, language) -> includeSecurityTokenizing(xhtml));
-    WebPluginConsumerRegistry.add(RATING, (xhtml, language) -> includeRating(xhtml));
-    WebPluginConsumerRegistry.add(TOGGLE, (xhtml, language) -> includeToggle(xhtml));
-    WebPluginConsumerRegistry.add(TABS, (xhtml, language) -> includeTabsWebComponent(xhtml));
-    WebPluginConsumerRegistry.add(COLORPICKER, (xhtml, language) -> includeColorPickerWebComponent(xhtml));
-    WebPluginConsumerRegistry.add(LIGHTSLIDESHOW, (xhtml, language) -> includeLightweightSlideshow(xhtml));
-    WebPluginConsumerRegistry.add(LANG, (xhtml, language) -> includeLang(xhtml));
-    WebPluginConsumerRegistry.add(TICKER, JavascriptPluginInclusion::includeTicker);
-    WebPluginConsumerRegistry.add(SUBSCRIPTION, (xhtml, language) -> includeDynamicallySubscription(xhtml, null));
-    WebPluginConsumerRegistry.add(DRAGANDDROPUPLOAD, JavascriptPluginInclusion::includeDragAndDropUpload);
-    WebPluginConsumerRegistry.add(CHART, JavascriptPluginInclusion::includeChart);
-    WebPluginConsumerRegistry.add(CHAT, (xhtml, language) -> includeChat(xhtml));
-    WebPluginConsumerRegistry.add(SELECTIZE, (xhtml, language) -> includeSelectize(xhtml));
-    WebPluginConsumerRegistry.add(LISTOFUSERSANDGROUPS, JavascriptPluginInclusion::includeListOfUsersAndGroups);
-    WebPluginConsumerRegistry.add(USERNOTIFICATION, (xhtml, language) -> includeUserNotification(xhtml));
-    WebPluginConsumerRegistry.add(ATTACHMENT, (xhtml, language) -> includeAttachment(xhtml));
-    WebPluginConsumerRegistry.add(CRUD, (xhtml, language) -> includeCrud(xhtml));
-    WebPluginConsumerRegistry.add(PANES, (xhtml, language) -> includePanes(xhtml));
-    WebPluginConsumerRegistry.add(CONTRIBUTIONREMINDER, JavascriptPluginInclusion::includeContributionReminder);
+    add(POLYFILLS, (xhtml, language) -> includePolyfills(xhtml));
+    add(EMBEDPLAYER, (xhtml, language) -> includeEmbedPlayer(xhtml));
+    add(MEDIAPLAYER, (xhtml, language) -> includeMediaPlayer(xhtml));
+    add(QTIP, JavascriptPluginInclusion::includeQTip);
+    add(DATEPICKER, JavascriptPluginInclusion::includeDatePicker);
+    add(PAGINATION, (xhtml, language) -> includePagination(xhtml));
+    add(BREADCRUMB, (xhtml, language) -> includeBreadCrumb(xhtml));
+    add(USERZOOM, JavascriptPluginInclusion::includeUserZoom);
+    add(RELATIONSHIP, JavascriptPluginInclusion::includeRelationship);
+    add(WYSIWYG, JavascriptPluginInclusion::includeWysiwygEditor);
+    add(RESPONSIBLES, JavascriptPluginInclusion::includeResponsibles);
+    add(POPUP, (xhtml, language) -> includePopup(xhtml));
+    add(CALENDAR, JavascriptPluginInclusion::includeCalendar);
+    add(IFRAMEAJAXTRANSPORT, (xhtml, language) -> includeIFrameAjaxTransport(xhtml));
+    add(PREVIEW, (xhtml, language) -> includePreview(xhtml));
+    add(FPVIEWER, (xhtml, language) -> includeFlexPaperViewer(xhtml));
+    add(PDFVIEWER, JavascriptPluginInclusion::includePdfViewer);
+    add(NOTIFIER, (xhtml, language) -> includeNotifier(xhtml));
+    add(PASSWORD, (xhtml, language) -> includePassword(xhtml));
+    add(GAUGE, (xhtml, language) -> includeGauge(xhtml));
+    add(JQUERY, (xhtml, language) -> includeJQuery(xhtml));
+    add(TAGS, (xhtml, language) -> includeTags(xhtml));
+    add(PDC, (xhtml, language) -> JavascriptPluginInclusion.includePdc(xhtml, language, false));
+    add(PDCDYNAMICALLY, (xhtml, language) -> JavascriptPluginInclusion.includePdc(xhtml, language, true));
+    add(TKN, (xhtml, language) -> includeSecurityTokenizing(xhtml));
+    add(RATING, (xhtml, language) -> includeRating(xhtml));
+    add(TOGGLE, (xhtml, language) -> includeToggle(xhtml));
+    add(TABS, (xhtml, language) -> includeTabsWebComponent(xhtml));
+    add(COLORPICKER, JavascriptPluginInclusion::includeColorPickerWebComponent);
+    add(LIGHTSLIDESHOW, (xhtml, language) -> includeLightweightSlideshow(xhtml));
+    add(LANG, (xhtml, language) -> includeLang(xhtml));
+    add(TICKER, JavascriptPluginInclusion::includeTicker);
+    add(SUBSCRIPTION, (xhtml, language) -> includeDynamicallySubscription(xhtml, null));
+    add(DRAGANDDROPUPLOAD, JavascriptPluginInclusion::includeDragAndDropUpload);
+    add(CHART, JavascriptPluginInclusion::includeChart);
+    add(CHAT, (xhtml, language) -> includeChat(xhtml));
+    add(SELECTIZE, (xhtml, language) -> includeSelectize(xhtml));
+    add(LISTOFUSERSANDGROUPS, JavascriptPluginInclusion::includeListOfUsersAndGroups);
+    add(USERNOTIFICATION, (xhtml, language) -> includeUserNotification(xhtml));
+    add(ATTACHMENT, (xhtml, language) -> includeAttachment(xhtml));
+    add(CRUD, (xhtml, language) -> includeCrud(xhtml));
+    add(PANES, (xhtml, language) -> includePanes(xhtml));
+    add(CONTRIBUTIONREMINDER, JavascriptPluginInclusion::includeContributionReminder);
   }
 
   @Override

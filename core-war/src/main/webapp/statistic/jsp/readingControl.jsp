@@ -23,8 +23,7 @@
   --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ page import="org.silverpeas.core.cache.model.SimpleCache" %>
-<%@ page import="org.silverpeas.core.cache.service.CacheServiceProvider" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
 <%@ page import="java.util.List" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -55,18 +54,14 @@
 <jsp:useBean id="objectType" type="java.lang.String"/>
 
 <%
-  final String cacheKey = "statistic_readingControl_list";
-  final SimpleCache sessionCache = CacheServiceProvider.getSessionCacheService().getCache();
-  if (request.getParameter("fromArrayPane") == null) {
-    sessionCache.remove(cacheKey);
-  }
   final ResourceReference resourceReference = new ResourceReference(id, componentId);
   final String resourceType = objectType;
-  final List<HistoryByUser> readingState = sessionCache.computeIfAbsent(cacheKey, List.class, () -> {
-    final StatisticService statisticService = ServiceProvider.getService(StatisticService.class);
-    final List<String> userIds = (List) request.getAttribute("UserIds");
-    return statisticService.getHistoryByObject(resourceReference, 1, resourceType, userIds);
-  });
+  final List<HistoryByUser> readingState = ArrayPane
+    .computeDataUserSessionIfAbsent(request, "statistic_readingControl_list", () -> {
+      final StatisticService statisticService = ServiceProvider.getService(StatisticService.class);
+      final List<String> userIds = (List) request.getAttribute("UserIds");
+      return statisticService.getHistoryByObject(resourceReference, 1, resourceType, userIds);
+    });
 %>
 <c:set var="readingState" value="<%=readingState%>"/>
 
