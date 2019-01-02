@@ -2423,15 +2423,18 @@ public class Admin {
       if (spaceInst != null) {
         spaceInst.addSpaceProfileInst(spaceProfile);
       }
-      if (!spaceProfile.isInherited()) {
-        SpaceProfileInst inheritedProfile = spaceProfileManager.getInheritedSpaceProfileInstByName(
-            domainDriverManager, spaceId, spaceProfile.getName());
-        if (inheritedProfile != null) {
-          spaceProfile.addGroups(inheritedProfile.getAllGroups());
-          spaceProfile.addUsers(inheritedProfile.getAllUsers());
+      // profile 'Manager' does not need to be spread
+      if (!spaceProfile.isManager()) {
+        if (!spaceProfile.isInherited()) {
+          SpaceProfileInst inheritedProfile = spaceProfileManager
+              .getInheritedSpaceProfileInstByName(domainDriverManager, spaceId, spaceProfile.getName());
+          if (inheritedProfile != null) {
+            spaceProfile.addGroups(inheritedProfile.getAllGroups());
+            spaceProfile.addUsers(inheritedProfile.getAllUsers());
+          }
         }
+        spreadSpaceProfile(spaceId, spaceProfile);
       }
-      spreadSpaceProfile(spaceId, spaceProfile);
       if (startNewTransaction) {
         domainDriverManager.commit();
       }
@@ -2541,6 +2544,7 @@ public class Admin {
       String spaceProfileNewId = spaceProfileManager.updateSpaceProfileInst(oldSpaceProfile,
           domainDriverManager, newSpaceProfile);
 
+      // profile 'Manager' does not need to be spread
       if (!oldSpaceProfile.isManager()) {
         String spaceId = getDriverSpaceId(newSpaceProfile.getSpaceFatherId());
         if (StringUtil.isDefined(userId)) {
