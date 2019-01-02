@@ -1763,15 +1763,20 @@ class Admin implements Administration {
       if (spaceInst != null) {
         spaceInst.addSpaceProfileInst(spaceProfile);
       }
-      if (!spaceProfile.isInherited()) {
-        SpaceProfileInst inheritedProfile = spaceProfileManager.getInheritedSpaceProfileInstByName(
-            spaceId, spaceProfile.getName());
-        if (inheritedProfile != null) {
-          spaceProfile.addGroups(inheritedProfile.getAllGroups());
-          spaceProfile.addUsers(inheritedProfile.getAllUsers());
+
+      // profile 'Manager' does not need to be spread
+      if (!spaceProfile.isManager()) {
+        if (!spaceProfile.isInherited()) {
+          SpaceProfileInst inheritedProfile = spaceProfileManager
+              .getInheritedSpaceProfileInstByName(spaceId, spaceProfile.getName());
+          if (inheritedProfile != null) {
+            spaceProfile.addGroups(inheritedProfile.getAllGroups());
+            spaceProfile.addUsers(inheritedProfile.getAllUsers());
+          }
         }
+        spreadSpaceProfile(spaceId, spaceProfile);
       }
-      spreadSpaceProfile(spaceId, spaceProfile);
+
       cache.opAddSpaceProfile(spaceProfile);
       return sSpaceProfileId;
     } catch (Exception e) {
@@ -1840,6 +1845,7 @@ class Admin implements Administration {
       String spaceProfileNewId = spaceProfileManager.updateSpaceProfileInst(oldSpaceProfile,
           newSpaceProfile);
 
+      // profile 'Manager' does not need to be spread
       if (!oldSpaceProfile.isManager()) {
         int spaceId = getDriverSpaceId(newSpaceProfile.getSpaceFatherId());
         if (StringUtil.isDefined(userId)) {
