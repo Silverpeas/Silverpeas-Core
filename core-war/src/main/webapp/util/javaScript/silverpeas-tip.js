@@ -23,6 +23,9 @@
  */
 
 (function() {
+  if (window.TipManager) {
+    return;
+  }
 
   if (!window.TipBundle) {
     window.TipBundle = new SilverpeasPluginBundle();

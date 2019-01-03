@@ -35,7 +35,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 public class ProgressMessageTag extends TagSupport {
 
   private static final long serialVersionUID = 1L;
-  private List<String> messages = new ArrayList<String>();
+  private List<String> messages = new ArrayList<>();
 
   @Override
   public int doEndTag() throws JspException {
