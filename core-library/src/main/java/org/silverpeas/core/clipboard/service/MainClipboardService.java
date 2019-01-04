@@ -28,7 +28,7 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
+import javax.enterprise.context.SessionScoped;
 import javax.transaction.Transactional;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
@@ -42,7 +42,7 @@ import static org.silverpeas.core.clipboard.ClipboardSelection.IndexFlavor;
 /**
  * Silverpeas Service to maintain the status of the main clipboard.
  */
-@Singleton
+@SessionScoped
 @Transactional
 @MainClipboard
 public class MainClipboardService implements Clipboard, Serializable {
