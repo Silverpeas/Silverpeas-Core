@@ -793,7 +793,9 @@ if (typeof window.silverpeasAjax === 'undefined') {
       if (Object.getOwnPropertyNames) {
         var xhr = new XMLHttpRequest();
         xhr.onload = function() {
-          notySetupRequestComplete.call(this, xhr);
+          if (typeof notySetupRequestComplete === 'function') {
+            notySetupRequestComplete.call(this, xhr);
+          }
           if (xhr.status < 400) {
             resolve(xhr);
           } else {
