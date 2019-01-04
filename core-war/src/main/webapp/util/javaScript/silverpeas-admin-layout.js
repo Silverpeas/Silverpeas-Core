@@ -316,9 +316,11 @@
     },
     forceOnBackground : function() {
       this.getContainer().style.zIndex = -1;
+      this.getContainer().querySelector('iframe').contentWindow.document.body.classList.add('sp-admin-layout-part-force-on-background');
     },
     unforceOnBackground : function() {
       this.getContainer().style.zIndex = '';
+      this.getContainer().querySelector('iframe').contentWindow.document.body.classList.remove('sp-admin-layout-part-force-on-background');
     },
     setOnForeground : function() {
       this.getContainer().classList.add('sp-admin-layout-part-on-foreground');

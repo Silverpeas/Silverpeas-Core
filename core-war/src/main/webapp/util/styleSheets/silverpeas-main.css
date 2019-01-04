@@ -725,9 +725,14 @@ Style Utilise par le ViewGenerator
   display: none;
 }
 
+.sp-layout-part-force-on-background .ui-widget-overlay,
+.sp-admin-layout-part-force-on-background .ui-widget-overlay {
+  display: none;
+}
+
 .sp-layout-part-on-foreground,
 .sp-admin-layout-part-on-foreground {
-  z-index:3000;
+  z-index: 3000;
 }
 
 .sp-layout-part-on-top-element-drag,
