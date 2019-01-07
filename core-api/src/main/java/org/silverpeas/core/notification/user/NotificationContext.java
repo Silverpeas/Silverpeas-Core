@@ -16,6 +16,19 @@ import static org.apache.commons.lang3.StringUtils.split;
 public class NotificationContext extends HashMap<String, String> {
   private static final long serialVersionUID = 341715544034127254L;
 
+  /**
+   * The predefined key in the context mapped with the unique identifier of a Silverpeas component
+   * instance.
+   */
+  public static final String COMPONENT_ID = "componentId";
+
+  /**
+   * The predefined key in the context mapped with the unique identifier of a contribution in
+   * Silverpeas. If the contribution is managed by a given component instance, then the key
+   * {@link NotificationContext#COMPONENT_ID} must be defined.
+   */
+  public static final String CONTRIBUTION_ID = "contributionId";
+
   public List<String> getAsList(final String key) {
     final String value = get(key);
     return asList(split(value, ","));

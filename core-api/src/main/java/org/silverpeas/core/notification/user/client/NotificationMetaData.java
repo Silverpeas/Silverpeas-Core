@@ -294,8 +294,9 @@ public class NotificationMetaData implements java.io.Serializable {
   private void appendExtraMessageHtmlFragment(final StringBuilder messageContent,
       final String language) {
     final String extraMessage = getOriginalExtraMessage();
-    if (isDefined(extraMessage) &&
-        !messageContent.toString().replace("\r", "").contains(extraMessage.replace("\r", ""))) {
+    if (isDefined(extraMessage) && !messageContent.toString()
+        .replaceAll("[\\n\\r]", "")
+        .contains(extraMessage.replaceAll("[\\n\\r]", ""))) {
       SilverpeasTemplate templateRepository =
           SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
       templateRepository.setAttribute(SENDER_MESSAGE_ATTRIBUTE, extraMessage);

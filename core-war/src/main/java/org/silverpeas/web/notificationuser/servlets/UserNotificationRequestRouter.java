@@ -32,8 +32,10 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.web.notificationuser.control.UserNotificationSessionController;
 
+import javax.servlet.annotation.WebServlet;
 import java.util.Enumeration;
 
+@WebServlet()
 public class UserNotificationRequestRouter
     extends ComponentRequestRouter<UserNotificationSessionController> {
 

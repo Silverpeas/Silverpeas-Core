@@ -51,6 +51,13 @@ CKEDITOR.editorConfig = function( config )
     { name: 'styles',      items : [ 'Styles','Format','Font','FontSize' ] }
   ];
 
+  config.toolbar_Basic = [
+    { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','-','Undo','Redo' ] },
+    { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
+    { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
+    { name: 'colors',      items : [ 'TextColor','BGColor' ] }
+  ];
+
   config.toolbar_calendar = config.toolbar_Default;
   config.toolbar_forum = config.toolbar_Light;
   config.toolbar_blog = config.toolbar_Default;
@@ -59,5 +66,6 @@ CKEDITOR.editorConfig = function( config )
   config.toolbar_XMLForm = config.toolbar_Default;
   config.toolbar_questionReply = config.toolbar_Light;
   config.toolbar_suggestionBox = config.toolbar_Light;
+  config.toolbar_userNotification = config.toolbar_Basic;
 
 };
