@@ -145,19 +145,20 @@
   });
 
 function ifCorrectBasicFormExecute(callback) {
+  var verifyPromises = [sp.promise.resolveDirectlyWith()];
   var userLastNameInput = $("#userLastName");
-  var errorMsg = "";
+  SilverpeasError.reset();
 
   if (userLastNameInput.length > 0 && isWhitespace(userLastNameInput.val())) {
-    errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.lastName")+resource.getString("JDP.missingFieldEnd")%>\n";
+    SilverpeasError.add("<%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.lastName")+resource.getString("JDP.missingFieldEnd")%>");
   }
 
   <% if (userCreation) { %>
   var loginfld = stripInitialWhitespace(document.userForm.userLogin.value);
   if (isWhitespace(loginfld)) {
-    errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.login")+resource.getString("JDP.missingFieldEnd")%>\n";
+    SilverpeasError.add("<%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.login")+resource.getString("JDP.missingFieldEnd")%>");
   } else if(loginfld.length < <%=minLengthLogin.intValue()%>) {
-    errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.login")+resource.getString("JDP.minLength")+" "+minLengthLogin.toString()+" "+resource.getString("JDP.caracteres")%>\n";
+    SilverpeasError.add("<%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.login")+resource.getString("JDP.minLength")+" "+minLengthLogin.toString()+" "+resource.getString("JDP.caracteres")%>");
   }
   <% } %>
 
@@ -165,18 +166,26 @@ function ifCorrectBasicFormExecute(callback) {
   if ($('#userPasswordValid:checked').val()) {
     var $pwdInput = $('#userPasswordId');
     <% if (userCreation || "userModify".equals(action)) { %>
-      <% if ("userModify".equals(action)) { %>
+    <% if ("userModify".equals(action)) { %>
     if ($pwdInput.val()) {
       <% } %>
-      $pwdInput.password('verify', {onError : function() {
-        errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.password")+resource.getString("JDP.pwdError")%>\n";
-      }});
+      var passwordDeferred = sp.promise.deferred();
+      verifyPromises.push(passwordDeferred.promise);
+      $pwdInput.password('verify', {
+        onSuccess : function() {
+          passwordDeferred.resolve();
+        },
+        onError : function() {
+          SilverpeasError.add("<%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.password")+resource.getString("JDP.pwdError")%>");
+          passwordDeferred.resolve();
+        }
+      });
       if ($pwdInput.val() != $('#userPasswordAgainId').val()) {
-        errorMsg += "- <fmt:message key="JDP.confirmPwdError"/> \n";
+        SilverpeasError.add("<fmt:message key='JDP.confirmPwdError'/>");
       }
       <% if ("userModify".equals(action)) { %>
     }
-      <% } %>
+    <% } %>
     <% } %>
   }
   <% } %>
@@ -187,30 +196,30 @@ function ifCorrectBasicFormExecute(callback) {
   if ((rightAccess === 'USER' || rightAccess === 'GUEST')
       && $(document.userForm.userManualNotifReceiverLimitEnabled).is(":checked")
       && (!isInteger(limitValue) || (limitValue.length > 0 && eval(limitValue) <= 0))) {
-    errorMsg += "- <fmt:message key="GML.thefield" /> '${userManualNotifReceiverLimitValueLabel}' <fmt:message key="GML.MustContainsPositiveNumber" />";
+    SilverpeasError.add("<fmt:message key="GML.thefield" /> '${userManualNotifReceiverLimitValueLabel}' <fmt:message key="GML.MustContainsPositiveNumber" />");
   }
   </c:if>
 
-  if (errorMsg == "")
-  {
-    <% if (userCreation && CollectionUtil.isNotEmpty(groups)) { %>
+  sp.promise.whenAllResolved(verifyPromises).then(function() {
+    if (!SilverpeasError.show()) {
+      <% if (userCreation && CollectionUtil.isNotEmpty(groups)) { %>
       var firstName = $("#userFirstName").val();
       var lastName = userLastNameInput.val();
       var email = $("#userEMail").val();
-      $.post('<%=m_context%>/JobDomainPeasAJAXServlet', {FirstName:firstName,LastName:lastName,Email:email,Action:'CheckUser'},
-        function(data){
-          if (data == "ok") {
+      $.post('<%=m_context%>/JobDomainPeasAJAXServlet',
+        {FirstName : firstName, LastName : lastName, Email : email, Action : 'CheckUser'},
+        function(data) {
+          if (data === "ok") {
             callback.call(this);
           } else {
             jQuery.popup.error('<fmt:message key="JDP.userAlreadyExistingError"/>');
           }
         }, 'text');
-  <% } else { %>
-        callback.call(this);
+      <% } else { %>
+      callback.call(this);
       <% } %>
-  } else {
-    jQuery.popup.error(errorMsg);
-  }
+    }
+  });
 }
 
 function selectUnselect() {
