@@ -52,6 +52,7 @@ public class FileUploadTag extends TagSupport {
   private boolean fieldset = false;
   private String title = "";
   private boolean multiple = true;
+  private boolean infoInputs = true;
   private boolean dragAndDropDisplay = true;
   private String jqueryFormSelector = "";
   private Integer nbFileLimit = 0;
@@ -80,6 +81,14 @@ public class FileUploadTag extends TagSupport {
 
   public void setMultiple(final boolean multiple) {
     this.multiple = multiple;
+  }
+
+  public boolean isInfoInputs() {
+    return infoInputs;
+  }
+
+  public void setInfoInputs(final boolean infoInputs) {
+    this.infoInputs = infoInputs;
   }
 
   public boolean isDragAndDropDisplay() {
@@ -161,6 +170,8 @@ public class FileUploadTag extends TagSupport {
       jQueryStart.append("jQuery(document).ready(function(){jQuery('.fileUpload').fileUpload({");
       jQueryStart.append("multiple:");
       jQueryStart.append(isMultiple());
+      jQueryStart.append(",infoInputs:");
+      jQueryStart.append(isInfoInputs());
       jQueryStart.append(",dragAndDropDisplay:");
       jQueryStart.append(isDragAndDropDisplay());
       jQueryStart.append(",jqueryFormSelector:\"");

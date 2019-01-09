@@ -1848,6 +1848,15 @@
     </attribute>
     <attribute>
       <description>
+        Displays title and description inputs?
+      </description>
+      <name>infoInputs</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>
         Default value is true.
         If true drop zone area is displayed on compatible web browsers. If false a standard input
         file is displayed in any case.

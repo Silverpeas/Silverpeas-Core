@@ -226,7 +226,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public void createComponentIndex(final ComponentInstLight componentInst) {
+  public void createComponentIndex(final SilverpeasComponentInstance componentInst) {
 
   }
 

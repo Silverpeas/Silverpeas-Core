@@ -911,7 +911,7 @@ class Admin implements Administration {
     try {
       final SilverpeasComponentInstance componentInstance = getComponentInstance(componentId);
       if (!componentInstance.isPersonal()) {
-        createComponentIndex((ComponentInstLight) componentInstance);
+        createComponentIndex(componentInstance);
       }
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e);
@@ -919,17 +919,26 @@ class Admin implements Administration {
   }
 
   @Override
-  public void createComponentIndex(ComponentInstLight componentInst) {
-    if (componentInst != null) {
+  public void createComponentIndex(SilverpeasComponentInstance instance) {
+    if (instance != null) {
       // Index the component
-      String componentId = componentInst.getId();
+      String componentId = instance.getId();
       FullIndexEntry indexEntry = new FullIndexEntry(INDEX_COMPONENT_SCOPE, "Component", componentId);
-      indexEntry.setTitle(componentInst.getLabel());
-      indexEntry.setPreview(componentInst.getDescription());
-      indexEntry.setCreationUser(Integer.toString(componentInst.getCreatedBy()));
-      indexEntry.setCreationDate(componentInst.getCreateDate());
-      indexEntry.setLastModificationUser(String.valueOf(componentInst.getUpdatedBy()));
-      indexEntry.setLastModificationDate(componentInst.getUpdateDate());
+      indexEntry.setTitle(instance.getLabel());
+      indexEntry.setPreview(instance.getDescription());
+      if (instance instanceof ComponentInst) {
+        final ComponentInst componentInst = (ComponentInst) instance;
+        indexEntry.setCreationUser(componentInst.getCreatorUserId());
+        indexEntry.setCreationDate(componentInst.getCreateDate());
+        indexEntry.setLastModificationUser(componentInst.getUpdaterUserId());
+        indexEntry.setLastModificationDate(componentInst.getUpdateDate());
+      } else if (instance instanceof ComponentInstLight) {
+        final ComponentInstLight componentInstLight = (ComponentInstLight) instance;
+        indexEntry.setCreationUser(Integer.toString(componentInstLight.getCreatedBy()));
+        indexEntry.setCreationDate(componentInstLight.getCreateDate());
+        indexEntry.setLastModificationUser(String.valueOf(componentInstLight.getUpdatedBy()));
+        indexEntry.setLastModificationDate(componentInstLight.getUpdateDate());
+      }
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
   }

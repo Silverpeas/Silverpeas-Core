@@ -278,7 +278,7 @@ public interface Administration {
    * Create the index for the specified component.
    * @param componentInst
    */
-  void createComponentIndex(ComponentInstLight componentInst);
+  void createComponentIndex(SilverpeasComponentInstance componentInst);
 
   void deleteAllComponentIndexes();
 
