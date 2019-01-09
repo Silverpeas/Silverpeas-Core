@@ -44,6 +44,7 @@
 <c:set var="groups" value="${requestScope.recipientGroups}"/>
 <c:set var="recipientsEditable" value="${requestScope.recipientEdition}"/>
 <c:set var="componentId" value="${requestScope.componentId}"/>
+<c:set var="contributionId" value="${requestScope.contributionId}"/>
 <c:set var="subject" value="${requestScope.title}"/>
 
 <c:set var="requiredReceiversErrorMessage"><fmt:message key="GML.thefield"/> <b><fmt:message key="addressees"/></b> <fmt:message key="GML.isRequired"/></c:set>

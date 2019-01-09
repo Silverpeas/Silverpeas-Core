@@ -30,9 +30,10 @@ import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
@@ -72,7 +73,7 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
     performBuild(resource);
     performNotificationResource(resource);
     if (getAction() == NotifAction.DELETE) {
-      getNotificationMetaData().setLink(StringUtil.EMPTY);
+      getNotificationMetaData().setLink(Link.EMPTY_LINK);
     }
   }
 
@@ -90,9 +91,10 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   }
 
   protected NotificationResourceData initializeNotificationResourceData() {
+    final NotificationMetaData metaData = getNotificationMetaData();
     final NotificationResourceData notificationResourceData = new NotificationResourceData();
-    notificationResourceData.setComponentInstanceId(getNotificationMetaData().getComponentId());
-    notificationResourceData.setResourceUrl(getNotificationMetaData().getLink());
+    notificationResourceData.setComponentInstanceId(metaData.getComponentId());
+    notificationResourceData.setResourceUrl(metaData.getLink().getLinkUrl());
     if (resource instanceof SilverpeasContent) {
       fill(notificationResourceData, (SilverpeasContent) resource);
     } else if (resource instanceof Contribution) {

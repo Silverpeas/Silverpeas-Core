@@ -48,10 +48,9 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
         query = "delete from NotificationResourceData r where not exists (from DelayedNotificationData d where d.resource.id = r.id)")
 })
 public class NotificationResourceData
-    extends BasicJpaEntity<NotificationResourceData, UniqueLongIdentifier>
-    implements Cloneable {
+    extends BasicJpaEntity<NotificationResourceData, UniqueLongIdentifier> {
 
-  public final static String LOCATION_SEPARATOR = "@#@#@";
+  public static final String LOCATION_SEPARATOR = "@#@#@";
 
   @Column(name = "resourceId", nullable = false)
   private String resourceId;
@@ -62,17 +61,20 @@ public class NotificationResourceData
   @Column(name = "resourceName", nullable = false)
   private String resourceName;
 
-  @Column(name = "resourceDescription", nullable = true)
+  @Column(name = "resourceDescription")
   private String resourceDescription;
 
   @Column(name = "resourceLocation", nullable = false)
   private String resourceLocation;
 
-  @Column(name = "resourceUrl", nullable = true)
+  @Column(name = "resourceUrl")
   private String resourceUrl;
 
   @Column(name = "componentInstanceId", nullable = false)
   private String componentInstanceId;
+
+  @Column(name = "attachmentTargetId")
+  private String attachmentTargetId;
 
   /**
    * Copying all data from the given resource excepted the id
@@ -86,6 +88,7 @@ public class NotificationResourceData
     setResourceLocation(notificationResourceData.getResourceLocation());
     setResourceUrl(notificationResourceData.getResourceUrl());
     setComponentInstanceId(notificationResourceData.getComponentInstanceId());
+    setAttachmentTargetId(notificationResourceData.getAttachmentTargetId());
   }
 
   @Override
@@ -183,5 +186,23 @@ public class NotificationResourceData
 
   public void setComponentInstanceId(final String componentInstanceId) {
     this.componentInstanceId = componentInstanceId;
+  }
+
+  public void setAttachmentTargetId(final String targetId) {
+    this.attachmentTargetId = targetId;
+  }
+
+  public String getAttachmentTargetId() {
+    return this.attachmentTargetId;
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return super.equals(obj);
   }
 }

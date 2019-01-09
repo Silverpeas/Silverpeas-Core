@@ -52,10 +52,8 @@ CKEDITOR.editorConfig = function( config )
   ];
 
   config.toolbar_Basic = [
-    { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','-','Undo','Redo' ] },
-    { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
-    { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
-    { name: 'colors',      items : [ 'TextColor','BGColor' ] }
+    { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','-','RemoveFormat' ] },
+    { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent' ] }
   ];
 
   config.toolbar_calendar = config.toolbar_Default;

@@ -30,7 +30,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.silverpeas.core.contribution.publication.model.Link;
+import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.ResourceReference;
@@ -132,7 +132,7 @@ public class SeeAlsoDAO {
    * @throws SQLException
    *
    */
-  public static List<Link> getLinks(Connection con, PublicationPK pubPK) throws SQLException {
+  public static List<PublicationLink> getLinks(Connection con, PublicationPK pubPK) throws SQLException {
     ResultSet rs = null;
     String selectStatement = "select id, targetId, targetInstanceId from "
         + SEEALSO_TABLENAME + " where objectId  = ? AND objectInstanceId = ? ";
@@ -143,7 +143,7 @@ public class SeeAlsoDAO {
       prepStmt.setString(2, pubPK.getInstanceId());
       rs = prepStmt.executeQuery();
 
-      List<Link> list = new ArrayList<>();
+      List<PublicationLink> list = new ArrayList<>();
       while (rs.next()) {
         list.add(getLink(pubPK, rs));
       }
@@ -160,7 +160,7 @@ public class SeeAlsoDAO {
    * @return a list of publication identifier
    * @throws SQLException
    */
-  public static List<Link> getReverseLinks(Connection con, PublicationPK pubPK)
+  public static List<PublicationLink> getReverseLinks(Connection con, PublicationPK pubPK)
       throws SQLException {
     ResultSet rs = null;
     String selectStatement = "select id, objectId, objectInstanceId  from "
@@ -172,9 +172,9 @@ public class SeeAlsoDAO {
       prepStmt.setString(2, pubPK.getInstanceId());
       rs = prepStmt.executeQuery();
 
-      List<Link> list = new ArrayList<>();
+      List<PublicationLink> list = new ArrayList<>();
       while (rs.next()) {
-        Link link = getLink(pubPK, rs);
+        PublicationLink link = getLink(pubPK, rs);
         link.setReverse(true);
         list.add(link);
       }
@@ -184,12 +184,12 @@ public class SeeAlsoDAO {
     }
   }
 
-  private static Link getLink(PublicationPK pubPK, ResultSet rs) throws SQLException {
+  private static PublicationLink getLink(PublicationPK pubPK, ResultSet rs) throws SQLException {
     String id = Integer.toString(rs.getInt(1));
     String targetId = Integer.toString(rs.getInt(2));
     String targetInstanceId = rs.getString(3);
     ResourceReference targetPK = new ResourceReference(targetId, targetInstanceId);
 
-    return new Link(id, pubPK, targetPK);
+    return new PublicationLink(id, pubPK, targetPK);
   }
 }

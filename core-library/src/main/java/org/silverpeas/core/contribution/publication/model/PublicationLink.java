@@ -4,7 +4,10 @@ import org.silverpeas.core.ResourceReference;
 
 import java.io.Serializable;
 
-public class Link implements Serializable {
+/**
+ * Links from a publication to a contribution.
+ */
+public class PublicationLink implements Serializable {
 
   private String id;
   private PublicationPK pubPK;
@@ -12,7 +15,7 @@ public class Link implements Serializable {
   private PublicationDetail pub;
   private boolean reverse = false;
 
-  public Link(String id, PublicationPK pubPK, ResourceReference target) {
+  public PublicationLink(String id, PublicationPK pubPK, ResourceReference target) {
     setId(id);
     setPubPK(pubPK);
     setTarget(target);

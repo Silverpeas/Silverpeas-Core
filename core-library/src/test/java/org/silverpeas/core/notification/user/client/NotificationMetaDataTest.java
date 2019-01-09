@@ -53,6 +53,8 @@ public class NotificationMetaDataTest {
 
   @RegisterExtension
   FieldMocker mocker = new FieldMocker();
+  @TestManagedMock
+  private NotificationManager notificationManager;
   private NotificationMetaData current;
   private SettingBundle mockedSettings;
 
@@ -82,9 +84,7 @@ public class NotificationMetaDataTest {
     });
 
     // Notification Manager
-    final NotificationManager mockedNotificationManager =
-        mocker.mockField(current, NotificationManager.class, "notificationManager");
-    when(mockedNotificationManager.getUsersFromGroup(anyString()))
+    when(notificationManager.getUsersFromGroup(anyString()))
         .thenAnswer((Answer<Collection<UserRecipient>>) invocation -> {
           String groupId = (String) invocation.getArguments()[0];
           return Arrays

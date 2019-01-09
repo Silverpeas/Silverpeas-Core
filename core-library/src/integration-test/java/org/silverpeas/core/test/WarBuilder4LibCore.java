@@ -107,6 +107,7 @@ import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.mail.extractor.Mail;
+import org.silverpeas.core.notification.user.AttachmentLink;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;
@@ -585,7 +586,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addPackages(true, "org.silverpeas.core.notification.user.client");
       addPackages(true, "org.silverpeas.core.notification.user.server");
       addAsResource("org/silverpeas/notificationManager");
-      addClasses(AbstractTable.class, UserSubscriptionNotificationSendingHandler.class);
+      addClasses(AbstractTable.class, UserSubscriptionNotificationSendingHandler.class,
+          AttachmentLink.class);
       // Centralized features
       addSilverpeasUrlFeatures();
     }

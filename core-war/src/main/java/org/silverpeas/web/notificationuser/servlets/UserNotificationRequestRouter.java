@@ -41,7 +41,6 @@ public class UserNotificationRequestRouter
 
   private static final long serialVersionUID = -5858231857279380747L;
   private static final String RECIPIENT_EDITION_PARAM = "recipientEdition";
-  private static final String COMPONENT_ID = "componentId";
   private static final String RECIPIENT_USERS = "recipientUsers";
   private static final String RECIPIENT_GROUPS = "recipientGroups";
   private static final String MESSAGE_TITLE = "title";
@@ -85,7 +84,6 @@ public class UserNotificationRequestRouter
           request.setAttribute(RECIPIENT_USERS, nuSC.getUsersFrom(recipientUsers));
           request.setAttribute(RECIPIENT_GROUPS, nuSC.getGroupsFrom(recipientGroups));
         }
-        final String instanceId = request.getParameter(COMPONENT_ID);
         final String param = request.getParameter(RECIPIENT_EDITION_PARAM);
         final boolean areRecipientsEditable;
         if (StringUtil.isDefined(param)) {
@@ -93,7 +91,8 @@ public class UserNotificationRequestRouter
         } else {
           areRecipientsEditable = true;
         }
-        request.setAttribute(COMPONENT_ID, instanceId);
+        request.setAttribute(NotificationContext.COMPONENT_ID,
+            context.get(NotificationContext.COMPONENT_ID));
         request.setAttribute(RECIPIENT_EDITION_PARAM, areRecipientsEditable);
         destination = "/userNotification/jsp/notificationSender.jsp";
       } else if (SENDING_FUNCTION.equals(function)) {

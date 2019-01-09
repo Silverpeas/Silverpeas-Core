@@ -29,6 +29,7 @@ package org.silverpeas.core.notification.user.client;
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Date;
@@ -69,8 +70,7 @@ public class NotificationParameters {
   private String sTitle = "";
   private String senderName = "";
   private String sMessage = "";
-  private String sURL = "";
-  private String sLinkLabel = "";
+  private Link link = Link.EMPTY_LINK;
   private String sSource = "";
   private String sSessionId = "";
   private String sOriginalExtraMessage = null;
@@ -158,21 +158,12 @@ public class NotificationParameters {
     return this;
   }
 
-  public String getURL() {
-    return sURL;
+  public Link getLink() {
+    return link;
   }
 
-  public NotificationParameters setURL(final String sURL) {
-    this.sURL = sURL;
-    return this;
-  }
-
-  public String getLinkLabel() {
-    return sLinkLabel;
-  }
-
-  public NotificationParameters setLinkLabel(final String sLinkLabel) {
-    this.sLinkLabel = sLinkLabel;
+  public NotificationParameters setLink(final Link link) {
+    this.link = link;
     return this;
   }
 

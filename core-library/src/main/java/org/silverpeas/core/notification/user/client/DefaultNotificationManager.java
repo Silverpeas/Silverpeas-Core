@@ -73,6 +73,8 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.silverpeas.core.notification.user.client.NotificationParameterNames.*;
+
 /**
  * Title: Notification Manager Description: La fonction de ce manager est de décider en fonction de
  * règles pré-établies, de la destination des messages qu'il est chargé d'envoyer. La fonction
@@ -84,7 +86,7 @@ import java.util.stream.Stream;
  */
 @Transactional
 public class DefaultNotificationManager extends AbstractNotification
-    implements NotificationParameterNames, ComponentInstanceDeletion, NotificationManager {
+    implements ComponentInstanceDeletion, NotificationManager {
 
   private static final String FROM_UID = "I";
   private static final String FROM_EMAIL = "E";
@@ -770,9 +772,10 @@ public class DefaultNotificationManager extends AbstractNotification
     setSenderAddress(params, theMessage, theExtraParams, ncr, nd, senderName);
 
     // Set Url parameter
-    if (StringUtil.isDefined(params.getURL())) {
-      theExtraParams.put(URL, (params.getURL().startsWith("http") ? params.getURL() :
-          getUserAutoRedirectURL(aUserId, params.getURL())));
+    final String url = params.getLink().getLinkUrl();
+    if (StringUtil.isDefined(url)) {
+      theExtraParams.put(URL,
+          (url.startsWith("http") ? url : getUserAutoRedirectURL(aUserId, url)));
     }
 
     // Set Source parameter
@@ -831,9 +834,9 @@ public class DefaultNotificationManager extends AbstractNotification
 
     String senderName = getSenderName(params);
     setSenderEmail(params, theExtraParams, senderName);
-    if (StringUtil.isDefined(params.getURL())) {
-      theExtraParams.put(URL, params.getURL());
-      theExtraParams.put(LINKLABEL, params.getLinkLabel());
+    if (StringUtil.isDefined(params.getLink().getLinkUrl())) {
+      theExtraParams.put(URL, params.getLink().getLinkUrl());
+      theExtraParams.put(LINKLABEL, params.getLink().getLinkLabel());
     }
 
     // Set Source parameter
@@ -944,9 +947,16 @@ public class DefaultNotificationManager extends AbstractNotification
 
       // Set Url parameter
       theExtraParams.put(SERVERURL, getUserAutoRedirectSilverpeasServerURL(aUserId));
-      if (StringUtil.isDefined(params.getURL())) {
-        theExtraParams.put(URL, computeURL(aUserId, params.getURL()));
-        theExtraParams.put(LINKLABEL, params.getLinkLabel());
+      if (StringUtil.isDefined(params.getLink().getLinkUrl())) {
+        theExtraParams.put(URL, computeURL(aUserId, params.getLink().getLinkUrl()));
+        theExtraParams.put(LINKLABEL, params.getLink().getLinkLabel());
+      }
+
+      if (StringUtil.isDefined(params.getNotificationResourceData().getAttachmentTargetId())) {
+        theExtraParams.put(ATTACHMENT_TARGETID,
+            params.getNotificationResourceData().getAttachmentTargetId());
+        theExtraParams.put(COMPONENTID,
+            params.getNotificationResourceData().getComponentInstanceId());
       }
 
       // Set Source parameter
@@ -1036,11 +1046,5 @@ public class DefaultNotificationManager extends AbstractNotification
    */
   List<NotifChannel> getDefaultNotificationChannels() {
     return NotificationManagerSettings.getDefaultChannels();
-  }
-
-  @FunctionalInterface
-  private interface Callback {
-
-    void call() throws NotificationException;
   }
 }

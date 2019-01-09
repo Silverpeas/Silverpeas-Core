@@ -1,10 +1,7 @@
 package org.silverpeas.web.notificationuser.control;
 
 import org.owasp.encoder.Encode;
-import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.attachment.AttachmentService;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.GroupRecipient;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
@@ -12,13 +9,11 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -88,17 +83,9 @@ public class UserNotificationWrapper implements UserNotification {
    * from which this notification was built.
    * @return itself.
    */
-  public UserNotificationWrapper setAttachmentLinks(final String contributionId) {
+  public UserNotificationWrapper setAttachmentLinksFor(final String contributionId) {
     if (StringUtil.isDefined(contributionId)) {
-      final AttachmentService attachmentService = AttachmentService.get();
-      final NotificationMetaData metaData = notification.getNotificationMetaData();
-      for (String lang : DisplayI18NHelper.getLanguages()) {
-        final ResourceReference ref =
-            new ResourceReference(contributionId, metaData.getComponentId());
-        final List<SimpleDocument> documents =
-            attachmentService.listDocumentsByForeignKey(ref, lang);
-        documents.forEach(d -> metaData.setLink(new Link(d.getAttachmentURL(), d.getTitle()), lang));
-      }
+      notification.getNotificationMetaData().setAttachmentTargetId(contributionId);
     }
     return this;
   }

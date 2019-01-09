@@ -173,7 +173,7 @@ public class NotificationSender implements java.io.Serializable {
       throws NotificationException {
     final NotificationParameters params = getNotificationParameters(addressId, metaData);
     params.setTitle(metaData.getTitle(language))
-        .setLinkLabel(metaData.getLinkLabel(language))
+        .setLink(metaData.getLink(language))
         .setMessage(metaData.getContent(language))
         .setLanguage(language);
     if (!userIds.isEmpty()) {
@@ -204,14 +204,12 @@ public class NotificationSender implements java.io.Serializable {
 
   private NotificationParameters getNotificationParameters(int aMediaType,
       NotificationMetaData metaData) {
-    NotificationParameters params = new NotificationParameters();
-
+    final NotificationParameters params = new NotificationParameters();
     params.setMessagePriority(metaData.getMessageType())
         .setDate(metaData.getDate())
         .setTitle(metaData.getTitle())
         .setMessage(metaData.getContent())
         .setSource(metaData.getSource())
-        .setURL(metaData.getLink())
         .setSessionId(metaData.getSessionId())
         .setOriginalExtraMessage(metaData.getOriginalExtraMessage())
         .setSendImmediately(metaData.isSendImmediately())

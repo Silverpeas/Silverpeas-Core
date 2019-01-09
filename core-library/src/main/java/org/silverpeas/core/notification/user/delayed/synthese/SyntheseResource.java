@@ -23,7 +23,10 @@
  */
 package org.silverpeas.core.notification.user.delayed.synthese;
 
+import org.silverpeas.core.notification.user.AttachmentLink;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,6 +38,7 @@ public class SyntheseResource {
   private String description;
   private String location;
   private String url;
+  private List<AttachmentLink> attachmentLinks = null;
   private final List<SyntheseResourceNotification> notifications = new ArrayList<>();
 
   public String getName() {
@@ -67,6 +71,14 @@ public class SyntheseResource {
 
   public void setUrl(final String url) {
     this.url = url;
+  }
+
+  public void setAttachmentLinks(final List<AttachmentLink> attachmentLinks) {
+    this.attachmentLinks = attachmentLinks;
+  }
+
+  public List<AttachmentLink> getAttachmentLinks() {
+    return this.attachmentLinks == null ? Collections.emptyList():this.attachmentLinks;
   }
 
   public List<SyntheseResourceNotification> getNotifications() {
