@@ -25,6 +25,8 @@ package org.silverpeas.core.admin.domain.driver.googledriver;
 
 import com.google.api.services.admin.directory.model.User;
 import org.silverpeas.core.admin.domain.AbstractDomainDriver;
+import org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntitySimpleAttributePathResolver.AttributePathDecoder;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -34,10 +36,13 @@ import org.silverpeas.core.util.SettingBundle;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_RO_PULL_USER;
+import static org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntitySimpleAttributePathResolver.decodePath;
+import static org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntitySimpleAttributePathResolver.resolve;
 import static org.silverpeas.core.admin.user.constant.UserAccessLevel.USER;
 import static org.silverpeas.core.admin.user.constant.UserState.DEACTIVATED;
 import static org.silverpeas.core.admin.user.constant.UserState.VALID;
@@ -50,6 +55,7 @@ import static org.silverpeas.core.admin.user.constant.UserState.VALID;
  */
 public class GoogleDriver extends AbstractDomainDriver {
 
+  private static final String ATTRIBUTE_PATH_MSG_ERROR = "Verify the attribute path to access entity data, it must target a single value";
   protected SettingBundle settings;
   private UserFilterManager userFilterManager;
 
@@ -66,7 +72,7 @@ public class GoogleDriver extends AbstractDomainDriver {
 
   /**
    * Called when Admin starts the synchronization
-   * @return
+   * @return the available actions as hexadecimal.
    */
   @Override
   public long getDriverActions() {
@@ -131,18 +137,27 @@ public class GoogleDriver extends AbstractDomainDriver {
    * Retrieve user information from database
    * @param specificId The user id as stored in the database
    * @return The User object that contain new user information
-   * @throws AdminException
+   * @throws AdminException on error.
    */
   @Override
   public UserFull getUserFull(String specificId) throws AdminException {
-    return userFullMapper.apply(request().user(specificId));
+    UserFull uf = null;
+    final User user = request().user(specificId);
+    if (user != null) {
+      try {
+        uf = userFullMapper.apply(user);
+      } catch (ClassCastException e) {
+        throw new AdminException(ATTRIBUTE_PATH_MSG_ERROR, e);
+      }
+    }
+    return uf;
   }
 
   /**
    * Retrieve user information from database
    * @param specificId The user id as stored in the database
    * @return The User object that contain new user information
-   * @throws AdminException
+   * @throws AdminException on error.
    */
   @Override
   public UserDetail getUser(String specificId) throws AdminException {
@@ -152,7 +167,7 @@ public class GoogleDriver extends AbstractDomainDriver {
   /**
    * Retrieve all users from the database
    * @return User[] An array of User Objects that contain users information
-   * @throws AdminException
+   * @throws AdminException on error.
    */
   @Override
   public UserDetail[] getAllUsers() throws AdminException {
@@ -160,9 +175,24 @@ public class GoogleDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail[] getUsersBySpecificProperty(String propertyName, String propertyValue) {
-    // No specific property handled for now
-    return new UserDetail[0];
+  public UserDetail[] getUsersBySpecificProperty(String propertyName, String propertyValue)
+      throws AdminException {
+    final DomainProperty property = getProperty(propertyName);
+    if (property == null) {
+      // This property is not defined in this domain
+      return new UserDetail[0];
+    } else {
+      final String googleEntityAttributePath = property.getMapParameter();
+      final AttributePathDecoder attributePathDecoder = decodePath(googleEntityAttributePath);
+      try {
+        return request().users().stream().filter(u -> {
+          final String attributeValue = (String) resolve(u, attributePathDecoder);
+          return Objects.equals(attributeValue, propertyValue);
+        }).map(userDetailMapper).toArray(UserDetail[]::new);
+      } catch (ClassCastException e) {
+        throw new AdminException(ATTRIBUTE_PATH_MSG_ERROR, e);
+      }
+    }
   }
 
   @Override
@@ -313,9 +343,15 @@ public class GoogleDriver extends AbstractDomainDriver {
   };
 
   private Function<User, UserFull> userFullMapper = u -> {
-    final UserFull user = new UserFull();
+    final UserFull user = new UserFull(this);
     setCommonUserProps(u, user);
-    // No specific property handled for now
+    final String[] specificProps = getPropertiesNames();
+    for (String specificProp : specificProps) {
+      final DomainProperty property = getProperty(specificProp);
+      final String googleEntityAttributePath = property.getMapParameter();
+      final String value = (String) resolve(u, googleEntityAttributePath);
+      user.setValue(property.getName(), value);
+    }
     return user;
   };
 

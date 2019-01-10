@@ -101,7 +101,7 @@ class GoogleUserFilter<T extends GenericJson> {
   private static final Pattern CRITERION_ARRAY_PATTERN = Pattern
       .compile("(?i)^\\s*(\\S+)\\s*\\[\\s*(\\S+)\\s*]$");
   private static final String CRITERION_PART_DECODER = "(?i)^\\s*(\\S+)\\s*";
-  private static final Map<String, BiPredicate<String, String>> OPERATORS = new HashMap<>(3);
+  private static final Map<String, BiPredicate<String, String>> OPERATORS = new HashMap<>(4);
   private final List<T> allUsers;
   private final String combinationRule;
 
