@@ -46,6 +46,7 @@ public class StringUtil extends StringUtils {
       = "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
   private static final String HOUR_PATTERN = "^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$";
 
+
   public static boolean isDefined(String parameter) {
     return (parameter != null && !parameter.trim().isEmpty() && !"null".equalsIgnoreCase(parameter));
   }
@@ -438,6 +439,82 @@ public class StringUtil extends StringUtils {
       }
     }
     return res.toString();
+  }
+
+  public static boolean likeIgnoreCase(final String actualValue, String expectedValue) {
+    return new Like(actualValue, expectedValue, true).test();
+  }
+
+  public static boolean like(final String actualValue, String expectedValue) {
+    return new Like(actualValue, expectedValue, false).test();
+  }
+
+  private static class Like {
+    private final String actual;
+    private final String expected;
+    private String currentActual;
+    private int tokenIndex;
+
+    private Like(final String actual, final String expected, final boolean ignoreCase) {
+      if (ignoreCase) {
+        this.actual = defaultStringIfNotDefined(actual).toLowerCase();
+        this.expected = defaultStringIfNotDefined(expected).toLowerCase();
+      } else {
+        this.actual = defaultStringIfNotDefined(actual);
+        this.expected = defaultStringIfNotDefined(expected);
+      }
+    }
+
+    boolean test() {
+      currentActual = actual;
+      tokenIndex = 0;
+      boolean like = true;
+      boolean mustStart = true;
+      String currentToken = nextExpectedToken();
+      while(like && currentToken != null) {
+        if (currentToken.isEmpty()) {
+          mustStart = false;
+          tokenIndex++;
+        } else {
+          like = verifyToken(currentToken, mustStart);
+          mustStart = true;
+        }
+        currentToken = nextExpectedToken();
+      }
+      return like && (!mustStart || currentActual.isEmpty());
+    }
+
+    private boolean verifyToken(final String token, final boolean mustStart) {
+      final String escapedToken = token.replace("\\%", "%");
+      final int currentIndex = currentActual.indexOf(escapedToken);
+      final int nextActualIndex = currentIndex + escapedToken.length();
+      currentActual = nextActualIndex < currentActual.length()
+          ? currentActual.substring(nextActualIndex)
+          : "";
+      tokenIndex += token.length();
+      return mustStart ? currentIndex == 0 : currentIndex >= 0;
+    }
+
+    private String nextExpectedToken() {
+      if (tokenIndex >= expected.length()) {
+        return null;
+      }
+      int index = expected.indexOf('%', tokenIndex);
+      boolean found = false;
+      while(!found) {
+        if (index < 0) {
+          index = expected.length();
+          found = true;
+        } else if (index > 0 && expected.charAt(index - 1) != '\\') {
+          found = true;
+        } else if (index == 0) {
+          found = true;
+        } else {
+          index = expected.indexOf('%', index + 1);
+        }
+      }
+      return expected.substring(tokenIndex, index);
+    }
   }
 
   private StringUtil() {

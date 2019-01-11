@@ -16,14 +16,8 @@ $domainUserFilterRuleInfo_common()$
       <li><b>[attribut ressource] = <i>[valeur en chaîne de caractères]</i></b>
         cible les comptes dont la valeur de l'attribut est égale à la valeur indiquée
       </li>
-      <li><b>[attribut ressource] ^= <i>[valeur en chaîne de caractères]</i></b>
-        cible les comptes dont la valeur de l'attribut est égale ou commence par la valeur indiquée
-      </li>
-      <li><b>[attribut ressource] \$= <i>[valeur en chaîne de caractères]</i></b>
-        cible les comptes dont la valeur de l'attribut est égale ou se termine par la valeur indiquée
-      </li>
-      <li><b>[attribut ressource] *= <i>[valeur en chaîne de caractères]</i></b>
-        cible les comptes dont la valeur de l'attribut contient la valeur indiquée
+      <li><b>[valeur en chaîne de caractères]</b> peut contenir une ou plusieurs occurrences du caractère spécial
+        <b>%</b>. Il permet d'indiquer aucun caractère ou n'importe quelle suite de caractères
       </li>
     </ul>
     <p>
@@ -31,8 +25,8 @@ $domainUserFilterRuleInfo_common()$
     <ul>
       $if(domainGoogle)$
       <li><span class="code">orgUnitPath = /SIEGE</span> pour cibler les comptes utilisateurs dont l'unité organisationnelle est exactement <span class="code">/SIEGE</span>.</li>
-      <li><span class="code">orgUnitPath ^= /SIEGE</span> pour cibler les comptes utilisateurs dont l'unité organisationnelle commence par <span class="code">/SIEGE</span>.</li>
-      <li><span class="code">name.familyName ^= Cha</span> pour cibler les comptes utilisateurs dont le nom commence par <span class="code">Cha</span>.</li>
+      <li><span class="code">orgUnitPath = /SIEGE%</span> pour cibler les comptes utilisateurs dont l'unité organisationnelle commence par <span class="code">/SIEGE</span>.</li>
+      <li><span class="code">name.familyName = Cha%</span> pour cibler les comptes utilisateurs dont le nom commence par <span class="code">Cha</span>.</li>
       $endif$
     </ul>
   </p>
@@ -56,7 +50,7 @@ $domainUserFilterRuleInfo_common()$
       $if(domainGoogle)$
       <li><span class="code">addresses[locality=GRENOBLE]</span> pour cibler les comptes utilisateurs
        dont la localité d'une des adresses est <span class="code">GRENOBLE</span>.</li>
-      <li><span class="code">emails[|(address\$=.com)(address\$=.org)]</span> pour cibler les comptes
+      <li><span class="code">emails[|(address=%.com)(address=%.org)]</span> pour cibler les comptes
        utilisateurs dont l'un des e-mails se termine par <span class="code">.com</span> ou
        <span class="code">.org</span>.</li>
       $endif$
@@ -66,7 +60,7 @@ $domainUserFilterRuleInfo_common()$
     Quelques exemples de combinaison de règles :
     <ul>
     $if(domainGoogle)$
-      <li><span class="code">&(|(orgUnitPath^=/SIEGE)(orgUnitPath^=/AGENCES))(!(customSchemas.flags.technical=True))</span>
+      <li><span class="code">&(|(orgUnitPath=/SIEGE%)(orgUnitPath=/AGENCES%))(!(customSchemas.flags.technical=True))</span>
         : cible les comptes dont l'unité organisationnelle commence par <span class="code">/SIEGE</span>
          ou <span class="code">/AGENCES</span> et qui ne sont pas des comptes techniques
         <div class="precision"><span class="code">customSchemas.flags.technical</span> est un attribut

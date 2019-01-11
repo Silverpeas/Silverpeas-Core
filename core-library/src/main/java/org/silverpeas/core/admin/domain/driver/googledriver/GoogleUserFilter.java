@@ -31,12 +31,9 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -101,7 +98,6 @@ class GoogleUserFilter<T extends GenericJson> {
   private static final Pattern CRITERION_ARRAY_PATTERN = Pattern
       .compile("(?i)^\\s*(\\S+)\\s*\\[\\s*(\\S+)\\s*]$");
   private static final String CRITERION_PART_DECODER = "(?i)^\\s*(\\S+)\\s*";
-  private static final Map<String, BiPredicate<String, String>> OPERATORS = new HashMap<>(4);
   private final List<T> allUsers;
   private final String combinationRule;
 
@@ -232,16 +228,7 @@ class GoogleUserFilter<T extends GenericJson> {
     } else if (isDefined(subRule)) {
       filterResult = applySubRule(subRule, data, attr);
     } else {
-      final BiPredicate<String, String> ope = OPERATORS.get(criterionDecoder.getOperator());
-      if (ope == null) {
-        throw new UserFilterException(BAD_OPERATOR).withCriterion(criterion)
-            .withPath(path).withPathPart(attr);
-      }
-      Object o = attributeValues.get(attr);
-      if (o != null) {
-        o = o.toString().toLowerCase();
-      }
-      filterResult = ope.test((String) o, expectedValue);
+      filterResult = likeIgnoreCase((String) attributeValues.get(attr), expectedValue);
     }
     return filterResult;
   }
@@ -370,15 +357,7 @@ class GoogleUserFilter<T extends GenericJson> {
       final String[] explodedCriterion = getCriterion().split("[=]");
       match = explodedCriterion.length == 2;
       if (match) {
-        path = explodedCriterion[0];
-        final String lastChar = String.valueOf(path.charAt(path.length() - 1));
-        operator = lastChar + "=";
-        if (!OPERATORS.containsKey(operator)) {
-          operator = "=";
-        } else {
-          path = path.substring(0, path.length() - 1);
-        }
-        path = path.replaceAll(CRITERION_PART_DECODER, "$1");
+        path = explodedCriterion[0].replaceAll(CRITERION_PART_DECODER, "$1");
         explodedPath = path.split("[.]");
         expectedValue = explodedCriterion[1].replaceAll(CRITERION_PART_DECODER, "$1");
       }
@@ -442,12 +421,5 @@ class GoogleUserFilter<T extends GenericJson> {
       this.elements[2] = pathPart;
       return this;
     }
-  }
-
-  static {
-    OPERATORS.put("^=", String::startsWith);
-    OPERATORS.put("$=", String::endsWith);
-    OPERATORS.put("*=", String::contains);
-    OPERATORS.put("=", Objects::equals);
   }
 }

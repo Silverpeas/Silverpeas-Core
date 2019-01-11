@@ -1296,7 +1296,11 @@ public class GenericRecordSetManager {
           " rec, " +
           TEMPLATE_TABLE +
           " tpl WHERE tpl.templateid = ? AND rec.templateId = tpl.templateId AND tf.recordId = rec.recordId" +
-          " AND tf.fieldName = ? AND (tf.fieldvalue = ? OR tf.fieldvalue like ? OR tf.fieldvalue like ? OR tf.fieldvalue like ?)";
+          " AND tf.fieldName = ? " +
+          " AND (lower(tf.fieldvalue) like lower(?)" +
+          "  OR lower(tf.fieldvalue) like lower(?)" +
+          "  OR lower(tf.fieldvalue) like lower(?)" +
+          "  OR lower(tf.fieldvalue) like lower(?))";
 
   private static final String SELECT_NUMBER_OF_RECORDS_BY_TEMPLATE_AND_COMPONENTS =
       "select t.externalid, count(r.recordid) from " +

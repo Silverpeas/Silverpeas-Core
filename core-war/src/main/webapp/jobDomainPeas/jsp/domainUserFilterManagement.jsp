@@ -98,16 +98,13 @@
   <script language="JavaScript" type="text/javascript">
     var arrayPaneAjaxControl;
     function verify() {
-      performAction('verify').then(spProgressMessage.hide);
+      performAction('verify');
     }
     function validate() {
       performAction('validate').then(function(value) {
-        <c:if test="${empty technicalError}">
-        var message = '${silfn:escapeJs(successMessage)}'.replace('###', value);
-        jQuery.popup.info(message, function() {
-          sp.formRequest('${back}').submit();
-        });
-        </c:if>
+        setTimeout(function() {
+          handleValidateResponse(value);
+        }, 0);
       });
     }
     function performAction(action) {
@@ -170,6 +167,14 @@
           arrayPaneAjaxControl = sp.arrayPane.ajaxControls('#dynamic-content');
           SilverpeasError.add("${silfn:escapeJs(technicalError)}").show();
         });
+        function handleValidateResponse(value) {
+          <c:if test="${empty technicalError}">
+          var message = '${silfn:escapeJs(successMessage)}'.replace('###', value);
+          jQuery.popup.info(message, function() {
+            sp.formRequest('${back}').submit();
+          });
+          </c:if>
+        }
       </script>
     </div>
     <p>

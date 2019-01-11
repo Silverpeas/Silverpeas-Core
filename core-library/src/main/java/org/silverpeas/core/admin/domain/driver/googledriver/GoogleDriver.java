@@ -36,7 +36,6 @@ import org.silverpeas.core.util.SettingBundle;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -46,6 +45,7 @@ import static org.silverpeas.core.admin.domain.driver.googledriver.GoogleEntityS
 import static org.silverpeas.core.admin.user.constant.UserAccessLevel.USER;
 import static org.silverpeas.core.admin.user.constant.UserState.DEACTIVATED;
 import static org.silverpeas.core.admin.user.constant.UserState.VALID;
+import static org.silverpeas.core.util.StringUtil.likeIgnoreCase;
 
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)
@@ -187,7 +187,7 @@ public class GoogleDriver extends AbstractDomainDriver {
       try {
         return request().users().stream().filter(u -> {
           final String attributeValue = (String) resolve(u, attributePathDecoder);
-          return Objects.equals(attributeValue, propertyValue);
+          return likeIgnoreCase(attributeValue, propertyValue);
         }).map(userDetailMapper).toArray(UserDetail[]::new);
       } catch (ClassCastException e) {
         throw new AdminException(ATTRIBUTE_PATH_MSG_ERROR, e);

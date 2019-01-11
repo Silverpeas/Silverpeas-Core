@@ -37,13 +37,13 @@ import static org.junit.Assert.*;
  *
  * @author ehugonnet
  */
-public class StringUtilTest {
+class StringUtilTest {
 
   /**
    * Test of isDefined method, of class StringUtil.
    */
   @Test
-  public void testIsDefined() {
+  void testIsDefined() {
     assertTrue(StringUtil.isDefined("1"));
     assertFalse(StringUtil.isDefined("   "));
     assertFalse(StringUtil.isDefined(""));
@@ -56,7 +56,7 @@ public class StringUtilTest {
    * Test of isInteger method, of class StringUtil.
    */
   @Test
-  public void testIsInteger() {
+  void testIsInteger() {
     assertTrue(StringUtil.isInteger("1"));
     assertTrue(StringUtil.isInteger("00100"));
     assertFalse(StringUtil.isInteger("1.1"));
@@ -69,7 +69,7 @@ public class StringUtilTest {
    * Test of isInteger method, of class StringUtil.
    */
   @Test
-  public void testIsFloat() {
+  void testIsFloat() {
     assertTrue(StringUtil.isFloat("1"));
     assertTrue(StringUtil.isFloat("00100"));
     assertTrue(StringUtil.isFloat("1.1"));
@@ -83,7 +83,7 @@ public class StringUtilTest {
    * Test of isInteger method, of class StringUtil.
    */
   @Test
-  public void testConvertFloat() {
+  void testConvertFloat() {
     assertEquals(1.0f, StringUtil.convertFloat("1"), 0.001f);
     assertEquals(1.1f, StringUtil.convertFloat("1.1"), 0.001f);
     assertEquals(0f, StringUtil.convertFloat("a"), 0.001f);
@@ -95,7 +95,7 @@ public class StringUtilTest {
    * Test of escapeQuote method, of class StringUtil.
    */
   @Test
-  public void testEscapeQuote() {
+  void testEscapeQuote() {
     String text = "'hello'";
     String expResult = " hello ";
     String result = StringUtil.escapeQuote(text);
@@ -106,7 +106,7 @@ public class StringUtilTest {
    * Test of isValidEmailAddress method, of class StringUtil.
    */
   @Test
-  public void testIsValidEmailAddress() {
+  void testIsValidEmailAddress() {
     // Test variations in the email name
     assertTrue(StringUtil.isValidEmailAddress("steve@javasrc.com"));
     assertTrue(StringUtil.isValidEmailAddress("steven.haines@javasrc.com"));
@@ -139,7 +139,7 @@ public class StringUtilTest {
    * @throws UnsupportedEncodingException
    */
   @Test
-  public void testConvertToEncoding() throws UnsupportedEncodingException {
+  void testConvertToEncoding() throws UnsupportedEncodingException {
     assertEquals("élève", StringUtil.convertToEncoding(new String("élève".getBytes("UTF-8")),
         "UTF-8"));
     assertNotSame("élève", StringUtil.convertToEncoding(new String("élève".getBytes("ISO-8859-1")),
@@ -150,7 +150,7 @@ public class StringUtilTest {
    * Test of getBooleanValue method, of class StringUtil.
    */
   @Test
-  public void testGetBooleanValue() {
+  void testGetBooleanValue() {
     assertTrue(StringUtil.getBooleanValue("1"));
     assertTrue(StringUtil.getBooleanValue("yes"));
     assertTrue(StringUtil.getBooleanValue("YeS"));
@@ -164,7 +164,7 @@ public class StringUtilTest {
   }
 
   @Test
-  public void testDefaultStringIfNotDefinedReturningEmptyStringAsDefault() {
+  void testDefaultStringIfNotDefinedReturningEmptyStringAsDefault() {
     assertThat(StringUtil.defaultStringIfNotDefined(null), is(StringUtil.EMPTY));
     assertThat(StringUtil.defaultStringIfNotDefined(""), is(StringUtil.EMPTY));
     assertThat(StringUtil.defaultStringIfNotDefined("   "), is(StringUtil.EMPTY));
@@ -172,7 +172,7 @@ public class StringUtilTest {
   }
 
   @Test
-  public void testDefaultStringIfNotDefinedReturningGivenStringAsDefault() {
+  void testDefaultStringIfNotDefinedReturningGivenStringAsDefault() {
     String defaultString = "givenString";
     assertThat(StringUtil.defaultStringIfNotDefined(null, defaultString), is(defaultString));
     assertThat(StringUtil.defaultStringIfNotDefined("", defaultString), is(defaultString));
@@ -181,7 +181,7 @@ public class StringUtilTest {
   }
 
   @Test
-  public void testIsValidHour() {
+  void testIsValidHour() {
     assertTrue(StringUtil.isValidHour("10:30"));
     assertTrue(StringUtil.isValidHour("24:59"));
     assertTrue(StringUtil.isValidHour("00:00"));
@@ -196,7 +196,7 @@ public class StringUtilTest {
   }
 
   @Test
-  public void normalize() {
+  void normalize() {
     String allInput =
         " \r\t\n²1&234567890°+=})]aàäãâ@ç\\_`eéèëê-oöôõòiïîìnnñuüûù|[({'#\"~?,.;:!§ù%*µ¤$£├®é";
     String resInput =
@@ -206,7 +206,7 @@ public class StringUtilTest {
   }
 
   @Test
-  public void normalizeByRemovingAccent() {
+  void normalizeByRemovingAccent() {
     String allInput =
         " \r\t\n²1&234567890°+=})]aàäãâ@ç\\_`eéèëê-oöôõòiïîìnnñuüûù|[({'#\"~?,.;:!§ù%*µ¤$£├®é";
     String resInput =
@@ -216,7 +216,7 @@ public class StringUtilTest {
   }
 
   @Test
-  public void normalizeWhenUppercase() {
+  void normalizeWhenUppercase() {
     String allInput =
         " \r\t\n²1&234567890°+=})]AÀÄÃÂ@Ç\\_`EÉÈËÊ-OÖÔÕÒIÏÎÌNNÑUÜÛÙ|[({'#\"~?,.;:!§Ù%*Μ¤$£├®É";
     String resInput =
@@ -226,12 +226,71 @@ public class StringUtilTest {
   }
 
   @Test
-  public void normalizeByRemovingAccentWhenUppercase() {
+  void normalizeByRemovingAccentWhenUppercase() {
     String allInput =
         " \r\t\n²1&234567890°+=})]AÀÄÃÂ@Ç\\_`EÉÈËÊ-OÖÔÕÒIÏÎÌNNÑUÜÛÙ|[({'#\"~?,.;:!§Ù%*Μ¤$£├®É";
     String resInput =
         " \r\t\n²1&234567890°+=})]AAAAA@C\\_`EEEEE-OOOOOIIIINNNUUUU|[({'#\"~?,.;:!§U%*Μ¤$£├®E";
     String result = StringUtil.normalizeByRemovingAccent(allInput);
     assertEquals(resInput, result);
+  }
+
+  @Test
+  void likeIgnoreCase() {
+    assertThat(StringUtil.likeIgnoreCase(null, null), is(true));
+    assertThat(StringUtil.likeIgnoreCase("", ""), is(true));
+    assertThat(StringUtil.likeIgnoreCase("", null), is(true));
+    assertThat(StringUtil.likeIgnoreCase(null, ""), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toTo", "%Oto%%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toTo", "%Oto%\\%"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("toTo%", "%Oto%\\%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toTo\\%", "%Oto%\\%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toTo\\%", "%Oto\\%"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("toTo\\%", "%Oto\\\\%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("to%To%", "%O\\%to%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("to%%To%", "%O\\%\\%to%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("to%To%", "%O\\%to%x"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("to%To%", "%O\\%tox"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("toToBool%", "%Oto%\\%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toToX", "%Oto%X"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toToY", "%Oto%X"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("toTo", "%Oto%i"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("toTo", "%Oto%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toTo", "%Ot%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("toTo", "%Ot%o"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("%%%toTo", "\\%\\%\\%%%%%%%%%%%%%%%%%Ot%%%%%%%%%%%%%%%%%%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("%%%La petite maison", "\\%\\%\\%LA PETITE MAISON"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "LA PETITE MAISON"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "%E%E%S"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "%E%E%S%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "La%E%E%S%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "La%E%E%S"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "a%E%E%S"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "a%E%E%S%"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "La%E%E%S"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "La%E%E%S%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "%E%P%S"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "%E%P%S%"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "%MAIson"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "%pet%MAIson"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "%pet%MAIson%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "L%pet%MAIson%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("La petite \\maison", "L%pet%MAIson%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("La petite maison", "L %pet%MAIson%"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("/SIEGE/EXCLUSION", "%exclusion%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("/SIEGE/EXCLUSION/TEST", "%exclusion%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("/SIEGE/EXCLUSION/TEST", "%exclusion"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("/SIEGE/EXCLUSION/TEST", "exclusion%"), is(false));
+    assertThat(StringUtil.likeIgnoreCase("EXCLUSION", "%exclusion%"), is(true));
+    assertThat(StringUtil.likeIgnoreCase("&é\"\\m\\p\\a'(-è_ç^à@)°]+=}$£¤^¨*µù\\%!§:/;.,?<>", "&é\"\\m\\p\\a'(-è_ç^à@)°]+=}$£¤^¨*µù\\\\%!§:/;.,?<>"), is(true));
+  }
+
+  @Test
+  void like() {
+    assertThat(StringUtil.like("La petite maison", "LA PETITE MAISON"), is(false));
+    assertThat(StringUtil.like("La petite maison", "la petite maison"), is(false));
+    assertThat(StringUtil.like("LA PETITE MAISON", "La petite maison"), is(false));
+    assertThat(StringUtil.like("la petite maison", "La petite maison"), is(false));
+    assertThat(StringUtil.like("La petite maison", "La petite maison"), is(true));
   }
 }

@@ -15,7 +15,9 @@ $synchronizationRuleHelp_common()$
       (using it only for groups created into the <i>shared domain</i>)
     </li>
     <li><b>DC_<i>[property]</i> = <i>[value]</i></b>
-      targets the accounts which have the value of specified property equal to the specified value
+      targets the accounts which have the value of specified property equal to the specified value.<br/>
+      <b>[value]</b> can contain one or more occurrences of the special character
+      <b>%</b>. It allows to indicate no character or any sequence of characters
     </li>
     <li><b>DR_Groups = <i>[group identifiers separated by comma]</i></b>
       targets the accounts which are directly referenced by the specified groups (accounts

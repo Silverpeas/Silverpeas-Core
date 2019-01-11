@@ -108,24 +108,24 @@ class GoogleUserFilterTest {
   @Test
   void oneEqualOneStartWithOuFilterWithOrOperator() {
     assertResult(
-        new GoogleUserFilter<>(allGoogleUsers, "|(orgUnitPath=/SIEGE/EXCLUSION)(orgUnitPath^=/SIEGE/DRH)"),
+        new GoogleUserFilter<>(allGoogleUsers, "|(orgUnitPath=/SIEGE/EXCLUSION)(orgUnitPath=/SIEGE/DRH%)"),
         asList(USER_G, USER_B, USER_E));
   }
 
   @Test
   void oneContainsOneEndWithOuFilterWithOrOperator() {
     assertResult(
-        new GoogleUserFilter<>(allGoogleUsers, "|(orgUnitPath*=EXCLUSION)(orgUnitPath$=/DRH)"),
+        new GoogleUserFilter<>(allGoogleUsers, "|(orgUnitPath=%EXCLUSION%)(orgUnitPath=%/DRH)"),
         asList(USER_G, USER_E));
     assertResult(
-        new GoogleUserFilter<>(allGoogleUsers, "|(orgUnitPath  *=   EXCLUSION)(orgUnitPath  $=   /DRH)"),
+        new GoogleUserFilter<>(allGoogleUsers, "|(orgUnitPath  =   %EXCLUSION%)(orgUnitPath  =   %/DRH)"),
         asList(USER_G, USER_E));
   }
 
   @Test
   void oneContainsOneEndWithOuFilterWithAndOperator() {
     assertResult(
-        new GoogleUserFilter<>(allGoogleUsers, "&(orgUnitPath*=EXCLUSION)(orgUnitPath$=/DRH)"),
+        new GoogleUserFilter<>(allGoogleUsers, "&(orgUnitPath=%EXCLUSION%)(orgUnitPath=%/DRH)"),
         emptyList());
   }
 
@@ -141,7 +141,7 @@ class GoogleUserFilterTest {
         new GoogleUserFilter<>(allGoogleUsers, "!(emails[!(&(address=g@g.g)(customType=work))])"),
         asList(USER_G));
     assertResult(
-        new GoogleUserFilter<>(allGoogleUsers, "&(orgUnitPath^=/SIeGE)(emails[!(&(address=g@g.g)(customType=work))])"),
+        new GoogleUserFilter<>(allGoogleUsers, "&(orgUnitPath=/SIeGE%)(emails[!(&(address=g@g.g)(customType=work))])"),
         asList(USER_B, USER_E));
   }
 
@@ -155,7 +155,7 @@ class GoogleUserFilterTest {
   @Test
   void oneContainsOneNotEndWithOuFilterWithOrOperator() {
     assertResult(
-        new GoogleUserFilter<>(allGoogleUsers, "|(orgUnitPath*=EXCLUSion)(!(orgUnitPath$=/DrH))"),
+        new GoogleUserFilter<>(allGoogleUsers, "|(orgUnitPath=%EXCLUSion%)(!(orgUnitPath=%/DrH))"),
         asList(USER_G, USER_A, USER_B, USER_C, USER_D, USER_F, USER_H, USER_I, USER_J, USER_K));
   }
 

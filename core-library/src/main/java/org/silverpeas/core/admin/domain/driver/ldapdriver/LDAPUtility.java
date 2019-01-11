@@ -367,6 +367,9 @@ public class LDAPUtility {
         case '*':
           sb.append("\\2a");
           break;
+        case '%':
+          sb.append("*");
+          break;
         case '(':
           sb.append("\\28");
           break;
@@ -380,7 +383,7 @@ public class LDAPUtility {
           sb.append(curChar);
       }
     }
-    return sb.toString();
+    return sb.toString().replace("\\5c*", "%");
   }
 
   /**
