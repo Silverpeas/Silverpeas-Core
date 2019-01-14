@@ -140,7 +140,7 @@
           <label class="txtlibform">${filterRuleLabel} :</label>
           <div class="champs">
             <input type="text" id="domainUserFilterRule" name="domainUserFilterRule"
-                   size="70" maxlength="99" value="${domainUserFilterRule}">
+                   size="70" value="${domainUserFilterRule}">
             <img id="rule-info" class="infoBulle" src="<c:url value="/util/icons/info.gif"/>" alt="info"/>
           </div>
         </div>

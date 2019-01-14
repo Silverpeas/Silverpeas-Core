@@ -228,7 +228,7 @@ class GoogleUserFilter<T extends GenericJson> {
     } else if (isDefined(subRule)) {
       filterResult = applySubRule(subRule, data, attr);
     } else {
-      filterResult = likeIgnoreCase((String) attributeValues.get(attr), expectedValue);
+      filterResult = likeIgnoreCase(String.valueOf(attributeValues.get(attr)), expectedValue);
     }
     return filterResult;
   }
