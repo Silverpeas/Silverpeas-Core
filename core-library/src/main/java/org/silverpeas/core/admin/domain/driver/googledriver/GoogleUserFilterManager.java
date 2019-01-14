@@ -28,13 +28,11 @@ import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
 
 import java.util.Properties;
 
 import static org.silverpeas.core.util.ResourceLocator.saveSettingBundle;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * @author silveryocha

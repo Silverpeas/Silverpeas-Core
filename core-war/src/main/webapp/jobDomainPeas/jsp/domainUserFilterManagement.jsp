@@ -98,16 +98,13 @@
   <script language="JavaScript" type="text/javascript">
     var arrayPaneAjaxControl;
     function verify() {
-      performAction('verify').then(spProgressMessage.hide);
+      performAction('verify');
     }
     function validate() {
       performAction('validate').then(function(value) {
-        <c:if test="${empty technicalError}">
-        var message = '${silfn:escapeJs(successMessage)}'.replace('###', value);
-        jQuery.popup.info(message, function() {
-          sp.formRequest('${back}').submit();
-        });
-        </c:if>
+        setTimeout(function() {
+          handleValidateResponse(value);
+        }, 0);
       });
     }
     function performAction(action) {
@@ -143,7 +140,7 @@
           <label class="txtlibform">${filterRuleLabel} :</label>
           <div class="champs">
             <input type="text" id="domainUserFilterRule" name="domainUserFilterRule"
-                   size="70" maxlength="99" value="${domainUserFilterRule}">
+                   size="70" value="${domainUserFilterRule}">
             <img id="rule-info" class="infoBulle" src="<c:url value="/util/icons/info.gif"/>" alt="info"/>
           </div>
         </div>
@@ -170,6 +167,14 @@
           arrayPaneAjaxControl = sp.arrayPane.ajaxControls('#dynamic-content');
           SilverpeasError.add("${silfn:escapeJs(technicalError)}").show();
         });
+        function handleValidateResponse(value) {
+          <c:if test="${empty technicalError}">
+          var message = '${silfn:escapeJs(successMessage)}'.replace('###', value);
+          jQuery.popup.info(message, function() {
+            sp.formRequest('${back}').submit();
+          });
+          </c:if>
+        }
       </script>
     </div>
     <p>

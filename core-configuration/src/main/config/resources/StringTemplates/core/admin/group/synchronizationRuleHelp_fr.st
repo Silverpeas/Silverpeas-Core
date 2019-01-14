@@ -16,7 +16,9 @@ $synchronizationRuleHelp_common()$
       (fonctionne uniquement pour les groupes créés dans le <i>domaine mixte</i>)
     </li>
     <li><b>DC_<i>[propriété]</i> = <i>[valeur]</i></b>
-      cible les comptes dont la propriété indiquée est égale à la valeur indiquée
+      cible les comptes dont la propriété indiquée est égale à la valeur indiquée.<br/>
+      <b>[valeur]</b> peut contenir une ou plusieurs occurrences du caractère spécial
+      <b>%</b>. Il permet d'indiquer aucun caractère ou n'importe quelle suite de caractères
     </li>
     <li><b>DR_Groups = <i>[identifiants de groupe séparés par une virgule]</i></b>
       cible les comptes directement liés à un des groupes indiqués (les comptes des

@@ -110,7 +110,7 @@ class GoogleDriverTest {
     when(settings.getString(anyString(), anyString())).then(i -> {
       Object value = i.getArguments()[1];
       if ("google.user.filter.rule".equals(i.getArguments()[0])) {
-        value = "orgUnitPath^=/SIEGE";
+        value = "orgUnitPath=/SIEGE%";
       }
       return value;
     });
@@ -124,7 +124,7 @@ class GoogleDriverTest {
     when(settings.getString(anyString(), anyString())).then(i -> {
       Object value = i.getArguments()[1];
       if ("google.user.filter.rule".equals(i.getArguments()[0])) {
-        value = "|(orgUnitPath^=/SIEGE)(orgUnitPath^=/DSI/ATOA)";
+        value = "|(orgUnitPath=/SIEGE%)(orgUnitPath=/DSI/ATOA%)";
       }
       return value;
     });
@@ -138,7 +138,7 @@ class GoogleDriverTest {
     when(settings.getString(anyString(), anyString())).then(i -> {
       Object value = i.getArguments()[1];
       if ("google.user.filter.rule".equals(i.getArguments()[0])) {
-        value = "!(|(orgUnitPath^=/SIEGE)(orgUnitPath^=/DSI/A))";
+        value = "!(|(orgUnitPath=/SIEGE%)(orgUnitPath=/DSI/A%))";
       }
       return value;
     });
@@ -152,7 +152,7 @@ class GoogleDriverTest {
     when(settings.getString(anyString(), anyString())).then(i -> {
       Object value = i.getArguments()[1];
       if ("google.user.filter.rule".equals(i.getArguments()[0])) {
-        value = "!(orgUnitPath^=/SIEGE)";
+        value = "!(orgUnitPath=/SIEGE%)";
       }
       return value;
     });
@@ -166,7 +166,7 @@ class GoogleDriverTest {
     when(settings.getString(anyString(), anyString())).then(i -> {
       Object value = i.getArguments()[1];
       if ("google.user.filter.rule".equals(i.getArguments()[0])) {
-        value = "&(!(|(orgUnitPath^=/SIEGE/EXCLUSION)(orgUnitPath^=/DSI/ATOA)))(|(orgUnitPath^=/SIEGE)(orgUnitPath^=/DSI))";
+        value = "&(!(|(orgUnitPath=/SIEGE/EXCLUSION%)(orgUnitPath=/DSI/ATOA%)))(|(orgUnitPath=/SIEGE%)(orgUnitPath=/DSI%))";
       }
       return value;
     });

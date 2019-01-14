@@ -201,7 +201,7 @@ public class SQLUserTable {
   public List<Integer> getAllUserIds(Connection c) throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    List<Integer> theResult = new ArrayList<Integer>();
+    List<Integer> theResult = new ArrayList<>();
     String theQuery = "select " + drvSettings.getUserSpecificIdColumnName()
         + " from " + drvSettings.getUserTableName();
 
@@ -225,7 +225,7 @@ public class SQLUserTable {
   public List<UserDetail> getAllUsers(Connection c) throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    List<UserDetail> theResult = new ArrayList<UserDetail>();
+    List<UserDetail> theResult = new ArrayList<>();
     String theQuery = "select " + getColumns() + " from "
         + drvSettings.getUserTableName();
 
@@ -250,10 +250,10 @@ public class SQLUserTable {
       String propertyName, String value) throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    List<UserDetail> theResult = new ArrayList<UserDetail>();
+    List<UserDetail> theResult = new ArrayList<>();
     String theQuery = "select " + getColumns() + " from "
         + drvSettings.getUserTableName();
-    theQuery += " where " + propertyName + " = ? ";
+    theQuery += " where lower(" + propertyName + ") like lower(?) ";
 
     try {
       statement = c.prepareStatement(theQuery);

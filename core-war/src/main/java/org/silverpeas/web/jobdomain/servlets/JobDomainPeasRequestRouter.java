@@ -41,7 +41,6 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.SilverpeasTrappedException;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
@@ -62,7 +61,6 @@ import org.silverpeas.web.jobdomain.UserRequestData;
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -897,8 +895,7 @@ public class JobDomainPeasRequestRouter extends
     jobDomainSC.getUserFilterManager().ifPresent(m -> request.setAttribute("domainUserFilterManager", m));
     final String action = request.getParameter(ACTION_ATTR);
     try {
-      final String encodedRule = defaultStringIfNotDefined(request.getParameter(DOMAIN_USER_FILTER_RULE_PARAM));
-      final String newRule = URLDecoder.decode(encodedRule, Charsets.UTF_8.name());
+      final String newRule = defaultStringIfNotDefined(request.getParameter(DOMAIN_USER_FILTER_RULE_PARAM));
       if ("verify".equals(action)) {
         final User[] arrayToConvert = jobDomainSC.verifyUserFilterRule(newRule);
         final SilverpeasList<User> users = SilverpeasList.as(arrayToConvert);

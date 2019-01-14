@@ -39,13 +39,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author ehugonnet
  */
 @UnitTest
-public class LDAPUtilityTest {
+class LDAPUtilityTest {
 
   /**
    * Test of isAGuid method, of class LDAPUtility.
    */
   @Test
-  public void testIsAGuid() {
+  void testIsAGuid() {
    assertTrue(LDAPUtility.isAGuid("objectGUID"));
    assertTrue(LDAPUtility.isAGuid("OBJECTguid"));
    assertTrue(LDAPUtility.isAGuid("GUID"));
@@ -58,7 +58,7 @@ public class LDAPUtilityTest {
    * Test of escapeDN method, of class LDAPUtility.
    */
   @Test
-  public void testEscapeDN() {
+  void testEscapeDN() {
     //escapeDN
     assertEquals("Helloé", LDAPUtility.escapeDN("Helloé"), "No special characters to escape");
     assertEquals("\\# Helloé", LDAPUtility.escapeDN("# Helloé"), "leading #");
@@ -73,7 +73,7 @@ public class LDAPUtilityTest {
    * Test of escapeLDAPSearchFilter method, of class LDAPUtility.
    */
   @Test
-  public void testEscapeLDAPSearchFilter() {
+  void testEscapeLDAPSearchFilter() {
     final String expectedEscapedValue = "Hi \\00 \\28This\\29 = is \\2a a \\5c test # ç à ô";
 
     assertEquals("Hi This is a test #çà",
@@ -88,10 +88,23 @@ public class LDAPUtilityTest {
   }
 
   /**
+   * Test of escapeLDAPSearchFilter method, of class LDAPUtility.
+   */
+  @Test
+  void testEscapeLDAPSearchFilterWithSpecialCharacterClause() {
+    assertEquals("Hi This * is a test * #çà",
+        LDAPUtility.escapeLDAPSearchFilter("Hi This % is a test % #çà"),
+        "% character to escape");
+    assertEquals("Hi This % is a test % #çà",
+        LDAPUtility.escapeLDAPSearchFilter("Hi This \\% is a test \\% #çà"),
+        "No special characters to escape");
+  }
+
+  /**
    * Test of unescapeLDAPSearchFilter method, of class LDAPUtility.
    */
   @Test
-  public void testUnescapeLDAPSearchFilter() {
+  void testUnescapeLDAPSearchFilter() {
     final String expectedUnescapedValue = "Hi \u0000 (This) = is * a \\ test # ç à ô";
 
     assertEquals("Hi This is a test #çà",
@@ -108,7 +121,7 @@ public class LDAPUtilityTest {
    * Test of unescapeLDAPSearchFilter method, of class LDAPUtility.
    */
   @Test
-  public void testChainedUnescapeAndEscapeLDAPSearchFilter() {
+  void testChainedUnescapeAndEscapeLDAPSearchFilter() {
     final String escapedValue = "Hi \\00 \\28This\\29 = is \\2a a \\5c test # ç à ô";
     final String unescapedValue = "Hi \u0000 (This) = is * a \\ test # ç à ô";
 

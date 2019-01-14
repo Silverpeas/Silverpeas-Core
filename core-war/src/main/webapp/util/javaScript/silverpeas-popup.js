@@ -126,7 +126,7 @@
       var $info = $('<div>').append($('<p>').append(message));
       if (typeof params === 'function') {
         options = {
-          callback: params
+          callbackOnClose: params
         }
       }
       $info.popup('information', options);
