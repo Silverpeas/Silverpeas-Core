@@ -201,34 +201,42 @@
     $('#newPassword').password();
   });
 
-	function ifCorrectBasicFormExecute(callback) {
-		var errorMsg = "";
-		<% if (updateLastNameIsAllowed) { %>
-			var namefld = document.UserForm.userLastName.value;
-			if (isWhitespace(namefld))
-			{
-				errorMsg = "- <%=resource.getString("GML.theField")%> '<%=resource.getString("GML.lastName")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-			}
-		<% } %>
-		<% if (isPasswordChangeAllowed) {%>
+  function ifCorrectBasicFormExecute(callback) {
+    var verifyPromises = [sp.promise.resolveDirectlyWith()];
+    SilverpeasError.reset();
+    <% if (updateLastNameIsAllowed) { %>
+    var namefld = document.UserForm.userLastName.value;
+    if (isWhitespace(namefld)) {
+      SilverpeasError.add("<%=resource.getString("GML.theField")%> '<%=resource.getString("GML.lastName")%>' <%=resource.getString("GML.MustBeFilled")%>");
+    }
+    <% } %>
+    <% if (isPasswordChangeAllowed) {%>
     var $pwdInput = $('#newPassword');
     if ($pwdInput.val()) {
-      $pwdInput.password('verify', {onError : function() {
-        errorMsg += "- <%=resource.getString("myProfile.Error_bad_credential")%>\n";
-      }});
+      var passwordDeferred = sp.promise.deferred();
+      verifyPromises.push(passwordDeferred.promise);
+      $pwdInput.password('verify', {
+        onSuccess : function() {
+          passwordDeferred.resolve();
+        },
+        onError : function() {
+          SilverpeasError.add("<%=resource.getString("myProfile.Error_bad_credential")%>");
+          passwordDeferred.resolve();
+        }
+      });
       if ($pwdInput.val() != $('#newPasswordConfirmation').val()) {
-        errorMsg += "- <%=resource.getString("myProfile.WrongNewPwd")%>\n";
+        SilverpeasError.add("<%=resource.getString("myProfile.WrongNewPwd")%>");
       }
     }
-		<%
-		}
-		%>
-		if (errorMsg == "") {
-      callback.call(this);
-		} else {
-      jQuery.popup.error(errorMsg);
-		}
-	}
+    <%
+    }
+    %>
+    sp.promise.whenAllResolved(verifyPromises).then(function() {
+      if (!SilverpeasError.show()) {
+        callback.call(this);
+      }
+    });
+  }
 
   function saveUser() {
     if ($("#identity-template").length) {
