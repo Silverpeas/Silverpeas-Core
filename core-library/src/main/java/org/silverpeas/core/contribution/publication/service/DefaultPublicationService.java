@@ -41,7 +41,7 @@ import org.silverpeas.core.contribution.publication.dao.SeeAlsoDAO;
 import org.silverpeas.core.contribution.publication.dao.ValidationStepsDAO;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.Link;
+import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationI18N;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -930,8 +930,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, singletonList(detail));
       }
-      List<Link> links = SeeAlsoDAO.getLinks(con, pubPK);
-      List<Link> reverseLinks = SeeAlsoDAO.getReverseLinks(con, pubPK);
+      List<PublicationLink> links = SeeAlsoDAO.getLinks(con, pubPK);
+      List<PublicationLink> reverseLinks = SeeAlsoDAO.getReverseLinks(con, pubPK);
       CompletePublication cp = new CompletePublication(detail, links, reverseLinks);
       cp.setValidationSteps(getValidationSteps(pubPK));
       return cp;

@@ -23,17 +23,23 @@
  */
 package org.silverpeas.core.notification.user.client;
 
-public interface NotificationParameterNames {
-  String SOURCE = "SOURCE";
-  String SERVERURL = "SERVERURL";
-  String URL = "URL";
-  String LINKLABEL = "LINKLABEL";
-  String FROM = "FROM";
-  String SUBJECT = "SUBJECT";
-  String SESSIONID = "SESSIONID";
-  String DATE = "DATE";
-  String LANGUAGE = "LANGUAGE";
-  String COMMUNICATION = "COMMUNICATION";
-  String ATTACHMENTID = "ATTACHMENTID";
-  String HIDESMTPHEADERFOOTER = "HIDESMTPHEADERFOOTER";
+public class NotificationParameterNames {
+  public static final String SOURCE = "SOURCE";
+  public static final String SERVERURL = "SERVERURL";
+  public static final String URL = "URL";
+  public static final String LINKLABEL = "LINKLABEL";
+  public static final String FROM = "FROM";
+  public static final String SUBJECT = "SUBJECT";
+  public static final String SESSIONID = "SESSIONID";
+  public static final String DATE = "DATE";
+  public static final String LANGUAGE = "LANGUAGE";
+  public static final String COMMUNICATION = "COMMUNICATION";
+  public static final String ATTACHMENTID = "ATTACHMENTID";
+  public static final String HIDESMTPHEADERFOOTER = "HIDESMTPHEADERFOOTER";
+  public static final String COMPONENTID = "COMPONENTID";
+  public static final String ATTACHMENT_TARGETID = "ATTACHMENT_TARGETID";
+
+  private NotificationParameterNames() {
+
+  }
 }

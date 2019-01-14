@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.notification.user.server.channel.smtp;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailSending;
+import org.silverpeas.core.notification.user.AttachmentLink;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameterNames;
 import org.silverpeas.core.notification.user.server.NotificationData;
@@ -48,6 +50,8 @@ import javax.jms.MessageListener;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.silverpeas.core.mail.MailAddress.eMail;
@@ -106,77 +110,105 @@ public class SMTPListener extends AbstractListener implements MessageListener {
         "org.silverpeas.notificationserver.channel.smtp.multilang.smtpBundle", tmpLanguageString);
     if (tmpFromString == null) {
       throw new NotificationServerException("Missing sender email address!");
-    } else {
-      StringBuilder body = new StringBuilder();
-      SilverpeasTemplate templateHeaderFooter =
-          SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
-
-      templateHeaderFooter.setAttribute(notification_serverurl.toString(), serverUrl);
-      templateHeaderFooter.setAttribute(notification_sendername.toString(), notification.getSenderName());
-      templateHeaderFooter.setAttribute(notification_senderemail.toString(), tmpFromString);
-
-      if (hideSmtpHeaderFooter == null) {
-        // Header Message
-        String smtpMessageheader =
-            templateHeaderFooter.applyFileTemplate("SMTPmessageHeader" + '_' + tmpLanguageString);
-        body.append(smtpMessageheader);
-      }
-
-      // Body Message
-      String messageBody = notification.getMessage();
-        // Transform text to html format
-      messageBody = WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(messageBody + "\n\n");
-      body.append(messageBody);
-
-      if(tmpUrlString != null) {
-
-        templateHeaderFooter.setAttribute(notification_link.toString(), tmpUrlString);
-
-        if(StringUtil.isDefined(linkLabel)) {
-          templateHeaderFooter.setAttribute(notification_linkLabel.toString(), linkLabel);
-        } else {//link name by default
-          templateHeaderFooter.setAttribute(notification_linkLabel.toString(), messages.getString("GoToContribution"));
-        }
-
-      }
-
-      // The next treatments use String replacement mechanism
-      StringBuilder beforeFooterMessage = new StringBuilder();
-      StringBuilder afterFooterMessage = new StringBuilder();
-
-      if (hideSmtpHeaderFooter == null) {
-        // Before Footer Message
-        String smtpMessageBeforeFooter = templateHeaderFooter
-            .applyFileTemplate("SMTPmessageFooter_before" + '_' + tmpLanguageString);
-        beforeFooterMessage.append(smtpMessageBeforeFooter);
-        // After Footer Message
-        String smtpMessageAfterFooter = templateHeaderFooter
-            .applyFileTemplate("SMTPmessageFooter_after" + '_' + tmpLanguageString);
-        afterFooterMessage.append(smtpMessageAfterFooter);
-      }
-
-
-      String bodyAsString = body.toString();
-      bodyAsString = bodyAsString.replace(NotificationMetaData.BEFORE_MESSAGE_FOOTER_TAG,
-          beforeFooterMessage.toString().replaceAll("[\\n\\r]", ""));
-      bodyAsString = bodyAsString.replace(NotificationMetaData.AFTER_MESSAGE_FOOTER_TAG,
-          afterFooterMessage.toString().replaceAll("[\\n\\r]", ""));
-      boolean isHtml = tmpAttachmentIdString == null;
-      sendEmail(tmpFromString, notification.getSenderName(), notification.getTargetReceipt(),
-          tmpSubjectString, bodyAsString, isHtml);
     }
+
+    StringBuilder body = new StringBuilder();
+    SilverpeasTemplate templateHeaderFooter =
+        SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
+
+    templateHeaderFooter.setAttribute(NOTIFICATION_SERVER_URL.toString(), serverUrl);
+    templateHeaderFooter.setAttribute(NOTIFICATION_SENDER_NAME.toString(),
+        notification.getSenderName());
+    templateHeaderFooter.setAttribute(NOTIFICATION_SENDER_EMAIL.toString(), tmpFromString);
+
+    if (hideSmtpHeaderFooter == null) {
+      // Header Message
+      String smtpMessageheader =
+          templateHeaderFooter.applyFileTemplate("SMTPmessageHeader" + '_' + tmpLanguageString);
+      body.append(smtpMessageheader);
+    }
+
+    // Body Message
+    String messageBody = notification.getMessage();
+    // Transform text to html format
+    messageBody = WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(messageBody + "\n\n");
+    body.append(messageBody);
+
+    if (tmpUrlString != null) {
+
+      templateHeaderFooter.setAttribute(NOTIFICATION_LINK.toString(), tmpUrlString);
+
+      if (StringUtil.isDefined(linkLabel)) {
+        templateHeaderFooter.setAttribute(NOTIFICATION_LINK_LABEL.toString(), linkLabel);
+      } else {//link name by default
+        templateHeaderFooter.setAttribute(NOTIFICATION_LINK_LABEL.toString(),
+            messages.getString("GoToContribution"));
+      }
+
+    }
+
+    final List<AttachmentLink> attachments = getAttachmentLinks(keyValue, tmpLanguageString);
+    if (!attachments.isEmpty()) {
+      templateHeaderFooter.setAttribute(NOTIFICATION_ATTACHMENTS.toString(), attachments);
+    }
+
+    // The next treatments use String replacement mechanism
+    StringBuilder beforeFooterMessage = new StringBuilder();
+    StringBuilder afterFooterMessage = new StringBuilder();
+
+    if (hideSmtpHeaderFooter == null) {
+      applyFooterTemplate(templateHeaderFooter, tmpLanguageString, beforeFooterMessage,
+          afterFooterMessage);
+    }
+
+    String bodyAsString = body.toString();
+    bodyAsString = bodyAsString.replace(NotificationMetaData.BEFORE_MESSAGE_FOOTER_TAG,
+        beforeFooterMessage.toString().replaceAll("[\\n\\r]", ""));
+    bodyAsString = bodyAsString.replace(NotificationMetaData.AFTER_MESSAGE_FOOTER_TAG,
+        afterFooterMessage.toString().replaceAll("[\\n\\r]", ""));
+    boolean isHtml = tmpAttachmentIdString == null;
+    sendEmail(tmpFromString, notification.getSenderName(), notification.getTargetReceipt(),
+        tmpSubjectString, bodyAsString, isHtml);
+  }
+
+  private void applyFooterTemplate(final SilverpeasTemplate templateHeaderFooter,
+      final String tmpLanguageString, final StringBuilder beforeFooterMessage,
+      final StringBuilder afterFooterMessage) {
+    // Before Footer Message
+    String smtpMessageBeforeFooter = templateHeaderFooter.applyFileTemplate(
+        "SMTPmessageFooter_before" + '_' + tmpLanguageString);
+    beforeFooterMessage.append(smtpMessageBeforeFooter);
+    // After Footer Message
+    String smtpMessageAfterFooter =
+        templateHeaderFooter.applyFileTemplate("SMTPmessageFooter_after" + '_' + tmpLanguageString);
+    afterFooterMessage.append(smtpMessageAfterFooter);
+  }
+
+  @SuppressWarnings("unchecked")
+  private List<AttachmentLink> getAttachmentLinks(final Map<String, Object> keyValues,
+      final String language) {
+    final String componentId = (String) keyValues.get(NotificationParameterNames.COMPONENTID);
+    final String contributionId =
+        (String) keyValues.get(NotificationParameterNames.ATTACHMENT_TARGETID);
+    final List<AttachmentLink> links;
+    if (StringUtil.isDefined(componentId) && StringUtil.isDefined(contributionId)) {
+      final ResourceReference ref = new ResourceReference(contributionId, componentId);
+      links = AttachmentLink.getForContribution(ref, language);
+    } else {
+      links = Collections.emptyList();
+    }
+    return links;
   }
 
   /**
    * send email to destination using SMTP protocol and JavaMail 1.3 API (compliant with MIME
    * format).
-   *
    * @param from : from field that will appear in the email header.
    * @param fromName :
-   * @see {@link InternetAddress}
    * @param to : the email target destination.
    * @param subject : the subject of the email.
    * @param content : the message or payload of the email.
+   * @see {@link InternetAddress}
    */
   private void sendEmail(String from, String fromName, String to, String subject,
       String content, boolean isHtml) throws NotificationServerException {

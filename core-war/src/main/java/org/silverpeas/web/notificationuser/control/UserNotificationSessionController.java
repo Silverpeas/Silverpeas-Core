@@ -140,8 +140,12 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
    */
   public void sendNotification(final NotificationContext context) {
     final UserNotificationWrapper userNotification = getUserNotification(context);
+    final String contributionId = context.containsKey(NotificationContext.PUBLICATION_ID) ?
+        context.get(NotificationContext.PUBLICATION_ID) :
+        context.get(NotificationContext.CONTRIBUTION_ID);
     userNotification.setTitle(context.get("title"))
-        .setContent(context.get("content"))
+        .setContent(context.get("content").replaceAll("[\\n\\r]", ""))
+        .setAttachmentLinksFor(contributionId)
         .setSender(getUserDetail())
         .setRecipientUsers(context.getAsList("recipientUsers"))
         .setRecipientGroups(context.getAsList("recipientGroups"))
@@ -151,7 +155,8 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
   }
 
   private UserNotificationWrapper supplyUserNotification(final NotificationContext context) {
-    final String componentId = context.getOrDefault("componentId", getComponentRootName());
+    final String componentId =
+        context.getOrDefault(NotificationContext.COMPONENT_ID, getComponentRootName());
     final String componentName;
     if (!getComponentRootName().equals(componentId) &&
         !PersonalComponentInstance.from(componentId).isPresent()) {

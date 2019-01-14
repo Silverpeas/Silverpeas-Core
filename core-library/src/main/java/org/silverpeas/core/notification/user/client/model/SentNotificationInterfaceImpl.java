@@ -59,8 +59,8 @@ public class SentNotificationInterfaceImpl implements SentNotificationInterface 
       SentNotificationDetail notif =
           new SentNotificationDetail(Integer.parseInt(metaData.getSender()), metaData.
           getMessageType(), metaData.getDate(), metaData.getTitle(language), metaData.getSource(),
-          metaData.getLink(), metaData.getSessionId(), metaData.getComponentId(), metaData.
-          getContent(language));
+              metaData.getLink().getLinkUrl(), metaData.getSessionId(), metaData.getComponentId(),
+              metaData.getContent(language));
       notif.setUsers(users);
       int id = SentNotificationDAO.saveNotifUser(con, notif);
       notif.setNotifId(id);

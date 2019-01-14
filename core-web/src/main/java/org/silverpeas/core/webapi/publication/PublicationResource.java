@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.publication;
 
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.Link;
+import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
@@ -107,8 +107,8 @@ public class PublicationResource extends AbstractPublicationResource {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
 
-    List<Link> links = publication.getLinkList();
-    for (Link link : links) {
+    List<PublicationLink> links = publication.getLinkList();
+    for (PublicationLink link : links) {
       if (link.getId().equals(linkId)) {
         getPublicationService().deleteLink(linkId);
         return Response.ok().build();

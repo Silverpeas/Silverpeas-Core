@@ -34,10 +34,14 @@ import javax.xml.parsers.SAXParserFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class NotificationServerUtil {
 
@@ -130,9 +134,9 @@ public class NotificationServerUtil {
   static public Map<String, Object> unpackKeyValues(String keyvaluestring) {
     Map<String, Object> result = new HashMap<>();
     char c;
-    StringBuffer key = new StringBuffer();
-    StringBuffer value = new StringBuffer();
-    StringBuffer sb;
+    StringBuilder key = new StringBuilder();
+    StringBuilder value = new StringBuilder();
+    StringBuilder sb;
 
     if (keyvaluestring != null) {
       sb = key;
@@ -149,11 +153,15 @@ public class NotificationServerUtil {
           } else { // the ; is the Key/Values pairs separator
             String strValue = value.toString();
             if (strValue.startsWith("#DATE#")) {
-              strValue = strValue.substring(6, strValue.length());
+              strValue = strValue.substring(6);
               result.put(key.toString(), new Date(Long.valueOf(strValue)));
             } else if (strValue.startsWith("#BOOLEAN#")) {
-              strValue = strValue.substring(9, strValue.length());
+              strValue = strValue.substring(9);
               result.put(key.toString(), new Boolean(strValue));
+            } else if (strValue.startsWith("#LIST#")) {
+              strValue = strValue.substring(6);
+              List<String> listValue = Stream.of(strValue.split(",")).collect(Collectors.toList());
+              result.put(key.toString(), listValue);
             } else {
               result.put(key.toString(), strValue);
             }
@@ -182,8 +190,12 @@ public class NotificationServerUtil {
         strValue = strValue.substring(6);
         result.put(key.toString(), new Date(Long.valueOf(strValue)));
       } else if (strValue.startsWith("#BOOLEAN#")) {
-        strValue = strValue.substring(9, strValue.length());
+        strValue = strValue.substring(9);
         result.put(key.toString(), new Boolean(strValue));
+      } else if (strValue.startsWith("#LIST#")) {
+        strValue = strValue.substring(6);
+        List<String> listValue = Stream.of(strValue.split(",")).collect(Collectors.toList());
+        result.put(key.toString(), listValue);
       } else {
         result.put(key.toString(), strValue);
       }
@@ -251,7 +263,7 @@ public class NotificationServerUtil {
         if (!success) {
           try {
             Date date = (Date) keyValues.get(theKey);
-            keyValue = "#DATE#" + String.valueOf(date.getTime());
+            keyValue = "#DATE#" + date.getTime();
             success = true;
           } catch (ClassCastException cce) {
             success = false;
@@ -262,8 +274,20 @@ public class NotificationServerUtil {
         if (!success) {
           try {
             Boolean bool = (Boolean) keyValues.get(theKey);
-            keyValue = "#BOOLEAN#" + String.valueOf(bool);
+            keyValue = "#BOOLEAN#" + bool;
             success = true;
+          } catch (ClassCastException cce) {
+            success = false;
+          }
+        }
+
+        if (!success) {
+          try {
+            Collection<String> collection = (Collection<String>) keyValues.get(theKey);
+            if (!collection.isEmpty()) {
+              keyValue = "#LIST#" + collection.stream().collect(Collectors.joining(","));
+              success = true;
+            }
           } catch (ClassCastException cce) {
             success = false;
           }

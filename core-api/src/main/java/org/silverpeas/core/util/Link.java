@@ -23,29 +23,48 @@
  */
 package org.silverpeas.core.util;
 
+import java.util.Objects;
+
+/**
+ * Link to a given web resource. The resource is defined by the URL at which it can be accessed
+ * through the Web.
+ */
 public class Link {
 
-  private String linkUrl;
-  private String linkLabel;
+  /**
+   * An empty link is a link whose the URL and label is an empty string.
+   */
+  public static final Link EMPTY_LINK = new Link("", "");
 
-  public Link(String linkUrl, String linkLabel) {
+  private final String linkUrl;
+  private final String linkLabel;
+
+  /**
+   * Constructs a new link with the specified URL and labels.
+   * @param linkUrl the URL of the linked resource.
+   * @param linkLabel the label to render for that link.
+   */
+  public Link(final String linkUrl, final String linkLabel) {
+    Objects.requireNonNull(linkUrl);
+    Objects.requireNonNull(linkLabel);
     this.linkUrl = linkUrl;
     this.linkLabel = linkLabel;
   }
 
+  /**
+   * Gets the URL of the resource referred by this link.
+   * @return the resource URL.
+   */
   public String getLinkUrl() {
     return linkUrl;
   }
 
-  public void setLinkUrl(String linkUrl) {
-    this.linkUrl = linkUrl;
-  }
-
+  /**
+   * Gets the label with which this link should be referred.
+   * @return this link's label.
+   */
   public String getLinkLabel() {
     return linkLabel;
   }
 
-  public void setLinkLabel(String linkLabel) {
-    this.linkLabel = linkLabel;
-  }
 }
