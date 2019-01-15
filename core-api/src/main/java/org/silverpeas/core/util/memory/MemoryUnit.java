@@ -34,7 +34,7 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 /**
  * User: Yohann Chastagnier
  * Date: 15/11/13
- */ /* Byte, Kilo-Byte, Mega-Byte, ... */
+ */
 public enum MemoryUnit {
   B(1, "o", "bytes"), KB(2, "ko", "Kb"), MB(3, "mo", "Mb"), GB(4, "go", "Gb"), TB(5, "to", "Tb");
   private final String bundleKey;
@@ -63,6 +63,11 @@ public enum MemoryUnit {
     return defaultStringIfNotDefined(getStringTranslation(getBundleKey()), getBundleDefault());
   }
 
+  public String getLabel(final String language) {
+    return defaultStringIfNotDefined(getStringTranslation(getBundleKey(), language),
+        getBundleDefault());
+  }
+
   public BigDecimal getLimit() {
     if (limit == null) {
       limit = byteMultiplier.pow(power);
@@ -74,13 +79,11 @@ public enum MemoryUnit {
     return power;
   }
 
-  /**
-   * Gets the translation of an element
-   * @param key
-   * @return
-   */
   private static String getStringTranslation(final String key) {
-    String language = MessageManager.getLanguage();
+    return getStringTranslation(key, MessageManager.getLanguage());
+  }
+
+  private static String getStringTranslation(final String key, final String language) {
     LocalizationBundle rl =
         ResourceLocator.getLocalizationBundle("org.silverpeas.util.multilang.util", language);
     return rl.getString(key);

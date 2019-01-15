@@ -45,12 +45,12 @@ public class CompletePublication implements Serializable {
   /**
    * The publications linked to the current publication
    */
-  private List<Link> linkList;
+  private List<PublicationLink> linkList;
 
   /**
    * The publications which are a reference to the current publication
    */
-  private List<Link> reverseLinkList;
+  private List<PublicationLink> reverseLinkList;
 
   private List<ValidationStep> validationSteps = null;
 
@@ -59,8 +59,8 @@ public class CompletePublication implements Serializable {
    * @param linkList The publications linked to the current publication
    * @param reverseLinkList The publications which are a reference to the current publication
    */
-  public CompletePublication(PublicationDetail pubDetail, List<Link> linkList,
-      List<Link> reverseLinkList) {
+  public CompletePublication(PublicationDetail pubDetail, List<PublicationLink> linkList,
+      List<PublicationLink> reverseLinkList) {
     this.pubDetail = pubDetail;
     this.linkList = linkList;
     this.reverseLinkList = reverseLinkList;
@@ -78,14 +78,14 @@ public class CompletePublication implements Serializable {
   /**
    * @return the linkList
    */
-  public List<Link> getLinkList() {
+  public List<PublicationLink> getLinkList() {
     return linkList;
   }
 
   /**
    * @return the reverseLinkList
    */
-  public List<Link> getReverseLinkList() {
+  public List<PublicationLink> getReverseLinkList() {
     return reverseLinkList;
   }
 
@@ -97,11 +97,11 @@ public class CompletePublication implements Serializable {
     return validationSteps;
   }
 
-  public List<Link> getLinkedPublications(String userId) {
-    List<Link> publications = getAuthorizedLinks(userId, linkList);
+  public List<PublicationLink> getLinkedPublications(String userId) {
+    List<PublicationLink> publications = getAuthorizedLinks(userId, linkList);
     // remove reverse link linked by the same publication
-    List<Link> reverseLinkListWithoutDuplicates = new ArrayList<>();
-    for (Link reverseLink : reverseLinkList) {
+    List<PublicationLink> reverseLinkListWithoutDuplicates = new ArrayList<>();
+    for (PublicationLink reverseLink : reverseLinkList) {
       if (!isReverseLinkADuplication(publications, reverseLink)) {
         reverseLinkListWithoutDuplicates.add(reverseLink);
       }
@@ -110,8 +110,8 @@ public class CompletePublication implements Serializable {
     return publications;
   }
 
-  private boolean isReverseLinkADuplication(List<Link> links, Link linkToTest) {
-    for (Link link : links) {
+  private boolean isReverseLinkADuplication(List<PublicationLink> links, PublicationLink linkToTest) {
+    for (PublicationLink link : links) {
       if (link.getTarget().equals(linkToTest.getTarget())) {
         return true;
       }
@@ -119,12 +119,12 @@ public class CompletePublication implements Serializable {
     return false;
   }
 
-  private List<Link> getAuthorizedLinks(String userId, List<Link> links) {
+  private List<PublicationLink> getAuthorizedLinks(String userId, List<PublicationLink> links) {
     PublicationService publicationService = PublicationService.get();
     PublicationAccessController accessController =
         ServiceProvider.getService(PublicationAccessController.class);
-    List<Link> authorizedLinks = new ArrayList<>();
-    for (Link link : links) {
+    List<PublicationLink> authorizedLinks = new ArrayList<>();
+    for (PublicationLink link : links) {
       PublicationPK pk = new PublicationPK(link.getTarget().getLocalId(),
           link.getTarget().getComponentInstanceId());
       if (accessController.isUserAuthorized(userId, pk)) {

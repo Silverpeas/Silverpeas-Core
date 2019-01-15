@@ -1,3 +1,8 @@
+$if(notification_attachments)$
+<p>Angehängte Dateien:</p>
+  $notification_attachments:attachmentLinks_de(attachment=it)$
+$endif$
+
 $if(notification_link)$
   <div itemscope itemtype="http://schema.org/EmailMessage">
     <div itemprop="action" itemscope itemtype="http://schema.org/ViewAction">

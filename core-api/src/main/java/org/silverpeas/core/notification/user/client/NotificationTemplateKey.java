@@ -24,11 +24,23 @@
 package org.silverpeas.core.notification.user.client;
 
 public enum NotificationTemplateKey {
-  notification_sendername,
-  notification_senderemail,
-  notification_receiver_users,
-  notification_receiver_groups,
-  notification_serverurl,
-  notification_link,
-  notification_linkLabel;
+  NOTIFICATION_SENDER_NAME("notification_sendername"),
+  NOTIFICATION_SENDER_EMAIL("notification_senderemail"),
+  NOTIFICATION_RECEIVER_USERS("notification_receiver_users"),
+  NOTIFICATION_RECEIVER_GROUPS("notification_receiver_groups"),
+  NOTIFICATION_SERVER_URL("notification_serverurl"),
+  NOTIFICATION_LINK("notification_link"),
+  NOTIFICATION_LINK_LABEL("notification_linkLabel"),
+  NOTIFICATION_ATTACHMENTS("notification_attachments");
+
+  private final String name;
+
+  NotificationTemplateKey(final String name) {
+    this.name = name;
+  }
+
+  @Override
+  public String toString() {
+    return this.name;
+  }
 }

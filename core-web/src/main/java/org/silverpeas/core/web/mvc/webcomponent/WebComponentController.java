@@ -23,13 +23,9 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
-import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Base class for all web component controller.
@@ -42,16 +38,6 @@ public abstract class WebComponentController<T extends WebComponentRequestContex
     extends AbstractComponentSessionController {
 
   boolean onCreationCalled = false;
-
-  /**
-   * This static method has to be implemented by each web component controller concrete class if
-   * the corresponding Silverpeas component supports the manual notification.
-   * @return a provider of {@link UserNotification} objects for manual notification. By default,
-   * returns null.
-   */
-  public static Function<Map<String, String>, UserNotification> getManualUserNotificationProvider() {
-    return null;
-  }
 
   public WebComponentController(final MainSessionController controller, final String spaceId,
       final String componentId) {

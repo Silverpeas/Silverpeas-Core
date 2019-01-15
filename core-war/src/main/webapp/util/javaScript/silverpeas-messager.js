@@ -41,6 +41,7 @@
        * Opens the messager window to write a message. The window's content is provided by the
        * userNotification/jsp/notificationSender.jsp JSP. Parameters can be passed to customize the
        * message to send. Among the parameters, some of them are predefined:
+       * - contributionId: the unique identifier of a contribution for which the messager is opened.
        * - recipientUsers: a preselected coma-separated list of the recipient user's identifiers
        * - recipientGroups: a preselected coma-separated list of the recipient group's identifiers
        * - recipientEdition: a boolean indicated if the recipient(s) of the message can be selected
@@ -91,6 +92,8 @@
        * Sends the message described by the specified notification descriptor. The descriptor is an
        * object with at least the following attributes:
        * - 'componentId' with the unique identifier of a component instance. Can be not set.
+       * - 'contributionId' with the unique identifier of a contribution. If set, then any
+       * attachments are searching in order to referring them automatically in the message.
        * - 'recipientUsers' with a comma-separated list of recipient user's identifiers,
        * - 'recipientGroups' with a comma-separated list of recipient group's identifiers.
        * - 'manual' with a boolean indicating if the message is set explicitly by a user (true) or

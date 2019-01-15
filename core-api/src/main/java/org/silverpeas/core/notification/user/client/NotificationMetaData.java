@@ -36,10 +36,18 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.notification_receiver_groups;
-import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.notification_receiver_users;
+import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.NOTIFICATION_RECEIVER_GROUPS;
+import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.NOTIFICATION_RECEIVER_USERS;
 import static org.silverpeas.core.ui.DisplayI18NHelper.verifyLanguage;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -49,12 +57,12 @@ public class NotificationMetaData implements java.io.Serializable {
   public static final String BEFORE_MESSAGE_FOOTER_TAG = "<!--BEFORE_MESSAGE_FOOTER-->";
   public static final String AFTER_MESSAGE_FOOTER_TAG = "<!--AFTER_MESSAGE_FOOTER-->";
   private static final String SENDER_MESSAGE_ATTRIBUTE = "senderMessage";
+  private static final String BREAK_LINE_REGEXP = "[\\n\\r]";
 
   private int messageType;
   private Date date;
   private String sender;
   private String source;
-  private String link;
   private String sessionId;
   private final Collection<UserRecipient> userRecipients = new ArrayList<>();
   private final Collection<UserRecipient> userRecipientsToExclude = new ArrayList<>();
@@ -65,13 +73,11 @@ public class NotificationMetaData implements java.io.Serializable {
   private String fileName;
   private boolean sendImmediately = false;
   private NotifAction action;
-  private Map<String, NotificationResourceData> notificationResourceData =
+  private final Map<String, NotificationResourceData> notificationResourceData =
       new HashMap<>();
-
-  private Map<String, String> titles = new HashMap<>();
-  private Map<String, String> contents = new HashMap<>();
-  private Map<String, String> linkLabels = new HashMap<>();
-
+  private final Map<String, String> titles = new HashMap<>();
+  private final Map<String, String> contents = new HashMap<>();
+  private final Map<String, Link> links = new HashMap<>();
   private Map<String, SilverpeasTemplate> templates;
   private Map<String, SilverpeasTemplate> templatesMessageFooter;
 
@@ -79,9 +85,6 @@ public class NotificationMetaData implements java.io.Serializable {
   private boolean displayReceiversInFooter = false;
 
   private boolean isManualUserOne = false;
-
-  protected NotificationManager notificationManager = null;
-
 
   /**
    * Default Constructor
@@ -119,7 +122,6 @@ public class NotificationMetaData implements java.io.Serializable {
     date = new Date();
     sender = "";
     source = "";
-    link = "";
     sessionId = "";
     componentId = "";
     isAnswerAllowed = false;
@@ -245,12 +247,12 @@ public class NotificationMetaData implements java.io.Serializable {
         String receiverUsers = getUserReceiverFormattedList();
         if (StringUtil.isDefined(receiverUsers)) {
           templateMessageFooter
-              .setAttribute(notification_receiver_users.toString(), receiverUsers);
+              .setAttribute(NOTIFICATION_RECEIVER_USERS.toString(), receiverUsers);
         }
         String receiverGroups = getGroupReceiverFormattedList();
         if (StringUtil.isDefined(receiverGroups)) {
           templateMessageFooter
-              .setAttribute(notification_receiver_groups.toString(), receiverGroups);
+              .setAttribute(NOTIFICATION_RECEIVER_GROUPS.toString(), receiverGroups);
         }
       } catch (NotificationException e) {
         SilverLogger.getLogger(this).error(e);
@@ -258,7 +260,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
       String messageFooter =
           templateMessageFooter.applyFileTemplate("messageFooter" + '_' + language)
-              .replaceAll("[\\n\\r]", "");
+              .replaceAll(BREAK_LINE_REGEXP, "");
       if (messageFooter.length() > 0) {
         result.append(messageFooter);
       }
@@ -294,8 +296,9 @@ public class NotificationMetaData implements java.io.Serializable {
   private void appendExtraMessageHtmlFragment(final StringBuilder messageContent,
       final String language) {
     final String extraMessage = getOriginalExtraMessage();
-    if (isDefined(extraMessage) &&
-        !messageContent.toString().replace("\r", "").contains(extraMessage.replace("\r", ""))) {
+    if (isDefined(extraMessage) && !messageContent.toString()
+        .replaceAll(BREAK_LINE_REGEXP, "")
+        .contains(extraMessage.replaceAll(BREAK_LINE_REGEXP, ""))) {
       SilverpeasTemplate templateRepository =
           SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
       templateRepository.setAttribute(SENDER_MESSAGE_ATTRIBUTE, extraMessage);
@@ -353,19 +356,32 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   /**
+   * Gets message link in the default language of the platform.
+   * @return the message link
+   */
+  public Link getLink() {
+    return getLink(DisplayI18NHelper.getDefaultLanguage());
+  }
+
+  /**
+   * Gets the message link in the given language.
+   * @param language the ISO 631-1 code of a language supported by Silverpeas.
+   * @return the message link.
+   */
+  public Link getLink(final String language) {
+    final Link link = this.links.get(language);
+    if (link == null) {
+      return Link.EMPTY_LINK;
+    }
+    return link;
+  }
+
+  /**
    * Set message link
    * @param link the link to be set
    */
   public void setLink(String link) {
-    this.link = link;
-  }
-
-  /**
-   * Get message link
-   * @return the message link
-   */
-  public String getLink() {
-    return link;
+    this.links.put(DisplayI18NHelper.getDefaultLanguage(), new Link(link, ""));
   }
 
   /**
@@ -382,20 +398,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param language the language of the linkLabel
    */
   public void setLink(Link link, String language) {
-    this.link = link.getLinkUrl();
-    linkLabels.put(language, link.getLinkLabel());
-  }
-
-  /**
-   * Get message linkLabel
-   * @return the message linkLabel
-   */
-  public String getLinkLabel() {
-    return getLinkLabel(DisplayI18NHelper.getDefaultLanguage());
-  }
-
-  public String getLinkLabel(String language) {
-    return linkLabels.get(language);
+    this.links.put(language, link);
   }
 
   /**
@@ -412,6 +415,19 @@ public class NotificationMetaData implements java.io.Serializable {
    */
   public String getSessionId() {
     return sessionId;
+  }
+
+  /**
+   * Sets the unique identifier of a resource in Silverpeas that can have attachments. The target
+   * is set for each {@link NotificationResourceData} instances embedded by this metadata.
+   * @param attachmentTargetId the unique identifier of a resource. Generally, the one of a
+   * contribution. If not defined, then nothing is done.
+   */
+  public void setAttachmentTargetId(final String attachmentTargetId) {
+    if (StringUtil.isDefined(attachmentTargetId)) {
+      this.notificationResourceData.forEach(
+          (key, value) -> value.setAttachmentTargetId(attachmentTargetId));
+    }
   }
 
   /**
@@ -703,9 +719,9 @@ public class NotificationMetaData implements java.io.Serializable {
     allUniqueUserRecipients.addAll(users);
 
     // Then get users included in groups
+    final NotificationManager notificationManager = getNotificationManager();
     for (GroupRecipient group : groups) {
-      allUniqueUserRecipients
-          .addAll(getNotificationManager().getUsersFromGroup(group.getGroupId()));
+      allUniqueUserRecipients.addAll(notificationManager.getUsersFromGroup(group.getGroupId()));
     }
 
     // Then exclude users that don't have to be notified
@@ -719,9 +735,10 @@ public class NotificationMetaData implements java.io.Serializable {
       throws NotificationException {
     HashSet<UserRecipient> usersSet = new HashSet<>();
     usersSet.addAll(getUserRecipients());
+    final NotificationManager notificationManager = getNotificationManager();
     for (GroupRecipient group : getGroupRecipients()) {
       if (!displayGroup(group.getGroupId())) {
-        usersSet.addAll(getNotificationManager().getUsersFromGroup(group.getGroupId()));
+        usersSet.addAll(notificationManager.getUsersFromGroup(group.getGroupId()));
       }
     }
 
@@ -819,9 +836,6 @@ public class NotificationMetaData implements java.io.Serializable {
    * @return the notification manager instance.
    */
   private NotificationManager getNotificationManager() {
-    if (notificationManager == null) {
-      notificationManager = NotificationManager.get();
-    }
-    return notificationManager;
+    return NotificationManager.get();
   }
 }

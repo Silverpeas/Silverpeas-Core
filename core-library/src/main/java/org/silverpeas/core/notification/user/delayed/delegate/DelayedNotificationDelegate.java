@@ -24,6 +24,7 @@
 package org.silverpeas.core.notification.user.delayed.delegate;
 
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -42,6 +43,7 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.notification.user.server.NotificationServer;
 import org.silverpeas.core.notification.user.server.NotificationServerException;
+import org.silverpeas.core.notification.user.AttachmentLink;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.CollectionUtil;
@@ -49,6 +51,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 
@@ -407,6 +410,15 @@ public class DelayedNotificationDelegate extends AbstractNotification {
       syntheseResource.setUrl(computeURL(synthese.getUserId(), syntheseResource.getUrl()));
     }
 
+    if (StringUtil.isDefined(resource.getAttachmentTargetId()) &&
+        StringUtil.isDefined(resource.getComponentInstanceId())) {
+      ResourceReference attachmentTarget = new ResourceReference(resource.getAttachmentTargetId(),
+          resource.getComponentInstanceId());
+      final List<AttachmentLink> attachmentLinks =
+          AttachmentLink.getForContribution(attachmentTarget, synthese.getLanguage());
+      syntheseResource.setAttachmentLinks(attachmentLinks);
+    }
+
     // Browsing notifications
     SyntheseResourceNotification syntheseNotification;
     boolean isPreviousHasMessage = false;
@@ -563,6 +575,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     // Hide Header and Footer in SMTP message
     notificationData.getTargetParam().put(NotificationParameterNames.HIDESMTPHEADERFOOTER,
         true);
+
 
     // Set the message
     notificationData.setMessage(synthese.getMessage());

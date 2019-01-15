@@ -44,16 +44,22 @@
 <c:set var="groups" value="${requestScope.recipientGroups}"/>
 <c:set var="recipientsEditable" value="${requestScope.recipientEdition}"/>
 <c:set var="componentId" value="${requestScope.componentId}"/>
+<c:set var="contributionId" value="${requestScope.contributionId}"/>
 <c:set var="subject" value="${requestScope.title}"/>
 
 <c:set var="requiredReceiversErrorMessage"><fmt:message key="GML.thefield"/> <b><fmt:message key="addressees"/></b> <fmt:message key="GML.isRequired"/></c:set>
 <c:set var="requiredSubjectErrorMessage"><fmt:message key="GML.thefield"/> <b><fmt:message key="GML.notification.subject"/></b> <fmt:message key="GML.isRequired"/></c:set>
 <view:link href="/util/styleSheets/fieldset.css"/>
+<view:includePlugin name="wysiwyg"/>
 <view:loadScript src="/util/javaScript/checkForm.js"/>
 <script type="text/javascript">
   var userSelectApi;
 
   function onPageReady() {
+     <view:wysiwyg replace="content" language="${language}"
+                   toolbar="userNotification"
+                   activateWysiwygBackupManager="false"
+                   height="300"/>
     ${recipientsEditable ? 'userSelectApi.focus();' : 'document.querySelector("#notification-data-subject").focus();'}
   }
 
@@ -68,7 +74,7 @@
     }
     if (!SilverpeasError.show()) {
       var elements = ['#notification-data-manual', 'recipientUsers', 'recipientGroups',
-        '#notification-data-subject', '#notification-data-message'];
+        '#notification-data-subject'];
       for (var i = 0; i < elements.length; i++) {
         var $input;
         if (elements[i].indexOf('#') === 0) {
@@ -78,6 +84,7 @@
         }
         notification[$input.name] = $input.value;
       }
+      notification['content'] = CKEDITOR.instances['notification-data-message'].getData();
       return sp.messager.send(notification);
     }
     return false;

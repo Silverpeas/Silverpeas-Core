@@ -69,11 +69,23 @@ public class UserNotificationWrapper implements UserNotification {
   public UserNotificationWrapper setContent(final String content) {
     if (StringUtil.isDefined(content)) {
       final NotificationMetaData metaData = notification.getNotificationMetaData();
-      final String htmlContent = Encode.forHtml(content);
-      metaData.setContent(htmlContent);
+      metaData.setContent(content);
       for (String lang : DisplayI18NHelper.getLanguages()) {
-        metaData.addExtraMessage(htmlContent, lang);
+        metaData.addExtraMessage(content, lang);
       }
+    }
+    return this;
+  }
+
+  /**
+   * Sets a link for all the attachments of the specified contribution.
+   * @param contributionId the unique identifier of the contribution in the component instance
+   * from which this notification was built.
+   * @return itself.
+   */
+  public UserNotificationWrapper setAttachmentLinksFor(final String contributionId) {
+    if (StringUtil.isDefined(contributionId)) {
+      notification.getNotificationMetaData().setAttachmentTargetId(contributionId);
     }
     return this;
   }
