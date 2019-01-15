@@ -5,6 +5,7 @@ import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.FileLink;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.memory.MemoryUnit;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class AttachmentLink extends FileLink {
     final AttachmentService attachmentService = AttachmentService.get();
     return attachmentService.listDocumentsByForeignKey(resource, language).stream().map(d -> {
       final String label = StringUtil.isDefined(d.getTitle()) ? d.getTitle() : d.getFilename();
-      return new AttachmentLink(d.getAttachmentURL(), label, d.getSize(), language);
+      return new AttachmentLink(URLUtil.getCurrentServerURL()+d.getUniversalURL(), label, d.getSize(), language);
     }).collect(Collectors.toList());
   }
 

@@ -144,7 +144,7 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
         context.get(NotificationContext.PUBLICATION_ID) :
         context.get(NotificationContext.CONTRIBUTION_ID);
     userNotification.setTitle(context.get("title"))
-        .setContent(context.get("content").replaceAll("[\\n\\r]", ""))
+        .setContent(context.get("content").replaceAll("[\\n\\r\\t]", ""))
         .setAttachmentLinksFor(contributionId)
         .setSender(getUserDetail())
         .setRecipientUsers(context.getAsList("recipientUsers"))
