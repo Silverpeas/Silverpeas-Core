@@ -219,7 +219,7 @@ public class SimpleDocumentService
       doc.setXmlFormId(xmlFormName);
       repository.updateDocument(session, doc, true);
       session.save();
-    } catch (RepositoryException | IOException ex) {
+    } catch (RepositoryException ex) {
       throw new AttachmentException(ex);
     }
   }

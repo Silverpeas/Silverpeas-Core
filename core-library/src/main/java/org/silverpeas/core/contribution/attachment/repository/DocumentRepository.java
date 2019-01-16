@@ -25,6 +25,7 @@ package org.silverpeas.core.contribution.attachment.repository;
 
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -41,6 +42,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
@@ -74,6 +76,7 @@ import java.util.List;
 import java.util.Set;
 
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 /**
@@ -222,82 +225,86 @@ public class DocumentRepository {
    * @throws RepositoryException
    */
   public SimpleDocumentPK copyDocument(Session session, HistorisedDocument document,
-      WAPrimaryKey destination) throws RepositoryException, IOException {
-    prepareComponentAttachments(destination.getInstanceId(), document.getFolder());
-    SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
-    List<SimpleDocument> history = new ArrayList<SimpleDocument>(document.getHistory());
-    Collections.reverse(history);
-    history.add(document);
-    SimpleDocument targetDoc = new HistorisedDocument(history.remove(0));
-    targetDoc.setNodeName(null);
-    targetDoc.setPK(pk);
-    targetDoc.setDocumentType(document.getDocumentType());
-    targetDoc.setForeignId(destination.getId());
-    targetDoc.setUpdatedBy(null);
-    targetDoc.computeNodeName();
-    pk = createDocument(session, targetDoc);
-    if (I18NHelper.isI18nContentEnabled()) {
-      // The first version can have several language contents.
-      Set<String> checkedLanguages = new HashSet<String>();
-      checkedLanguages.add(targetDoc.getLanguage());
-      for (String language : I18NHelper.getAllSupportedLanguages()) {
-        if (!checkedLanguages.contains(language)) {
-          HistorisedDocument temp =
-              (HistorisedDocument) findDocumentById(session, document.getPk(), language);
-          List<SimpleDocumentVersion> versions = temp.getHistory();
-          if (!versions.isEmpty()) {
-            SimpleDocumentVersion firstVersion = versions.get(versions.size() - 1);
-            if (!checkedLanguages.contains(firstVersion.getLanguage())) {
-              addContent(session, targetDoc.getPk(), firstVersion.getAttachment());
-            }
-          }
-          checkedLanguages.add(language);
-        }
-      }
-    }
-    unlock(session, targetDoc, false);
-    VersionManager versionManager = session.getWorkspace().getVersionManager();
-    String currentVersion = targetDoc.getVersion();
-    for (SimpleDocument doc : history) {
+      WAPrimaryKey destination) throws RepositoryException {
+    try {
+      prepareComponentAttachments(destination.getInstanceId(), document.getFolder());
+      SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
+      List<SimpleDocument> history = new ArrayList<>(document.getHistory());
+      Collections.reverse(history);
+      history.add(document);
+      SimpleDocument targetDoc = new HistorisedDocument(history.remove(0));
+      FirstVersionManager.computeIfAbsent(new DocumentVersion(targetDoc));
+      targetDoc.setNodeName(null);
+      targetDoc.setPK(pk);
+      targetDoc.setDocumentType(document.getDocumentType());
+      targetDoc.setForeignId(destination.getId());
+      targetDoc.setUpdatedBy(null);
+      targetDoc.computeNodeName();
+      pk = createDocument(session, targetDoc);
       if (I18NHelper.isI18nContentEnabled()) {
-        // One language content is aimed by a version. So the first step here is to search the
-        // language content updated.
-        Set<String> checkedLanguages = new HashSet<String>();
-        checkedLanguages.add(doc.getLanguage());
+        // The first version can have several language contents.
+        Set<String> checkedLanguages = new HashSet<>();
+        checkedLanguages.add(targetDoc.getLanguage());
         for (String language : I18NHelper.getAllSupportedLanguages()) {
           if (!checkedLanguages.contains(language)) {
-            SimpleDocument temp = findDocumentById(session, doc.getPk(), language);
-            if (temp != null && !checkedLanguages.contains(temp.getLanguage()) &&
-                temp.getUpdated().after(doc.getUpdated())) {
-              doc = temp;
+            HistorisedDocument temp = (HistorisedDocument) findDocumentById(session, document.getPk(), language);
+            List<SimpleDocumentVersion> versions = temp.getHistory();
+            if (!versions.isEmpty()) {
+              SimpleDocumentVersion firstVersion = versions.get(versions.size() - 1);
+              if (!checkedLanguages.contains(firstVersion.getLanguage())) {
+                addContent(session, targetDoc.getPk(), firstVersion.getAttachment());
+              }
             }
             checkedLanguages.add(language);
           }
         }
       }
-      HistorisedDocument targetHistorisedDoc = new HistorisedDocument(doc);
-      targetHistorisedDoc.setPK(pk);
-      targetHistorisedDoc.setForeignId(destination.getId());
-      targetHistorisedDoc.setNodeName(targetDoc.getNodeName());
-      // The reservation is not copied.
-      targetHistorisedDoc.release();
-      Node masterDocumentNode = session.getNodeByIdentifier(pk.getId());
-      if (!currentVersion.equals(doc.getVersion())) {
-        // In this case, a functional version is performed, so the common tools are used
-        lock(session, targetDoc, doc.getUpdatedBy());
-        converter.fillNode(targetHistorisedDoc, masterDocumentNode);
-        unlock(session, targetHistorisedDoc, false);
-        currentVersion = targetHistorisedDoc.getVersion();
-      } else {
-        // In this case, the version is a technical one (setOrder for example) and technical
-        // tools are used
-        versionManager.checkout(masterDocumentNode.getPath());
-        converter.fillNode(targetHistorisedDoc, masterDocumentNode);
-        session.save();
-        versionManager.checkin(masterDocumentNode.getPath());
+      unlock(session, targetDoc, false);
+      VersionManager versionManager = session.getWorkspace().getVersionManager();
+      String previousVersion = targetDoc.getVersion();
+      for (SimpleDocument doc : history) {
+        if (I18NHelper.isI18nContentEnabled()) {
+          // One language content is aimed by a version. So the first step here is to search the
+          // language content updated.
+          Set<String> checkedLanguages = new HashSet<>();
+          checkedLanguages.add(doc.getLanguage());
+          for (String language : I18NHelper.getAllSupportedLanguages()) {
+            if (!checkedLanguages.contains(language)) {
+              SimpleDocument temp = findDocumentById(session, doc.getPk(), language);
+              if (temp != null && !checkedLanguages.contains(temp.getLanguage()) &&
+                  temp.getUpdated().after(doc.getUpdated())) {
+                doc = temp;
+              }
+              checkedLanguages.add(language);
+            }
+          }
+        }
+        HistorisedDocument targetHistorisedDoc = new HistorisedDocument(doc);
+        targetHistorisedDoc.setPK(pk);
+        targetHistorisedDoc.setForeignId(destination.getId());
+        targetHistorisedDoc.setNodeName(targetDoc.getNodeName());
+        // The reservation is not copied.
+        targetHistorisedDoc.release();
+        Node masterDocumentNode = session.getNodeByIdentifier(pk.getId());
+        if (!previousVersion.equals(doc.getVersion())) {
+          // In this case, a functional version is performed, so the common tools are used
+          lock(session, targetDoc, doc.getUpdatedBy());
+          converter.fillNode(targetHistorisedDoc, masterDocumentNode);
+          unlock(session, targetHistorisedDoc, false);
+          previousVersion = targetHistorisedDoc.getVersion();
+        } else {
+          // In this case, the version is a technical one (setOrder for example) and technical
+          // tools are used
+          versionManager.checkout(masterDocumentNode.getPath());
+          converter.fillNode(targetHistorisedDoc, masterDocumentNode);
+          session.save();
+          versionManager.checkin(masterDocumentNode.getPath());
+        }
       }
+      return pk;
+    } finally {
+      FirstVersionManager.clear();
     }
-    return pk;
   }
 
   /**
@@ -308,11 +315,9 @@ public class DocumentRepository {
    * @param document
    * @param updateLastModifiedData
    * @throws RepositoryException
-   * @throws IOException
    */
   public void updateDocument(Session session, SimpleDocument document,
-      final boolean updateLastModifiedData) throws
-      RepositoryException, IOException {
+      final boolean updateLastModifiedData) throws RepositoryException {
     Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
     if (updateLastModifiedData) {
       if (StringUtil.isDefined(document.getEditedBy())) {
@@ -434,7 +439,7 @@ public class DocumentRepository {
       deleteContent(documentNode, documentPk.getInstanceId());
       deleteDocumentNode(documentNode);
     } catch (ItemNotFoundException infex) {
-
+      SilverLogger.getLogger(this).silent(infex);
     }
   }
 
@@ -530,7 +535,7 @@ public class DocumentRepository {
       Node documentNode = session.getNodeByIdentifier(documentPk.getId());
       document = converter.convertNode(documentNode, lang);
     } catch (ItemNotFoundException infex) {
-
+      SilverLogger.getLogger(this).silent(infex);
     }
     return document;
   }
@@ -1180,21 +1185,27 @@ public class DocumentRepository {
 
   /**
    * Check the document in.
-   *
    * @param documentNode the node to checkin.
    * @param isMajor true if the new version is a major one - false otherwise.
    * @return the document for this new version.
-   * @throws RepositoryException
+   * @throws RepositoryException on technical JCR error.
    */
   SimpleDocument checkinNode(Node documentNode, String lang, boolean isMajor) throws
       RepositoryException {
+    final DocumentVersion firstVersion = FirstVersionManager.remove();
+    if (!documentNode.hasProperty(SLV_PROPERTY_MAJOR) && firstVersion != null) {
+      isMajor = firstVersion.isMajor();
+      int major = firstVersion.getMajor();
+      int minor = firstVersion.getMinor();
+      documentNode.setProperty(SLV_PROPERTY_MAJOR, isMajor ? major - 1 : major);
+      documentNode.setProperty(SLV_PROPERTY_MINOR, isMajor ? minor : minor - 1);
+    }
     VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
     String versionLabel = converter.updateVersion(documentNode, lang, isMajor);
     documentNode.getSession().save();
     Version lastVersion = versionManager.checkin(documentNode.getPath());
     lastVersion.getContainingHistory().addVersionLabel(lastVersion.getName(), versionLabel, false);
-    SimpleDocument doc = converter.convertNode(documentNode, lang);
-    return doc;
+    return converter.convertNode(documentNode, lang);
   }
 
   /**
@@ -1256,8 +1267,8 @@ public class DocumentRepository {
     }
   }
 
-  public long storeContent(SimpleDocument document, InputStream in, boolean update) throws
-      RepositoryException, IOException {
+  public long storeContent(SimpleDocument document, InputStream in, boolean update)
+      throws IOException {
     File file = new File(document.getAttachmentPath());
     if (update) {
       File parentFile = file.getParentFile();
@@ -1270,13 +1281,11 @@ public class DocumentRepository {
     return file.length();
   }
 
-  public long storeContent(SimpleDocument document, InputStream in) throws
-      RepositoryException, IOException {
+  public long storeContent(SimpleDocument document, InputStream in) throws IOException {
     return storeContent(document, in, false);
   }
 
-  public void duplicateContent(SimpleDocument origin, SimpleDocument document)
-      throws IOException, RepositoryException {
+  public void duplicateContent(SimpleDocument origin, SimpleDocument document) throws IOException {
     String originDir = origin.getDirectoryPath(null);
     String targetDir = document.getDirectoryPath(null);
     targetDir = targetDir.replace('/', File.separatorChar);
@@ -1372,7 +1381,7 @@ public class DocumentRepository {
   public void mergeAttachment(Session session, SimpleDocument attachment, SimpleDocument clone)
       throws RepositoryException {
     Node originalNode = session.getNodeByIdentifier(attachment.getId());
-    Set<String> existingAttachements = new HashSet<String>(I18NHelper.getNumberOfLanguages());
+    Set<String> existingAttachements = new HashSet<>(I18NHelper.getNumberOfLanguages());
     for (Node child : new NodeIterable(originalNode.getNodes())) {
       existingAttachements.add(child.getName());
     }
@@ -1412,6 +1421,106 @@ public class DocumentRepository {
       if (!property.getDefinition().isProtected()) {
         target.setProperty(property.getName(), property.getValue());
       }
+    }
+  }
+
+  /**
+   * Represents a version of a document.
+   */
+  public static class DocumentVersion {
+    private final int major;
+    private final int minor;
+
+    public DocumentVersion(final int major, final int minor) {
+      this.major = major;
+      this.minor = minor;
+    }
+
+    public DocumentVersion(final SimpleDocument document) {
+      this(document.getMajorVersion(), document.getMinorVersion());
+    }
+
+    boolean isMajor() {
+      return minor == 0;
+    }
+
+    int getMajor() {
+      return major;
+    }
+
+    int getMinor() {
+      return minor;
+    }
+  }
+
+  /**
+   * In charge of registering the first version to apply for {@link HistorisedDocument}.
+   * <p>
+   * When a first version will be registered (document copy as an example), using this manager
+   * permits to apply the right first version.
+   * </p>
+   * <p>
+   * BE CAREFUL: the repository of this manager is the thread memory, so it MUST be used into a
+   * try finally statement:
+   * <pre>
+   *   try {
+   *     ...
+   *     FirstVersionManager.set(new Version(...));
+   *     ...
+   *   } finally {
+   *     FirstVersionManager.clear();
+   *   }
+   * </pre> or
+   * <pre>
+   *   try {
+   *     ...
+   *     FirstVersionManager.computeIfAbsent(new Version(...));
+   *     ...
+   *   } finally {
+   *     FirstVersionManager.clear();
+   *   }
+   * </pre>
+   * </p>
+   */
+  public static class FirstVersionManager {
+
+    private static final String CACHE_KEY = DocumentVersion.class.getSimpleName() + "@theFirst";
+
+    private FirstVersionManager() {
+      throw new IllegalAccessError("Utility class");
+    }
+
+    /**
+     * Gets first version and computes it if it does not yet exist.
+     * @param version a version to register if none yet registered.
+     * @return the already registered version if any, the given version otherwise.
+     */
+    public static DocumentVersion computeIfAbsent(final DocumentVersion version) {
+      return getThreadCache().computeIfAbsent(CACHE_KEY, DocumentVersion.class, () -> version);
+    }
+
+    /**
+     * Registers the given version version, even if an other one is already registered.
+     * <p>The previous one registered if any is lost.</p>
+     * @param version a version to register.
+     */
+    public static void set(final DocumentVersion version) {
+      getThreadCache().put(CACHE_KEY, version);
+    }
+
+    /**
+     * Clears the registered version as a first one.
+     */
+    public static void clear() {
+      remove();
+    }
+
+    static DocumentVersion remove() {
+      return getThreadCache().remove(CACHE_KEY, DocumentVersion.class);
+    }
+
+    private static SimpleCache getThreadCache() {
+      return getThreadCacheService().getCache();
     }
   }
 }
