@@ -167,6 +167,11 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
     if (!commentAuthorId.equals(contentCreator.getId()) && canBeSent(content, contentCreator)) {
       interestedUsers.add(contentCreator.getId());
     }
+    User contentUpdater = content.getLastModifier();
+    if (contentUpdater != null && !contentUpdater.getId().equals(contentCreator.getId()) &&
+        !commentAuthorId.equals(contentUpdater.getId()) && canBeSent(content, contentUpdater)) {
+      interestedUsers.add(contentUpdater.getId());
+    }
     return interestedUsers;
   }
 
