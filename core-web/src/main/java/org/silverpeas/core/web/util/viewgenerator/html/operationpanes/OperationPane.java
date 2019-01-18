@@ -76,14 +76,14 @@ public interface OperationPane extends SimpleGraphicElement {
    * @param iconPath
    * @param label
    * @param action
-   * @param classes
+   * @param id allows to easily identify operation
    *
    */
-  public abstract void addOperation(String iconPath, String label, String action, String classes);
+  public abstract void addOperation(String iconPath, String label, String action, String id);
 
   public void addOperationOfCreation(String iconPath, String label, String action);
 
-  public void addOperationOfCreation(String iconPath, String label, String action, String classes);
+  public void addOperationOfCreation(String iconPath, String label, String action, String id);
 
   /**
    * Method declaration

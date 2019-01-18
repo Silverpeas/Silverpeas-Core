@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
+import org.apache.ecs.html.LI;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.TagUtil;
@@ -43,25 +44,22 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
   @Override
   public void addOperation(final String iconPath, final String label, final String action,
-      final String classes) {
-    StringBuilder operation = new StringBuilder();
-
+      final String id) {
     String operationLabel = label;
     if (!StringUtil.isDefined(label)) {
       operationLabel = action;
     }
 
-    String operationClasses = "yuimenuitemlabel";
-    if (StringUtil.isDefined(classes)) {
-      operationClasses += " " + classes.trim();
+    LI li = new LI();
+    li.setClass("yuimenuitem");
+    if (StringUtil.isDefined(id)) {
+      li.setID(id);
     }
-
     String href = TagUtil.formatHrefFromAction(action);
-    operation.append("<li class=\"yuimenuitem\"><a class=\"").append(operationClasses)
-        .append("\" ").append(href).append(">").append(operationLabel)
-        .append("</a></li>");
+    String a = "<a class=\"yuimenuitemlabel\" "+href+">"+operationLabel+"</a></li>";
+    li.addElement(a);
 
-    getStack().add(operation.toString());
+    getStack().add(li.toString());
   }
 
   @Override
