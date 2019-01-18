@@ -72,7 +72,7 @@ public class HTTPSessionInfo extends org.silverpeas.core.security.session.Sessio
       try {
         httpSession.invalidate();
       } catch (IllegalStateException ex) {
-        SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+        SilverLogger.getLogger(this).info(ex.getMessage(), ex);
       }
     }
     super.onClosed();
