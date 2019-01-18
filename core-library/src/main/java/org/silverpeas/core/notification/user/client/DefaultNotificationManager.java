@@ -952,7 +952,8 @@ public class DefaultNotificationManager extends AbstractNotification
         theExtraParams.put(LINKLABEL, params.getLink().getLinkLabel());
       }
 
-      if (StringUtil.isDefined(params.getNotificationResourceData().getAttachmentTargetId())) {
+      if (params.getNotificationResourceData() != null &&
+          StringUtil.isDefined(params.getNotificationResourceData().getAttachmentTargetId())) {
         theExtraParams.put(ATTACHMENT_TARGETID,
             params.getNotificationResourceData().getAttachmentTargetId());
         theExtraParams.put(COMPONENTID,

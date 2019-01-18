@@ -224,7 +224,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
     // Stopping the process if no user to notify
     if (stopWhenNoUserToNotify() && CollectionUtil.isEmpty(userIdsToNotify) &&
         CollectionUtil.isEmpty(groupIdsToNotify) && CollectionUtil.isEmpty(emailsToNotify)) {
-      SilverLogger.getLogger(this).error("No user or groups to notify!");
+      SilverLogger.getLogger(this).info("No user or groups to notify!");
       stop();
     }
 
