@@ -299,6 +299,33 @@ if (!window.SilverpeasError) {
   };
 }
 
+if (!window.SelectionPipeline) {
+  /**
+   * selection pipeline: the process that takes one or more decision functions to apply on
+   * the specified value in order to get either the matching value or a computed value from
+   * the matching value.
+   * @param value the value to match over the different decisions.
+   * @constructor
+   */
+  window.SelectionPipeline = function(value) {
+    this.either = function(decision) {
+      var result = decision(value);
+      return {
+        or : function(anotherDesision) {
+          if (!result) {
+            result = anotherDesision(value);
+          }
+          return this;
+        },
+
+        get : function() {
+          return result;
+        }
+      };
+    }
+  }
+}
+
 function SP_openWindow(page, name, width, height, options) {
   var top = (screen.height - height) / 2;
   var left = (screen.width - width) / 2;

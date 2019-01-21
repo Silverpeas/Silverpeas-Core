@@ -70,6 +70,6 @@ public abstract class AbstractCache extends AbstractSimpleCache
   @Override
   public <T> T computeIfAbsent(final Object key, final Class<T> classType, final int timeToLive,
       final Supplier<T> valueSupplier) {
-    return computeIfAbsent(key, classType, 0, DEFAULT_TIME_TO_IDLE, valueSupplier);
+    return computeIfAbsent(key, classType, timeToLive, DEFAULT_TIME_TO_IDLE, valueSupplier);
   }
 }
