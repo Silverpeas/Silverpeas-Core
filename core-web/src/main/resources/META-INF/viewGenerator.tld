@@ -1644,24 +1644,6 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Integer</type>
     </attribute>
-    <attribute>
-      <description>
-        Total number of pages.
-      </description>
-      <name>nbPages</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.Integer</type>
-    </attribute>
-    <attribute>
-      <description>
-      Param name to pass the page number (starting at 0) to be displayed.
-      </description>
-      <name>pageParam</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
   </tag>
   <tag>
     <description>Equivalent of the JSTL fmt:setBundle tag but with support for the ResourceWrapper</description>
