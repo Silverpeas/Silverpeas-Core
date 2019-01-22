@@ -181,6 +181,13 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_LIST_OF_USERS_AND_GROUPS_JS =
       "silverpeas-user-group-list.js";
 
+  private static final String RESOLVE_CALLBACK = "resolve();";
+
+  private static final String CANCEL_BUNDLE_KEY = "GML.cancel";
+  private static final String OK_BUNDLE_KEY = "GML.ok";
+  private static final String YES_BUNDLE_KEY = "GML.yes";
+  private static final String NO_BUNDLE_KEY = "GML.no";
+
   /**
    * Hidden constructor.
    */
@@ -211,7 +218,7 @@ public class JavascriptPluginInclusion {
   private static String generateDynamicPluginLoadingPromise(final SupportedWebPlugins plugin,
       final String src) {
     return generatePromise(plugin,
-        generateDynamicPluginLoading(src, plugin.name().toLowerCase() + "Plugin", "resolve();",
+        generateDynamicPluginLoading(src, plugin.name().toLowerCase() + "Plugin", RESOLVE_CALLBACK,
             null));
   }
 
@@ -386,8 +393,8 @@ public class JavascriptPluginInclusion {
     final LocalizationBundle bundle = ResourceLocator
         .getLocalizationBundle("org.silverpeas.pdcPeas.multilang.pdcBundle", language);
     final JavascriptBundleProducer bundleProducer = bundleVariableName("PdcBundle");
-    bundleProducer.add("pdc.l.o", bundle.getString("GML.ok"));
-    bundleProducer.add("pdc.l.c", bundle.getString("GML.cancel"));
+    bundleProducer.add("pdc.l.o", bundle.getString(OK_BUNDLE_KEY));
+    bundleProducer.add("pdc.l.c", bundle.getString(CANCEL_BUNDLE_KEY));
     bundleProducer.add("pdc.e.ma", bundle.getString("pdcPeas.theContent") + " " + bundle.getString("pdcPeas.MustContainsMandatoryAxis"));
     xhtml.addElement(scriptContent(bundleProducer.produce()));
 
@@ -400,7 +407,7 @@ public class JavascriptPluginInclusion {
           generateDynamicPluginLoading(JAVASCRIPT_PATH + SILVERPEAS_PDC_WIDGET,
               PDC.name().toLowerCase() + "Plugin",
               generateDynamicPluginLoading(JAVASCRIPT_PATH + SILVERPEAS_PDC, "__pdcDynLoad",
-                  "resolve();", null), null))));
+                  RESOLVE_CALLBACK, null), null))));
     }
     return xhtml;
   }
@@ -519,10 +526,10 @@ public class JavascriptPluginInclusion {
         .getLocalizationBundle("org.silverpeas.social.multilang.socialNetworkBundle", language);
     xhtml.addElement(scriptContent(bundleVariableName("RelationshipBundle")
         .add(ResourceLocator.getGeneralLocalizationBundle(language),
-            "GML.ok",
-            "GML.cancel",
-            "GML.yes",
-            "GML.no",
+            OK_BUNDLE_KEY,
+            CANCEL_BUNDLE_KEY,
+            YES_BUNDLE_KEY,
+            NO_BUNDLE_KEY,
             "GML.notification.message")
         .add(bundle,
             "myProfile.invitations.dialog.cancel.title",
@@ -849,13 +856,18 @@ public class JavascriptPluginInclusion {
   /**
    * Includes a dynamic loading of Silverpeas subscription JQuery Plugin.
    * @param xhtml the container into which the plugin loading code will be added.
-   * @param jsCallback javascript routine as string (without function declaration that wraps it)
-   * that is always performed after that the plugin existence is verified.
+   * @param language the user language.
    * @return the completed parent container.
    */
   static ElementContainer includeDynamicallySubscription(final ElementContainer xhtml,
-      final String jsCallback) {
-    xhtml.addElement(scriptContent(getDynamicSubscriptionJavascriptLoadContent(jsCallback)));
+      final String language) {
+    final LocalizationBundle bundle = ResourceLocator.getGeneralLocalizationBundle(language);
+    final JavascriptBundleProducer bundleProducer = bundleVariableName("SubscriptionBundle");
+    bundleProducer.add("s.s", bundle.getString("GML.subscribe"));
+    bundleProducer.add("s.u", bundle.getString("GML.unsubscribe"));
+    xhtml.addElement(scriptContent(bundleProducer.produce()));
+    xhtml.addElement(scriptContent(
+        generatePromise(SUBSCRIPTION, getDynamicSubscriptionJavascriptLoadContent(RESOLVE_CALLBACK))));
     return xhtml;
   }
 
@@ -943,7 +955,7 @@ public class JavascriptPluginInclusion {
         "org.silverpeas.notificationUser.multilang.notificationUserBundle", language);
     xhtml.addElement(scriptContent(bundleVariableName("NotificationBundle")
         .add("send", notifBundle.getString("Envoyer"))
-        .add("cancel", notifBundle.getString("GML.cancel"))
+        .add("cancel", notifBundle.getString(CANCEL_BUNDLE_KEY))
         .add("thefield", notifBundle.getString("GML.thefield"))
         .add("addressees", notifBundle.getString("addressees"))
         .add("title", notifBundle.getString("GML.notification.subject"))

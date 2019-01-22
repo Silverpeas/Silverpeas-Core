@@ -47,18 +47,21 @@
 */
 package org.silverpeas.core.webapi.subscribe;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.CommentRuntimeException;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.subscription.service.NodeSubscription;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
+import org.silverpeas.core.web.subscription.bean.NodeSubscriptionBean;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -69,6 +72,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.Collection;
+
+import static org.silverpeas.core.util.JSONCodec.encodeArray;
 
 /**
 * A REST Web resource representing a given subscription.
@@ -92,10 +98,10 @@ public class SubscribeResource extends RESTWebService {
       Subscription subscription = new ComponentSubscription(getUser().getId(), componentId);
       SubscriptionServiceProvider.getSubscribeService().subscribe(subscription);
       ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
-      MessageNotifier.addSuccess(MessageFormat
+      WebMessager.getInstance().addSuccess(MessageFormat
           .format(getBundle().getString("GML.subscribe.success"),
               component.getLabel(getUser().getUserPreferences().getLanguage())));
-      return "OK";
+      return encodeArray(j -> j.add("OK"));
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
@@ -108,10 +114,17 @@ public class SubscribeResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public String subscribeToTopic(@PathParam("id") String topicId) {
     try {
-      Subscription subscription = new NodeSubscription(getUser().getId(), new NodePK(topicId,
-              componentId));
+      final Subscription subscription = new NodeSubscription(getUser().getId(),
+          new NodePK(topicId, componentId));
       SubscriptionServiceProvider.getSubscribeService().subscribe(subscription);
-      return "OK";
+      final String userLanguage = getUserPreferences().getLanguage();
+      final ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
+      final Collection<NodeDetail> path = NodeService.get().getPath(subscription.getResource().getPK());
+      final NodeSubscriptionBean nodeSubscriptionBean = new NodeSubscriptionBean(subscription, path,
+          component, userLanguage);
+      WebMessager.getInstance().addSuccess(MessageFormat
+          .format(getBundle().getString("GML.subscribe.success"), nodeSubscriptionBean.getPath()));
+      return encodeArray(j -> j.add("OK"));
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
