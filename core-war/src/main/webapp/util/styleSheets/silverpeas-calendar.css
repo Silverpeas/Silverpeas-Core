@@ -448,8 +448,8 @@ silverpeas-contribution-reminder-duration-item .actions img {
   margin-top: 2px;
 }
 
-silverpeas-calendar-event-view .field,
-silverpeas-calendar-event-form .field {
+silverpeas-calendar-event-view .fields .field,
+silverpeas-calendar-event-form .fields .field {
   width: 98%;
   clear: both;
 }
