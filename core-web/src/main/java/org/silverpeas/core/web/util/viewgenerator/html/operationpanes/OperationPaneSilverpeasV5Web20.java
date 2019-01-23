@@ -24,15 +24,15 @@
 package org.silverpeas.core.web.util.viewgenerator.html.operationpanes;
 
 import org.apache.ecs.html.LI;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.util.viewgenerator.html.TagUtil;
 
 import java.util.Vector;
 
 public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
-  private final static String line = "</ul>\n<ul>";
+  private static final String LINE = "</ul>\n<ul>";
 
   /**
    * Constructor declaration
@@ -74,7 +74,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
   @Override
   public void addLine() {
-    getStack().add(line);
+    getStack().add(LINE);
   }
 
   /**
@@ -99,7 +99,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
     // prevents to display a line as last entry
     String lastElement = stack.lastElement();
-    if (lastElement.equals(line)) {
+    if (lastElement.equals(LINE)) {
       stack.removeElementAt(stack.size() - 1);
     }
 
@@ -166,6 +166,18 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
       }
       result.append("}");
     }
+
+    // Adjusting the position of the drop down menu in order to be rightly displayed in any case
+    result.append("var __setDropDownMenuPosition = function() {");
+    result.append("var $menu = document.querySelector('#whatNextMenu');");
+    result.append("var menuWidth = $menu.offsetWidth;");
+    result.append("var $dropDownMenu = oMenu.element;");
+    result.append("var dropDownMenuWidth = $dropDownMenu.offsetWidth;");
+    result.append("var left = menuWidth - dropDownMenuWidth;");
+    result.append("$dropDownMenu.style.left = left + 'px';");
+    result.append("};");
+    result.append("oMenu.subscribe('show', __setDropDownMenuPosition);");
+    result.append("__setDropDownMenuPosition();");
 
     // Once the menu is rendered this below event is triggered
     result.append("setTimeout(applyTokenSecurityOnMenu, 0);");
