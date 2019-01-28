@@ -159,6 +159,16 @@
      * @return a wrapper of the loaded popup.
      */
     load: function(url, context) {
+      var loadRequest = sp.ajaxRequest(url);
+      if (context) {
+        if (context.method === 'POST') {
+          loadRequest = loadRequest.byPostMethod();
+        }
+        if (context.params) {
+          loadRequest = loadRequest.withParams(context.params);
+        }
+      }
+      var loadPromise = loadRequest.send();
       return {
         /**
          * Shows the loaded popup by using the specified rendering type and popup parameters.
@@ -171,16 +181,7 @@
           jQuery.popup.showWaiting();
           return new Promise(function(resolve, reject) {
             var options = params;
-            var request = sp.ajaxRequest(url);
-            if (context) {
-              if (context.method === 'POST') {
-                request = request.byPostMethod();
-              }
-              if (context.params) {
-                request = request.withParams(context.params);
-              }
-            }
-            request.send().then(function(request) {
+            loadPromise.then(function(request) {
               var data = request.responseText;
               var $popup = $('#popupHelperContainer');
               if ($popup.length !== 0) {
@@ -212,6 +213,9 @@
               jQuery.popup.hideWaiting();
             });
           });
+        },
+        close : function() {
+          jQuery('#popupHelperContainer').popup('close');
         }
       }
     }
@@ -804,8 +808,12 @@
       });
     }
     dialogInstanceElement.__lastRegisteredHandler = function() {
-      if ($container.dialog('isOpen')) {
-        $container.dialog("close");
+      try {
+        if ($container.dialog('isOpen')) {
+          $container.dialog("close");
+        }
+      } catch (e) {
+        sp.log.debug(e);
       }
       return true;
     };
