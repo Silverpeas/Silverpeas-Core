@@ -23,12 +23,9 @@
  */
 package org.silverpeas.core.web.subscription.bean;
 
-import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-
-import java.util.Collection;
+import org.silverpeas.core.node.model.NodePath;
+import org.silverpeas.core.subscription.Subscription;
 
 /**
  * User: Yohann Chastagnier
@@ -36,32 +33,21 @@ import java.util.Collection;
  */
 public class NodeSubscriptionBean extends AbstractSubscriptionBean {
 
-  private final Collection<NodeDetail> path;
+  private final NodePath nodes;
 
-  public NodeSubscriptionBean(final Subscription subscription, final Collection<NodeDetail> path,
+  public NodeSubscriptionBean(final Subscription subscription, final NodePath nodes,
       final ComponentInstLight component, final String language) {
     super(subscription, component, language);
-    this.path = path;
+    this.nodes = nodes;
   }
 
   @Override
   public String getPath() {
-    StringBuilder result = new StringBuilder();
-    for (NodeDetail node : path) {
-      if (result.length() > 0) {
-        result.insert(0, " > ");
-      }
-      if (NodePK.ROOT_NODE_ID.equals(node.getNodePK().getId())) {
-        result.insert(0, super.getPath());
-      } else {
-        result.insert(0, node.getName(getLanguage()));
-      }
-    }
-    return result.toString();
+    return nodes.format(getLanguage());
   }
 
   @Override
   public String getLink() {
-    return path.iterator().next().getLink();
+    return nodes.iterator().next().getLink();
   }
 }

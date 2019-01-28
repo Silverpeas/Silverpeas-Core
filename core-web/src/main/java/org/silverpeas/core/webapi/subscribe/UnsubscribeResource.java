@@ -51,7 +51,7 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.CommentRuntimeException;
-import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.subscription.Subscription;
@@ -75,7 +75,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.text.MessageFormat;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -171,7 +170,7 @@ public class UnsubscribeResource extends RESTWebService {
           new NodePK(topicId, componentId), getUser().getId());
       SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscription);
       final ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
-      final Collection<NodeDetail> path = NodeService.get().getPath(subscription.getResource().getPK());
+      final NodePath path = NodeService.get().getPath(subscription.getResource().getPK());
       final String userLanguage = getUserPreferences().getLanguage();
       final NodeSubscriptionBean nodeSubscriptionBean = new NodeSubscriptionBean(subscription, path,
           component, userLanguage);
