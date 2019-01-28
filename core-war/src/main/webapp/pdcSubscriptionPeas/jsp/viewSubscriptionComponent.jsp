@@ -65,15 +65,13 @@
           }
         }
 
-        if (sendIt && areYouSure()) {
-          document.readForm.mode.value = 'delete';
-          document.readForm.submit();
+        if (sendIt) {
+          jQuery.popup.confirm("<%=resource.getString("confirmDeleteSubscription")%>", function() {
+            document.readForm.mode.value = 'delete';
+            document.readForm.submit();
+          });
         }
       }
-    }
-
-    function areYouSure() {
-      return confirm("<%=resource.getString("confirmDeleteSubscription")%>");
     }
   </script>
 </head>
