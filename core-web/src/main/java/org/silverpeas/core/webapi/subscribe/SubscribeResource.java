@@ -51,7 +51,7 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.CommentRuntimeException;
-import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.subscription.Subscription;
@@ -72,7 +72,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.text.MessageFormat;
-import java.util.Collection;
 
 import static org.silverpeas.core.util.JSONCodec.encodeArray;
 
@@ -119,7 +118,7 @@ public class SubscribeResource extends RESTWebService {
       SubscriptionServiceProvider.getSubscribeService().subscribe(subscription);
       final String userLanguage = getUserPreferences().getLanguage();
       final ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
-      final Collection<NodeDetail> path = NodeService.get().getPath(subscription.getResource().getPK());
+      final NodePath path = NodeService.get().getPath(subscription.getResource().getPK());
       final NodeSubscriptionBean nodeSubscriptionBean = new NodeSubscriptionBean(subscription, path,
           component, userLanguage);
       WebMessager.getInstance().addSuccess(MessageFormat

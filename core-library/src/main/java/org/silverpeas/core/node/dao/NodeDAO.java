@@ -23,17 +23,18 @@
  */
 package org.silverpeas.core.node.dao;
 
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodeI18NDetail;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.model.NodeRuntimeException;
-import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodeI18NDetail;
+import org.silverpeas.core.node.model.NodePath;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodeRuntimeException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.ejb.NoSuchEntityException;
 import java.sql.Connection;
@@ -561,9 +562,9 @@ public class NodeDAO {
    * @see NodeDetail
    * @since 1.0
    */
-  public static Collection<NodeDetail> getAnotherPath(Connection con, NodePK nodePK)
+  public static NodePath getAnotherPath(Connection con, NodePK nodePK)
       throws SQLException {
-    List<NodeDetail> nodeDetails = new ArrayList<>();
+    NodePath nodeDetails = new NodePath();
 
     /* le node courant */
     NodeDetail nd = getAnotherHeader(con, nodePK);
