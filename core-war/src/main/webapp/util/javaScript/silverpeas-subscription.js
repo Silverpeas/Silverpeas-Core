@@ -294,7 +294,7 @@
    * It handles automatically the menu action by detecting a span HTML TAG with id
    * 'subscriptionMenuLabel'.
    *
-   * The plugin in dynamically loaded, so the new instance can be performed outside the
+   * The plugin is dynamically loaded, so the new instance can be performed outside the
    * corresponding promises :
    * SUBSCRIPTION_PROMISE.then(function(){
    *  window.subscriptionManager = new SilverpeasSubscriptionManager(...);

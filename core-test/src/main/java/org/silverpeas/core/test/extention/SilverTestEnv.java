@@ -120,6 +120,8 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     if (testManagedBeans != null) {
       for (Class<?> type : testManagedBeans.value()) {
         Object bean = instantiate(type);
+        Objects.requireNonNull(bean);
+        mockInjectedDependency(bean);
         invokePostConstruction(bean);
         manageBean(bean, type);
       }
@@ -215,12 +217,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
   private void processTestManagedBeanAnnotation(final Field field, final Object testInstance)
       throws IllegalAccessException {
     if (field.isAnnotationPresent(TestManagedBean.class)) {
-      field.setAccessible(true);
-      Object bean = field.get(testInstance);
-      if (bean == null) {
-        bean = instantiate(field.getType());
-        field.set(testInstance, bean);
-      }
+      final Object bean = setupInstanceField(field, testInstance);
       manageBean(bean, field.getType());
     }
   }
@@ -239,17 +236,23 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
   private void processTestedBeanAnnotation(final Field field, final Object testInstance)
       throws IllegalAccessException {
     if (field.isAnnotationPresent(TestedBean.class)) {
-      field.setAccessible(true);
-      Object bean = field.get(testInstance);
-      if (bean == null) {
-        bean = instantiate(field.getType());
-        field.set(testInstance, bean);
-      }
-      Objects.requireNonNull(bean);
-      mockInjectedDependency(bean);
-      invokePostConstruction(bean);
+      final Object bean = setupInstanceField(field, testInstance);
       registerInBeanContainer(bean);
     }
+  }
+
+  private Object setupInstanceField(final Field field, final Object testInstance)
+      throws IllegalAccessException {
+    field.setAccessible(true);
+    Object bean = field.get(testInstance);
+    if (bean == null) {
+      bean = instantiate(field.getType());
+      field.set(testInstance, bean);
+    }
+    Objects.requireNonNull(bean);
+    mockInjectedDependency(bean);
+    invokePostConstruction(bean);
+    return bean;
   }
 
   private void mockInjectedDependency(final Object bean)

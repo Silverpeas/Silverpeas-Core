@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.node.model;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -37,7 +36,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * List of {@link NodeDetail} which provides centralized computed data.
+ * List of {@link NodeDetail} which represents a path.
  * @author silveryocha
  */
 public class NodePath extends ArrayList<NodeDetail> {
@@ -52,7 +51,7 @@ public class NodePath extends ArrayList<NodeDetail> {
     super(initialCapacity);
   }
 
-  public NodePath(@NotNull final Collection<? extends NodeDetail> c) {
+  public NodePath(final Collection<? extends NodeDetail> c) {
     super(c);
   }
 
