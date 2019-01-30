@@ -47,7 +47,6 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 /**
@@ -223,35 +222,25 @@ public class TaskManagerImpl extends AbstractTaskManager {
    * Extract processId from external Id
    */
   private String getProcessId(String externalId) throws WorkflowException {
-    // Separator '#' has been replaced by '_' due to HTML's URL limitation
-    StringTokenizer st = new StringTokenizer(externalId, "__");
-
-    // The number of token must be : 4
-    if (st.countTokens() != 4)
-      throw new WorkflowException("TaskManagerImpl.getProcessId",
-          "workflowEngine.EX_ERR_ILLEGAL_EXTERNALID", "external Id : "
-          + externalId);
-
-    return st.nextToken();
+    return getItems(externalId)[0];
   }
 
   /**
    * Extract role name from external Id
    */
   private String getRoleName(String externalId) throws WorkflowException {
-    // Separator '#' has been replaced by '_' due to HTML's URL limitation
-    StringTokenizer st = new StringTokenizer(externalId, "__");
+    return getItems(externalId)[3];
+  }
+
+  private String[] getItems(String externalId) throws WorkflowException {
+    String[] items = StringUtil.split(externalId, "$$");
 
     // The number of token must be : 4
-    if (st.countTokens() != 4)
-      throw new WorkflowException("TaskManagerImpl.getProcessId",
-          "workflowEngine.EX_ERR_ILLEGAL_EXTERNALID", "external Id : "
-          + externalId);
+    if (items.length != 4) {
+      throw new WorkflowException("TaskManagerImpl.getItems",
+          "workflowEngine.EX_ERR_ILLEGAL_EXTERNALID", "external Id : " + externalId);
+    }
 
-    st.nextToken();
-    st.nextToken();
-    st.nextToken();
-
-    return st.nextToken();
+    return items;
   }
 }

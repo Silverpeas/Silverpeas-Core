@@ -217,7 +217,12 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    */
   @Override
   public ProcessInstance getProcessInstance(String instanceId) throws WorkflowException {
-    return repository.getById(instanceId);
+    try {
+      return repository.getById(instanceId);
+    } catch (Exception e) {
+      throw new WorkflowException("ProcessInstanceManagerImpl.getProcessInstance",
+          "EX_ERR_GET_INSTANCE", "Process instance #"+instanceId+" not found !");
+    }
   }
 
   /**

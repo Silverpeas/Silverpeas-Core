@@ -245,7 +245,7 @@
           <c:set var="pathJsCall" value="viewToDo('${todo.id}')"/>
           <c:if test="${not empty todo.externalId}">
             <%-- Trick for workflow --%>
-            <c:set var="externalId" value="${fn:replace(todo.externalId, '#', '_')}"/>
+            <c:set var="externalId" value="${fn:replace(todo.externalId, '#', '$')}"/>
             <c:url var="componentInstanceUrl" value="${silfn:componentURL(todo.componentId)}"/>
             <c:set var="pathJsCall" value="goTo('${componentInstanceUrl}','${externalId}','TodoDetail')"/>
           </c:if>
