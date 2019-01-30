@@ -250,7 +250,7 @@ public class UserManager {
       throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       final String usersOfDomain = ".getAllUsersInDomain()";
-      SynchroDomainReport.info(USERMANAGER_SYNCHRO_REPORT + usersOfDomain,
+      SynchroDomainReport.debug(USERMANAGER_SYNCHRO_REPORT + usersOfDomain,
           "Recherche des utilisateurs du domaine (domaine " + sDomainId + ") dans la base...");
       // Get users of domain from Silverpeas database
       final UserState[] userStatesToExclude = includeRemoved
@@ -269,7 +269,7 @@ public class UserManager {
             "Utilisateur trouvé no : " + i + ", login : " + u.getLogin() + ", " + u.getFirstName() +
                 ", " + u.getLastName() + ", " + u.geteMail());
       }
-      SynchroDomainReport.info(USERMANAGER_SYNCHRO_REPORT + usersOfDomain,
+      SynchroDomainReport.debug(USERMANAGER_SYNCHRO_REPORT + usersOfDomain,
           "Récupération de " + users.size() + " utilisateurs du domaine dans la base");
       return usersInDomain;
     } catch (Exception e) {
@@ -534,7 +534,7 @@ public class UserManager {
     }
 
     try(Connection connection = DBUtil.openConnection()) {
-      SynchroDomainReport.info(USERMANAGER_SYNCHRO_REPORT + addUser,
+      SynchroDomainReport.debug(USERMANAGER_SYNCHRO_REPORT + addUser,
           "Ajout de l'utilisateur " + userDetail.getSpecificId() + " dans la base...");
       final String alreadyExistingUserId = userDAO
           .getUserIdByLoginAndDomain(connection, userDetail.getLogin(), userDetail.getDomainId());
@@ -613,7 +613,7 @@ public class UserManager {
   public String removeUser(UserDetail user, final boolean indexation) throws AdminException {
     final String removeUser = ".removeUser()";
     try (Connection connection = DBUtil.openConnection()) {
-      SynchroDomainReport.info(USERMANAGER_SYNCHRO_REPORT + removeUser,
+      SynchroDomainReport.debug(USERMANAGER_SYNCHRO_REPORT + removeUser,
           "En attente de suppression de l'utilisateur " + user.
               getSpecificId() + " de la base...");
       removeUser(connection, user);
@@ -717,7 +717,7 @@ public class UserManager {
 
   private void deleteUser(final Connection connection, final UserDetail user) throws SQLException {
     final String userLogin = user.getLogin();
-    SynchroDomainReport.info(USER_TABLE_REMOVE_USER,
+    SynchroDomainReport.debug(USER_TABLE_REMOVE_USER,
         REMOVING_MESSAGE + userLogin + " des groupes dans la base");
     final String userId = user.getId();
     List<GroupDetail> groups = groupDAO.getDirectGroupsOfUser(connection, userId);
@@ -725,7 +725,7 @@ public class UserManager {
       groupDAO.deleteUserInGroup(connection, userId, group.getId());
     }
 
-    SynchroDomainReport.info(USER_TABLE_REMOVE_USER,
+    SynchroDomainReport.debug(USER_TABLE_REMOVE_USER,
         REMOVING_MESSAGE + userLogin + " des rôles dans la base");
     final int userIdAsInt = Integer.parseInt(userId);
     UserRoleRow[] roles = organizationSchema.userRole().getDirectUserRolesOfUser(userIdAsInt);
@@ -733,7 +733,7 @@ public class UserManager {
       organizationSchema.userRole().removeUserFromUserRole(userIdAsInt, role.id);
     }
 
-    SynchroDomainReport.info(USER_TABLE_REMOVE_USER,
+    SynchroDomainReport.debug(USER_TABLE_REMOVE_USER,
         REMOVING_MESSAGE + userLogin + " en tant que manager d'espace dans la base");
     SpaceUserRoleRow[] spaceRoles =
         organizationSchema.spaceUserRole().getDirectSpaceUserRolesOfUser(userIdAsInt);
@@ -784,7 +784,7 @@ public class UserManager {
   public String updateUser(UserDetail user, final boolean indexation) throws AdminException {
     try(Connection connection = DBUtil.openConnection()) {
       // update the user node in Silverpeas
-      SynchroDomainReport.info("UserManager.updateUser()",
+      SynchroDomainReport.debug("UserManager.updateUser()",
           "Maj de l'utilisateur " + user.getSpecificId() + " dans la base...");
       userDAO.updateUser(connection, user);
 

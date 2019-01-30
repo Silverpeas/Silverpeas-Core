@@ -4452,12 +4452,9 @@ class Admin implements Administration {
           String sReport = "Starting synchronization...\n\n";
           synchronized (semaphore) {
             // Starting synchronization with a status popup
-            if (threaded) {
-              SynchroDomainReport.setReportLevel(Level.WARNING);
-            }
             SynchroDomainReport.startSynchro();
             try {
-              SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_DOMAIN,
+              SynchroDomainReport.info(ADMIN_SYNCHRONIZE_DOMAIN,
                   "Domain '" + domainDriverManager.getDomain(sDomainId).getName() + "', Id : " +
                       sDomainId);
               // Start synchronization
@@ -4476,8 +4473,10 @@ class Admin implements Administration {
               sReport += "\n" + synchronizeGroups(sDomainId, userIdsMapping);
               // End synchronization
               final String sDomainSpecificErrors = domainDriverManager.endSynchronization(sDomainId, false);
-              SynchroDomainReport
-                  .warn(ADMIN_SYNCHRONIZE_DOMAIN, "----------------" + sDomainSpecificErrors);
+              if (StringUtil.isDefined(sDomainSpecificErrors)) {
+                SynchroDomainReport
+                    .info(ADMIN_SYNCHRONIZE_DOMAIN, "----------------" + sDomainSpecificErrors);
+              }
               return Pair.of(
                   sReport + "\n----------------\n" + sDomainSpecificErrors,
                   singletonList(syncOfUsersContext.getIndexationBackgroundProcess()));
@@ -4553,13 +4552,13 @@ class Admin implements Administration {
     final String domainId = context.getDomainId();
     context.appendToReport("User synchronization : \n");
     String message;
-    SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, "Starting synchronization of users...");
+    SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, "Starting synchronization of users...");
     final UserDetail[] distantUDs = domainDriverManager.getAllUsers(context.getDomainId());
-    SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS,
+    SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_USERS,
         format("Existing currently {0} users in external repository before synchronization",
             distantUDs.length));
     final UserDetail[] silverpeasUDs = userManager.getAllUsersInDomain(domainId, true);
-    SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS,
+    SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_USERS,
         format("Existing currently {0} users in Silverpeas before synchronization",
             silverpeasUDs.length));
     try {
@@ -4569,14 +4568,14 @@ class Admin implements Administration {
           context.getUpdatedUsers().values(), context.getRemovedUsers().values());
       message = "Synchronization of users terminated";
       context.appendToReport(message).appendToReport("\n");
-      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
+      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
       message = "# of updated users: " + context.getUpdatedUsers().size() +
           ", added: " + context.getAddedUsers().size() +
           ", removed: " + context.getRemovedUsers().size() +
           ", restored: " + context.getRestoredUsers().size() +
           ", deleted: " + context.getDeletedUsers().size();
       context.appendToReport(message).appendToReport("\n");
-      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
+      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
       context.setIndexationBackgroundProcess(
           new BackgroundUserIndexationProcess(domainDriverManager, context));
       return context;
@@ -4591,7 +4590,7 @@ class Admin implements Administration {
   private void performRemoveOfUsersDuringSynchronization(final SyncOfUsersContext context,
       final UserDetail[] distantUDs, final UserDetail[] silverpeasUDs) {
     if (context.isRemoveOperationToPerform()) {
-      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, "Removing users from database...");
+      SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_USERS, "Removing users from database...");
       final Set<String> indexedDistantUsers = extractUserSpecificIdAndFallbackLogin(distantUDs);
       for (UserDetail silverpeasUD : silverpeasUDs) {
         // search for user in distant datasource
@@ -4605,7 +4604,7 @@ class Admin implements Administration {
 
   private void performSaveOfUsersDuringSynchronization(final SyncOfUsersContext context,
       final UserDetail[] distantUDs, final UserDetail[] silverpeasUDs) {
-    SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, "Saving users in database...");
+    SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_USERS, "Saving users in database...");
     final Map<String, UserDetail> indexedSpUsers = indexUsersBySpecificIdAndLogin(silverpeasUDs);
     for (final UserDetail distantUD : distantUDs) {
       final UserDetail userToUpdateFromDistantUser = getUserBySpecificIdOrFallbackLoginFrom(distantUD, indexedSpUsers);
@@ -4730,7 +4729,7 @@ class Admin implements Administration {
       context.getUpdatedUsers().put(silverpeasId, distantUD);
       final String message = format("{0} {1} updated (id:{2} / specificId:{3})", USER,
           distantUD.getDisplayedName(), silverpeasId, specificId);
-      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
+      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
       context.appendToReport(message).appendToReport("\n");
     } catch (AdminException aeMaj) {
       SilverLogger.getLogger(this)
@@ -4760,7 +4759,7 @@ class Admin implements Administration {
         final String message = format("{0} {1} added (id:{2} / specificId:{3})", USER,
             distantUD.getDisplayedName(), silverpeasId, specificId);
         context.appendToReport(message).appendToReport("\n");
-        SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
+        SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
       }
     } catch (AdminException ae) {
       SilverLogger.getLogger(this).error("Full synchro: error while adding user " + specificId, ae);
@@ -4782,7 +4781,7 @@ class Admin implements Administration {
       final String message = format("{0} {1} removed (id:{2} / specificId:{3})", USER,
           silverpeasUD.getDisplayedName(), silverpeasUD.getId(), specificId);
       context.appendToReport(message).appendToReport("\n");
-      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
+      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
     } catch (AdminException aeDel) {
       SilverLogger.getLogger(this)
           .error("Full synchro: error while removing user " + specificId, aeDel);
@@ -4807,7 +4806,7 @@ class Admin implements Administration {
       final String message = format("{0} {1} restored (id:{2} / specificId:{3})", USER,
           silverpeasUD.getDisplayedName(), silverpeasUD.getId(), specificId);
       context.appendToReport(message).appendToReport("\n");
-      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
+      SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_USERS, message);
     } catch (AdminException aeDel) {
       SilverLogger.getLogger(this)
           .error("Full synchro: error while restoring user " + specificId, aeDel);
@@ -4833,7 +4832,7 @@ class Admin implements Administration {
             final String message = format("{0} {1} deleted (id:{2} / login:{3})", USER,
                 distantUD.getDisplayedName(), distantUD.getId(), login);
             context.appendToReport(message).appendToReport("\n");
-            SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
+            SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
           } else {
             final String message = format(
                 "{0} {1} must have 'REMOVED' state for deletion (id:{2} / login:{3})", USER,
@@ -4896,20 +4895,20 @@ class Admin implements Administration {
     int iNbGroupsAdded = 0;
     int iNbGroupsMaj = 0;
     int iNbGroupsDeleted = 0;
-    SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_GROUPS, "Starting groups synchronization...");
+    SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS, "Starting groups synchronization...");
     try {
       // Get all root groups of the domain from distant datasource
       GroupDetail[] distantRootGroups = domainDriverManager.getAllRootGroups(domainId);
       // Get all groups of the domain from Silverpeas
       GroupDetail[] silverpeasGroups = groupManager.getGroupsOfDomain(domainId);
 
-      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS, "Adding or updating groups in database...");
+      SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_GROUPS, "Adding or updating groups in database...");
       // Check for new groups resursively
       sReport += checkOutGroups(domainId, silverpeasGroups, distantRootGroups, allDistantGroups,
           userIds, null, iNbGroupsAdded, iNbGroupsMaj);
 
       // Delete obsolete groups
-      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS, "Removing groups from database...");
+      SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_GROUPS, "Removing groups from database...");
       GroupDetail[] distantGroups = allDistantGroups.values().toArray(new GroupDetail[0]);
       for (GroupDetail silverpeasGroup : silverpeasGroups) {
         bFound = false;
@@ -4929,7 +4928,7 @@ class Admin implements Administration {
             groupManager.deleteGroup(silverpeasGroup, true);
             iNbGroupsDeleted++;
             sReport += "deleting group " + silverpeasGroup.getName() + "(id:" + specificId + ")\n";
-            SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_GROUPS, "GroupDetail " + silverpeasGroup.getName()
+            SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS, "GroupDetail " + silverpeasGroup.getName()
                 + " deleted (SpecificId:" + specificId + ")");
           } catch (AdminException aeDel) {
             SilverLogger.getLogger(this).error("Full synchro: error while deleting group " +
@@ -4944,7 +4943,7 @@ class Admin implements Administration {
       SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS,
           "# of groups updated : " + iNbGroupsMaj + ", added : " + iNbGroupsAdded
           + ", deleted : " + iNbGroupsDeleted);
-      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_GROUPS, "Groups synchronization terminated");
+      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS, "Groups synchronization terminated");
       return sReport;
     } catch (Exception e) {
       SynchroDomainReport.error(ADMIN_SYNCHRONIZE_GROUPS,
@@ -5036,16 +5035,16 @@ class Admin implements Administration {
             iNbGroupsMaj++;
             silverpeasId = testedGroup.getId();
             report += "updating group " + testedGroup.getName() + "(id:" + specificId + ")\n";
-            SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS, "maj groupe " + testedGroup.getName()
+            SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS, "maj groupe " + testedGroup.getName()
                 + " (id:" + silverpeasId + ") OK");
           } else// le name groupe non renseigné
           {
-            SilverLogger.getLogger(this).debug("Full Synchro: error while updating group {0}",
+            SilverLogger.getLogger(this).error("Full Synchro: error while updating group {0}",
                 specificId);
             report += "problem updating group id : " + specificId + "\n";
           }
         } catch (AdminException aeMaj) {
-          SilverLogger.getLogger(this).debug("Full Synchro: error while updating group {0}: ",
+          SilverLogger.getLogger(this).error("Full Synchro: error while updating group {0}: ",
               specificId, aeMaj.getMessage());
           report += "problem updating group " + testedGroup.getName() + " (id:" + specificId + ") "
               + aeMaj.getMessage() + "\n";
@@ -5058,7 +5057,7 @@ class Admin implements Administration {
             iNbGroupsAdded++;
 
             report += "adding group " + testedGroup.getName() + "(id:" + specificId + ")\n";
-            SynchroDomainReport.warn(
+            SynchroDomainReport.debug(
                 ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS, "ajout groupe " + testedGroup.getName()
                 + " (id:" + silverpeasId + ") OK");
           } else { // le name groupe non renseigné
@@ -5079,7 +5078,7 @@ class Admin implements Administration {
           GroupDetail[] cleanSubGroups = removeCrossReferences(subGroups,
               allIncluededGroups, specificId);
           if (cleanSubGroups != null && cleanSubGroups.length > 0) {
-            SynchroDomainReport.info(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
+            SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
                 "Ajout ou mise à jour de " + cleanSubGroups.length + " groupes fils du groupe "
                 + specificId + "...");
             report += checkOutGroups(domainId, existingGroups, cleanSubGroups,

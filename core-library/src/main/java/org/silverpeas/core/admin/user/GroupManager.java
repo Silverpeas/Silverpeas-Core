@@ -509,7 +509,7 @@ public class GroupManager {
           AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       // Get organization
-      SynchroDomainReport.info(GROUP_MANAGER_GET_GROUPS_OF_DOMAIN,
+      SynchroDomainReport.debug(GROUP_MANAGER_GET_GROUPS_OF_DOMAIN,
               "Recherche des groupes du domaine dans la base...");
       // Get groups of domain from Silverpeas database
       List<GroupDetail> grs = groupDao.getAllGroupsByDomainId(connection, sDomainId);
@@ -522,7 +522,7 @@ public class GroupManager {
                 toString(nI) + ", specificID : " + groups[nI].getSpecificId() + ", desc. : "
                 + groups[nI].getDescription());
       }
-      SynchroDomainReport.info(GROUP_MANAGER_GET_GROUPS_OF_DOMAIN,
+      SynchroDomainReport.debug(GROUP_MANAGER_GET_GROUPS_OF_DOMAIN,
           "Récupération de " + grs.size() + " groupes du domaine dans la base");
       return groups;
     } catch (Exception e) {
@@ -567,11 +567,11 @@ public class GroupManager {
       }
       // Create the group node in Silverpeas
       if (StringUtil.isDefined(group.getSuperGroupId())) {
-        SynchroDomainReport.info(GROUP_MANAGER_ADD_GROUP, "Ajout du groupe " + group.getName()
+        SynchroDomainReport.debug(GROUP_MANAGER_ADD_GROUP, "Ajout du groupe " + group.getName()
                 + " (père=" + getGroupDetail(group.getSuperGroupId()).getSpecificId()
                 + ") dans la table ST_Group");
       } else {
-        SynchroDomainReport.info(GROUP_MANAGER_ADD_GROUP, "Ajout du groupe " + group.getName()
+        SynchroDomainReport.debug(GROUP_MANAGER_ADD_GROUP, "Ajout du groupe " + group.getName()
                 + " (groupe racine) dans la table ST_Group...");
       }
       String groupId = groupDao.saveGroup(connection, group);
@@ -582,7 +582,7 @@ public class GroupManager {
       domainDriverManager.indexGroup(group);
 
       // Create the links group_user in Silverpeas
-      SynchroDomainReport.info(GROUP_MANAGER_ADD_GROUP,
+      SynchroDomainReport.debug(GROUP_MANAGER_ADD_GROUP,
               "Inclusion des utilisateurs directement associés au groupe " + group.getName()
               + " (table ST_Group_User_Rel)");
       String[] asUserIds = group.getUserIds();
@@ -638,13 +638,13 @@ public class GroupManager {
       throws SQLException, AdminException {
     int groupId = idAsInt(group.getId());
 
-    SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
+    SynchroDomainReport.debug(GROUP_MANAGER_DELETE_GROUP,
         "Suppression du groupe " + group.getName() + " dans la base...");
 
     // remove the group from each role where it's used.
     UserRoleTable userRoleTable = OrganizationSchema.get().userRole();
     UserRoleRow[] roles = userRoleTable.getDirectUserRolesOfGroup(groupId);
-    SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
+    SynchroDomainReport.debug(GROUP_MANAGER_DELETE_GROUP,
         REMOVING_MESSAGE + group.getName() + " des rôles dans la base");
     for (UserRoleRow role : roles) {
       userRoleTable.removeGroupFromUserRole(groupId, role.id);
@@ -653,7 +653,7 @@ public class GroupManager {
     // remove the group from each space role where it's used.
     SpaceUserRoleTable spaceUserRoleTable = OrganizationSchema.get().spaceUserRole();
     SpaceUserRoleRow[] spaceRoles = spaceUserRoleTable.getDirectSpaceUserRolesOfGroup(groupId);
-    SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
+    SynchroDomainReport.debug(GROUP_MANAGER_DELETE_GROUP,
         REMOVING_MESSAGE + group.getName() + " comme manager d'espace dans la base");
     for (SpaceUserRoleRow spaceRole : spaceRoles) {
       spaceUserRoleTable.removeGroupFromSpaceUserRole(groupId, spaceRole.id);
@@ -662,7 +662,7 @@ public class GroupManager {
     // remove the group from each group role where it's used.
     GroupUserRoleTable groupUserRoleTable = OrganizationSchema.get().groupUserRole();
     GroupUserRoleRow[] groupRoles = groupUserRoleTable.getDirectGroupUserRolesOfGroup(groupId);
-    SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
+    SynchroDomainReport.debug(GROUP_MANAGER_DELETE_GROUP,
         REMOVING_MESSAGE + group.getName() + " comme manager de groupe dans la base");
     for (GroupUserRoleRow groupRole : groupRoles) {
       groupUserRoleTable.removeGroupFromGroupUserRole(groupId, groupRole.id);
@@ -671,7 +671,7 @@ public class GroupManager {
     // remove the group user role.
     GroupUserRoleRow groupRole = groupUserRoleTable.getGroupUserRoleByGroupId(groupId);
     if (groupRole != null) {
-      SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
+      SynchroDomainReport.debug(GROUP_MANAGER_DELETE_GROUP,
           REMOVING_MESSAGE + group.getName() + " des rôles de groupe dans la base");
       groupUserRoleTable.removeGroupUserRole(groupRole.id);
     }
@@ -679,7 +679,7 @@ public class GroupManager {
     // remove all the subgroups
     List<GroupDetail> subgroups = groupDao.getDirectSubGroups(connection, group.getId());
     if (!subgroups.isEmpty()) {
-      SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
+      SynchroDomainReport.debug(GROUP_MANAGER_DELETE_GROUP,
           "Suppression des groupes fils de " + group.getName() + IN_SILVERPEAS_MESSAGE);
       for (GroupDetail subgroup : subgroups) {
         deleteGroup(connection, subgroup);
@@ -732,7 +732,7 @@ public class GroupManager {
         strInfoSycnhro = "Maj du groupe " + group.getName()
                 + " (groupe racine) dans la base (table ST_Group)...";
       }
-      SynchroDomainReport.info(GROUP_MANAGER_UPDATE_GROUP, strInfoSycnhro);
+      SynchroDomainReport.debug(GROUP_MANAGER_UPDATE_GROUP, strInfoSycnhro);
       // Update the group
       groupDao.updateGroup(connection, group);
 
@@ -740,7 +740,7 @@ public class GroupManager {
       domainDriverManager.indexGroup(group);
 
       // Update the users if necessary
-      SynchroDomainReport.info(GROUP_MANAGER_UPDATE_GROUP, "Maj éventuelle des relations du groupe "
+      SynchroDomainReport.debug(GROUP_MANAGER_UPDATE_GROUP, "Maj éventuelle des relations du groupe "
               + group.getName()
               + " avec les utilisateurs qui y sont directement inclus (tables ST_Group_User_Rel)");
 

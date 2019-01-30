@@ -98,11 +98,11 @@ public class SynchroDomainReport {
       messages.clear();
     }
     setState(STATE_STARTED);
-    warn("SynchroDomainReport.startSynchro", "Synchronisation Start");
+    info("SynchroDomainReport.startSynchro", "Synchronisation Start");
   }
 
   public static void stopSynchro() {
-    warn("SynchroDomainReport.stopSynchro", "Synchronisation End");
+    info("SynchroDomainReport.stopSynchro", "Synchronisation End");
     setState(STATE_ENDED);
   }
 

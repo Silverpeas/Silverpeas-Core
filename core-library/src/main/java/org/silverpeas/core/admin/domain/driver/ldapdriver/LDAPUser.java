@@ -98,7 +98,7 @@ public class LDAPUser {
       theFilter = driverSettings.getUsersFullFilter();
     }
     SynchroDomainReport
-        .info("LDAPUser.getAllUsers()", "Recherche des utilisateurs du domaine LDAP distant...");
+        .debug("LDAPUser.getAllUsers()", "Recherche des utilisateurs du domaine LDAP distant...");
     List<UserDetail> ldapUsers = new ArrayList<>();
     LDAPEntry[] theEntries = LDAPUtility
         .search1000Plus(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
@@ -113,7 +113,7 @@ public class LDAPUser {
               ldapUsers.get(i).getFirstName() + ", " + ldapUsers.get(i).getLastName() + ", " +
               ldapUsers.get(i).geteMail());
     }
-    SynchroDomainReport.info("LDAPUser.getAllUsers()",
+    SynchroDomainReport.debug("LDAPUser.getAllUsers()",
         "Récupération de " + theEntries.length + " utilisateurs du domaine LDAP distant");
     return ldapUsers.toArray(new UserDetail[ldapUsers.size()]);
   }
