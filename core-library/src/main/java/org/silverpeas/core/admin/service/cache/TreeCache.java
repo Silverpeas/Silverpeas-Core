@@ -29,25 +29,39 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.model.Space;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * A cache with the organizational tree of the application instances in Silverpeas. The tree is
+ * made up of spaces that can contain other spaces or applications and of component instances (aka
+ * applications).
+ */
+@Singleton
 public class TreeCache {
 
-  private static final ConcurrentMap<Integer, Space> map = new ConcurrentHashMap<>();
+  private final ConcurrentMap<Integer, Space> map = new ConcurrentHashMap<>();
 
-  private TreeCache() {
-    throw new IllegalAccessError("Utility class");
+  protected TreeCache() {
   }
 
-  public static synchronized void clearCache() {
+  /**
+   * Clears the cache.
+   */
+  public synchronized void clearCache() {
     map.clear();
   }
 
-  public static SpaceInstLight getSpaceInstLight(int spaceId) {
+  /**
+   * Gets the space instance with the specified identifier.
+   * @param spaceId the unique identifier of a space in Silverpeas.
+   * @return a {@link SpaceInstLight} object.
+   */
+  public SpaceInstLight getSpaceInstLight(int spaceId) {
     Space space = getSpace(spaceId);
     if (space != null) {
       return space.getSpace();
@@ -55,11 +69,22 @@ public class TreeCache {
     return null;
   }
 
-  public static void addSpace(Integer spaceId, Space space) {
-    map.putIfAbsent(spaceId, space);
+  /**
+   * Adds the specified space in the cache if there is no yet a space cached with the given
+   * identifier.
+   * @param spaceId the unique identifier of a space.
+   * @param space the space to add in the cache.
+   * @return either the added space or the already cached space.
+   */
+  public Space addSpace(Integer spaceId, Space space) {
+    return map.putIfAbsent(spaceId, space);
   }
 
-  public static synchronized void removeSpace(int spaceId) {
+  /**
+   * Removes from the cache the space with the specified identifier.
+   * @param spaceId the unique identifier of a space.
+   */
+  public synchronized void removeSpace(int spaceId) {
     Space space = map.get(spaceId);
     if (space != null) {
       for (SpaceInstLight subspace : space.getSubspaces()) {
@@ -69,7 +94,14 @@ public class TreeCache {
     }
   }
 
-  public static void setSubspaces(int spaceId, List<SpaceInstLight> subspaces) {
+  /**
+   * Set the specified subspaces as children to the space with the given identifier. If there is
+   * no such space with the given identifier, then nothing is done. If the space has already some
+   * children, then they are all replaced by the specified ones.
+   * @param spaceId the unique identifier of a father space.
+   * @param subspaces the spaces to set as children to the father space.
+   */
+  public void setSubspaces(int spaceId, List<SpaceInstLight> subspaces) {
     // add subspaces in spaces list
     Space space = getSpace(spaceId);
     if (space != null) {
@@ -78,7 +110,12 @@ public class TreeCache {
     }
   }
 
-  public static List<ComponentInstLight> getComponents(int spaceId) {
+  /**
+   * Gets the application instances present in the specified space.
+   * @param spaceId the unique identifier of a space.
+   * @return a list of component instances.
+   */
+  public List<ComponentInstLight> getComponents(int spaceId) {
     Space space = getSpace(spaceId);
     if (space != null) {
       return space.getComponents();
@@ -86,7 +123,12 @@ public class TreeCache {
     return new ArrayList<>();
   }
 
-  public static List<String> getComponentIds(int spaceId) {
+  /**
+   * Gets the identifiers of the application instances present in the specified space.
+   * @param spaceId the unique identifier of a space.
+   * @return a list of component instance identifiers.
+   */
+  public List<String> getComponentIds(int spaceId) {
     Space space = getSpace(spaceId);
     if (space != null) {
       return space.getComponentIds();
@@ -94,7 +136,12 @@ public class TreeCache {
     return new ArrayList<>();
   }
 
-  public static List<SpaceInstLight> getSubSpaces(int spaceId) {
+  /**
+   * Gets the spaces that are children of the specified space in the tree.
+   * @param spaceId the unique identifier of a space.
+   * @return a list of space instances.
+   */
+  public List<SpaceInstLight> getSubSpaces(int spaceId) {
     Space space = getSpace(spaceId);
     if (space != null) {
       return space.getSubspaces();
@@ -102,26 +149,12 @@ public class TreeCache {
     return new ArrayList<>();
   }
 
-  public static boolean isSpaceContainsComponent(int spaceId, String componentId) {
-    boolean contains = false;
-    Space space = getSpace(spaceId);
-    if (space != null) {
-      contains = space.containsComponent(componentId);
-      if (!contains) {
-        List<SpaceInstLight> subspaces = space.getSubspaces();
-        for (SpaceInstLight subspace : subspaces) {
-          contains = isSpaceContainsComponent(subspace.getLocalId(), componentId);
-          if (contains) {
-            return true;
-          }
-        }
-      }
-    }
-
-    return contains;
-  }
-
-  public static void addComponent(ComponentInstLight component, int spaceId) {
+  /**
+   * Adds the specified component instance in the cache as being in the specified space.
+   * @param component a component instance.
+   * @param spaceId the unique identifier of the space that contains the given component instance.
+   */
+  public void addComponent(ComponentInstLight component, int spaceId) {
     // add component in spaces list
     Space space = getSpace(spaceId);
     if (space != null) {
@@ -129,7 +162,12 @@ public class TreeCache {
     }
   }
 
-  public static void removeComponent(int spaceId, String componentId) {
+  /**
+   * Removes from the cache the given component instance as being in the given space.
+   * @param spaceId the unique identifier of a space.
+   * @param componentId the unique identifier of a component instance.
+   */
+  public void removeComponent(int spaceId, String componentId) {
     // remove component from spaces list
     Space space = getSpace(spaceId);
     if (space != null) {
@@ -140,7 +178,14 @@ public class TreeCache {
     }
   }
 
-  public static void setComponents(int spaceId, List<ComponentInstLight> components) {
+  /**
+   * Sets the specified component instances in the cache as being in the specified space. If there
+   * is no such space, then nothing is done. If the space has already some component instances in
+   * the cache, then they are replaced by the specified ones.
+   * @param spaceId the unique identifier of a space in the cache.
+   * @param components a list of component instances.
+   */
+  public void setComponents(int spaceId, List<ComponentInstLight> components) {
     // add components in spaces list
     Space space = getSpace(spaceId);
     if (space != null) {
@@ -149,7 +194,13 @@ public class TreeCache {
     }
   }
 
-  public static List<ComponentInstLight> getComponentsInSpaceAndSubspaces(int spaceId) {
+  /**
+   * Gets all the component instances that are directly and indirectly contained in the specified
+   * space.
+   * @param spaceId the unique identifier of a space.
+   * @return a list of component instances.
+   */
+  public List<ComponentInstLight> getComponentsInSpaceAndSubspaces(int spaceId) {
     List<ComponentInstLight> components = new ArrayList<>();
     // add components of space
     components.addAll(getComponents(spaceId));
@@ -160,7 +211,12 @@ public class TreeCache {
     return components;
   }
 
-  public static List<SpaceInstLight> getSpacePath(int spaceId) {
+  /**
+   * Gets the path in the tree of the specified space.
+   * @param spaceId the unique identifier of a space.
+   * @return the path of a space in the cached tree.
+   */
+  public List<SpaceInstLight> getSpacePath(int spaceId) {
     List<SpaceInstLight> path = new ArrayList<>();
     SpaceInstLight space = getSpaceInstLight(spaceId);
     if (space != null) {
@@ -175,7 +231,12 @@ public class TreeCache {
     return path;
   }
 
-  public static synchronized ComponentInstLight getComponent(String componentId) {
+  /**
+   * Gets the component instance with the specified identifier.
+   * @param componentId the unique identifier of a component instance.
+   * @return the a {@link org.silverpeas.core.admin.component.model.ComponentInstLight} object.
+   */
+  public synchronized ComponentInstLight getComponent(String componentId) {
     ComponentInstLight component = null;
     for (Space space : map.values()) {
       component = space.getComponent(componentId);
@@ -186,7 +247,12 @@ public class TreeCache {
     return component;
   }
 
-  public static synchronized SpaceInstLight getSpaceContainingComponent(String componentId) {
+  /**
+   * Gets the space that contains the specified component instance.
+   * @param componentId the unique identifier of a component instance in the cache.
+   * @return the {@link SpaceInstLight} instance that contains the specified component instance.
+   */
+  public synchronized SpaceInstLight getSpaceContainingComponent(String componentId) {
     for (Space space : map.values()) {
       if (space.containsComponent(componentId)) {
         return space.getSpace();
@@ -195,7 +261,13 @@ public class TreeCache {
     return null;
   }
 
-  public static List<SpaceInstLight> getComponentPath(String componentId) {
+  /**
+   * Gets the path of the specified component instance in the cached tree.
+   * @param componentId the unique identifier of a component instance.
+   * @return a list of {@link SpaceInstLight} instances, each of them being a node in the path of
+   * the component instance.
+   */
+  public List<SpaceInstLight> getComponentPath(String componentId) {
     ComponentInstLight component = getComponent(componentId);
     if (component != null && component.hasDomainFather()) {
       return getSpacePath(getSpaceId(component));
@@ -203,7 +275,12 @@ public class TreeCache {
     return new ArrayList<>();
   }
 
-  public static synchronized void updateSpace(SpaceInstLight spaceLight) {
+  /**
+   * Updates the space cached here by the specified one. The space in the cache to update is
+   * identified by the identifier of the specified space instance.
+   * @param spaceLight the instance with which the space in the cache will be updated.
+   */
+  public synchronized void updateSpace(SpaceInstLight spaceLight) {
     if (spaceLight != null && StringUtil.isDefined(spaceLight.getId())) {
       Space space = getSpace(spaceLight.getLocalId());
       if (space != null) {
@@ -217,15 +294,26 @@ public class TreeCache {
     }
   }
 
-  private static synchronized Space getSpace(int spaceId) {
+  private synchronized Space getSpace(int spaceId) {
     return map.get(spaceId);
   }
 
-  public static int getSpaceLevel(int spaceId) {
+  /**
+   * Gets the level of the specified space in the cached tree.
+   * @param spaceId the unique identifier of a space in the cache.
+   * @return the level of the space in the tree. -1 means the space isn't cached, 0 means the space
+   * is a root one.
+   */
+  public int getSpaceLevel(int spaceId) {
     return getSpacePath(spaceId).size() - 1;
   }
 
-  public static void addSubSpace(int spaceId, SpaceInstLight subSpace) {
+  /**
+   * Adds the specified space as a child space of the space with the given identifier.
+   * @param spaceId the unique identifier of a space that will contain the given space.
+   * @param subSpace the space to add as a child.
+   */
+  public void addSubSpace(int spaceId, SpaceInstLight subSpace) {
     Space space = getSpace(spaceId);
     if (space != null) {
       Iterator<SpaceInstLight> spaceSubSpaceIterator = space.getSubspaces().iterator();
@@ -240,12 +328,18 @@ public class TreeCache {
     }
   }
 
-  public static void updateComponent(ComponentInstLight component) {
+  /**
+   * Updates the component instance cached here by the specified one. The cached component instance
+   * is found by the identifier of the given component instance. The cached component instance
+   * is replaced by the specified one.
+   * @param component the component instance with which the cached one will be updated.
+   */
+  public void updateComponent(ComponentInstLight component) {
     Space space = getSpace(getSpaceId(component));
     space.updateComponent(component);
   }
 
-  private static int getSpaceId(ComponentInstLight component) {
+  private int getSpaceId(ComponentInstLight component) {
     return Integer
         .parseInt(component.getSpaceId().replaceFirst("^" + SpaceInst.SPACE_KEY_PREFIX, ""));
   }

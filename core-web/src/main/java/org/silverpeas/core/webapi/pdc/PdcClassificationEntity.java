@@ -23,15 +23,14 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
+import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
-import org.silverpeas.core.webapi.base.WebEntity;
-import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.exception.DecodingException;
+import org.silverpeas.core.webapi.base.WebEntity;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -133,7 +132,7 @@ public class PdcClassificationEntity implements WebEntity {
    * this entity out of the JAX-RS context.
    * @return a JSON representation of this classification entity (as string).
    */
-  public String toJSON() throws JAXBException {
+  public String toJSON() {
     return JSONCodec.encode(this);
   }
 
@@ -314,6 +313,10 @@ public class PdcClassificationEntity implements WebEntity {
 
   private static class PositionComparator implements Comparator<PdcPositionEntity> {
 
+    private static boolean isIdDefined(final PdcPositionEntity position) {
+      return isDefined(position.getId()) && !position.getId().equals("-1");
+    }
+
     @Override
     public int compare(PdcPositionEntity t, PdcPositionEntity t1) {
       if (isIdDefined(t) && isIdDefined(t1)) {
@@ -324,7 +327,4 @@ public class PdcClassificationEntity implements WebEntity {
     }
   }
 
-  private static boolean isIdDefined(final PdcPositionEntity position) {
-    return isDefined(position.getId()) && !position.getId().equals("-1");
-  }
 }

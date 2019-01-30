@@ -61,7 +61,7 @@ public abstract class FileResponse {
   private static final int MAX_PATH_LENGTH_IN_LOGS = 100;
   private static final int BUFFER_LENGTH = 1024 * 16;
   private static final Pattern RANGE_PATTERN = Pattern.compile("bytes=(?<start>\\d*)-(?<end>\\d*)");
-  private static final long EXPIRE_TIME = 1000 * 60 * 60 * 24;
+  private static final long EXPIRE_TIME = 1000 * 60 * 60 * 24l;
 
   final HttpServletResponse response;
   private final HttpServletRequest request;

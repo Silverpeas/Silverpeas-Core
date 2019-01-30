@@ -29,8 +29,8 @@ import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.util.DateUtil;
 
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 
 /**
  * The interface for all the SilverContent (filebox+, ..)
@@ -58,7 +58,7 @@ public interface SilverContentInterface extends SilverpeasContent {
 
   String getCreatorId();
 
-  Iterator<String> getLanguages();
+  Collection<String> getLanguages();
 
   /**
    * {@link SilverpeasContent} default implementations.

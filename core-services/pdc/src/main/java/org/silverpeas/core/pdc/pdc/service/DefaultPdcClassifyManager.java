@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.classification.ClassifyEngineException;
 import org.silverpeas.core.pdc.classification.Criteria;
@@ -51,6 +51,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Singleton
 public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentInstanceDeletion {
@@ -69,64 +70,48 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
     try {
       return classifyEngine.isPositionAlreadyExists(silverObjectId, position);
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.isPositionAlreadyExists",
-          SilverpeasException.ERROR, "Pdc.CANNOT_ADD_POSITION", e);
+      throw new PdcException(e);
     }
   }
 
   @Override
   public int addPosition(int silverObjectId, ClassifyPosition position, String sComponentId) throws
       PdcException {
-    Connection connection = null;
-    try {
-      // Open the connection
-      connection = DBUtil.openConnection();
+    try (final Connection connection = DBUtil.openConnection()) {
       // Vérification de la contrainte invariante
       classifyEngine.classifySilverObject(connection, silverObjectId, position);
       return 0;
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.addPosition", SilverpeasException.ERROR,
-          "Pdc.CANNOT_ADD_POSITION", e);
-    } finally {
-      DBUtil.close(connection);
+      throw new PdcException(e);
     }
   }
 
   @Override
   public int updatePosition(ClassifyPosition position) throws PdcException {
     try {
-      classifyEngine.updateSilverObjectPosition(null, position);
+      classifyEngine.updateSilverObjectPosition(position);
       return 0;
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.updatePosition", SilverpeasException.ERROR,
-          "Pdc.CANNOT_UPDATE_POSITION", e);
+      throw new PdcException(e);
     }
   }
 
   @Override
   public int updatePositions(List<Value> classifyValues, int silverObjectId) throws PdcException {
     try {
-      classifyEngine.updateSilverObjectPositions(null, classifyValues, silverObjectId);
+      classifyEngine.updateSilverObjectPositions(classifyValues, silverObjectId);
       return 0;
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.updatePositions",
-          SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_POSITION", e);
+      throw new PdcException(e);
     }
   }
 
   @Override
   public void deletePosition(int nPositionId, String sComponentId) throws PdcException {
-    Connection connection = null;
-
-    try {
-      // Open the connection
-      connection = DBUtil.openConnection();
+    try (final Connection connection = DBUtil.openConnection()) {
       classifyEngine.unclassifySilverObjectByPositionId(connection, nPositionId);
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.deletePosition", SilverpeasException.ERROR,
-          "Pdc.CANNOT_DELETE_POSITION", e);
-    } finally {
-      DBUtil.close(connection);
+      throw new PdcException(e);
     }
   }
 
@@ -136,8 +121,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
       // Get all the positions for the given silverObjectId
       return classifyEngine.findPositionsBySilverOjectId(silverObjectId);
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.getPositions", SilverpeasException.ERROR,
-          "Pdc.CANNOT_GET_POSITIONS", e);
+      throw new PdcException(e);
     }
   }
 
@@ -146,8 +130,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
     try {
       classifyEngine.registerAxis(con, axisId);
     } catch (ClassifyEngineException e) {
-      throw new PdcException("PdcClassifyBmImpl.getPositions",
-          SilverpeasException.ERROR, "Pdc.CANNOT_CREATE_AXE", e);
+      throw new PdcException(e);
     }
   }
 
@@ -156,8 +139,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
     try {
       classifyEngine.unregisterAxis(con, axisId);
     } catch (ClassifyEngineException e) {
-      throw new PdcException("PdcClassifyBmImpl.getPositions", SilverpeasException.ERROR,
-          "Pdc.CANNOT_DELETE_AXE", "axisId: " + axisId, e);
+      throw new PdcException(e);
     }
   }
 
@@ -172,21 +154,17 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   @Override
   public void createValuesAndReplace(Connection con, String axisId,
       List<String> oldPath, List<String> newPath) throws PdcException {
-    List<Value> oldValues = new ArrayList<Value>();
-    List<Value> newValues = new ArrayList<Value>();
-    String path = "";
-    Value oldValue = null;
-    Value newValue = null;
+    Objects.requireNonNull(con);
+    final List<Value> oldValues = new ArrayList<>();
+    final List<Value> newValues = new ArrayList<>();
     // set the axisId of Value Objects
     int id = Integer.parseInt(axisId);
-    // oldValue.setAxisId(id);
-    // newValue.setAxisId(id);
     // build old values and new values object
     for (int i = 0; i < oldPath.size(); i++) {
-      oldValue = new Value();
-      newValue = new Value();
+      final Value oldValue = new Value();
+      final Value newValue = new Value();
       // get oldpath
-      path = oldPath.get(i);
+      String path = oldPath.get(i);
       oldValue.setAxisId(id);
       oldValue.setValue(path);
       // get newPath
@@ -199,19 +177,18 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
       newValues.add(newValue);
     }
     try {
-      Position<Value> position = new Position<Value>(newValues);
+      Position<Value> position = new Position<>(newValues);
       if (classifyEngine.isPositionAlreadyExists(id, position) == -1) {
         classifyEngine.replaceValuesOnAxis(con, oldValues, newValues);
       }
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.createValuesAndReplace",
-          SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_POSITIONS", e);
+      throw new PdcException(e);
     }
   }
 
   @Override
   public List<Integer> getObjectsByInstance(String instanceId) throws PdcException {
-    List<Integer> objectIdList = new ArrayList<Integer>();
+    final List<Integer> objectIdList;
     try {
       JoinStatement contentJoin = contentManager.getPositionsByGenericSearch(null, null, null);
       List<Criteria> criterias = new ArrayList<>();
@@ -220,7 +197,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
       objectIdList = classifyEngine
           .findSilverOjectByCriterias(criterias, instanceIds, contentJoin, null, null, true, false);
     } catch (ClassifyEngineException e) {
-
+      throw new PdcException(e);
     }
     return objectIdList;
   }
@@ -236,45 +213,20 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   @Override
   public boolean hasAlreadyPositions(List<Integer> objectIdList, UsedAxis usedAxis)
       throws PdcException {
-    String newBaseValue = "/"
-        + (new Integer(usedAxis.getBaseValue())).toString() + "/";
-    String instanceId = usedAxis.getInstanceId();
+    final String newBaseValue = "/" + usedAxis.getBaseValue() + "/";
+    final String instanceId = usedAxis.getInstanceId();
 
     boolean hasOnePosition = false;
-    // de toutes ces SilverObjectId, je récupère toutes les positions correspondantes
-    List<Position> positions = new ArrayList<Position>();
-    for (Integer objectId : objectIdList) {
-      if (objectId != -1) {
-        positions = getPositions(objectId.intValue(), instanceId);
-        // maintenant, je récupère toutes les valeurs de toutes les positions
-        // pour ne prendre que les path de chaques Values
-        // si la valeur de base ne fait pas partie du chemin alors on ne peut
-        // pas
-        // modifier cette valeur
-        // et il faut que la nouvelle valeur de base ne soit pas dans le chemin
-        String onePath = "";
-        for (Position position : positions) {
-          Value value = position.getValueByAxis(usedAxis.
+    for (int i = 0; i < objectIdList.size() && !hasOnePosition; i++) {
+      if (objectIdList.get(i) != -1) {
+        final List<Position> positions = getPositions(objectIdList.get(i), instanceId);
+        for (int j = 0; j < positions.size() && !hasOnePosition; j++) {
+          final Value value = positions.get(i).getValueByAxis(usedAxis.
               getAxisId());
-          onePath = value.getValue();
+          final String onePath = value.getValue();
           if (onePath != null && onePath.contains(newBaseValue)) {
-            // une position existe déjà
-            // on ne peut donc pas changer cette valeur de base
             hasOnePosition = true;
-            break;
           }
-          // une position existe deja, inutile de continuer à chercher d'autres
-          // positions
-          // je sors donc de la boucle
-          if (hasOnePosition) {
-            break;
-          }
-        }
-        // une position existe deja, inutile de chercher des positions dans
-        // d'autres silverobjectid
-        // je sors donc de la boucle principale
-        if (hasOnePosition) {
-          break;
         }
       }
     }
@@ -289,8 +241,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
       return classifyEngine
           .getPertinentAxisByJoin(searchContext.getCriterias(), axisIds, instanceIds);
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
-          SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_AXIS", e);
+      throw new PdcException(e);
     }
   }
 
@@ -301,8 +252,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
       return classifyEngine.getPertinentValuesByJoin(searchContext.getCriterias(), axisId,
           instanceIds);
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
-          SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_VALUES", e);
+      throw new PdcException(e);
     }
   }
 
@@ -313,39 +263,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
       return classifyEngine.getObjectValuePairsByJoin(searchContext.getCriterias(), axisId,
           instanceIds);
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
-          SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_VALUES", e);
-    }
-  }
-
-  /**
-   * Remove all the positions of the given content.
-   *
-   * @param connection
-   * @param nSilverContentId
-   * @return
-   * @throws PdcException
-   */
-  @Override
-  public List<Integer> removePosition(Connection connection, int nSilverContentId)
-      throws PdcException {
-    try {
-      // Get all the positions of the removed object
-      List<Position> alPositions = classifyEngine.findPositionsBySilverOjectId(nSilverContentId);
-
-      // Create the liste with only the positionId
-      List<Integer> alPositionIds = new ArrayList<Integer>(alPositions.size());
-      for (int nI = 0; alPositions != null && nI < alPositions.size(); nI++) {
-        alPositionIds.add(alPositions.get(nI).getPositionId());
-      }
-
-      // Unclassify the SilverContentId
-      classifyEngine.unclassifySilverObject(connection, nSilverContentId);
-
-      return alPositionIds;
-    } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.removePosition",
-          SilverpeasException.ERROR, "Pdc.CANNOT_REMOVE_SILVERCONTENTID", e);
+      throw new PdcException(e);
     }
   }
 
@@ -374,8 +292,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
           authorId, afterDate, beforeDate), afterDate, beforeDate,
           recursiveSearch, visibilitySensitive);
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.findSilverContentIdByPosition",
-          SilverpeasException.ERROR, "Pdc.CANNOT_GET_SILVERCONTENTIDS", e);
+      throw new PdcException(e);
     }
   }
 
@@ -388,13 +305,13 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   @Transactional
   public void delete(final String componentInstanceId) {
     try (Connection connection = DBUtil.openConnection()) {
-      ContentManager contentManager = ContentManagerProvider.getContentManager();
-      List<Integer> contentIds = contentManager.getSilverContentIdByInstanceId(componentInstanceId);
+      ContentManager theContentManager = ContentManagerProvider.getContentManager();
+      List<Integer> contentIds = theContentManager.getSilverContentIdByInstanceId(componentInstanceId);
       for (Integer contentId : contentIds) {
         classifyEngine.unclassifySilverObject(connection, contentId);
       }
     } catch (ContentManagerException | SQLException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e);
     } catch (ClassifyEngineException e) {
       SilverLogger.getLogger(this)
           .warn("[Deletion of {0}] {1}", componentInstanceId, e.getMessage());

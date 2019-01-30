@@ -162,8 +162,8 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
     this.translationId = translationId;
   }
 
-  public Iterator<String> getLanguages() {
-    return translations.keySet().iterator();
+  public Collection<String> getLanguages() {
+    return translations.keySet();
   }
 
   @Override

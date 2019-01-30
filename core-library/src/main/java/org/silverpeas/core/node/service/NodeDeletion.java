@@ -23,18 +23,19 @@
  */
 package org.silverpeas.core.node.service;
 
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.node.notification.NodeEventNotifier;
 import org.silverpeas.core.node.dao.NodeDAO;
 import org.silverpeas.core.node.dao.NodeI18NDAO;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeRuntimeException;
+import org.silverpeas.core.node.notification.NodeEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -46,7 +47,11 @@ import java.util.Collection;
  * node deletion whatever the context in which it occurs. It is intended to by used both by the EJB
  * context and by the Silverpeas instanciator context (legacy code that should be later cleaned up).
  */
+@Singleton
 public class NodeDeletion {
+  
+  @Inject
+  private NodeDAO nodeDAO;
 
   /**
    * Deletes the specified node and all of its children within the specified data source connection.
@@ -54,10 +59,10 @@ public class NodeDeletion {
    * @param inConnection the connection to use in the deletion.
    * @param afterDeletion the method to invoke after the deletion of a node.
    */
-  public static void deleteNodes(final NodePK pk, final Connection inConnection,
+  public void deleteNodes(final NodePK pk, final Connection inConnection,
       final AnonymousMethodOnNode afterDeletion) {
     try {
-      Collection<NodeDetail> children = NodeDAO.getChildrenDetails(inConnection, pk);
+      Collection<NodeDetail> children = nodeDAO.getChildrenDetails(inConnection, pk);
       for (NodeDetail childNode : children) {
         deleteNodes(childNode.getNodePK(), inConnection, afterDeletion);
       }
@@ -67,16 +72,14 @@ public class NodeDeletion {
         afterDeletion.invoke(pk);
       }
     } catch (Exception ex) {
-      throw new NodeRuntimeException("NodeBmEJB.removeNode()",
-          SilverpeasRuntimeException.ERROR, "node.DELETING_NODE_FAILED",
-          "nodeId = " + pk.getId(), ex);
+      throw new NodeRuntimeException(ex);
     }
   }
 
-  private static void deleteNode(final NodePK pk, final Connection connection) throws
+  private void deleteNode(final NodePK pk, final Connection connection) throws
       SQLException {
-    NodeDetail node = NodeDAO.loadRow(connection, pk);
-    NodeDAO.deleteRow(connection, pk);
+    NodeDetail node = nodeDAO.loadRow(connection, pk);
+    nodeDAO.deleteRow(connection, pk);
     NodeI18NDAO.removeTranslations(connection, Integer.parseInt(pk.getId()));
     IndexEntryKey indexEntry = new IndexEntryKey(pk.getComponentName(), "Node", pk.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);

@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Iterator;
@@ -53,6 +54,9 @@ public class NodeDAOIT {
 
   private static final String TABLE_CREATION_SCRIPT = "/node-create-database.sql";
   private static final String DATASET_XML_SCRIPT = "nodes-test-dataset.xml";
+  
+  @Inject
+  private NodeDAO nodeDAO;
 
   @Rule
   public DbUnitLoadingRule dbUnitLoadingRule =
@@ -78,11 +82,11 @@ public class NodeDAOIT {
   public void testGetTree() throws Exception {
     try (Connection connection = getSafeConnection()) {
       NodePK nodePK = new NodePK("0", INSTANCE_ID);
-      List<NodeDetail> tree = NodeDAO.getTree(connection, nodePK);
+      List<NodeDetail> tree = nodeDAO.getTree(connection, nodePK);
       assertNotNull(tree);
       assertEquals(5, tree.size());
       nodePK = new NodePK("3", INSTANCE_ID);
-      tree = NodeDAO.getTree(connection, nodePK);
+      tree = nodeDAO.getTree(connection, nodePK);
       assertNotNull(tree);
       assertEquals(5, tree.size());
       NodeDetail detail = tree.get(0);
@@ -196,23 +200,23 @@ public class NodeDAOIT {
       detail.setLevel(2);
       detail.setName("Corbeille");
       detail.setNodePK(pk);
-      assertTrue(NodeDAO.isSameNameSameLevelOnCreation(connection, detail));
+      assertTrue(nodeDAO.isSameNameSameLevelOnCreation(connection, detail));
       detail = new NodeDetail();
       detail.setLevel(3);
       detail.setName("Corbeille");
       detail.setNodePK(pk);
-      assertFalse(NodeDAO.isSameNameSameLevelOnCreation(connection, detail));
+      assertFalse(nodeDAO.isSameNameSameLevelOnCreation(connection, detail));
       detail = new NodeDetail();
       detail.setLevel(2);
       detail.setName("Poubelle");
       detail.setNodePK(pk);
-      assertFalse(NodeDAO.isSameNameSameLevelOnCreation(connection, detail));
+      assertFalse(nodeDAO.isSameNameSameLevelOnCreation(connection, detail));
       detail = new NodeDetail();
       detail.setLevel(2);
       detail.setName("Corbeille");
       pk = new NodePK(null, "kmelia65");
       detail.setNodePK(pk);
-      assertFalse(NodeDAO.isSameNameSameLevelOnCreation(connection, detail));
+      assertFalse(nodeDAO.isSameNameSameLevelOnCreation(connection, detail));
     }
   }
 
@@ -224,29 +228,29 @@ public class NodeDAOIT {
       detail.setLevel(2);
       detail.setName("Corbeille");
       detail.setNodePK(pk);
-      assertTrue(NodeDAO.isSameNameSameLevelOnCreation(connection, detail));
+      assertTrue(nodeDAO.isSameNameSameLevelOnCreation(connection, detail));
       detail = new NodeDetail();
       detail.setLevel(3);
       detail.setName("Corbeille");
       detail.setNodePK(pk);
-      assertFalse(NodeDAO.isSameNameSameLevelOnCreation(connection, detail));
+      assertFalse(nodeDAO.isSameNameSameLevelOnCreation(connection, detail));
       detail = new NodeDetail();
       detail.setLevel(2);
       detail.setName("Poubelle");
       detail.setNodePK(pk);
-      assertFalse(NodeDAO.isSameNameSameLevelOnCreation(connection, detail));
+      assertFalse(nodeDAO.isSameNameSameLevelOnCreation(connection, detail));
       detail = new NodeDetail();
       detail.setLevel(2);
       detail.setName("Corbeille");
       pk = new NodePK("2", "kmelia65");
       detail.setNodePK(pk);
-      assertFalse(NodeDAO.isSameNameSameLevelOnCreation(connection, detail));
+      assertFalse(nodeDAO.isSameNameSameLevelOnCreation(connection, detail));
       detail = new NodeDetail();
       detail.setLevel(2);
       detail.setName("Corbeille");
       pk = new NodePK("5", "kmelia65");
       detail.setNodePK(pk);
-      assertFalse(NodeDAO.isSameNameSameLevelOnCreation(connection, detail));
+      assertFalse(nodeDAO.isSameNameSameLevelOnCreation(connection, detail));
     }
   }
 
@@ -254,11 +258,11 @@ public class NodeDAOIT {
   public void testGetChildrenPKs() throws Exception {
     try (Connection connection = getSafeConnection()) {
       NodePK nodePK = new NodePK("0", INSTANCE_ID);
-      Collection<NodePK> children = NodeDAO.getChildrenPKs(connection, nodePK);
+      Collection<NodePK> children = nodeDAO.getChildrenPKs(connection, nodePK);
       assertNotNull(children);
       assertEquals(3, children.size());
       nodePK = new NodePK("3", INSTANCE_ID);
-      children = NodeDAO.getChildrenPKs(connection, nodePK);
+      children = nodeDAO.getChildrenPKs(connection, nodePK);
       assertNotNull(children);
       assertEquals(1, children.size());
       NodePK childPk = children.iterator().next();
@@ -275,11 +279,11 @@ public class NodeDAOIT {
   public void testGetDescendantPKs() throws Exception {
     try (Connection connection = getSafeConnection()) {
       NodePK nodePK = new NodePK("3", INSTANCE_ID);
-      Collection children = NodeDAO.getDescendantPKs(connection, nodePK);
+      Collection children = nodeDAO.getDescendantPKs(connection, nodePK);
       assertNotNull(children);
       assertEquals(1, children.size());
       nodePK = new NodePK("0", INSTANCE_ID);
-      children = NodeDAO.getDescendantPKs(connection, nodePK);
+      children = nodeDAO.getDescendantPKs(connection, nodePK);
       assertNotNull(children);
       assertEquals(4, children.size());
       Iterator iter = children.iterator();
@@ -317,11 +321,11 @@ public class NodeDAOIT {
   public void testGetDescendantDetailsConnectionNodePK() throws Exception {
     try (Connection connection = getSafeConnection()) {
       NodePK nodePK = new NodePK("3", INSTANCE_ID);
-      Collection children = NodeDAO.getDescendantDetails(connection, nodePK);
+      Collection children = nodeDAO.getDescendantDetails(connection, nodePK);
       assertNotNull(children);
       assertEquals(1, children.size());
       nodePK = new NodePK("0", INSTANCE_ID);
-      children = NodeDAO.getDescendantDetails(connection, nodePK);
+      children = nodeDAO.getDescendantDetails(connection, nodePK);
       assertNotNull(children);
       assertEquals(4, children.size());
       Iterator iter = children.iterator();
@@ -415,14 +419,14 @@ public class NodeDAOIT {
       NodeDetail parent = new NodeDetail();
       parent.setNodePK(nodePK);
       parent.setPath("/0/");
-      Collection children = NodeDAO.getDescendantDetails(connection, parent.getNodePK());
+      Collection children = nodeDAO.getDescendantDetails(connection, parent.getNodePK());
       assertNotNull(children);
       assertEquals(1, children.size());
       nodePK = new NodePK("0", INSTANCE_ID);
       parent = new NodeDetail();
       parent.setNodePK(nodePK);
       parent.setPath("/");
-      children = NodeDAO.getDescendantDetails(connection, parent.getNodePK());
+      children = nodeDAO.getDescendantDetails(connection, parent.getNodePK());
       assertNotNull(children);
       assertEquals(4, children.size());
       Iterator iter = children.iterator();
@@ -513,10 +517,10 @@ public class NodeDAOIT {
   public void testGetHeadersByLevel() throws Exception {
     try (Connection connection = getSafeConnection()) {
       NodePK nodePK = new NodePK("3", INSTANCE_ID);
-      Collection children = NodeDAO.getHeadersByLevel(connection, nodePK, 1);
+      Collection children = nodeDAO.getHeadersByLevel(connection, nodePK, 1);
       assertNotNull(children);
       assertEquals(1, children.size());
-      children = NodeDAO.getHeadersByLevel(connection, nodePK, 2);
+      children = nodeDAO.getHeadersByLevel(connection, nodePK, 2);
       assertNotNull(children);
       assertEquals(3, children.size());
       Iterator iter = children.iterator();
@@ -580,7 +584,7 @@ public class NodeDAOIT {
       assertEquals(3, detail.getOrder());
       assertEquals("/0/", detail.getPath());
       assertEquals("default", detail.getType());
-      children = NodeDAO.getHeadersByLevel(connection, nodePK, 3);
+      children = nodeDAO.getHeadersByLevel(connection, nodePK, 3);
       assertNotNull(children);
       assertEquals(1, children.size());
       detail = (NodeDetail) children.iterator().next();
@@ -610,11 +614,11 @@ public class NodeDAOIT {
   public void testGetAllHeaders() throws Exception {
     try (Connection connection = getSafeConnection()) {
       NodePK nodePK = new NodePK("0", INSTANCE_ID);
-      List tree = NodeDAO.getTree(connection, nodePK);
+      List tree = nodeDAO.getTree(connection, nodePK);
       assertNotNull(tree);
       assertEquals(5, tree.size());
       nodePK = new NodePK("3", INSTANCE_ID);
-      tree = NodeDAO.getTree(connection, nodePK);
+      tree = nodeDAO.getTree(connection, nodePK);
       assertNotNull(tree);
       assertEquals(5, tree.size());
       NodeDetail detail = (NodeDetail) tree.get(0);
@@ -721,10 +725,10 @@ public class NodeDAOIT {
   }
 
   @Test
-  public void testGetAnotherPath() throws Exception {
+  public void testGetPath() throws Exception {
     try (Connection connection = getSafeConnection()) {
       NodePK nodePK = new NodePK("3", INSTANCE_ID);
-      Collection tree = NodeDAO.getAnotherPath(connection, nodePK);
+      Collection tree = nodeDAO.getNodePath(connection, nodePK);
       assertNotNull(tree);
       assertEquals(2, tree.size());
       Iterator iter = tree.iterator();
@@ -769,7 +773,7 @@ public class NodeDAOIT {
       assertEquals("/", detail.getPath());
       assertNull(detail.getType());
       nodePK = new NodePK("4", INSTANCE_ID);
-      tree = NodeDAO.getAnotherPath(connection, nodePK);
+      tree = nodeDAO.getNodePath(connection, nodePK);
       assertNotNull(tree);
       assertEquals(3, tree.size());
       iter = tree.iterator();
@@ -837,10 +841,10 @@ public class NodeDAOIT {
   }
 
   @Test
-  public void testGetAnotherHeader() throws Exception {
+  public void testGetHeader() throws Exception {
     try (Connection connection = getSafeConnection()) {
       NodePK nodePK = new NodePK("2", INSTANCE_ID);
-      NodeDetail detail = NodeDAO.selectByPrimaryKey(connection, nodePK);
+      NodeDetail detail = nodeDAO.selectByPrimaryKey(connection, nodePK);
       assertNotNull(detail);
       assertEquals(2, detail.getId());
       assertEquals("Déclassées", detail.getName());
@@ -861,7 +865,7 @@ public class NodeDAOIT {
       assertEquals("/0/", detail.getPath());
       assertNull(detail.getType());
       nodePK = new NodePK("1", INSTANCE_ID);
-      detail = NodeDAO.selectByPrimaryKey(connection, nodePK);
+      detail = nodeDAO.selectByPrimaryKey(connection, nodePK);
       assertNotNull(detail);
       assertEquals(1, detail.getId());
       assertEquals("Corbeille", detail.getName());
@@ -882,7 +886,7 @@ public class NodeDAOIT {
       assertEquals("/0/", detail.getPath());
       assertNull(detail.getType());
       nodePK = new NodePK("3", INSTANCE_ID);
-      detail = NodeDAO.selectByPrimaryKey(connection, nodePK);
+      detail = nodeDAO.selectByPrimaryKey(connection, nodePK);
       assertNotNull(detail);
       assertEquals(3, detail.getId());
       assertEquals("Theme de Test", detail.getName());
@@ -903,7 +907,7 @@ public class NodeDAOIT {
       assertEquals("/0/", detail.getPath());
       assertEquals("default", detail.getType());
       nodePK = new NodePK("4", INSTANCE_ID);
-      detail = NodeDAO.selectByPrimaryKey(connection, nodePK);
+      detail = nodeDAO.selectByPrimaryKey(connection, nodePK);
       assertNotNull(detail);
       assertEquals(4, detail.getId());
       assertEquals("Sous Theme de Test", detail.getName());
@@ -930,7 +934,7 @@ public class NodeDAOIT {
   public void testGetChildrenDetailsConnectionNodePK() throws Exception {
     try (Connection connection = getSafeConnection()) {
       NodePK nodePK = new NodePK("0", INSTANCE_ID);
-      Collection<NodeDetail> children = NodeDAO.getChildrenDetails(connection, nodePK);
+      Collection<NodeDetail> children = nodeDAO.getChildrenDetails(connection, nodePK);
       assertNotNull(children);
       assertEquals(3, children.size());
       Iterator<NodeDetail> iter = children.iterator();
@@ -995,7 +999,7 @@ public class NodeDAOIT {
       assertEquals("/0/", detail.getPath());
       assertEquals("default", detail.getType());
       nodePK = new NodePK("3", INSTANCE_ID);
-      children = NodeDAO.getChildrenDetails(connection, nodePK);
+      children = nodeDAO.getChildrenDetails(connection, nodePK);
       assertNotNull(children);
       assertEquals(1, children.size());
       detail = children.iterator().next();
@@ -1026,9 +1030,9 @@ public class NodeDAOIT {
   public void testGetChildrenNumber() throws Exception {
     try (Connection connection = getSafeConnection()) {
       NodePK nodePK = new NodePK("0", INSTANCE_ID);
-      assertEquals(3, NodeDAO.getChildrenNumber(connection, nodePK));
+      assertEquals(3, nodeDAO.getChildrenNumber(connection, nodePK));
       nodePK = new NodePK("3", INSTANCE_ID);
-      assertEquals(1, NodeDAO.getChildrenNumber(connection, nodePK));
+      assertEquals(1, nodeDAO.getChildrenNumber(connection, nodePK));
     }
   }
 
@@ -1036,7 +1040,7 @@ public class NodeDAOIT {
   public void testSelectByPrimaryKey() throws Exception {
     try (Connection connection = getSafeConnection()) {
       NodePK nodePK = new NodePK("2", INSTANCE_ID);
-      NodeDetail detail = NodeDAO.selectByPrimaryKey(connection, nodePK);
+      NodeDetail detail = nodeDAO.selectByPrimaryKey(connection, nodePK);
       assertNotNull(detail);
       assertEquals("2", detail.getNodePK().getId());
       assertEquals(INSTANCE_ID, detail.getNodePK().getInstanceId());
@@ -1060,7 +1064,7 @@ public class NodeDAOIT {
       assertEquals("/0/", detail.getPath());
       assertNull(detail.getType());
       nodePK = new NodePK("1", INSTANCE_ID);
-      detail = NodeDAO.selectByPrimaryKey(connection, nodePK);
+      detail = nodeDAO.selectByPrimaryKey(connection, nodePK);
       assertNotNull(detail);
       assertEquals("1", detail.getNodePK().getId());
       assertEquals(INSTANCE_ID, detail.getNodePK().getInstanceId());
@@ -1084,7 +1088,7 @@ public class NodeDAOIT {
       assertEquals("/0/", detail.getPath());
       assertNull(detail.getType());
       nodePK = new NodePK("3", INSTANCE_ID);
-      detail = NodeDAO.selectByPrimaryKey(connection, nodePK);
+      detail = nodeDAO.selectByPrimaryKey(connection, nodePK);
       assertNotNull(detail);
       assertEquals("3", detail.getNodePK().getId());
       assertEquals(INSTANCE_ID, detail.getNodePK().getInstanceId());
@@ -1108,7 +1112,7 @@ public class NodeDAOIT {
       assertEquals("/0/", detail.getPath());
       assertEquals("default", detail.getType());
       nodePK = new NodePK("4", INSTANCE_ID);
-      detail = NodeDAO.selectByPrimaryKey(connection, nodePK);
+      detail = nodeDAO.selectByPrimaryKey(connection, nodePK);
       assertNotNull(detail);
       assertEquals("4", detail.getNodePK().getId());
       assertEquals(4, detail.getId());
@@ -1140,7 +1144,7 @@ public class NodeDAOIT {
     IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("2", INSTANCE_ID);
-    NodePK detail = NodeDAO.selectByNameAndFatherId(connection, nodePK, "Déclassées", 0);
+    NodePK detail = nodeDAO.selectByNameAndFatherId(connection, nodePK, "Déclassées", 0);
     assertNotNull(detail);
     assertNotNull(detail.nodeDetail);
     assertEquals("2", detail.getId());
@@ -1166,14 +1170,14 @@ public class NodeDAOIT {
     assertEquals("/0/", detail.nodeDetail.getPath());
     assertNull(detail.nodeDetail.getType());
     try {
-      detail = NodeDAO.selectByNameAndFatherId(connection, nodePK, "Toto", 0);
+      detail = nodeDAO.selectByNameAndFatherId(connection, nodePK, "Toto", 0);
       fail();
     } catch (NodeRuntimeException nrex) {
       assertEquals("root.EX_CANT_LOAD_ENTITY_ATTRIBUTES", nrex.getMessage());
     }
     assertNotNull(detail);
     nodePK = new NodePK("1", INSTANCE_ID);
-    detail = NodeDAO.selectByNameAndFatherId(connection, nodePK, "Corbeille", 0);
+    detail = nodeDAO.selectByNameAndFatherId(connection, nodePK, "Corbeille", 0);
     assertNotNull(detail);
     assertNotNull(detail.nodeDetail);
     assertEquals("1", detail.getId());
@@ -1200,7 +1204,7 @@ public class NodeDAOIT {
     assertEquals("/0/", detail.nodeDetail.getPath());
     assertNull(detail.nodeDetail.getType());
     nodePK = new NodePK("3", INSTANCE_ID);
-    detail = NodeDAO.selectByNameAndFatherId(connection, nodePK, "Theme de Test", 0);
+    detail = nodeDAO.selectByNameAndFatherId(connection, nodePK, "Theme de Test", 0);
     assertNotNull(detail);
     assertNotNull(detail.nodeDetail);
     assertEquals("3", detail.getId());
@@ -1227,12 +1231,12 @@ public class NodeDAOIT {
     assertEquals("default", detail.nodeDetail.getType());
     nodePK = new NodePK("4", INSTANCE_ID);
     try {
-      detail = NodeDAO.selectByNameAndFatherId(connection, nodePK, "Theme de Test", 3);
+      detail = nodeDAO.selectByNameAndFatherId(connection, nodePK, "Theme de Test", 3);
       fail();
     } catch (NodeRuntimeException nrex) {
       assertEquals("root.EX_CANT_LOAD_ENTITY_ATTRIBUTES", nrex.getMessage());
     }
-    detail = NodeDAO.selectByNameAndFatherId(connection, nodePK, "Sous Theme de Test", 3);
+    detail = nodeDAO.selectByNameAndFatherId(connection, nodePK, "Sous Theme de Test", 3);
     assertNotNull(detail);
     assertNotNull(detail.nodeDetail);
     assertEquals("4", detail.getId());
@@ -1265,7 +1269,7 @@ public class NodeDAOIT {
     IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
-    Collection children = NodeDAO.getChildrenPKs(connection, nodePK);
+    Collection children = nodeDAO.getChildrenPKs(connection, nodePK);
     assertNotNull(children);
     assertEquals(3, children.size());
     Iterator iter = children.iterator();
@@ -1337,7 +1341,7 @@ public class NodeDAOIT {
     assertEquals("/0/", detail.getPath());
     assertEquals("default", detail.getType());
     nodePK = new NodePK("3", INSTANCE_ID);
-    children = NodeDAO.getChildrenPKs(connection, nodePK);
+    children = nodeDAO.getChildrenPKs(connection, nodePK);
     assertNotNull(children);
     assertEquals(1, children.size());
     result = (NodePK) children.iterator().next();

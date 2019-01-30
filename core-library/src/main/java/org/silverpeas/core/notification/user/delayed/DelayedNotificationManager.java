@@ -54,7 +54,6 @@ import java.util.Set;
 @Singleton
 @Transactional
 public class DelayedNotificationManager implements DelayedNotification {
-  private static final Object SYNCHRONIZED = new Object();
 
   /**
    * For now, only the SMTP channel can be delayed (mail)
@@ -188,6 +187,7 @@ public class DelayedNotificationManager implements DelayedNotification {
   }
 
   @Override
+  @Transactional(Transactional.TxType.SUPPORTS)
   public DelayedNotificationUserSetting getDelayedNotificationUserSettingByUserIdAndChannel(
       final int userId, final NotifChannel channel) {
     final List<DelayedNotificationUserSetting> userSettings =
@@ -250,6 +250,7 @@ public class DelayedNotificationManager implements DelayedNotification {
   }
 
   @Override
+  @Transactional(Transactional.TxType.NOT_SUPPORTED)
   public DelayedNotificationFrequency getUserFrequency(final Integer userId,
       final NotifChannel channel) {
     DelayedNotificationFrequency result = DelayedNotificationFrequency.NONE;

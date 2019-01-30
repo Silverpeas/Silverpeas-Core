@@ -23,15 +23,8 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.AxisHeaderPersistence;
@@ -39,16 +32,22 @@ import org.silverpeas.core.pdc.pdc.model.AxisPK;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.pdc.pdc.model.UsedAxisPK;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author
@@ -57,6 +56,8 @@ import javax.transaction.Transactional;
 public class DefaultPdcUtilizationService implements PdcUtilizationService,
     ComponentInstanceDeletion {
 
+  private static final String USELESS = "useless";
+  private static final String AXIS_ID_EQUALS = " axisId = ";
   @Inject
   private ClassifyEngine classifyEngine;
 
@@ -72,8 +73,8 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
   protected DefaultPdcUtilizationService() {
     try {
       dao = SilverpeasBeanDAOFactory.getDAO("org.silverpeas.core.pdc.pdc.model.UsedAxis");
-    } catch (PersistenceException exce_DAO) {
-      SilverLogger.getLogger(this).error("Failed to get the DAO for UsedAxis", exce_DAO);
+    } catch (PersistenceException e) {
+      SilverLogger.getLogger(this).error("Failed to get the DAO for UsedAxis", e);
     }
   }
 
@@ -88,9 +89,8 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
 
     try {
       usedAxis = dao.findByPrimaryKey(new UsedAxisPK(usedAxisId));
-    } catch (PersistenceException exce_select) {
-      throw new PdcException("DefaultPdcUtilizationService.getUsedAxis", SilverpeasException.ERROR,
-          "Pdc.CANNOT_FIND_USED_AXIS", exce_select);
+    } catch (PersistenceException e) {
+      throw new PdcException(e);
     }
     return usedAxis;
   }
@@ -101,16 +101,11 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
    */
   @Override
   public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException {
-    List<UsedAxis> usedAxis = null;
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
+    final List<UsedAxis> usedAxis;
+    try (final Connection con = DBUtil.openConnection()) {
       usedAxis = utilizationDAO.getUsedAxisByInstanceId(con, instanceId);
     } catch (Exception e) {
-      throw new PdcException("DefaultPdcUtilizationService.getUsedAxisByInstanceId",
-          SilverpeasException.ERROR, "Pdc.CANNOT_FIND_USED_AXIS", e);
-    } finally {
-      DBUtil.close(con);
+      throw new PdcException(e);
     }
 
     return usedAxis;
@@ -123,8 +118,7 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
       return new ArrayList<>(0);
     }
 
-    Connection con = null;
-    try {
+    try (Connection con = DBUtil.openConnection()) {
       List<Integer> ids = classifyEngine.getPertinentAxisByInstanceIds(instanceIds);
 
       if (ids == null || ids.isEmpty()) {
@@ -141,12 +135,10 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
         first = false;
       }
 
-      SilverpeasBeanDAO<AxisHeaderPersistence> dao = SilverpeasBeanDAOFactory
-          .<AxisHeaderPersistence>getDAO(
+      SilverpeasBeanDAO<AxisHeaderPersistence> theDao = SilverpeasBeanDAOFactory.getDAO(
               "org.silverpeas.core.pdc.pdc.model.AxisHeaderPersistence");
-      con = DBUtil.openConnection();
       Collection<AxisHeaderPersistence> result =
-          dao.findByWhereClause(con, new AxisPK("useless"), "id IN (" + inClause.toString() + ")");
+          theDao.findByWhereClause(con, new AxisPK(USELESS), "id IN (" + inClause.toString() + ")");
 
       List<AxisHeader> axisHeaders = new ArrayList<>();
       if (result != null) {
@@ -158,10 +150,7 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
 
       return axisHeaders;
     } catch (Exception e) {
-      throw new PdcException("DefaultPdcUtilizationService.getUsedAxisByInstanceId",
-          SilverpeasException.ERROR, "Pdc.CANNOT_FIND_USED_AXIS", e);
-    } finally {
-      DBUtil.close(con);
+      throw new PdcException(e);
     }
   }
 
@@ -171,11 +160,10 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
    */
   private List<UsedAxis> getUsedAxisByAxisId(Connection con, int axisId) throws PdcException {
     try {
-      return (List<UsedAxis>) dao
-          .findByWhereClause(con, new UsedAxisPK("useless"), "axisId = " + axisId);
+      return (List<UsedAxis>) dao.findByWhereClause(con, new UsedAxisPK(USELESS),
+          "axisId = " + axisId);
     } catch (Exception e) {
-      throw new PdcException("DefaultPdcUtilizationService.getUsedAxisByAxisId",
-          SilverpeasException.ERROR, "Pdc.CANNOT_FIND_USED_AXIS", e);
+      throw new PdcException(e);
     }
   }
 
@@ -187,9 +175,7 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
    */
   @Override
   public int addUsedAxis(UsedAxis usedAxis, String treeId) throws PdcException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
+    try (final Connection con = DBUtil.openConnection()) {
       if (utilizationDAO
           .isAlreadyAdded(con, usedAxis.getInstanceId(), Integer.parseInt(usedAxis.getPK().getId()),
               usedAxis.getAxisId(), usedAxis.getBaseValue(), treeId)) {
@@ -197,11 +183,8 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
       } else {
         dao.add(usedAxis);
       }
-    } catch (Exception exce_create) {
-      throw new PdcException("DefaultPdcUtilizationService.addUsedAxis", SilverpeasException.ERROR,
-          "Pdc.CANNOT_ADD_USED_AXIS", exce_create);
-    } finally {
-      DBUtil.close(con);
+    } catch (Exception e) {
+      throw new PdcException(e);
     }
     return 0;
   }
@@ -212,30 +195,24 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
    */
   @Override
   public int updateUsedAxis(UsedAxis usedAxis, String treeId) throws PdcException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
+    try (Connection con = DBUtil.openConnection()) {
       // test si la valeur de base a été modifiée
       int newBaseValue = usedAxis.getBaseValue();
       int oldBaseValue = (getUsedAxis(usedAxis.getPK().getId())).getBaseValue();
       // si elle a été modifiée alors on reporte la modification.
-      if (newBaseValue != oldBaseValue) {
-        if (utilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(),
+      if (newBaseValue != oldBaseValue &&
+          utilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(),
             Integer.parseInt(usedAxis.getPK().getId()), usedAxis.getAxisId(),
             usedAxis.getBaseValue(), treeId)) {
           return 1;
-        }
       }
       dao.update(usedAxis);
       // une fois cette axe modifié, il faut tenir compte de la propagation des
       // choix aux niveaux obligatoire/facultatif et variant/invariante
       utilizationDAO.updateAllUsedAxis(con, usedAxis);
       return 0;
-    } catch (Exception exce_create) {
-      throw new PdcException("DefaultPdcUtilizationService.updateUsedAxis",
-          SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_USED_AXIS", exce_create);
-    } finally {
-      DBUtil.close(con);
+    } catch (Exception e) {
+      throw new PdcException(e);
     }
   }
 
@@ -247,9 +224,8 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
   public void deleteUsedAxis(String usedAxisId) throws PdcException {
     try {
       dao.remove(new UsedAxisPK(usedAxisId));
-    } catch (Exception exce_delete) {
-      throw new PdcException("DefaultPdcUtilizationService.deleteUsedAxis",
-          SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_USED_AXIS", exce_delete);
+    } catch (Exception e) {
+      throw new PdcException(e);
     }
   }
 
@@ -261,17 +237,14 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
   public void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException {
     try {
       Iterator<String> it = usedAxisIds.iterator();
-      String usedAxisId = "";
       StringBuilder whereClause = new StringBuilder(" 0 = 1 ");
-
       while (it.hasNext()) {
-        usedAxisId = it.next();
+        final String usedAxisId = it.next();
         whereClause.append(" or " + usedAxisId);
       }
-      dao.removeWhere(new UsedAxisPK("useless"), whereClause.toString());
-    } catch (Exception exce_delete) {
-      throw new PdcException("DefaultPdcUtilizationService.deleteUsedAxis",
-          SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_USED_AXIS", exce_delete);
+      dao.removeWhere(new UsedAxisPK(USELESS), whereClause.toString());
+    } catch (Exception e) {
+      throw new PdcException(e);
     }
   }
 
@@ -285,10 +258,10 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
   @Override
   public void deleteUsedAxisByAxisId(Connection con, String axisId) throws PdcException {
     try {
-      dao.removeWhere(con, new UsedAxisPK("useless"), " axisId = " + axisId);
-    } catch (Exception exce_delete) {
-      throw new PdcException("DefaultPdcUtilizationService.deleteUsedAxisByAxisId",
-          SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_USED_AXIS", exce_delete);
+      Objects.requireNonNull(con);
+      dao.removeWhere(con, new UsedAxisPK(USELESS), AXIS_ID_EQUALS + axisId);
+    } catch (Exception e) {
+      throw new PdcException(e);
     }
   }
 
@@ -301,11 +274,10 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
   private void deleteUsedAxisByValueId(Connection con, int valueId, int axisId)
       throws PdcException {
     try {
-      dao.removeWhere(con, new UsedAxisPK("useless"),
-          " axisId = " + axisId + " and baseValue = " + valueId);
-    } catch (Exception exce_delete) {
-      throw new PdcException("DefaultPdcUtilizationService.deleteUsedAxisByValueId",
-          SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_USED_AXIS", exce_delete);
+      dao.removeWhere(con, new UsedAxisPK(USELESS),
+          AXIS_ID_EQUALS + axisId + " and baseValue = " + valueId);
+    } catch (Exception e) {
+      throw new PdcException(e);
     }
   }
 
@@ -320,12 +292,11 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
   public void deleteUsedAxisByMotherValue(Connection con, String valueId, String axisId,
       String treeId) throws PdcException {
     try {
-      dao.removeWhere(con, new UsedAxisPK("useless"), " axisId = " + axisId +
+      dao.removeWhere(con, new UsedAxisPK(USELESS), AXIS_ID_EQUALS + axisId +
           " and baseValue in ( select id from SB_Tree_Tree where treeId = " + treeId +
           " and (path like '%/" + valueId + "/%' or id = " + valueId + " ))");
-    } catch (Exception exce_delete) {
-      throw new PdcException("DefaultPdcUtilizationService.deleteUsedAxisByValueId",
-          SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_USED_AXIS", exce_delete);
+    } catch (Exception e) {
+      throw new PdcException(e);
     }
   }
 
@@ -336,30 +307,21 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
       String treeId, String instanceId) throws PdcException {
     try {
       utilizationDAO.updateBaseValue(con, oldBaseValue, newBaseValue, axisId, treeId, instanceId);
-    } catch (Exception exce_update) {
-      throw new PdcException("DefaultPdcUtilizationService.updateUsedAxis",
-          SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_USED_AXIS", exce_update);
+    } catch (Exception e) {
+      throw new PdcException(e);
     }
   }
 
   @Override
   public void updateOrDeleteBaseValue(Connection con, int baseValueToUpdate, int newBaseValue,
       int axisId, String treeId) throws PdcException {
-
-
-
-
-
-    List<UsedAxis> usedAxisList = getUsedAxisByAxisId(con, axisId);
+    Objects.requireNonNull(con);
+    final List<UsedAxis> usedAxisList = getUsedAxisByAxisId(con, axisId);
     // pour chaque instance, on vérifie que la modification est possible
-    String instanceId = null;
-    UsedAxis usedAxis = null;
-    boolean updateAllowed = false;
+    boolean updateAllowed;
     for (UsedAxis anUsedAxisList : usedAxisList) {
-      usedAxis = anUsedAxisList;
-      instanceId = usedAxis.getInstanceId();
-
-
+      final UsedAxis usedAxis = anUsedAxisList;
+      final String instanceId = usedAxis.getInstanceId();
       if (usedAxis.getBaseValue() == baseValueToUpdate) {
         try {
           // test si la nouvelle valeur est autorisée comme nouvelle valeur de base
@@ -367,11 +329,8 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
               .isAlreadyAdded(con, instanceId, Integer.parseInt(usedAxis.getPK().getId()), axisId,
                   newBaseValue, treeId);
         } catch (Exception e) {
-          throw new PdcException("DefaultPdcUtilizationService.updateOrDeleteBaseValue",
-              SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_USED_AXIS", e);
+          throw new PdcException(e);
         }
-
-
 
         if (updateAllowed) {
           updateBaseValue(con, baseValueToUpdate, newBaseValue, axisId, treeId,
@@ -393,7 +352,7 @@ public class DefaultPdcUtilizationService implements PdcUtilizationService,
     try (Connection connection = DBUtil.openConnection()) {
       utilizationDAO.deleteAllAxisUsedByInstanceId(connection, componentInstanceId);
     } catch (SQLException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 }

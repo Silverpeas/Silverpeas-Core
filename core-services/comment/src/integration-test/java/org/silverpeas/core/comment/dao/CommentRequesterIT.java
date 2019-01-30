@@ -49,6 +49,7 @@ import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
@@ -60,14 +61,16 @@ import static org.junit.Assert.*;
 @RunWith(Arquillian.class)
 public class CommentRequesterIT {
 
-  private final JDBCCommentRequester commentRequester = new JDBCCommentRequester();
-
   private static final String TABLE_CREATION_SCRIPT = "/org/silverpeas/core/comment/create-database.sql";
   private static final String DATASET_SCRIPT = "/org/silverpeas/core/comment/comment-dataset.sql";
 
   private final String DUMMY_COMMENT_ID = "newCommentId";
   private final String DUMMY_INSTANCE_ID = "newInstanceId";
   private final Date DUUMMY_DATE = java.sql.Date.valueOf("2015-01-01");
+
+  @Inject
+  private JDBCCommentRequester commentRequester;
+
 
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(TABLE_CREATION_SCRIPT)

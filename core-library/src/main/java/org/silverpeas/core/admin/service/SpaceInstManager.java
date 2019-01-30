@@ -68,6 +68,8 @@ public class SpaceInstManager {
   private SpaceEventNotifier notifier;
   @Inject
   private OrganizationSchema organizationSchema;
+  @Inject
+  private TreeCache treeCache;
 
   protected SpaceInstManager() {
   }
@@ -352,7 +354,7 @@ public class SpaceInstManager {
   }
 
   private int getSpaceLevel(int spaceId) {
-    return TreeCache.getSpaceLevel(spaceId);
+    return treeCache.getSpaceLevel(spaceId);
   }
 
   /**

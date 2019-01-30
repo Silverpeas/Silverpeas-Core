@@ -25,7 +25,6 @@ package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
 
@@ -591,7 +590,7 @@ public class Recurrence implements Cloneable {
     if (getRecurrenceCount() == 1) {
       return date;
     }
-    final long interval = getRecurrenceCount() *
+    final long interval = (long)getRecurrenceCount() *
         (getFrequency().getInterval() >= 1 ? getFrequency().getInterval() : 1);
     date = date.plus(interval, getFrequency().getUnit().toChronoUnit());
     boolean firstDayOfWeekSet = false;

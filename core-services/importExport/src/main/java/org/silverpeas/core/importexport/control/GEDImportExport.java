@@ -760,7 +760,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     try {
       String directoryName = directory.getName();
       NodeDetail nodeDetail =
-          new NodeDetail("unknow", directoryName, directoryName, null, null, null, "0", "useless");
+          new NodeDetail("unknow", directoryName, directoryName, 0, "useless");
       nodeDetail.setNodePK(addSubTopicToTopic(nodeDetail, topicId, massiveReport));
       return nodeDetail;
     } catch (Exception ex) {

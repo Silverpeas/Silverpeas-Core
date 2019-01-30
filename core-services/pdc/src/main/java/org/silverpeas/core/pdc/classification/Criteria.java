@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.pdc.classification;
 
-import org.silverpeas.core.exception.SilverpeasException;
-
 public class Criteria implements java.io.Serializable {
 
   private static final long serialVersionUID = 3824817745975131588L;
@@ -60,8 +58,7 @@ public class Criteria implements java.io.Serializable {
   // Check that the given criteria is valid
   public void checkCriteria() throws ClassifyEngineException {
     if (this.getAxisId() < 0) {
-      throw new ClassifyEngineException("Criteria.checkCriteria",
-          SilverpeasException.ERROR, "classifyEngine.EX_INCORRECT_AXISID_CRITERIA");
+      throw new ClassifyEngineException("Incorrect criterion on axis id");
     }
   }
 

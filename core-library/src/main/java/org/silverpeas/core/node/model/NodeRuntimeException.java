@@ -23,34 +23,21 @@
  */
 package org.silverpeas.core.node.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class NodeRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -4411956434040097085L;
 
-  public NodeRuntimeException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  public NodeRuntimeException(final String message) {
+    super(message);
   }
 
-  public NodeRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public NodeRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public NodeRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public NodeRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public NodeRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "node";
-  }
-
 }

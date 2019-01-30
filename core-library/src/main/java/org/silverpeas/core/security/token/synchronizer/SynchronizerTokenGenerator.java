@@ -23,16 +23,18 @@
  */
 package org.silverpeas.core.security.token.synchronizer;
 
-import org.silverpeas.core.util.StringUtil;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
 import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.security.token.TokenGenerationParameter;
 import org.silverpeas.core.security.token.TokenGenerator;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.StringUtil;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 /**
  * A generator of synchronizer tokens.
@@ -54,7 +56,7 @@ public class SynchronizerTokenGenerator implements TokenGenerator {
    */
   @Override
   public SynchronizerToken generate(final TokenGenerationParameter... parameters) {
-    final List<String> alterators = new ArrayList<String>(parameters.length);
+    final List<String> alterators = new ArrayList<>(parameters.length);
     String value = compute(new Iterator<String>() {
       int i = 0;
 
@@ -66,7 +68,10 @@ public class SynchronizerTokenGenerator implements TokenGenerator {
       @Override
       public String next() {
         String value = null;
-        Object parameter = parameters[i++].value();
+        if (i++ >= parameters.length) {
+          throw new NoSuchElementException("Collection end reached!");
+        }
+        Object parameter = parameters[i].value();
         if (parameter instanceof String) {
           value = (String) parameter;
           alterators.add(value);

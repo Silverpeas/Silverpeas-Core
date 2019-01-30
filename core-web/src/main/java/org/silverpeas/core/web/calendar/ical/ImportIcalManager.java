@@ -53,15 +53,15 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class ImportIcalManager {
 
-  public final static String IMPORT_SUCCEEDED = "0";
-  public final static String IMPORT_EMPTY = "1";
   private static final long YEAR = 1000L * 60 * 60 * 24 * 365;
   public static String charset = null;
   private AgendaSessionController agendaSessionController;
@@ -144,7 +144,7 @@ public class ImportIcalManager {
         Collection reccurenceDates = getRecurrenceDates(eventIcal);
 
         // No reccurent dates
-        if (reccurenceDates == null) {
+        if (reccurenceDates.isEmpty()) {
           String idEvent = isExist(eventIcal);
           // update if event already exists, create if does not exist
           if (isDefined(idEvent)) {
@@ -317,7 +317,8 @@ public class ImportIcalManager {
    * @throws ParseException
    */
   private Date getDay(String dateTime) throws ParseException {
-    Date day;
+    Objects.requireNonNull(dateTime);
+    final Date day;
     if (dateTime.length() > 8) {
       day = new DateTime(dateTime);
     } else {
@@ -333,6 +334,7 @@ public class ImportIcalManager {
    * @throws ParseException
    */
   private String getHour(String dateTime) throws ParseException {
+    Objects.requireNonNull(dateTime);
     String hour = null;
     if (dateTime.length() > 8) {
       hour = DateUtil.getFormattedTime(new DateTime(dateTime));
@@ -372,7 +374,7 @@ public class ImportIcalManager {
       DateList dates = recur.getDates(startDate, endDate, Value.DATE_TIME);
       return dates;
     }
-    return null;
+    return Collections.emptyList();
   }
 
   /**
