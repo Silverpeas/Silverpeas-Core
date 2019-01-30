@@ -24,26 +24,25 @@
 package org.silverpeas.web.thesaurus.control;
 
 import org.silverpeas.core.pdc.PdcServiceProvider;
-import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
-import org.silverpeas.core.pdc.thesaurus.service.ThesaurusService;
-import org.silverpeas.core.pdc.thesaurus.model.Jargon;
-import org.silverpeas.core.pdc.thesaurus.model.Synonym;
-import org.silverpeas.core.pdc.thesaurus.model.Vocabulary;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.thesaurus.model.Jargon;
+import org.silverpeas.core.pdc.thesaurus.model.Synonym;
+import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
+import org.silverpeas.core.pdc.thesaurus.model.Vocabulary;
+import org.silverpeas.core.pdc.thesaurus.service.ThesaurusService;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,15 +51,16 @@ import java.util.List;
 
 public class ThesaurusSessionController extends AbstractComponentSessionController {
 
+  private static final String RTHESAURUS_JSP_MAIN = "/Rthesaurus/jsp/Main";
   private Vocabulary currentVoca = null;
   private Axis currentAxis = null;
-  private Collection<String> usersSelected = new ArrayList<String>(); // Collection de userId
-  private Collection<String> groupsSelected = new ArrayList<String>(); // Collection de groupId
-  private Collection<Jargon> jargonsSelected = new ArrayList<Jargon>(); // Collection de Jargon
+  private Collection<String> usersSelected = new ArrayList<>(); // Collection de userId
+  private Collection<String> groupsSelected = new ArrayList<>(); // Collection de groupId
+  private Collection<Jargon> jargonsSelected = new ArrayList<>(); // Collection de Jargon
   // correspondant aux
   // usersSelected et
   // groupsSelected
-  private Collection<Jargon> newJargonsSelected = new ArrayList<Jargon>(); // Collection de
+  private Collection<Jargon> newJargonsSelected = new ArrayList<>(); // Collection de
   // Jargon
   // correspondant aux
   // usersSelected et
@@ -152,8 +152,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
     try {
       return getPdcBm().getAxis();
     } catch (PdcException e) {
-      throw new ThesaurusException("ThesaurusSessionController.getListAxis",
-          SilverpeasException.ERROR, "thesaurusPeas.EX_CANT_GET_AXIS_LIST", e);
+      throw new ThesaurusException(e);
     }
   }
 
@@ -174,8 +173,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
       }
       return getCurrentAxis();
     } catch (PdcException e) {
-      throw new ThesaurusException("ThesaurusSessionController.getAxis",
-          SilverpeasException.ERROR, "thesaurusPeas.EX_CANT_GET_AXIS", e);
+      throw new ThesaurusException(e);
     }
   }
 
@@ -187,7 +185,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    *
    */
   public Collection<Value> getAxisTerms() {
-    Collection<Value> terms = new ArrayList<Value>();
+    Collection<Value> terms = new ArrayList<>();
     if (getCurrentAxis() != null) {
       terms = getCurrentAxis().getValues();
     }
@@ -207,8 +205,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
       if ((getCurrentAxis() != null) && (!idTerm.equals("-1"))) {
         term = getPdcBm().getAxisValue(
             idTerm,
-            new Integer(getCurrentAxis().getAxisHeader().getRootId())
-            .toString());
+            Integer.toString(getCurrentAxis().getAxisHeader().getRootId()));
         if (term == null)
           setCurrentAxis(null);
       } else if ((getCurrentAxis() != null) && (idTerm.equals("-1"))) {
@@ -217,8 +214,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
       }
       return term;
     } catch (PdcException e) {
-      throw new ThesaurusException("ThesaurusSessionController.getAxis",
-          SilverpeasException.ERROR, "thesaurusPeas.EX_CANT_GET_TERM", e);
+      throw new ThesaurusException(e);
     }
   }
 
@@ -231,16 +227,13 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    *
    */
   public Collection<Vocabulary> getListVoca() throws ThesaurusException {
-    Collection<Vocabulary> vocas = new ArrayList<Vocabulary>();
     try {
-      vocas = getThBm().getListVocabulary();
-      Collections.sort((List) vocas);
+      final Collection<Vocabulary> vocas = getThBm().getListVocabulary();
+      Collections.sort(new ArrayList<>(vocas));
+      return vocas;
     } catch (ThesaurusException e) {
-      throw new ThesaurusException("ThesaurusSessionController.getListVoca",
-          SilverpeasException.ERROR,
-          "thesaurusPeas.EX_CANT_GET_VOCABULARY_LIST", e);
+      throw new ThesaurusException(e);
     }
-    return vocas;
   }
 
   /**
@@ -306,7 +299,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    */
   public long updateVocabulary(String name, String desc)
       throws ThesaurusException {
-    if ((!getCurrentVoca().getName().toLowerCase().equals(name.toLowerCase()))
+    if ((!getCurrentVoca().getName().equalsIgnoreCase(name))
         && (existVocabulary(name)))
       return -1;
     getCurrentVoca().setName(name);
@@ -350,12 +343,9 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    */
   public Collection<Synonym> getSynonyms(String termId) throws ThesaurusException {
     long idVoca = ((IdPK) getCurrentVoca().getPK()).getIdAsLong();
-    long idTree = new Integer(getCurrentAxis().getAxisHeader().getRootId())
-        .longValue();
-    long idTerm = new Long(termId).longValue();
-    Collection<Synonym> synonyms = getThBm().getSynonyms(idVoca, idTree, idTerm);
-    // Collections.sort((List)synonyms);
-    return synonyms;
+    long idTree = getCurrentAxis().getAxisHeader().getRootId();
+    long idTerm = Long.parseLong(termId);
+    return getThBm().getSynonyms(idVoca, idTree, idTerm);
   }
 
   // *** Gestion des users et groupes affectés aux vocabulaire *** //
@@ -369,18 +359,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   public Collection<Jargon> getJargons() throws ThesaurusException {
     long idVoca = ((IdPK) getCurrentVoca().getPK()).getIdAsLong();
     Collection<Jargon> jargons = getThBm().getJargons(idVoca);
-    Collection<Jargon> userJargons = new ArrayList<Jargon>();
-    Collection<Jargon> jargonsToDelete = new ArrayList<Jargon>();
-    for (Jargon jargon : jargons) {
-      if (jargon.readUserName() != null) // le user existe
-        userJargons.add(jargon);
-      else
-        jargonsToDelete.add(jargon);
-    }
-    if (jargonsToDelete.size() > 0) {
-      getThBm().deleteJargons(jargons);
-    }
-    return userJargons;
+    return findEffectiveJargons(jargons);
   }
 
   /**
@@ -391,36 +370,23 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @throws ThesaurusException
    */
   public String initSelectedUserPanel() throws ThesaurusException {
-    String m_context = URLUtil.getApplicationURL();
+    String mContext = URLUtil.getApplicationURL();
     String hostSpaceName = getSpaceLabel();
     Pair<String, String> hostComponentName = new Pair<>(
-        getString("thesaurus.componentName"), m_context
-        + "/Rthesaurus/jsp/Main");
+        getString("thesaurus.componentName"), mContext + RTHESAURUS_JSP_MAIN);
     Pair<String, String>[] hostPath = new Pair[2];
     hostPath[0] =
         new Pair<>(getString("thesaurus.thesaurus") + " > ", "/Rthesaurus/jsp/Back");
     String nomVoca = WebEncodeHelper.javaStringToHtmlString(getCurrentVoca().getName());
     hostPath[1] = new Pair<>(getString("thesaurus.BBlistAffectations")
         + nomVoca, "/Rthesaurus/jsp/EditAssignments");
-    String hostUrl = m_context + "/Rthesaurus/jsp/SaveAssignUser";
-    String cancelUrl = m_context + "/Rthesaurus/jsp/Main";
-
-    Selection sel = getSelection();
-    sel.resetAll();
-    sel.setHostSpaceName(hostSpaceName);
-    sel.setHostComponentName(hostComponentName);
-    sel.setHostPath(hostPath);
-
-    sel.setGoBackURL(hostUrl);
-    sel.setCancelURL(cancelUrl);
-
-    sel.setMultiSelect(true);
-    sel.setPopupMode(false);
+    String hostUrl = mContext + "/Rthesaurus/jsp/SaveAssignUser";
+    Selection sel = setSelection(mContext, hostSpaceName, hostComponentName, hostPath, hostUrl);
 
     Collection<Jargon> jargons = getJargons();
     if (jargons != null && !jargons.isEmpty()) {
-      Collection<String> users = new ArrayList<String>();
-      Collection<String> groups = new ArrayList<String>();
+      Collection<String> users = new ArrayList<>();
+      Collection<String> groups = new ArrayList<>();
       for (Jargon jargon : jargons) {
         if (jargon.getType() == 1) // groupe
         {
@@ -444,16 +410,23 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @throws ThesaurusException
    *
    */
-  public String initUserPanel() throws ThesaurusException {
-    String m_context = URLUtil.getApplicationURL();
+  public String initUserPanel() {
+    String mContext = URLUtil.getApplicationURL();
     String hostSpaceName = "";
     Pair<String, String> hostComponentName =
-        new Pair<>(getString("thesaurus.componentName"), m_context
-        + "/Rthesaurus/jsp/Main");
+        new Pair<>(getString("thesaurus.componentName"), mContext
+        + RTHESAURUS_JSP_MAIN);
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] = new Pair<>(getString("thesaurus.thesaurus"), "/Rthesaurus/jsp/Back");
-    String hostUrl = m_context + "/Rthesaurus/jsp/UserAssignments";
-    String cancelUrl = m_context + "/Rthesaurus/jsp/Main";
+    String hostUrl = mContext + "/Rthesaurus/jsp/UserAssignments";
+    setSelection(mContext, hostSpaceName, hostComponentName, hostPath, hostUrl);
+    return Selection.getSelectionURL();
+  }
+
+  private Selection setSelection(final String mContext, final String hostSpaceName,
+      final Pair<String, String> hostComponentName, final Pair<String, String>[] hostPath,
+      final String hostUrl) {
+    String cancelUrl = mContext + RTHESAURUS_JSP_MAIN;
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -466,7 +439,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
 
     sel.setMultiSelect(true);
     sel.setPopupMode(false);
-    return Selection.getSelectionURL();
+    return sel;
   }
 
   /**
@@ -481,7 +454,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
     Selection sel = getSelection();
     String[] userIds = SelectionUsersGroups.getDistinctUserIds(sel
         .getSelectedElements(), sel.getSelectedSets());
-    Collection<String> users = new ArrayList<String>();
+    Collection<String> users = new ArrayList<>();
     for (int i = 0; userIds != null && i < userIds.length; i++) {
       users.add(userIds[i]);
     }
@@ -513,19 +486,23 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
     Collection<Jargon> userJargons = getThBm().getJargons(getUsersSelected(), 0);
     Collection<Jargon> jargons = getThBm().getJargons(getGroupsSelected(), 1);
     jargons.addAll(userJargons);
-    Collection<Jargon> effectiveJargons = new ArrayList<Jargon>();
-    Collection<Jargon> jargonsToDelete = new ArrayList<Jargon>();
+    jargonsSelected = findEffectiveJargons(jargons);
+  }
+
+  private Collection<Jargon> findEffectiveJargons(final Collection<Jargon> jargons)
+      throws ThesaurusException {
+    Collection<Jargon> effectiveJargons = new ArrayList<>();
+    Collection<Jargon> jargonsToDelete = new ArrayList<>();
     for (Jargon jargon : jargons) {
       if (jargon.readUserName() != null) // le user existe
         effectiveJargons.add(jargon);
       else
         jargonsToDelete.add(jargon);
     }
-    if (jargonsToDelete.size() > 0) {
+    if (!jargonsToDelete.isEmpty()) {
       getThBm().deleteJargons(jargons);
     }
-
-    jargonsSelected = effectiveJargons;
+    return effectiveJargons;
   }
 
   /**
@@ -536,7 +513,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    *
    */
   private void setUserSelectedNewJargons() {
-    Collection<Jargon> jargons = new ArrayList<Jargon>();
+    Collection<Jargon> jargons = new ArrayList<>();
     List<Jargon> jSelected = (List<Jargon>) getUserSelectedJargons();
     for (String userId : getUsersSelected()) {
       Jargon jargon = new Jargon();
@@ -639,7 +616,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    */
   public void createNewJargons() throws ThesaurusException {
     long idVoca = ((IdPK) getCurrentVoca().getPK()).getIdAsLong();
-    Collection<Jargon> jargons = new ArrayList<Jargon>();
+    Collection<Jargon> jargons = new ArrayList<>();
     jargons.addAll(getNewJargons(idVoca));
     jargons.addAll(getSameJargons(idVoca));
     getThBm().createVocaJargons(jargons, idVoca);
@@ -680,15 +657,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    */
   private Collection<Jargon> getNewJargons(long idVoca) {
     Collection<Jargon> jargons = getUserSelectedNewJargons();
-    Collection<Jargon> newJargons = new ArrayList<Jargon>();
-    for (Jargon jargon : jargons) {
-      Jargon newJargon = new Jargon();
-      newJargon.setIdVoca(idVoca);
-      newJargon.setIdUser(jargon.getIdUser());
-      newJargon.setType(jargon.getType());
-      newJargons.add(newJargon);
-    }
-    return newJargons;
+    return spawnJargons(idVoca, jargons);
   }
 
   /**
@@ -700,7 +669,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    */
   private Collection<Jargon> getSameJargons(long idVoca) {
     Collection<Jargon> jargons = getUserSelectedJargons();
-    Collection<Jargon> sameJargons = new ArrayList<Jargon>();
+    Collection<Jargon> sameJargons = new ArrayList<>();
     for (Jargon jargon : jargons) {
       if (jargon.getIdVoca() == idVoca) {
         sameJargons.add(jargon);
@@ -718,7 +687,13 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    */
   private Collection<Jargon> getJargons(long idVoca) {
     Collection<Jargon> jargons = getUserSelectedJargons();
-    Collection<Jargon> newJargons = new ArrayList<Jargon>();
+    final Collection<Jargon> newJargons = spawnJargons(idVoca, jargons);
+    newJargons.addAll(getNewJargons(idVoca));
+    return newJargons;
+  }
+
+  private Collection<Jargon> spawnJargons(final long idVoca, final Collection<Jargon> jargons) {
+    final Collection<Jargon> newJargons = new ArrayList<>();
     for (Jargon jargon : jargons) {
       Jargon newJargon = new Jargon();
       newJargon.setIdVoca(idVoca);
@@ -726,7 +701,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
       newJargon.setType(jargon.getType());
       newJargons.add(newJargon);
     }
-    newJargons.addAll(getNewJargons(idVoca));
     return newJargons;
   }
 

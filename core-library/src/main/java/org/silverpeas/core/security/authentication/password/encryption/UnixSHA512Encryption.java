@@ -73,6 +73,7 @@ import org.silverpeas.core.util.Charsets;
 
 import javax.inject.Singleton;
 import java.text.MessageFormat;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -104,9 +105,11 @@ import java.util.regex.Pattern;
 @Singleton
 public class UnixSHA512Encryption implements PasswordEncryption {
 
-  static private final String SALTCHARS =
+  private static final String SALTCHARS =
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890/.";
-  static private final String ENCRYPTION_METHOD_ID = "$6$";
+  private static final String ENCRYPTION_METHOD_ID = "$6$";
+
+  private static Random random = new Random();
 
   /**
    * Encrypts the specified password by using a random salt (or no salt for some weakness
@@ -188,7 +191,6 @@ public class UnixSHA512Encryption implements PasswordEncryption {
   }
 
   private static final String computeRandomSalt() {
-    java.util.Random random = new java.util.Random();
     StringBuilder saltBuf = new StringBuilder(ENCRYPTION_METHOD_ID);
 
     while (saltBuf.length() < 16) {

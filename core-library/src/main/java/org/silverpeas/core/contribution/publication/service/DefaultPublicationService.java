@@ -1135,14 +1135,12 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try {
       if (pubPK != null) {
 
-        Iterator<String> languages = pubDetail.getLanguages();
-        while (languages.hasNext()) {
-          WysiwygController.addToIndex(indexEntry, new ResourceReference(pubPK), languages.next());
-        }
+        Collection<String> languages = pubDetail.getLanguages();
+        languages.forEach(l ->
+          WysiwygController.addToIndex(indexEntry, new ResourceReference(pubPK), l));
       }
     } catch (Exception e) {
-      SilverTrace.error("publication",
-          "DefaultPublicationService.updateIndexEntryWithWysiwygContent", "", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -1237,9 +1235,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
           getIndexEntryPK(pubDetail.getPK().getComponentName(), pubDetail.getPK().getId()));
       indexEntry.setIndexId(true);
 
-      Iterator<String> languages = pubDetail.getLanguages();
-      while (languages.hasNext()) {
-        String language = languages.next();
+      Collection<String> languages = pubDetail.getLanguages();
+      for(final String language: languages) {
         PublicationI18N translation = pubDetail.getTranslation(language);
 
         indexEntry.setTitle(translation.getName(), language);

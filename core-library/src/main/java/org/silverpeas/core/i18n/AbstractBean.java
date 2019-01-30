@@ -23,7 +23,8 @@
  */
 package org.silverpeas.core.i18n;
 
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The abstraction of Silverpeas's beans.
@@ -32,8 +33,8 @@ public abstract class AbstractBean extends AbstractI18NBean {
   private static final long serialVersionUID = 3300278318449203747L;
 
   @Override
-  public final Iterator<String> getLanguages() {
-    return null;
+  public final Collection<String> getLanguages() {
+    return Collections.emptyList();
   }
 
   @Override

@@ -26,7 +26,6 @@ package org.silverpeas.core.pdc.pdc.model;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
@@ -34,10 +33,14 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
 /**
  * A value of one of the PdC's axis. A value belongs to an axis. An axis represents a given concept
@@ -60,7 +63,7 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
   @Transient
   private TreeNode treeNode;
   @Transient
-  private List<? extends TreeNode> treeNodeParents = null;
+  private TreeNodeList treeNodeParents = new TreeNodeList();
 
   protected PdcAxisValue() {
   }
@@ -81,9 +84,7 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
       return new PdcAxisValue().fromTreeNode(treeNode).withAsTreeNodeParents(parents).
           inAxisId(treeNode.getTreeId());
     } catch (PdcException ex) {
-      throw new PdcRuntimeException(
-          PdcAxisValue.class.getSimpleName() + ".aPdcAxisValueFromTreeNode()",
-          SilverpeasException.ERROR, ex.getMessage(), ex);
+      throw new PdcRuntimeException(ex);
     }
   }
 
@@ -133,8 +134,7 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
       }
       return Collections.unmodifiableSet(children);
     } catch (PdcException ex) {
-      throw new PdcRuntimeException(getClass().getSimpleName() + ".getChildValues()",
-          SilverpeasException.ERROR, ex.getMessage(), ex);
+      throw new PdcRuntimeException(ex);
     }
   }
 
@@ -145,7 +145,7 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
    * this value is a base one).
    */
   public PdcAxisValue getParentValue() {
-    PdcAxisValue parent = null;
+    final PdcAxisValue parent;
     TreeNode node = getTreeNode();
     if (node.hasFather()) {
       int lastNodeIndex = treeNodeParents.size() - 1;
@@ -156,6 +156,8 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
       parent =
           pdcAxisValue.fromTreeNode(aTreeNode).inAxisId(getAxisId())
               .withAsTreeNodeParents(treeNodeParents.subList(0, lastNodeIndex));
+    } else {
+      parent = null;
     }
     return parent;
   }
@@ -208,10 +210,13 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
    * equivalent to the call of the getMeaning() method.
    */
   public String getMeaningTranslatedIn(String language) {
-    String meaning = "", theLanguage = (language == null ? "" : language);
+    final String meaning;
+    final String theLanguage = (language == null ? "" : language);
     PdcAxisValue theParent = getParentValue();
     if (theParent != null) {
       meaning = theParent.getMeaningTranslatedIn(theLanguage) + " / ";
+    } else {
+      meaning = "";
     }
     return meaning + getTerm();
   }
@@ -239,8 +244,7 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
       usedAxis._setAxisName(axisHeader.getName());
       return usedAxis;
     } catch (PdcException ex) {
-      throw new PdcRuntimeException(getClass().getSimpleName() + ".getUsedAxis()",
-          SilverpeasException.ERROR, ex.getMessage(), ex);
+      throw new PdcRuntimeException(ex);
     }
   }
 
@@ -277,7 +281,7 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
   }
 
   protected PdcAxisValue withAsTreeNodeParents(final List<? extends TreeNode> parents) {
-    this.treeNodeParents = parents;
+    this.treeNodeParents.setAll(parents);
     return this;
   }
 
@@ -340,7 +344,7 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
     return value;
   }
 
-  protected List<? extends TreeNode> getTreeNodeParents() {
+  protected TreeNodeList getTreeNodeParents() {
     if (this.treeNodeParents == null) {
       loadTreeNodes();
     }
@@ -354,14 +358,50 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
       List<? extends TreeNode> paths = pdc.getFullPath(getValueId(), treeId);
       int lastNodeIndex = paths.size() - 1;
       this.treeNode = paths.get(lastNodeIndex);
-      this.treeNodeParents = paths.subList(0, lastNodeIndex);
+      this.treeNodeParents.setAll(paths.subList(0, lastNodeIndex));
     } catch (PdcException ex) {
-      throw new PdcRuntimeException(getClass().getSimpleName() + ".loadTreeNodes()",
-          SilverpeasException.ERROR, ex.getMessage(), ex);
+      throw new PdcRuntimeException(ex);
     }
   }
 
   private static PdcManager getPdcManager() {
     return PdcManager.get();
+  }
+
+  private class TreeNodeList implements Iterable<TreeNode> {
+
+    private final List<TreeNode> treeNodes = new ArrayList<>();
+
+    public int size() {
+      return treeNodes.size();
+    }
+
+    public TreeNode get(final int index) {
+      return treeNodes.get(index);
+    }
+
+    public List<TreeNode> subList(final int fromIndex, final int toIndex) {
+      return treeNodes.subList(fromIndex, toIndex);
+    }
+
+    public void setAll(final Collection<? extends TreeNode> nodes) {
+      this.treeNodes.clear();
+      this.treeNodes.addAll(nodes);
+    }
+
+    @Override
+    public Iterator<TreeNode> iterator() {
+      return this.treeNodes.iterator();
+    }
+
+    @Override
+    public void forEach(final Consumer<? super TreeNode> action) {
+      this.treeNodes.forEach(action);
+    }
+
+    @Override
+    public Spliterator<TreeNode> spliterator() {
+      return this.treeNodes.spliterator();
+    }
   }
 }

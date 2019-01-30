@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.pdc.tree.service;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
@@ -54,6 +54,8 @@ import java.util.StringTokenizer;
 @Singleton
 public class DefaultTreeService implements TreeService {
 
+  private static final String TREE_ID_EQUALS = "treeId = ";
+  private static final String USELESS = "useless";
   @Inject
   private TreeI18NDAO treeI18NDAO;
 
@@ -66,13 +68,13 @@ public class DefaultTreeService implements TreeService {
   public TreeNode getRoot(Connection con, String treeId)
       throws TreeManagerException {
 
-    String whereClause = "treeId = " + treeId + " and levelNumber = 0";
+    String whereClause = TREE_ID_EQUALS + treeId + " and levelNumber = 0";
     TreeNode root = null;
     try {
       List<TreeNodePersistence> roots =
-          (List<TreeNodePersistence>) getDAO().findByWhereClause(new TreeNodePK("useless"),
+          (List<TreeNodePersistence>) getDAO().findByWhereClause(new TreeNodePK(USELESS),
           whereClause);
-      if (roots.size() > 0) {
+      if (!roots.isEmpty()) {
 
         TreeNodePersistence rootPers = roots.get(0);
         root = new TreeNode(rootPers);
@@ -80,8 +82,7 @@ public class DefaultTreeService implements TreeService {
         setTranslations(con, root);
       }
     } catch (Exception e) {
-      throw new TreeManagerException("TreeBmImpl.deleteTree()",
-          SilverpeasException.ERROR, "treeManager.DELETING_TREE_FAILED", e);
+      throw new TreeManagerException(e);
     }
     return root;
   }
@@ -99,11 +100,9 @@ public class DefaultTreeService implements TreeService {
       root.setTreeId(treeId);
       root.setPK(new TreeNodePK("0"));
 
-      // createIndex(root);
       createIndex(con, root);
     } catch (Exception e) {
-      throw new TreeManagerException("TreeBmImpl.createRoot()",
-          SilverpeasException.ERROR, "treeManager.CREATING_ROOT_FAILED", e);
+      throw new TreeManagerException(e);
     }
 
     return treeId;
@@ -111,14 +110,13 @@ public class DefaultTreeService implements TreeService {
 
   public void updateNode(Connection con, TreeNode node)
       throws TreeManagerException {
-
-    String nodeId = node.getPK().getId();
-    String treeId = node.getTreeId();
-    int order = node.getOrderNumber();
+    final String nodeId = node.getPK().getId();
+    final String treeId = node.getTreeId();
+    final int order = node.getOrderNumber();
     // recupere les noeuds freres ordonnés qui ont un numéro d'ordre >= à
     // celui
     // du noeud à modifier
-    String whereClause = "path = (SELECT path FROM SB_Tree_Tree WHERE treeId = "
+    final String whereClause = "path = (SELECT path FROM SB_Tree_Tree WHERE treeId = "
         + treeId
         + " and id = "
         + nodeId
@@ -131,179 +129,134 @@ public class DefaultTreeService implements TreeService {
       Collection<TreeNodePersistence> nodesToUpdate = getDAO().findByWhereClause(con, node.getPK(),
           whereClause);
       boolean nodeHasMoved = true;
-      Iterator<TreeNodePersistence> it = null;
-      if (nodesToUpdate.size() > 0) {
-        it = nodesToUpdate.iterator();
-        TreeNodePersistence firstNode = null;
-        if (it.hasNext()) {
-          // Test si le noeud n'a pas changé de place
-          firstNode = it.next();
-          if (firstNode.getPK().getId().equals(nodeId))
-            nodeHasMoved = false;
+      final Iterator<TreeNodePersistence> it = nodesToUpdate.iterator();
+      if (it.hasNext()) {
+        final TreeNodePersistence firstNode = it.next();
+        if (firstNode.getPK().getId().equals(nodeId)) {
+          nodeHasMoved = false;
         }
       } else {
         nodeHasMoved = false;
       }
 
-
-
       TreeNode oldNode = getNode(con, (TreeNodePK) node.getPK(), treeId);
-      // gestion des traductions
       if (node.isRemoveTranslation()) {
-        if (oldNode.getLanguage() == null) {
-          // translation for the first time
-          oldNode.setLanguage(I18NHelper.defaultLanguage);
-        }
-        if (oldNode.getLanguage().equalsIgnoreCase(node.getLanguage())) {
-          List<TreeNodeI18N> translations = treeI18NDAO.getTranslations(con,
-              node.getTreeId(), node.getPK().getId());
-
-          if (translations != null && translations.size() > 0) {
-            TreeNodeI18N translation = translations.get(0);
-
-            node.setLanguage(translation.getLanguage());
-            node.setName(translation.getName());
-            node.setDescription(translation.getDescription());
-
-            TreeDAO.updateNode(con, node);
-
-            treeI18NDAO.deleteTranslation(con, translation.getId());
-          }
-        } else {
-          treeI18NDAO.deleteTranslation(con, Integer.parseInt(node
-              .getTranslationId()));
-        }
+        applyTranslationDeletion(con, treeId, oldNode, node, true);
       } else {
-        if (node.getLanguage() != null) {
-          if (oldNode.getLanguage() == null) {
-            // translation for the first time
-            oldNode.setLanguage(I18NHelper.defaultLanguage);
-          }
-          if (!node.getLanguage().equalsIgnoreCase(oldNode.getLanguage())) {
-            TreeNodeI18N newNode = new TreeNodeI18N(Integer.parseInt(node
-                .getPK().getId()), node.getLanguage(), node.getName(), node
-                .getDescription());
-            String translationId = node.getTranslationId();
-            if (translationId != null && !translationId.equals("-1")) {
-              // update translation
-              newNode.setId(Integer.parseInt(node.getTranslationId()));
-
-              treeI18NDAO.updateTranslation(con, newNode);
-            } else {
-              treeI18NDAO.createTranslation(con, newNode, treeId);
-            }
-
-            node.setLanguage(oldNode.getLanguage());
-            node.setName(oldNode.getName());
-            node.setDescription(oldNode.getDescription());
-          }
-        }
-
-        TreeDAO.updateNode(con, node);
+        applyTranslationModification(con, treeId, oldNode, node, true);
       }
 
-      // Modifie le noeud
-      // TreeDAO.updateNode(con, node);
-
-      // createIndex(node);
       createIndex(con, node);
-
-
 
       // Le noeud a changé de place, on décale les noeuds dont l'ordre est
       // supérieur ou égal
       if (nodeHasMoved) {
-        it = nodesToUpdate.iterator();
-        TreeNodePersistence nodeToMove = null;
-        while (it.hasNext()) {
-          nodeToMove = it.next();
-          if (!nodeToMove.getPK().getId().equals(nodeId)) {
-            // On modifie l'ordre du noeud en l'incrémentant de 1
-            nodeToMove.setOrderNumber(nodeToMove.getOrderNumber() + 1);
-            TreeNode treeNode = new TreeNode(nodeToMove);
-            TreeDAO.updateNode(con, treeNode);
-          }
-        }
+        shiftNodes(con, nodeId, nodesToUpdate);
       }
     } catch (Exception e) {
-      throw new TreeManagerException("TreeBmImpl.updateNode()",
-          SilverpeasException.ERROR, "treeManager.UPDATING_NODE_FAILED", e);
+      throw new TreeManagerException(e);
     }
 
     TreeCache.unvalidateTree(treeId);
   }
 
-  public void updateRoot(Connection con, TreeNode node)
-      throws TreeManagerException {
+  private void shiftNodes(final Connection con, final String nodeId,
+      final Collection<TreeNodePersistence> nodesToUpdate) {
+    for (final TreeNodePersistence node: nodesToUpdate) {
+      if (!node.getPK().getId().equals(nodeId)) {
+        node.setOrderNumber(node.getOrderNumber() + 1);
+        TreeNode treeNode = new TreeNode(node);
+        try {
+          TreeDAO.updateNode(con, treeNode);
+        } catch (SQLException e) {
+          throw new SilverpeasRuntimeException(e);
+        }
+      }
+    }
+  }
 
+  public void updateRoot(Connection con, TreeNode node) throws TreeManagerException {
     try {
-      String treeId = node.getTreeId();
-      TreeNode oldRoot = getRoot(con, treeId);
+      final String treeId = node.getTreeId();
+      final TreeNode oldRoot = getRoot(con, treeId);
       // gestion des traductions
       if (node.isRemoveTranslation()) {
-        if (oldRoot.getLanguage() == null) {
-          // translation for the first time
-          oldRoot.setLanguage(I18NHelper.defaultLanguage);
-        }
-        if (oldRoot.getLanguage().equalsIgnoreCase(node.getLanguage())) {
-          List<TreeNodeI18N> translations = treeI18NDAO.getTranslations(con,
-              node.getTreeId(), node.getPK().getId());
-
-          if (translations != null && translations.size() > 0) {
-            TreeNodeI18N translation = translations.get(0);
-
-            node.setLanguage(translation.getLanguage());
-            node.setName(translation.getName());
-            node.setDescription(translation.getDescription());
-
-            TreeDAO.updateNode(con, node);
-
-            treeI18NDAO.deleteTranslation(con, translation.getId());
-          }
-        } else {
-          // treeI18NDAO.deleteTranslation(con,
-          // Integer.parseInt(node.getTranslationId()));
-          treeI18NDAO.deleteTranslation(con, treeId, node.getPK().getId(), node
-              .getLanguage());
-        }
+        applyTranslationDeletion(con, treeId, oldRoot, node, false);
       } else {
-        if (node.getLanguage() != null) {
-          if (oldRoot.getLanguage() == null) {
-            // translation for the first time
-            oldRoot.setLanguage(I18NHelper.defaultLanguage);
-          }
-          if (!node.getLanguage().equalsIgnoreCase(oldRoot.getLanguage())) {
-            TreeNodeI18N newNode = new TreeNodeI18N(Integer.parseInt(node
-                .getPK().getId()), node.getLanguage(), node.getName(), node
-                .getDescription());
-            String translationId = node.getTranslationId();
-            if (translationId != null && !translationId.equals("-1")) {
-              // update translation
-              // newNode.setId(Integer.parseInt(node.getTranslationId()));
-
-              treeI18NDAO.updateTranslation(con, treeId, newNode);
-            } else {
-              treeI18NDAO.createTranslation(con, newNode, treeId);
-            }
-
-            node.setLanguage(oldRoot.getLanguage());
-            node.setName(oldRoot.getName());
-            node.setDescription(oldRoot.getDescription());
-          }
-        }
-
-        TreeDAO.updateNode(con, node);
+        applyTranslationModification(con, treeId, oldRoot, node, false);
       }
 
       // Modifie le noeud
-      // TreeDAO.updateNode(con, node);
       createIndex(con, node);
     } catch (Exception e) {
-      throw new TreeManagerException("TreeBmImpl.updateRoot()",
-          SilverpeasException.ERROR, "treeManager.UPDATING_ROOT_FAILED", e);
+      throw new TreeManagerException(e);
     }
 
     TreeCache.unvalidateTree(node.getTreeId());
+  }
+
+  private void setDefaultLanguage(final TreeNode oldRoot) {
+    if (oldRoot.getLanguage() == null) {
+      // translation for the first time
+      oldRoot.setLanguage(I18NHelper.defaultLanguage);
+    }
+  }
+
+  private void applyTranslationModification(final Connection con, final String treeId,
+      final TreeNode oldNode, final TreeNode node, final boolean withIdSetting) throws SQLException {
+    if (node.getLanguage() != null) {
+      setDefaultLanguage(oldNode);
+      if (!node.getLanguage().equalsIgnoreCase(oldNode.getLanguage())) {
+        TreeNodeI18N newNode = new TreeNodeI18N(Integer.parseInt(node
+            .getPK().getId()), node.getLanguage(), node.getName(), node
+            .getDescription());
+        String translationId = node.getTranslationId();
+        if (translationId != null && !translationId.equals("-1")) {
+          // update translation
+          if (withIdSetting) {
+            newNode.setId(Integer.parseInt(node.getTranslationId()));
+            treeI18NDAO.updateTranslation(con, newNode);
+          } else {
+            treeI18NDAO.updateTranslation(con, treeId, newNode);
+          }
+        } else {
+          treeI18NDAO.createTranslation(con, newNode, treeId);
+        }
+
+        node.setLanguage(oldNode.getLanguage());
+        node.setName(oldNode.getName());
+        node.setDescription(oldNode.getDescription());
+      }
+    }
+
+    TreeDAO.updateNode(con, node);
+  }
+
+  private void applyTranslationDeletion(final Connection con, final String treeId,
+      final TreeNode oldNode, final TreeNode node, boolean byId) throws SQLException {
+    setDefaultLanguage(oldNode);
+    if (oldNode.getLanguage().equalsIgnoreCase(node.getLanguage())) {
+      List<TreeNodeI18N> translations = treeI18NDAO.getTranslations(con,
+          node.getTreeId(), node.getPK().getId());
+
+      if (translations != null && !translations.isEmpty()) {
+        TreeNodeI18N translation = translations.get(0);
+
+        node.setLanguage(translation.getLanguage());
+        node.setName(translation.getName());
+        node.setDescription(translation.getDescription());
+
+        TreeDAO.updateNode(con, node);
+
+        treeI18NDAO.deleteTranslation(con, translation.getId());
+      }
+    } else {
+      if (byId) {
+        treeI18NDAO.deleteTranslation(con, Integer.parseInt(node.getTranslationId()));
+      } else {
+        treeI18NDAO.deleteTranslation(con, treeId, node.getPK().getId(), node.getLanguage());
+      }
+    }
   }
 
   public void deleteSubTree(Connection con, TreeNodePK rootPK, String treeId)
@@ -313,7 +266,7 @@ public class DefaultTreeService implements TreeService {
     TreeNode node = getNode(con, rootPK, treeId);
 
     // Remove all nodes under the rootId
-    String whereClause = "treeId = " + treeId + " and (path LIKE '"
+    String whereClause = TREE_ID_EQUALS + treeId + " and (path LIKE '"
         + node.getPath() + rootId + "/%' or id = " + rootId + ")";
     try {
       getDAO().removeWhere(rootPK, whereClause);
@@ -328,8 +281,7 @@ public class DefaultTreeService implements TreeService {
         deleteIndex((TreeNodePK) nodeToDelete.getPK(), nodeToDelete.getTreeId());
       }
     } catch (Exception e) {
-      throw new TreeManagerException("TreeBmImpl.deleteSubTree()",
-          SilverpeasException.ERROR, "treeManager.DELETING_TREE_FAILED", e);
+      throw new TreeManagerException(e);
     }
 
     try {
@@ -337,8 +289,7 @@ public class DefaultTreeService implements TreeService {
       TreeDAO.deleteNode(con, rootPK, treeId);
       deleteIndex(rootPK, treeId);
     } catch (Exception e) {
-      throw new TreeManagerException("TreeBmImpl.deleteTree()",
-          SilverpeasException.ERROR, "treeManager.DELETING_NODE_FAILED", e);
+      throw new TreeManagerException(e);
     }
     TreeCache.unvalidateTree(treeId);
   }
@@ -349,15 +300,14 @@ public class DefaultTreeService implements TreeService {
 
     List<TreeNode> tree = getTree(con, treeId);
 
-    String whereClause = "treeId = " + treeId;
+    String whereClause = TREE_ID_EQUALS + treeId;
     try {
-      getDAO().removeWhere(new TreeNodePK("useless"), whereClause);
+      getDAO().removeWhere(new TreeNodePK(USELESS), whereClause);
 
       // remove translations
       treeI18NDAO.deleteTreeTranslations(con, treeId);
     } catch (Exception e) {
-      throw new TreeManagerException("TreeBmImpl.deleteTree()",
-          SilverpeasException.ERROR, "treeManager.DELETING_TREE_FAILED", e);
+      throw new TreeManagerException(e);
     }
 
     // Remove all index of nodes of the tree
@@ -370,35 +320,22 @@ public class DefaultTreeService implements TreeService {
 
   public List<TreeNode> getTree(Connection con, String treeId) throws TreeManagerException {
     List<TreeNode> sortedList = TreeCache.getTree(treeId);
-
     if (sortedList == null) {
-      TreeNode root = null;
-      sortedList = new ArrayList<TreeNode>();
-      root = getRoot(con, treeId);
+      sortedList = new ArrayList<>();
+      final TreeNode root = getRoot(con, treeId);
       if (root != null) {
         List<TreeNodePersistence> list = getDescendants(con, root);
-
-        // 1 - On parcours la liste list
-        // pour chaque élément on le place correctement dans la liste
-        // ordonnée
-        if (list != null && list.size() > 0) {
-          TreeNode node = null;
-          int position = -1;
-          // On parcours le reste de la liste
-          boolean first = true;
-          for (TreeNodePersistence nodePers : list) {
-            node = new TreeNode(nodePers);
-            setTranslations(con, node);
-            if (first) {
-              // Premier élément de la liste est l'élément racine
-              // On l'insére dans la liste en première position
-              position = 0;
-              first = false;
-            } else {
-              position = whereInsertNodeToCorrectPlaceInList(sortedList, node);
-            }
-            sortedList.add(position, node);
+        for (int i = 0; i < list.size(); i++) {
+          final TreeNodePersistence nodePers = list.get(i);
+          final TreeNode node = new TreeNode(nodePers);
+          setTranslations(con, node);
+          final int position;
+          if (i == 0) {
+            position = 0;
+          } else {
+            position = whereInsertNodeToCorrectPlaceInList(sortedList, node);
           }
+          sortedList.add(position, node);
         }
       }
       TreeCache.cacheTree(treeId, sortedList);
@@ -419,9 +356,7 @@ public class DefaultTreeService implements TreeService {
         translations = treeI18NDAO.getTranslations(con, node.getTreeId(), node
             .getPK().getId());
       } catch (SQLException e) {
-        throw new TreeManagerException("TreeBmImpl.setTranslations()",
-            SilverpeasException.ERROR,
-            "treeManager.GETTING_TRANSLATIONS_FAILED", e);
+        throw new TreeManagerException(e);
       }
       for (int t = 0; translations != null && t < translations.size(); t++) {
         TreeNodeI18N tr = translations.get(t);
@@ -438,11 +373,9 @@ public class DefaultTreeService implements TreeService {
 
     // 1 - On parcours la liste list
     // pour chaque élément on le place correctement dans la liste ordonnée
-    ArrayList<TreeNode> sortedList = new ArrayList<TreeNode>();
-    if (list != null && list.size() > 0) {
+    ArrayList<TreeNode> sortedList = new ArrayList<>();
+    if (list != null && !list.isEmpty()) {
       // Premier élément de la liste est l'élément racine
-      // root = (TreeNode) list.get(0);
-
       TreeNodePersistence rootPers = list.get(0);
       root = new TreeNode(rootPers);
 
@@ -456,7 +389,6 @@ public class DefaultTreeService implements TreeService {
       int position = -1;
       // On parcours le reste de la liste
       for (int i = 1; i < list.size(); i++) {
-        // node = (TreeNode) list.get(i);
         TreeNodePersistence nodePers = list.get(i);
         node = new TreeNode(nodePers);
 
@@ -497,13 +429,7 @@ public class DefaultTreeService implements TreeService {
         }
         i++;
       }
-      if (i == sortedList.size()) {
-        // on est à la fin de la liste et on a pas trouvé de frere
-        return i;
-      } else {
-        // on a pas trouvé de frere
-        return i;
-      }
+      return i;
     }
   }
 
@@ -519,34 +445,28 @@ public class DefaultTreeService implements TreeService {
     String treeId = root.getTreeId();
     String path = root.getPath();
     // String whereClause =
-    // "path LIKE (SELECT path + '%' FROM SB_Tree_Tree WHERE id = "+rootId+") ORDER BY path ASC, orderNumber ASC";
     StringBuilder whereClause = new StringBuilder();
-    whereClause.append("treeId = ").append(treeId).append(" and (path LIKE '")
+    whereClause.append(TREE_ID_EQUALS).append(treeId).append(" and (path LIKE '")
         .append(path).append(rootId).append("/%' or id = ").append(rootId)
-        .append(")");
+        .append(")").append(" ORDER BY path ASC, orderNumber ASC");
 
-    whereClause.append(" ORDER BY path ASC, orderNumber ASC");
-
-    List<TreeNodePersistence> list = null;
     try {
-      list = (List<TreeNodePersistence>) getDAO().findByWhereClause(con, root.getPK(),
+      return (List<TreeNodePersistence>) getDAO().findByWhereClause(con, root.getPK(),
           whereClause.toString());
     } catch (PersistenceException pe) {
-      throw new TreeManagerException("TreeBmImpl.getDescendants()",
-          SilverpeasException.ERROR, "treeManager.GETTING_TREE_FAILED", pe);
+      throw new TreeManagerException(pe);
     }
-    return list;
   }
 
   public TreeNode getNode(Connection con, TreeNodePK nodePK, String treeId)
       throws TreeManagerException {
     TreeNode node = null;
     try {
-      String whereClause = "treeId = " + treeId + " and id = " + nodePK.getId();
+      String whereClause = TREE_ID_EQUALS + treeId + " and id = " + nodePK.getId();
       @SuppressWarnings("unchecked")
       List<TreeNodePersistence> nodes =
           (List<TreeNodePersistence>) getDAO().findByWhereClause(con, nodePK, whereClause);
-      if (nodes.size() > 0) {
+      if (!nodes.isEmpty()) {
         TreeNodePersistence tnp = nodes.get(0);
         node = new TreeNode(tnp);
 
@@ -554,8 +474,7 @@ public class DefaultTreeService implements TreeService {
         setTranslations(con, node);
       }
     } catch (PersistenceException pe) {
-      throw new TreeManagerException("TreeBmImpl.getNode()",
-          SilverpeasException.ERROR, "treeManager.GETTING_NODE_FAILED", pe);
+      throw new TreeManagerException(pe);
     }
     return node;
   }
@@ -564,12 +483,10 @@ public class DefaultTreeService implements TreeService {
     StringBuilder str = new StringBuilder();
 
     for (int i = 0; i < name.length(); i++) {
-      switch (name.charAt(i)) {
-        case '\'':
-          str.append("''");
-          break;
-        default:
-          str.append(name.charAt(i));
+      if (name.charAt(i) == '\'') {
+        str.append("''");
+      } else {
+        str.append(name.charAt(i));
       }
     }
     return str.toString();
@@ -588,13 +505,11 @@ public class DefaultTreeService implements TreeService {
       String whereClause = "LOWER(name) = LOWER('" + nameEncode + "') OR "+
                             "LOWER(name) = LOWER('" + nameNoAccent + "')";
       nodes =
-          (List<TreeNodePersistence>) getDAO().findByWhereClause(con, new TreeNodePK("useless"),
+          (List<TreeNodePersistence>) getDAO().findByWhereClause(con, new TreeNodePK(USELESS),
           whereClause);
       result = persistence2TreeNode(con, nodes);
     } catch (PersistenceException pe) {
-      throw new TreeManagerException("TreeBmImpl.getNodesByName()",
-          SilverpeasException.ERROR,
-          "treeManager.GETTING_NODES_BY_NAME_FAILED", pe);
+      throw new TreeManagerException(pe);
     }
     return result;
   }
@@ -617,17 +532,14 @@ public class DefaultTreeService implements TreeService {
     try {
       newFatherPK = TreeDAO.createNode(con, nodeToInsert);
       nodeToInsert.setPK(newFatherPK);
-      // createIndex(nodeToInsert);
       createIndex(con, nodeToInsert);
     } catch (Exception e) {
-      throw new TreeManagerException("TreeBmImpl.insertFatherToNode()",
-          SilverpeasException.ERROR, "treeManager.INSERTING_FATHER_FAILED", e);
+      throw new TreeManagerException(e);
     }
 
     // Ajouter 1 au niveau du fils également, modifier le père du fils en P2
-    // refNode.setLevelNumber(refNode.getLevelNumber()+1);
     refNode.setFatherId(newFatherPK.getId());
-    String newPath = refNode.getPath() + newFatherPK.getId() + "/";
+    String newPath = refNode.getPath() + newFatherPK.getId() + '/';
 
     // refNode.setPath(newPath); //Ici ??????
     updateNode(con, refNode);
@@ -637,7 +549,7 @@ public class DefaultTreeService implements TreeService {
     // juste un remplacement de sous chaine
     // Ajouter 1 au niveau des descendants
     List<TreeNodePersistence> list = getDescendants(con, refNode); // Attention ICI
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       String pathToUpdate = "";
       String endOfPath = "";
       for (TreeNodePersistence nodeToUpdate : list) {
@@ -689,7 +601,6 @@ public class DefaultTreeService implements TreeService {
     // ainsi que le levelnumber
 
     // Premier élément de la liste est l'élément racine
-    // root = (TreeNode) list.get(0);
     // il a déjà été modifié donc on passe à l'index 1
     if (list.size() > 1) {
       TreeNodePersistence nodeToUpdate = null;
@@ -729,7 +640,7 @@ public class DefaultTreeService implements TreeService {
       boolean placeFind = false;
       String nodeToInsertName = nodeToInsert.getName();
       int i = 0;
-      while (placeFind == false && i < brothers.size()) {
+      while (!placeFind && i < brothers.size()) {
         brother = brothers.get(i);
         brotherName = brother.getName();
         if (brotherName.compareTo(nodeToInsertName) >= 0) {
@@ -745,7 +656,7 @@ public class DefaultTreeService implements TreeService {
     // recupere les noeuds freres ordonnés qui ont un numéro d'ordre >= à
     // celui
     // du noeud à modifier
-    String whereClause = "treeId = " + treeId + " and fatherId = "
+    String whereClause = TREE_ID_EQUALS + treeId + " and fatherId = "
         + father.getPK().getId() + " and orderNumber >= " + order
         + " ORDER BY orderNumber ASC";
 
@@ -765,8 +676,7 @@ public class DefaultTreeService implements TreeService {
         TreeDAO.updateNode(con, nodeToMove);
       }
     } catch (Exception e) {
-      throw new TreeManagerException("TreeBmImpl.createSonToNode()",
-          SilverpeasException.ERROR, "treeManager.UPDATING_NODE_FAILED", e);
+      throw new TreeManagerException(e);
     }
 
     try {
@@ -775,8 +685,7 @@ public class DefaultTreeService implements TreeService {
       nodeToInsert.setPK(pk);
       createIndex(con, nodeToInsert);
     } catch (Exception e) {
-      throw new TreeManagerException("TreeBmImpl.createSonToNode()",
-          SilverpeasException.ERROR, "treeManager.CREATING_SON_FAILED", e);
+      throw new TreeManagerException(e);
     }
     TreeCache.unvalidateTree(treeId);
     return pk.getId();
@@ -785,7 +694,7 @@ public class DefaultTreeService implements TreeService {
   @SuppressWarnings("unchecked")
   public List<TreeNode> getSonsToNode(Connection con, TreeNodePK treeNodePK, String treeId)
       throws TreeManagerException {
-    String whereClause = "treeId = " + treeId + " and fatherId = "
+    String whereClause = TREE_ID_EQUALS + treeId + " and fatherId = "
         + treeNodePK.getId();
     Collection<TreeNodePersistence> sons = null;
     List<TreeNode> result = null;
@@ -793,8 +702,7 @@ public class DefaultTreeService implements TreeService {
       sons = getDAO().findByWhereClause(con, treeNodePK, whereClause);
       result = persistence2TreeNode(con, sons);
     } catch (PersistenceException pe) {
-      throw new TreeManagerException("TreeBmImpl.getSonsToNode()",
-          SilverpeasException.ERROR, "treeManager.GETTING_SONS_FAILED", pe);
+      throw new TreeManagerException(pe);
     }
     return result;
   }
@@ -817,8 +725,7 @@ public class DefaultTreeService implements TreeService {
       // Update du path pour les valeurs descendantes.
       TreeDAO.updatePath(con, nodeId, treeId);
     } catch (SQLException se) {
-      throw new TreeManagerException("TreeBmImpl.deleteNode()",
-          SilverpeasException.ERROR, "treeManager.DELETING_NODE_FAILED", se);
+      throw new TreeManagerException(se);
     }
     try {
       // Supprime le noeud
@@ -830,8 +737,7 @@ public class DefaultTreeService implements TreeService {
       // Supprime l'index
       deleteIndex(nodePK, treeId);
     } catch (Exception e) {
-      throw new TreeManagerException("TreeBmImpl.deleteNode()",
-          SilverpeasException.ERROR, "treeManager.DELETING_NODE_FAILED", e);
+      throw new TreeManagerException(e);
     }
     TreeCache.unvalidateTree(treeId);
   }
@@ -842,9 +748,7 @@ public class DefaultTreeService implements TreeService {
       treeDao = SilverpeasBeanDAOFactory
           .getDAO("org.silverpeas.core.pdc.tree.model.TreeNodePersistence");
     } catch (PersistenceException pe) {
-      throw new TreeManagerException("TreeBmImpl.getDAO()",
-          SilverpeasException.ERROR,
-          "treeManager.GETTING_SILVERPEASBEANDAO_FAILED", pe);
+      throw new TreeManagerException(pe);
     }
     return treeDao;
   }
@@ -852,12 +756,12 @@ public class DefaultTreeService implements TreeService {
   public List<TreeNode> getFullPath(Connection con, TreeNodePK nodePK, String treeId)
       throws TreeManagerException {
     String path = getPath(con, nodePK, treeId);
-    ArrayList<TreeNode> list = new ArrayList<TreeNode>();
+    ArrayList<TreeNode> list = new ArrayList<>();
     try {
       // récupère la valeur de la colonne path de la table SB_Tree_Tree
       StringTokenizer st = new StringTokenizer(path, "/");
       StringBuilder whereClause =
-          new StringBuilder("treeId = ").append(treeId).append(" and (1=0 ");
+          new StringBuilder(TREE_ID_EQUALS).append(treeId).append(" and (1=0 ");
       while (st.hasMoreTokens()) {
         whereClause.append(" or id = ").append(st.nextToken());
       }
@@ -868,8 +772,7 @@ public class DefaultTreeService implements TreeService {
 
       list.addAll(persistence2TreeNode(con, tree));
     } catch (Exception e) {
-      throw new TreeManagerException("TreeBmImpl.getFullPath()",
-          SilverpeasException.ERROR, "treeManager.CREATING_SON_FAILED", e);
+      throw new TreeManagerException(e);
     }
 
     return list;
@@ -878,7 +781,7 @@ public class DefaultTreeService implements TreeService {
   private List<TreeNode> persistence2TreeNode(Connection con,
       Collection<TreeNodePersistence> silverpeasBeans)
       throws TreeManagerException {
-    List<TreeNode> nodes = new ArrayList<TreeNode>();
+    List<TreeNode> nodes = new ArrayList<>();
     if (silverpeasBeans != null) {
       for (TreeNodePersistence silverpeasBean : silverpeasBeans) {
         TreeNode node = new TreeNode(silverpeasBean);
@@ -898,8 +801,7 @@ public class DefaultTreeService implements TreeService {
       node = getNode(con, nodePK, treeId);
       path = node.getPath();
     } catch (Exception e) {
-      throw new TreeManagerException("TreeBmImpl.getPath()",
-          SilverpeasException.ERROR, "treeManager.CREATING_SON_FAILED", e);
+      throw new TreeManagerException(e);
     }
     return path;
   }
@@ -920,30 +822,26 @@ public class DefaultTreeService implements TreeService {
   }
 
   private void createIndex(TreeNode node) {
-
-    FullIndexEntry indexEntry = null;
-
     if (node != null) {
       // Index the Node
-      indexEntry = new FullIndexEntry("pdc", "TreeNode", node.getPK().getId()
+      final FullIndexEntry indexEntry = new FullIndexEntry("pdc", "TreeNode", node.getPK().getId()
           + "_" + node.getTreeId());
 
-      Iterator<String> languages = node.getLanguages();
-      while (languages.hasNext()) {
-        String language = languages.next();
-        TreeNodeI18N translation = (TreeNodeI18N) node.getTranslation(language);
+      Collection<String> languages = node.getLanguages();
+      languages.forEach(l -> {
+        TreeNodeI18N translation = node.getTranslation(l);
 
-        indexEntry.setTitle(translation.getName(), language);
-        indexEntry.setPreview(translation.getDescription(), language);
-      }
+        indexEntry.setTitle(translation.getName(), l);
+        indexEntry.setPreview(translation.getDescription(), l);
+      });
       try {
         indexEntry.setCreationDate(DateUtil.parse(node.getCreationDate()));
       } catch (ParseException e) {
         SilverLogger.getLogger(this).warn(e);
       }
       indexEntry.setCreationUser(node.getCreatorId());
+      IndexEngineProxy.addIndexEntry(indexEntry);
     }
-    IndexEngineProxy.addIndexEntry(indexEntry);
   }
 
   /**

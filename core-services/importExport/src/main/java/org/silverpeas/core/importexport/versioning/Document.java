@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.importexport.versioning;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -110,7 +111,7 @@ public class Document implements java.io.Serializable, Cloneable {
     } catch (CloneNotSupportedException e) {
       // this should never happened
       SilverLogger.getLogger(this).silent(e);
-      return null;
+      throw new SilverpeasRuntimeException(e);
     }
   }
 

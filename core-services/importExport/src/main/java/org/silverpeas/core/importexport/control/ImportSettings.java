@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.importexport.control;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FilenameUtils;
@@ -200,7 +201,7 @@ public class ImportSettings implements Cloneable {
     try {
       return (ImportSettings) super.clone();
     } catch (CloneNotSupportedException e) {
-      return null;
+      throw new SilverpeasRuntimeException(e);
     }
   }
 }

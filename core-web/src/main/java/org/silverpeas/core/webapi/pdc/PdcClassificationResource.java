@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
@@ -112,9 +113,7 @@ public class PdcClassificationResource extends RESTWebService {
     try {
       URI itsURI = getUri().getRequestUri();
       return thePdcClassificationOfTheRequestedResource(identifiedBy(itsURI));
-    } catch (ContentManagerException ex) {
-      throw new WebApplicationException(ex, Status.NOT_FOUND);
-    } catch (PdcException ex) {
+    } catch (ContentManagerException | PdcException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
@@ -139,12 +138,10 @@ public class PdcClassificationResource extends RESTWebService {
     try {
       pdcServiceProvider().deletePosition(positionId, forContentOfId(getContentId()),
           inComponentOfId(getComponentId()));
-    } catch (ContentManagerException ex) {
-      SilverLogger.getLogger(this).warn(ex.getMessage());
     } catch (PdcPositionDeletionException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new WebApplicationException(Status.CONFLICT);
-    } catch (PdcException ex) {
+    } catch (ContentManagerException | PdcException ex) {
       SilverLogger.getLogger(this).warn(ex.getMessage());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
@@ -233,7 +230,7 @@ public class PdcClassificationResource extends RESTWebService {
   }
 
   private PdcClassificationEntity thePdcClassificationOfTheRequestedResource(final URI uri) throws
-      Exception {
+      SilverpeasException {
     UserPreferences userPreferences = getUserPreferences();
     List<ClassifyPosition> contentPositions = pdcServiceProvider().getAllPositions(
         forContentOfId(getContentId()),

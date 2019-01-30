@@ -23,13 +23,12 @@
  */
 package org.silverpeas.core.pdc.thesaurus.model;
 
-import org.silverpeas.core.pdc.thesaurus.service.ThesaurusService;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.pdc.thesaurus.service.ThesaurusService;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * This class contains a full information about a Jargon a Jargon is linked to a Vocabulary and a
@@ -63,14 +62,9 @@ public class Jargon extends SilverpeasBean {
 
   public String readVocaName() throws ThesaurusException {
     String name = "";
-    try {
-      if (this.idVoca != 0) {
-        Vocabulary voca = thesaurus.getVocabulary(this.idVoca);
-        name = voca.getName();
-      }
-    } catch (ThesaurusException e) {
-      throw new ThesaurusException("Jargon.readVocaName", SilverpeasException.ERROR,
-          "Thesaurus.EX_CANT_GET_VOCABULARY_NAME", "", e);
+    if (this.idVoca != 0) {
+      Vocabulary voca = thesaurus.getVocabulary(this.idVoca);
+      name = voca.getName();
     }
     return name;
   }
@@ -122,10 +116,12 @@ public class Jargon extends SilverpeasBean {
     this.idUser = idUser;
   }
 
+  @Override
   public String _getTableName() {
     return "SB_Thesaurus_Jargon";
   }
 
+  @Override
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.pdc.thesaurus.service;
 
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
@@ -60,36 +59,29 @@ public class ThesaurusManager {
   public Collection<String> getSynonyms(String mot, String idUser)
       throws ThesaurusException {
 
-    Collection<String> finalList = new ArrayList<String>();
-    try {
-      // recupere le jargon de l'utilisateur
-      Jargon jargon = getJargon(idUser);
+    Collection<String> finalList = new ArrayList<>();
+    // recupere le jargon de l'utilisateur
+    Jargon jargon = getJargon(idUser);
 
-      if (jargon != null) {
-        long idVoca = jargon.getIdVoca();
+    if (jargon != null) {
+      long idVoca = jargon.getIdVoca();
 
-        // recupere la liste des mots synonymes du mot si c'est un terme
-        Collection<String> synonyms = getSynonymsTerm(idVoca, mot);
-        List<String> interList = new ArrayList<String>(synonyms);
+      // recupere la liste des mots synonymes du mot si c'est un terme
+      Collection<String> synonyms = getSynonymsTerm(idVoca, mot);
+      List<String> interList = new ArrayList<>(synonyms);
 
-        // recupere la liste des mots synonymes du mot si c'est un synonyme
-        Collection<String> otherSynonyms = getSynonyms(idVoca, mot);
+      // recupere la liste des mots synonymes du mot si c'est un synonyme
+      Collection<String> otherSynonyms = getSynonyms(idVoca, mot);
 
-        interList.addAll(otherSynonyms);
+      interList.addAll(otherSynonyms);
 
-        // parsing de la liste pour enlever les doublons
-        for (String synonyme : interList) {
-          if ((!isExist(synonyme, finalList))
-              && (!mot.toLowerCase().equals(synonyme.toLowerCase()))) {
-            finalList.add(synonyme);
-          }
+      // parsing de la liste pour enlever les doublons
+      for (String synonyme : interList) {
+        if ((!isExist(synonyme, finalList)) &&
+            (!mot.equalsIgnoreCase(synonyme))) {
+          finalList.add(synonyme);
         }
       }
-    } catch (ThesaurusException e) {
-      throw new ThesaurusException(
-          "ThesaurusManager.getSynonyms(String mot, String idUser)",
-          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS_USER", "",
-          e);
     }
 
     return finalList;
@@ -106,7 +98,7 @@ public class ThesaurusManager {
   private Collection<String> getSynonymsTerm(long idVoca, String term)
       throws ThesaurusException {
 
-    Collection<String> theList = new ArrayList<String>();
+    Collection<String> theList = new ArrayList<>();
     try {
       // recupere les termes correspondant à un nom de terme
       PdcManager pdc = PdcManager.get();
@@ -126,13 +118,7 @@ public class ThesaurusManager {
       }
 
     } catch (PdcException e) {
-      throw new ThesaurusException("ThesaurusManager.getSynonymsTerm",
-          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS_USER", "",
-          e);
-    } catch (ThesaurusException e) {
-      throw new ThesaurusException("ThesaurusManager.getSynonymsTerm",
-          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS_USER", "",
-          e);
+      throw new ThesaurusException(e);
     }
 
     return theList;
@@ -149,7 +135,7 @@ public class ThesaurusManager {
   private Collection<String> getSynonyms(long idVoca, String synonym)
       throws ThesaurusException {
 
-    Collection<String> theList = new ArrayList<String>();
+    Collection<String> theList = new ArrayList<>();
     try {
       // recupere les autres synonymes du synonyme dans le vocabulaire
       Collection<Synonym> synonymsList = thesaurus.getSynonyms(idVoca, synonym);
@@ -174,15 +160,7 @@ public class ThesaurusManager {
       }
 
     } catch (PdcException e) {
-      throw new ThesaurusException(
-          "ThesaurusManager.getSynonyms(long idVoca, String synonym)",
-          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS_USER", "",
-          e);
-    } catch (ThesaurusException e) {
-      throw new ThesaurusException(
-          "ThesaurusManager.getSynonyms(long idVoca, String synonym)",
-          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS_USER", "",
-          e);
+      throw new ThesaurusException(e);
     }
 
     return theList;
@@ -199,7 +177,7 @@ public class ThesaurusManager {
    */
   private boolean isExist(String nom, Collection<String> tab) {
     for (String mot : tab) {
-      if (nom.toLowerCase().equals(mot.toLowerCase())) {
+      if (nom.equalsIgnoreCase(mot)) {
         return true;
       }
     }
@@ -218,19 +196,13 @@ public class ThesaurusManager {
   public Collection<String> getSynonyms(long idTree, long idTerm, String idUser)
       throws ThesaurusException {
 
-    Collection<String> theList = new ArrayList<String>();
-    try {
-      // recupere le jargon de l'utilisateur
-      Jargon jargon = getJargon(idUser);
-      if (jargon != null) {
-        long idVoca = jargon.getIdVoca();
+    Collection<String> theList = new ArrayList<>();
+    // recupere le jargon de l'utilisateur
+    Jargon jargon = getJargon(idUser);
+    if (jargon != null) {
+      long idVoca = jargon.getIdVoca();
 
-        theList.addAll(getSynonyms(idTree, idTerm, idVoca));
-      }
-    } catch (ThesaurusException e) {
-      throw new ThesaurusException(
-          "ThesaurusManager.getSynonyms(long idTree, long idTerm, String idUser)",
-          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS", "", e);
+      theList.addAll(getSynonyms(idTree, idTerm, idVoca));
     }
     return theList;
   }
@@ -238,7 +210,7 @@ public class ThesaurusManager {
   public Collection<String> getSynonyms(long idTree, long idTerm, long idVoca)
       throws ThesaurusException {
 
-    List<String> theList = new ArrayList<String>();
+    List<String> theList = new ArrayList<>();
 
     // recupere la liste des synonymes du terme dans le vocabulaire
     Collection<Synonym> synonyms = thesaurus.getSynonyms(idVoca, idTree, idTerm);
@@ -265,7 +237,7 @@ public class ThesaurusManager {
   public Collection<String> getSynonymsAxis(String axisId, String idUser)
       throws ThesaurusException {
 
-    Collection<String> theList = new ArrayList<String>();
+    Collection<String> theList = new ArrayList<>();
     try {
       // recupere le jargon de l'utilisateur
       Jargon jargon = getJargon(idUser);
@@ -288,13 +260,7 @@ public class ThesaurusManager {
       }
 
     } catch (PdcException e) {
-      throw new ThesaurusException(
-          "ThesaurusManager.getSynonymsAxis(String axisId, String idUser)",
-          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS", "", e);
-    } catch (ThesaurusException e) {
-      throw new ThesaurusException(
-          "ThesaurusManager.getSynonymsAxis(String axisId, String idUser)",
-          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS", "", e);
+      throw new ThesaurusException(e);
     }
 
     return theList;
@@ -307,16 +273,7 @@ public class ThesaurusManager {
    * @throws ThesaurusException
    */
   public Jargon getJargon(String idUser) throws ThesaurusException {
-
-    Jargon jargon = null;
-    try {
-      jargon = thesaurus.getJargon(idUser);
-    } catch (ThesaurusException e) {
-      throw new ThesaurusException("ThesaurusManager.getJargon",
-          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_JARGON", "", e);
-    }
-
-    return jargon;
+    return thesaurus.getJargon(idUser);
   }
 
   /**
@@ -327,14 +284,7 @@ public class ThesaurusManager {
    */
   public void deleteSynonymsAxis(Connection con, long idTree)
       throws ThesaurusException {
-
-    try {
       thesaurus.deleteSynonymsAxis(con, idTree);
-    } catch (ThesaurusException e) {
-      throw new ThesaurusException("ThesaurusManager.deleteSynonymsAxis",
-          SilverpeasException.ERROR,
-          "Thesaurus.EX_DELETE_SYNONYMS_AXIS_FAILED", "", e);
-    }
   }
 
   /**
@@ -346,14 +296,7 @@ public class ThesaurusManager {
    */
   public void deleteSynonymsTerms(Connection con, long idTree, List<String> idTerms)
       throws ThesaurusException {
-
-    try {
       thesaurus.deleteSynonymsTerms(con, idTree, idTerms);
-    } catch (ThesaurusException e) {
-      throw new ThesaurusException("ThesaurusManager.deleteSynonymsTerms",
-          SilverpeasException.ERROR,
-          "Thesaurus.EX_DELETE_SYNONYMS_TERMS_FAILED", "", e);
-    }
   }
 
 }

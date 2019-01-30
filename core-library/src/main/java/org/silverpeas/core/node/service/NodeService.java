@@ -28,7 +28,6 @@ import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -65,21 +64,21 @@ public interface NodeService {
 
   NodeDetail getDetailByNameAndFatherId(NodePK pk, String name, int nodeFatherId);
 
-  ArrayList<NodeDetail> getTree(NodePK pk);
+  List<NodeDetail> getTree(NodePK pk);
 
-  ArrayList<NodeDetail> getSubTree(NodePK pk);
+  List<NodeDetail> getSubTree(NodePK pk);
 
-  ArrayList<NodeDetail> getSubTree(NodePK pk, String sorting);
+  List<NodeDetail> getSubTree(NodePK pk, String sorting);
 
-  ArrayList<NodeDetail> getSubTreeByStatus(NodePK pk, String status);
+  List<NodeDetail> getSubTreeByStatus(NodePK pk, String status);
 
-  ArrayList<NodeDetail> getSubTreeByStatus(NodePK pk, String status, String sorting);
+  List<NodeDetail> getSubTreeByStatus(NodePK pk, String status, String sorting);
 
-  ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level);
+  List<NodeDetail> getSubTreeByLevel(NodePK pk, int level);
 
-  ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level, String sorting);
+  List<NodeDetail> getSubTreeByLevel(NodePK pk, int level, String sorting);
 
-  ArrayList<NodeDetail> getSubTree(NodePK pk, String status, int level, String sorting);
+  List<NodeDetail> getSubTree(NodePK pk, String status, int level, String sorting);
 
   /**
    * Method declaration
@@ -236,15 +235,6 @@ public interface NodeService {
    * @param node A NodeDetail
    */
   List<NodeDetail> getDescendantDetails(NodeDetail node);
-
-  /**
-   * Get the path from root to a node
-   *
-   * @return A collection of NodeDetail
-   * @param nodePK A NodePK
-   * @see NodePK
-   */
-  Collection<NodeDetail> getAnotherPath(NodePK nodePK);
 
   /**
    * A wysiwyg's content has been added or modified to a node. Its content must be added to the

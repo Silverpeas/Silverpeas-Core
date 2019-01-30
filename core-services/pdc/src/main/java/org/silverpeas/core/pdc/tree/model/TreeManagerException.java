@@ -26,75 +26,21 @@
 
 package org.silverpeas.core.pdc.tree.model;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
-/**
- * Class declaration
- * @author
- */
 public class TreeManagerException extends SilverpeasException {
 
-  private static final long serialVersionUID = 2846118733378611759L;
+  private static final long serialVersionUID = 6600799044207452017L;
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   *
-   */
-  public TreeManagerException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  public TreeManagerException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   *
-   */
-  public TreeManagerException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public TreeManagerException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   *
-   */
-  public TreeManagerException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public TreeManagerException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   *
-   */
-  public TreeManagerException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public String getModule() {
-    return "treeManager";
-  }
-
 }

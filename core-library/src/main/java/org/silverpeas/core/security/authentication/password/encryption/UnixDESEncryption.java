@@ -334,6 +334,8 @@ public class UnixDESEncryption implements PasswordEncryption {
       0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
       0x7A };
 
+  private static Random random = new Random();
+
   private static final int byteToUnsigned(byte b) {
     int value = (int) b;
 
@@ -575,7 +577,6 @@ public class UnixDESEncryption implements PasswordEncryption {
 
   private static final String crypt(String original) {
     // Get random salt
-    Random random = new Random();
     byte[] salt = new byte[] { legalSaltChars[random.nextInt(64)],
         legalSaltChars[random.nextInt(64)] };
 

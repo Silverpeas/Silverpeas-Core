@@ -164,44 +164,6 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
     RequestTaskManager.push(ServerEventDispatcherTask.class, request);
   }
 
-  private static void push(final ServerEvent serverEventToDispatch,
-      final SilverpeasAsyncContext asyncContext, final boolean completeAfterSend) {
-    try {
-      synchronized (asyncContext) {
-        if (!asyncContext.isSendPossible()) {
-          // This asynchronous context is no more usable
-          SseLogger.get().debug(() -> format("No more usable {0}", asyncContext));
-          // Removing from handled contexts (just in case)
-          unregisterAsyncContext(asyncContext);
-          return;
-        }
-        HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
-        HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
-        final Long lastServerEventId = asyncContext.getLastServerEventId();
-        final Long serverEventId = serverEventToDispatch.getId();
-        if (lastServerEventId != null && serverEventId != null) {
-          if (lastServerEventId < (serverEventId - 1)) {
-            sendLastServerEventsFromId(request, response, lastServerEventId,
-                asyncContext.getSessionId(), asyncContext.getUser());
-          }
-          asyncContext.setLastServerEventId(null);
-        }
-        boolean sendPerformed = serverEventToDispatch
-            .send(request, response, asyncContext.getSessionId(), asyncContext.getUser());
-        if (sendPerformed) {
-          SseLogger.get().debug(() -> format("Send done on {0}", asyncContext));
-        }
-        if (completeAfterSend && sendPerformed) {
-          asyncContext.complete();
-          SseLogger.get().debug(() -> format("Complete requested after send on {0}", asyncContext));
-        }
-      }
-    } catch (IOException e) {
-      SseLogger.get().error("Can not send SSE", e);
-      unregisterAsyncContext(asyncContext);
-    }
-  }
-
   /**
    * This is the implementation of a request in charge of dispatching a server event.
    */
@@ -229,6 +191,44 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
         sendTo(safeContexts);
       }
       serverEventStore.add(serverEventToDispatch);
+    }
+
+    private void push(final ServerEvent serverEventToDispatch,
+        final SilverpeasAsyncContext asyncContext, final boolean completeAfterSend) {
+      try {
+        synchronized (asyncContext.getMutex()) {
+          if (!asyncContext.isSendPossible()) {
+            // This asynchronous context is no more usable
+            SseLogger.get().debug(() -> format("No more usable {0}", asyncContext));
+            // Removing from handled contexts (just in case)
+            unregisterAsyncContext(asyncContext);
+            return;
+          }
+          HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
+          HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
+          final Long lastServerEventId = asyncContext.getLastServerEventId();
+          final Long serverEventId = serverEventToDispatch.getId();
+          if (lastServerEventId != null && serverEventId != null) {
+            if (lastServerEventId < (serverEventId - 1)) {
+              sendLastServerEventsFromId(request, response, lastServerEventId,
+                  asyncContext.getSessionId(), asyncContext.getUser());
+            }
+            asyncContext.setLastServerEventId(null);
+          }
+          boolean sendPerformed = serverEventToDispatch
+              .send(request, response, asyncContext.getSessionId(), asyncContext.getUser());
+          if (sendPerformed) {
+            SseLogger.get().debug(() -> format("Send done on {0}", asyncContext));
+          }
+          if (completeAfterSend && sendPerformed) {
+            asyncContext.complete();
+            SseLogger.get().debug(() -> format("Complete requested after send on {0}", asyncContext));
+          }
+        }
+      } catch (IOException e) {
+        SseLogger.get().error("Can not send SSE", e);
+        unregisterAsyncContext(asyncContext);
+      }
     }
 
     private void sendTo(final List<SilverpeasAsyncContext> safeContexts) {

@@ -23,74 +23,21 @@
  */
 package org.silverpeas.core.pdc.pdc.model;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
-/**
- * Class declaration
- * @author
- */
 public class PdcException extends SilverpeasException implements java.io.Serializable {
 
-  private static final long serialVersionUID = -7924319201141630785L;
+  private static final long serialVersionUID = 1568353495181052030L;
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   *
-   */
-  public PdcException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public PdcException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   *
-   */
-  public PdcException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public PdcException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   *
-   */
-  public PdcException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public PdcException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   *
-   */
-  public PdcException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public String getModule() {
-    return "Pdc";
-  }
-
 }

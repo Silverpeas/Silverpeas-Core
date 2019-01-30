@@ -247,8 +247,7 @@ public class DefaultPdcClassificationService implements PdcClassificationService
         }
       }
     } catch (PdcException ex) {
-      throw new PdcRuntimeException(getClass().getSimpleName() + ".classifyContent()", ex.
-          getErrorLevel(), ex.getMessage(), ex);
+      throw new PdcRuntimeException(ex);
     }
   }
 

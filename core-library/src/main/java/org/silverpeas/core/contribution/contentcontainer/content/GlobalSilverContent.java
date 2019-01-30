@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -78,13 +78,12 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
   }
 
   private void processLanguages(SilverContentInterface sci) {
-    Iterator<String> languages = sci.getLanguages();
-    while (languages != null && languages.hasNext()) {
-      String language = languages.next();
-      GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(language, sci.getName(language),
-          sci.getDescription(language));
+    Collection<String> languages = sci.getLanguages();
+    languages.forEach(l -> {
+      GlobalSilverContentI18N gscI18N = new GlobalSilverContentI18N(l, sci.getName(l),
+          sci.getDescription(l));
       addTranslation(gscI18N);
-    }
+    });
   }
 
   public String getURL() {

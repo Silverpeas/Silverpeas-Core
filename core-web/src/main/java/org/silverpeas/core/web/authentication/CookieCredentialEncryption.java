@@ -27,8 +27,6 @@ package org.silverpeas.core.web.authentication;
  * Custom encryption algorithm of the user credentials before storing them in cookies.
  */
 public class CookieCredentialEncryption implements CredentialEncryption {
-  public CookieCredentialEncryption() {
-  }
 
   /**
    * Simple encode for cookie value
@@ -75,14 +73,14 @@ public class CookieCredentialEncryption implements CredentialEncryption {
    */
   public String decode(String str, String key, boolean extraCrypt) {
     //
-    StringBuilder asciiChar_string = new StringBuilder();
+    StringBuilder asciiCharString = new StringBuilder();
     for (int i = 0; i < key.length(); i++) {
       int asciiCode = key.charAt(i);
-      asciiChar_string.append(asciiCode);
+      asciiCharString.append(asciiCode);
     }
-    String prand = asciiChar_string.toString();
+    String prand = asciiCharString.toString();
 
-    int sPos = new Double(Math.floor(prand.length() / 5)).intValue();
+    int sPos = (int) Math.floor(prand.length() / 5.0d);
     StringBuilder stringMult = new StringBuilder();
     stringMult.append(prand.charAt(sPos)).append(prand.charAt(sPos * 2))
         .append(prand.charAt(sPos * 3)).append(prand.charAt(sPos * 4)).append(
@@ -90,7 +88,7 @@ public class CookieCredentialEncryption implements CredentialEncryption {
 
     int mult = Integer.parseInt(stringMult.toString());
 
-    int incr = Math.round(key.length() / 2);
+    int incr = Math.round(key.length() / 2.0f);
     double modu = Math.pow(2, 127) - 1;
     int salt = Integer.parseInt(str.substring(str.length() - 8, str.length()),
         16);
@@ -100,13 +98,13 @@ public class CookieCredentialEncryption implements CredentialEncryption {
     double prandInt = Double.parseDouble(prand);
     prandInt = (mult * prandInt + incr) % modu;
 
-    int dec_chrInt;
+    int decChrInt;
 
     StringBuilder hashString = new StringBuilder();
     for (int i = 0; i < str.length(); i += 2) {
-      dec_chrInt = Integer.parseInt(str.substring(i, i + 2), 16)
-          ^ new Double(Math.floor((prandInt / modu) * 255)).intValue();
-      hashString.append((char) dec_chrInt);
+      decChrInt = Integer.parseInt(str.substring(i, i + 2), 16)
+          ^ (int)Math.floor((prandInt / modu) * 255);
+      hashString.append((char) decChrInt);
       prandInt = (mult * prandInt + incr) % modu;
     }
     String decStr = hashString.toString();

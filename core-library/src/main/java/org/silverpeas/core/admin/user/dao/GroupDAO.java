@@ -31,6 +31,7 @@ import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -65,6 +66,9 @@ public class GroupDAO {
   private static final String NAME = "name";
   private static final String DESCRIPTION = "description";
   private static final String SYNCHRO_RULE = "synchroRule";
+  
+  @Inject
+  private GroupCache groupCache;
 
   protected GroupDAO() {
   }
@@ -100,7 +104,7 @@ public class GroupDAO {
         .addInsertParam(USER_ID, Integer.parseInt(userId))
         .executeWith(connection);
 
-    GroupCache.removeCacheOfUser(userId);
+    groupCache.removeCacheOfUser(userId);
   }
 
   public void addUsersInGroup(final Connection connection, final List<String> userIds,
@@ -115,7 +119,7 @@ public class GroupDAO {
           .addInsertParam(USER_ID, Integer.parseInt(userId))
           .executeWith(connection);
 
-      GroupCache.removeCacheOfUser(userId);
+      groupCache.removeCacheOfUser(userId);
     }
   }
 
@@ -175,7 +179,7 @@ public class GroupDAO {
         .where("userId = ?", Integer.parseInt(userId))
         .and(GROUP_ID_CRITERION, Integer.parseInt(groupdId))
         .executeWith(connection);
-    GroupCache.removeCacheOfUser(userId);
+    groupCache.removeCacheOfUser(userId);
   }
 
   public boolean isGroupByNameExists(final Connection connection, final String name)

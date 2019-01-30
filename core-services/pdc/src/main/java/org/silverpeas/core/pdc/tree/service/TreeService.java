@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,73 +16,73 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.pdc.tree.service;
-
-import java.util.List;
-import java.sql.Connection;
 
 import org.silverpeas.core.pdc.tree.model.TreeManagerException;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.pdc.tree.model.TreeNodePK;
 
+import java.sql.Connection;
+import java.util.List;
+
 public interface TreeService {
 
-  public String createRoot(Connection con, TreeNode root)
+  String createRoot(Connection con, TreeNode root)
       throws TreeManagerException;
 
-  public void updateNode(Connection con, TreeNode node)
+  void updateNode(Connection con, TreeNode node)
       throws TreeManagerException;
 
-  public void updateRoot(Connection con, TreeNode root)
+  void updateRoot(Connection con, TreeNode root)
       throws TreeManagerException;
 
-  public void deleteTree(Connection con, String treeId)
+  void deleteTree(Connection con, String treeId)
       throws TreeManagerException;
 
-  public void deleteSubTree(Connection con, TreeNodePK rootPK, String treeId)
+  void deleteSubTree(Connection con, TreeNodePK rootPK, String treeId)
       throws TreeManagerException;
 
-  public List<TreeNode> getTree(Connection con, String treeId)
+  List<TreeNode> getTree(Connection con, String treeId)
       throws TreeManagerException;
 
-  public List<TreeNode> getSubTree(Connection con, TreeNodePK rootPK, String treeId)
+  List<TreeNode> getSubTree(Connection con, TreeNodePK rootPK, String treeId)
       throws TreeManagerException;
 
-  public TreeNode getNode(Connection con, TreeNodePK rootPK, String treeId)
+  TreeNode getNode(Connection con, TreeNodePK rootPK, String treeId)
       throws TreeManagerException;
 
-  public List<TreeNode> getNodesByName(Connection con, String nodeName)
+  List<TreeNode> getNodesByName(Connection con, String nodeName)
       throws TreeManagerException;
 
-  public String insertFatherToNode(Connection con, TreeNode nodeToInsert,
+  String insertFatherToNode(Connection con, TreeNode nodeToInsert,
       TreeNodePK refNode, String treeId) throws TreeManagerException;
 
-  public void moveSubTreeToNewFather(Connection con, TreeNodePK nodeToMovePK,
+  void moveSubTreeToNewFather(Connection con, TreeNodePK nodeToMovePK,
       TreeNodePK newFatherPK, String treeId, int orderNumber)
       throws TreeManagerException;
 
-  public String createSonToNode(Connection con, TreeNode nodeToInsert,
+  String createSonToNode(Connection con, TreeNode nodeToInsert,
       TreeNodePK refNode, String treeId) throws TreeManagerException;
 
-  public List<TreeNode> getSonsToNode(Connection con, TreeNodePK treeNodePK, String treeId)
+  List<TreeNode> getSonsToNode(Connection con, TreeNodePK treeNodePK, String treeId)
       throws TreeManagerException;
 
-  public void deleteNode(Connection con, TreeNodePK treeNodePK, String treeId)
+  void deleteNode(Connection con, TreeNodePK treeNodePK, String treeId)
       throws TreeManagerException;
 
-  public List<TreeNode> getFullPath(Connection con, TreeNodePK nodePK, String treeId)
+  List<TreeNode> getFullPath(Connection con, TreeNodePK nodePK, String treeId)
       throws TreeManagerException;
 
-  public String getPath(Connection con, TreeNodePK nodePK, String treeId)
+  String getPath(Connection con, TreeNodePK nodePK, String treeId)
       throws TreeManagerException;
 
-  public TreeNode getRoot(Connection con, String treeId)
+  TreeNode getRoot(Connection con, String treeId)
       throws TreeManagerException;
 
-  public void indexTree(Connection con, int treeId) throws TreeManagerException;
+  void indexTree(Connection con, int treeId) throws TreeManagerException;
 }

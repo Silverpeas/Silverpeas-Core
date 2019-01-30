@@ -187,6 +187,12 @@ class Admin implements Administration {
   private ContentManager contentManager;
   @Inject
   private DomainDriverManager domainDriverManager;
+  @Inject
+  private DomainCache domainCache;
+  @Inject
+  private TreeCache treeCache;
+  @Inject
+  private GroupCache groupCache;
 
   private void setup() {
     // Load silverpeas admin resources
@@ -220,8 +226,8 @@ class Admin implements Administration {
   @Override
   public void reloadCache() {
     cache.resetCache();
-    TreeCache.clearCache();
-    GroupCache.clearCache();
+    treeCache.clearCache();
+    groupCache.clearCache();
     try {
 
       List<SpaceInstLight> spaces = spaceManager.getAllSpaces();
@@ -287,7 +293,7 @@ class Admin implements Administration {
     List<SpaceInstLight> subSpaces = getSubSpaces(space.getId());
 
     spaceInCache.setSubspaces(subSpaces);
-    TreeCache.addSpace(space.getLocalId(), spaceInCache);
+    treeCache.addSpace(space.getLocalId(), spaceInCache);
 
     for (SpaceInstLight subSpace : subSpaces) {
       addSpaceInTreeCache(subSpace, false);
@@ -295,7 +301,7 @@ class Admin implements Administration {
 
     if (addSpaceToSuperSpace) {
       if (!space.isRoot()) {
-        TreeCache.addSubSpace(Integer.parseInt(space.getFatherId()), space);
+        treeCache.addSubSpace(Integer.parseInt(space.getFatherId()), space);
       }
     }
   }
@@ -445,7 +451,7 @@ class Admin implements Administration {
       }
 
       cache.opRemoveSpace(spaceInst);
-      TreeCache.removeSpace(driverSpaceId);
+      treeCache.removeSpace(driverSpaceId);
       // desindexation de l'espace
       deleteSpaceIndex(spaceInst);
       return spaceId;
@@ -460,7 +466,7 @@ class Admin implements Administration {
     spaceEventNotifier.notifyEventOn(ResourceEvent.Type.REMOVING, spaceInst, spaceInst);
 
     // notify of direct sub spaces logical deletion too
-    List<SpaceInstLight> spaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
+    List<SpaceInstLight> spaces = treeCache.getSubSpaces(getDriverSpaceId(spaceId));
     for (SpaceInstLight space : spaces) {
       notifyOnSpaceLogicalDeletion(space.getId());
     }
@@ -499,7 +505,7 @@ class Admin implements Administration {
 
       // force caches to be refreshed
       cache.removeSpaceInst(driverSpaceId);
-      TreeCache.removeSpace(driverSpaceId);
+      treeCache.removeSpace(driverSpaceId);
 
       // Get the space and put it in the cache
       SpaceInst spaceInst = getSpaceInstById(driverSpaceId);
@@ -579,7 +585,7 @@ class Admin implements Administration {
         updateSpaceInheritance(oldSpace, spaceInstNew.isInheritanceBlocked());
       }
       cache.opUpdateSpace(spaceInstNew);
-      SpaceInstLight spaceInCache = TreeCache.getSpaceInstLight(spaceInstNew.getLocalId());
+      SpaceInstLight spaceInCache = treeCache.getSpaceInstLight(spaceInstNew.getLocalId());
       if (spaceInCache != null) {
         spaceInCache.setInheritanceBlocked(spaceInstNew.isInheritanceBlocked());
       }
@@ -587,7 +593,7 @@ class Admin implements Administration {
       SpaceInstLight spaceLight =
           spaceManager.getSpaceInstLightById(getDriverSpaceId(spaceInstNew.getId()));
       spaceLight.setInheritanceBlocked(spaceInstNew.isInheritanceBlocked());
-      TreeCache.updateSpace(spaceLight);
+      treeCache.updateSpace(spaceLight);
 
       // indexation de l'espace
 
@@ -607,14 +613,14 @@ class Admin implements Administration {
       cache.opUpdateSpace(spaceManager.getSpaceInstById(driverSpaceId));
 
       // Update space order
-      SpaceInstLight space = TreeCache.getSpaceInstLight(driverSpaceId);
+      SpaceInstLight space = treeCache.getSpaceInstLight(driverSpaceId);
       // the space is null if it was just deleted while the update of the ranking concerns one of
       // its sibling
       if (space != null) {
         space.setOrderNum(orderNum);
         if (!space.isRoot()) {
           // Update brothers sort in TreeCache
-          TreeCache.setSubspaces(getDriverSpaceId(space.getFatherId()),
+          treeCache.setSubspaces(getDriverSpaceId(space.getFatherId()),
               getSubSpaces(space.getFatherId()));
         }
       }
@@ -899,7 +905,7 @@ class Admin implements Administration {
       }
       cache.opUpdateComponent(componentInst);
       ComponentInstLight component = getComponentInstLight(componentId);
-      TreeCache.addComponent(component, getDriverSpaceId(component.getDomainFatherId()));
+      treeCache.addComponent(component, getDriverSpaceId(component.getDomainFatherId()));
       createComponentIndex(component);
     } catch (Exception e) {
       throw new AdminException(failureOnRestoring(COMPONENT, componentId));
@@ -1004,7 +1010,7 @@ class Admin implements Administration {
       cache.opAddComponent(componentInst);
 
       ComponentInstLight component = getComponentInstLight(componentId);
-      TreeCache.addComponent(component, getDriverSpaceId(spaceInstFather.getId()));
+      treeCache.addComponent(component, getDriverSpaceId(spaceInstFather.getId()));
 
       // indexation du composant
       createComponentIndex(component);
@@ -1099,7 +1105,7 @@ class Admin implements Administration {
       }
 
       cache.opRemoveComponent(componentInst);
-      TreeCache.removeComponent(getDriverSpaceId(sFatherClientId), componentId);
+      treeCache.removeComponent(getDriverSpaceId(sFatherClientId), componentId);
 
       // unindex component
       deleteComponentIndex(componentId);
@@ -1143,7 +1149,7 @@ class Admin implements Administration {
       }
 
       cache.opUpdateComponent(component);
-      TreeCache.updateComponent(getComponentInstLight(component.getId()));
+      treeCache.updateComponent(getComponentInstLight(component.getId()));
 
       // indexation du composant
       createComponentIndex(componentClientId);
@@ -1446,11 +1452,11 @@ class Admin implements Administration {
 
     // reset caches
     cache.resetSpaceInst();
-    TreeCache.removeSpace(shortSpaceId);
-    TreeCache.setSubspaces(shortOldSpaceId, spaceManager.getSubSpaces(shortOldSpaceId));
+    treeCache.removeSpace(shortSpaceId);
+    treeCache.setSubspaces(shortOldSpaceId, spaceManager.getSubSpaces(shortOldSpaceId));
     addSpaceInTreeCache(spaceManager.getSpaceInstLightById(shortSpaceId), false);
     if (!moveOnTop) {
-      TreeCache.setSubspaces(shortFatherId, spaceManager.getSubSpaces(shortFatherId));
+      treeCache.setSubspaces(shortFatherId, spaceManager.getSubSpaces(shortFatherId));
     }
 
     String[] allComponentIds = getAllComponentIdsRecur(spaceId);
@@ -1499,9 +1505,9 @@ class Admin implements Administration {
       // Remove component from the Cache
       cache.resetSpaceInst();
       cache.resetComponentInst();
-      TreeCache.setComponents(getDriverSpaceId(oldSpaceId),
+      treeCache.setComponents(getDriverSpaceId(oldSpaceId),
           componentManager.getComponentsInSpace(getDriverSpaceId(oldSpaceId)));
-      TreeCache.setComponents(getDriverSpaceId(spaceId),
+      treeCache.setComponents(getDriverSpaceId(spaceId),
           componentManager.getComponentsInSpace(getDriverSpaceId(spaceId)));
     } catch (Exception e) {
       throw new AdminException("Fail to move component " + componentId + " into space " + spaceId,
@@ -1919,7 +1925,7 @@ class Admin implements Administration {
 
   private void spreadSpaceProfile(int spaceId, SpaceProfileInst spaceProfile) throws AdminException {
     // update profile in components
-    List<ComponentInstLight> components = TreeCache.getComponents(spaceId);
+    List<ComponentInstLight> components = treeCache.getComponents(spaceId);
     for (ComponentInstLight component : components) {
       if (component != null && !component.isInheritanceBlocked()) {
         String componentRole = spaceRole2ComponentRole(spaceProfile.getName(),
@@ -1962,7 +1968,7 @@ class Admin implements Administration {
     }
 
     // update profile in subspaces
-    List<SpaceInstLight> subSpaces = TreeCache.getSubSpaces(spaceId);
+    List<SpaceInstLight> subSpaces = treeCache.getSubSpaces(spaceId);
     for (SpaceInstLight subSpace : subSpaces) {
       if (!subSpace.isInheritanceBlocked()) {
         SpaceProfileInst subSpaceProfile = spaceProfileManager
@@ -2665,7 +2671,7 @@ class Admin implements Administration {
   @Override
   public String updateDomain(Domain domain) throws AdminException {
     try {
-      DomainCache.removeDomain(domain.getId());
+      domainCache.removeDomain(domain.getId());
       return domainDriverManager.updateDomain(domain);
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate(DOMAIN, domain.getId()), e);
@@ -2698,7 +2704,7 @@ class Admin implements Administration {
       domainDriverManager.removeDomain(domainId);
       // Update the synchro scheduler
       domainSynchroScheduler.removeDomain(domainId);
-      DomainCache.removeDomain(domainId);
+      domainCache.removeDomain(domainId);
 
       return domainId;
     } catch (Exception e) {
@@ -2726,10 +2732,10 @@ class Admin implements Administration {
       if (!StringUtil.isDefined(domainId) || !StringUtil.isInteger(domainId)) {
         domainId = "-1";
       }
-      Domain domain = DomainCache.getDomain(domainId);
+      Domain domain = domainCache.getDomain(domainId);
       if (domain == null) {
         domain = domainDriverManager.getDomain(domainId);
-        DomainCache.addDomain(domain);
+        domainCache.addDomain(domain);
       }
       return domain;
     } catch (Exception e) {
@@ -2888,7 +2894,7 @@ class Admin implements Administration {
     // getting all components availables
     List<String> componentIds = getAllowedComponentIds(sUserId);
     for (String componentId : componentIds) {
-      List<SpaceInstLight> spaces = TreeCache.getComponentPath(componentId);
+      List<SpaceInstLight> spaces = treeCache.getComponentPath(componentId);
       for (SpaceInstLight space : spaces) {
         if (!spaceIds.contains(space.getId())) {
           spaceIds.add(space.getId());
@@ -2900,13 +2906,13 @@ class Admin implements Administration {
   }
 
   private List<String> getAllGroupsOfUser(String userId) throws AdminException {
-    List<String> allGroupsOfUser = GroupCache.getAllGroupIdsOfUser(userId);
+    List<String> allGroupsOfUser = groupCache.getAllGroupIdsOfUser(userId);
     if (allGroupsOfUser == null) {
       // group ids of user is not yet processed
       // process it and store it in cache
       allGroupsOfUser = groupManager.getAllGroupsOfUser(userId);
       // store groupIds of user in cache
-      GroupCache.setAllGroupIdsOfUser(userId, allGroupsOfUser);
+      groupCache.setAllGroupIdsOfUser(userId, allGroupsOfUser);
     }
     return allGroupsOfUser;
   }
@@ -2963,7 +2969,7 @@ class Admin implements Administration {
   private String[] getUserSubSpaceIds(List<String> componentIds, String spaceId) {
     List<String> result = new ArrayList<>();
     // getting all subspaces
-    List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
+    List<SpaceInstLight> subspaces = treeCache.getSubSpaces(getDriverSpaceId(spaceId));
     for (SpaceInstLight subspace : subspaces) {
       if (isSpaceContainsOneComponent(componentIds, subspace.getLocalId(), true)) {
         result.add(subspace.getId());
@@ -2986,7 +2992,7 @@ class Admin implements Administration {
       boolean checkInSubspaces) {
     boolean find = false;
 
-    List<ComponentInstLight> components = new ArrayList<>(TreeCache.getComponents(spaceId));
+    List<ComponentInstLight> components = new ArrayList<>(treeCache.getComponents(spaceId));
 
     // Is there at least one component available ?
     for (int c = 0; !find && c < components.size(); c++) {
@@ -2997,7 +3003,7 @@ class Admin implements Administration {
     } else {
       if (checkInSubspaces) {
         // check in subspaces
-        List<SpaceInstLight> subspaces = new ArrayList<>(TreeCache.getSubSpaces(spaceId));
+        List<SpaceInstLight> subspaces = new ArrayList<>(treeCache.getSubSpaces(spaceId));
         for (int s = 0; !find && s < subspaces.size(); s++) {
           find = isSpaceContainsOneComponent(componentIds, subspaces.get(s).getLocalId(),
               checkInSubspaces);
@@ -3019,7 +3025,7 @@ class Admin implements Administration {
       List<String> componentIds = getAllowedComponentIds(userId);
 
       // getting all subspaces
-      List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
+      List<SpaceInstLight> subspaces = treeCache.getSubSpaces(getDriverSpaceId(spaceId));
       for (SpaceInstLight subspace : subspaces) {
         if (isSpaceContainsOneComponent(componentIds, subspace.getLocalId(), true)) {
           result.add(subspace);
@@ -3047,7 +3053,7 @@ class Admin implements Administration {
 
       List<ComponentInstLight> allowedComponents = new ArrayList<>();
 
-      List<ComponentInstLight> allComponents = TreeCache.getComponentsInSpaceAndSubspaces(
+      List<ComponentInstLight> allComponents = treeCache.getComponentsInSpaceAndSubspaces(
           getDriverSpaceId(spaceId));
       for (ComponentInstLight component : allComponents) {
         if (allowedComponentIds.contains(component.getId())) {
@@ -3125,7 +3131,7 @@ class Admin implements Administration {
     for (String spaceId : rootSpaceIds) {
       int currentSpaceId = getDriverSpaceId(spaceId);
       if (authorizedIds.contains(currentSpaceId)) {
-        treeview.add(TreeCache.getSpaceInstLight(currentSpaceId));
+        treeview.add(treeCache.getSpaceInstLight(currentSpaceId));
         addAuthorizedSpaceToTree(treeview, authorizedIds, currentSpaceId, 1);
       }
     }
@@ -3134,7 +3140,7 @@ class Admin implements Administration {
 
   void addAuthorizedSpaceToTree(List<SpaceInstLight> treeview, Set<Integer> authorizedIds,
       int spaceId, int level) {
-    List<SpaceInstLight> subSpaces = TreeCache.getSubSpaces(spaceId);
+    List<SpaceInstLight> subSpaces = treeCache.getSubSpaces(spaceId);
     for (SpaceInstLight space : subSpaces) {
       int subSpaceId = space.getLocalId();
       if (authorizedIds.contains(subSpaceId)) {
@@ -3155,11 +3161,11 @@ class Admin implements Administration {
         !spaces.contains(space.getLocalId())) {
       int spaceId = space.getLocalId();
       spaces.add(spaceId);
-      componentsId.removeAll(TreeCache.getComponentIds(spaceId));
+      componentsId.removeAll(treeCache.getComponentIds(spaceId));
       if (!space.isRoot()) {
         int fatherId = getDriverSpaceId(space.getFatherId());
         if (!spaces.contains(fatherId)) {
-          SpaceInstLight parent = TreeCache.getSpaceInstLight(fatherId);
+          SpaceInstLight parent = treeCache.getSpaceInstLight(fatherId);
           addAuthorizedSpace(spaces, componentsId, parent);
         }
       }
@@ -3167,7 +3173,7 @@ class Admin implements Administration {
   }
 
   void filterSpaceFromComponents(Set<Integer> spaces, Set<String> componentsId, String componentId) {
-    SpaceInstLight space = TreeCache.getSpaceContainingComponent(componentId);
+    SpaceInstLight space = treeCache.getSpaceContainingComponent(componentId);
     addAuthorizedSpace(spaces, componentsId, space);
     if (!componentsId.isEmpty()) {
       String newComponentId = componentsId.iterator().next();
@@ -3234,7 +3240,7 @@ class Admin implements Administration {
 
     // process components
     List<ComponentInstLight> allowedComponents = new ArrayList<>();
-    List<ComponentInstLight> allComponents = TreeCache.getComponents(getDriverSpaceId(spaceId));
+    List<ComponentInstLight> allComponents = treeCache.getComponents(getDriverSpaceId(spaceId));
     for (ComponentInstLight component : allComponents) {
       if (componentIds.contains(component.getId())) {
         allowedComponents.add(component);
@@ -3255,7 +3261,7 @@ class Admin implements Administration {
   }
 
   private SpaceInstLight getSpaceInstLight(int spaceId, int level) throws AdminException {
-    SpaceInstLight sil = TreeCache.getSpaceInstLight(spaceId);
+    SpaceInstLight sil = treeCache.getSpaceInstLight(spaceId);
     if (sil == null) {
       sil = spaceManager.getSpaceInstLightById(spaceId);
     }
@@ -3264,7 +3270,7 @@ class Admin implements Administration {
         sil.setLevel(level);
       }
       if (sil.getLevel() == -1) {
-        sil.setLevel(TreeCache.getSpaceLevel(spaceId));
+        sil.setLevel(treeCache.getSpaceLevel(spaceId));
       }
     }
     return sil;
@@ -3385,7 +3391,7 @@ class Admin implements Administration {
       // retain only root spaces
       List<String> manageableRootSpaceIds = new ArrayList<>();
       for (Integer asManageableSpaceId : asManageableSpaceIds) {
-        SpaceInstLight space = TreeCache.getSpaceInstLight(asManageableSpaceId);
+        SpaceInstLight space = treeCache.getSpaceInstLight(asManageableSpaceId);
         if (space != null && space.isRoot()) {
           manageableRootSpaceIds.add(asManageableSpaceId.toString());
         }
@@ -3412,14 +3418,14 @@ class Admin implements Administration {
       List<String> manageableRootSpaceIds = new ArrayList<>();
       for (Integer manageableSpaceId : asManageableSpaceIds) {
         find = false;
-        SpaceInstLight space = TreeCache.getSpaceInstLight(manageableSpaceId);
+        SpaceInstLight space = treeCache.getSpaceInstLight(manageableSpaceId);
         while (space != null && !space.isRoot() && !find) {
           int driverFatherId = getDriverSpaceId(space.getFatherId());
           if (parentSpaceId == driverFatherId) {
             manageableRootSpaceIds.add(String.valueOf(manageableSpaceId));
             find = true;
           } else {
-            space = TreeCache.getSpaceInstLight(driverFatherId);
+            space = treeCache.getSpaceInstLight(driverFatherId);
           }
         }
       }
@@ -3568,7 +3574,7 @@ class Admin implements Administration {
       int spaceId = getDriverSpaceId(sClientSpaceId);
 
       // Get available component ids from database
-      List<ComponentInstLight> components = TreeCache.getComponents(spaceId);
+      List<ComponentInstLight> components = treeCache.getComponents(spaceId);
 
       List<String> allowedComponentIds = getAllowedComponentIds(sUserId);
       List<String> result = new ArrayList<>();
@@ -3648,7 +3654,7 @@ class Admin implements Administration {
     List<SpaceInstLight> spaces = new ArrayList<>();
     List<ComponentInstLight> components = getAvailComponentInstLights(userId, componentName);
     for (ComponentInstLight component : components) {
-      List<SpaceInstLight> path = TreeCache.getComponentPath(component.getId());
+      List<SpaceInstLight> path = treeCache.getComponentPath(component.getId());
       if (path != null && !path.isEmpty()) {
         SpaceInstLight root = path.get(0);
         if (!spaces.contains(root)) {
@@ -3668,7 +3674,7 @@ class Admin implements Administration {
     List<ComponentInstLight> components = getAvailComponentInstLights(userId, componentName);
 
     for (ComponentInstLight component : components) {
-      List<SpaceInstLight> path = TreeCache.getComponentPath(component.getId());
+      List<SpaceInstLight> path = treeCache.getComponentPath(component.getId());
       for (SpaceInstLight space : path) {
         if (getDriverSpaceId(space.getFatherId()) == driverSpaceId && !spaces.contains(space)) {
           spaces.add(space);
@@ -3723,7 +3729,7 @@ class Admin implements Administration {
       // check TreeCache to know if component is not removed neither into a removed space
       List<String> shortIds = new ArrayList<>();
       for (String componentId : matchingComponentIds) {
-        ComponentInstLight component = TreeCache.getComponent(sComponentName + componentId);
+        ComponentInstLight component = treeCache.getComponent(sComponentName + componentId);
         if (component != null) {
           shortIds.add(componentId);
         }
@@ -3745,7 +3751,7 @@ class Admin implements Administration {
       for (Integer id : componentIds) {
         ComponentInst component = getComponentInst(id, null);
         // check TreeCache to know if component is not removed neither into a removed space
-        ComponentInstLight componentLight = TreeCache.getComponent(component.getId());
+        ComponentInstLight componentLight = treeCache.getComponent(component.getId());
         if (componentLight != null && !componentLight.isRemoved()) {
           components.add(componentLight);
         }
@@ -4015,7 +4021,7 @@ class Admin implements Administration {
 
   @Override
   public String[] getAllComponentIdsRecur(String sSpaceId) throws AdminException {
-    List<ComponentInstLight> components = TreeCache.getComponentsInSpaceAndSubspaces(
+    List<ComponentInstLight> components = treeCache.getComponentsInSpaceAndSubspaces(
         getDriverSpaceId(sSpaceId));
 
     List<String> componentIds = new ArrayList<>();
@@ -5423,7 +5429,7 @@ class Admin implements Administration {
     if (anotherSpaceId == null || anotherSpaceId < 0) {
       return false;
     }
-    List<SpaceInstLight> path = TreeCache.getSpacePath(anotherSpaceId);
+    List<SpaceInstLight> path = treeCache.getSpacePath(anotherSpaceId);
     if (path.isEmpty()) {
       path = getPathToSpace(String.valueOf(anotherSpaceId), true);
     }

@@ -630,9 +630,10 @@ public class PublicationsTypeManager {
                                 coordinatePointType.getAxisId(), componentId);
                         if (nodeDetail == null && createCoordinateAllowed) {
                           NodeDetail position =
-                              new NodeDetail("toDefine", coordinatePointType.getValue(), "", null,
-                                  userDetail.getId(), null, NodePK.ROOT_NODE_ID,
-                                  String.valueOf(coordinatePointType.getAxisId()), null);
+                              new NodeDetail("toDefine", coordinatePointType.getValue(), "",
+                                  Integer.valueOf(NodePK.ROOT_NODE_ID),
+                                  String.valueOf(coordinatePointType.getAxisId()));
+                          position.setCreatorId(userDetail.getId());
                           nodeDetail = coordinateImportExport.addPosition(position,
                               String.valueOf(coordinatePointType.getAxisId()), componentId);
                         }

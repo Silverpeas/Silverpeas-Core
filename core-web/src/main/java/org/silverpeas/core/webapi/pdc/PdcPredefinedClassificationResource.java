@@ -26,9 +26,9 @@ package org.silverpeas.core.webapi.pdc;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
@@ -137,8 +137,6 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
       PdcClassification theClassification = pdcServiceProvider().
           findPredefinedClassificationForContentsIn(nodeId, getComponentId());
       return asWebEntity(theClassification, identifiedBy(theUriOf(theClassification)));
-    } catch (PdcException ex) {
-      throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -178,8 +176,6 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
           .entity(asWebEntity(savedClassification, identifiedBy(theClassificationURI))).build();
     } catch (ConstraintViolationException ex) {
       throw new WebApplicationException(ex, Status.BAD_REQUEST);
-    } catch (PdcException ex) {
-      throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -216,8 +212,7 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
       PdcClassification classificationToUpdate = pdcServiceProvider().
           findPredefinedClassificationForContentsIn(nodeId, getComponentId());
       if (nodeId != null && !nodeId.equals(classificationToUpdate.getNodeId())) {
-        throw new PdcException(PdcPredefinedClassificationResource.class.getSimpleName(),
-            SilverpeasException.ERROR, "root.EX_NO_MESSAGE");
+        throw new PdcException("Node doesn't match with the one of the classification to update");
       }
       classificationToUpdate =
           (classification.isModifiable() ? classificationToUpdate.modifiable() :
@@ -235,8 +230,8 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
     }
   }
 
-  private PdcClassificationEntity asWebEntity(final PdcClassification classification, URI uri)
-      throws Exception {
+  private PdcClassificationEntity asWebEntity(final PdcClassification classification, URI uri) throws
+      ThesaurusException {
     PdcClassificationEntity theClassificationEntity;
     if (classification == PdcClassification.NONE_CLASSIFICATION) {
       theClassificationEntity = undefinedClassification();

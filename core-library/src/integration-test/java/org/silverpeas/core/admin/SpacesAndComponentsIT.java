@@ -76,6 +76,8 @@ public class SpacesAndComponentsIT {
   private Administration admin;
   @Inject
   private OrganizationController organizationController;
+  @Inject
+  private TreeCache treeCache;
   private String userId = "1";
 
   @Rule
@@ -183,18 +185,18 @@ public class SpacesAndComponentsIT {
 
     SpaceInst space = organizationController.getSpaceInstById("WA1");
     assertThat(space.getStatus(), is("R"));
-    assertThat(TreeCache.getSpaceInstLight(1), is(nullValue()));
-    assertThat(TreeCache.getSpaceInstLight(2), is(nullValue()));
+    assertThat(treeCache.getSpaceInstLight(1), is(nullValue()));
+    assertThat(treeCache.getSpaceInstLight(2), is(nullValue()));
 
     admin.restoreSpaceFromBasket("WA1");
     space = organizationController.getSpaceInstById("WA1");
     assertThat(space.getStatus(), is(nullValue()));
 
-    assertThat(TreeCache.getSpaceInstLight(1), is(notNullValue()));
-    assertThat(TreeCache.getSubSpaces(1), hasSize(1));
-    assertThat(TreeCache.getComponentsInSpaceAndSubspaces(1), hasSize(3));
-    assertThat(TreeCache.getComponent("kmelia1"), is(notNullValue()));
-    assertThat(TreeCache.getComponent("almanach2"), is(notNullValue()));
+    assertThat(treeCache.getSpaceInstLight(1), is(notNullValue()));
+    assertThat(treeCache.getSubSpaces(1), hasSize(1));
+    assertThat(treeCache.getComponentsInSpaceAndSubspaces(1), hasSize(3));
+    assertThat(treeCache.getComponent("kmelia1"), is(notNullValue()));
+    assertThat(treeCache.getComponent("almanach2"), is(notNullValue()));
   }
 
   @Test
@@ -257,9 +259,9 @@ public class SpacesAndComponentsIT {
     admin.deleteComponentInst(userId, "kmelia1", false);
     ComponentInst component = adminController.getComponentInst("kmelia1");
     assertThat(component.getStatus(), is("R"));
-    assertThat(TreeCache.getComponent("kmelia1"), is(nullValue()));
+    assertThat(treeCache.getComponent("kmelia1"), is(nullValue()));
     adminController.restoreComponentFromBasket("kmelia1");
-    assertThat(TreeCache.getComponent("kmelia1"), is(notNullValue()));
+    assertThat(treeCache.getComponent("kmelia1"), is(notNullValue()));
   }
 
   @Test
@@ -375,7 +377,7 @@ public class SpacesAndComponentsIT {
     adminController.updateSpaceInst(sub1);
 
     List<SpaceInstLight> subspaces =
-        TreeCache.getSubSpaces(Integer.parseInt(newRootSpaceId.substring(2)));
+        treeCache.getSubSpaces(Integer.parseInt(newRootSpaceId.substring(2)));
     assertThat(subspaces.size(), is(1));
     SpaceInstLight subspace = subspaces.get(0);
     assertThat(subspace.isInheritanceBlocked(), is(true));
