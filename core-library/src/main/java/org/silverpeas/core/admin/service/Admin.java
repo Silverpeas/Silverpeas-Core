@@ -155,16 +155,15 @@ class Admin implements Administration {
   private String domainSynchroCron = "";
   private String senderEmail = null;
   private String senderName = null;
-  // Cache management
-  private final AdminCache cache = new AdminCache();
   private SynchroGroupScheduler groupSynchroScheduler = null;
   private SynchroDomainScheduler domainSynchroScheduler = null;
   private SettingBundle roleMapping = null;
   private boolean useProfileInheritance = false;
 
   @Inject
+  private AdminCache cache;
+  @Inject
   private WAComponentRegistry componentRegistry;
-
   @Inject
   private UserManager userManager;
   @Inject
@@ -2129,7 +2128,7 @@ class Admin implements Administration {
   public String updateGroup(GroupDetail group, boolean onlyInSilverpeas) throws AdminException {
     try {
       String sGroupId = groupManager.updateGroup(group, onlyInSilverpeas);
-      cache.opUpdateGroup(getGroup(sGroupId));
+      cache.resetOnUpdateGroup();
       return sGroupId;
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate(GROUP, group.getId()), e);
@@ -2142,7 +2141,7 @@ class Admin implements Administration {
       // Update group
       groupManager.removeUserFromGroup(sUserId, sGroupId);
 
-      cache.opUpdateGroup(getGroup(sGroupId));
+      cache.resetOnUpdateGroup();
 
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting(USER + sUserId, IN_GROUP + sGroupId), e);
@@ -2154,7 +2153,7 @@ class Admin implements Administration {
     try {
       // Update group
       groupManager.addUserInGroup(sUserId, sGroupId);
-      cache.opUpdateGroup(getGroup(sGroupId));
+      cache.resetOnUpdateGroup();
     } catch (Exception e) {
       throw new AdminException(failureOnAdding(USER + sUserId, IN_GROUP + sGroupId), e);
     }
@@ -2373,11 +2372,7 @@ class Admin implements Administration {
   public String addUser(UserDetail userDetail, boolean addOnlyInSilverpeas) throws AdminException {
     try {
       // add user
-      String sUserId = userManager.addUser(userDetail, addOnlyInSilverpeas, true);
-
-      cache.opAddUser(userManager.getUserDetail(sUserId));
-      // return group id
-      return sUserId;
+      return userManager.addUser(userDetail, addOnlyInSilverpeas, true);
     } catch (Exception e) {
       throw new AdminException(failureOnAdding("user", userDetail.getDisplayedName()), e);
     }
@@ -3341,7 +3336,7 @@ class Admin implements Administration {
     try {
       // Get user manageable space ids from cache
       asManageableSpaceIds = cache.getManageableSpaceIds(sUserId);
-      if (asManageableSpaceIds == null) {
+      if (asManageableSpaceIds.length == 0) {
         // Get user manageable space ids from database
 
         List<String> groupIds = getAllGroupsOfUser(sUserId);
@@ -3494,7 +3489,6 @@ class Admin implements Administration {
       if (asAvailCompoIds == null) {
         // Get available component ids from database
         List<ComponentInstLight> components = getAvailCompoInSpace(sUserId, sClientSpaceId);
-
         List<String> componentIds = new ArrayList<>();
         for (ComponentInstLight component : components) {
           componentIds.add(component.getId());
@@ -3769,7 +3763,7 @@ class Admin implements Administration {
       // Get the profile ids from cache
       String[] asProfilesIds = cache.getProfileIds(sUserId);
 
-      if (asProfilesIds == null) {
+      if (asProfilesIds.length == 0) {
         // retrieve value from database
         asProfilesIds = profileManager.getProfileIdsOfUser(sUserId, getAllGroupsOfUser(sUserId));
 
@@ -4372,7 +4366,7 @@ class Admin implements Administration {
           if (theUserDetail.getDomainId().equals(oldGroup.getDomainId())) {
             // Remove the user from this group
             groupManager.removeUserFromGroup(userId, oldGroup.getId());
-            cache.opRemoveUserFromGroup(userId, oldGroup.getId());
+            cache.opRemoveUserFromGroup(userId);
           }
         }
       }
@@ -4380,7 +4374,7 @@ class Admin implements Administration {
       // newly added
       for (String includedGroupId : incGroupsId) {
         groupManager.addUserInGroup(userId, includedGroupId);
-        cache.opAddUserInGroup(userId, includedGroupId);
+        cache.opAddUserInGroup(userId);
       }
 
       // traitement spécifique des users selon l'interface implémentée

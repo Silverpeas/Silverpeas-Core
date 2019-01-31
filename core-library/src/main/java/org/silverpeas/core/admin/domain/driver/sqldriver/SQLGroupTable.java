@@ -39,9 +39,12 @@ import java.util.List;
  * A GroupTable object manages the DomainSQL_Group table.
  */
 public class SQLGroupTable {
-  SQLSettings drvSettings = new SQLSettings();
+  private static final String WHERE = " where ";
+  private static final String SELECT = "select ";
+  private static final String FROM = " from ";
+  private SQLSettings drvSettings;
 
-  public SQLGroupTable(SQLSettings ds) {
+  SQLGroupTable(SQLSettings ds) {
     drvSettings = ds;
   }
 
@@ -55,7 +58,7 @@ public class SQLGroupTable {
   /**
    * Fetch the current group row from a resultSet.
    */
-  protected GroupDetail fetchGroup(ResultSet rs) throws SQLException {
+  private GroupDetail fetchGroup(ResultSet rs) throws SQLException {
     GroupDetail g = new GroupDetail();
 
     g.setSpecificId(Integer.toString(rs.getInt(1)));
@@ -100,7 +103,7 @@ public class SQLGroupTable {
   public void deleteGroup(Connection c, int groupId) throws AdminException {
     PreparedStatement statement = null;
     String theQuery = "delete from " + drvSettings.getGroupTableName()
-        + " where " + drvSettings.getGroupSpecificIdColumnName() + " = ?";
+        + WHERE + drvSettings.getGroupSpecificIdColumnName() + " = ?";
 
     try {
       statement = c.prepareStatement(theQuery);
@@ -117,7 +120,7 @@ public class SQLGroupTable {
     PreparedStatement statement = null;
     String theQuery = "update " + drvSettings.getGroupTableName() + " set "
         + drvSettings.getGroupNameColumnName() + " = ?,"
-        + drvSettings.getGroupDescriptionColumnName() + " = ?" + " where "
+        + drvSettings.getGroupDescriptionColumnName() + " = ?" + WHERE
         + drvSettings.getGroupSpecificIdColumnName() + " = ?";
 
     try {
@@ -139,7 +142,7 @@ public class SQLGroupTable {
   public GroupDetail getGroup(Connection c, int groupId) throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    String theQuery = "select " + getColumns() + " from "
+    String theQuery = SELECT + getColumns() + FROM
         + drvSettings.getGroupTableName() + " where id = ?";
 
     try {
@@ -161,11 +164,11 @@ public class SQLGroupTable {
   /**
    * Returns the GroupDetail whith the given name.
    */
-  public GroupDetail getGroupByName(Connection c, String groupName)
+  GroupDetail getGroupByName(Connection c, String groupName)
       throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
-    String theQuery = "select " + getColumns() + " from "
+    String theQuery = SELECT + getColumns() + FROM
         + drvSettings.getGroupTableName() + " where name = ?";
     try {
       statement = c.prepareStatement(theQuery);
@@ -190,7 +193,7 @@ public class SQLGroupTable {
     ResultSet rs = null;
     PreparedStatement statement = null;
     List<GroupDetail> theResult = new ArrayList<>();
-    String theQuery = "select " + getColumns() + " from "
+    String theQuery = SELECT + getColumns() + FROM
         + drvSettings.getGroupTableName();
 
     try {
@@ -210,13 +213,13 @@ public class SQLGroupTable {
   /**
    * Returns the User whith the given id.
    */
-  public List<GroupDetail> getDirectSubGroups(Connection c, int groupId)
+  List<GroupDetail> getDirectSubGroups(Connection c, int groupId)
       throws AdminException {
     ResultSet rs = null;
     PreparedStatement statement = null;
     List<GroupDetail> theResult = new ArrayList<>();
-    String theQuery = "select " + getColumns() + " from "
-        + drvSettings.getGroupTableName() + " where "
+    String theQuery = SELECT + getColumns() + FROM
+        + drvSettings.getGroupTableName() + WHERE
         + drvSettings.getGroupParentIdColumnName();
 
     try {

@@ -49,6 +49,8 @@ public class ProfiledObjectManager {
   private ProfileInstManager profileInstManager;
   @Inject
   private OrganizationSchema organizationSchema;
+  @Inject
+  private RoleDAO roleDAO;
 
   /**
    * Constructor
@@ -90,7 +92,7 @@ public class ProfiledObjectManager {
       con = DBUtil.openConnection();
 
       List<UserRoleRow> roles =
-          RoleDAO.getRoles(con, objectId, objectType, componentId, groupIds, userId);
+          roleDAO.getRoles(con, objectId, objectType, componentId, groupIds, userId);
       List<String> roleNames = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
@@ -113,7 +115,7 @@ public class ProfiledObjectManager {
       con = DBUtil.openConnection();
 
       List<UserRoleRow> roles =
-          RoleDAO.getRoles(con, -1, objectType, componentId, groupIds, userId);
+          roleDAO.getRoles(con, -1, objectType, componentId, groupIds, userId);
       Map<Integer, List<String>> objectProfiles = new HashMap<>(roles.size());
 
       Collections.sort(roles, Comparator.comparingInt(o -> o.objectId));
