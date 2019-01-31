@@ -151,15 +151,15 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
     perform(resource);
     SilverpeasTemplate template;
     final NotificationResourceData nRDBase = initializeNotificationResourceData();
-    NotificationResourceData notificationResourceData;
+    NotificationResourceData resourceData;
     for (final String curLanguage : DisplayI18NHelper.getLanguages()) {
       //set link url and link label
-      String linkUrl = getResourceURL(resource);
+      final String linkUrl = getResourceURL(resource);
       String linkLabel = "";
       if (getContributionAccessLinkLabelBundleKey() != null) {
         linkLabel = getBundle(curLanguage).getString(getContributionAccessLinkLabelBundleKey());
       }
-      Link link = new Link(linkUrl, linkLabel);
+      final Link link = new Link(linkUrl, linkLabel);
       getNotificationMetaData().setLink(link, curLanguage);
 
       template = createTemplate();
@@ -168,9 +168,11 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
       templates.put(curLanguage, template);
 
       performTemplateData(curLanguage, resource, template);
-      notificationResourceData = nRDBase.clone();
-      performNotificationResource(curLanguage, resource, notificationResourceData);
-      getNotificationMetaData().setNotificationResourceData(curLanguage, notificationResourceData);
+      resourceData = nRDBase.clone();
+      resourceData.setCurrentLanguage(curLanguage);
+      resourceData.setLinkLabel(linkLabel);
+      performNotificationResource(curLanguage, resource, resourceData);
+      getNotificationMetaData().setNotificationResourceData(curLanguage, resourceData);
     }
   }
 

@@ -6,5 +6,5 @@
   <p>Angehängte Dateien:</p>
     resource.attachmentLinks:attachmentLinks_de(attachment=it)$
   $endif$
-	$if(resource.url)$<div style="height:40px;"><a target="_blank" href="$resource.url$" style="display:inline-block; float:right;  margin:0;border-radius:10px; border:1px solid #ccc; font-size:12px; color:#333; font-weight:bold;text-decoration:none;padding:10px;background: linear-gradient(#fff, #eee) repeat scroll 0 0 #eee;"> &#9658; gehen Sie zum Beitrag</a></div>$endif$
+	$if(resource.url)$<div style="height:40px;"><a target="_blank" href="$resource.url$" style="display:inline-block; float:right;  margin:0;border-radius:10px; border:1px solid #ccc; font-size:12px; color:#333; font-weight:bold;text-decoration:none;padding:10px;background: linear-gradient(#fff, #eee) repeat scroll 0 0 #eee;"> &#9658; $resource.linkLabel$</a></div>$endif$
 </div>
