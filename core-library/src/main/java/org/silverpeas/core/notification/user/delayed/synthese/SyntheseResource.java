@@ -38,6 +38,7 @@ public class SyntheseResource {
   private String description;
   private String location;
   private String url;
+  private String linkLabel;
   private List<AttachmentLink> attachmentLinks = null;
   private final List<SyntheseResourceNotification> notifications = new ArrayList<>();
 
@@ -71,6 +72,14 @@ public class SyntheseResource {
 
   public void setUrl(final String url) {
     this.url = url;
+  }
+
+  public String getLinkLabel() {
+    return linkLabel;
+  }
+
+  public void setLinkLabel(final String linkLabel) {
+    this.linkLabel = linkLabel;
   }
 
   public void setAttachmentLinks(final List<AttachmentLink> attachmentLinks) {

@@ -24,7 +24,7 @@
 package org.silverpeas.core.i18n;
 
 /**
- * A translation of a text, a property of of a resource supporting the i18n features. Such a bean
+ * A translation of a text, a property of a resource supporting the i18n features. Such a bean
  * can be a user's contribution or a contribution's content or a transverse business entity in
  * Silverpeas. All objects that represent a translation of a given i18n or l10n bean
  * must implement either this interface or one of its more-typed children interfaces/classes.
@@ -39,5 +39,4 @@ package org.silverpeas.core.i18n;
 public interface Translation {
 
   String getLanguage();
-
 }

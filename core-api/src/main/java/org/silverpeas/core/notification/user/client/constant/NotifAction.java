@@ -92,7 +92,12 @@ public enum NotifAction {
   /**
    * A contribution has been published.
    */
-  PUBLISHED(13, 13);
+  PUBLISHED(13, 13),
+
+  /**
+   * A container has been populated.
+   */
+  POPULATED(14, 14);
 
   private int id;
   private int priority;
