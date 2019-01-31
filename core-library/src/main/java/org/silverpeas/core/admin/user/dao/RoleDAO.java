@@ -23,26 +23,28 @@
  */
 package org.silverpeas.core.admin.user.dao;
 
+import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class RoleDAO {
 
-  static final private String USERROLE_COLUMNS =
+  private static final String USERROLE_COLUMNS =
       "id,instanceId,name,roleName,description,isInherited,objectId,objecttype";
+  private static final String FROM_ST_USERROLE_AND_ST_USERROLE_GROUP_REL =
+      " from st_userrole r, st_userrole_group_rel gr";
+  private static final String WHERE_ID_EQUALS_USERROLEID = " where r.id=gr.userroleid";
+  private static final String AND_GROUP_ID_IN = " and gr.groupId IN (";
 
-  public RoleDAO() {
-
-  }
 
   private static String list2String(List<String> ids) {
     StringBuilder str = new StringBuilder();
@@ -55,31 +57,32 @@ public class RoleDAO {
     return str.toString();
   }
 
-  private final static String queryAllUserRoles = "select " + USERROLE_COLUMNS
-      + " from st_userrole r, st_userrole_user_rel ur"
-      + " where r.id=ur.userroleid"
-      + " and r.objectId is null "
-      + " and ur.userId = ? ";
+  private static final String SELECT = "select ";
+  private static final String FROM_ST_USERROLE_AND_ST_USERROLE_USER_REL =
+      " from st_userrole r, st_userrole_user_rel ur";
+  private static final String WHERE_ID_EQUALS_TO_USERROLEID = " where r.id=ur.userroleid";
+  private static final String AND_USER_ID_EQUALS_TO_GIVEN_VALUE = " and ur.userId = ? ";
+  private static final String QUERY_ALL_USER_ROLES =
+      SELECT + USERROLE_COLUMNS + FROM_ST_USERROLE_AND_ST_USERROLE_USER_REL +
+          WHERE_ID_EQUALS_TO_USERROLEID + " and r.objectId is null " +
+          AND_USER_ID_EQUALS_TO_GIVEN_VALUE;
 
-  private static List<UserRoleRow> getRoles(Connection con, int userId)
-      throws SQLException {
-    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
+  private List<UserRoleRow> getRoles(Connection con, int userId) throws SQLException {
+    return getUserRoleRows(con, QUERY_ALL_USER_ROLES, userId);
+  }
 
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = con.prepareStatement(queryAllUserRoles);
+  private List<UserRoleRow> getUserRoleRows(final Connection con, final String queryAllUserRoles,
+      final int userId) throws SQLException {
+    final List<UserRoleRow> roles = new ArrayList<>();
+    try (final PreparedStatement stmt = con.prepareStatement(queryAllUserRoles)) {
       stmt.setInt(1, userId);
+      try (final ResultSet rs = stmt.executeQuery()) {
 
-      rs = stmt.executeQuery();
-
-      while (rs.next()) {
-        roles.add(fetchUserRole(rs));
+        while (rs.next()) {
+          roles.add(fetchUserRole(rs));
+        }
       }
-
       return roles;
-    } finally {
-      DBUtil.close(rs, stmt);
     }
   }
 
@@ -88,16 +91,16 @@ public class RoleDAO {
    * Gets several groups and/or one user component object roles (not the direct component roles).
    * To get only groups roles, specify -1 for userId.
    * To get only user roles, specify null or empty list for groupIds.
-   * @param con
-   * @param groupIds
-   * @param userId
-   * @return
-   * @throws SQLException
+   * @param con connection with the database.
+   * @param groupIds a list of group identifiers.
+   * @param userId the user identifier.
+   * @return a list of {@link UserRoleRow} instances.
+   * @throws SQLException if an error occurs.
    */
-  public static List<UserRoleRow> getAllComponentObjectRoles(Connection con, List<String> groupIds,
+  public List<UserRoleRow> getAllComponentObjectRoles(Connection con, List<String> groupIds,
       int userId) throws SQLException {
-    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
-    if (groupIds != null && groupIds.size() > 0) {
+    List<UserRoleRow> roles = new ArrayList<>();
+    if (groupIds != null && !groupIds.isEmpty()) {
       roles.addAll(getAllComponentObjectRolesForGroups(con, groupIds));
     }
     if (userId != -1) {
@@ -106,90 +109,49 @@ public class RoleDAO {
     return roles;
   }
 
-  private final static String queryAllUserComponentObjectRoles =
-      "select " + USERROLE_COLUMNS + " from st_userrole r, st_userrole_user_rel ur"
-      + " where r.id=ur.userroleid"
-      + " and r.objectId is not null "
-      + " and ur.userId = ? ";
+  private static final String QUERY_ALL_USER_COMPONENT_OBJECT_ROLES =
+      SELECT + USERROLE_COLUMNS + FROM_ST_USERROLE_AND_ST_USERROLE_USER_REL +
+          WHERE_ID_EQUALS_TO_USERROLEID + " and r.objectId is not null " +
+          AND_USER_ID_EQUALS_TO_GIVEN_VALUE;
 
-  private static List<UserRoleRow> getAllComponentObjectRolesForUser(Connection con, int userId)
-  throws SQLException {
-    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
-
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = con.prepareStatement(queryAllUserComponentObjectRoles);
-      stmt.setInt(1, userId);
-
-      rs = stmt.executeQuery();
-
-      while (rs.next()) {
-        roles.add(fetchUserRole(rs));
-      }
-
-      return roles;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
-  }
-
-  private static List<UserRoleRow> getRoles(Connection con, List<String> groupIds)
+  private List<UserRoleRow> getAllComponentObjectRolesForUser(Connection con, int userId)
       throws SQLException {
-    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
-
-    String query = "select " + USERROLE_COLUMNS
-        + " from st_userrole r, st_userrole_group_rel gr"
-        + " where r.id=gr.userroleid"
-        + " and r.objectId is null "
-        + " and gr.groupId IN (" + list2String(groupIds) + ")";
-
-    Statement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(query);
-
-      while (rs.next()) {
-        roles.add(fetchUserRole(rs));
-      }
-
-      return roles;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
+    return getUserRoleRows(con, QUERY_ALL_USER_COMPONENT_OBJECT_ROLES, userId);
   }
 
-  private static List<UserRoleRow> getAllComponentObjectRolesForGroups(Connection con,
-      List<String> groupIds) throws SQLException {
-    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
+  private List<UserRoleRow> getRoles(Connection con, List<String> groupIds) throws SQLException {
+    final String query = SELECT + USERROLE_COLUMNS + FROM_ST_USERROLE_AND_ST_USERROLE_GROUP_REL +
+        WHERE_ID_EQUALS_USERROLEID + " and r.objectId is null " + AND_GROUP_ID_IN +
+        list2String(groupIds) + ")";
 
-    String query = "select " + USERROLE_COLUMNS
-        + " from st_userrole r, st_userrole_group_rel gr"
-        + " where r.id=gr.userroleid"
-        + " and r.objectId is not null "
-        + " and gr.groupId IN (" + list2String(groupIds) + ")";
-
-    Statement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(query);
-
-      while (rs.next()) {
-        roles.add(fetchUserRole(rs));
-      }
-
-      return roles;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
+    return getUserRoleRows(con, query);
   }
 
-  public static List<UserRoleRow> getRoles(Connection con, List<String> groupIds, int userId)
+  @NotNull
+  private List<UserRoleRow> getUserRoleRows(final Connection con, final String query)
       throws SQLException {
-    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
-    if (groupIds != null && groupIds.size() > 0) {
+    final List<UserRoleRow> roles = new ArrayList<>();
+    try (final PreparedStatement stmt = con.prepareStatement(query);
+         final ResultSet rs = stmt.executeQuery()) {
+      while (rs.next()) {
+        roles.add(fetchUserRole(rs));
+      }
+    }
+    return roles;
+  }
+
+  private List<UserRoleRow> getAllComponentObjectRolesForGroups(Connection con, List<String> groupIds) throws SQLException {
+    String query = SELECT + USERROLE_COLUMNS + FROM_ST_USERROLE_AND_ST_USERROLE_GROUP_REL +
+        WHERE_ID_EQUALS_USERROLEID + " and r.objectId is not null " + AND_GROUP_ID_IN +
+        list2String(groupIds) + ")";
+
+    return getUserRoleRows(con, query);
+  }
+
+  public List<UserRoleRow> getRoles(Connection con, List<String> groupIds, int userId)
+      throws SQLException {
+    List<UserRoleRow> roles = new ArrayList<>();
+    if (groupIds != null && !groupIds.isEmpty()) {
       roles.addAll(getRoles(con, groupIds));
     }
     if (userId != -1) {
@@ -203,18 +165,17 @@ public class RoleDAO {
    * (not of objects managed by the component).
    * To get only groups roles, specify -1 for userId.
    * To get only user roles, specify null or empty list for groupIds.
-   * @param con
-   * @param groupIds
-   * @param userId
-   * @param instanceId
-   * @return
-   * @throws SQLException
+   * @param con the connection with the database.
+   * @param groupIds a list of group identifiers.
+   * @param userId the user identifier.
+   * @param instanceId the component instance identifier.
+   * @return a list of {@link UserRoleRow} instances.
+   * @throws SQLException if an error occurs.
    */
-  public static List<UserRoleRow> getRoles(Connection con, List<String> groupIds, int userId,
-      int instanceId)
+  public List<UserRoleRow> getRoles(Connection con, List<String> groupIds, int userId, int instanceId)
       throws SQLException {
-    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
-    if (groupIds != null && groupIds.size() > 0) {
+    List<UserRoleRow> roles = new ArrayList<>();
+    if (groupIds != null && !groupIds.isEmpty()) {
       roles.addAll(getRoles(con, -1, null, instanceId, groupIds));
     }
     if (userId != -1) {
@@ -228,19 +189,18 @@ public class RoleDAO {
    * instance (not directly those of of the component).
    * To get only groups roles, specify -1 for userId.
    * To get only user roles, specify null or empty list for groupIds.
-   * @param con
+   * @param con a connection with the database.
    * @param objectId if -1 is given, then all the rows associated to the type are returned
-   * @param objectType
-   * @param instanceId
-   * @param groupIds
-   * @param userId
-   * @return
-   * @throws SQLException
+   * @param objectType the type of the object on which the roles are related.
+   * @param instanceId the component instance identifier.
+   * @param groupIds a list of group identifiers.
+   * @param userId the user identifier.
+   * @return a list of {@link UserRoleRow} instances.
+   * @throws SQLException if an error occurs.
    */
-  public static List<UserRoleRow> getRoles(Connection con, int objectId, String objectType,
-      int instanceId, List<String> groupIds, int userId) throws SQLException {
-    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
-    if (groupIds != null && groupIds.size() > 0) {
+  public List<UserRoleRow> getRoles(Connection con, int objectId, String objectType, int instanceId, List<String> groupIds, int userId) throws SQLException {
+    List<UserRoleRow> roles = new ArrayList<>();
+    if (groupIds != null && !groupIds.isEmpty()) {
       roles.addAll(getRoles(con, objectId, objectType, instanceId, groupIds));
     }
     if (userId != -1) {
@@ -249,14 +209,11 @@ public class RoleDAO {
     return roles;
   }
 
-  private static List<UserRoleRow> getRoles(Connection con, int objectId, String objectType,
-      int instanceId, List<String> groupIds)
+  private List<UserRoleRow> getRoles(Connection con, int objectId, String objectType, int instanceId, List<String> groupIds)
       throws SQLException {
-    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
-
-    String queryAllAvailableComponentIds = "select " + USERROLE_COLUMNS
-        + " from st_userrole r, st_userrole_group_rel gr"
-        + " where r.id=gr.userroleid";
+    String queryAllAvailableComponentIds =
+        SELECT + USERROLE_COLUMNS + FROM_ST_USERROLE_AND_ST_USERROLE_GROUP_REL +
+            WHERE_ID_EQUALS_USERROLEID;
     if (objectId != -1) {
       queryAllAvailableComponentIds += " and r.objectId = " + objectId;
     }
@@ -265,24 +222,10 @@ public class RoleDAO {
     } else {
       queryAllAvailableComponentIds += " and r.objectType is null";
     }
-    queryAllAvailableComponentIds += " and r.instanceId = " + instanceId
-        + " and gr.groupId IN (" + list2String(groupIds) + ")";
+    queryAllAvailableComponentIds +=
+        " and r.instanceId = " + instanceId + AND_GROUP_ID_IN + list2String(groupIds) + ")";
 
-    Statement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = con.createStatement();
-
-      rs = stmt.executeQuery(queryAllAvailableComponentIds);
-
-      while (rs.next()) {
-        roles.add(fetchUserRole(rs));
-      }
-
-      return roles;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
+    return getUserRoleRows(con, queryAllAvailableComponentIds);
   }
 
   /**
@@ -303,13 +246,10 @@ public class RoleDAO {
     return ur;
   }
 
-  private final static String queryAllUserRolesOnObject = "select " + USERROLE_COLUMNS
-      + " from st_userrole r, st_userrole_user_rel ur"
-      + " where r.id=ur.userroleid"
-      + " and r.objectId = ? "
-      + " and r.objectType = ? "
-      + " and r.instanceId = ? "
-      + " and ur.userId = ? ";
+  private static final String QUERY_ALL_USER_ROLES_ON_OBJECT =
+      SELECT + USERROLE_COLUMNS + FROM_ST_USERROLE_AND_ST_USERROLE_USER_REL +
+          WHERE_ID_EQUALS_TO_USERROLEID + " and r.objectId = ? " + " and r.objectType = ? " +
+          " and r.instanceId = ? " + AND_USER_ID_EQUALS_TO_GIVEN_VALUE;
 
   /**
    * Gets the roles associated to the given user about the object represented by an id and a
@@ -317,22 +257,19 @@ public class RoleDAO {
    * When the value {@code -1} is given of the objectId parameter, all the object of given type are
    * aimed.
    * @return a list of user roles.
-   * @throws SQLException
+   * @throws SQLException if an error occurs
    */
-  private static List<UserRoleRow> getRoles(Connection con, int objectId, String objectType,
+  private List<UserRoleRow> getRoles(Connection con, int objectId, String objectType,
       int instanceId, int userId) throws SQLException {
-    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
+    final List<UserRoleRow> roles = new ArrayList<>();
 
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    try {
-      final String sqlQuery;
-      if (objectId != -1) {
-        sqlQuery = queryAllUserRolesOnObject;
-      } else {
-        sqlQuery = queryAllUserRolesOnObject.replace(" and r.objectId = ?", "");
-      }
-      stmt = con.prepareStatement(sqlQuery);
+    final String sqlQuery;
+    if (objectId != -1) {
+      sqlQuery = QUERY_ALL_USER_ROLES_ON_OBJECT;
+    } else {
+      sqlQuery = QUERY_ALL_USER_ROLES_ON_OBJECT.replace(" and r.objectId = ?", "");
+    }
+    try (final PreparedStatement stmt = con.prepareStatement(sqlQuery)) {
       int index = 0;
       if (objectId != -1) {
         stmt.setInt(++index, objectId);
@@ -341,45 +278,32 @@ public class RoleDAO {
       stmt.setInt(++index, instanceId);
       stmt.setInt(++index, userId);
 
-      rs = stmt.executeQuery();
-
-      while (rs.next()) {
-        roles.add(fetchUserRole(rs));
+      try (final ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          roles.add(fetchUserRole(rs));
+        }
       }
-
-      return roles;
-    } finally {
-      DBUtil.close(rs, stmt);
     }
+    return roles;
   }
 
-  private final static String queryAllUserRolesOnComponent = "select " + USERROLE_COLUMNS
-      + " from st_userrole r, st_userrole_user_rel ur"
-      + " where r.id=ur.userroleid"
-      + " and r.instanceId = ? "
-      + " and r.objecttype is null "
-      + " and ur.userId = ? ";
+  private static final String QUERY_ALL_USER_ROLES_ON_COMPONENT =
+      SELECT + USERROLE_COLUMNS + FROM_ST_USERROLE_AND_ST_USERROLE_USER_REL +
+          WHERE_ID_EQUALS_TO_USERROLEID + " and r.instanceId = ? " + " and r.objecttype is null " +
+          AND_USER_ID_EQUALS_TO_GIVEN_VALUE;
 
-  private static List<UserRoleRow> getRoles(Connection con, int instanceId, int userId)
-  throws SQLException {
-    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
-
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = con.prepareStatement(queryAllUserRolesOnComponent);
+  private List<UserRoleRow> getRoles(Connection con, int instanceId, int userId)
+      throws SQLException {
+    final List<UserRoleRow> roles = new ArrayList<>();
+    try (final PreparedStatement stmt = con.prepareStatement(QUERY_ALL_USER_ROLES_ON_COMPONENT)) {
       stmt.setInt(1, instanceId);
       stmt.setInt(2, userId);
-
-      rs = stmt.executeQuery();
-
-      while (rs.next()) {
-        roles.add(fetchUserRole(rs));
+      try (final ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          roles.add(fetchUserRole(rs));
+        }
       }
-
-      return roles;
-    } finally {
-      DBUtil.close(rs, stmt);
     }
+    return roles;
   }
 }

@@ -23,12 +23,11 @@
  */
 package org.silverpeas.core.admin.domain;
 
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.domain.exception.DomainCreationException;
 import org.silverpeas.core.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.core.admin.domain.exception.NameAlreadyExistsInDatabaseException;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.util.StringUtil;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
@@ -60,14 +59,10 @@ public abstract class AbstractDomainService implements DomainService {
    * @throws DomainCreationException
    */
   protected String getNextDomainId() throws DomainCreationException {
-    SilverTrace
-        .info("admin", "AbstractDomainService.getNextDomainId()", "root.MSG_GEN_ENTER_METHOD");
     try {
       return getAdminService().getNextDomainId();
     } catch (AdminException e) {
-      SilverTrace
-          .error("admin", "AAbstractDomainService.getNextDomainId()", "admin.EX_ADD_DOMAIN", e);
-      throw new DomainCreationException("AbstractDomainService.getNextDomainId()", e);
+      throw new DomainCreationException(e);
     }
   }
 
@@ -84,9 +79,7 @@ public abstract class AbstractDomainService implements DomainService {
     try {
       return getAdminService().addDomain(domainToCreate);
     } catch (AdminException e) {
-      SilverTrace
-          .error("admin", "AAbstractDomainService.registerDomain()", "admin.EX_ADD_DOMAIN", e);
-      throw new DomainCreationException("AbstractDomainService.registerDomain()", e);
+      throw new DomainCreationException(e);
     }
   }
 
@@ -100,7 +93,7 @@ public abstract class AbstractDomainService implements DomainService {
     try {
       return getAdminService().removeDomain(domainToRemove.getId());
     } catch (AdminException e) {
-      throw new DomainDeletionException("AbstractDomainService.unRegisterDomain()", e);
+      throw new DomainDeletionException(e);
     }
   }
 }

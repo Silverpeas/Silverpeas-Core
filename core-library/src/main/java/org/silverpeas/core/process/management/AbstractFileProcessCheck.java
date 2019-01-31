@@ -26,6 +26,10 @@ package org.silverpeas.core.process.management;
 import org.silverpeas.core.process.check.AbstractProcessCheck;
 import org.silverpeas.core.process.check.ProcessCheckType;
 import org.silverpeas.core.process.io.file.FileHandler;
+import org.silverpeas.core.util.StringUtil;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Abstract extension of <code>AbstractProcessCheck</code> oriented on file system verifications.
@@ -61,6 +65,26 @@ public abstract class AbstractFileProcessCheck extends AbstractProcessCheck {
    * @param fileHandler the instance of the file handler.
    * @throws Exception
    */
-  abstract public void checkFiles(ProcessExecutionContext processExecutionContext,
-      final FileHandler fileHandler) throws Exception;
+  public abstract void checkFiles(ProcessExecutionContext processExecutionContext,
+      final FileHandler fileHandler);
+
+  /**
+   * Identifying all component instances aimed by the process chained execution
+   * @param processExecutionProcess
+   * @param fileHandler
+   * @return
+   */
+  protected final Set<String> identifyComponentInstances(
+      final ProcessExecutionContext processExecutionProcess, final FileHandler fileHandler) {
+    final Set<String> componentInstanceIds = new HashSet<>();
+
+    // Component instance id from the context
+    if (StringUtil.isDefined(processExecutionProcess.getComponentInstanceId())) {
+      componentInstanceIds.add(processExecutionProcess.getComponentInstanceId());
+    }
+
+    // Component instance ids from the session
+    componentInstanceIds.addAll(fileHandler.getSessionHandledRootPathNames(true));
+    return componentInstanceIds;
+  }
 }

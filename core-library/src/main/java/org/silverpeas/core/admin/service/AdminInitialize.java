@@ -36,9 +36,6 @@ public class AdminInitialize implements Initialization {
   @Inject
   private Administration admin;
 
-  public AdminInitialize() {
-  }
-
   @Override
   public void init() {
     try {

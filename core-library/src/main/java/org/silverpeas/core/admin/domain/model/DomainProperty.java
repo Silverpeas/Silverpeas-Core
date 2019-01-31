@@ -26,15 +26,16 @@ package org.silverpeas.core.admin.domain.model;
 import org.silverpeas.core.util.SettingBundle;
 
 public class DomainProperty {
-  final static public String PROPERTY_TYPE_STRING = "STRING";
-  final static public String PROPERTY_TYPE_USERID = "USERID";
-  final static public String PROPERTY_TYPE_BOOLEAN = "BOOLEAN";
+  public static final String PROPERTY_TYPE_STRING = "STRING";
+  public static final String PROPERTY_TYPE_USERID = "USERID";
+  public static final String PROPERTY_TYPE_BOOLEAN = "BOOLEAN";
 
-  final static public int DEFAULT_MAX_LENGTH = 50;
+  public static final int DEFAULT_MAX_LENGTH = 50;
 
-  final static public String PROPERTY_UPDATEALLOWED_ADMIN = "A";
-  final static public String PROPERTY_UPDATEALLOWED_USER = "U";
-  final static public String PROPERTY_UPDATE_NOT_ALLOWED = "N";
+  public static final String PROPERTY_UPDATEALLOWED_ADMIN = "A";
+  public static final String PROPERTY_UPDATEALLOWED_USER = "U";
+  public static final String PROPERTY_UPDATE_NOT_ALLOWED = "N";
+  private static final String PROPERTY = "property_";
 
   private String name = null;
   private String type = PROPERTY_TYPE_STRING;
@@ -54,22 +55,22 @@ public class DomainProperty {
   public DomainProperty(SettingBundle rs, String num) {
     String s;
 
-    name = rs.getString("property_" + num + ".Name");
+    name = rs.getString(PROPERTY + num + ".Name");
     type = PROPERTY_TYPE_STRING;
-    s = rs.getString("property_" + num + ".Type");
+    s = rs.getString(PROPERTY + num + ".Type");
     if ((s != null) && (s.length() > 0)) {
-      if (s.equalsIgnoreCase("USERID")) {
+      if (s.equalsIgnoreCase(PROPERTY_TYPE_USERID)) {
         type = PROPERTY_TYPE_USERID;
-      } else if (s.equalsIgnoreCase("BOOLEAN")) {
+      } else if (s.equalsIgnoreCase(PROPERTY_TYPE_BOOLEAN)) {
         type = PROPERTY_TYPE_BOOLEAN;
       }
     }
-    maxLength = rs.getInteger("property_" + num + ".MaxLength", DEFAULT_MAX_LENGTH);
-    mapParameter = rs.getString("property_" + num + ".MapParameter", null);
-    usedToImport = rs.getBoolean("property_" + num + ".UsedToImport", false);
-    redirectOU = rs.getString("property_" + num + ".RedirectOU", null);
-    redirectAttribute = rs.getString("property_" + num + ".RedirectAttribute", null);
-    updateAllowedTo = rs.getString("property_" + num + ".UpdateAllowedTo",
+    maxLength = rs.getInteger(PROPERTY + num + ".MaxLength", DEFAULT_MAX_LENGTH);
+    mapParameter = rs.getString(PROPERTY + num + ".MapParameter", null);
+    usedToImport = rs.getBoolean(PROPERTY + num + ".UsedToImport", false);
+    redirectOU = rs.getString(PROPERTY + num + ".RedirectOU", null);
+    redirectAttribute = rs.getString(PROPERTY + num + ".RedirectAttribute", null);
+    updateAllowedTo = rs.getString(PROPERTY + num + ".UpdateAllowedTo",
         PROPERTY_UPDATE_NOT_ALLOWED);
   }
 

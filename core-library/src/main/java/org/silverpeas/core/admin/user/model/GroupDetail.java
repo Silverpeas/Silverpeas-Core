@@ -30,6 +30,7 @@ import org.silverpeas.core.util.ArrayUtil;
 import java.text.Collator;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -222,28 +223,25 @@ public class GroupDetail implements Group {
       return false;
     }
     final GroupDetail other = (GroupDetail) obj;
-    if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+    if (!Objects.equals(this.id, other.id)) {
       return false;
     }
-    if ((this.specificId == null) ? (other.specificId != null)
-            : !this.specificId.equals(other.specificId)) {
+    if (!Objects.equals(this.specificId, other.specificId)) {
       return false;
     }
-    if ((this.domainId == null) ? (other.domainId != null) : !this.domainId.equals(other.domainId)) {
+    if (!Objects.equals(this.domainId, other.domainId)) {
       return false;
     }
-    if ((this.superGroupId == null) ? (other.superGroupId != null)
-            : !this.superGroupId.equals(other.superGroupId)) {
+    if (!Objects.equals(this.superGroupId, other.superGroupId)) {
       return false;
     }
-    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+    if (!Objects.equals(this.name, other.name)) {
       return false;
     }
-    if ((this.description == null) ? (other.description != null)
-            : !this.description.equals(other.description)) {
+    if (!Objects.equals(this.description, other.description)) {
       return false;
     }
-    if ((this.rule == null) ? (other.rule != null) : !this.rule.equals(other.rule)) {
+    if (!Objects.equals(this.rule, other.rule)) {
       return false;
     }
 

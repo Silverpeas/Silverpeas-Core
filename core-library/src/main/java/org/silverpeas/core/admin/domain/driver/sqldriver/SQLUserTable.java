@@ -40,9 +40,16 @@ import java.util.List;
  * a DAO to manage the DomainSQL_User table.
  */
 public class SQLUserTable {
-  SQLSettings drvSettings = new SQLSettings();
+  private static final String WHERE = " where ";
+  private static final String UPDATE = "update ";
+  private static final String SET = " set ";
+  private static final String EQUAL_TO_GIVEN_VALUE = " = ?,";
+  private static final String SELECT = "select ";
+  private static final String FROM = " from ";
+  private static final String WHERE_ID_EQUAL_TO_GIVEN_VALUE = " where id = ?";
+  private SQLSettings drvSettings;
 
-  public SQLUserTable(SQLSettings ds) {
+  SQLUserTable(SQLSettings ds) {
     drvSettings = ds;
   }
 
@@ -50,56 +57,43 @@ public class SQLUserTable {
    * Inserts in the database a new user row.
    */
   public int createUser(Connection c, UserDetail user) throws AdminException {
-    PreparedStatement statement = null;
-    int nextId = 0;
-    String theQuery = "insert into " + drvSettings.getUserTableName() + "("
+    final String theQuery = "insert into " + drvSettings.getUserTableName() + "("
         + getColumns() + ") values (?,?,?,?,?)";
-
-    try {
-      nextId = DBUtil.getNextId(drvSettings.getUserTableName(), drvSettings
+    try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
+      final int nextId = DBUtil.getNextId(drvSettings.getUserTableName(), drvSettings
           .getUserSpecificIdColumnName());
-      statement = c.prepareStatement(theQuery);
       statement.setInt(1, nextId);
       statement.setString(2, drvSettings.trunc(user.getFirstName(), 100));
       statement.setString(3, drvSettings.trunc(user.getLastName(), 100));
       statement.setString(4, drvSettings.trunc(user.geteMail(), 100));
       statement.setString(5, drvSettings.trunc(user.getLogin(), 50));
       statement.executeUpdate();
+      return nextId;
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(statement);
     }
-    return nextId;
   }
 
   public void deleteUser(Connection c, int userId) throws AdminException {
-    PreparedStatement statement = null;
-    String theQuery = "delete from " + drvSettings.getUserTableName()
-        + " where " + drvSettings.getUserSpecificIdColumnName() + " = ?";
-
-    try {
-      statement = c.prepareStatement(theQuery);
+    final String theQuery = "delete from " + drvSettings.getUserTableName() + WHERE +
+        drvSettings.getUserSpecificIdColumnName() + " = ?";
+    try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
       statement.setInt(1, userId);
       statement.executeUpdate();
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(statement);
     }
   }
 
   public void updateUser(Connection c, UserDetail ud) throws AdminException {
-    PreparedStatement statement = null;
-    String theQuery = "update " + drvSettings.getUserTableName() + " set "
-        + drvSettings.getUserFirstNameColumnName() + " = ?,"
-        + drvSettings.getUserLastNameColumnName() + " = ?,"
-        + drvSettings.getUserEMailColumnName() + " = ?,"
-        + drvSettings.getUserLoginColumnName() + " = ? " + " where "
+    final String theQuery =
+        UPDATE + drvSettings.getUserTableName() + SET + drvSettings.getUserFirstNameColumnName() +
+            EQUAL_TO_GIVEN_VALUE + drvSettings.getUserLastNameColumnName() + EQUAL_TO_GIVEN_VALUE +
+            drvSettings.getUserEMailColumnName() + EQUAL_TO_GIVEN_VALUE +
+            drvSettings.getUserLoginColumnName() + " = ? " + WHERE
         + drvSettings.getUserSpecificIdColumnName() + " = ?";
 
-    try {
-      statement = c.prepareStatement(theQuery);
+    try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
       statement.setString(1, drvSettings.trunc(ud.getFirstName(), 100));
       statement.setString(2, drvSettings.trunc(ud.getLastName(), 100));
       statement.setString(3, drvSettings.trunc(ud.geteMail(), 100));
@@ -108,23 +102,19 @@ public class SQLUserTable {
       statement.executeUpdate();
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(statement);
     }
   }
 
   /**
    * Inserts in the database a new user row.
    */
-  public void updateUserSpecificProperty(Connection c, int userId,
+  void updateUserSpecificProperty(Connection c, int userId,
       DomainProperty dp, String value) throws AdminException {
-    PreparedStatement statement = null;
-    String theQuery = "update " + drvSettings.getUserTableName() + " set "
-        + dp.getMapParameter() + " = ?" + " where "
+    final String theQuery =
+        UPDATE + drvSettings.getUserTableName() + SET + dp.getMapParameter() + " = ?" + WHERE
         + drvSettings.getUserSpecificIdColumnName() + " = ?";
 
-    try {
-      statement = c.prepareStatement(theQuery);
+    try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
       if (DomainProperty.PROPERTY_TYPE_BOOLEAN.equals(dp.getType())) {
         statement.setInt(1, Integer.parseInt(value));
       } else {
@@ -134,31 +124,26 @@ public class SQLUserTable {
       statement.executeUpdate();
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(statement);
     }
   }
 
   /**
    * Inserts in the database a new user row.
    */
-  public void updateUserPassword(Connection c, int userId, String value)
+  void updateUserPassword(Connection c, int userId, String value)
       throws AdminException {
     if (drvSettings.isUserPasswordAvailable()) {
-      PreparedStatement statement = null;
-      String theQuery = "update " + drvSettings.getUserTableName() + " set "
-          + drvSettings.getUserPasswordColumnName() + " = ?" + " where "
+      final String theQuery =
+          UPDATE + drvSettings.getUserTableName() + SET + drvSettings.getUserPasswordColumnName() +
+              " = ?" + WHERE
           + drvSettings.getUserSpecificIdColumnName() + " = ?";
 
-      try {
-        statement = c.prepareStatement(theQuery);
+      try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
         statement.setString(1, value);
         statement.setInt(2, userId);
         statement.executeUpdate();
       } catch (Exception e) {
         throw new AdminException(e.getMessage(), e);
-      } finally {
-        DBUtil.close(statement);
       }
     }
   }
@@ -166,23 +151,19 @@ public class SQLUserTable {
   /**
    * Inserts in the database a new user row.
    */
-  public void updateUserPasswordValid(Connection c, int userId, boolean value)
+  void updateUserPasswordValid(Connection c, int userId, boolean value)
       throws AdminException {
     if (drvSettings.isUserPasswordValidAvailable()) {
-      PreparedStatement statement = null;
-      String theQuery = "update " + drvSettings.getUserTableName() + " set "
-          + drvSettings.getUserPasswordValidColumnName() + " = ?" + " where "
+      final String theQuery = UPDATE + drvSettings.getUserTableName() + SET +
+          drvSettings.getUserPasswordValidColumnName() + " = ?" + WHERE
           + drvSettings.getUserSpecificIdColumnName() + " = ?";
 
-      try {
-        statement = c.prepareStatement(theQuery);
+      try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
         statement.setString(1, (value) ? "Y" : "N");
         statement.setInt(2, userId);
         statement.executeUpdate();
       } catch (Exception e) {
         throw new AdminException(e.getMessage(), e);
-      } finally {
-        DBUtil.close(statement);
       }
     }
   }
@@ -199,22 +180,17 @@ public class SQLUserTable {
    * Returns all the groups in a given userRole (not recursive).
    */
   public List<Integer> getAllUserIds(Connection c) throws AdminException {
-    ResultSet rs = null;
-    PreparedStatement statement = null;
     List<Integer> theResult = new ArrayList<>();
-    String theQuery = "select " + drvSettings.getUserSpecificIdColumnName()
-        + " from " + drvSettings.getUserTableName();
+    final String theQuery =
+        SELECT + drvSettings.getUserSpecificIdColumnName() + FROM + drvSettings.getUserTableName();
 
-    try {
-      statement = c.prepareStatement(theQuery);
-      rs = statement.executeQuery();
+    try (final PreparedStatement statement = c.prepareStatement(theQuery);
+         final ResultSet rs = statement.executeQuery()) {
       while (rs.next()) {
         theResult.add(rs.getInt(1));
       }
     } catch (SQLException e) {
       throw new AdminException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, statement);
     }
     return theResult;
   }
@@ -223,22 +199,17 @@ public class SQLUserTable {
    * Returns all the groups in a given userRole (not recursive).
    */
   public List<UserDetail> getAllUsers(Connection c) throws AdminException {
-    ResultSet rs = null;
-    PreparedStatement statement = null;
     List<UserDetail> theResult = new ArrayList<>();
-    String theQuery = "select " + getColumns() + " from "
+    final String theQuery = SELECT + getColumns() + FROM
         + drvSettings.getUserTableName();
 
-    try {
-      statement = c.prepareStatement(theQuery);
-      rs = statement.executeQuery();
+    try (final PreparedStatement statement = c.prepareStatement(theQuery);
+         final ResultSet rs = statement.executeQuery()) {
       while (rs.next()) {
         theResult.add(fetchUser(rs));
       }
     } catch (SQLException e) {
       throw new AdminException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, statement);
     }
     return theResult;
   }
@@ -248,24 +219,19 @@ public class SQLUserTable {
    */
   public List<UserDetail> getUsersBySpecificProperty(Connection c,
       String propertyName, String value) throws AdminException {
-    ResultSet rs = null;
-    PreparedStatement statement = null;
-    List<UserDetail> theResult = new ArrayList<>();
-    String theQuery = "select " + getColumns() + " from "
-        + drvSettings.getUserTableName();
-    theQuery += " where lower(" + propertyName + ") like lower(?) ";
+    final List<UserDetail> theResult = new ArrayList<>();
+    final String theQuery = SELECT + getColumns() + FROM
+        + drvSettings.getUserTableName() + " where lower(" + propertyName + ") like lower(?) ";
 
-    try {
-      statement = c.prepareStatement(theQuery);
+    try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
       statement.setString(1, value);
-      rs = statement.executeQuery();
-      while (rs.next()) {
-        theResult.add(fetchUser(rs));
+      try (final ResultSet rs = statement.executeQuery()) {
+        while (rs.next()) {
+          theResult.add(fetchUser(rs));
+        }
       }
     } catch (SQLException e) {
       throw new AdminException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, statement);
     }
     return theResult;
   }
@@ -274,107 +240,83 @@ public class SQLUserTable {
    * Returns the User whith the given id.
    */
   public UserDetail getUser(Connection c, int userId) throws AdminException {
-    ResultSet rs = null;
-    PreparedStatement statement = null;
-    String theQuery = "select " + getColumns() + " from "
-        + drvSettings.getUserTableName() + " where id = ?";
+    final String theQuery = SELECT + getColumns() + FROM + drvSettings.getUserTableName() +
+        WHERE_ID_EQUAL_TO_GIVEN_VALUE;
 
-    try {
-      statement = c.prepareStatement(theQuery);
+    try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
       statement.setInt(1, userId);
-      rs = statement.executeQuery();
-      if (rs.next()) {
-        return fetchUser(rs);
-      } else {
-        return null;
-      }
-    } catch (SQLException e) {
-      throw new AdminException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, statement);
-    }
-  }
-
-  /**
-   * Returns the User whith the given id.
-   */
-  public String getUserSpecificProperty(Connection c, int userId,
-      DomainProperty dp) throws AdminException {
-    ResultSet rs = null;
-    PreparedStatement statement = null;
-    String theQuery = "select " + dp.getMapParameter() + " from "
-        + drvSettings.getUserTableName() + " where id = ?";
-
-    try {
-      statement = c.prepareStatement(theQuery);
-      statement.setInt(1, userId);
-      rs = statement.executeQuery();
-      if (rs.next()) {
-        return rs.getString(1);
-      } else {
-        return "";
-      }
-    } catch (SQLException e) {
-      throw new AdminException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, statement);
-    }
-  }
-
-  /**
-   * Returns the User whith the given id.
-   */
-  public String getUserPassword(Connection c, int userId) throws AdminException {
-    if (drvSettings.isUserPasswordAvailable()) {
-      ResultSet rs = null;
-      PreparedStatement statement = null;
-      String theQuery = "select " + drvSettings.getUserPasswordColumnName()
-          + " from " + drvSettings.getUserTableName() + " where id = ?";
-
-      try {
-        statement = c.prepareStatement(theQuery);
-        statement.setInt(1, userId);
-        rs = statement.executeQuery();
+      try (final ResultSet rs = statement.executeQuery()) {
         if (rs.next()) {
-          return rs.getString(1);
+          return fetchUser(rs);
         } else {
-          return "";
+          return null;
         }
-      } catch (SQLException e) {
-        throw new AdminException(e.getMessage(), e);
-      } finally {
-        DBUtil.close(rs, statement);
       }
+    } catch (SQLException e) {
+      throw new AdminException(e.getMessage(), e);
+    }
+  }
+
+  /**
+   * Returns the User whith the given id.
+   */
+  String getUserSpecificProperty(Connection c, int userId,
+      DomainProperty dp) throws AdminException {
+    String theQuery = SELECT + dp.getMapParameter() + FROM + drvSettings.getUserTableName() +
+        WHERE_ID_EQUAL_TO_GIVEN_VALUE;
+    return executeFieldQuery(c, theQuery, userId);
+  }
+
+  /**
+   * Returns the User whith the given id.
+   */
+  String getUserPassword(Connection c, int userId) throws AdminException {
+    if (drvSettings.isUserPasswordAvailable()) {
+      String theQuery =
+          SELECT + drvSettings.getUserPasswordColumnName() + FROM + drvSettings.getUserTableName() +
+              WHERE_ID_EQUAL_TO_GIVEN_VALUE;
+      return executeFieldQuery(c, theQuery, userId);
     } else {
       return "";
     }
   }
 
+  private String executeFieldQuery(final Connection c, final String theQuery, final int userId)
+      throws AdminException {
+    try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
+      statement.setInt(1, userId);
+      try (final ResultSet rs = statement.executeQuery()) {
+        if (rs.next()) {
+          return rs.getString(1);
+        } else {
+          return "";
+        }
+      }
+    } catch (SQLException e) {
+      throw new AdminException(e.getMessage(), e);
+    }
+  }
+
   /**
    * Returns the User whith the given id.
    */
-  public boolean getUserPasswordValid(Connection c, int userId)
+  boolean getUserPasswordValid(Connection c, int userId)
       throws AdminException {
     if (drvSettings.isUserPasswordValidAvailable()) {
-      ResultSet rs = null;
-      PreparedStatement statement = null;
-      String theQuery = "select "
-          + drvSettings.getUserPasswordValidColumnName() + " from "
-          + drvSettings.getUserTableName() + " where id = ?";
+      final String theQuery = SELECT + drvSettings.getUserPasswordValidColumnName() + FROM +
+          drvSettings.getUserTableName() + WHERE_ID_EQUAL_TO_GIVEN_VALUE;
 
-      try {
-        statement = c.prepareStatement(theQuery);
+      try (final PreparedStatement statement = c.prepareStatement(theQuery)) {
         statement.setInt(1, userId);
-        rs = statement.executeQuery();
-        if (rs.next()) {
-          return "Y".equalsIgnoreCase(rs.getString(1));
-        } else {
-          return drvSettings.isUserPasswordAvailable();
+        try (final ResultSet rs = statement.executeQuery()) {
+          if (rs.next()) {
+            return "Y".equalsIgnoreCase(rs.getString(1));
+          } else {
+            return drvSettings.isUserPasswordAvailable();
+          }
         }
       } catch (SQLException e) {
         throw new AdminException(e.getMessage(), e);
-      } finally {
-        DBUtil.close(rs, statement);
       }
     } else {
       return drvSettings.isUserPasswordAvailable();
@@ -392,7 +334,7 @@ public class SQLUserTable {
   /**
    * Fetch the current user row from a resultSet.
    */
-  protected UserDetail fetchUser(ResultSet rs) throws SQLException {
+  private UserDetail fetchUser(ResultSet rs) throws SQLException {
     UserDetail u = new UserDetail();
 
     u.setSpecificId(Integer.toString(rs.getInt(1)));

@@ -23,35 +23,21 @@
  */
 package org.silverpeas.core.admin.domain.exception;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 public class DomainDeletionException extends SilverpeasException {
 
-  private static final long serialVersionUID = 4613229711734532042L;
+  private static final long serialVersionUID = -4609565003505944183L;
 
-  @Override
-  public String getModule() {
-    return "admin";
+  public DomainDeletionException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public DomainDeletionException(String callingClass,
-      Exception nested) {
-    super(callingClass, SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN", nested);
+  public DomainDeletionException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public DomainDeletionException(String callingClass,
-      String extraParams, Exception nested) {
-    super(callingClass, SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN", extraParams,
-        nested);
+  public DomainDeletionException(final Throwable cause) {
+    super(cause);
   }
-
-  public DomainDeletionException(String callingClass,
-      String extraParams) {
-    super(callingClass, SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN", extraParams);
-  }
-
-  public DomainDeletionException(String callingClass) {
-    super(callingClass, SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN");
-  }
-
 }

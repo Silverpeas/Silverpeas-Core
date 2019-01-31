@@ -23,170 +23,121 @@
  */
 package org.silverpeas.core.admin.service.cache;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceProfileInst;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.StringUtil;
+
+import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.silverpeas.core.util.StringUtil;
-
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
-
 /**
  * The class Store and manage all the Admin's cache
  */
+@Singleton
 public class AdminCache {
   // Cache management
 
-  static private boolean m_bUseCache = true;
-  static private boolean m_bUseSpaceInstCache = true;
-  static private Map<Integer, SpaceInst> m_hSpaceInstCache
-      = new ConcurrentHashMap<>();
-  static private boolean m_bUseComponentInstCache = true;
-  static private Map<Integer, ComponentInst> m_hComponentInstCache
-      = new ConcurrentHashMap<>();
-  static private boolean m_bUseProfileInstCache = true;
-  static private Map<String, ProfileInst> m_hProfileInstCache
-      = new ConcurrentHashMap<String, ProfileInst>();
-  static private boolean m_bUseUserDetailCache = true;
-  static private Map<String, UserDetail> m_hUserDetailCache
-      = new ConcurrentHashMap<String, UserDetail>();
-  static private boolean m_bUseManageableSpaceIdsCache = true;
-  static private Map<String, Integer[]> m_hManageableSpaceIdsCache
-      = new ConcurrentHashMap<>();
-  static private boolean m_bUseAvailCompoIdsCache = true;
-  static private Map<String, Map<String, String[]>> m_hAvailCompoIdsCache
-      = new ConcurrentHashMap<String, Map<String, String[]>>();
-  static private boolean m_bUseProfileIdsCache = true;
-  static private Map<String, String[]> m_hProfileIdsCache
-      = new ConcurrentHashMap<String, String[]>();
-  static private boolean m_bUseNodeProfileIdsCache = true;
-  static private Map<String, String[]> m_hNodeProfileIdsCache
-          = new ConcurrentHashMap<String, String[]>();
-
-  /**
-   * Admin Constructor
-   */
-  public AdminCache() {
-  }
+  private boolean useCache = true;
+  private boolean useSpaceInstCache = true;
+  private Map<Integer, SpaceInst> spaceInstCache = new ConcurrentHashMap<>();
+  private boolean useComponentInstCache = true;
+  private Map<Integer, ComponentInst> componentInstCache = new ConcurrentHashMap<>();
+  private boolean useProfileInstCache = true;
+  private Map<String, ProfileInst> profileInstCache = new ConcurrentHashMap<>();
+  private boolean useUserDetailCache = true;
+  private Map<String, UserDetail> userDetailCache = new ConcurrentHashMap<>();
+  private boolean useManageableSpaceIdsCache = true;
+  private Map<String, Integer[]> manageableSpaceIdsCache = new ConcurrentHashMap<>();
+  private boolean useAvailCompoIdsCache = true;
+  private Map<String, Map<String, String[]>> availCompoIdsCache = new ConcurrentHashMap<>();
+  private boolean useProfileIdsCache = true;
+  private Map<String, String[]> profileIdsCache = new ConcurrentHashMap<>();
 
   public void setCacheAvailable(boolean useCache) {
     // Cache management
-    m_bUseCache = useCache;
-  }
-
-  /**
-   * Get the number of spaces loaded in cache
-   *
-   * @return int representing the number of spaces stored in cache
-   */
-  public int getNbSpacesInCache() {
-    return m_hSpaceInstCache.size();
-  }
-
-  /**
-   * Get the number of components loaded in cache
-   *
-   * @return int representing the number of components stored in cache
-   */
-  public int getNbComponentsInCache() {
-    return m_hComponentInstCache.size();
-  }
-
-  /**
-   * Get the number of profiles loaded in cache
-   *
-   * @return int representing the number of profiles stored in cache
-   */
-  public int getNbProfilesInCache() {
-    return m_hProfileInstCache.size();
+    this.useCache = useCache;
   }
 
   /**
    * Reset data stored in cache
    */
   public void resetCache() {
-    m_hSpaceInstCache.clear();
-    m_hComponentInstCache.clear();
-    m_hProfileInstCache.clear();
-    m_hUserDetailCache.clear();
-    m_hManageableSpaceIdsCache.clear();
-    m_hAvailCompoIdsCache.clear();
-    m_hProfileIdsCache.clear();
+    spaceInstCache.clear();
+    componentInstCache.clear();
+    profileInstCache.clear();
+    userDetailCache.clear();
+    manageableSpaceIdsCache.clear();
+    availCompoIdsCache.clear();
+    profileIdsCache.clear();
   }
 
   /*
    * Store the spaceInst in cache
    */
   public void resetSpaceInst() {
-    if (m_bUseCache && m_bUseSpaceInstCache) {
-      m_hSpaceInstCache.clear();
+    if (useCache && useSpaceInstCache) {
+      spaceInstCache.clear();
     }
   }
 
   public void putSpaceInst(SpaceInst spaceInst) {
-    if (m_bUseCache && m_bUseSpaceInstCache) {
-      m_hSpaceInstCache.put(spaceInst.getLocalId(), spaceInst);
+    if (useCache && useSpaceInstCache) {
+      spaceInstCache.put(spaceInst.getLocalId(), spaceInst);
     }
   }
 
   public void removeSpaceInst(int spaceId) {
-    if (m_bUseCache && m_bUseSpaceInstCache) {
-      m_hSpaceInstCache.remove(spaceId);
+    if (useCache && useSpaceInstCache) {
+      spaceInstCache.remove(spaceId);
     }
   }
 
   public SpaceInst getSpaceInst(int spaceId) {
-    if (m_bUseCache && m_bUseSpaceInstCache) {
-      return m_hSpaceInstCache.get(spaceId);
+    if (useCache && useSpaceInstCache) {
+      return spaceInstCache.get(spaceId);
     }
     return null;
   }
 
-  protected void removeUserInSpaceInst(String userId) {
+  private void removeUserInSpaceInst(String userId) {
     removeTokenInSpaceInst(userId, false);
   }
 
-  protected void removeGroupInSpaceInst(String groupId) {
+  private void removeGroupInSpaceInst(String groupId) {
     removeTokenInSpaceInst(groupId, true);
   }
 
-  protected void removeTokenInSpaceInst(String tokenId, boolean isGroup) {
-    SpaceInst theSpace;
-    Iterator<SpaceInst> itSpace = m_hSpaceInstCache.values().iterator();
-    Iterator<ComponentInst> itComponent;
-    Iterator<ProfileInst> itProfile;
-    Iterator<SpaceProfileInst> itSpaceProfile;
-    ComponentInst theComponent;
-
-    while (itSpace.hasNext()) {
-      theSpace = itSpace.next();
+  private void removeTokenInSpaceInst(String tokenId, boolean isGroup) {
+    for (final SpaceInst theSpace : spaceInstCache.values()) {
       // First remove it from the SpaceProfileInst
-      itSpaceProfile = theSpace.getAllSpaceProfilesInst().iterator();
-      while (itSpaceProfile.hasNext()) {
+      for (final SpaceProfileInst spaceProfile : theSpace.getAllSpaceProfilesInst()) {
         if (isGroup) {
-          itSpaceProfile.next().removeGroup(tokenId);
+          spaceProfile.removeGroup(tokenId);
         } else {
-          itSpaceProfile.next().removeUser(tokenId);
+          spaceProfile.removeUser(tokenId);
         }
       }
       // Second remove it from the ProfileInst of all ComponentInst
-      itComponent = theSpace.getAllComponentsInst().iterator();
-      while (itComponent.hasNext()) {
-        theComponent = itComponent.next();
-        itProfile = theComponent.getAllProfilesInst().iterator();
-        while (itProfile.hasNext()) {
-          if (isGroup) {
-            itProfile.next().removeGroup(tokenId);
-          } else {
-            itProfile.next().removeUser(tokenId);
-          }
+      removeInProfilesForAllComponentInstances(tokenId, isGroup, theSpace.getAllComponentsInst());
+    }
+  }
+
+  private void removeInProfilesForAllComponentInstances(final String tokenId, final boolean isGroup,
+      final Collection<ComponentInst> componentInstances) {
+    for (final ComponentInst theComponent : componentInstances) {
+      for (final ProfileInst theProfile : theComponent.getAllProfilesInst()) {
+        if (isGroup) {
+          theProfile.removeGroup(tokenId);
+        } else {
+          theProfile.removeUser(tokenId);
         }
       }
     }
@@ -196,60 +147,44 @@ public class AdminCache {
    * Store the componentInst in cache
    */
   public void resetComponentInst() {
-    if (m_bUseCache && m_bUseComponentInstCache) {
-      m_hComponentInstCache.clear();
+    if (useCache && useComponentInstCache) {
+      componentInstCache.clear();
     }
   }
 
   public void putComponentInst(ComponentInst componentInst) {
-    if (m_bUseCache && m_bUseComponentInstCache) {
-      m_hComponentInstCache.put(componentInst.getLocalId(), componentInst);
+    if (useCache && useComponentInstCache) {
+      componentInstCache.put(componentInst.getLocalId(), componentInst);
     }
   }
 
-  public void removeComponentInst(ComponentInst componentInst) {
-    if (m_bUseCache && m_bUseComponentInstCache) {
-      m_hComponentInstCache.remove(componentInst.getLocalId());
+  private void removeComponentInst(ComponentInst componentInst) {
+    if (useCache && useComponentInstCache) {
+      componentInstCache.remove(componentInst.getLocalId());
     }
   }
 
   public ComponentInst getComponentInst(int componentId) {
-    if (m_bUseCache && m_bUseComponentInstCache) {
-      return m_hComponentInstCache.get(componentId);
+    if (useCache && useComponentInstCache) {
+      return componentInstCache.get(componentId);
     }
     return null;
   }
 
-  protected void removeUserInComponentInst(String userId) {
+  private void removeUserInComponentInst(String userId) {
     removeTokenInComponentInst(userId, false);
   }
 
-  protected void removeGroupInComponentInst(String groupId) {
+  private void removeGroupInComponentInst(String groupId) {
     removeTokenInComponentInst(groupId, true);
   }
 
-  protected void removeTokenInComponentInst(String tokenId, boolean isGroup) {
-    Iterator<ComponentInst> itComponent = m_hComponentInstCache.values().iterator();
-    ComponentInst theComponent;
-    Iterator<ProfileInst> itProfile;
-
-    while (itComponent.hasNext()) {
-      theComponent = itComponent.next();
-      itProfile = theComponent.getAllProfilesInst().iterator();
-      while (itProfile.hasNext()) {
-        if (isGroup) {
-          itProfile.next().removeGroup(tokenId);
-        } else {
-          itProfile.next().removeUser(tokenId);
-        }
-      }
-    }
+  private void removeTokenInComponentInst(String tokenId, boolean isGroup) {
+    removeInProfilesForAllComponentInstances(tokenId, isGroup, componentInstCache.values());
   }
 
-  protected void removeSpaceComponentsInst(int spaceId) {
-    ComponentInst[] theComponents = m_hComponentInstCache.values().toArray(
-        new ComponentInst[m_hComponentInstCache.size()]);
-
+  private void removeSpaceComponentsInst(int spaceId) {
+    final Collection<ComponentInst> theComponents = componentInstCache.values();
     for (ComponentInst theComponent : theComponents) {
       final Integer localSpaceId = getLocalSpaceId(theComponent.getDomainFatherId());
       if (localSpaceId != null && spaceId == localSpaceId) {
@@ -259,59 +194,47 @@ public class AdminCache {
     }
   }
 
-  /*
-   * Store the profileInst in cache
-   */
-  public void resetProfileInst() {
-    if (m_bUseCache && m_bUseProfileInstCache) {
-      m_hProfileInstCache.clear();
-    }
-  }
-
   public void putProfileInst(ProfileInst profileInst) {
-    if (m_bUseCache && m_bUseProfileInstCache) {
-      m_hProfileInstCache.put(profileInst.getId(), profileInst);
+    if (useCache && useProfileInstCache) {
+      profileInstCache.put(profileInst.getId(), profileInst);
     }
   }
 
-  public void removeProfileInst(ProfileInst profileInst) {
-    if (m_bUseCache && m_bUseProfileInstCache) {
-      m_hProfileInstCache.remove(profileInst.getId());
+  private void removeProfileInst(ProfileInst profileInst) {
+    if (useCache && useProfileInstCache) {
+      profileInstCache.remove(profileInst.getId());
     }
   }
 
   public ProfileInst getProfileInst(String profileId) {
-    if (m_bUseCache && m_bUseProfileInstCache) {
-      return m_hProfileInstCache.get(profileId);
+    if (useCache && useProfileInstCache) {
+      return profileInstCache.get(profileId);
     } else {
       return null;
     }
   }
 
-  protected void removeUserInProfileInst(String userId) {
+  private void removeUserInProfileInst(String userId) {
     removeTokenInProfileInst(userId, false);
   }
 
-  protected void removeGroupInProfileInst(String groupId) {
+  private void removeGroupInProfileInst(String groupId) {
     removeTokenInProfileInst(groupId, true);
   }
 
-  protected void removeTokenInProfileInst(String tokenId, boolean isGroup) {
-    Iterator<ProfileInst> itProfile = m_hProfileInstCache.values().iterator();
-
-    while (itProfile.hasNext()) {
+  private void removeTokenInProfileInst(String tokenId, boolean isGroup) {
+    final Collection<ProfileInst> profiles = profileInstCache.values();
+    for (final ProfileInst profile : profiles) {
       if (isGroup) {
-        itProfile.next().removeGroup(tokenId);
+        profile.removeGroup(tokenId);
       } else {
-        itProfile.next().removeUser(tokenId);
+        profile.removeUser(tokenId);
       }
     }
   }
 
-  protected void removeComponentsProfilesInst(int componentId) {
-    ProfileInst[] theProfiles = m_hProfileInstCache.values().toArray(
-        new ProfileInst[m_hProfileInstCache.size()]);
-
+  private void removeComponentsProfilesInst(int componentId) {
+    final Collection<ProfileInst> theProfiles = profileInstCache.values();
     for (ProfileInst theProfile : theProfiles) {
       if (String.valueOf(componentId).equals(theProfile.getComponentFatherId())) {
         removeProfileInst(theProfile);
@@ -319,28 +242,21 @@ public class AdminCache {
     }
   }
 
-  /*
-   * Store the UserDetail by user
-   */
-  public void resetUserDetail() {
-    m_hUserDetailCache.clear();
-  }
-
   public void putUserDetail(String userId, UserDetail userDetail) {
-    if (m_bUseCache && m_bUseUserDetailCache) {
-      m_hUserDetailCache.put(userId, userDetail);
+    if (useCache && useUserDetailCache) {
+      userDetailCache.put(userId, userDetail);
     }
   }
 
-  public void removeUserDetail(String userId) {
-    if (m_bUseCache && m_bUseUserDetailCache) {
-      m_hUserDetailCache.remove(userId);
+  private void removeUserDetail(String userId) {
+    if (useCache && useUserDetailCache) {
+      userDetailCache.remove(userId);
     }
   }
 
   public UserDetail getUserDetail(String userId) {
-    if (m_bUseCache && m_bUseUserDetailCache) {
-      return m_hUserDetailCache.get(userId);
+    if (useCache && useUserDetailCache) {
+      return userDetailCache.get(userId);
     } else {
       return null;
     }
@@ -349,119 +265,87 @@ public class AdminCache {
   /*
    * Store the ManageableSpaceIds by user
    */
-  public void resetManageableSpaceIds() {
-    m_hManageableSpaceIdsCache.clear();
+  private void resetManageableSpaceIds() {
+    manageableSpaceIdsCache.clear();
   }
 
   public void putManageableSpaceIds(String userId, Integer[] spaceIds) {
-    if (m_bUseCache && m_bUseManageableSpaceIdsCache) {
-      m_hManageableSpaceIdsCache.put(userId, spaceIds);
+    if (useCache && useManageableSpaceIdsCache) {
+      manageableSpaceIdsCache.put(userId, spaceIds);
     }
   }
 
-  public void removeManageableSpaceIds(String userId) {
-    if (m_bUseCache && m_bUseManageableSpaceIdsCache) {
-      m_hManageableSpaceIdsCache.remove(userId);
+  private void removeManageableSpaceIds(String userId) {
+    if (useCache && useManageableSpaceIdsCache) {
+      manageableSpaceIdsCache.remove(userId);
     }
   }
 
   public Integer[] getManageableSpaceIds(String userId) {
-    if (m_bUseCache && m_bUseManageableSpaceIdsCache) {
-      return m_hManageableSpaceIdsCache.get(userId);
+    if (useCache && useManageableSpaceIdsCache) {
+      return manageableSpaceIdsCache.getOrDefault(userId, new Integer[0]);
     } else {
-      return null;
+      return new Integer[0];
     }
   }
 
   /*
    * Store the AvailCompoIds by space and user
    */
-  public void resetAvailCompoIds() {
-    m_hAvailCompoIdsCache.clear();
+  private void resetAvailCompoIds() {
+    availCompoIdsCache.clear();
   }
 
   public void putAvailCompoIds(String spaceId, String userId, String[] compoIds) {
-    if (m_bUseCache && m_bUseAvailCompoIdsCache) {
-      Map<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
-      if (spaceTable == null) {
-        spaceTable = new ConcurrentHashMap<String, String[]>();
-        m_hAvailCompoIdsCache.put(spaceId, spaceTable);
-      }
+    if (useCache && useAvailCompoIdsCache) {
+      final Map<String, String[]> spaceTable =
+          availCompoIdsCache.computeIfAbsent(spaceId, s -> new ConcurrentHashMap<>());
       spaceTable.put(userId, compoIds);
     }
   }
 
-  public void removeAvailCompoIds(String spaceId, String userId) {
-    if (m_bUseCache && m_bUseAvailCompoIdsCache) {
-      Map<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
-      if (spaceTable != null) {
+  private void removeAvailCompoIdsForUser(String userId) {
+    if (useCache && useAvailCompoIdsCache) {
+      for (Map<String, String[]> spaceTable : availCompoIdsCache.values()) {
         spaceTable.remove(userId);
       }
-    }
-  }
-
-  public void removeAvailCompoIdsForUser(String userId) {
-    if (m_bUseCache && m_bUseAvailCompoIdsCache) {
-      for (Map<String, String[]> spaceTable : m_hAvailCompoIdsCache.values()) {
-        spaceTable.remove(userId);
-      }
-    }
-  }
-
-  public void removeAvailCompoIdsForSpace(String spaceId) {
-    if (m_bUseCache && m_bUseAvailCompoIdsCache) {
-      m_hAvailCompoIdsCache.remove(spaceId);
     }
   }
 
   public String[] getAvailCompoIds(int spaceId, String userId) {
-    if (m_bUseCache && m_bUseAvailCompoIdsCache) {
-      Map<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(String.valueOf(spaceId));
+    if (useCache && useAvailCompoIdsCache) {
+      Map<String, String[]> spaceTable = availCompoIdsCache.get(String.valueOf(spaceId));
       if (spaceTable != null) {
-        return spaceTable.get(userId);
+        return spaceTable.getOrDefault(userId, new String[0]);
       }
     }
-    return null;
+    return new String[0];
   }
 
   /*
    * Store the ProfileIds by space and user
    */
-  public void resetProfileIds() {
-    m_hProfileIdsCache.clear();
+  private void resetProfileIds() {
+    profileIdsCache.clear();
   }
 
   public void putProfileIds(String userId, String[] profileIds) {
-    if (m_bUseCache && m_bUseProfileIdsCache) {
-      m_hProfileIdsCache.put(userId, profileIds);
+    if (useCache && useProfileIdsCache) {
+      profileIdsCache.put(userId, profileIds);
     }
   }
 
-  public void putNodeProfileIds(String userId, String[] profileIds) {
-    if (m_bUseCache && m_bUseNodeProfileIdsCache) {
-      m_hNodeProfileIdsCache.put(userId, profileIds);
-    }
-  }
-
-  public void removeProfileIds(String userId) {
-    if (m_bUseCache && m_bUseProfileIdsCache) {
-      m_hProfileIdsCache.remove(userId);
+  private void removeProfileIds(String userId) {
+    if (useCache && useProfileIdsCache) {
+      profileIdsCache.remove(userId);
     }
   }
 
   public String[] getProfileIds(String userId) {
-    if (m_bUseCache && m_bUseProfileIdsCache) {
-      return m_hProfileIdsCache.get(userId);
+    if (useCache && useProfileIdsCache) {
+      return profileIdsCache.getOrDefault(userId, new String[0]);
     } else {
-      return null;
-    }
-  }
-
-  public String[] getNodeProfileIds(String userId) {
-    if (m_bUseCache && m_bUseNodeProfileIdsCache) {
-      return m_hNodeProfileIdsCache.get(userId);
-    } else {
-      return null;
+      return new String[0];
     }
   }
 
@@ -478,11 +362,14 @@ public class AdminCache {
         && (!theSpace.getDomainFatherId().equals("0"))) { // This is a subSpace
       // -> Reset the Parent
       // space
-      SpaceInst theFather = getSpaceInst(getLocalSpaceId(theSpace.getDomainFatherId()));
-      if (theFather != null) {
-        List<SpaceInst> subSpaces = new ArrayList<>(theFather.getSubSpaces());
-        subSpaces.add(theSpace);
-        theFather.setSubSpaces(subSpaces);
+      Integer spaceId = getLocalSpaceId(theSpace.getDomainFatherId());
+      if (spaceId != null) {
+        SpaceInst theFather = getSpaceInst(spaceId);
+        if (theFather != null) {
+          List<SpaceInst> subSpaces = new ArrayList<>(theFather.getSubSpaces());
+          subSpaces.add(theSpace);
+          theFather.setSubSpaces(subSpaces);
+        }
       }
     }
   }
@@ -497,22 +384,23 @@ public class AdminCache {
         && (!theSpace.getDomainFatherId().equals("0"))) { // This is a subSpace
       // -> Reset the Parent
       // space
-      SpaceInst theFather = getSpaceInst(getLocalSpaceId(theSpace.getDomainFatherId()));
-      if (theFather != null) {
-        List<SpaceInst> subSpaces = new ArrayList<>(theFather.getSubSpaces());
-        for (int i = 0; i < subSpaces.size(); i++) {
-          if (subSpaces.get(i).getLocalId() == theSpace.getLocalId()) {
-            subSpaces.remove(i);
-            break;
-          }
+      Integer spaceId = getLocalSpaceId(theSpace.getDomainFatherId());
+      if (spaceId != null) {
+        SpaceInst theFather = getSpaceInst(spaceId);
+        if (theFather != null) {
+          List<SpaceInst> subSpaces = new ArrayList<>(theFather.getSubSpaces());
+          subSpaces.stream()
+              .filter(s -> s.getLocalId() == theSpace.getLocalId())
+              .findFirst()
+              .ifPresent(subSpaces::remove);
+          theFather.setSubSpaces(subSpaces);
         }
-        theFather.setSubSpaces(subSpaces);
       }
     }
     opResetSpace(theSpace);
   }
 
-  protected void opResetSpace(SpaceInst theSpace) {
+  private void opResetSpace(SpaceInst theSpace) {
     // First level cache reset : it's not the best but it's simple : remove all
     // structs from cache that includes the component and all the child's
     // structs
@@ -536,18 +424,25 @@ public class AdminCache {
     opResetComponent(component);
   }
 
-  protected void opResetComponent(ComponentInst component) {
+  private void opResetComponent(ComponentInst component) {
     // First level cache reset : it's not the best but it's simple : remove all
     // structs from cache that includes the component and all the child's
     // structs
     removeComponentsProfilesInst(component.getLocalId());
-    SpaceInst theSpace = getSpaceInst(getLocalSpaceId(component.getDomainFatherId()));
-    if (theSpace != null) {
-      removeSpaceInst(theSpace.getLocalId());
-    }
-    removeComponentInst(component);
+    removeComponent(component);
     resetProfileIds();
     resetAvailCompoIds();
+  }
+
+  private void removeComponent(final ComponentInst component) {
+    Integer spaceId = getLocalSpaceId(component.getDomainFatherId());
+    if (spaceId != null) {
+      SpaceInst theSpace = getSpaceInst(spaceId);
+      if (theSpace != null) {
+        removeSpaceInst(theSpace.getLocalId());
+      }
+    }
+    removeComponentInst(component);
   }
 
   // ----- Profiles -----
@@ -563,16 +458,12 @@ public class AdminCache {
     opResetProfile(profile);
   }
 
-  protected void opResetProfile(ProfileInst profile) {
+  private void opResetProfile(ProfileInst profile) {
     // First level cache reset : it's not the best but it's simple : remove all
     // structs from cache that includes the profile
     ComponentInst theComponent = getComponentInst(Integer.parseInt(profile.getComponentFatherId()));
     if (theComponent != null) {
-      SpaceInst theSpace = getSpaceInst(getLocalSpaceId(theComponent.getDomainFatherId()));
-      if (theSpace != null) {
-        removeSpaceInst(theSpace.getLocalId());
-      }
-      removeComponentInst(theComponent);
+      removeComponent(theComponent);
     }
     removeProfileInst(profile);
     resetProfileIds();
@@ -581,26 +472,35 @@ public class AdminCache {
 
   // ----- Space Profiles -----
   public void opAddSpaceProfile(SpaceProfileInst profile) {
-    SpaceInst theSpace = getSpaceInst(getLocalSpaceId(profile.getSpaceFatherId()));
-    if (theSpace != null) {
-      theSpace.addSpaceProfileInst(profile);
+    Integer spaceId = getLocalSpaceId(profile.getSpaceFatherId());
+    if (spaceId != null) {
+      SpaceInst theSpace = getSpaceInst(spaceId);
+      if (theSpace != null) {
+        theSpace.addSpaceProfileInst(profile);
+      }
     }
     resetManageableSpaceIds();
   }
 
   public void opUpdateSpaceProfile(SpaceProfileInst profile) {
-    SpaceInst theSpace = getSpaceInst(getLocalSpaceId(profile.getSpaceFatherId()));
-    if (theSpace != null) {
-      theSpace.deleteSpaceProfileInst(profile);
-      theSpace.addSpaceProfileInst(profile);
+    Integer spaceId = getLocalSpaceId(profile.getSpaceFatherId());
+    if (spaceId != null) {
+      SpaceInst theSpace = getSpaceInst(spaceId);
+      if (theSpace != null) {
+        theSpace.deleteSpaceProfileInst(profile);
+        theSpace.addSpaceProfileInst(profile);
+      }
     }
     resetManageableSpaceIds();
   }
 
   public void opRemoveSpaceProfile(SpaceProfileInst profile) {
-    SpaceInst theSpace = getSpaceInst(getLocalSpaceId(profile.getSpaceFatherId()));
-    if (theSpace != null) {
-      theSpace.deleteSpaceProfileInst(profile);
+    Integer spaceId = getLocalSpaceId(profile.getSpaceFatherId());
+    if (spaceId != null) {
+      SpaceInst theSpace = getSpaceInst(spaceId);
+      if (theSpace != null) {
+        theSpace.deleteSpaceProfileInst(profile);
+      }
     }
     resetManageableSpaceIds();
   }
@@ -616,7 +516,7 @@ public class AdminCache {
     }
   }
 
-  public void opUpdateGroup(Group group) {
+  public void resetOnUpdateGroup() {
     resetProfileIds();
     resetAvailCompoIds();
     resetManageableSpaceIds();
@@ -633,16 +533,12 @@ public class AdminCache {
     resetManageableSpaceIds();
   }
 
-  public void opAddUserInGroup(String userId, String groupId) {
+  public void opAddUserInGroup(String userId) {
     opResetUserRights(userId);
   }
 
-  public void opRemoveUserFromGroup(String userId, String groupId) {
+  public void opRemoveUserFromGroup(String userId) {
     opResetUserRights(userId);
-  }
-
-  // ----- Users -----
-  public void opAddUser(UserDetail user) {
   }
 
   public void opUpdateUser(UserDetail user) {
@@ -661,13 +557,13 @@ public class AdminCache {
     removeUserInProfileInst(userId);
   }
 
-  protected void opResetUserRights(String userId) {
+  private void opResetUserRights(String userId) {
     removeProfileIds(userId);
     removeManageableSpaceIds(userId);
     removeAvailCompoIdsForUser(userId);
   }
 
-  protected Integer getLocalSpaceId(String spaceId) {
+  private Integer getLocalSpaceId(String spaceId) {
     boolean isSpaceIdDefined = StringUtil.isDefined(spaceId);
     if (isSpaceIdDefined && (spaceId.startsWith(SpaceInst.SPACE_KEY_PREFIX))) {
       return Integer.parseInt(spaceId.substring(SpaceInst.SPACE_KEY_PREFIX.length()));

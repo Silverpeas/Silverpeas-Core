@@ -23,39 +23,21 @@
  */
 package org.silverpeas.core.contact.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class ContactRuntimeException extends SilverpeasRuntimeException {
 
-  /**
-   * --------------------------------------------------------------------------
-   * constructors
-   */
-  public ContactRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  private static final long serialVersionUID = 5661188674042608956L;
+
+  public ContactRuntimeException(final String message) {
+    super(message);
   }
 
-  public ContactRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public ContactRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public ContactRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public ContactRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public ContactRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * --------------------------------------------------------------------------
-   * getModule
-   */
-  public String getModule() {
-    return "contact";
-  }
-
 }

@@ -43,6 +43,9 @@ import java.util.List;
 @Default
 public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
 
+  private static final String USER_FAVORITE_SPACE_BEAN =
+      "org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean";
+
   public List<UserFavoriteSpaceVO> getListUserFavoriteSpace(String userId) {
     List<UserFavoriteSpaceVO> listUserFavoriteSpaces = new ArrayList<>();
     SilverpeasBeanDAO<UserFavoriteSpaceBean> dao;
@@ -53,7 +56,7 @@ public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
 
       // find all message to display
       dao = SilverpeasBeanDAOFactory
-          .getDAO("org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean");
+          .getDAO(USER_FAVORITE_SPACE_BEAN);
       beansUserFavoriteSpaces = dao.findByWhereClause(pk, whereClause);
       // if any
       if (!beansUserFavoriteSpaces.isEmpty()) {
@@ -79,7 +82,7 @@ public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
       } else {
         // find all message to display
         dao = SilverpeasBeanDAOFactory
-            .getDAO("org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean");
+            .getDAO(USER_FAVORITE_SPACE_BEAN);
         dao.add(new UserFavoriteSpaceBean(ufsVO.getUserId(), ufsVO.getSpaceId()));
         result = true;
       }
@@ -100,7 +103,7 @@ public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
 
       // find all message to display
       dao = SilverpeasBeanDAOFactory
-          .getDAO("org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean");
+          .getDAO(USER_FAVORITE_SPACE_BEAN);
       beansUserFavoriteSpaces = dao.findByWhereClause(pk, whereClause);
       // if any
       if (!beansUserFavoriteSpaces.isEmpty()) {
@@ -137,7 +140,7 @@ public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
     try {
       // find all message to display
       dao = SilverpeasBeanDAOFactory
-          .getDAO("org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean");
+          .getDAO(USER_FAVORITE_SPACE_BEAN);
       dao.removeWhere(new IdPK(), whereBuff.toString());
       result = true;
     } catch (PersistenceException e) {
@@ -185,8 +188,5 @@ public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {
       }
     }
     return result;
-  }
-
-  public UserFavoriteSpaceServiceImpl() {
   }
 }

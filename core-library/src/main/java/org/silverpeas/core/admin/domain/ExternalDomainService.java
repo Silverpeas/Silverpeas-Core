@@ -44,16 +44,14 @@ public class ExternalDomainService extends AbstractDomainService {
     try {
       checkDomainName(domainToCreate.getName());
     } catch (AdminException e) {
-      throw new DomainCreationException("ExternalDomainService.createDomain", domainToCreate
-          .toString(), e);
+      throw new DomainCreationException(domainToCreate.toString(), e);
     }
 
     String id;
     domainToCreate.setId("-1");
     id = registerDomain(domainToCreate);
     if (!StringUtil.isDefined(id)) {
-      throw new DomainCreationException("ExternalDomainService.createDomain()", domainToCreate
-          .toString());
+      throw new DomainCreationException(domainToCreate.toString());
     }
 
     return id;
@@ -64,8 +62,7 @@ public class ExternalDomainService extends AbstractDomainService {
     String id;
     id = unRegisterDomain(domainToRemove);
     if (!StringUtil.isDefined(id)) {
-      throw new DomainDeletionException("ExternalDomainService.deleteDomain()", domainToRemove
-          .toString());
+      throw new DomainDeletionException(domainToRemove.toString());
     }
 
     return id;

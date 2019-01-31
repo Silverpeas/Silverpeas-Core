@@ -32,7 +32,6 @@ import org.silverpeas.core.admin.domain.exception.DomainPropertiesAlreadyExistsE
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.repository.SQLDomainRepository;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ResourceLocator;
@@ -40,6 +39,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -50,6 +50,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.Normalizer;
 
 @Singleton
@@ -58,10 +60,10 @@ public class SQLDomainService extends AbstractDomainService {
   SettingBundle templateSettings;
   SettingBundle adminSettings;
 
-  private final static String DATABASE_TABLE_NAME_DOMAIN_PREFIX = "Domain";
-  private final static String DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX = "_User";
-  private final static String DATABASE_TABLE_NAME_DOMAIN_GROUP_SUFFIX = "_Group";
-  private final static String DATABASE_TABLE_NAME_DOMAIN_USER_GROUP_SUFFIX = "_Group_User_Rel";
+  private static final String DATABASE_TABLE_NAME_DOMAIN_PREFIX = "Domain";
+  private static final String DATABASE_TABLE_NAME_DOMAIN_USER_SUFFIX = "_User";
+  private static final String DATABASE_TABLE_NAME_DOMAIN_GROUP_SUFFIX = "_Group";
+  private static final String DATABASE_TABLE_NAME_DOMAIN_USER_GROUP_SUFFIX = "_Group_User_Rel";
 
   @Inject
   private SQLDomainRepository dao;
@@ -85,14 +87,10 @@ public class SQLDomainService extends AbstractDomainService {
     String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(fileDomainName);
 
     if (new File(authenticationPropertiesPath).exists()) {
-      SilverTrace.error("admin", "SQLDomainService.checkFileName",
-          "admin.MSG_ERR_DOMAIN_ALREADY_EXIST_DOMAIN_PROPERTIES", fileDomainName);
       throw new DomainAuthenticationPropertiesAlreadyExistsException(fileDomainName);
     }
 
     if (new File(domainPropertiesPath).exists()) {
-      SilverTrace.error("admin", "SQLDomainService.checkFileName",
-          "admin.MSG_ERR_DOMAIN_ALREADY_EXIST_DOMAIN_PROPERTIES", fileDomainName);
       throw new DomainPropertiesAlreadyExistsException(fileDomainName);
     }
   }
@@ -175,40 +173,38 @@ public class SQLDomainService extends AbstractDomainService {
       domainToCreate.setName(initialDomainName);
       registerDomain(domainToCreate);
 
+    } catch (DomainCreationException e) {
+      rollBack(domainToCreate, initialDomainName, technicalDomainName);
+      throw e;
     } catch (Exception e) {
-
-      /*
-      Roll back all things that have been created
-       */
-
-      try {
-        removePropertiesFiles(technicalDomainName);
-      } catch (Exception anyE) {
-        // Nothing to do ...
-      }
-
-      try {
-        domainToCreate.setName(technicalDomainName);
-        dao.deleteDomainStorage(domainToCreate);
-      } catch (Exception anyE) {
-        // Nothing to do ...
-      }
-
-      try {
-        domainToCreate.setName(initialDomainName);
-        unRegisterDomain(domainToCreate);
-      } catch (Exception anyE) {
-        // Nothing to do ...
-      }
-
-      if (e instanceof DomainCreationException) {
-        throw (DomainCreationException) e;
-      }
-      throw new DomainCreationException("SQLDomainService.createDomain", domainToCreate.toString(),
-          e);
+      rollBack(domainToCreate, initialDomainName, technicalDomainName);
+      throw new DomainCreationException(domainToCreate.toString(), e);
     }
 
     return domainId;
+  }
+
+  private void rollBack(final Domain domainToCreate, final String initialDomainName,
+      final String technicalDomainName) {
+    try {
+      removePropertiesFiles(technicalDomainName);
+    } catch (Exception anyE) {
+      // Nothing to do ...
+    }
+
+    try {
+      domainToCreate.setName(technicalDomainName);
+      dao.deleteDomainStorage(domainToCreate);
+    } catch (Exception anyE) {
+      // Nothing to do ...
+    }
+
+    try {
+      domainToCreate.setName(initialDomainName);
+      unRegisterDomain(domainToCreate);
+    } catch (Exception anyE) {
+      // Nothing to do ...
+    }
   }
 
   @Transactional
@@ -263,8 +259,12 @@ public class SQLDomainService extends AbstractDomainService {
     String authenticationPropertiesPath =
         FileRepositoryManager.getDomainAuthenticationPropertiesPath(domainName);
     String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(domainName);
-    new File(authenticationPropertiesPath).delete();
-    new File(domainPropertiesPath).delete();
+    try {
+      Files.deleteIfExists(Paths.get(authenticationPropertiesPath));
+      Files.deleteIfExists(Paths.get(domainPropertiesPath));
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).warn(e.getMessage());
+    }
   }
 
   /**
@@ -289,18 +289,15 @@ public class SQLDomainService extends AbstractDomainService {
         DATABASE_TABLE_NAME_DOMAIN_USER_GROUP_SUFFIX);
 
     File domainPropertiesFile = new File(domainPropertiesPath);
-    PrintWriter out = null;
-    try {
-      out = new PrintWriter(new FileWriter(domainPropertiesFile));
+    try (final PrintWriter out = new PrintWriter(new FileWriter(domainPropertiesFile))) {
       out.print(template.applyFileTemplate("templateDomainSQL"));
     } catch (IOException e) {
-      domainPropertiesFile.delete();
-      throw new DomainCreationException("SQLDomainService.generateDomainPropertiesFile()",
-          domainToCreate.toString(), e);
-    } finally {
-      if (out != null) {
-        out.close();
+      try {
+        Files.deleteIfExists(domainPropertiesFile.toPath());
+      } catch (IOException ioe) {
+        SilverLogger.getLogger(this).warn(ioe.getMessage());
       }
+      throw new DomainCreationException(domainToCreate.toString(), e);
     }
   }
 
@@ -329,21 +326,17 @@ public class SQLDomainService extends AbstractDomainService {
 
     File domainPropertiesFile = new File(domainPropertiesPath);
     File authenticationPropertiesFile = new File(authenticationPropertiesPath);
-    PrintWriter out = null;
-    try {
-      out = new PrintWriter(new FileWriter(authenticationPropertiesFile));
+    try (final PrintWriter out = new PrintWriter(new FileWriter(authenticationPropertiesFile))) {
       out.print(template.applyFileTemplate("templateDomainAuthenticationSQL"));
     } catch (IOException e) {
-      domainPropertiesFile.delete();
-      authenticationPropertiesFile.delete();
-      throw new DomainCreationException(
-          "SQLDomainService.generateDomainAuthenticationPropertiesFile()", domainToCreate
-          .toString(), e);
-    } finally {
-      if (out != null) {
-      out.close();
+      try {
+        Files.deleteIfExists(authenticationPropertiesFile.toPath());
+        Files.deleteIfExists(domainPropertiesFile.toPath());
+      } catch (IOException ioe) {
+        SilverLogger.getLogger(this).warn(ioe.getMessage());
+      }
+      throw new DomainCreationException(domainToCreate.toString(), e);
     }
-  }
   }
 
   /**
@@ -362,14 +355,14 @@ public class SQLDomainService extends AbstractDomainService {
     File domainPropertiesFile = new File(domainPropertiesPath);
     File authenticationPropertiesFile = new File(authenticationPropertiesPath);
 
-    boolean domainPropertiesFileDeleted = domainPropertiesFile.delete();
-    boolean authenticationPropertiesFileDeleted = authenticationPropertiesFile.delete();
-
-    if (!(domainPropertiesFileDeleted && authenticationPropertiesFileDeleted)) {
-      SilverTrace.warn("admin", "SQLDomainService.removeDomainAuthenticationPropertiesFile()",
-          "admin.EX_DELETE_DOMAIN_PROPERTIES", "domainPropertiesFileDeleted:" +
-          domainPropertiesFileDeleted + ", authenticationPropertiesFileDeleted:" +
-          authenticationPropertiesFileDeleted);
+    try {
+      Files.deleteIfExists(domainPropertiesFile.toPath());
+      Files.deleteIfExists(authenticationPropertiesFile.toPath());
+    } catch (IOException e) {
+      SilverLogger.getLogger(this)
+          .warn("Domain or authentication properties file no deleted. Domain properties: " +
+              domainPropertiesPath + ", authentication properties: " +
+              authenticationPropertiesPath);
     }
   }
 

@@ -74,7 +74,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
    */
   @Override
   public void checkFiles(final ProcessExecutionContext processExecutionContext,
-      final FileHandler fileHandler) throws Exception {
+      final FileHandler fileHandler) {
 
     // If not activated, noting is done
     if (!dataStorageInSpaceQuotaActivated) {
@@ -114,22 +114,15 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
 
   /**
    * Identifying all spaces aimed by the process chained execution
-   * @param processExecutionProcess
+   * @param processExecutionContext
    * @param fileHandler
    * @return
    */
   private Collection<SpaceInst> identifyHandledSpaces(
-      final ProcessExecutionContext processExecutionProcess, final FileHandler fileHandler) {
-    final Set<String> spaceIds = new HashSet<String>();
-    final Set<String> componentInstanceIds = new HashSet<String>();
-
-    // Component instance id from the context
-    if (StringUtil.isDefined(processExecutionProcess.getComponentInstanceId())) {
-      componentInstanceIds.add(processExecutionProcess.getComponentInstanceId());
-    }
-
-    // Component instance ids from the session
-    componentInstanceIds.addAll(fileHandler.getSessionHandledRootPathNames(true));
+      final ProcessExecutionContext processExecutionContext, final FileHandler fileHandler) {
+    final Set<String> spaceIds = new HashSet<>();
+    final Set<String> componentInstanceIds =
+        identifyComponentInstances(processExecutionContext, fileHandler);
 
     // Space ids
     for (final String componentInstanceId : componentInstanceIds) {

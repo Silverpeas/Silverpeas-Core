@@ -23,136 +23,106 @@
  */
 package org.silverpeas.core.admin.space.dao;
 
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.space.SpaceProfileInst;
+import org.silverpeas.core.util.StringUtil;
+
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-
+@Singleton
 public class SpaceDAO {
 
-  static final private String SPACE_COLUMNS =
+  private static final String SPACE_COLUMNS =
       "id,domainFatherId,name,description,createdBy,firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus,updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst,isPersonal";
 
-  public SpaceDAO() {
 
-  }
-
-  public static List<Integer> getRootSpaceIds(Connection con)
+  public List<Integer> getRootSpaceIds(Connection con)
       throws SQLException {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    try {
-      List<Integer> spaceIds = new ArrayList<>();
-
-      stmt = con.prepareStatement(querySortedRootSpaceIds);
-      rs = stmt.executeQuery();
-
-      while (rs.next()) {
-        spaceIds.add(rs.getInt(1));
-      }
-
-      return spaceIds;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
+    return getSpacesByQuery(con, QUERY_SORTED_ROOT_SPACE_IDS);
   }
 
-  private final static String querySortedRootSpaceIds = "SELECT id FROM st_space WHERE "
+  private static final String QUERY_SORTED_ROOT_SPACE_IDS = "SELECT id FROM st_space WHERE "
       + "domainFatherId IS NULL AND spacestatus IS NULL AND isPersonal IS NULL ORDER BY orderNum";
 
-  public static List<SpaceInstLight> getSubSpaces(Connection con, int spaceId) throws SQLException {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    try {
-      List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
-      stmt = con.prepareStatement(querySortedSubSpaces);
+  public List<SpaceInstLight> getSubSpaces(Connection con, int spaceId) throws SQLException {
+    final List<SpaceInstLight> spaces = new ArrayList<>();
+    try (final PreparedStatement stmt = con.prepareStatement(QUERY_SORTED_SUB_SPACES)) {
       stmt.setInt(1, spaceId);
-      rs = stmt.executeQuery();
-      while (rs.next()) {
-        spaces.add(fetchSpace(rs));
+      try (final ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          spaces.add(fetchSpace(rs));
+        }
       }
-      return spaces;
-    } finally {
-      DBUtil.close(rs, stmt);
     }
+    return spaces;
   }
 
-  private final static String querySortedSubSpaces = "select " + SPACE_COLUMNS
+  private static final String QUERY_SORTED_SUB_SPACES = "select " + SPACE_COLUMNS
       + " from st_space"
       + " where domainFatherId = ? "
       + " and spacestatus is null"
       + " order by orderNum";
 
-  public static List<Integer> getManageableSpaceIds(Connection con, String userId,
+  public List<Integer> getManageableSpaceIds(Connection con, String userId,
       List<String> groupIds) throws SQLException {
     Set<Integer> manageableSpaceIds = new HashSet<>();
     if (StringUtil.isDefined(userId)) {
       manageableSpaceIds.addAll(getManageableSpaceIdsByUser(con, userId));
     }
-    if (groupIds != null && groupIds.size() > 0) {
+    if (groupIds != null && !groupIds.isEmpty()) {
       manageableSpaceIds.addAll(getManageableSpaceIdsByGroups(con, groupIds));
     }
     return new ArrayList<>(manageableSpaceIds);
   }
 
-  static final private String queryGetManageableSpaceIdsByUser = "SELECT st_spaceuserrole.spaceid "
+  private static final String QUERY_GET_MANAGEABLE_SPACE_IDS_BY_USER =
+      "SELECT st_spaceuserrole.spaceid "
       + "FROM st_spaceuserrole_user_rel, st_spaceuserrole WHERE "
       + "st_spaceuserrole_user_rel.spaceuserroleid = st_spaceuserrole.id AND st_spaceuserrole.rolename='"
       + SpaceProfileInst.SPACE_MANAGER + "' AND st_spaceuserrole_user_rel.userid=?";
 
-  private static List<Integer> getManageableSpaceIdsByUser(Connection con, String userId)
+  private List<Integer> getManageableSpaceIdsByUser(Connection con, String userId)
       throws SQLException {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      List<Integer> spaceIds = new ArrayList<>();
-      stmt = con.prepareStatement(queryGetManageableSpaceIdsByUser);
+    final List<Integer> spaceIds = new ArrayList<>();
+    try (final PreparedStatement stmt = con.prepareStatement(
+        QUERY_GET_MANAGEABLE_SPACE_IDS_BY_USER)) {
       stmt.setInt(1, Integer.parseInt(userId));
-
-      rs = stmt.executeQuery();
-
-      while (rs.next()) {
-        spaceIds.add(rs.getInt(1));
+      try (final ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          spaceIds.add(rs.getInt(1));
+        }
       }
-      return spaceIds;
-    } finally {
-      DBUtil.close(rs, stmt);
     }
-
+    return spaceIds;
   }
 
-  private static List<Integer> getManageableSpaceIdsByGroups(Connection con, List<String> groupIds)
+  private List<Integer> getManageableSpaceIdsByGroups(Connection con, List<String> groupIds)
       throws SQLException {
-    Statement stmt = null;
-    ResultSet rs = null;
+    final String query = "SELECT st_spaceuserrole.spaceid FROM st_spaceuserrole_group_rel, " +
+        "st_spaceuserrole WHERE st_spaceuserrole_group_rel.spaceuserroleid = st_spaceuserrole.id" +
+        " AND st_spaceuserrole.rolename='" + SpaceProfileInst.SPACE_MANAGER +
+        "' AND st_spaceuserrole_group_rel.groupid IN (" + list2String(groupIds) + ")";
+    return getSpacesByQuery(con, query);
+  }
 
-    try {
-      String query = "SELECT st_spaceuserrole.spaceid FROM st_spaceuserrole_group_rel, "
-          + "st_spaceuserrole WHERE st_spaceuserrole_group_rel.spaceuserroleid = st_spaceuserrole.id"
-          + " AND st_spaceuserrole.rolename='"+ SpaceProfileInst.SPACE_MANAGER
-          + "' AND st_spaceuserrole_group_rel.groupid IN (" + list2String(groupIds) + ")";
-      List<Integer> manageableSpaceIds = new ArrayList<>();
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(query);
+  private List<Integer> getSpacesByQuery(final Connection con, final String query)
+      throws SQLException {
+    final List<Integer> manageableSpaceIds = new ArrayList<>();
+    try (final PreparedStatement stmt = con.prepareStatement(query);
+         final ResultSet rs = stmt.executeQuery()) {
       while (rs.next()) {
         manageableSpaceIds.add(rs.getInt(1));
       }
-      return manageableSpaceIds;
-    } finally {
-      DBUtil.close(rs, stmt);
     }
-
+    return manageableSpaceIds;
   }
 
   private static String list2String(List<String> ids) {
@@ -166,9 +136,8 @@ public class SpaceDAO {
     return str.toString();
   }
 
-  private static SpaceInstLight fetchSpace(ResultSet rs) throws SQLException {
-    SpaceInstLight space = new SpaceInstLight();
-
+  private SpaceInstLight fetchSpace(ResultSet rs) throws SQLException {
+    final SpaceInstLight space = new SpaceInstLight();
     space.setLocalId(rs.getInt("id"));
     space.setFatherId(rs.getInt("domainFatherId"));
     space.setName(rs.getString("name"));
@@ -178,7 +147,6 @@ public class SpaceDAO {
     space.setPersonalSpace(isPersonalSpace);
     boolean inheritanceBlocked = rs.getInt("isInheritanceBlocked") == 1;
     space.setInheritanceBlocked(inheritanceBlocked);
-
     return space;
   }
 

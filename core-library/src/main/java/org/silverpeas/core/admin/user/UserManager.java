@@ -85,6 +85,8 @@ public class UserManager {
   @Inject
   private GroupDAO groupDAO;
   @Inject
+  private SpaceDAO spaceDAO;
+  @Inject
   private UserEventNotifier notifier;
   @Inject
   private DomainDriverManager domainDriverManager;
@@ -340,7 +342,7 @@ public class UserManager {
   public Integer[] getManageableSpaceIds(String sUserId, List<String> groupIds)
       throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
-      List<Integer> spaceIds = SpaceDAO.getManageableSpaceIds(connection, sUserId, groupIds);
+      List<Integer> spaceIds = spaceDAO.getManageableSpaceIds(connection, sUserId, groupIds);
       return spaceIds.toArray(new Integer[spaceIds.size()]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("spaces manageable by user", sUserId), e);

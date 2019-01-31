@@ -23,18 +23,16 @@
  */
 package org.silverpeas.core.process.management;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.process.io.file.FileHandler;
-
-import java.io.IOException;
 
 /**
  * @author Yohann Chastagnier
  */
-class ThrowIoExceptionCheckFileTest extends AbstractFileProcessCheck {
+class ThrowSilverpeasRuntimeExceptionCheckFileTest extends AbstractFileProcessCheck {
 
   @Override
-  public void checkFiles(final ProcessExecutionContext context, final FileHandler fileHandler)
-      throws Exception {
-    throw new IOException();
+  public void checkFiles(final ProcessExecutionContext context, final FileHandler fileHandler) {
+    throw new SilverpeasRuntimeException("");
   }
 }
