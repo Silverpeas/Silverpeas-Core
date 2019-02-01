@@ -30,6 +30,7 @@ import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -55,7 +56,7 @@ import static org.silverpeas.core.security.authorization.AccessControllerProvide
  */
 public class UploadSession {
 
-  final static String X_UPLOAD_SESSION = "X-UPLOAD-SESSION";
+  static final String X_UPLOAD_SESSION = "X-UPLOAD-SESSION";
 
   private static final String SESSION_CACHE_KEY = "@@@_" + UploadSession.class.getName();
   private static final String UPLOAD_SESSION_CACHE_KEY_PREFIX = "@@@_instance_for_";
@@ -63,8 +64,8 @@ public class UploadSession {
   private String uploadSessionId;
   private File uploadSessionFolder;
   private String componentInstanceId;
-  private Map<String, String> componentInstanceParameters = new HashMap<String, String>();
-  private Map<String, Boolean> currentFileWritings = new ConcurrentHashMap<String, Boolean>();
+  private Map<String, String> componentInstanceParameters = new HashMap<>();
+  private Map<String, Boolean> currentFileWritings = new ConcurrentHashMap<>();
 
   /**
    * Hidden constructor.
@@ -154,9 +155,8 @@ public class UploadSession {
    * If the file path is currently in writing mode, nothing is removed.
    * @param fullPath the path of the file into the session.
    * @return true of removed has been effective, false otherwise.
-   * @throws Exception
    */
-  public synchronized boolean remove(String fullPath) throws Exception {
+  public synchronized boolean remove(String fullPath) {
     boolean removed = false;
     if (isHandledOnFileSystem()) {
       UploadSessionFile uploadSessionFile = getUploadSessionFile(fullPath);
@@ -175,7 +175,7 @@ public class UploadSession {
    * @return
    * @throws Exception
    */
-  public synchronized UploadSessionFile getUploadSessionFile(String fullPath) throws Exception {
+  public synchronized UploadSessionFile getUploadSessionFile(String fullPath) {
     initialize();
     return new UploadSessionFile(this, fullPath, new File(uploadSessionFolder, fullPath));
   }
@@ -226,7 +226,7 @@ public class UploadSession {
     currentFileWritings.put(fullPath, true);
   }
 
-  void markFileWritingDone(UploadSessionFile uploadSessionFile) throws IOException {
+  void markFileWritingDone(UploadSessionFile uploadSessionFile) {
     currentFileWritings.remove(uploadSessionFile.getFullPath());
   }
 
@@ -330,6 +330,7 @@ public class UploadSession {
         try {
           UploadSession.from(uploadSessionId).clear();
         } catch (Exception ignore) {
+          SilverLogger.getLogger(UploadSession.class).silent(ignore);
         }
       }
       sessionInfo.getCache().remove(SESSION_CACHE_KEY);

@@ -500,14 +500,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public void removeNode(NodePK pk) {
     Connection connection = getConnection();
     try {
-      nodeDeletion.deleteNodes(pk, connection, new AnonymousMethodOnNode() {
-        @Override
-        public void invoke(NodePK pk) throws Exception {
+      nodeDeletion.deleteNodes(pk, connection, pk1 ->
           // remove wysiwyg attached to node
-          WysiwygController.deleteWysiwygAttachments(pk.getInstanceId(), "Node_" + pk.getId());
-
-        }
-      });
+          WysiwygController.deleteWysiwygAttachments(pk1.getInstanceId(), "Node_" + pk1.getId()));
     } catch (Exception re) {
       throw new NodeRuntimeException(re);
     } finally {

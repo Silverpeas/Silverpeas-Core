@@ -26,69 +26,21 @@
 
 package org.silverpeas.core.node.coordinates.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
-/**
- * Class declaration
- * @author
- * @version %I%, %G%
- */
 public class CoordinateRuntimeException extends SilverpeasRuntimeException {
 
-  /**
-   * -------------------------------------------------------------------------- constructors
-   * constructors
-   */
-  public CoordinateRuntimeException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  private static final long serialVersionUID = -1521209786283661461L;
+
+  public CoordinateRuntimeException(final String message) {
+    super(message);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   *
-   */
-  public CoordinateRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public CoordinateRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   *
-   */
-  public CoordinateRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public CoordinateRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   *
-   */
-  public CoordinateRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * -------------------------------------------------------------------------- getModule getModule
-   */
-  public String getModule() {
-    return "coordinates";
-  }
-
 }

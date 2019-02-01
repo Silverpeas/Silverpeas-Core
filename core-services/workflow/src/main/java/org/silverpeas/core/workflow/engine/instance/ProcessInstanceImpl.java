@@ -971,7 +971,7 @@ public class ProcessInstanceImpl
 
       if ("wysiwyg".equals(tmpl.getDisplayerName())) {
         if ((!updatedField.isNull()) &&
-            (!updatedField.getStringValue().startsWith(WysiwygFCKFieldDisplayer.dbKey))) {
+            (!updatedField.getStringValue().startsWith(WysiwygFCKFieldDisplayer.DB_KEY))) {
           WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
           PagesContext context =
               new PagesContext("dummy", "0", actionData.getLanguage(), false, getModelId(),

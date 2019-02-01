@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.form.record;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -50,6 +51,7 @@ import java.util.StringTokenizer;
 public class GenericFieldTemplate implements FieldTemplate, Serializable, Cloneable {
 
   private static final long serialVersionUID = 1L;
+  private static final String TYPE_MANAGER = "TypeManager";
   @XmlElement(required = true)
   private String fieldName;
   private Class fieldImpl;
@@ -388,13 +390,13 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       field.setOccurrence(occurrence);
       return field;
     } catch (NoSuchMethodException e) {
-      throw new FormFatalException("TypeManager",
+      throw new FormFatalException(TYPE_MANAGER,
           "form.EXP_MISSING_EMPTY_CONSTRUCTOR", fieldImpl.getName(), e);
     } catch (ClassCastException e) {
-      throw new FormFatalException("TypeManager", "form.EXP_NOT_A_FIELD",
+      throw new FormFatalException(TYPE_MANAGER, "form.EXP_NOT_A_FIELD",
           fieldImpl.getName(), e);
     } catch (Exception e) {
-      throw new FormFatalException("TypeManager",
+      throw new FormFatalException(TYPE_MANAGER,
           "form.EXP_FIELD_CONSTRUCTION_FAILED", fieldImpl.getName(), e);
     }
   }
@@ -505,7 +507,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
       clone.setUsedAsFacet(isUsedAsFacet());
       clone.setMaximumNumberOfOccurrences(getMaximumNumberOfOccurrences());
     } catch (FormException e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
     return clone;
   }

@@ -23,20 +23,17 @@
  */
 package org.silverpeas.core.mail.extractor;
 
-import org.silverpeas.core.util.WebEncodeHelper;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.text.translate.CharSequenceTranslator;
+import org.apache.commons.text.translate.EntityArrays;
+import org.apache.commons.text.translate.LookupTranslator;
+import org.silverpeas.core.mail.MailException;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.exception.SilverpeasException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -47,27 +44,26 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import javax.mail.internet.ParseException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
-import org.apache.commons.lang3.text.translate.EntityArrays;
-import org.apache.commons.lang3.text.translate.LookupTranslator;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 public class EMLExtractor implements MailExtractor {
 
-  public static final CharSequenceTranslator ESCAPE_ISO8859_1 = new LookupTranslator(
-      EntityArrays.ISO8859_1_ESCAPE());
+  private static final CharSequenceTranslator ESCAPE_ISO8859_1 = new LookupTranslator(
+      EntityArrays.ISO8859_1_ESCAPE);
   private MimeMessage message;
 
   public EMLExtractor(File file) throws ExtractorException {
-    InputStream in = null;
-    try {
-      in = new FileInputStream(file);
+    try (final InputStream in = new FileInputStream(file)) {
       init(in);
     } catch (Exception e) {
-      throw new ExtractorException("EMLExtractor.constructor", SilverpeasException.ERROR, "", e);
-    } finally {
-      IOUtils.closeQuietly(in);
+      throw new ExtractorException(e);
     }
   }
 
@@ -75,7 +71,7 @@ public class EMLExtractor implements MailExtractor {
     try {
       init(file);
     } catch (MessagingException e) {
-      throw new ExtractorException("EMLExtractor.constructor", SilverpeasException.ERROR, "", e);
+      throw new ExtractorException(e);
     }
   }
 
@@ -87,36 +83,44 @@ public class EMLExtractor implements MailExtractor {
   }
 
   @Override
-  public Mail getMail() throws Exception {
-    Mail mail = new Mail();
-    mail.setDate(message.getSentDate());
-    mail.setSubject(message.getSubject());
+  public Mail getMail() throws MailException {
+    try {
+      Mail mail = new Mail();
+      mail.setDate(message.getSentDate());
+      mail.setSubject(message.getSubject());
 
-    String body = null;
-    Object messageContent = message.getContent();
-    if (messageContent instanceof Multipart) {
-      body = getBody((Multipart) messageContent);
-    } else if (messageContent instanceof String) {
-      body = (String) messageContent;
-    }
+      String body = null;
+      Object messageContent = message.getContent();
+      if (messageContent instanceof Multipart) {
+        body = getBody((Multipart) messageContent);
+      } else if (messageContent instanceof String) {
+        body = (String) messageContent;
+      }
 
-    if (message.getFrom() != null) {
-      mail.setFrom((InternetAddress) message.getFrom()[0]);
+      if (message.getFrom() != null) {
+        mail.setFrom((InternetAddress) message.getFrom()[0]);
+      }
+      mail.setTo(message.getRecipients(Message.RecipientType.TO));
+      mail.setCc(message.getRecipients(Message.RecipientType.CC));
+      mail.setBody(ESCAPE_ISO8859_1.translate(body));
+      return mail;
+    } catch (MessagingException | IOException e) {
+      throw new MailException(e);
     }
-    mail.setTo(message.getRecipients(Message.RecipientType.TO));
-    mail.setCc(message.getRecipients(Message.RecipientType.CC));
-    mail.setBody(ESCAPE_ISO8859_1.translate(body));
-    return mail;
   }
 
   @Override
-  public List<MailAttachment> getAttachments() throws Exception {
-    List<MailAttachment> attachments = new ArrayList<MailAttachment>();
-    Object messageContent = message.getContent();
-    if (messageContent instanceof Multipart) {
-      processMultipart((Multipart) messageContent, attachments);
+  public List<MailAttachment> getAttachments() throws MailException {
+    try {
+      List<MailAttachment> attachments = new ArrayList<>();
+      Object messageContent = message.getContent();
+      if (messageContent instanceof Multipart) {
+        processMultipart((Multipart) messageContent, attachments);
+      }
+      return attachments;
+    } catch (MessagingException | IOException e) {
+      throw new MailException(e);
     }
-    return attachments;
   }
 
   private String getBody(Multipart multipart) throws MessagingException, IOException {
@@ -184,38 +188,34 @@ public class EMLExtractor implements MailExtractor {
         ContentType type = new ContentType(part.getContentType());
         return "text".equalsIgnoreCase(type.getPrimaryType());
       } catch (ParseException e) {
-        SilverTrace.error("util", EMLExtractor.class.getSimpleName() + ".getFileName",
-            "root.EX_NO_MESSAGE", e);
+        SilverLogger.getLogger(this).error(e);
       }
     } else if (Part.INLINE.equals(disposition)) {
       try {
         ContentType type = new ContentType(part.getContentType());
         return "text".equalsIgnoreCase(type.getPrimaryType()) && getFileName(part) == null;
       } catch (ParseException e) {
-        SilverTrace.error("util", EMLExtractor.class.getSimpleName() + ".getFileName",
-            "root.EX_NO_MESSAGE", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
     return false;
   }
 
-  private static String getFileName(Part part) throws MessagingException {
+  private String getFileName(Part part) throws MessagingException {
     String fileName = part.getFileName();
     if (!StringUtil.isDefined(fileName)) {
       try {
         ContentType type = new ContentType(part.getContentType());
         fileName = type.getParameter("name");
       } catch (ParseException e) {
-        SilverTrace.error("util", EMLExtractor.class.getSimpleName() + ".getFileName",
-            "root.EX_NO_MESSAGE", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
     if (StringUtil.isDefined(fileName) && fileName.startsWith("=?") && fileName.endsWith("?=")) {
       try {
         fileName = MimeUtility.decodeText(part.getFileName());
       } catch (UnsupportedEncodingException e) {
-        SilverTrace.error("util", EMLExtractor.class.getSimpleName() + ".getFileName",
-            "root.EX_NO_MESSAGE", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
     return fileName;

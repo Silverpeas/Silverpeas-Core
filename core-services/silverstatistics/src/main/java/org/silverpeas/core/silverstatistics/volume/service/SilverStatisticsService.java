@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.silverstatistics.volume.service;
 
-import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.volume.dao.SilverStatisticsDAO;
 import org.silverpeas.core.silverstatistics.volume.dao.SilverStatisticsManagerDAO;
@@ -56,7 +56,7 @@ public class SilverStatisticsService implements SilverStatistics {
    */
   @Override
   public void putStats(StatType type, String data) {
-    StrTokenizer stData = new StrTokenizer(data, SEPARATOR);
+    StringTokenizer stData = new StringTokenizer(data, SEPARATOR);
     List<String> dataArray = stData.getTokenList();
     if (myStatsConfig.isGoodDatas(type, dataArray)) {
       try(Connection myCon = DBUtil.openConnection()) {

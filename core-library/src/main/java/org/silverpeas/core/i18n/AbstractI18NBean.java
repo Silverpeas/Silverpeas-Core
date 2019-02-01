@@ -221,7 +221,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
 
   @Override
   public T getNextTranslation() {
-    Iterator<String> languages = I18NHelper.getLanguages();
+    Iterator<String> languages = I18NHelper.getLanguages().iterator();
     T translation = null;
     while (translation == null && languages.hasNext()) {
       translation = getTranslations().get(languages.next());

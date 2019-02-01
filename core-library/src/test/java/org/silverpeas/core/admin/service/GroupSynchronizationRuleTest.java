@@ -516,6 +516,11 @@ public class GroupSynchronizationRuleTest {
             .getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_1, DOMAIN_B_USER_2)));
+
+    userIds =
+        from(group4Rule(DOMAIN_A, "  (&(DC_ville=Bidule) (DS_AccessLevel=A) )"))
+            .getUserIds();
+    assertThat(userIds, empty());
   }
 
   @Test
@@ -558,6 +563,12 @@ public class GroupSynchronizationRuleTest {
         DOMAIN_A_USER_SPACE_ADMIN_2,
         DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4,
         DOMAIN_B_USER_1, DOMAIN_B_USER_2)));
+
+    userIds =
+        from(group4Rule(DOMAIN_A, "  (|(DC_ville=Bidule) (DS_AccessLevel=A) )"))
+            .getUserIds();
+    assertThat(userIds, containsInAnyOrder(extractUserIds(
+        DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_ADMIN_3)));
   }
 
   @Test
@@ -595,6 +606,9 @@ public class GroupSynchronizationRuleTest {
         DOMAIN_B_USER_ADMIN_1,
         DOMAIN_B_USER_SPACE_ADMIN_1,
         DOMAIN_B_USER_1)));
+
+    userIds = from(group4Rule(SHARED_DOMAIN, "!(DC_ville=Bidule)")).getUserIds();
+    assertThat(userIds, containsInAnyOrder(extractUserIds(ALL_USERS)));
   }
 
   @Test
@@ -639,6 +653,11 @@ public class GroupSynchronizationRuleTest {
         DOMAIN_A_USER_SPACE_ADMIN_1,
         DOMAIN_B_USER_ADMIN_1,
         DOMAIN_B_USER_SPACE_ADMIN_1)));
+
+    userIds =
+        from(group4Rule(DOMAIN_A, "  (!(&(DC_ville=Bidule) (DS_AccessLevel=A)))"))
+            .getUserIds();
+    assertThat(userIds, containsInAnyOrder(extractUserIds(DOMAIN_A_USERS)));
   }
 
   @Test

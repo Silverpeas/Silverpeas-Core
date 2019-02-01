@@ -934,7 +934,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
         } else {
           fieldValue = "";
         }
-      } else if (fieldValue.startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
+      } else if (fieldValue.startsWith(WysiwygFCKFieldDisplayer.DB_KEY)) {
         fieldValue = WysiwygFCKFieldDisplayer.getContentFromFile(getPK().getInstanceId(), getPK().
             getId(), xmlField.getName(), language);
       } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2018 Silverpeas
+ * Copyright (C) 2000 - 2019 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,23 +21,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.io.media.image.thumbnail;
+
+package org.silverpeas.core.mail;
 
 import org.silverpeas.core.SilverpeasException;
 
-public class ThumbnailException extends SilverpeasException {
+/**
+ * Exception thrown when a mail operation failed.
+ * @author mmoquillon
+ */
+public class MailException extends SilverpeasException {
 
-  private static final long serialVersionUID = 8352947513098763843L;
+  private static final long serialVersionUID = 2501066470893186625L;
 
-  public ThumbnailException(final String message, final String... parameters) {
+  public MailException(final String message, final String... parameters) {
     super(message, parameters);
   }
 
-  public ThumbnailException(final String message, final Throwable cause) {
+  public MailException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
-  public ThumbnailException(final Throwable cause) {
+  public MailException(final Throwable cause) {
     super(cause);
   }
 }
+  

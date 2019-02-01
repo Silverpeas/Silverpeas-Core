@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 
+import javax.inject.Inject;
 import java.sql.Connection;
 
 import static org.junit.Assert.*;
@@ -58,6 +59,9 @@ public class ThumbnailDAOIT {
         .addAsResource("org/silverpeas/core/io/media/image/thumbnail/create-database.sql")
         .build();
   }
+
+  @Inject
+  private ThumbnailDAO thumbnailDAO;
 
   /**
    * Test of insertRow method, of class ThumbnailDAO.
@@ -86,8 +90,8 @@ public class ThumbnailDAOIT {
       detail.setXLength(x_length);
       detail.setYLength(y_length);
 
-      ThumbnailDAO.insertThumbnail(con, detail);
-      ThumbnailDetail result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
+      thumbnailDAO.insertThumbnail(con, detail);
+      ThumbnailDetail result = thumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
       assertNotNull(result);
       assertEquals(detail.getInstanceId(), result.getInstanceId());
       assertEquals(detail.getObjectId(), result.getObjectId());
@@ -100,7 +104,7 @@ public class ThumbnailDAOIT {
       assertEquals(detail.getYStart(), result.getYStart());
       assertEquals(detail.getYLength(), result.getYLength());
 
-      ThumbnailDAO.deleteThumbnail(con, objectId, objectType, instanceId);
+      thumbnailDAO.deleteThumbnail(con, objectId, objectType, instanceId);
     }
   }
 
@@ -110,7 +114,7 @@ public class ThumbnailDAOIT {
   @Test
   public void testSelectByKey() throws Exception {
     try (Connection con = getSafeConnection()) {
-      ThumbnailDetail result = ThumbnailDAO.selectByKey(con, "kmelia57", 1, 0);
+      ThumbnailDetail result = thumbnailDAO.selectByKey(con, "kmelia57", 1, 0);
       assertNotNull(result);
       assertEquals("kmelia57", result.getInstanceId());
       assertEquals(1, result.getObjectId());
@@ -153,11 +157,11 @@ public class ThumbnailDAOIT {
       detail.setXLength(x_length);
       detail.setYLength(y_length);
 
-      ThumbnailDAO.insertThumbnail(con, detail);
+      thumbnailDAO.insertThumbnail(con, detail);
 
-      ThumbnailDAO.deleteThumbnail(con, objectId, objectType, instanceId);
+      thumbnailDAO.deleteThumbnail(con, objectId, objectType, instanceId);
 
-      ThumbnailDetail result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
+      ThumbnailDetail result = thumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
       assertNull(result);
     }
   }
@@ -190,18 +194,18 @@ public class ThumbnailDAOIT {
       detail.setXLength(x_length);
       detail.setYLength(y_length);
 
-      ThumbnailDAO.insertThumbnail(con, detail);
+      thumbnailDAO.insertThumbnail(con, detail);
 
       int objectId2 = 777777;
       detail.setObjectId(objectId2);
 
-      ThumbnailDAO.insertThumbnail(con, detail);
+      thumbnailDAO.insertThumbnail(con, detail);
 
-      ThumbnailDAO.deleteAllThumbnails(con, instanceId);
+      thumbnailDAO.deleteAllThumbnails(con, instanceId);
 
-      ThumbnailDetail result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
+      ThumbnailDetail result = thumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
       assertNull(result);
-      ThumbnailDetail result2 = ThumbnailDAO.selectByKey(con, instanceId, objectId2, objectType);
+      ThumbnailDetail result2 = thumbnailDAO.selectByKey(con, instanceId, objectId2, objectType);
       assertNull(result2);
     }
   }
@@ -234,9 +238,9 @@ public class ThumbnailDAOIT {
       detail.setXLength(0);
       detail.setYLength(0);
 
-      ThumbnailDAO.insertThumbnail(con, detail);
+      thumbnailDAO.insertThumbnail(con, detail);
 
-      ThumbnailDetail result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
+      ThumbnailDetail result = thumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
       assertNotNull(result);
       assertEquals(detail.getCropFileName(), "");
       assertEquals(detail.getXStart(), 0);
@@ -250,9 +254,9 @@ public class ThumbnailDAOIT {
       detail.setXLength(x_length);
       detail.setYLength(y_length);
 
-      ThumbnailDAO.updateThumbnail(con, detail);
+      thumbnailDAO.updateThumbnail(con, detail);
 
-      result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
+      result = thumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
       assertNotNull(result);
       assertEquals(detail.getInstanceId(), result.getInstanceId());
       assertEquals(detail.getObjectId(), result.getObjectId());
@@ -264,7 +268,7 @@ public class ThumbnailDAOIT {
       assertEquals(detail.getXLength(), result.getXLength());
       assertEquals(detail.getYStart(), result.getYStart());
       assertEquals(detail.getYLength(), result.getYLength());
-      ThumbnailDAO.deleteThumbnail(con, objectId, objectType, instanceId);
+      thumbnailDAO.deleteThumbnail(con, objectId, objectType, instanceId);
     }
   }
 }

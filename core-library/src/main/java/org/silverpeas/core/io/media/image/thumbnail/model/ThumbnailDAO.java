@@ -23,39 +23,35 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.model;
 
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+@Singleton
 public class ThumbnailDAO {
 
-  private static final String INSERT_THUMBNAIL = "INSERT INTO sb_thumbnail_thumbnail "
-      + "(instanceid, objectid, objecttype, originalattachmentname, modifiedattachmentname,"
-      + "mimetype, xstart, ystart, xlength, ylength) "
-      + "VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)";
-  private static final String UPDATE_THUMBNAIL = "UPDATE sb_thumbnail_thumbnail "
-      + "SET xstart = ?, ystart = ?, xlength = ?, ylength = ?, originalattachmentname = ?, "
-      + "modifiedattachmentname = ? WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
-  private static final String DELETE_THUMBNAIL = "DELETE FROM sb_thumbnail_thumbnail "
-      + "WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
+  private static final String INSERT_THUMBNAIL = "INSERT INTO sb_thumbnail_thumbnail " + "(instanceid, objectid, objecttype, originalattachmentname, modifiedattachmentname," + "mimetype, xstart, ystart, xlength, ylength) " + "VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)";
+  private static final String UPDATE_THUMBNAIL = "UPDATE sb_thumbnail_thumbnail " +
+      "SET xstart = ?, ystart = ?, xlength = ?, ylength = ?, originalattachmentname = ?, " +
+      "modifiedattachmentname = ? WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
+  private static final String DELETE_THUMBNAIL = "DELETE FROM sb_thumbnail_thumbnail " +
+      "WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
   private static final String DELETE_COMPONENT_THUMBNAILS =
       "DELETE FROM sb_thumbnail_thumbnail WHERE instanceId = ?";
-  private static final String SELECT_THUMBNAIL_BY_PK =
-      "SELECT instanceid, objectid, objecttype, "
-          + "originalattachmentname, modifiedattachmentname, mimetype, xstart, ystart, xlength, "
-          + "ylength FROM sb_thumbnail_thumbnail WHERE objectId = ? AND objectType = ? AND instanceId = ?";
-  private static final String MOVE_THUMBNAIL = "UPDATE sb_thumbnail_thumbnail "
-    + " SET instanceId = ? WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
+  private static final String SELECT_THUMBNAIL_BY_PK = "SELECT instanceid, objectid, objecttype, " + "originalattachmentname, modifiedattachmentname, mimetype, xstart, ystart, xlength, " + "ylength FROM sb_thumbnail_thumbnail WHERE objectId = ? AND objectType = ? AND instanceId = ?";
+  private static final String MOVE_THUMBNAIL = "UPDATE sb_thumbnail_thumbnail " +
+      " SET instanceId = ? WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
 
-  public static ThumbnailDetail insertThumbnail(Connection con, ThumbnailDetail thumbnailDetail) throws
-      SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(INSERT_THUMBNAIL);
+  protected ThumbnailDAO() {
+
+  }
+
+  public ThumbnailDetail insertThumbnail(Connection con, ThumbnailDetail thumbnailDetail)
+      throws SQLException {
+    try (final PreparedStatement prepStmt = con.prepareStatement(INSERT_THUMBNAIL)) {
       prepStmt.setString(1, thumbnailDetail.getInstanceId());
       prepStmt.setInt(2, thumbnailDetail.getObjectId());
       prepStmt.setInt(3, thumbnailDetail.getObjectType());
@@ -91,16 +87,12 @@ public class ThumbnailDAO {
         prepStmt.setNull(10, Types.INTEGER);
       }
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
     return thumbnailDetail;
   }
 
-  public static void updateThumbnail(Connection con, ThumbnailDetail thumbToUpdate) throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(UPDATE_THUMBNAIL);
+  public void updateThumbnail(Connection con, ThumbnailDetail thumbToUpdate) throws SQLException {
+    try (final PreparedStatement prepStmt = con.prepareStatement(UPDATE_THUMBNAIL)) {
       prepStmt.setInt(1, thumbToUpdate.getXStart());
       prepStmt.setInt(2, thumbToUpdate.getYStart());
       prepStmt.setInt(3, thumbToUpdate.getXLength());
@@ -111,70 +103,53 @@ public class ThumbnailDAO {
       prepStmt.setInt(8, thumbToUpdate.getObjectType());
       prepStmt.setString(9, thumbToUpdate.getInstanceId());
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
-  public static void deleteThumbnail(Connection con, int objectId, int objectType, String instanceId)
+  public void deleteThumbnail(Connection con, int objectId, int objectType, String instanceId)
       throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(DELETE_THUMBNAIL);
+    try (final PreparedStatement prepStmt = con.prepareStatement(DELETE_THUMBNAIL)) {
       prepStmt.setInt(1, objectId);
       prepStmt.setInt(2, objectType);
       prepStmt.setString(3, instanceId);
       prepStmt.executeUpdate();
-
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
-  public static void moveThumbnail(Connection con, ThumbnailDetail thumbToUpdate, String toInstanceId) throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(MOVE_THUMBNAIL);
+  public void moveThumbnail(Connection con, ThumbnailDetail thumbToUpdate, String toInstanceId)
+      throws SQLException {
+    try (final PreparedStatement prepStmt = con.prepareStatement(MOVE_THUMBNAIL)) {
       prepStmt.setString(1, toInstanceId);
       prepStmt.setInt(2, thumbToUpdate.getObjectId());
       prepStmt.setInt(3, thumbToUpdate.getObjectType());
       prepStmt.setString(4, thumbToUpdate.getInstanceId());
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
 
-  public static void deleteAllThumbnails(Connection con, String instanceId) throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(DELETE_COMPONENT_THUMBNAILS);
+  public void deleteAllThumbnails(Connection con, String instanceId) throws SQLException {
+    try (final PreparedStatement prepStmt = con.prepareStatement(DELETE_COMPONENT_THUMBNAILS)) {
       prepStmt.setString(1, instanceId);
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
-  public static ThumbnailDetail selectByKey(Connection con, String instanceId, int objectId, int objectType)
-      throws SQLException {
-
-    ResultSet rs = null;
-    ThumbnailDetail thumbnailDetail = null;
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(SELECT_THUMBNAIL_BY_PK);
+  public ThumbnailDetail selectByKey(Connection con, String instanceId, int objectId,
+      int objectType) throws SQLException {
+    final ThumbnailDetail thumbnailDetail;
+    try (final PreparedStatement prepStmt = con.prepareStatement(SELECT_THUMBNAIL_BY_PK)) {
       prepStmt.setInt(1, objectId);
       prepStmt.setInt(2, objectType);
       prepStmt.setString(3, instanceId);
 
-      rs = prepStmt.executeQuery();
-      if (rs.next()) {
-        thumbnailDetail = resultSet2ThumbDetail(rs);
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        if (rs.next()) {
+          thumbnailDetail = resultSet2ThumbDetail(rs);
+        } else {
+          thumbnailDetail = null;
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return thumbnailDetail;
   }

@@ -23,18 +23,20 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
+import org.silverpeas.core.SilverpeasException;
+
 /**
  * Processes operation on WYSIWYG content and returning a typed result.
  * Must be used with {@link WysiwygContentTransformer}.
- * @param <TYPED_RESULT> the type of the result.
+ * @param <T> the type of the result.
  * @author Yohann Chastagnier
  */
-public interface WysiwygContentTransformerProcess<TYPED_RESULT> {
+public interface WysiwygContentTransformerProcess<T> {
 
   /**
    * Executes the process on the given WYSIWYG content.
    * @param wysiwygContent the WYSIWYG content source.
    * @return the typed result of the WYSIWYG transformation process.
    */
-  TYPED_RESULT execute(String wysiwygContent) throws Exception;
+  T execute(String wysiwygContent) throws SilverpeasException;
 }

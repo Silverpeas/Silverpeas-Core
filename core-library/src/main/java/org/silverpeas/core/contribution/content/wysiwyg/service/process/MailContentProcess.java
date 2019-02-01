@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service.process;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerProcess;
 import org.silverpeas.core.io.file.SilverpeasFile;
@@ -31,6 +32,7 @@ import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.activation.URLDataSource;
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.MimeBodyPart;
 import java.net.URL;
@@ -52,76 +54,78 @@ import static org.silverpeas.core.util.StringDataExtractor.from;
 public class MailContentProcess
     implements WysiwygContentTransformerProcess<MailContentProcess.MailResult> {
 
-  private static List<Pattern> CKEDITOR_LINK_PATTERNS =
+  private static final List<Pattern> CKEDITOR_LINK_PATTERNS =
       Arrays.asList(Pattern.compile("(?i)=\"([^\"]*/wysiwyg/jsp/ckeditor/[^\"]+)"));
 
-  private static List<Pattern> ATTACHMENT_LINK_PATTERNS = Arrays
+  private static final List<Pattern> ATTACHMENT_LINK_PATTERNS = Arrays
       .asList(Pattern.compile("(?i)=\"([^\"]*/attachmentId/[a-z\\-0-9]+/[^\"]+)"),
           Pattern.compile("(?i)=\"([^\"]*/File/[a-z\\-0-9]+[^\"]*)"));
 
-  private static List<Pattern> GALLERY_CONTENT_LINK_PATTERNS =
+  private static final List<Pattern> GALLERY_CONTENT_LINK_PATTERNS =
       Arrays.asList(Pattern.compile("(?i)=\"([^\"]*/GalleryInWysiwyg/[^\"]+)"));
 
   @Override
-  public MailResult execute(final String wysiwygContent) throws Exception {
-    String transformedWysiwygContent = wysiwygContent;
-    List<MimeBodyPart> bodyParts = new ArrayList<>();
-    int idCount = 0;
+  public MailResult execute(final String wysiwygContent) throws SilverpeasException {
+    try {
+      String transformedWysiwygContent = wysiwygContent;
+      List<MimeBodyPart> bodyParts = new ArrayList<>();
+      int idCount = 0;
 
-    // Handling CKEditor and Gallery links
-    List<Pattern> linkPatterns = new ArrayList<>(CKEDITOR_LINK_PATTERNS);
-    linkPatterns.addAll(GALLERY_CONTENT_LINK_PATTERNS);
-    for (String link : from(transformedWysiwygContent).withDirectives(regexps(linkPatterns, 1))
-        .extract()) {
+      // Handling CKEditor and Gallery links
+      List<Pattern> linkPatterns = new ArrayList<>(CKEDITOR_LINK_PATTERNS);
+      linkPatterns.addAll(GALLERY_CONTENT_LINK_PATTERNS);
+      for (String link : from(transformedWysiwygContent).withDirectives(regexps(linkPatterns, 1)).extract()) {
 
-      String cid = "link-content-" + (idCount++);
-
-      // CID links
-      transformedWysiwygContent = replaceLinkByCid(transformedWysiwygContent, link, cid);
-
-      // CID references
-      MimeBodyPart mbp = new MimeBodyPart();
-      String linkForDataSource = link;
-      if (!linkForDataSource.toLowerCase()
-          .startsWith(URLUtil.getCurrentServerURL().toLowerCase())) {
-        linkForDataSource = (URLUtil.getCurrentServerURL() + link);
-      }
-      linkForDataSource = linkForDataSource.replace("&amp;", "&");
-
-      URLDataSource uds = new URLDataSource(new URL(linkForDataSource));
-      mbp.setDataHandler(new DataHandler(uds));
-      mbp.setHeader("Content-ID", "<" + cid + ">");
-      bodyParts.add(mbp);
-    }
-
-    // Handling attachments
-    Map<String, String> attachmentCidCache = new HashMap<>();
-    for (String attachmentUrlLink : extractAllLinksOfReferencedAttachments(
-        transformedWysiwygContent)) {
-
-      SilverpeasFile attachmentFile = SilverpeasFileProvider.getFile(attachmentUrlLink);
-      if (attachmentFile.exists() && attachmentFile.isImage()) {
-        String cid = attachmentCidCache.get(attachmentUrlLink);
-        if (cid == null) {
-          cid = "attachment-content-" + (idCount++);
-          attachmentCidCache.put(attachmentUrlLink, cid);
-        }
+        String cid = "link-content-" + (idCount++);
 
         // CID links
-        transformedWysiwygContent =
-            replaceLinkByCid(transformedWysiwygContent, attachmentUrlLink, cid);
+        transformedWysiwygContent = replaceLinkByCid(transformedWysiwygContent, link, cid);
 
         // CID references
         MimeBodyPart mbp = new MimeBodyPart();
-        FileDataSource fds = new FileDataSource(attachmentFile);
-        mbp.setDataHandler(new DataHandler(fds));
+        String linkForDataSource = link;
+        if (!linkForDataSource.toLowerCase().startsWith(URLUtil.getCurrentServerURL().toLowerCase())) {
+          linkForDataSource = (URLUtil.getCurrentServerURL() + link);
+        }
+        linkForDataSource = linkForDataSource.replace("&amp;", "&");
+
+        URLDataSource uds = new URLDataSource(new URL(linkForDataSource));
+        mbp.setDataHandler(new DataHandler(uds));
         mbp.setHeader("Content-ID", "<" + cid + ">");
         bodyParts.add(mbp);
       }
-    }
 
-    // Returning the result of complete parsing
-    return new MailResult(transformedWysiwygContent, bodyParts);
+      // Handling attachments
+      Map<String, String> attachmentCidCache = new HashMap<>();
+      for (String attachmentUrlLink : extractAllLinksOfReferencedAttachments(
+          transformedWysiwygContent)) {
+
+        SilverpeasFile attachmentFile = SilverpeasFileProvider.getFile(attachmentUrlLink);
+        if (attachmentFile.exists() && attachmentFile.isImage()) {
+          String cid = attachmentCidCache.get(attachmentUrlLink);
+          if (cid == null) {
+            cid = "attachment-content-" + (idCount++);
+            attachmentCidCache.put(attachmentUrlLink, cid);
+          }
+
+          // CID links
+          transformedWysiwygContent =
+              replaceLinkByCid(transformedWysiwygContent, attachmentUrlLink, cid);
+
+          // CID references
+          MimeBodyPart mbp = new MimeBodyPart();
+          FileDataSource fds = new FileDataSource(attachmentFile);
+          mbp.setDataHandler(new DataHandler(fds));
+          mbp.setHeader("Content-ID", "<" + cid + ">");
+          bodyParts.add(mbp);
+        }
+      }
+
+      // Returning the result of complete parsing
+      return new MailResult(transformedWysiwygContent, bodyParts);
+    } catch (Exception e) {
+      throw new SilverpeasException(e);
+    }
   }
 
   /**
@@ -144,9 +148,13 @@ public class MailContentProcess
       return bodyParts;
     }
 
-    public void applyOn(Multipart multipart) throws Exception {
-      for (MimeBodyPart mimeBodyPart : getBodyParts()) {
-        multipart.addBodyPart(mimeBodyPart);
+    public void applyOn(Multipart multipart) throws SilverpeasException {
+      try {
+        for (MimeBodyPart mimeBodyPart : getBodyParts()) {
+          multipart.addBodyPart(mimeBodyPart);
+        }
+      } catch (MessagingException e) {
+        throw new SilverpeasException(e);
       }
     }
   }

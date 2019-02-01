@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.ArgumentCaptor;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.mylinks.MyLinksRuntimeException;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.service.MyLinksService;
@@ -59,7 +58,6 @@ public class MyLinksPeasSessionControllerTest {
 
   @BeforeEach
   public void setup() {
-    mocker.setField(I18NHelper.class, false, "isI18nContentActivated");
     MainSessionController mainSessionController = mock(MainSessionController.class);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentName()).thenReturn("myLinks");

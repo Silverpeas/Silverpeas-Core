@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.pdc.pdc.model;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.pdc.classification.Criteria;
 
 /**
@@ -66,7 +67,8 @@ public class SearchCriteria extends Criteria implements java.io.Serializable, Cl
     try {
       return super.clone();
     } catch (CloneNotSupportedException e) {
-      return null; // this should never happened
+      // this would never happen
+      throw new SilverpeasRuntimeException(e);
     }
   }
 

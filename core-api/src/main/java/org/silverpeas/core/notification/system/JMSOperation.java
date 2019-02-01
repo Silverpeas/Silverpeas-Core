@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.system;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;
@@ -102,7 +103,7 @@ public class JMSOperation {
    * @see JMSOperation
    */
   public static void realize(final Operation operation) {
-    get()._realize(operation);
+    get().doRealize(operation);
   }
 
   /**
@@ -110,12 +111,12 @@ public class JMSOperation {
    * @param operation the operation to realize.
    * @see JMSOperation
    */
-  private void _realize(final Operation operation) {
+  private void doRealize(final Operation operation) {
     try (JMSContext context = jmsConnectionFactory.createContext()) {
       try {
         operation.realize(context);
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw new SilverpeasRuntimeException(e);
       }
     }
   }
