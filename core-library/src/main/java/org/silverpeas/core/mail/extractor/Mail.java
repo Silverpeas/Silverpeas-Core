@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.mail.extractor;
 
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
 
 public class Mail {
 
@@ -100,7 +100,7 @@ public class Mail {
   }
 
   public Address[] getAllRecipients() {
-    List<Address> recipients = new ArrayList<Address>();
+    List<Address> recipients = new ArrayList<>();
     if (getTo() != null && getTo().length > 0) {
       recipients.addAll(Arrays.asList(getTo()));
     }

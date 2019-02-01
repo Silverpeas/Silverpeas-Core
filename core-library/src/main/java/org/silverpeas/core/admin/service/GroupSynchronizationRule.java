@@ -53,6 +53,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -169,7 +170,7 @@ class GroupSynchronizationRule {
    * @return the expression.
    */
   private static String getRuleExpression(
-      PrefixedNotationExpressionEngine<List<String>> combinationEngine,
+      PrefixedNotationExpressionEngine<Optional<List<String>>> combinationEngine,
       final String combinationRule) {
     String rule = combinationRule != null ? combinationRule : "";
     Matcher matcher = EXPRESSION_PATTERN.matcher(rule);
@@ -186,32 +187,33 @@ class GroupSynchronizationRule {
    * @throws RuleError
    */
   private List<String> evaluateCombinationRule(String combinationRule) {
-    final OperatorFunction<List<String>> negateFunction =
+    final OperatorFunction<Optional<List<String>>> negateFunction =
         new OperatorFunction<>("!", (computed, userIds) -> {
           try {
             List<String> safeComputed =
-                computed.isEmpty() ? getCacheOfAllUserIds() : new ArrayList<>();
-            safeComputed.removeAll(userIds);
-            return safeComputed;
+                computed.isPresent() ? new ArrayList<>() : getCacheOfAllUserIds();
+            safeComputed.removeAll(userIds.orElse(Collections.emptyList()));
+            return Optional.of(safeComputed);
           } catch (AdminException e) {
             throw new SilverpeasRuntimeException(e);
           }
         });
 
-    final OperatorFunction<List<String>> andFunction =
+    final OperatorFunction<Optional<List<String>>> andFunction =
         new OperatorFunction<>("&", (computed, userIds) -> {
-          List<String> safeComputed = computed.isEmpty() ? userIds : computed;
-          return intersection(safeComputed, userIds);
+          final List<String> defaultUsersId = userIds.orElse(Collections.emptyList());
+          List<String> safeComputed = computed.orElse(defaultUsersId);
+          return Optional.of(intersection(safeComputed, defaultUsersId));
         });
 
-    final OperatorFunction<List<String>> orFunction =
+    final OperatorFunction<Optional<List<String>>> orFunction =
         new OperatorFunction<>("|", (computed, userIds) -> {
-          List<String> safeComputed =
-              computed.isEmpty() ? Collections.emptyList() : computed;
-          return union(safeComputed, userIds);
+          List<String> safeComputed = computed.orElse(Collections.emptyList());
+          return Optional.of(union(safeComputed, userIds.orElse(Collections.emptyList())));
         });
 
-    final Function<String, List<String>> simpleSilverpeasRuleToUserIds = simpleSilverpeasRule -> {
+    final Function<String, Optional<List<String>>> simpleSilverpeasRuleToUserIds =
+        simpleSilverpeasRule -> {
       try {
         return evaluateSimpleSilverpeasRule(simpleSilverpeasRule);
       } catch (AdminException e) {
@@ -219,14 +221,14 @@ class GroupSynchronizationRule {
       }
     };
 
-    @SuppressWarnings("unchecked") PrefixedNotationExpressionEngine<List<String>>
+    @SuppressWarnings("unchecked") PrefixedNotationExpressionEngine<Optional<List<String>>>
         combinationEngine =
         PrefixedNotationExpressionEngine.from(simpleSilverpeasRuleToUserIds, negateFunction,
             andFunction, orFunction);
 
     try {
       String expression = getRuleExpression(combinationEngine, combinationRule);
-      return combinationEngine.evaluate(expression);
+      return combinationEngine.evaluate(expression).orElse(Collections.emptyList());
     } catch (RuleError e) {
       throw e;
     } catch (Exception e) {
@@ -240,15 +242,15 @@ class GroupSynchronizationRule {
    * @return a list of user identifiers.
    * @throws AdminException
    */
-  private List<String> evaluateSimpleSilverpeasRule(final String simpleSilverpeasRule)
+  private Optional<List<String>> evaluateSimpleSilverpeasRule(final String simpleSilverpeasRule)
       throws AdminException {
     if (simpleSilverpeasRule == null) {
-      return Collections.emptyList();
+      return Optional.empty();
     }
 
     Matcher matcher = ACCESSLEVEL_STANDARD_DATA_PATTERN.matcher(simpleSilverpeasRule);
     if (matcher.find()) {
-      return getUserIdsByAccessLevel(matcher.group(1));
+      return Optional.of(getUserIdsByAccessLevel(matcher.group(1)));
     }
 
     matcher = DOMAIN_STANDARD_DATA_PATTERN.matcher(simpleSilverpeasRule);
@@ -259,7 +261,7 @@ class GroupSynchronizationRule {
       for (String domainId : domainIds) {
         userIds.addAll(getUserIdsByDomain(domainId));
       }
-      return userIds;
+      return Optional.of(userIds);
     }
 
     matcher = GROUP_RULE_DATA_PATTERN.matcher(simpleSilverpeasRule);
@@ -268,7 +270,7 @@ class GroupSynchronizationRule {
       // Split parameters as a list using comma separator and trimming spaces
       String groupValues = matcher.group(2).replaceAll("\\s", "");
       List<String> groupIds = asList(groupValues.split(","));
-      return getUserIdsByGroups(groupIds, withSubGroups);
+      return Optional.of(getUserIdsByGroups(groupIds, withSubGroups));
     }
 
     matcher = COMPLEMENTARY_DATA_PATTERN.matcher(simpleSilverpeasRule);
@@ -278,7 +280,7 @@ class GroupSynchronizationRule {
       Set<String> userIds = new HashSet<>();
       userIds.addAll(getUserIdsBySpecificProperty(propertyName, propertyValue));
       userIds.addAll(getUserIdsByExtraFormFieldValue(propertyName, propertyValue));
-      return new ArrayList<>(userIds);
+      return Optional.of(new ArrayList<>(userIds));
     }
 
     SilverLogger.getLogger(this)

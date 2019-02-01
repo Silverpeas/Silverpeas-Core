@@ -160,7 +160,7 @@ public abstract class AbstractContributionResource extends RESTWebService {
       String fieldValue = field.getValue(lang);
 
       if (StringUtil.isDefined(fieldValue)) {
-        if (fieldValue.startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
+        if (fieldValue.startsWith(WysiwygFCKFieldDisplayer.DB_KEY)) {
 
           // Rich text
           entity = FormFieldValueEntity.createFrom(null, WysiwygFCKFieldDisplayer

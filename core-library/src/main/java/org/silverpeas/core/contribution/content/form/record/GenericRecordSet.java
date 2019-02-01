@@ -453,7 +453,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
           }
         } else {
           Optional.ofNullable(currentValue)
-              .filter(o -> o.startsWith(WysiwygFCKFieldDisplayer.dbKey))
+              .filter(o -> o.startsWith(WysiwygFCKFieldDisplayer.DB_KEY))
               .ifPresent(o -> {
                 // Wysiwyg case
                 final String newValue = o.replaceFirst("[0-9]+", record.getId());

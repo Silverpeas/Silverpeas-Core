@@ -94,7 +94,7 @@ public class WysiwygDisplayerTag extends TagSupport {
           currentLang);
       //if content not found in specified language, check other ones
       if (!StringUtil.isDefined(content) && I18NHelper.isI18nContentActivated) {
-        Iterator<String> languages = I18NHelper.getLanguages();
+        Iterator<String> languages = I18NHelper.getLanguages().iterator();
         while (languages.hasNext() && !StringUtil.isDefined(content)) {
           currentLang = languages.next();
           content = WysiwygController.loadForReadOnly(getComponentId(), getObjectId(), currentLang);

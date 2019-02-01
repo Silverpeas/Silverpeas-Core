@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.util;
 
-import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
@@ -32,12 +32,13 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SharingContext {
 
-  private static Pattern REGEXPR_SHARED_ATTACHMENT =
+  private static final Pattern REGEXPR_SHARED_ATTACHMENT =
       Pattern.compile("(?i)src=\"(.+/attachmentId/[^\"]+)");
 
   private String baseURI;
@@ -114,11 +115,11 @@ public class SharingContext {
           .path(attachment.getInstanceId())
           .path(getToken())
           .path(attachment.getId())
-          .path(URLEncoder.encode(attachment.getFilename(), CharEncoding.UTF_8))
+          .path(URLEncoder.encode(attachment.getFilename(), StandardCharsets.UTF_8.name()))
           .build();
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      throw new RuntimeException(ex.getMessage(), ex);
+      throw new SilverpeasRuntimeException(ex.getMessage(), ex);
     }
     return sharedUri;
   }

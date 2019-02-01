@@ -109,11 +109,11 @@ public class LastModifiedDateFileTask implements Runnable {
         File currentFile = pair.getKey();
         Long lastModifiedDate = pair.getValue();
         if (currentFile.isFile()) {
-          currentFile.setLastModified(lastModifiedDate);
+          setLastModifiedDate(currentFile, lastModifiedDate);
         } else if (currentFile.isDirectory()) {
           for (File file : FileUtils.listFilesAndDirs(currentFile, FileFilterUtils.trueFileFilter(),
               FileFilterUtils.trueFileFilter())) {
-            file.setLastModified(lastModifiedDate);
+            setLastModifiedDate(file, lastModifiedDate);
           }
         }
       } catch (Exception e) {
@@ -122,6 +122,14 @@ public class LastModifiedDateFileTask implements Runnable {
 
       // Getting the next request if any.
       pair = nextRequest();
+    }
+  }
+
+  private void setLastModifiedDate(final File file, final long lastModifiedDate) {
+    boolean isOk = file.setLastModified(lastModifiedDate);
+    if (!isOk) {
+      SilverLogger.getLogger(this).warn("Unable set last modification date to file " +
+          file.getPath());
     }
   }
 

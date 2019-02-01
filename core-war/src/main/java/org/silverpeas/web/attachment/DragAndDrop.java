@@ -28,6 +28,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.importexport.control.RepositoriesTypeManager;
 import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.util.Charsets;
@@ -68,9 +69,12 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
    *
    */
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-    doPost(req, res);
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
+    try {
+      doPost(req, res);
+    } catch (Exception e) {
+      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
   }
 
   /**
@@ -82,18 +86,26 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
    *
    */
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse res) {
+    try {
+      final String versionType = req.getParameter("Type");
 
-    final String versionType = req.getParameter("Type");
+      final HttpRequest request = HttpRequest.decorate(req);
+      request.setCharacterEncoding(Charsets.UTF_8.name());
 
-    final HttpRequest request = HttpRequest.decorate(req);
-    request.setCharacterEncoding(Charsets.UTF_8.name());
+      final UserDetail currentUser = UserDetail.getCurrentRequester();
+      final String userLanguage = currentUser.getUserPreferences().getLanguage();
+      final UploadSession uploadSession = UploadSession.from(request);
 
-    final UserDetail currentUser = UserDetail.getCurrentRequester();
-    final String userLanguage = currentUser.getUserPreferences().getLanguage();
-    final UploadSession uploadSession = UploadSession.from(request);
+      processDragAndDrop(request, uploadSession, currentUser, versionType, userLanguage);
+    } catch (Exception e) {
+      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+  }
 
+  private void processDragAndDrop(final HttpRequest request, final UploadSession uploadSession,
+      final UserDetail currentUser, final String versionType, final String userLanguage)
+      throws ServletException {
     try {
       final String componentId = request.getParameter("ComponentId");
 
@@ -101,33 +113,39 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
         throwHttpForbiddenError();
       }
 
-      UserSubscriptionNotificationSendingHandler.verifyRequest(req);
+      UserSubscriptionNotificationSendingHandler.verifyRequest(request);
 
       final String resourceId = request.getParameter("ResourceId");
       final String contentLanguage = checkLanguage(request.getParameter("ContentLanguage"));
       final DocumentType documentType = determineDocumentType(request);
       final boolean hasToBeIndexed = getBooleanValue(request.getParameter("IndexIt"));
-      final boolean versionControlActivated = !getBooleanValue(
-          uploadSession.getComponentInstanceParameterValue("publicationAlwaysVisible")) &&
+      final boolean versionControlActivated = !getBooleanValue(uploadSession.getComponentInstanceParameterValue("publicationAlwaysVisible")) &&
           getBooleanValue(uploadSession.getComponentInstanceParameterValue("versionControl"));
-      final boolean publicVersion =
-          StringUtil.isDefined(versionType) && !getBooleanValue(versionType);
+      final boolean publicVersion = StringUtil.isDefined(versionType) && !getBooleanValue(versionType);
 
       final File rootUploadFolder = uploadSession.getRootFolder();
       final Date creationDate = new Date();
 
-      final List<File> files = new ArrayList<>(FileUtils
-          .listFiles(rootUploadFolder, FileFilterUtils.fileFileFilter(),
-              FileFilterUtils.trueFileFilter()));
+      final List<File> files = new ArrayList<>(
+          FileUtils.listFiles(rootUploadFolder, FileFilterUtils.fileFileFilter(), FileFilterUtils.trueFileFilter()));
       if (listFromYoungestToOldestAdd() && !getAttachmentService().
           listDocumentsByForeignKeyAndType(new ResourceReference(resourceId, componentId),
               documentType, null).isManuallySorted()) {
         Collections.reverse(files);
       }
       for (final File file : files) {
-        handleFileToAttach(currentUser, componentId, resourceId, request.getParameter("DocumentId"),
-            documentType, file, contentLanguage, creationDate, hasToBeIndexed,
-            versionControlActivated, publicVersion);
+        final RepositoriesTypeManager.AttachmentDescriptor descriptor = new RepositoriesTypeManager.AttachmentDescriptor().setCurrentUser(currentUser)
+            .setComponentId(componentId)
+            .setResourceId(resourceId)
+            .setOldSilverpeasId(request.getParameter("DocumentId"))
+            .setDocumentType(documentType)
+            .setFile(file)
+            .setContentLanguage(contentLanguage)
+            .setCreationDate(creationDate)
+            .setHasToBeIndexed(hasToBeIndexed)
+            .setComponentVersionActivated(versionControlActivated)
+            .setPublicVersionRequired(publicVersion);
+        handleFileToAttach(descriptor);
 
       }
     } catch (Exception ex) {

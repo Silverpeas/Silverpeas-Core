@@ -23,18 +23,6 @@
  */
 package org.silverpeas.core.contribution.content.form.record;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -42,21 +30,30 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.FormRuntimeException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.dummy.DummyRecordSet;
-import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.security.encryption.cipher.CryptoException;
-
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
 import org.silverpeas.core.security.encryption.ContentEncryptionServiceProvider;
 import org.silverpeas.core.security.encryption.EncryptionContentIterator;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * The GenericRecordSetManage all the GenericRecordSet. It is a singleton.
@@ -67,6 +64,11 @@ public class GenericRecordSetManager {
   private static final String SEPARATOR = "|";
   private static final String INSERT_INTO = "insert into ";
   private static final String DELETE_FROM = "delete from ";
+  private static final String GENERIC_RECORD_SET_MANAGER = "GenericRecordSetManager";
+  private static final String FORM_EXP_SELECT_FAILED = "form.EXP_SELECT_FAILED";
+  private static final String FORM_EXP_INSERT_FAILED = "form.EXP_INSERT_FAILED";
+  private static final String FORM_EXP_UNKNOWN_TEMPLATE = "form.EXP_UNKNOWN_TEMPLATE";
+  private static final String FIELD_VALUE = "fieldValue";
 
   private final Map<String, GenericRecordSet> cache = new HashMap<>();
 
@@ -88,7 +90,7 @@ public class GenericRecordSetManager {
       return JdbcSqlQuery.createSelect("externalId from " + TEMPLATE_TABLE)
           .where("externalId like ?", componentInstanceId + ":%").execute(row -> row.getString(1));
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager", "form.EXP_SELECT_FAILED", e);
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, FORM_EXP_SELECT_FAILED, e);
     }
   }
 
@@ -103,17 +105,12 @@ public class GenericRecordSetManager {
 
   public GenericRecordSet createRecordSet(String externalId,
       RecordTemplate template, String templateName, boolean encrypted) throws FormException {
-
-    Connection con = null;
     IdentifiedRecordTemplate identifiedTemplate = new IdentifiedRecordTemplate(
         template);
     identifiedTemplate.setExternalId(externalId);
     identifiedTemplate.setTemplateName(templateName);
     identifiedTemplate.setEncrypted(encrypted);
-
-    try {
-      con = getConnection();
-
+    try (final Connection con = getConnection()) {
       IdentifiedRecordTemplate existingOne = selectTemplateRow(con, externalId);
       if (existingOne == null) {
         insertTemplateRow(con, identifiedTemplate);
@@ -127,12 +124,8 @@ public class GenericRecordSetManager {
       } else {
         return (GenericRecordSet) getRecordSet(externalId);
       }
-
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager",
-          "form.EXP_INSERT_FAILED", e);
-    } finally {
-      closeConnection(con);
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, FORM_EXP_INSERT_FAILED, e);
     }
   }
 
@@ -146,19 +139,12 @@ public class GenericRecordSetManager {
    */
   public String getRawValue(String templateExternalId,
       String recordExternalId, String fieldName) throws FormException {
-
-    Connection con = null;
-
-    try {
-      con = getConnection();
-
+    try (final Connection con = getConnection()) {
       return selectRecordFieldsRow(con, templateExternalId, recordExternalId, fieldName);
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager.getRawValues",
-          "form.EXP_INSERT_FAILED", "templateExternalId : " + templateExternalId +
+      throw new FormException("GenericRecordSetManager.getRawValues", FORM_EXP_INSERT_FAILED,
+          "templateExternalId : " + templateExternalId +
           ", recordExternalId : " + recordExternalId, e);
-    } finally {
-      closeConnection(con);
     }
   }
 
@@ -171,13 +157,8 @@ public class GenericRecordSetManager {
     if (cachedSet != null) {
       return cachedSet;
     }
-
-    Connection con = null;
-    IdentifiedRecordTemplate template = null;
-
-    try {
-      con = getConnection();
-      template = selectTemplateRow(con, externalId);
+    try (final Connection con = getConnection()) {
+      final IdentifiedRecordTemplate template = selectTemplateRow(con, externalId);
       if (template == null) {
         return new DummyRecordSet();
       }
@@ -189,15 +170,11 @@ public class GenericRecordSetManager {
         // get fields directly from database
         selectTemplateFieldRows(con, template);
       }
-
       cachedSet = new GenericRecordSet(template);
       cacheRecordSet(externalId, cachedSet);
       return cachedSet;
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager",
-          "form.EXP_SELECT_FAILED", e);
-    } finally {
-      closeConnection(con);
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, FORM_EXP_SELECT_FAILED, e);
     }
   }
 
@@ -207,28 +184,19 @@ public class GenericRecordSetManager {
    */
   public void removeRecordSet(String externalId) throws FormException {
     removeCachedRecordSet(externalId);
-
-    Connection con = null;
-    IdentifiedRecordTemplate template = null;
-
-    try {
-      con = getConnection();
-      template = selectTemplateRow(con, externalId);
+    try (final Connection con = getConnection()) {
+      final IdentifiedRecordTemplate template = selectTemplateRow(con, externalId);
       if (template == null) {
-        SilverTrace.error("form", "GenericRecordSetManager.removeRecordSet",
-            "form.EXP_UNKNOWN_TEMPLATE", "externalId = " + externalId);
+        SilverLogger.getLogger(this).error("Unknown template: externalId = " + externalId);
       } else {
         deleteFieldRows(con, template);
         deleteRecordRows(con, template);
         deleteTemplateFieldRows(con, template);
         deleteTemplateRow(con, template);
       }
-
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager",
+      throw new FormException(GENERIC_RECORD_SET_MANAGER,
           "form.EXP_DELETE_FAILED", e);
-    } finally {
-      closeConnection(con);
     }
   }
 
@@ -250,11 +218,11 @@ public class GenericRecordSetManager {
   public void removeTemplateFromCache(String templateName) {
     // getting cached recordsets managed by given template
     List<String> ids = new ArrayList<>();
-    for (String id : cache.keySet()) {
-      GenericRecordSet rs = cache.get(id);
+    for (Map.Entry<String, GenericRecordSet> recordSets : cache.entrySet()) {
+      GenericRecordSet rs = recordSets.getValue();
       IdentifiedRecordTemplate template = (IdentifiedRecordTemplate) rs.getRecordTemplate();
       if (template != null && templateName.equalsIgnoreCase(template.getTemplateName())) {
-        ids.add(id);
+        ids.add(recordSets.getKey());
       }
     }
     // removing recordsets from cache
@@ -284,14 +252,12 @@ public class GenericRecordSetManager {
    */
   public DataRecord getRecord(IdentifiedRecordTemplate template, String objectId, String language)
       throws FormException {
-    Connection con = null;
-    try {
-      con = getConnection();
+    try (final Connection con = getConnection()) {
       GenericDataRecord record = selectRecordRow(con, template, objectId, language);
       if (record != null) {
         record.setLanguage(language);
       } else if (I18NHelper.isI18nContentEnabled()) {
-        List<String> languages = new ArrayList<String>(I18NHelper.getAllSupportedLanguages());
+        List<String> languages = new ArrayList<>(I18NHelper.getAllSupportedLanguages());
         languages.remove(language);
         for (String lang : languages) {
           record = selectRecordRow(con, template, objectId, lang);
@@ -302,33 +268,22 @@ public class GenericRecordSetManager {
         }
       }
       if (record != null) {
-        try {
-          selectFieldRows(con, template, record);
-        } catch (CryptoException e) {
-          throw new FormException("GenericRecordSetManager", "form.DECRYPTING_DATA_FAILED", e);
-        }
+        selectFieldRows(con, template, record);
       }
 
       return record;
 
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager", "form.EXP_SELECT_FAILED", e);
-    } finally {
-      closeConnection(con);
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, FORM_EXP_SELECT_FAILED, e);
     }
   }
 
   public List<String> getLanguagesOfRecord(IdentifiedRecordTemplate template,
       String externalId) throws FormException {
-    Connection con = null;
-    try {
-      con = getConnection();
+    try (final Connection con = getConnection()) {
       return selectLanguagesOfRecord(con, template, externalId);
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager",
-          "form.EXP_SELECT_FAILED", e);
-    } finally {
-      closeConnection(con);
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, FORM_EXP_SELECT_FAILED, e);
     }
   }
 
@@ -341,78 +296,24 @@ public class GenericRecordSetManager {
    */
   public void insertRecord(IdentifiedRecordTemplate template,
       DataRecord insertedRecord) throws FormException {
-    Connection con = null;
-
-    try {
+    try (final Connection con = getConnection()) {
       GenericDataRecord record = (GenericDataRecord) insertedRecord;
-
-      con = getConnection();
       insertRecordRow(con, template, record);
-      try {
-        insertFieldRows(con, template, record);
-      } catch (CryptoException e) {
-        throw new FormException("GenericRecordSetManager", "form.ENCRYPTING_DATA_FAILED", e);
-      }
-
+      insertFieldRows(con, template, record);
     } catch (ClassCastException e) {
-      throw new FormException("GenericRecordSetManager", "form.EXP_UNKNOWN_TEMPLATE", e);
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, FORM_EXP_UNKNOWN_TEMPLATE, e);
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager", "form.EXP_INSERT_FAILED", e);
-    } finally {
-      closeConnection(con);
-    }
-  }
-
-  public void cloneRecord(IdentifiedRecordTemplate templateFrom,
-      String objectIdFrom, IdentifiedRecordTemplate templateTo,
-      String objectIdTo, Map<String, String> fileIds) throws FormException {
-    Iterator<String> languages = I18NHelper.getLanguages();
-    while (languages.hasNext()) {
-      String language = languages.next();
-
-      GenericDataRecord record = (GenericDataRecord) getRecord(templateFrom,
-          objectIdFrom, language);
-      if (record != null) {
-        record.setInternalId(-1);
-        record.setId(objectIdTo);
-
-        Field[] fields = record.getFields();
-        for (Field field : fields) {
-          if (Field.TYPE_FILE.equals(field.getTypeName())) {
-            // le formulaire contient un champ de type File (fichier ou image)
-            // Remplacement de l'ancien id par le nouveau
-            String oldId = field.getStringValue();
-            if (oldId != null && fileIds != null) {
-              String newId = fileIds.get(oldId);
-              field.setStringValue(newId);
-            }
-          } else {
-            String oldValue = field.getStringValue();
-            if (oldValue != null
-                && oldValue.startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
-              // Wysiwyg case
-              String newValue = oldValue.replaceAll(objectIdFrom, objectIdTo);
-              field.setStringValue(newValue);
-            }
-          }
-        }
-        insertRecord(templateTo, record);
-      }
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, FORM_EXP_INSERT_FAILED, e);
     }
   }
 
   public void moveRecord(int recordId, IdentifiedRecordTemplate templateTo)
       throws FormException {
-    Connection con = null;
-
-    try {
-      con = getConnection();
+    try (final Connection con = getConnection()) {
       updateTemplateId(con, templateTo.getInternalId(), recordId);
     } catch (SQLException e) {
       throw new FormException("GenericRecordSetManager.moveRecord",
           "form.CANT_MOVE_RECORD_FROM_TEMPLATE_TO_ANOTHER", e);
-    } finally {
-      closeConnection(con);
     }
   }
 
@@ -424,23 +325,13 @@ public class GenericRecordSetManager {
    */
   public void updateRecord(IdentifiedRecordTemplate template,
       DataRecord updatedRecord) throws FormException {
-    Connection con = null;
-
-    try {
+    try (final Connection con = getConnection()) {
       GenericDataRecord record = (GenericDataRecord) updatedRecord;
-
-      con = getConnection();
-      try {
-        updateFieldRows(con, template, record);
-      } catch (CryptoException e) {
-        throw new FormException("GenericRecordSetManager", "form.ENCRYPTING_DATA_FAILED", e);
-      }
+      updateFieldRows(con, template, record);
     } catch (ClassCastException e) {
-      throw new FormException("GenericRecordSetManager", "form.EXP_UNKNOWN_TEMPLATE", e);
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, FORM_EXP_UNKNOWN_TEMPLATE, e);
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager", "form.EXP_UPDATED_FAILED", e);
-    } finally {
-      closeConnection(con);
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, "form.EXP_UPDATED_FAILED", e);
     }
   }
 
@@ -450,23 +341,15 @@ public class GenericRecordSetManager {
    * @throws FormException when the (templateId, recordId) pair is unknown.
    */
   public void deleteRecord(DataRecord deletedRecord) throws FormException {
-    Connection con = null;
-
-    try {
+    try (final Connection con = getConnection()) {
       GenericDataRecord record = (GenericDataRecord) deletedRecord;
-
-      con = getConnection();
       deleteFieldRows(con, record);
       deleteRecordRows(con, record);
-
     } catch (ClassCastException e) {
-      throw new FormException("GenericRecordSetManager",
-          "form.EXP_UNKNOWN_TEMPLATE", e);
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, FORM_EXP_UNKNOWN_TEMPLATE, e);
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager",
+      throw new FormException(GENERIC_RECORD_SET_MANAGER,
           "form.EXP_DELETE_FAILED", e);
-    } finally {
-      closeConnection(con);
     }
   }
 
@@ -480,14 +363,10 @@ public class GenericRecordSetManager {
 
   public List<DataRecord> getRecords(IdentifiedRecordTemplate template, String fieldName,
       String fieldValue) throws FormException {
-    Connection con = null;
-    try {
-      con = getConnection();
+    try (final Connection con = getConnection()) {
       return selectRecords(con, template, fieldName, fieldValue);
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager.getRecords", "form.EXP_SELECT_FAILED", e);
-    } finally {
-      closeConnection(con);
+      throw new FormException("GenericRecordSetManager.getRecords", FORM_EXP_SELECT_FAILED, e);
     }
   }
 
@@ -506,42 +385,33 @@ public class GenericRecordSetManager {
       }
     } catch (SQLException e) {
       throw new FormException("GenericRecordSetManager.getNumberOfRecordsByTemplateAndComponents",
-          "form.EXP_SELECT_FAILED", e);
+          FORM_EXP_SELECT_FAILED, e);
     }
     return result;
   }
 
   private List<DataRecord> selectRecords(Connection con, IdentifiedRecordTemplate template,
       String fieldName, String fieldValue) throws SQLException, FormException {
-    List<DataRecord> records = new ArrayList<>();
-    PreparedStatement select = null;
-    ResultSet rs = null;
-
-    try {
-      select = con.prepareStatement(SELECT_TEMPLATE_RECORDS_BY_FIELDVALUE);
-
+    final List<DataRecord> records = new ArrayList<>();
+    try (final PreparedStatement select = con.prepareStatement(
+        SELECT_TEMPLATE_RECORDS_BY_FIELDVALUE)) {
       select.setInt(1, template.getInternalId());
       select.setString(2, fieldName);
       select.setString(3, fieldValue);
       select.setString(4, "%##"+fieldValue);
       select.setString(5, "%##"+fieldValue+"##%");
       select.setString(6, fieldValue+"##%");
+      try (final ResultSet rs = select.executeQuery()) {
+        while (rs.next()) {
+          int internalId = rs.getInt(1);
+          String objectId = rs.getString(3);
+          GenericDataRecord record = new GenericDataRecord(template);
+          record.setInternalId(internalId);
+          record.setId(objectId);
+          records.add(record);
+        }
 
-      rs = select.executeQuery();
-
-      while (rs.next()) {
-        int internalId = rs.getInt(1);
-        String objectId = rs.getString(3);
-
-        GenericDataRecord record = new GenericDataRecord(template);
-        record.setInternalId(internalId);
-        record.setId(objectId);
-
-        records.add(record);
       }
-
-    } finally {
-      DBUtil.close(rs, select);
     }
     return records;
   }
@@ -572,9 +442,7 @@ public class GenericRecordSetManager {
   }
 
   protected void updateFieldRows(Connection con, List<RecordRow> rows) throws SQLException {
-    PreparedStatement update = con.prepareStatement(UPDATE_FIELD);
-
-    try {
+    try (final PreparedStatement update = con.prepareStatement(UPDATE_FIELD)) {
       for (RecordRow row : rows) {
         update.setString(1, row.getFieldValue());
         update.setInt(2, row.getRecordId());
@@ -582,60 +450,43 @@ public class GenericRecordSetManager {
 
         int nbRowsUpdated = update.executeUpdate();
         if (nbRowsUpdated != 1) {
-          SilverTrace.error("form", this.getClass().getName() + ".updateFieldRows()",
-              "root.MSG_GEN_PARAM_VALUE", "Update failed for record " + row.getRecordId() +
+          SilverLogger.getLogger(this).error("Update failed for record " + row.getRecordId() +
                   " and field '" + row.getFieldName() + "' with value " + row.getFieldValue());
         }
       }
-    } finally {
-      DBUtil.close(update);
     }
   }
 
   protected List<RecordRow> getAllRecordsOfTemplate(String templateName) throws FormException {
-    Connection con = null;
-    PreparedStatement select = null;
-    ResultSet rs = null;
-    List<RecordRow> rows = new ArrayList<>();
-    try {
-      con = getConnection();
-      select = con.prepareStatement(SELECT_TEMPLATE_RECORD_ENTRIES);
+    try (final Connection con = getConnection();
+         final PreparedStatement select = con.prepareStatement(SELECT_TEMPLATE_RECORD_ENTRIES)) {
+      final List<RecordRow> rows = new ArrayList<>();
       select.setString(1, templateName);
-      rs = select.executeQuery();
-
-      while (rs.next()) {
-        RecordRow row = new RecordRow(rs.getInt("recordId"), rs.getString("fieldName"), rs.getString("fieldValue"));
-        rows.add(row);
+      try (final ResultSet rs = select.executeQuery()) {
+        while (rs.next()) {
+          RecordRow row = new RecordRow(rs.getInt("recordId"), rs.getString("fieldName"),
+              rs.getString(FIELD_VALUE));
+          rows.add(row);
+        }
+        return rows;
       }
-
-      return rows;
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager", "form.EXP_SELECT_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
-      DBUtil.close(con);
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, FORM_EXP_SELECT_FAILED, e);
     }
   }
 
   private String selectRecordFieldsRow(Connection con,
       String templateExternalId, String recordExternalId, String fieldName) throws SQLException {
-    PreparedStatement select = null;
-    ResultSet rs = null;
-
-    try {
-      select = con.prepareStatement(SELECT_TEMPLATE_RECORD_VALUES);
+    try (final PreparedStatement select = con.prepareStatement(SELECT_TEMPLATE_RECORD_VALUES)) {
       select.setString(1, fieldName);
       select.setString(2, recordExternalId);
       select.setString(3, templateExternalId);
-      rs = select.executeQuery();
-
-      if (!rs.next()) {
-        return null;
+      try (final ResultSet rs = select.executeQuery()) {
+        if (!rs.next()) {
+          return null;
+        }
+        return rs.getString(FIELD_VALUE);
       }
-
-      return rs.getString("fieldValue");
-    } finally {
-      DBUtil.close(rs, select);
     }
   }
 
@@ -643,9 +494,7 @@ public class GenericRecordSetManager {
    * Get the template field declarations directly from the XML file.
    */
   private void selectTemplateFieldsFromXML(IdentifiedRecordTemplate template) throws FormException {
-
     GenericRecordTemplate genericRecordTemplate = null;
-
     try {
       PublicationTemplate publicationTemplateImpl = PublicationTemplateManager.getInstance()
           .loadPublicationTemplate(template.getTemplateName());
@@ -653,19 +502,16 @@ public class GenericRecordSetManager {
           .getRecordTemplate();
       template.setEncrypted(publicationTemplateImpl.isDataEncrypted());
     } catch (PublicationTemplateException e) {
-      throw new FormException("GenericRecordSetManager",
-          "form.EXP_UNKNOWN_TEMPLATE", e);
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, FORM_EXP_UNKNOWN_TEMPLATE, e);
     }
 
     GenericRecordTemplate wrapped = (GenericRecordTemplate) template.
         getWrappedTemplate();
     FieldTemplate[] fields = genericRecordTemplate.getFieldTemplates();
-
     for (FieldTemplate field : fields) {
       String displayName = field.getDisplayerName();
       GenericFieldTemplate fieldTemplate = new GenericFieldTemplate(field.
           getFieldName(), field.getTypeName());
-
       fieldTemplate.setMandatory(field.isMandatory());
       fieldTemplate.setReadOnly(field.isReadOnly());
       fieldTemplate.setHidden(field.isHidden());
@@ -696,10 +542,8 @@ public class GenericRecordSetManager {
   /**
    * Returns the next id in the named table.
    */
-  private int getNextId(String tableName, String idColumn)
-      throws SQLException {
-      int nextId = DBUtil
-          .getNextId(tableName, idColumn);
+  private int getNextId(String tableName, String idColumn) {
+    int nextId = DBUtil.getNextId(tableName, idColumn);
     if (nextId == 0) {
       return 1;
     } else {
@@ -712,21 +556,15 @@ public class GenericRecordSetManager {
    */
   private void insertTemplateRow(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
-    PreparedStatement insert = null;
-
-    try {
-      int internalId = getNextId(TEMPLATE_TABLE, "templateId");
-      template.setInternalId(internalId);
-      String externalId = template.getExternalId();
-      String templateName = template.getTemplateName();
-
-      insert = con.prepareStatement(INSERT_TEMPLATE);
+    int internalId = getNextId(TEMPLATE_TABLE, "templateId");
+    template.setInternalId(internalId);
+    String externalId = template.getExternalId();
+    String templateName = template.getTemplateName();
+    try (final PreparedStatement insert = con.prepareStatement(INSERT_TEMPLATE)) {
       insert.setInt(1, internalId);
       insert.setString(2, externalId);
       insert.setString(3, templateName);
       insert.execute();
-    } finally {
-      DBUtil.close(insert);
     }
   }
 
@@ -735,11 +573,7 @@ public class GenericRecordSetManager {
    */
   private void insertTemplateFieldRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException, FormException {
-    PreparedStatement insert = null;
-
-    try {
-      insert = con.prepareStatement(INSERT_TEMPLATE_FIELD);
-
+    try (final PreparedStatement insert = con.prepareStatement(INSERT_TEMPLATE_FIELD)) {
       int internalId = template.getInternalId();
       FieldTemplate[] fields = template.getFieldTemplates();
       for (int i = 0; i < fields.length; i++) {
@@ -760,8 +594,6 @@ public class GenericRecordSetManager {
         insert.setInt(7, 1);
         insert.execute();
       }
-    } finally {
-      DBUtil.close(insert);
     }
   }
 
@@ -770,28 +602,21 @@ public class GenericRecordSetManager {
    */
   private IdentifiedRecordTemplate selectTemplateRow(Connection con,
       String externalId) throws SQLException {
-    PreparedStatement select = null;
-    ResultSet rs = null;
-
-    try {
-      select = con.prepareStatement(SELECT_TEMPLATE);
+    try (final PreparedStatement select = con.prepareStatement(SELECT_TEMPLATE)) {
       select.setString(1, externalId);
-      rs = select.executeQuery();
-
-      if (!rs.next()) {
-        return null;
+      try (final ResultSet rs = select.executeQuery()) {
+        if (!rs.next()) {
+          return null;
+        }
+        int internalId = rs.getInt(1);
+        String templateName = rs.getString(3);
+        IdentifiedRecordTemplate template =
+            new IdentifiedRecordTemplate(new GenericRecordTemplate());
+        template.setInternalId(internalId);
+        template.setExternalId(externalId);
+        template.setTemplateName(templateName);
+        return template;
       }
-      int internalId = rs.getInt(1);
-      String templateName = rs.getString(3);
-
-      IdentifiedRecordTemplate template = new IdentifiedRecordTemplate(
-          new GenericRecordTemplate());
-      template.setInternalId(internalId);
-      template.setExternalId(externalId);
-      template.setTemplateName(templateName);
-      return template;
-    } finally {
-      DBUtil.close(rs, select);
     }
   }
 
@@ -800,38 +625,34 @@ public class GenericRecordSetManager {
    */
   private void selectTemplateFieldRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException, FormException {
-    PreparedStatement select = null;
-    ResultSet rs = null;
     GenericRecordTemplate wrapped = (GenericRecordTemplate) template
         .getWrappedTemplate();
 
-    try {
-      select = con.prepareStatement(SELECT_TEMPLATE_FIELDS);
+    try (final PreparedStatement select = con.prepareStatement(SELECT_TEMPLATE_FIELDS)) {
       select.setInt(1, template.getInternalId());
-      rs = select.executeQuery();
+      try (final ResultSet rs = select.executeQuery()) {
 
-      GenericFieldTemplate fieldTemplate = null;
-      String fieldName;
-      String fieldType;
-      boolean isMandatory;
-      boolean isReadOnly;
-      boolean isHidden;
-      while (rs.next()) {
-        fieldName = rs.getString(2);
-        fieldType = rs.getString(4);
-        isMandatory = rs.getBoolean(5);
-        isReadOnly = rs.getBoolean(6);
-        isHidden = rs.getBoolean(7);
+        GenericFieldTemplate fieldTemplate = null;
+        String fieldName;
+        String fieldType;
+        boolean isMandatory;
+        boolean isReadOnly;
+        boolean isHidden;
+        while (rs.next()) {
+          fieldName = rs.getString(2);
+          fieldType = rs.getString(4);
+          isMandatory = rs.getBoolean(5);
+          isReadOnly = rs.getBoolean(6);
+          isHidden = rs.getBoolean(7);
 
-        fieldTemplate = new GenericFieldTemplate(fieldName, fieldType);
-        fieldTemplate.setMandatory(isMandatory);
-        fieldTemplate.setReadOnly(isReadOnly);
-        fieldTemplate.setHidden(isHidden);
+          fieldTemplate = new GenericFieldTemplate(fieldName, fieldType);
+          fieldTemplate.setMandatory(isMandatory);
+          fieldTemplate.setReadOnly(isReadOnly);
+          fieldTemplate.setHidden(isHidden);
 
-        wrapped.addFieldTemplate(fieldTemplate);
+          wrapped.addFieldTemplate(fieldTemplate);
+        }
       }
-    } finally {
-      DBUtil.close(rs, select);
     }
   }
 
@@ -840,16 +661,10 @@ public class GenericRecordSetManager {
    */
   private void deleteFieldRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
-    PreparedStatement delete = null;
-
-    try {
+    try (final PreparedStatement delete = con.prepareStatement(DELETE_TEMPLATE_RECORDS_FIELDS)) {
       int internalId = template.getInternalId();
-
-      delete = con.prepareStatement(DELETE_TEMPLATE_RECORDS_FIELDS);
       delete.setInt(1, internalId);
       delete.execute();
-    } finally {
-      DBUtil.close(delete);
     }
   }
 
@@ -858,16 +673,10 @@ public class GenericRecordSetManager {
    */
   private void deleteRecordRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
-    PreparedStatement delete = null;
-
-    try {
+    try (final PreparedStatement delete = con.prepareStatement(DELETE_TEMPLATE_RECORDS)) {
       int internalId = template.getInternalId();
-
-      delete = con.prepareStatement(DELETE_TEMPLATE_RECORDS);
       delete.setInt(1, internalId);
       delete.execute();
-    } finally {
-      DBUtil.close(delete);
     }
   }
 
@@ -876,16 +685,10 @@ public class GenericRecordSetManager {
    */
   private void deleteTemplateFieldRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
-    PreparedStatement delete = null;
-
-    try {
+    try (final PreparedStatement delete = con.prepareStatement(DELETE_TEMPLATE_FIELDS)) {
       int internalId = template.getInternalId();
-
-      delete = con.prepareStatement(DELETE_TEMPLATE_FIELDS);
       delete.setInt(1, internalId);
       delete.execute();
-    } finally {
-      DBUtil.close(delete);
     }
   }
 
@@ -894,16 +697,10 @@ public class GenericRecordSetManager {
    */
   private void deleteTemplateRow(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
-    PreparedStatement delete = null;
-
-    try {
+    try (final PreparedStatement delete = con.prepareStatement(DELETE_TEMPLATE)) {
       int internalId = template.getInternalId();
-
-      delete = con.prepareStatement(DELETE_TEMPLATE);
       delete.setInt(1, internalId);
       delete.execute();
-    } finally {
-      DBUtil.close(delete);
     }
   }
 
@@ -913,14 +710,11 @@ public class GenericRecordSetManager {
   private void insertRecordRow(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
       throws SQLException {
-    PreparedStatement insert = null;
-
-    try {
+    try (final PreparedStatement insert = con.prepareStatement(INSERT_RECORD)) {
       int internalId = getNextId(RECORD_TABLE, "recordId");
       record.setInternalId(internalId);
       int templateId = template.getInternalId();
       String externalId = record.getId();
-      insert = con.prepareStatement(INSERT_RECORD);
       insert.setInt(1, internalId);
       insert.setInt(2, templateId);
       insert.setString(3, externalId);
@@ -931,8 +725,6 @@ public class GenericRecordSetManager {
         insert.setString(4, record.getLanguage());
       }
       insert.execute();
-    } finally {
-      DBUtil.close(insert);
     }
   }
 
@@ -940,78 +732,94 @@ public class GenericRecordSetManager {
    * Creates a row for each template_fields.
    * @throws CryptoException
    */
-  private void insertFieldRows(Connection con,
-      IdentifiedRecordTemplate template, GenericDataRecord record)
-      throws SQLException, FormException, CryptoException {
-    PreparedStatement insert = null;
-
+  private void insertFieldRows(Connection con, IdentifiedRecordTemplate template,
+      GenericDataRecord record) throws SQLException, FormException {
+    int recordId = record.getInternalId();
     try {
-      insert = con.prepareStatement(INSERT_FIELD);
-      int recordId = record.getInternalId();
-
       Map<String, String> rows = getRowsToStore(record, template.isEncrypted());
-
-      for (String fieldNameIndexed : rows.keySet()) {
-        String[] fieldNameAndIndex = StringUtil.split(fieldNameIndexed, SEPARATOR);
+      for (Map.Entry<String, String> fieldNameIndexed : rows.entrySet()) {
+        String[] fieldNameAndIndex = StringUtil.split(fieldNameIndexed.getKey(), SEPARATOR);
         String fieldName = fieldNameAndIndex[0];
         int fieldValueIndex = Integer.parseInt(fieldNameAndIndex[1]);
-
-        String fieldValue = rows.get(fieldNameIndexed);
-        insert.setInt(1, recordId);
-        insert.setString(2, fieldName);
-        insert.setString(3, fieldValue);
-        insert.setInt(4, fieldValueIndex);
-        insert.execute();
+        String fieldValue = fieldNameIndexed.getValue();
+        executeInsertQuery(con, recordId, fieldValueIndex, fieldName, fieldValue);
       }
-    } finally {
-      DBUtil.close(insert);
+    } catch (CryptoException e) {
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, "form.ENCRYPTING_DATA_FAILED", e);
+    }
+  }
+
+  private void executeInsertQuery(final Connection con, final int recordId,
+      final int fieldValueIndex, final String fieldName, final String fieldValue)
+      throws SQLException {
+    try (final PreparedStatement insert = con.prepareStatement(INSERT_FIELD)) {
+      insert.setInt(1, recordId);
+      insert.setString(2, fieldName);
+      insert.setString(3, fieldValue);
+      insert.setInt(4, fieldValueIndex);
+      insert.execute();
     }
   }
 
   /**
    * Select the template header.
    */
-  private GenericDataRecord selectRecordRow(Connection con,
-      IdentifiedRecordTemplate template, String externalId, String language)
+  private GenericDataRecord selectRecordRow(Connection con, IdentifiedRecordTemplate template,
+      String externalId, String language) throws SQLException, FormException {
+    if (!I18NHelper.isI18nContentActivated || I18NHelper.isDefaultLanguage(language)) {
+      language = null;
+    }
+
+    if (language != null) {
+      final String query = SELECT_RECORD + " AND lang = ? ";
+      return executeSelectQuery(con, query, template, externalId, language);
+    } else {
+      final String query = SELECT_RECORD + " AND lang is null";
+      return executeSelectQuery(con, query, template, externalId);
+    }
+  }
+
+  private GenericDataRecord executeSelectQuery(final Connection con, final String query,
+      final IdentifiedRecordTemplate template, final String externalId)
       throws SQLException, FormException {
-    PreparedStatement select = null;
-    ResultSet rs = null;
-
-    try {
-      if (!I18NHelper.isI18nContentActivated || I18NHelper.isDefaultLanguage(language)) {
-        language = null;
-      }
-
-      if (language != null) {
-        select = con.prepareStatement(SELECT_RECORD + " AND lang = ? ");
-      } else {
-        select = con.prepareStatement(SELECT_RECORD + " AND lang is null");
-      }
-
+    try (final PreparedStatement select = con.prepareStatement(query)) {
       select.setInt(1, template.getInternalId());
       select.setString(2, externalId);
-
-      if (language != null) {
-        select.setString(3, language);
+      try (final ResultSet rs = select.executeQuery()) {
+        return fetchGenericDataRecord(rs, template, externalId);
       }
-
-      rs = select.executeQuery();
-
-      if (!rs.next()) {
-        return null;
-      }
-
-      int internalId = rs.getInt(1);
-
-      GenericDataRecord record = new GenericDataRecord(template);
-      record.setInternalId(internalId);
-      record.setId(externalId);
-      record.setLanguage(language);
-
-      return record;
-    } finally {
-      DBUtil.close(rs, select);
     }
+  }
+
+  private GenericDataRecord executeSelectQuery(final Connection con, final String query,
+      final IdentifiedRecordTemplate template, final String externalId, final String language)
+      throws SQLException, FormException {
+    try (final PreparedStatement select = con.prepareStatement(query)) {
+      select.setInt(1, template.getInternalId());
+      select.setString(2, externalId);
+      select.setString(3, language);
+      try (final ResultSet rs = select.executeQuery()) {
+        GenericDataRecord record = fetchGenericDataRecord(rs, template, externalId);
+        if (record != null) {
+          record.setLanguage(language);
+        }
+        return record;
+      }
+    }
+  }
+
+  private GenericDataRecord fetchGenericDataRecord(final ResultSet rs,
+      final IdentifiedRecordTemplate template, final String externalId)
+      throws SQLException, FormException {
+    if (!rs.next()) {
+      return null;
+    }
+    int internalId = rs.getInt(1);
+
+    GenericDataRecord record = new GenericDataRecord(template);
+    record.setInternalId(internalId);
+    record.setId(externalId);
+    return record;
   }
 
   /**
@@ -1020,63 +828,56 @@ public class GenericRecordSetManager {
    */
   private void selectFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
-      throws SQLException, FormException, CryptoException {
-    PreparedStatement select = null;
-    ResultSet rs = null;
-
-    try {
-      select = con.prepareStatement(SELECT_FIELDS);
+      throws SQLException, FormException {
+    try (final PreparedStatement select = con.prepareStatement(SELECT_FIELDS)) {
       select.setInt(1, record.getInternalId());
-      rs = select.executeQuery();
-      Map<String, String> rows = new TreeMap<>();
-      while (rs.next()) {
-        String fieldName = rs.getString("fieldName");
-        String fieldValue = rs.getString("fieldValue");
-        int fieldValueIndex = rs.getInt("fieldvalueindex");
+      try (final ResultSet rs = select.executeQuery()) {
+        Map<String, String> rows = new TreeMap<>();
+        while (rs.next()) {
+          String fieldName = rs.getString("fieldName");
+          String fieldValue = rs.getString(FIELD_VALUE);
+          int fieldValueIndex = rs.getInt("fieldvalueindex");
 
-        rows.put(fieldName+SEPARATOR+fieldValueIndex, fieldValue);
-      }
+          rows.put(fieldName + SEPARATOR + fieldValueIndex, fieldValue);
+        }
 
-      if (template.isEncrypted()) {
-        rows = getEncryptionService().decryptContent(rows);
-      }
+        if (template.isEncrypted()) {
+          rows = getEncryptionService().decryptContent(rows);
+        }
 
-      for(String fieldNameIndexed : rows.keySet()) {
-        String[] fieldNameAndIndex = StringUtil.split(fieldNameIndexed, SEPARATOR);
-        String fieldName = fieldNameAndIndex[0];
-        int fieldValueIndex = Integer.parseInt(fieldNameAndIndex[1]);
-        Field field = record.getField(fieldName, fieldValueIndex);
-        String fieldValue = rows.get(fieldNameIndexed);
-        if (field != null) {// We found a field corresponding to the fieldName
-          field.setStringValue(fieldValue);
+        for (Map.Entry<String, String> fieldNameIndexed : rows.entrySet()) {
+          String[] fieldNameAndIndex = StringUtil.split(fieldNameIndexed.getKey(), SEPARATOR);
+          String fieldName = fieldNameAndIndex[0];
+          int fieldValueIndex = Integer.parseInt(fieldNameAndIndex[1]);
+          Field field = record.getField(fieldName, fieldValueIndex);
+          String fieldValue = fieldNameIndexed.getValue();
+          if (field != null) {// We found a field corresponding to the fieldName
+            field.setStringValue(fieldValue);
+          }
         }
       }
-    } finally {
-      DBUtil.close(rs, select);
+    } catch (CryptoException e) {
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, "form.DECRYPTING_DATA_FAILED", e);
     }
   }
 
   private List<String> selectLanguagesOfRecord(Connection con,
       IdentifiedRecordTemplate template, String externalId)
       throws SQLException {
-    PreparedStatement select = null;
-    ResultSet rs = null;
     List<String> languages = new ArrayList<>();
-    try {
-      select = con.prepareStatement(SELECT_RECORD);
+    try (final PreparedStatement select = con.prepareStatement(SELECT_RECORD)) {
       select.setInt(1, template.getInternalId());
       select.setString(2, externalId);
-      rs = select.executeQuery();
-      while (rs.next()) {
-        String language = rs.getString("lang");
-        if (!StringUtil.isDefined(language)) {
-          language = I18NHelper.defaultLanguage;
+      try (final ResultSet rs = select.executeQuery()) {
+        while (rs.next()) {
+          String language = rs.getString("lang");
+          if (!StringUtil.isDefined(language)) {
+            language = I18NHelper.defaultLanguage;
+          }
+          languages.add(language);
         }
-        languages.add(language);
       }
       return languages;
-    } finally {
-      DBUtil.close(rs, select);
     }
   }
 
@@ -1086,20 +887,16 @@ public class GenericRecordSetManager {
    */
   private void updateFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
-      throws SQLException, FormException, CryptoException {
-    PreparedStatement update = null;
-    PreparedStatement insert = null;
-
-    try {
-      update = con.prepareStatement(UPDATE_FIELD);
+      throws SQLException, FormException {
+    try (final PreparedStatement update = con.prepareStatement(UPDATE_FIELD)) {
       int recordId = record.getInternalId();
       Map<String, String> rows = getRowsToStore(record, template.isEncrypted());
 
-      for (String fieldNameIndexed : rows.keySet()) {
-        String[] fieldNameAndIndex = StringUtil.split(fieldNameIndexed, SEPARATOR);
+      for (Map.Entry<String, String> fieldNameIndexed : rows.entrySet()) {
+        String[] fieldNameAndIndex = StringUtil.split(fieldNameIndexed.getKey(), SEPARATOR);
         String fieldName = fieldNameAndIndex[0];
         int fieldValueIndex = Integer.parseInt(fieldNameAndIndex[1]);
-        String fieldValue = rows.get(fieldNameIndexed);
+        String fieldValue = fieldNameIndexed.getValue();
         update.setString(1, fieldValue);
         update.setInt(2, recordId);
         update.setString(3, fieldName);
@@ -1110,22 +907,16 @@ public class GenericRecordSetManager {
           // no row has been updated because the field fieldName doesn't exist in database.
           // The form has changed since the last modification of the record.
           // So we must insert this new field.
-          insert = con.prepareStatement(INSERT_FIELD);
-          insert.setInt(1, recordId);
-          insert.setString(2, fieldName);
-          insert.setString(3, fieldValue);
-          insert.setInt(4, fieldValueIndex);
-          insert.execute();
+          executeInsertQuery(con, recordId, fieldValueIndex, fieldName, fieldValue);
         }
       }
-    } finally {
-      DBUtil.close(update);
-      DBUtil.close(insert);
+    } catch (CryptoException e) {
+      throw new FormException(GENERIC_RECORD_SET_MANAGER, "form.ENCRYPTING_DATA_FAILED", e);
     }
   }
 
   private Map<String, String> getRowsToStore(GenericDataRecord record, boolean crypt)
-      throws FormException, CryptoException {
+      throws CryptoException {
     Map<String, String> rows = new HashMap<>();
     for (Field field : record.getFields()) {
       String fieldNameIndexed = field.getName()+SEPARATOR+field.getOccurrence();
@@ -1142,15 +933,10 @@ public class GenericRecordSetManager {
    */
   private void deleteFieldRows(Connection con, GenericDataRecord record)
       throws SQLException {
-    PreparedStatement delete = null;
-
-    try {
+    try (final PreparedStatement delete = con.prepareStatement(DELETE_RECORD_FIELDS)) {
       int internalId = record.getInternalId();
-      delete = con.prepareStatement(DELETE_RECORD_FIELDS);
       delete.setInt(1, internalId);
       delete.execute();
-    } finally {
-      DBUtil.close(delete);
     }
   }
 
@@ -1159,35 +945,20 @@ public class GenericRecordSetManager {
    */
   private void deleteRecordRows(Connection con, GenericDataRecord record)
       throws SQLException {
-    PreparedStatement delete = null;
-
-    try {
+    try (final PreparedStatement delete = con.prepareStatement(DELETE_RECORD)) {
       int internalId = record.getInternalId();
-
-      delete = con.prepareStatement(DELETE_RECORD);
       delete.setInt(1, internalId);
       delete.execute();
-    } finally {
-      DBUtil.close(delete);
     }
   }
 
   private void updateTemplateId(Connection con, int newTemplateId, int recordId)
       throws SQLException {
-    PreparedStatement update = null;
-
-    try {
-      update = con.prepareStatement(MOVE_RECORD);
+    try (final PreparedStatement update = con.prepareStatement(MOVE_RECORD)) {
       update.setInt(1, newTemplateId);
       update.setInt(2, recordId);
       update.execute();
-    } finally {
-      DBUtil.close(update);
     }
-  }
-
-  private void closeConnection(Connection con) {
-    DBUtil.close(con);
   }
 
   /* Template table */
@@ -1202,8 +973,9 @@ public class GenericRecordSetManager {
   private static final String INSERT_TEMPLATE = INSERT_INTO + TEMPLATE_TABLE
       + "(" + TEMPLATE_COLUMNS + ")" + " values (?,?,?)";
 
-  private static final String DELETE_TEMPLATE = DELETE_FROM + TEMPLATE_TABLE
-      + " where templateId=?";
+  private static final String WHERE_TEMPLATE_ID_EQUAL_GIVEN_VALUE = " where templateId=?";
+  private static final String DELETE_TEMPLATE =
+      DELETE_FROM + TEMPLATE_TABLE + WHERE_TEMPLATE_ID_EQUAL_GIVEN_VALUE;
 
   /* Template fields table */
 
@@ -1212,16 +984,16 @@ public class GenericRecordSetManager {
   private static final String TEMPLATE_FIELDS_COLUMNS =
       "templateId,fieldName,fieldIndex,fieldType,isMandatory,isReadOnly,isHidden";
 
-  private static final String SELECT_TEMPLATE_FIELDS = "select "
-      + TEMPLATE_FIELDS_COLUMNS + " from " + TEMPLATE_FIELDS_TABLE
-      + " where templateId=?" + " order by fieldIndex";
+  private static final String SELECT_TEMPLATE_FIELDS =
+      "select " + TEMPLATE_FIELDS_COLUMNS + " from " + TEMPLATE_FIELDS_TABLE +
+          WHERE_TEMPLATE_ID_EQUAL_GIVEN_VALUE + " order by fieldIndex";
 
   private static final String INSERT_TEMPLATE_FIELD = INSERT_INTO
       + TEMPLATE_FIELDS_TABLE + "(" + TEMPLATE_FIELDS_COLUMNS + ")"
       + " values (?,?,?,?,?,?,?)";
 
-  private static final String DELETE_TEMPLATE_FIELDS = DELETE_FROM
-      + TEMPLATE_FIELDS_TABLE + " where templateId=?";
+  private static final String DELETE_TEMPLATE_FIELDS =
+      DELETE_FROM + TEMPLATE_FIELDS_TABLE + WHERE_TEMPLATE_ID_EQUAL_GIVEN_VALUE;
 
   /* Record table */
 
@@ -1236,8 +1008,8 @@ public class GenericRecordSetManager {
   private static final String INSERT_RECORD = INSERT_INTO + RECORD_TABLE
       + "(" + RECORD_COLUMNS + ")" + " values (?,?,?,?)";
 
-  private static final String DELETE_TEMPLATE_RECORDS = DELETE_FROM
-      + RECORD_TABLE + " where templateId=?";
+  private static final String DELETE_TEMPLATE_RECORDS =
+      DELETE_FROM + RECORD_TABLE + WHERE_TEMPLATE_ID_EQUAL_GIVEN_VALUE;
 
   private static final String DELETE_RECORD = DELETE_FROM + RECORD_TABLE
       + " where recordId=?";
@@ -1267,33 +1039,22 @@ public class GenericRecordSetManager {
   private static final String DELETE_RECORD_FIELDS = DELETE_FROM
       + FIELDS_TABLE + " where recordId=?";
 
+  private static final String TF_ALIAS = " tf, ";
+  private static final String REC_ALIAS = " rec, ";
   private static final String SELECT_TEMPLATE_RECORD_VALUES =
-      "select fieldValue from "
-          +
-          FIELDS_TABLE +
-          " tf, "
-          +
-          RECORD_TABLE +
-          " rec, "
+      "select fieldValue from " + FIELDS_TABLE + TF_ALIAS + RECORD_TABLE + REC_ALIAS
           +
           TEMPLATE_TABLE +
           " tpl where tf.fieldName= ? and tf.recordId = rec.recordId and rec.externalId = ? and rec.templateId = tpl.templateId and tpl.externalId = ?";
 
   private static final String SELECT_TEMPLATE_RECORD_ENTRIES =
-      "SELECT * FROM " +
-          FIELDS_TABLE +
-          " tf, " +
-          RECORD_TABLE +
-          " rec, " +
+      "SELECT * FROM " + FIELDS_TABLE + TF_ALIAS + RECORD_TABLE + REC_ALIAS +
           TEMPLATE_TABLE +
           " tpl WHERE tpl.templatename = ? AND rec.templateId = tpl.templateId AND tf.recordId = rec.recordId";
 
   private static final String SELECT_TEMPLATE_RECORDS_BY_FIELDVALUE =
-      "SELECT rec.recordId,rec.templateId,rec.externalId,rec.lang FROM " +
-          FIELDS_TABLE +
-          " tf, " +
-          RECORD_TABLE +
-          " rec, " +
+      "SELECT rec.recordId,rec.templateId,rec.externalId,rec.lang FROM " + FIELDS_TABLE + TF_ALIAS +
+          RECORD_TABLE + REC_ALIAS +
           TEMPLATE_TABLE +
           " tpl WHERE tpl.templateid = ? AND rec.templateId = tpl.templateId AND tf.recordId = rec.recordId" +
           " AND tf.fieldName = ? " +

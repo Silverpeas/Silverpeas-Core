@@ -34,7 +34,8 @@ import org.silverpeas.core.util.URLUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -51,21 +52,21 @@ public class I18NHelper implements I18n {
 
   // "fr" - List of I18NLanguage : all available languages in french
   // "en" - List of I18NLanguage : all available languages in english
-  private final static Map<String, List<I18NLanguage>> allContentLanguages = new LinkedHashMap<>();
+  private static final Map<String, List<I18NLanguage>> allContentLanguages = new LinkedHashMap<>();
 
   // The languages set for content writing are not necessarily the same set for user languages.
   // This fallback container permits to store the content language labels translated into a
   // language that is not managed by content language mechanism.
   // By this way, even if the user language does not correspond to a managed content language,
   // the labels are displayed according to the user language.
-  private final static Map<String, List<I18NLanguage>> fallbackContentLanguages =
+  private static final Map<String, List<I18NLanguage>> fallbackContentLanguages =
       new LinkedHashMap<>();
 
   private static int nbContentLanguages = 0;
-  public static boolean isI18nContentActivated = false;
-  public static String defaultLanguage = null;
+  public static final boolean isI18nContentActivated;
+  public static String defaultLanguage;
   public static Locale defaultLocale = Locale.getDefault();
-  private final static List<String> allContentLanguageCodes = new ArrayList<>();
+  private static final List<String> allContentLanguageCodes = new ArrayList<>();
 
   public static final String HTMLSelectObjectName = "I18NLanguage";
   public static final String HTMLHiddenRemovedTranslationMode = "TranslationRemoveIt";
@@ -109,7 +110,7 @@ public class I18NHelper implements I18n {
           ResourceLocator.getLocalizationBundle("org.silverpeas.util.multilang.i18n",
               fallbackLanguageCode);
 
-      List<I18NLanguage> fallbackLanguageLabels = new ArrayList<I18NLanguage>();
+      List<I18NLanguage> fallbackLanguageLabels = new ArrayList<>();
       for (String contentLanguageCode : allContentLanguageCodes) {
         I18NLanguage i18nLanguage = new I18NLanguage(contentLanguageCode,
             rsLanguage.getString("language_" + contentLanguageCode));
@@ -144,8 +145,8 @@ public class I18NHelper implements I18n {
     return allContentLanguageUserTranslations;
   }
 
-  public static Iterator<String> getLanguages() {
-    return allContentLanguages.keySet().iterator();
+  public static Collection<String> getLanguages() {
+    return Collections.unmodifiableSet(allContentLanguages.keySet());
   }
 
   @Override
@@ -219,11 +220,7 @@ public class I18NHelper implements I18n {
     }
 
     StringBuilder links = new StringBuilder(512);
-    String link = "";
-
-    String begin = "";
-    String end = "";
-
+    String link;
     boolean first = true;
     for (String code : allContentLanguageCodes) {
       String className = "";
@@ -286,7 +283,7 @@ public class I18NHelper implements I18n {
       String selectedTranslation) {
     List<I18NLanguage> languages = getAllUserTranslationsOfContentLanguages(userLanguage);
 
-    List<I18NLanguage> result = new ArrayList<I18NLanguage>();
+    List<I18NLanguage> result = new ArrayList<>();
     for (I18NLanguage lang : languages) {
       I18NLanguage newLang = new I18NLanguage(lang.getCode(), lang.getLabel());
       if (bean != null) {
@@ -388,20 +385,19 @@ public class I18NHelper implements I18n {
     return getLanguageAndTranslationId(param);
   }
 
-  static private String[] getLanguageAndTranslationId(String param) {
+  private static String[] getLanguageAndTranslationId(String param) {
     if (StringUtil.isDefined(param)) {
       StringTokenizer tokenizer = new StringTokenizer(param, "_");
       String language = tokenizer.nextToken();
       String translationId = tokenizer.nextToken();
-      String[] result = {language, translationId};
-      return result;
+      return new String[] {language, translationId};
     }
-    return null;
+    return new String[0];
   }
 
   public static String getSelectedContentLanguage(HttpServletRequest request) {
     String[] param = getLanguageAndTranslationId(request);
-    if (param != null) {
+    if (param.length > 0) {
       return param[0];
     }
     return null;
@@ -427,11 +423,10 @@ public class I18NHelper implements I18n {
     setI18NInfo(bean, languageAndTranslationId, removeTranslation);
   }
 
-  static private void setI18NInfo(I18NBean bean, String param,
+  private static void setI18NInfo(I18NBean bean, String param,
       String removeParam) {
     String[] languageAndTranslationId = getLanguageAndTranslationId(param);
-
-    if (languageAndTranslationId != null) {
+    if (languageAndTranslationId.length > 0) {
       String language = languageAndTranslationId[0];
       String translationId = languageAndTranslationId[1];
 
@@ -445,7 +440,7 @@ public class I18NHelper implements I18n {
     }
   }
 
-  static private String getParameterValue(List<FileItem> items, String parameterName) {
+  private static String getParameterValue(List<FileItem> items, String parameterName) {
     for (FileItem item : items) {
       if (item.isFormField() && parameterName.equals(item.getFieldName())) {
         return item.getString();

@@ -26,8 +26,8 @@ package org.silverpeas.core.node.dao;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodeI18NDetail;
-import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
@@ -72,7 +72,7 @@ public class NodeDAO {
       "SELECT nodepath FROM sb_node_node WHERE " + "nodeid = ? AND instanceid = ?";
   private static final String SELECT_DESCENDANTS_ID_BY_PATH = "SELECT nodeid FROM sb_node_node " +
       "WHERE nodePath LIKE ? AND instanceid = ? ORDER BY nodeid";
-  private static final Map<String, ArrayList<NodeDetail>> alltrees = new ConcurrentHashMap<>();
+  private final Map<String, List<NodeDetail>> allTrees = new ConcurrentHashMap<>();
   private static final String SELECT_QUERY = "selectQuery = ";
   private static final String COMPO_NAME = " compo name = ";
   private static final String ID_EQUALS = " id = ";
@@ -99,17 +99,17 @@ public class NodeDAO {
   }
 
   public List<NodeDetail> getTree(Connection con, NodePK nodePK) throws SQLException {
-    ArrayList<NodeDetail> tree = alltrees.get(nodePK.getComponentName());
+    List<NodeDetail> tree = allTrees.get(nodePK.getComponentName());
     if (tree == null) {
-      tree = (ArrayList<NodeDetail>) getAllHeaders(con, nodePK);
-      alltrees.put(nodePK.getComponentName(), tree);
+      tree = getAllHeaders(con, nodePK);
+      allTrees.put(nodePK.getComponentName(), tree);
     }
     return tree;
   }
 
   public void unvalidateTree(Connection con, NodePK nodePK) {
     Objects.requireNonNull(con);
-    alltrees.remove(nodePK.getComponentName());
+    allTrees.remove(nodePK.getComponentName());
   }
 
   /**
@@ -123,25 +123,23 @@ public class NodeDAO {
    */
   public boolean isSameNameSameLevelOnCreation(Connection con, NodeDetail nd)
       throws SQLException {
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    int nbItems = 0;
-    try {
-      prepStmt = con.prepareStatement(COUNT_NODES_PER_LEVEL);
+    final int nbItems;
+    try (final PreparedStatement prepStmt = con.prepareStatement(COUNT_NODES_PER_LEVEL)) {
       prepStmt.setInt(1, nd.getLevel());
       prepStmt.setString(2, nd.getName());
       prepStmt.setString(3, nd.getNodePK().getComponentName());
-      rs = prepStmt.executeQuery();
-      if (rs.next()) {
-        nbItems = rs.getInt("nb");
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        if (rs.next()) {
+          nbItems = rs.getInt("nb");
+        } else {
+          nbItems = 0;
+        }
       }
     } catch (SQLException e) {
       SilverLogger.getLogger(this)
           .error(SELECT_QUERY + COUNT_NODES_PER_LEVEL + " level = " + nd.getLevel() + " name = " +
               nd.getName() + COMPO_NAME + nd.getNodePK().getComponentName(), e);
       throw e;
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return nbItems != 0;
   }
@@ -157,18 +155,19 @@ public class NodeDAO {
    */
   public boolean isSameNameSameLevelOnUpdate(Connection con, NodeDetail nd)
       throws SQLException {
-    int nbItems = 0;
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(COUNT_NODES_PER_LEVEL_WITHOUT_CURRENT);
+    int nbItems;
+    try (final PreparedStatement prepStmt = con.prepareStatement(
+        COUNT_NODES_PER_LEVEL_WITHOUT_CURRENT)) {
       prepStmt.setInt(1, Integer.parseInt(nd.getNodePK().getId()));
       prepStmt.setInt(2, nd.getLevel());
       prepStmt.setString(3, nd.getName());
       prepStmt.setString(4, nd.getNodePK().getComponentName());
-      rs = prepStmt.executeQuery();
-      if (rs.next()) {
-        nbItems = rs.getInt(1);
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        if (rs.next()) {
+          nbItems = rs.getInt(1);
+        } else {
+          nbItems = 0;
+        }
       }
     } catch (SQLException e) {
       SilverLogger.getLogger(this)
@@ -176,11 +175,8 @@ public class NodeDAO {
               nd.getNodePK().getId() + " level = " + nd.getLevel() + " name = " + nd.getName() +
               COMPO_NAME + nd.getNodePK().getComponentName(), e);
       throw e;
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
-
-    return (nbItems != 0);
+    return nbItems != 0;
   }
 
   /**
@@ -194,30 +190,29 @@ public class NodeDAO {
    */
   public Collection<NodePK> getChildrenPKs(Connection con, NodePK nodePK)
       throws SQLException {
-    List<NodePK> a = null;
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(SELECT_CHILDREN_IDS);
+    try (final PreparedStatement prepStmt = con.prepareStatement(SELECT_CHILDREN_IDS)) {
       prepStmt.setInt(1, Integer.parseInt(nodePK.getId()));
       prepStmt.setString(2, nodePK.getComponentName());
-      rs = prepStmt.executeQuery();
-      a = new ArrayList<>();
-      while (rs.next()) {
-        String nodeId = String.valueOf(rs.getInt("nodeid"));
-        NodePK n = new NodePK(nodeId, nodePK);
-        a.add(n); /* Stockage du sous thème */
-
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        final List<NodePK> pks = new ArrayList<>();
+        fetchSubNodes(rs, nodePK, pks);
+        return pks;
       }
     } catch (SQLException e) {
       SilverLogger.getLogger(this)
           .error("childrenStatement = " + SELECT_CHILDREN_IDS + ID_EQUALS + nodePK.getId() +
               COMPO_NAME + nodePK.getComponentName(), e);
       throw e;
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
-    return a;
+  }
+
+  private void fetchSubNodes(final ResultSet rs, final NodePK nodePK, final List<NodePK> pks)
+      throws SQLException {
+    while (rs.next()) {
+      final String nodeId = String.valueOf(rs.getInt("nodeid"));
+      final NodePK n = new NodePK(nodeId, nodePK);
+      pks.add(n); /* Stockage du sous thème */
+    }
   }
 
   /**
@@ -229,55 +224,45 @@ public class NodeDAO {
    * @see NodePK
    * @since 1.0
    */
-  public Collection<NodePK> getDescendantPKs(Connection con, NodePK nodePK)
-      throws SQLException {
-    String path = null;
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    try {
-      prepStmt = con.prepareStatement(SELECT_DESCENDANTS_PK);
-      prepStmt.setInt(1, Integer.parseInt(nodePK.getId()));
-      prepStmt.setString(2, nodePK.getComponentName());
-      rs = prepStmt.executeQuery();
-      if (rs.next()) {
-        path = rs.getString(1);
-      }
-    } catch (SQLException e) {
-      SilverLogger.getLogger(this)
-          .error(SELECT_QUERY + SELECT_DESCENDANTS_PK + ID_EQUALS + nodePK.getId() + COMPO_NAME +
-              nodePK.getComponentName(), e);
-      throw e;
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-
-    List<NodePK> a = new ArrayList<>();
+  public Collection<NodePK> getDescendantPKs(Connection con, NodePK nodePK) throws SQLException {
+    String path = getNodePath(con, nodePK, SELECT_DESCENDANTS_PK);
+    final List<NodePK> nodePKS = new ArrayList<>();
     if (path != null) {
-      path = path + nodePK.getId() + "/%";
-      try {
-        prepStmt = con.prepareStatement(SELECT_DESCENDANTS_ID_BY_PATH);
+      path += nodePK.getId() + "/%";
+      try (final PreparedStatement prepStmt = con.prepareStatement(SELECT_DESCENDANTS_ID_BY_PATH)) {
         prepStmt.setString(1, path);
         prepStmt.setString(2, nodePK.getComponentName());
-        rs = prepStmt.executeQuery();
-        String nodeId;
-        while (rs.next()) {
-          nodeId = String.valueOf(rs.getInt("nodeid"));
-          NodePK n = new NodePK(nodeId, nodePK);
-          a.add(n); /* Stockage du sous thème */
-
+        try (final ResultSet rs = prepStmt.executeQuery()) {
+          fetchSubNodes(rs, nodePK, nodePKS);
         }
       } catch (SQLException e) {
         SilverLogger.getLogger(this)
             .error(SELECT_QUERY + SELECT_DESCENDANTS_ID_BY_PATH + COMPO_NAME +
                 nodePK.getComponentName(), e);
         throw e;
-      } finally {
-        DBUtil.close(rs, prepStmt);
       }
     }
+    return nodePKS;
+  }
 
-    return a;
+  private String getNodePath(final Connection con, final NodePK nodePK, final String selectQuery)
+      throws SQLException {
+    String path = null;
+    try (final PreparedStatement prepStmt = con.prepareStatement(selectQuery)) {
+      prepStmt.setInt(1, Integer.parseInt(nodePK.getId()));
+      prepStmt.setString(2, nodePK.getComponentName());
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        if (rs.next()) {
+          path = rs.getString(1);
+        }
+      }
+    } catch (SQLException e) {
+      SilverLogger.getLogger(this)
+          .error(SELECT_QUERY + selectQuery + ID_EQUALS + nodePK.getId() + COMPO_NAME +
+              nodePK.getComponentName(), e);
+      throw e;
+    }
+    return path;
   }
 
   /**
@@ -291,58 +276,30 @@ public class NodeDAO {
    */
   public List<NodeDetail> getDescendantDetails(Connection con, NodePK nodePK)
       throws SQLException {
-
-    String path = null;
-    StringBuilder selectQuery = new StringBuilder();
-    selectQuery.append("SELECT nodePath from ").append(nodePK.getTableName())
-        .append(NODE_ID_AND_INSTANCE_ID_CLAUSE);
-    List<NodeDetail> a = new ArrayList<>();
-
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    try {
-      prepStmt = con.prepareStatement(selectQuery.toString());
-      prepStmt.setInt(1, Integer.parseInt(nodePK.getId()));
-      prepStmt.setString(2, nodePK.getComponentName());
-      rs = prepStmt.executeQuery();
-      if (rs.next()) {
-        path = rs.getString(1);
-      }
-    } catch (SQLException e) {
-      SilverLogger.getLogger(this)
-          .error(SELECT_QUERY + selectQuery.toString() + ID_EQUALS + nodePK.getId() + COMPO_NAME +
-              nodePK.getComponentName(), e);
-      throw e;
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-
+    final String selectNodePath =
+        "SELECT nodePath from " + nodePK.getTableName() + NODE_ID_AND_INSTANCE_ID_CLAUSE;
+    String path = getNodePath(con, nodePK, selectNodePath);
+    final List<NodeDetail> nodeDetails = new ArrayList<>();
     if (path != null) {
       path = path + nodePK.getId() + "/%";
-      selectQuery = new StringBuilder();
-      selectQuery.append(SELECT_FROM).append(nodePK.getTableName());
-      selectQuery.append(" where nodePath like '").append(path).append("'");
-      selectQuery.append(" and instanceId = ? order by nodePath");
-
-      try {
-        prepStmt = con.prepareStatement(selectQuery.toString());
+      final String selectNodes =
+          SELECT_FROM + nodePK.getTableName() + " where nodePath like '" + path +
+              "' and instanceId = ? order by nodePath";
+      try (final PreparedStatement prepStmt = con.prepareStatement(selectNodes)) {
         prepStmt.setString(1, nodePK.getComponentName());
-        rs = prepStmt.executeQuery();
-        while (rs.next()) {
-          NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
-          a.add(nd);
+        try (final ResultSet rs = prepStmt.executeQuery()) {
+          while (rs.next()) {
+            NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
+            nodeDetails.add(nd);
+          }
         }
       } catch (SQLException e) {
-        SilverLogger.getLogger(this).error(SELECT_QUERY + selectQuery.toString() + COMPO_NAME +
+        SilverLogger.getLogger(this).error(SELECT_QUERY + selectNodes + COMPO_NAME +
                 nodePK.getComponentName(), e);
         throw e;
-      } finally {
-        DBUtil.close(rs, prepStmt);
       }
     }
-
-    return a;
+    return nodeDetails;
   }
 
   /**
@@ -355,35 +312,25 @@ public class NodeDAO {
    */
   public List<NodeDetail> getDescendantDetails(Connection con, NodeDetail node)
       throws SQLException {
-    String path = node.getPath() + node.getNodePK().getId() + "/%";
-
-    StringBuilder selectQuery = new StringBuilder();
-    selectQuery.append(SELECT_FROM).append(node.getNodePK().getTableName());
-    selectQuery.append(" where nodePath like '").append(path).append("'");
-    selectQuery.append(" and instanceId = ? order by nodePath");
-
-    ArrayList<NodeDetail> a = new ArrayList<>();
-
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    try {
-      prepStmt = con.prepareStatement(selectQuery.toString());
+    final String path = node.getPath() + node.getNodePK().getId() + "/%";
+    final String selectQuery =
+        SELECT_FROM + node.getNodePK().getTableName() + " where nodePath like '" + path +
+            "' and instanceId = ? order by nodePath";
+    final List<NodeDetail> nodeDetails = new ArrayList<>();
+    try (final PreparedStatement prepStmt = con.prepareStatement(selectQuery)) {
       prepStmt.setString(1, node.getNodePK().getComponentName());
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        NodeDetail nd = resultSet2NodeDetail(rs, node.getNodePK());
-        a.add(nd);
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          final NodeDetail nd = resultSet2NodeDetail(rs, node.getNodePK());
+          nodeDetails.add(nd);
+        }
       }
     } catch (SQLException e) {
-      SilverLogger.getLogger(this).error(SELECT_QUERY + selectQuery.toString() + COMPO_NAME +
+      SilverLogger.getLogger(this).error(SELECT_QUERY + selectQuery + COMPO_NAME +
               node.getNodePK().getComponentName(), e);
       throw e;
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
-
-    return a;
+    return nodeDetails;
   }
 
   /**
@@ -397,47 +344,42 @@ public class NodeDAO {
    */
   public List<NodeDetail> getHeadersByLevel(Connection con, NodePK nodePK, int level)
       throws SQLException {
+    final String selectQuery =
+        SELECT_FROM + nodePK.getTableName() + " where nodeLevelNumber=" + level +
+            " and instanceId='" + nodePK.getComponentName() +
+            "' order by ordernumber asc, nodeId asc";
+    return findSubNodeDetails(con, selectQuery, nodePK);
+  }
 
-    List<NodeDetail> headers = new ArrayList<>();
-
-    StringBuilder nodeStatement = new StringBuilder();
-    nodeStatement.append(SELECT_FROM).append(nodePK.getTableName());
-    nodeStatement.append(" where nodeLevelNumber=").append(level);
-    nodeStatement.append(" and instanceId='").append(nodePK.getComponentName()).append("'");
-    nodeStatement.append(" order by ordernumber asc, nodeId asc ");
-    Statement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(nodeStatement.toString());
-      while (rs.next()) {
-        NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
-
-        setTranslations(con, nd);
-
-        headers.add(nd);
+  private List<NodeDetail> findSubNodeDetails(final Connection con, final String selectQuery,
+      final NodePK nodePK) throws SQLException {
+    final List<NodeDetail> details = new ArrayList<>();
+    try (final Statement stmt = con.createStatement()) {
+      try (final ResultSet rs = stmt.executeQuery(selectQuery)) {
+        while (rs.next()) {
+          final NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
+          setTranslations(con, nd);
+          details.add(nd);
+        }
       }
     } catch (SQLException e) {
-      SilverLogger.getLogger(this).error(NODE_STATEMENT + nodeStatement.toString(), e);
+      SilverLogger.getLogger(this).error(NODE_STATEMENT + selectQuery, e);
       throw e;
-    } finally {
-      DBUtil.close(rs, stmt);
     }
-
-    return headers;
+    return details;
   }
 
   private void setTranslations(Connection con, NodeDetail node) throws SQLException {
     // Add default translation
-    NodeI18NDetail nodeI18NDetail = new NodeI18NDetail(node.getLanguage(), node.getName(), node.
+    final NodeI18NDetail nodeI18NDetail =
+        new NodeI18NDetail(node.getLanguage(), node.getName(), node.
         getDescription());
     node.addTranslation(nodeI18NDetail);
     if (I18NHelper.isI18nContentActivated) {
       List<NodeI18NDetail> translations = NodeI18NDAO.getTranslations(con, node.getId());
       for (int t = 0; translations != null && t < translations.size(); t++) {
-        nodeI18NDetail = translations.get(t);
-        node.addTranslation(nodeI18NDetail);
+        final NodeI18NDetail anotherNodeI18NDetail = translations.get(t);
+        node.addTranslation(anotherNodeI18NDetail);
       }
     }
   }
@@ -476,54 +418,26 @@ public class NodeDAO {
    */
   public List<NodeDetail> getAllHeaders(Connection con, NodePK nodePK, String sorting,
       int level) throws SQLException {
-
-    List<NodeDetail> headers = new ArrayList<>();
-    StringBuilder nodeStatement = new StringBuilder();
-
-    nodeStatement.append(SELECT_FROM).append(nodePK.getTableName());
-    nodeStatement.append(" where instanceId ='").append(nodePK.getComponentName()).append("'");
-
+    final StringBuilder selectQuery = new StringBuilder();
+    selectQuery.append(SELECT_FROM).append(nodePK.getTableName());
+    selectQuery.append(" where instanceId ='").append(nodePK.getComponentName()).append("'");
     if (level > 0) {
-      nodeStatement.append(" and nodeLevelNumber = ").append(level);
+      selectQuery.append(" and nodeLevelNumber = ").append(level);
     }
-
     if (StringUtil.isDefined(sorting)) {
-      nodeStatement.append(" order by ").append(sorting);
+      selectQuery.append(" order by ").append(sorting);
     } else {
-      nodeStatement.append(" order by nodePath, orderNumber");
+      selectQuery.append(" order by nodePath, orderNumber");
     }
 
-    Statement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(nodeStatement.toString());
-      while (rs.next()) {
-        NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
-
-        setTranslations(con, nd);
-
-        headers.add(nd);
-      }
-    } catch (SQLException e) {
-      SilverLogger.getLogger(this).error(NODE_STATEMENT + nodeStatement.toString(), e);
-      throw e;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
-
-    return headers;
+    return findSubNodeDetails(con, selectQuery.toString(), nodePK);
   }
 
   public List<NodeDetail> getSubTree(Connection con, NodePK nodePK, String status)
       throws SQLException {
-
     // get the path of the given nodePK
-    NodeDetail detail = loadRow(con, nodePK);
-
-    List<NodeDetail> headers = new ArrayList<>();
-
+    final NodeDetail detail = loadRow(con, nodePK);
+    final List<NodeDetail> headers = new ArrayList<>();
     if (StringUtil.isDefined(status)) {
       if (status.equals(detail.getStatus())) {
         headers.add(detail);
@@ -533,13 +447,12 @@ public class NodeDAO {
       headers.add(detail);
       getSubTree(con, headers, nodePK, status);
     }
-
     return headers;
   }
 
   private void getSubTree(Connection con, List<NodeDetail> tree, NodePK nodePK,
       String status) throws SQLException {
-    Collection<NodeDetail> childrenDetails = getChildrenDetails(con, nodePK);
+    final Collection<NodeDetail> childrenDetails = getChildrenDetails(con, nodePK);
     if (!childrenDetails.isEmpty()) {
       for (NodeDetail child : childrenDetails) {
         if (StringUtil.isDefined(status)) {
@@ -567,22 +480,15 @@ public class NodeDAO {
    */
   public NodePath getNodePath(Connection con, NodePK nodePK)
       throws SQLException {
-    NodePath nodeDetails = new NodePath();
-
+    final NodePath nodePath = new NodePath();
     /* le node courant */
     NodeDetail nd = getAnotherHeader(con, nodePK);
-
-    int currentLevel = nd.getLevel();
-
-    nodeDetails.add(nd);
-    currentLevel--;
-
-    while (currentLevel >= 1) {
+    nodePath.add(nd);
+    for (int i = nd.getLevel() - 1; i >= 1; i--) {
       nd = getAnotherHeader(con, nd.getFatherPK());
-      nodeDetails.add(nd);
-      currentLevel--;
+      nodePath.add(nd);
     }
-    return nodeDetails;
+    return nodePath;
   }
 
   /**
@@ -598,7 +504,6 @@ public class NodeDAO {
    * @since 1.0
    */
   public NodeDetail resultSet2NodeDetail(ResultSet rs, NodePK nodePK) throws SQLException {
-
     /* Récupération des données depuis la BD */
     NodePK pk = new NodePK(String.valueOf(rs.getInt(1)), nodePK);
     String name = rs.getString(2);
@@ -643,32 +548,23 @@ public class NodeDAO {
    * @since 1.0
    */
   public NodeDetail getAnotherHeader(Connection con, NodePK nodePK) throws SQLException {
-
-    String nodeId = nodePK.getId();
-
-    StringBuilder nodeStatement = new StringBuilder();
-    nodeStatement.append(SELECT_FROM).append(nodePK.getTableName());
-    nodeStatement.append(" where nodeId = ").append(nodeId);
-    nodeStatement.append(" and instanceId = '").append(nodePK.getComponentName()).append("'");
-
-    Statement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(nodeStatement.toString());
-      if (rs.next()) {
-        NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
-        setTranslations(con, nd);
-        return nd;
-      } else {
-        throw new NoSuchEntityException("Row for id " + nodeId + " not found in database.");
+    final String nodeId = nodePK.getId();
+    final String selectQuery =
+        SELECT_FROM + nodePK.getTableName() + " where nodeId = " + nodeId + " and instanceId = '" +
+            nodePK.getComponentName() + "'";
+    try (final Statement stmt = con.createStatement()) {
+      try (final ResultSet rs = stmt.executeQuery(selectQuery)) {
+        if (rs.next()) {
+          final NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
+          setTranslations(con, nd);
+          return nd;
+        } else {
+          throw new NoSuchEntityException("Row for id " + nodeId + " not found in database.");
+        }
       }
     } catch (SQLException e) {
-      SilverLogger.getLogger(this).error(NODE_STATEMENT + nodeStatement.toString(), e);
+      SilverLogger.getLogger(this).error(NODE_STATEMENT + selectQuery, e);
       throw e;
-    } finally {
-      DBUtil.close(rs, stmt);
     }
   }
 
@@ -684,38 +580,26 @@ public class NodeDAO {
   public Collection<NodeDetail> getChildrenDetails(Connection con, NodePK nodePK)
       throws SQLException {
     String nodeId = nodePK.getId();
-    List<NodeDetail> a = null;
-    StringBuilder childrenStatement = new StringBuilder();
-    childrenStatement.append(SELECT_FROM).append(nodePK.getTableName());
-    childrenStatement.append(" where nodeFatherId = ? ");
-    childrenStatement.append(" and instanceId = ? ");
-    childrenStatement.append(" order by orderNumber asc");
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    try {
-      prepStmt = con.prepareStatement(childrenStatement.toString());
+    final String selectQuery = SELECT_FROM + nodePK.getTableName() +
+        " where nodeFatherId = ? and instanceId = ? order by orderNumber asc";
+    try (final PreparedStatement prepStmt = con.prepareStatement(selectQuery)) {
       prepStmt.setInt(1, Integer.parseInt(nodeId));
       prepStmt.setString(2, nodePK.getComponentName());
-      rs = prepStmt.executeQuery();
-      a = new ArrayList<>();
-      while (rs.next()) {
-        NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
-
-        setTranslations(con, nd);
-
-        a.add(nd);
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        final List<NodeDetail> nodeDetails = new ArrayList<>();
+        while (rs.next()) {
+          final NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
+          setTranslations(con, nd);
+          nodeDetails.add(nd);
+        }
+        return nodeDetails;
       }
     } catch (SQLException e) {
       SilverLogger.getLogger(this)
-          .error("childrenStatement = " + childrenStatement.toString() + " nodeId = " + nodeId +
+          .error("childrenStatement = " + selectQuery + " nodeId = " + nodeId +
               COMPO_NAME + nodePK.getComponentName(), e);
       throw e;
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
-
-    return a;
   }
 
   /**
@@ -727,35 +611,26 @@ public class NodeDAO {
    * @since 1.0
    */
   public int getChildrenNumber(Connection con, NodePK nodePK) throws SQLException {
-
-    int nbChildren = 0;
-
-    StringBuilder selectQuery = new StringBuilder();
-    selectQuery.append("select count(*) from ").append(nodePK.getTableName())
-        .append(" where nodeFatherId = ? and instanceId = ?");
-
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    try {
-      prepStmt = con.prepareStatement(selectQuery.toString());
+    final String selectQuery = "select count(*) from " + nodePK.getTableName() +
+        " where nodeFatherId = ? and instanceId = ?";
+    try (final PreparedStatement prepStmt = con.prepareStatement(selectQuery)) {
       prepStmt.setInt(1, Integer.parseInt(nodePK.getId()));
       prepStmt.setString(2, nodePK.getComponentName());
-      rs = prepStmt.executeQuery();
-      if (rs.next()) {
-        nbChildren = rs.getInt(1);
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        final int nbChildren;
+        if (rs.next()) {
+          nbChildren = rs.getInt(1);
+        } else {
+          nbChildren = 0;
+        }
+        return nbChildren;
       }
     } catch (SQLException e) {
       SilverLogger.getLogger(this)
-          .error(
-              SELECT_QUERY + selectQuery.toString() + " nodeId = " + nodePK.getId() + COMPO_NAME +
+          .error(SELECT_QUERY + selectQuery + " nodeId = " + nodePK.getId() + COMPO_NAME +
                   nodePK.getComponentName(), e);
       throw e;
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
-
-    return nbChildren;
   }
 
   /**
@@ -769,9 +644,7 @@ public class NodeDAO {
    */
   public NodePK insertRow(Connection con, NodeDetail nd) throws SQLException {
     NodePK pk = nd.getNodePK();
-
     int newId = 0;
-
     String name = nd.getName();
     String description = nd.getDescription();
     String creationDate = nd.getCreationDate();
@@ -807,12 +680,9 @@ public class NodeDAO {
       throw new NodeRuntimeException(e);
     }
 
-    StringBuilder insertQuery = new StringBuilder();
-    insertQuery.append("insert into ").append(nd.getNodePK().getTableName())
-        .append(" values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ? , ?, ? , ?)");
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(insertQuery.toString());
+    final String insertQuery = "insert into " + nd.getNodePK().getTableName() +
+        " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ? , ?, ? , ?)";
+    try (final PreparedStatement prepStmt = con.prepareStatement(insertQuery)) {
       prepStmt.setInt(1, newId);
       prepStmt.setString(2, name);
       prepStmt.setString(3, description);
@@ -829,14 +699,9 @@ public class NodeDAO {
       prepStmt.setString(14, language);
       prepStmt.setInt(15, nd.getRightsDependsOn());
       prepStmt.executeUpdate();
-
       pk.setId(String.valueOf(newId));
-
       unvalidateTree(con, nd.getNodePK());
-    } finally {
-      DBUtil.close(prepStmt);
     }
-
     return pk;
   }
 
@@ -849,21 +714,12 @@ public class NodeDAO {
    * @since 1.0
    */
   public void deleteRow(Connection con, NodePK nodePK) throws SQLException {
-
-    StringBuilder deleteQuery = new StringBuilder();
-    deleteQuery.append("delete from ").append(nodePK.getTableName());
-    deleteQuery.append(" where nodeId=").append(nodePK.getId());
-    deleteQuery.append(" and instanceId='").append(nodePK.getComponentName()).append("'");
-
-    Statement stmt = null;
-
-    try {
-      stmt = con.createStatement();
-      stmt.executeUpdate(deleteQuery.toString());
-
+    final String deleteQuery =
+        "delete from " + nodePK.getTableName() + " where nodeId=" + nodePK.getId() +
+            " and instanceId='" + nodePK.getComponentName() + "'";
+    try (final Statement stmt = con.createStatement()) {
+      stmt.executeUpdate(deleteQuery);
       unvalidateTree(con, nodePK);
-    } finally {
-      DBUtil.close(stmt);
     }
   }
 
@@ -890,7 +746,6 @@ public class NodeDAO {
 
   public NodeDetail selectByNameAndFatherId(Connection con, NodePK pk, String name,
       int nodeFatherId) throws SQLException {
-
     try {
       return loadRow(con, pk, name, nodeFatherId);
     } catch (NodeRuntimeException e) {
@@ -916,69 +771,47 @@ public class NodeDAO {
    */
   public NodeDetail loadRow(Connection con, NodePK nodePK, boolean getTranslations)
       throws SQLException {
-    NodeDetail detail = null;
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.prepareStatement(SELECT_NODE_BY_ID);
+    try (final PreparedStatement stmt = con.prepareStatement(SELECT_NODE_BY_ID)) {
       stmt.setInt(1, Integer.parseInt(nodePK.getId()));
       stmt.setString(2, nodePK.getComponentName());
-      rs = stmt.executeQuery();
-      if (rs.next()) {
-        detail = resultSet2NodeDetail(rs, nodePK);
-
-        if (getTranslations) {
-          setTranslations(con, detail);
+      try (final ResultSet rs = stmt.executeQuery()) {
+        if (rs.next()) {
+          final NodeDetail detail = resultSet2NodeDetail(rs, nodePK);
+          if (getTranslations) {
+            setTranslations(con, detail);
+          }
+          return detail;
+        } else {
+          throw new NodeRuntimeException("Cannot load node " + NODE_ID + nodePK.getId());
         }
-      } else {
-        throw new NodeRuntimeException("Cannot load node " + NODE_ID + nodePK.getId());
       }
     } catch (SQLException e) {
       SilverLogger.getLogger(this).error(SELECT_QUERY + SELECT_NODE_BY_ID, e);
       throw e;
-    } finally {
-      DBUtil.close(rs, stmt);
     }
-
-    return detail;
   }
 
   public NodeDetail loadRow(Connection con, NodePK nodePK, String name, int nodeFatherId)
       throws SQLException {
-
-    NodeDetail detail = null;
-    StringBuilder selectQuery = new StringBuilder();
-    selectQuery.append(SELECT_FROM).append(nodePK.getTableName());
-    selectQuery.append(" where lower(nodename)=?");
-    selectQuery.append(" and instanceId=?");
-    selectQuery.append(" and nodefatherid=?");
-
-
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.prepareStatement(selectQuery.toString());
+    final String selectQuery = SELECT_FROM + nodePK.getTableName() +
+        " where lower(nodename)=? and instanceId=? and nodefatherid=?";
+    try (final PreparedStatement stmt = con.prepareStatement(selectQuery)) {
       stmt.setString(1, name.toLowerCase());
       stmt.setString(2, nodePK.getComponentName());
       stmt.setInt(3, nodeFatherId);
-      rs = stmt.executeQuery();
-      if (rs.next()) {
-        detail = resultSet2NodeDetail(rs, nodePK);
-
-        setTranslations(con, detail);
-      } else {
-        throw new NodeRuntimeException("Cannot load node " + NODE_ID + nodePK.getId());
+      try (final ResultSet rs = stmt.executeQuery()) {
+        if (rs.next()) {
+          final NodeDetail detail = resultSet2NodeDetail(rs, nodePK);
+          setTranslations(con, detail);
+          return detail;
+        } else {
+          throw new NodeRuntimeException("Cannot load node " + NODE_ID + nodePK.getId());
+        }
       }
     } catch (SQLException e) {
-      SilverLogger.getLogger(this).error(SELECT_QUERY + selectQuery.toString(), e);
+      SilverLogger.getLogger(this).error(SELECT_QUERY + selectQuery, e);
       throw e;
-    } finally {
-      DBUtil.close(rs, stmt);
     }
-
-    return detail;
   }
 
   /**
@@ -989,19 +822,12 @@ public class NodeDAO {
    * @since 1.0
    */
   public void storeRow(Connection con, NodeDetail nodeDetail) throws SQLException {
-
-    int rowCount = 0;
-    StringBuilder updateStatement = new StringBuilder();
-    updateStatement.append(UPDATE).append(nodeDetail.getNodePK().getTableName());
-    updateStatement.append(" set nodeName =  ? , nodeDescription = ? , nodePath = ? , ");
-    updateStatement.append(
-        " nodeLevelNumber = ? , nodeFatherId = ? , modelId = ? , nodeStatus = ? , " +
-            "orderNumber = ?, lang = ?, rightsDependsOn = ? ");
-    updateStatement.append(NODE_ID_AND_INSTANCE_ID_CLAUSE);
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(updateStatement.toString());
+    final int rowCount;
+    final String updateQuery = UPDATE + nodeDetail.getNodePK().getTableName() +
+        " set nodeName =  ? , nodeDescription = ? , nodePath = ? , nodeLevelNumber = ? , " +
+        "nodeFatherId = ? , modelId = ? , nodeStatus = ? , orderNumber = ?, lang = ?, " +
+        "rightsDependsOn = ? " + NODE_ID_AND_INSTANCE_ID_CLAUSE;
+    try (final PreparedStatement prepStmt = con.prepareStatement(updateQuery)) {
       prepStmt.setString(1, nodeDetail.getName());
       prepStmt.setString(2, nodeDetail.getDescription());
       prepStmt.setString(3, nodeDetail.getPath());
@@ -1015,10 +841,7 @@ public class NodeDAO {
       prepStmt.setInt(11, Integer.parseInt(nodeDetail.getNodePK().getId()));
       prepStmt.setString(12, nodeDetail.getNodePK().getComponentName());
       rowCount = prepStmt.executeUpdate();
-
       unvalidateTree(con, nodeDetail.getNodePK());
-    } finally {
-      DBUtil.close(prepStmt);
     }
 
     if (rowCount == 0) {
@@ -1028,18 +851,11 @@ public class NodeDAO {
   }
 
   public void moveNode(Connection con, NodeDetail nodeDetail) throws SQLException {
-    int rowCount = 0;
-    StringBuilder updateStatement = new StringBuilder();
-    updateStatement.append(UPDATE).append(nodeDetail.getNodePK().getTableName());
-    updateStatement.append(" set nodePath = ? , ");
-    updateStatement.append(
-        " nodeLevelNumber = ? , nodeFatherId = ? , instanceId = ? , orderNumber = ?, " +
-            "rightsDependsOn = ? ");
-    updateStatement.append(" where nodeId = ? ");
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(updateStatement.toString());
+    final int rowCount;
+    final String updateQuery = UPDATE + nodeDetail.getNodePK().getTableName() +
+        " set nodePath = ? , nodeLevelNumber = ? , nodeFatherId = ? , instanceId = ? , " +
+        "orderNumber = ?, rightsDependsOn = ? where nodeId = ? ";
+    try (final PreparedStatement prepStmt = con.prepareStatement(updateQuery)) {
       prepStmt.setString(1, nodeDetail.getPath());
       prepStmt.setInt(2, nodeDetail.getLevel());
       prepStmt.setInt(3, Integer.parseInt(nodeDetail.getFatherPK().getId()));
@@ -1048,10 +864,7 @@ public class NodeDAO {
       prepStmt.setInt(6, nodeDetail.getRightsDependsOn());
       prepStmt.setInt(7, Integer.parseInt(nodeDetail.getNodePK().getId()));
       rowCount = prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
-
     if (rowCount == 0) {
       throw new NodeRuntimeException(
           "Cannot store node " + NODE_ID + nodeDetail.getNodePK().getId());
@@ -1060,30 +873,19 @@ public class NodeDAO {
 
   public void updateRightsDependency(Connection con, NodePK pk, int rightsDependsOn)
       throws SQLException {
-
-
-    StringBuilder updateStatement = new StringBuilder();
-    updateStatement.append(UPDATE).append(pk.getTableName());
-    updateStatement.append(" set rightsDependsOn =  ? ");
-    updateStatement.append(NODE_ID_AND_INSTANCE_ID_CLAUSE);
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(updateStatement.toString());
+    final String updateStatement =
+        UPDATE + pk.getTableName() + " set rightsDependsOn =  ? " + NODE_ID_AND_INSTANCE_ID_CLAUSE;
+    try (final PreparedStatement prepStmt = con.prepareStatement(updateStatement)) {
       prepStmt.setInt(1, rightsDependsOn);
       prepStmt.setInt(2, Integer.parseInt(pk.getId()));
       prepStmt.setString(3, pk.getInstanceId());
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
   public void sortNodes(Connection con, List<NodePK> nodePKs) throws SQLException {
-    String query = "UPDATE SB_Node_Node SET orderNumber = ? WHERE nodeId = ? ";
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(query);
+    final String query = "UPDATE SB_Node_Node SET orderNumber = ? WHERE nodeId = ? ";
+    try (final PreparedStatement prepStmt = con.prepareStatement(query)) {
       int i = 0;
       for (NodePK nodePK : nodePKs) {
         prepStmt.setInt(1, i);
@@ -1091,8 +893,6 @@ public class NodeDAO {
         prepStmt.executeUpdate();
         i++;
       }
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 }

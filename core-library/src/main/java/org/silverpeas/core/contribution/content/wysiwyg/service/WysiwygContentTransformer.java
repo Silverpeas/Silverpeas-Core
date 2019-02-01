@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.VariablesReplacementDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageUrlAccordingToHtmlSizeDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
@@ -92,9 +93,9 @@ public class WysiwygContentTransformer {
    * @param process the process to execute after all the directives.
    * @param <R> the result type of the process.
    * @return the result of the process execution.
-   * @throws Exception on technical error.
+   * @throws SilverpeasException on technical error.
    */
-  public <R> R transform(WysiwygContentTransformerProcess<R> process) throws Exception {
+  public <R> R transform(WysiwygContentTransformerProcess<R> process) throws SilverpeasException {
     return process.execute(transform());
   }
 
@@ -103,8 +104,9 @@ public class WysiwygContentTransformer {
    * can be for example an attachment.<br>
    * The directive set by method {@link #modifyImageUrlAccordingToHtmlSizeDirective()} is applied.
    * @return the wysiwyg content transformed to be sent by mail.
+   * @throws SilverpeasException on technical error.
    */
-  public MailContentProcess.MailResult toMailContent() throws Exception {
+  public MailContentProcess.MailResult toMailContent() throws SilverpeasException {
     return modifyImageUrlAccordingToHtmlSizeDirective().transform(new MailContentProcess());
   }
 }

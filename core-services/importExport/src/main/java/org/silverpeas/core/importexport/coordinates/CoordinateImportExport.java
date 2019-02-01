@@ -23,17 +23,16 @@
  */
 package org.silverpeas.core.importexport.coordinates;
 
-import org.silverpeas.core.node.coordinates.service.CoordinatesService;
 import org.silverpeas.core.node.coordinates.model.CoordinatePK;
 import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
 import org.silverpeas.core.node.coordinates.model.CoordinateRuntimeException;
-import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.node.coordinates.service.CoordinatesService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import java.rmi.RemoteException;
@@ -49,6 +48,10 @@ import java.util.StringTokenizer;
  */
 public class CoordinateImportExport {
 
+  private static final String NODE_SETTINGS_PATH = "org.silverpeas.node.nodeSettings";
+  private static final String SORT_FIELD = "sortField";
+  private static final String NODE_PATH_DEFAULT_VALUE = "nodepath";
+  private static final String SORT_ORDER = "sortOrder";
   @Inject
   private NodeService nodeService;
 
@@ -65,15 +68,14 @@ public class CoordinateImportExport {
    * @return coordinateId
    * @throws CoordinateRuntimeException
    */
-  public int addPositions(String componentId, String axisPath)
-      throws CoordinateRuntimeException {
+  public int addPositions(String componentId, String axisPath) {
     List<String> combination = getArrayCombination(axisPath);
     int coordinateId = 0;
     NodePK axisPK = new NodePK("toDefine", componentId);
     CoordinatePK coordinatePK = new CoordinatePK("unknown", axisPK);
     try {
       // enrich combination by get ancestors
-      List<CoordinatePoint> allnodes = new ArrayList<CoordinatePoint>();
+      List<CoordinatePoint> allnodes = new ArrayList<>();
       int i = 1;
       for (String nodeId : combination) {
 
@@ -98,8 +100,7 @@ public class CoordinateImportExport {
       }
       coordinateId = getCoordinatesService().addCoordinate(coordinatePK, allnodes);
     } catch (Exception e) {
-      throw new CoordinateRuntimeException("CoordinateImportExport.addPositions()",
-          SilverpeasRuntimeException.ERROR, "coordinates.ADDING_COORDINATES_COMBINATION_FAILED", e);
+      throw new CoordinateRuntimeException("Adding coordinates combination failure", e);
     }
     return coordinateId;
   }
@@ -114,12 +115,10 @@ public class CoordinateImportExport {
    */
   public NodeDetail getNodeDetailByName(String name, int nodeRootId, String componentId) {
     try {
-      NodeDetail nodeDetail = getNodeService().getDetailByNameAndFatherId(
+      return getNodeService().getDetailByNameAndFatherId(
           new NodePK("useless", componentId), name, nodeRootId);
-      return nodeDetail;
     } catch (Exception e) {
-      throw new CoordinateRuntimeException("CoordinateImportExport.addNodesToPublication()",
-          SilverpeasRuntimeException.ERROR, "coordinates.ATTACHING_NODES_TO_PUBLICATION_FAILED", e);
+      throw new CoordinateRuntimeException(e);
     }
   }
 
@@ -131,7 +130,7 @@ public class CoordinateImportExport {
    */
   private List<String> getArrayCombination(String valuePath) {
     StringTokenizer st = new StringTokenizer(valuePath, ",");
-    List<String> combination = new ArrayList<String>();
+    List<String> combination = new ArrayList<>();
     while (st.hasMoreTokens()) {
       String axisValue = st.nextToken();
       axisValue = axisValue.substring(axisValue.lastIndexOf('/') + 1, axisValue.length());
@@ -149,9 +148,8 @@ public class CoordinateImportExport {
    * @return a List of displayName: Axe1 > value15
    * @throws RemoteException
    */
-  public List<String> getCombinationLabels(List<String> combination, String componentId)
-      throws RemoteException {
-    List<String> coordinatesLabels = new ArrayList<String>();
+  public List<String> getCombinationLabels(List<String> combination, String componentId) {
+    List<String> coordinatesLabels = new ArrayList<>();
     for (String position : combination) {
       StringTokenizer st = new StringTokenizer(position, "/");
       StringBuilder pathName = new StringBuilder();
@@ -185,10 +183,9 @@ public class CoordinateImportExport {
    * @return
    */
   public List<NodeDetail> getAxis(String componentId) {
-    SettingBundle nodeSettings =
-        ResourceLocator.getSettingBundle("org.silverpeas.node.nodeSettings");
-    String sortField = nodeSettings.getString("sortField", "nodepath");
-    String sortOrder = nodeSettings.getString("sortOrder", "asc");
+    SettingBundle nodeSettings = ResourceLocator.getSettingBundle(NODE_SETTINGS_PATH);
+    String sortField = nodeSettings.getString(SORT_FIELD, NODE_PATH_DEFAULT_VALUE);
+    String sortOrder = nodeSettings.getString(SORT_ORDER, "asc");
     List<NodeDetail> axis = new ArrayList<>();
     try {
       List headers = getAxisHeaders(componentId);
@@ -202,9 +199,7 @@ public class CoordinateImportExport {
         }
       }
     } catch (Exception e) {
-      throw new CoordinateRuntimeException("CoordinateImportExport.getAxis()",
-          SilverpeasRuntimeException.ERROR,
-          "coordinates.EX_IMPOSSIBLE_DOBTENIR_LES_AXES", e);
+      throw new CoordinateRuntimeException("Getting axis failure", e);
     }
     return axis;
   }
@@ -218,17 +213,16 @@ public class CoordinateImportExport {
   public List<NodeDetail> getAxisHeadersWithChildren(String componentId,
       boolean includeUnclassified,
       boolean takeAxisInChildrenList) {
-    SettingBundle nodeSettings =
-        ResourceLocator.getSettingBundle("org.silverpeas.node.nodeSettings");
-    String sortField = nodeSettings.getString("sortField", "nodepath");
-    String sortOrder = nodeSettings.getString("sortOrder", "asc");
+    SettingBundle nodeSettings = ResourceLocator.getSettingBundle(NODE_SETTINGS_PATH);
+    String sortField = nodeSettings.getString(SORT_FIELD, NODE_PATH_DEFAULT_VALUE);
+    String sortOrder = nodeSettings.getString(SORT_ORDER, "asc");
     List<NodeDetail> axis = new ArrayList<>();
     try {
       List<NodeDetail> headers = getAxisHeaders(componentId);
       for (NodeDetail header : headers) {
-        Collection<NodeDetail> children = new ArrayList<NodeDetail>();
         if (Integer.parseInt(header.getNodePK().getId()) > 1 && includeUnclassified) {
-          children = getNodeService().getSubTree(header.getNodePK(), sortField + " " + sortOrder);
+          final Collection<NodeDetail> children =
+              getNodeService().getSubTree(header.getNodePK(), sortField + " " + sortOrder);
           if (!takeAxisInChildrenList) {
             children.remove(children.iterator().next());
           }
@@ -237,8 +231,7 @@ public class CoordinateImportExport {
         }
       }
     } catch (Exception e) {
-      throw new CoordinateRuntimeException("CoordinateImportExport.getAxisHeadersWithChildren()",
-          SilverpeasRuntimeException.ERROR, "coordinates.EX_IMPOSSIBLE_DOBTENIR_LES_AXES", e);
+      throw new CoordinateRuntimeException("Getting axis failure", e);
     }
     return axis;
   }
@@ -251,23 +244,19 @@ public class CoordinateImportExport {
    * @return
    */
   public List getAxisChildren(NodePK nodePK, boolean takeAxisInChildrenList) {
-    SettingBundle nodeSettings =
-        ResourceLocator.getSettingBundle("org.silverpeas.node.nodeSettings");
-    String sortField = nodeSettings.getString("sortField", "nodepath");
-    String sortOrder = nodeSettings.getString("sortOrder", "asc");
-    List<NodeDetail> children = new ArrayList<NodeDetail>();
+    SettingBundle nodeSettings = ResourceLocator.getSettingBundle(NODE_SETTINGS_PATH);
+    String sortField = nodeSettings.getString(SORT_FIELD, NODE_PATH_DEFAULT_VALUE);
+    String sortOrder = nodeSettings.getString(SORT_ORDER, "asc");
     try {
-      children = getNodeService().getSubTree(nodePK, sortField + " " + sortOrder);
+      final List<NodeDetail> children =
+          getNodeService().getSubTree(nodePK, sortField + " " + sortOrder);
       if (!takeAxisInChildrenList) {
         children.remove(children.iterator().next());
       }
+      return children;
     } catch (Exception e) {
-      throw new CoordinateRuntimeException("CoordinateImportExport.getAxisChildren()",
-          SilverpeasRuntimeException.ERROR,
-          "coordinates.EX_IMPOSSIBLE_DOBTENIR_LES_VALEURS_DUN_AXE",
-          e);
+      throw new CoordinateRuntimeException("Getting axis values failure", e);
     }
-    return children;
   }
 
   /**
@@ -278,9 +267,7 @@ public class CoordinateImportExport {
     try {
       return getNodeService().getHeadersByLevel(new NodePK("useless", componentId), 2);
     } catch (Exception e) {
-      throw new CoordinateRuntimeException("CoordinateImportExport.getAxisHeaders()",
-          SilverpeasRuntimeException.ERROR,
-          "coordinates.EX_IMPOSSIBLE_DOBTENIR_LES_ENTETES_DES_AXES", e);
+      throw new CoordinateRuntimeException(e);
     }
   }
 
@@ -304,10 +291,7 @@ public class CoordinateImportExport {
 
       positionDetail = getNodeHeader(positionPK);
     } catch (Exception e) {
-      throw new CoordinateRuntimeException(
-          "CoordinateImportExport.addPosition()",
-          SilverpeasRuntimeException.ERROR,
-          "coordinates.EX_IMPOSSIBLE_DAJOUTER_UNE_COMPOSANTE_A_L_AXE", e);
+      throw new CoordinateRuntimeException("Adding position failure", e);
     }
     return positionDetail;
   }
@@ -316,16 +300,11 @@ public class CoordinateImportExport {
    * Get node Detail
    */
   public NodeDetail getNodeHeader(NodePK pk) {
-    NodeDetail nodeDetail = null;
     try {
-      nodeDetail = getNodeService().getHeader(pk);
+      return getNodeService().getHeader(pk);
     } catch (Exception e) {
-      throw new CoordinateRuntimeException(
-          "CoordinateImportExport.getNodeHeader()",
-          SilverpeasRuntimeException.ERROR,
-          "coordinates.EX_IMPOSSIBLE_DOBTENIR_LE_NOEUD", e);
+      throw new CoordinateRuntimeException(e);
     }
-    return nodeDetail;
   }
 
   /**
@@ -337,14 +316,7 @@ public class CoordinateImportExport {
    */
   public NodeDetail getNodeHeader(String id, String componentId) {
     NodePK pk = new NodePK(id, componentId);
-    NodeDetail nodeDetail = null;
-    try {
-      nodeDetail = getNodeService().getHeader(pk);
-    } catch (Exception e) {
-      throw new CoordinateRuntimeException("CoordinateImportExport.getNodeHeader()",
-          SilverpeasRuntimeException.ERROR, "coordinates.EX_IMPOSSIBLE_DOBTENIR_LE_NOEUD", e);
-    }
-    return nodeDetail;
+    return getNodeHeader(pk);
   }
 
   /**
@@ -352,12 +324,7 @@ public class CoordinateImportExport {
    * @throws CoordinateRuntimeException
    */
   private CoordinatesService getCoordinatesService() {
-    try {
-      return coordinatesService;
-    } catch (Exception e) {
-      throw new CoordinateRuntimeException("CoordinateImportExport.getCoordinatesService()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    return coordinatesService;
   }
 
   /**

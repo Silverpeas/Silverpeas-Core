@@ -24,7 +24,6 @@
 package org.silverpeas.core.webapi.mylinks;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -35,7 +34,6 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.model.LinkDetailComparator;
 import org.silverpeas.core.mylinks.service.MyLinksService;
@@ -54,8 +52,8 @@ import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.reflect.FieldUtils.writeDeclaredField;
 import static org.apache.commons.lang3.tuple.Pair.of;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
@@ -70,13 +68,9 @@ public class MyLinksResourceTest {
   private MyLinksResource4Test rest;
   private MyLinksService service;
   private OrganizationController orgaCtrl;
-  boolean oldI18nActivationValue;
 
   @BeforeEach
-  public void setup() throws Exception {
-    oldI18nActivationValue = I18NHelper.isI18nContentActivated;
-    I18NHelper.isI18nContentActivated = false;
-
+  public void setup() {
     rest = spy(new MyLinksResource4Test());
     UserDetail user = new UserDetail();
     user.setId(CURRENT_USER_ID);
@@ -92,11 +86,6 @@ public class MyLinksResourceTest {
         invocationOnMock -> UriBuilder.fromUri(PATH_BASE).path(MyLinksResource.PATH));
     service = rest.getMyLinksService();
     orgaCtrl = rest.getOrganisationController();
-  }
-
-  @AfterEach
-  public void tearDown() {
-    I18NHelper.isI18nContentActivated = oldI18nActivationValue;
   }
 
   @SuppressWarnings("unchecked")

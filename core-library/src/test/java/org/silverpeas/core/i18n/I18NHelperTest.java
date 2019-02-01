@@ -71,7 +71,7 @@ public class I18NHelperTest {
    */
   @Test
   public void testGetLanguages() {
-    Iterator<String> result = I18NHelper.getLanguages();
+    Iterator<String> result = I18NHelper.getLanguages().iterator();
     List<String> languages = new ArrayList<String>(3);
     CollectionUtils.addAll(languages, result);
     assertThat(languages, containsInAnyOrder("en", "fr", "de"));

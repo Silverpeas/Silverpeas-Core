@@ -56,8 +56,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -74,7 +74,7 @@ import static java.text.MessageFormat.format;
  */
 public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
-  public static final String dbKey = "xmlWysiwygField_";
+  public static final String DB_KEY = "xmlWysiwygField_";
   private static final String DIRECTORYNAME = "xmlWysiwyg";
   private static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.wysiwyg.settings.wysiwygSettings");
@@ -90,6 +90,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           "indexIt : {2}" +
         "'}');" +
       "'}');\n";
+  private static final String WYSIWYG_FCKFIELD_DISPLAYER_UPDATE = "WysiwygFCKFieldDisplayer.update";
 
   /**
    * Returns the name of the managed types.
@@ -153,8 +154,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       PagesContext pageContext) throws FormException {
     String code = "";
     String fieldValue = field.getValue();
-    if (StringUtil.isDefined(fieldValue) && fieldValue.startsWith(dbKey)) {
-      String fileName = fieldValue.substring(dbKey.length());
+    if (StringUtil.isDefined(fieldValue) && fieldValue.startsWith(DB_KEY)) {
+      String fileName = fieldValue.substring(DB_KEY.length());
       code = getContentFromFile(pageContext.getComponentId(), fileName);
     } else {
       // Case of field initialized with a content
@@ -278,28 +279,28 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   public List<String> update(String newValue, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
     if (!field.getTypeName().equals(TextField.TYPE)) {
-      throw new FormException("WysiwygFCKFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
+      throw new FormException(WYSIWYG_FCKFIELD_DISPLAYER_UPDATE, "form.EX_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
 
     if (field.acceptValue(newValue, pageContext.getLanguage())) {
       try {
         String fieldValue = field.getValue();
-        if (StringUtil.isDefined(fieldValue) && fieldValue.startsWith(dbKey)) {
-          String fileName = fieldValue.substring(dbKey.length());
+        if (StringUtil.isDefined(fieldValue) && fieldValue.startsWith(DB_KEY)) {
+          String fileName = fieldValue.substring(DB_KEY.length());
           setContentIntoFile(pageContext.getComponentId(), fileName, newValue);
         } else {
           String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
           String fileName =
               setContentIntoFile(pageContext.getComponentId(), pageContext.getObjectId(),
                   template.getFieldName(), newValue, contentLanguage);
-          field.setValue(dbKey + fileName, contentLanguage);
+          field.setValue(DB_KEY + fileName, contentLanguage);
         }
       } catch (FormException e) {
-        throw new FormException("WysiwygFCKFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", e);
+        throw new FormException(WYSIWYG_FCKFIELD_DISPLAYER_UPDATE, "form.EX_NOT_CORRECT_VALUE", e);
       }
     } else {
-      throw new FormException("WysiwygFCKFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
+      throw new FormException(WYSIWYG_FCKFIELD_DISPLAYER_UPDATE, "form.EX_NOT_CORRECT_VALUE",
           TextField.TYPE);
     }
     return new ArrayList<>();
@@ -321,7 +322,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     String fieldValue = field.getValue();
     String fieldValueIndex = "";
     if (StringUtil.isDefined(fieldValue)) {
-      if (fieldValue.startsWith(dbKey)) {
+      if (fieldValue.startsWith(DB_KEY)) {
         String file = getFile(indexEntry.getComponent(), indexEntry.getObjectId(), fieldName,
             language);
         try {
@@ -350,7 +351,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     String code = getContent(from.getInstanceId(), from.getId(), template.getFieldName(), language);
     String fileName = setContentIntoFile(to.getInstanceId(), to.getId(), template.
         getFieldName(), code, language);
-    return dbKey + fileName;
+    return DB_KEY + fileName;
   }
 
   public void duplicateContent(Field field, FieldTemplate template,
@@ -362,7 +363,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         template.getFieldName(), contentLanguage);
     String fileName = setContentIntoFile(pageContext.getComponentId(), newObjectId, template.
         getFieldName(), code, contentLanguage);
-    field.setValue(dbKey + fileName, pageContext.getLanguage());
+    field.setValue(DB_KEY + fileName, pageContext.getLanguage());
   }
 
   private String getContent(String componentId, String objectId, String fieldName,
@@ -436,9 +437,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           File destFile = new File(toPath, getFileName(fieldName, toPK.getId()));
           moveOrCopyFile(fromPK, toPK, srcFile, destFile, copy, oldAndNewFileIds);
 
-          Iterator<String> languages = I18NHelper.getLanguages();
-          while (languages.hasNext()) {
-            String language = languages.next();
+          Collection<String> languages = I18NHelper.getLanguages();
+          for (final String language: languages) {
             if (fieldName.startsWith(language + "_")) {
               // skip en_
               fieldName = fieldName.substring(3);
@@ -477,9 +477,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     String content = FileUtils.readFileToString(file, Charsets.UTF_8);
     ResourceReference fromPK = new ResourceReference(ResourceReference.UNKNOWN_ID, from);
     ResourceReference toPK = new ResourceReference(ResourceReference.UNKNOWN_ID, to);
-    for (String oldId : oldAndNewFileIds.keySet()) {
-      fromPK.setId(oldId);
-      toPK.setId(oldAndNewFileIds.get(oldId));
+    for (Map.Entry<String, String> fileIds : oldAndNewFileIds.entrySet()) {
+      fromPK.setId(fileIds.getKey());
+      toPK.setId(fileIds.getValue());
       content = replaceInternalImageId(content, fromPK, toPK);
     }
     FileUtils.writeStringToFile(file, content, Charsets.UTF_8);
@@ -529,10 +529,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           setContentIntoFile(componentIdTo, objectIdTo, fieldName, fieldContent, null);
 
           // paste translations
-          Iterator<String> languages = I18NHelper.getLanguages();
-          while (languages.hasNext()) {
-            String language = languages.next();
-
+          Collection<String> languages = I18NHelper.getLanguages();
+          for (final String language: languages) {
             if (fieldName.startsWith(language + "_")) {
               // skip en_
               fieldName = fieldName.substring(3);
@@ -540,14 +538,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
               setContentIntoFile(componentIdTo, objectIdTo, fieldName, fieldContent, language);
             }
           }
-        }
-      }
 
-      // Delete merged files
-      for (File file : files) {
-        String fileName = file.getName();
-        if (fileName.startsWith(objectIdFrom + "_")) {
-          file.delete();
+          FileUtils.deleteQuietly(file);
         }
       }
     }
@@ -571,7 +563,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       for (String fieldName : fieldNames) {
         String filePath = getFile(pk.getInstanceId(), pk.getId(), fieldName, language);
         File file = new File(filePath);
-        if (file != null && file.exists()) {
+        if (file.exists()) {
           FileUtils.deleteQuietly(file);
         }
       }
