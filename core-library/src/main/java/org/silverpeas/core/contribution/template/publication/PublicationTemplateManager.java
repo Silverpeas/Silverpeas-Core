@@ -659,10 +659,12 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
   public void deleteDirectoryData(String userId) {
     PublicationTemplate template = getDirectoryTemplate();
-    try {
-      template.getRecordSet().delete(userId);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e);
+    if (template != null) {
+      try {
+        template.getRecordSet().delete(userId);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
     }
   }
 
