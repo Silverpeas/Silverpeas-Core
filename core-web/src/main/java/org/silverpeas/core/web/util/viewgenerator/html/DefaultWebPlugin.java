@@ -39,6 +39,7 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
 /**
  * @author Yohann Chastagnier
  */
+@SuppressWarnings("Duplicates")
 @Singleton
 public class DefaultWebPlugin implements WebPlugin, Initialization {
 
@@ -79,7 +80,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(LIGHTSLIDESHOW, (xhtml, language) -> includeLightweightSlideshow(xhtml));
     add(LANG, (xhtml, language) -> includeLang(xhtml));
     add(TICKER, JavascriptPluginInclusion::includeTicker);
-    add(SUBSCRIPTION, (xhtml, language) -> includeDynamicallySubscription(xhtml, null));
+    add(SUBSCRIPTION, JavascriptPluginInclusion::includeDynamicallySubscription);
     add(DRAGANDDROPUPLOAD, JavascriptPluginInclusion::includeDragAndDropUpload);
     add(CHART, JavascriptPluginInclusion::includeChart);
     add(CHAT, (xhtml, language) -> includeChat(xhtml));

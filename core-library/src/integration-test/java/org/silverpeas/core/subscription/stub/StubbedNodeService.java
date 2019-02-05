@@ -23,16 +23,14 @@
  */
 package org.silverpeas.core.subscription.stub;
 
-import org.silverpeas.core.node.service.DefaultNodeService;
 import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.DefaultNodeService;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
@@ -47,8 +45,8 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
 public class StubbedNodeService extends DefaultNodeService {
 
   @Override
-  public Collection<NodeDetail> getPath(final NodePK pk) {
-    Collection<NodeDetail> path = new ArrayList<NodeDetail>();
+  public NodePath getPath(final NodePK pk) {
+    NodePath path = new NodePath();
     NodeDetail currentNodeDetail = new NodeDetail();
     currentNodeDetail.setNodePK(pk);
     path.add(currentNodeDetail);

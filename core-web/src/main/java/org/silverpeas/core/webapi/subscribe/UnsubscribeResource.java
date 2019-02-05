@@ -47,10 +47,13 @@
 */
 package org.silverpeas.core.webapi.subscribe;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.CommentRuntimeException;
+import org.silverpeas.core.node.model.NodePath;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
@@ -58,10 +61,10 @@ import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.NodeSubscription;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
+import org.silverpeas.core.web.subscription.bean.NodeSubscriptionBean;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -120,7 +123,7 @@ public class UnsubscribeResource extends RESTWebService {
           new ComponentSubscription(subscriber, componentId, getUser().getId());
       SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscription);
       ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
-      MessageNotifier.addSuccess(MessageFormat
+      WebMessager.getInstance().addSuccess(MessageFormat
           .format(getBundle().getString("GML.unsubscribe.success"),
               component.getLabel(getUser().getUserPreferences().getLanguage())));
       return Response.ok(Collections.singletonList("OK")).build();
@@ -163,9 +166,17 @@ public class UnsubscribeResource extends RESTWebService {
   private Response unsubscribeSubscriberFromTopic(@PathParam("topicId") String topicId,
       SubscriptionSubscriber subscriber) {
     try {
-      Subscription subscription = new NodeSubscription(subscriber, new NodePK(topicId, componentId),
-          getUser().getId());
+      final Subscription subscription = new NodeSubscription(subscriber,
+          new NodePK(topicId, componentId), getUser().getId());
       SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscription);
+      final ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
+      final NodePath path = NodeService.get().getPath(subscription.getResource().getPK());
+      final String userLanguage = getUserPreferences().getLanguage();
+      final NodeSubscriptionBean nodeSubscriptionBean = new NodeSubscriptionBean(subscription, path,
+          component, userLanguage);
+      WebMessager.getInstance().addSuccess(MessageFormat
+          .format(getBundle().getString("GML.unsubscribe.success"),
+              nodeSubscriptionBean.getPath()));
       return Response.ok(Collections.singletonList("OK")).build();
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);

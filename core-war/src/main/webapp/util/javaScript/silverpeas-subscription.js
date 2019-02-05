@@ -285,4 +285,87 @@
     });
   }
 
+  if (!window.SubscriptionBundle) {
+    window.SubscriptionBundle = new SilverpeasPluginBundle();
+  }
+
+  /**
+   * Subscription plugin in charge to handle the subscribe and unsubscribe.
+   * It handles automatically the menu action by detecting a span HTML TAG with id
+   * 'subscriptionMenuLabel'.
+   *
+   * The plugin is dynamically loaded, so the new instance can be performed outside the
+   * corresponding promises :
+   * SUBSCRIPTION_PROMISE.then(function(){
+   *  window.subscriptionManager = new SilverpeasSubscriptionManager(...);
+   * });
+   *
+   * On instantiation, the plugin detects automatically the menu to update.
+   *
+   * The menu action must call the switchUserSubscription method.
+   */
+  window.SilverpeasSubscriptionManager = function(params) {
+    if (typeof params !== 'object') {
+      params = {componentInstanceId : params};
+    }
+    var __context = extendsObject({
+      state : this.STATE.SUBSCRIBED,
+      componentInstanceId : undefined,
+      topicId : undefined,
+      labels : {
+        subscribe : SubscriptionBundle.get('s.s'),
+        unsubscribe : SubscriptionBundle.get('s.u')
+      },
+      $menuLabel : undefined
+    }, params);
+    var url = webContext + '/services/subscriptions/' + __context.componentInstanceId;
+    if (__context.topicId) {
+      url += '/' + __context.topicId;
+    }
+    sp.ajaxRequest(sp.url.format(url, {userId : 'me'})).sendAndPromiseJsonResponse().then(function(userSubscriptions) {
+      whenSilverpeasReady(function() {
+        __context.$menuLabel = $("#subscriptionMenuLabel");
+        __context.state = userSubscriptions.length ? this.STATE.SUBSCRIBED : this.STATE.NOT_SUBSCRIBED;
+        __updateUI();
+      }.bind(this));
+    }.bind(this));
+    var __updateUI = function() {
+      var label;
+      if (__context.state === this.STATE.SUBSCRIBED) {
+        label = __context.labels.unsubscribe;
+      } else {
+        label = __context.labels.subscribe;
+      }
+      __context.$menuLabel.html(label);
+    }.bind(this);
+    /**
+     * This method must be called by menu action.
+     */
+    this.switchUserSubscription = function() {
+      var __url = '/' + __context.componentInstanceId;
+      if (__context.topicId) {
+        __url += '/topic/' + __context.topicId;
+      }
+      var promise;
+      if (__context.state === this.STATE.SUBSCRIBED) {
+        promise = sp.ajaxRequest(webContext + '/services/unsubscribe' +
+            __url).byPostMethod().sendAndPromiseJsonResponse().then(function() {
+          __context.state = this.STATE.NOT_SUBSCRIBED;
+          __updateUI();
+        }.bind(this));
+      } else {
+        promise = sp.ajaxRequest(webContext + '/services/subscribe' +
+            __url).byPostMethod().sendAndPromiseJsonResponse().then(function() {
+          __context.state = this.STATE.SUBSCRIBED;
+          __updateUI();
+        }.bind(this));
+      }
+      return promise;
+    };
+  };
+  window.SilverpeasSubscriptionManager.prototype.STATE = {
+    SUBSCRIBED : 'SUBSCRIBED',
+    NOT_SUBSCRIBED : 'NOT_SUBSCRIBED'
+  };
+
 })(jQuery);

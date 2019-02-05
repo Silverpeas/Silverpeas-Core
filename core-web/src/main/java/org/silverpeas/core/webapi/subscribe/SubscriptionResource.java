@@ -47,25 +47,27 @@
 */
 package org.silverpeas.core.webapi.subscribe;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.CommentRuntimeException;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.subscription.Subscription;
-import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.service.SubscribeRuntimeException;
+import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionList;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
+import javax.annotation.Nonnull;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -77,6 +79,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A REST Web resource representing a given subscription.
@@ -96,13 +101,15 @@ public class SubscriptionResource extends RESTWebService {
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @param userId optional filter on a user represented by its id.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    *         component subscriptions.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Collection<SubscriptionEntity> getComponentSubscriptions() {
-    return getSubscriptions(null);
+  public Collection<SubscriptionEntity> getComponentSubscriptions(
+      @QueryParam("userId") final String userId) {
+    return getSubscriptions(null, userId);
   }
 
   /**
@@ -112,21 +119,25 @@ public class SubscriptionResource extends RESTWebService {
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param resourceId identifier of the aimed resource (NODE for now). When a new type of resource
    * will be managed, the resource type will have to be passed into URI
+   * @param userId optional filter on a user represented by its id.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    *         component subscriptions.
    */
   @GET
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Collection<SubscriptionEntity> getSubscriptions(@PathParam("id") String resourceId) {
+  public Collection<SubscriptionEntity> getSubscriptions(@PathParam("id") final String resourceId,
+      @QueryParam("userId") final String userId) {
     try {
       final SubscriptionList subscriptions;
-      if (StringUtil.isDefined(resourceId)) {
-        subscriptions = SubscriptionServiceProvider.getSubscribeService()
-            .getByResource(NodeSubscriptionResource.from(new NodePK(resourceId, componentId)));
+      final org.silverpeas.core.subscription.SubscriptionResource
+          resource = getSubscriptionResource(resourceId);
+      if (isDefined(userId)) {
+        final User user = "me".equals(userId) ? getUser() : User.getById(userId);
+        final SubscriptionSubscriber subscriber = UserSubscriptionSubscriber.from(user.getId());
+        subscriptions = getSubscribeService().getBySubscriberAndResource(subscriber, resource);
       } else {
-        subscriptions = SubscriptionServiceProvider.
-            getSubscribeService().getByResource(ComponentSubscriptionResource.from(componentId));
+        subscriptions = getSubscribeService().getByResource(resource);
       }
       return asWebEntities(subscriptions.filterOnDomainVisibilityFrom(UserDetail.from(getUser())));
     } catch (CommentRuntimeException ex) {
@@ -166,14 +177,9 @@ public class SubscriptionResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SubscriberEntity> getSubscribers(@PathParam("id") String resourceId) {
     try {
-      final org.silverpeas.core.subscription.SubscriptionResource subscriptionResource;
-      if (StringUtil.isDefined(resourceId)) {
-        subscriptionResource = NodeSubscriptionResource.from(new NodePK(resourceId, componentId));
-      } else {
-        subscriptionResource = ComponentSubscriptionResource.from(componentId);
-      }
-      return asSubscriberWebEntities(SubscriptionServiceProvider.
-          getSubscribeService().getSubscribers(subscriptionResource)
+      final org.silverpeas.core.subscription.SubscriptionResource
+          subscriptionResource = getSubscriptionResource(resourceId);
+      return asSubscriberWebEntities(getSubscribeService().getSubscribers(subscriptionResource)
           .filterOnDomainVisibilityFrom(UserDetail.from(getUser())));
     } catch (SubscribeRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
@@ -252,14 +258,25 @@ public class SubscriptionResource extends RESTWebService {
     }
   }
 
+  @Nonnull
+  private org.silverpeas.core.subscription.SubscriptionResource getSubscriptionResource(
+      @PathParam("id") final String resourceId) {
+    final org.silverpeas.core.subscription.SubscriptionResource subscriptionResource;
+    if (isDefined(resourceId)) {
+      subscriptionResource = NodeSubscriptionResource.from(new NodePK(resourceId, componentId));
+    } else {
+      subscriptionResource = ComponentSubscriptionResource.from(componentId);
+    }
+    return subscriptionResource;
+  }
+
   /**
    * Gets WEB entity collection representing the given subscription collection.
    * @param subscriptions a collection of subscriptions
    * @return a collection of subscription entities
    */
   protected Collection<SubscriptionEntity> asWebEntities(Collection<Subscription> subscriptions) {
-    Collection<SubscriptionEntity> entities =
-        new ArrayList<SubscriptionEntity>(subscriptions.size());
+    final Collection<SubscriptionEntity> entities = new ArrayList<>(subscriptions.size());
     for (Subscription subscription : subscriptions) {
       entities.add(asWebEntity(subscription));
     }
@@ -282,7 +299,7 @@ public class SubscriptionResource extends RESTWebService {
    */
   protected Collection<SubscriberEntity> asSubscriberWebEntities(
       Collection<SubscriptionSubscriber> subscribers) {
-    Collection<SubscriberEntity> entities = new ArrayList<SubscriberEntity>(subscribers.size());
+    final Collection<SubscriberEntity> entities = new ArrayList<>(subscribers.size());
     for (SubscriptionSubscriber subscriber : subscribers) {
       entities.add(asSubscriberWebEntity(subscriber));
     }

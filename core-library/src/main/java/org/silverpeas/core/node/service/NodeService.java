@@ -24,6 +24,7 @@
 package org.silverpeas.core.node.service;
 
 import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -119,7 +120,7 @@ public interface NodeService {
    * @param pk the node primary key.
    * @return a NodeDetail Collection (only header).
    */
-  Collection<NodeDetail> getPath(NodePK pk);
+  NodePath getPath(NodePK pk);
 
   /**
    * Get the header of each child of the node.

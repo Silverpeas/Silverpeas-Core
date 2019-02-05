@@ -554,7 +554,7 @@
 <!-- Breadcrumb -->
 <view:browseBar componentId="${instanceId}">
   <c:forEach items="${context.path}" var="path">
-    <view:browseBarElt link="${path.link}" label="${path.name}"/>
+    <view:browseBarElt link="javascript:spWindow.loadLink('${path.link}')" label="${path.name}"/>
   </c:forEach>
   <view:browseBarElt link="#" label="${panelTitleLabel}"/>
 </view:browseBar>
