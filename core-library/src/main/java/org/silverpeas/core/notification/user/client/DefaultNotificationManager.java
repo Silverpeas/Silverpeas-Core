@@ -558,12 +558,14 @@ public class DefaultNotificationManager extends AbstractNotification
 
   private String getUserEmail(final String userId) {
     String valret = "";
+    if (! "-1".equals(userId)) {
       try {
         UserDetail uDetail = AdministrationServiceProvider.getAdminService().getUserDetail(userId);
         valret = uDetail.geteMail();
       } catch (AdminException e) {
         SilverLogger.getLogger(this).warn(e);
       }
+    }
     return valret;
   }
 
@@ -905,12 +907,12 @@ public class DefaultNotificationManager extends AbstractNotification
 
   private void setSenderEmail(final NotificationParameters params,
       final Map<String, Object> theExtraParams, final String senderName) {
-    String fromEmail = senderName;
-    if (!StringUtil.isValidEmailAddress(fromEmail) || params.getFromUserId() >= 0) {
+    String fromEmail = null;
+    if (!StringUtil.isValidEmailAddress(senderName) && params.getFromUserId() >= 0) {
       fromEmail = getUserEmail(String.valueOf(params.getFromUserId()));
-      if (!StringUtil.isDefined(fromEmail)) {
-        fromEmail = AdministrationServiceProvider.getAdminService().getSilverpeasEmail();
-      }
+    }
+    if (StringUtil.isNotDefined(fromEmail)) {
+      fromEmail = AdministrationServiceProvider.getAdminService().getSilverpeasEmail();
     }
     theExtraParams.put(FROM, fromEmail);
   }
