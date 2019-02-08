@@ -48,7 +48,7 @@ public class ParticipantImpl implements Participant, Serializable {
   @XmlID
   @XmlAttribute
   private String name;
-  @XmlAttribute(name = "state")
+  @XmlAttribute
   private String resolvedState;
   @XmlElement(name = "label", type = SpecificLabel.class)
   private List<ContextualDesignation> labels;
