@@ -72,6 +72,6 @@ public class NullUserNotification implements UserNotification {
   @Override
   public void send(final BuiltInNotifAddress notificationAddress) {
     // Nothing to do
-    SilverLogger.getLogger(this).warn("No user notification implemented yet");
+    SilverLogger.getLogger(this).info("No user notification implemented yet");
   }
 }
