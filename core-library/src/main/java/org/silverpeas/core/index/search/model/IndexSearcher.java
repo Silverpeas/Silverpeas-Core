@@ -29,15 +29,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.PrefixQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TermInSetQuery;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TermRangeQuery;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.util.BytesRef;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.IndexFileManager;
@@ -62,6 +54,8 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.index.indexing.model.IndexProcessor.doSearch;
 import static org.silverpeas.core.index.indexing.model.IndexReadersCache.getIndexReader;
@@ -75,7 +69,7 @@ public class IndexSearcher {
 
   private static final String INDEX_SEARCH_ERROR = "Index search failure";
   private static final int DEFAULT_MAX_RESULT = 100;
-  private static final int DEFAULT_PRIMARY_FACTOR = 3;
+  private static final int DEFAULT_FIELDHEADER_BOOST = 3;
 
   private QueryParser.Operator defaultOperator;
 
@@ -83,12 +77,7 @@ public class IndexSearcher {
    * The primary factor used with the secondary one to give a better score to entries whose title or
    * abstract match the query.
    */
-  private int primaryFactor = DEFAULT_PRIMARY_FACTOR;
-  /**
-   * The secondary factor used with the first one to give a better score to entries whose title or
-   * abstract match the query.
-   */
-  private int secondaryFactor = 1;
+  private int fieldHeaderBoost;
 
   @Inject
   private IndexManager indexManager;
@@ -104,8 +93,6 @@ public class IndexSearcher {
    */
   private IndexSearcher() {
     indexManager = IndexManager.get();
-    primaryFactor = getFactorFromProperties("PrimaryFactor", primaryFactor);
-    secondaryFactor = getFactorFromProperties("SecondaryFactor", secondaryFactor);
   }
 
   public static IndexSearcher get() {
@@ -118,35 +105,18 @@ public class IndexSearcher {
 
   @PostConstruct
   private void init() {
-    try {
-      SettingBundle settings =
-          ResourceLocator.getSettingBundle("org.silverpeas.index.search.searchEngineSettings");
-      int paramOperand = settings.getInteger("defaultOperand", 0);
-      if (paramOperand == 0) {
-        defaultOperator = QueryParser.OR_OPERATOR;
-      } else {
-        defaultOperator = QueryParser.AND_OPERATOR;
-      }
-
-      maxNumberResult = settings.getInteger("maxResults", DEFAULT_MAX_RESULT);
-    } catch (MissingResourceException e) {
-      SilverLogger.getLogger(this)
-          .error("Error while loading the settings from searchEngineSettings.properties", e);
-    }
-  }
-
-
-  /**
-   * Get the primary factor from the IndexEngine.properties file.
-   *
-   * @param propertyName
-   * @param defaultValue
-   * @return
-   */
-  private static int getFactorFromProperties(String propertyName, int defaultValue) {
     SettingBundle settings =
-        ResourceLocator.getSettingBundle("org.silverpeas.index.indexing.IndexEngine");
-    return settings.getInteger(propertyName, defaultValue);
+        ResourceLocator.getSettingBundle("org.silverpeas.index.search.searchEngineSettings");
+    int paramOperand = settings.getInteger("defaultOperand", 0);
+    if (paramOperand == 0) {
+      defaultOperator = QueryParser.OR_OPERATOR;
+    } else {
+      defaultOperator = QueryParser.AND_OPERATOR;
+    }
+
+    maxNumberResult = settings.getInteger("maxResults", DEFAULT_MAX_RESULT);
+
+    fieldHeaderBoost = settings.getInteger("boost.field.header", DEFAULT_FIELDHEADER_BOOST);
   }
 
   /**
@@ -264,7 +234,7 @@ public class IndexSearcher {
     }
 
     try {
-      Query plainTextQuery = getPlainTextQuery(query, IndexManager.CONTENT);
+      Query plainTextQuery = getPlainTextQuery(query);
       if (plainTextQuery != null) {
         booleanQueryBuilder.add(plainTextQuery, BooleanClause.Occur.MUST);
       }
@@ -283,7 +253,7 @@ public class IndexSearcher {
         IndexEntry.ENDDATE_DEFAULT, true, true);
   }
 
-  private Query getPlainTextQuery(QueryDescription query, String searchField) throws ParseException {
+  private Query getPlainTextQuery(QueryDescription query) throws ParseException {
     if (!StringUtil.isDefined(query.getQuery())) {
       return null;
     }
@@ -291,29 +261,20 @@ public class IndexSearcher {
     String language = query.getRequestedLanguage();
     Analyzer analyzer = indexManager.getAnalyzer(language);
 
-    Query parsedQuery;
-    try {
-      if (I18NHelper.isI18nContentActivated && "*".equals(language)) {
-        // search over all languages
-        Set<String> languages = I18NHelper.getAllSupportedLanguages();
-        parsedQuery = getQuery(searchField, query.getQuery(), languages, analyzer);
-      } else {
-        // search only specified language
-        String fieldName = searchField;
-        if (I18NHelper.isI18nContentActivated && !"*".equals(language) &&
-            !I18NHelper.isDefaultLanguage(language)) {
-          fieldName = getFieldName(searchField, language);
-        }
-
-        QueryParser queryParser = new QueryParser(fieldName, analyzer);
-        queryParser.setDefaultOperator(defaultOperator);
-        parsedQuery = queryParser.parse(query.getQuery());
-      }
-    } catch (org.apache.lucene.queryparser.classic.ParseException e) {
-      throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, e);
+    Set<String> languages = Stream.of(language).collect(Collectors.toSet());
+    if (I18NHelper.isI18nContentActivated && "*".equals(language)) {
+      // search over all languages
+      languages = I18NHelper.getAllSupportedLanguages();
     }
+    Query queryOnContent = getQuery(IndexManager.CONTENT, query.getQuery(), languages, analyzer);
+    Query queryOnHeader = getQuery(IndexManager.HEADER, query.getQuery(), languages, analyzer);
 
-    return parsedQuery;
+    BoostQuery boostQuery = new BoostQuery(queryOnHeader, fieldHeaderBoost);
+    BooleanQuery.Builder booleanQuery = new BooleanQuery.Builder();
+    booleanQuery.add(boostQuery, BooleanClause.Occur.SHOULD);
+    booleanQuery.add(queryOnContent, BooleanClause.Occur.SHOULD);
+    booleanQuery.setMinimumNumberShouldMatch(1);
+    return booleanQuery.build();
   }
 
   private Query getMultiFieldQuery(QueryDescription query)
@@ -323,10 +284,9 @@ public class IndexSearcher {
       Analyzer analyzer = indexManager.getAnalyzer(query.getRequestedLanguage());
       BooleanQuery.Builder booleanQuery = new BooleanQuery.Builder();
 
-      String keyword = query.getQuery();
-      if (StringUtil.isDefined(keyword)) {
-        Query headerQuery = getQuery(IndexManager.CONTENT, keyword, languages, analyzer);
-        booleanQuery.add(headerQuery, BooleanClause.Occur.MUST);
+      Query plainTextQuery = getPlainTextQuery(query);
+      if (plainTextQuery != null) {
+        booleanQuery.add(plainTextQuery, BooleanClause.Occur.MUST);
       }
 
       List<FieldDescription> fieldQueries = query.getMultiFieldQuery();
@@ -362,13 +322,26 @@ public class IndexSearcher {
     for (String language : languages) {
       QueryParser parser = new QueryParser(getFieldName(fieldName, language), analyzer);
       parser.setDefaultOperator(defaultOperator);
-      try {
-        booleanQueryBuilder.add(parser.parse(queryStr), BooleanClause.Occur.SHOULD);
-      } catch (org.apache.lucene.queryparser.classic.ParseException e) {
-        throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, e);
+      Query query = parse(parser, queryStr);
+      if (query != null) {
+        booleanQueryBuilder.add(query, BooleanClause.Occur.SHOULD);
       }
     }
     return booleanQueryBuilder.build();
+  }
+
+  private Query parse(QueryParser parser, String toParse) throws ParseException {
+    Query query;
+    try {
+      query = parser.parse(toParse);
+    } catch (org.apache.lucene.queryparser.classic.ParseException e) {
+      try {
+        query = parser.parse(QueryParser.escape(toParse));
+      } catch (org.apache.lucene.queryparser.classic.ParseException pe) {
+        throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, e);
+      }
+    }
+    return query;
   }
 
   private String getFieldName(String name, String language) {

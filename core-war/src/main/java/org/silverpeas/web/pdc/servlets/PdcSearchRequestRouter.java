@@ -700,8 +700,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       String sortOrder = request.getParameter("sortOrder");
       if (StringUtil.isDefined(sortOrder)) {
         pdcSC.setSortOrder(sortOrder);
-      } else {
-        pdcSC.setSortOrder(PdcSearchSessionController.SORT_ORDER_ASC);
       }
 
       pdcSC.setSearchType(PdcSearchSessionController.SEARCH_XML);
