@@ -53,6 +53,17 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   private Map<String, T> translations = new HashMap<>(3);
   private boolean removeTranslation = false;
 
+  protected AbstractI18NBean() {
+  }
+
+  protected AbstractI18NBean(final AbstractI18NBean other) {
+    this.name = other.name;
+    this.description = other.description;
+    this.language = other.language;
+    this.translationId = other.translationId;
+    this.translations.putAll(other.translations);
+    this.removeTranslation = other.removeTranslation;
+  }
 
   /**
    * Gets the name of the bean (default plat-form language)

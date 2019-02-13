@@ -210,7 +210,7 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public UserDetail[] getFiltredDirectUsers(final String sGroupId,
+  public UserDetail[] getFilteredDirectUsers(final String sGroupId,
       final String sUserLastNameFilter) {
     return new UserDetail[0];
   }

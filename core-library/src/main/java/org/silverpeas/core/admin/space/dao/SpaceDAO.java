@@ -46,7 +46,7 @@ public class SpaceDAO {
 
   public List<Integer> getRootSpaceIds(Connection con)
       throws SQLException {
-    return getSpacesByQuery(con, QUERY_SORTED_ROOT_SPACE_IDS);
+    return getSpaceIdsByQuery(con, QUERY_SORTED_ROOT_SPACE_IDS);
   }
 
   private static final String QUERY_SORTED_ROOT_SPACE_IDS = "SELECT id FROM st_space WHERE "
@@ -110,19 +110,19 @@ public class SpaceDAO {
         "st_spaceuserrole WHERE st_spaceuserrole_group_rel.spaceuserroleid = st_spaceuserrole.id" +
         " AND st_spaceuserrole.rolename='" + SpaceProfileInst.SPACE_MANAGER +
         "' AND st_spaceuserrole_group_rel.groupid IN (" + list2String(groupIds) + ")";
-    return getSpacesByQuery(con, query);
+    return getSpaceIdsByQuery(con, query);
   }
 
-  private List<Integer> getSpacesByQuery(final Connection con, final String query)
+  private List<Integer> getSpaceIdsByQuery(final Connection con, final String query)
       throws SQLException {
-    final List<Integer> manageableSpaceIds = new ArrayList<>();
+    final List<Integer> spaceIds = new ArrayList<>();
     try (final PreparedStatement stmt = con.prepareStatement(query);
          final ResultSet rs = stmt.executeQuery()) {
       while (rs.next()) {
-        manageableSpaceIds.add(rs.getInt(1));
+        spaceIds.add(rs.getInt(1));
       }
     }
-    return manageableSpaceIds;
+    return spaceIds;
   }
 
   private static String list2String(List<String> ids) {

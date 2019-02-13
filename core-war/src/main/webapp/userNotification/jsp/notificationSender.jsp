@@ -55,13 +55,27 @@
 <script type="text/javascript">
   var userSelectApi;
 
+  var __notificationSender_deferredOnPageReady = sp.promise.deferred();
+  var __notificationSender_allPromises = [
+    __notificationSender_deferredOnPageReady.promise,
+    new Promise(function(resolve) {
+      <view:wysiwyg replace="notification-data-message" language="${language}"
+                    toolbar="userNotification"
+                    activateWysiwygBackupManager="false"
+                    height="300"/>
+      CKEDITOR.once('instanceReady', function() {
+        resolve();
+      });
+    })];
+
   function onPageReady() {
-     <view:wysiwyg replace="content" language="${language}"
-                   toolbar="userNotification"
-                   activateWysiwygBackupManager="false"
-                   height="300"/>
-    ${recipientsEditable ? 'userSelectApi.focus();' : 'document.querySelector("#notification-data-subject").focus();'}
+    __notificationSender_deferredOnPageReady.resolve();
   }
+
+  sp.promise.whenAllResolved(__notificationSender_allPromises).then(function() {
+    sp.messager.deferredContentReady.resolve();
+    ${recipientsEditable ? 'userSelectApi.focus();' : 'document.querySelector("#notification-data-subject").focus();'}
+  });
 
   function sendNotification(notification) {
     var normalizedTitle = stripInitialWhitespace(

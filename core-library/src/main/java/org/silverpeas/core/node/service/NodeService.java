@@ -24,8 +24,8 @@
 package org.silverpeas.core.node.service;
 
 import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
@@ -59,8 +59,6 @@ public interface NodeService {
    * @return a NodeDetail
    */
   NodeDetail getDetail(NodePK pk);
-
-  NodeDetail getDetailTransactionally(NodePK pk);
 
   NodeDetail getDetailByNameAndFatherId(NodePK pk, String name, int nodeFatherId);
 

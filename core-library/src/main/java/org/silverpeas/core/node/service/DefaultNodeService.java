@@ -34,8 +34,8 @@ import org.silverpeas.core.node.dao.NodeDAO;
 import org.silverpeas.core.node.dao.NodeI18NDAO;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodeI18NDetail;
-import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
@@ -161,17 +161,6 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       throw new NodeRuntimeException(re);
     }
 
-  }
-
-  /**
-   * Get the attributes of a node and of its children with transaction support
-   *
-   * @return a NodeDetail
-   */
-  @Override
-  @Transactional(Transactional.TxType.SUPPORTS)
-  public NodeDetail getDetailTransactionally(NodePK pk) {
-    return getDetail(pk);
   }
 
   /**

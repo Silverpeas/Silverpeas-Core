@@ -33,21 +33,21 @@ import org.silverpeas.core.subscription.Subscription;
  */
 public class NodeSubscriptionBean extends AbstractSubscriptionBean {
 
-  private final NodePath nodes;
+  private final NodePath path;
 
-  public NodeSubscriptionBean(final Subscription subscription, final NodePath nodes,
+  public NodeSubscriptionBean(final Subscription subscription, final NodePath path,
       final ComponentInstLight component, final String language) {
     super(subscription, component, language);
-    this.nodes = nodes;
+    this.path = path;
   }
 
   @Override
   public String getPath() {
-    return nodes.format(getLanguage());
+    return path.format(getLanguage());
   }
 
   @Override
   public String getLink() {
-    return nodes.iterator().next().getLink();
+    return path.iterator().next().getLink();
   }
 }

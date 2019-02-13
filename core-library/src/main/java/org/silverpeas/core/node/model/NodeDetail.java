@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.node.model;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
-import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -50,6 +51,7 @@ import java.util.Collection;
 public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Serializable {
 
   private static final long serialVersionUID = -1401884517616404337L;
+  private static final String UNKNOWN = "unknown";
   public static final String DEFAULT_TYPE = "default";
   public static final String FILE_LINK_TYPE = "file_link";
   public static final String STATUS_VISIBLE = "Visible";
@@ -74,20 +76,30 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
   private String userRole = null;
   private boolean useId = false;
 
-
-  public NodeDetail(NodeDetail detail) {
-    new NodeDetail(detail.getNodePK(), detail.getName(), detail.getDescription(), detail.getLevel(),
-        detail.getFatherPK().getId());
-    setCreationDate(detail.getCreationDate());
-    setCreatorId(detail.getCreatorId());
-    setPath(detail.getPath());
-    setModelId(detail.getModelId());
-    setStatus(detail.getStatus());
-    setType(detail.getType());
-    setOrder(detail.getOrder());
-    setLanguage(detail.getLanguage());
-    setRightsDependsOn(detail.rightsDependsOn);
-    setTranslations(getTranslations());
+  /**
+   * Copy constructor of persisted entity, all data are deeply copied and id is set to "unknown"
+   * value.
+   * @param other the instance to copy.
+   */
+  public NodeDetail(final NodeDetail other) {
+    super(other);
+    this.nodePK = new NodePK(UNKNOWN, other.nodePK);
+    this.setPath(other.path);
+    this.creatorId = other.creatorId;
+    this.creationDate = other.creationDate;
+    this.level = other.level;
+    this.modelId = other.modelId;
+    this.status = other.status;
+    this.fatherPK = new NodePK(other.fatherPK.getId(), other.fatherPK.getInstanceId());
+    if (other.childrenDetails != null) {
+      this.childrenDetails = new ArrayList<>(other.childrenDetails);
+    }
+    this.type = other.type;
+    this.order = other.order;
+    this.rightsDependsOn = other.rightsDependsOn;
+    this.nbObjects = other.nbObjects;
+    this.userRole = other.userRole;
+    this.useId = other.useId;
   }
 
   /**

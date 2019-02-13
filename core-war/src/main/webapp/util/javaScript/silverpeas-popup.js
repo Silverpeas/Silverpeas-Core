@@ -156,7 +156,7 @@
      * <li> method: the HTTP method to use. By default, if not set, 'GET'. Either 'GET' or 'POST'
      * <li> params: the HTTP parameters to pass with the HTTP request.
      * </ul>
-     * @return a wrapper of the loaded popup.
+     * @return (*) a wrapper of the loaded popup.
      */
     load: function(url, context) {
       var loadRequest = sp.ajaxRequest(url);
@@ -202,11 +202,20 @@
                 }
                 $popup.remove();
               };
-              setTimeout(function() {
-                $popup.popup(type, options);
-                resolve(data);
-                jQuery.popup.hideWaiting();
-              }, 0);
+              var __displayPopup = function() {
+                setTimeout(function() {
+                  $popup.popup(type, options);
+                  resolve(data);
+                  jQuery.popup.hideWaiting();
+                }, 0);
+              };
+              if (sp.promise.isOne(params.contentReadyPromise)) {
+                setTimeout(function() {
+                  params.contentReadyPromise.then(__displayPopup);
+                }, 0);
+              } else {
+                __displayPopup();
+              }
             }, function(request) {
               notyError(request.responseText);
               reject();

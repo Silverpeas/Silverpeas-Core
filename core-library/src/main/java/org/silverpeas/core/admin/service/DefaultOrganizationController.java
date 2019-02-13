@@ -378,7 +378,7 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public UserDetail[] getFiltredDirectUsers(String sGroupId, String sUserLastNameFilter) {
+  public UserDetail[] getFilteredDirectUsers(String sGroupId, String sUserLastNameFilter) {
     try {
       return getAdminService().getFiltredDirectUsers(sGroupId, sUserLastNameFilter);
     } catch (Exception e) {
