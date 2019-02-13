@@ -43,6 +43,7 @@ import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepository;
 import org.silverpeas.core.contribution.attachment.repository.SimpleDocumentMatcher;
 import org.silverpeas.core.persistence.jcr.JcrSession;
+import org.silverpeas.core.scheduler.SchedulerInitializer;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.util.RandomGenerator;
@@ -91,12 +92,14 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
     return WarBuilder4LibCore.onWarForTestClass(HistorisedAttachmentServiceIT.class)
         .addJcrFeatures()
         .addPublicationTemplateFeatures()
+        .addSchedulerFeatures()
         .testFocusedOn(war -> war.addAsResource("LibreOffice.odt"))
         .build();
   }
 
   @Before
-  public void loadJcr() throws RepositoryException, ParseException, IOException, SQLException {
+  public void loadJcr() throws RepositoryException, IOException {
+    SchedulerInitializer.get().init(SchedulerInitializer.SchedulerType.VOLATILE);
     try (JcrSession session = openSystemSession()) {
       if (!session.getRootNode().hasNode(instanceId)) {
         session.getRootNode().addNode(instanceId, NT_FOLDER);

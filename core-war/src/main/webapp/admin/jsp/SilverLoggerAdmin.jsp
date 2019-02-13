@@ -80,7 +80,6 @@
 %>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <view:setBundle basename="org.silverpeas.util.logging.multilang.loggingAdmin"/>
-<fmt:message key="GML.update" var="validate"/>
 <fmt:message key="logging.admin.PrintLogContent" var="display"/>
 <fmt:message key="logging.admin.PrintLogContentInNewWindow" var="displayInNewWindow"/>
 
@@ -202,7 +201,7 @@
             <img id="level-help" data-hasqtip="true" src="${infoIcon}" class="parameterInfo" />
             <label class="txtlibform" for="level"><fmt:message key="logging.admin.LoggingLevel"/></label>
             <div class="champs">
-              <select id="level">
+              <select id="level" onchange="changeLoggingLevel();">
                 <option value="PARENT"><fmt:message key="logging.admin.DefaultLevel"/></option>
                 <c:forEach var="levelValue" items="${loggingLevels}">
                   <option value="${levelValue}">${levelValue}</option>
@@ -211,7 +210,6 @@
             </div>
           </li>
         </ul>
-        <view:button label="${validate}" action="javascript:changeLoggingLevel();"/>
       </fieldset>
     </form>
 

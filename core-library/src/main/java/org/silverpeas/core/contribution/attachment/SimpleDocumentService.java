@@ -50,6 +50,7 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.persistence.jcr.JcrDatastoreManager;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.util.Charsets;
@@ -764,9 +765,10 @@ public class SimpleDocumentService
       webdavRepository.updateAttachmentBinaryContent(session, finalDocument);
       webdavRepository.deleteAttachmentNode(session, finalDocument);
       repository.duplicateContent(document, finalDocument);
-    } else if (finalDocument.isOpenOfficeCompatible() && (context.isUpload() || !context.
-        isWebdav())) {
+      JcrDatastoreManager.get().notifyDataSave();
+    } else if (finalDocument.isOpenOfficeCompatible() && (context.isUpload() || !context.isWebdav())) {
       webdavRepository.deleteAttachmentNode(session, finalDocument);
+      JcrDatastoreManager.get().notifyDataSave();
     } else {
       File file = new File(finalDocument.getAttachmentPath());
       if (!file.exists() && !context.isForce()) {
