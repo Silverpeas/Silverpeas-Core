@@ -2,6 +2,7 @@ package org.silverpeas.core.workflow.engine;
 
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.TaskManager;
@@ -31,6 +32,8 @@ import java.util.List;
  * too long period
  */
 class WorkflowTools {
+
+  private static final String ADMIN_ID = "0";
 
   private WorkflowTools() {
   }
@@ -237,6 +240,7 @@ class WorkflowTools {
         Trigger trigger = triggers.next();
         if (trigger != null) {
           try {
+            setUpOperationContext(event);
             ExternalAction externalAction = ServiceProvider.getService(trigger.getHandler());
             externalAction.setProcessInstance(instance);
             externalAction.setEvent(event);
@@ -250,6 +254,15 @@ class WorkflowTools {
         }
       }
     }
+  }
+
+  private static void setUpOperationContext(final GenericEvent event) {
+    String currentUserId = ADMIN_ID;
+    // For a manual action (event)
+    if (event.getUser() != null) {
+      currentUserId = event.getUser().getUserId();
+    }
+    OperationContext.fromUser(org.silverpeas.core.admin.user.model.User.getById(currentUserId));
   }
 
   /**
