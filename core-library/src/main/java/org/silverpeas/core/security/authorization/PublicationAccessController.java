@@ -30,12 +30,12 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 import static org.silverpeas.core.security.authorization.AccessControlOperation.isPersistActionFrom;
@@ -82,10 +82,19 @@ public class PublicationAccessController extends AbstractAccessController<Public
   private boolean isUserAuthorizedByContext(String userId, PublicationPK pubPk,
       final AccessControlContext context, Set<SilverpeasRole> userRoles) {
     boolean authorized = !userRoles.isEmpty();
+    if (!authorized) {
+      return false;
+    }
     boolean isRoleVerificationRequired = false;
     SilverpeasRole highestUserRole = SilverpeasRole.getHighestFrom(userRoles);
     if (highestUserRole == null) {
-      highestUserRole = SilverpeasRole.reader;
+      highestUserRole = SilverpeasRole.user;
+    }
+
+    if (highestUserRole.equals(SilverpeasRole.user)) {
+      PublicationDetail publicationDetail =
+          context.get(PUBLICATION_DETAIL_KEY, PublicationDetail.class);
+      authorized = publicationDetail.isValid() && publicationDetail.isVisible();
     }
 
     boolean sharingOperation = isSharingActionFrom(context.getOperations());
@@ -135,63 +144,48 @@ public class PublicationAccessController extends AbstractAccessController<Public
     if (componentAccessController.isTopicTrackerSupported(publicationPK.getInstanceId()) &&
         StringUtil.isInteger(publicationPK.getId()) && !getSessionVolatileResourceCacheService()
         .contains(publicationPK.getId(), publicationPK.getInstanceId())) {
-      final PublicationDetail pubDetail;
-      try {
-        pubDetail =
+      final PublicationDetail pubDetail =
             getActualForeignPublication(publicationPK.getId(), publicationPK.getInstanceId());
-        context.put(PUBLICATION_DETAIL_KEY, pubDetail);
-      } catch (Exception e) {
-        SilverTrace.error("authorization", getClass().getSimpleName() + ".isUserAuthorized()",
-            "root.NO_EX_MESSAGE", e);
-        return;
-      }
+      context.put(PUBLICATION_DETAIL_KEY, pubDetail);
 
       // Check if an alias of publication is authorized
       // (special treatment in case of the user has no access right on component instance)
       if (!componentAccessAuthorized) {
-        try {
-          Collection<Alias> aliases = getPublicationService().getAlias(pubDetail.getPK());
-          for (Alias alias : aliases) {
-
-            final Set<SilverpeasRole> nodeUserRoles = getNodeAccessController()
-                .getUserRoles(userId, new NodePK(alias.getId(), alias.getInstanceId()), context);
-            if (getNodeAccessController().isUserAuthorized(nodeUserRoles)) {
-              userRoles.addAll(nodeUserRoles);
-              return;
-            }
-          }
-          return;
-        } catch (Exception e) {
-          SilverTrace.error("authorization", getClass().getSimpleName() + ".isUserAuthorized()",
-              "root.NO_EX_MESSAGE", e);
-          return;
-        }
-      } else if (getComponentAccessController().isRightOnTopicsEnabled(publicationPK.getInstanceId())) {
-        // If rights are not handled on folders, folder rights are not checked !
-        try {
-          Collection<NodePK> nodes = getPublicationService().getAllFatherPK(
-              new PublicationPK(pubDetail.getId(), publicationPK.getInstanceId()));
-          if (!nodes.isEmpty()) {
-            for (NodePK nodePk : nodes) {
-              final Set<SilverpeasRole> nodeUserRoles =
-                  getNodeAccessController().getUserRoles(userId, nodePk, context);
-              if (getNodeAccessController().isUserAuthorized(nodeUserRoles)) {
-                userRoles.addAll(nodeUserRoles);
-                return;
-              }
-            }
+        Collection<Alias> aliases = getPublicationService().getAlias(pubDetail.getPK());
+        for (Alias alias : aliases) {
+          final Set<SilverpeasRole> nodeUserRoles = getNodeAccessController()
+              .getUserRoles(userId, new NodePK(alias.getId(), alias.getInstanceId()), context);
+          if (getNodeAccessController().isUserAuthorized(nodeUserRoles)) {
+            userRoles.addAll(nodeUserRoles);
             return;
           }
-        } catch (Exception ex) {
-          SilverTrace.error("authorization", getClass().getSimpleName() + ".isUserAuthorized()",
-              "root.NO_EX_MESSAGE", ex);
-          return;
         }
+        return;
+      } else if (getComponentAccessController().isRightOnTopicsEnabled(publicationPK.getInstanceId())) {
+        // If rights are not handled on folders, folder rights are not checked !
+        Set<SilverpeasRole> nodeUserRoles = getUserRolesFromNode(context, userId, publicationPK);
+        userRoles.addAll(nodeUserRoles);
+        return;
       }
     }
     if (componentAccessAuthorized) {
       userRoles.addAll(componentUserRoles);
     }
+  }
+
+  private Set<SilverpeasRole> getUserRolesFromNode(AccessControlContext context, String userId,
+      PublicationPK publicationPK) {
+    Collection<NodePK> nodes = getPublicationService().getAllFatherPK(publicationPK);
+    if (!nodes.isEmpty()) {
+      for (NodePK nodePk : nodes) {
+        final Set<SilverpeasRole> nodeUserRoles =
+            getNodeAccessController().getUserRoles(userId, nodePk, context);
+        if (getNodeAccessController().isUserAuthorized(nodeUserRoles)) {
+          return nodeUserRoles;
+        }
+      }
+    }
+    return Collections.emptySet();
   }
 
   protected PublicationService getPublicationService() {
@@ -204,10 +198,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
    * @param foreignId
    * @param instanceId
    * @return
-   * @throws Exception
    */
-  private PublicationDetail getActualForeignPublication(String foreignId, String instanceId)
-      throws Exception {
+  private PublicationDetail getActualForeignPublication(String foreignId, String instanceId) {
     PublicationDetail pubDetail =
         getPublicationService().getDetail(new PublicationPK(foreignId, instanceId));
     if (!pubDetail.isValid() && pubDetail.haveGotClone()) {
