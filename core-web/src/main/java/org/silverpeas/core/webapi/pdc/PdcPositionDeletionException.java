@@ -31,25 +31,18 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
  * classification of a resource onto the PdC).
  */
 public class PdcPositionDeletionException extends PdcException {
-  private static final long serialVersionUID = -8201782942233535224L;
 
-  public PdcPositionDeletionException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  private static final long serialVersionUID = 6397066904320622572L;
+
+  public PdcPositionDeletionException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public PdcPositionDeletionException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public PdcPositionDeletionException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public PdcPositionDeletionException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public PdcPositionDeletionException(final Throwable cause) {
+    super(cause);
   }
-
-  public PdcPositionDeletionException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
-  }
-
 }

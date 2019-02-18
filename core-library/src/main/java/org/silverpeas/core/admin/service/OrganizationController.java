@@ -216,7 +216,7 @@ public interface OrganizationController extends java.io.Serializable {
   /**
    * For use in userPanel : return the users that are direct child of a given group
    */
-  <T extends User> T[] getFiltredDirectUsers(String sGroupId, String sUserLastNameFilter);
+  <T extends User> T[] getFilteredDirectUsers(String sGroupId, String sUserLastNameFilter);
 
   /**
    * Searches the groups that match the specified criteria.

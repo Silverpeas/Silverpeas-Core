@@ -23,24 +23,23 @@
  */
 package org.silverpeas.web.thumbnail.servlets;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailRuntimeException;
-import org.silverpeas.web.thumbnail.ThumbnailSessionController;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.web.thumbnail.ThumbnailSessionController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -316,9 +315,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
       }
 
       if (type == null || type.length() == 0) {
-        throw new ThumbnailRuntimeException(
-            "ThumbnailRequestRouter.saveFile()",
-            SilverpeasRuntimeException.ERROR, "thumbnail_MSG_TYPE_KO");
+        throw new ThumbnailRuntimeException("thumbnail type not defined");
       }
 
       String physicalName = System.currentTimeMillis() + "." + type;

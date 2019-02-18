@@ -27,13 +27,15 @@ import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 
+import java.util.Objects;
+
 public class SocialInformationComment extends AbstractSocialInformation {
 
   private final Comment comment;
 
   /**
    * Constructor with one param
-   * @param comment
+   * @param comment a comment
    */
   public SocialInformationComment(Comment comment) {
     this.comment = comment;
@@ -60,8 +62,8 @@ public class SocialInformationComment extends AbstractSocialInformation {
 
   /**
    * compare to SocialInformationComment if are equals or not
-   * @param obj
-   * @return boolean
+   * @param obj the other {@link SocialInformationComment} object.
+   * @return true if they are equals, false otherwise.
    */
   @Override
   public boolean equals(Object obj) {
@@ -70,16 +72,16 @@ public class SocialInformationComment extends AbstractSocialInformation {
     }
     final SocialInformationComment other = (SocialInformationComment) obj;
 
-    if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
+    if (!Objects.equals(this.type, other.type)) {
       return false;
     }
-    if ((this.author == null) ? (other.author != null) : !this.author.equals(other.author)) {
+    if (!Objects.equals(this.author, other.author)) {
       return false;
     }
-    if (this.date != other.date && (this.date == null || !this.date.equals(other.date))) {
+    if (!Objects.equals(this.date, other.date)) {
       return false;
     }
-    if ((this.url == null) ? (other.url != null) : !this.url.equals(other.url)) {
+    if (!Objects.equals(this.url, other.url)) {
       return false;
     }
     if ((this.getTitle() == null) ? (other.getTitle() != null) : !this.getTitle().equals(other.

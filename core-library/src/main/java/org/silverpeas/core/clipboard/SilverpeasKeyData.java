@@ -37,37 +37,36 @@ import java.util.Properties;
 public class SilverpeasKeyData implements Serializable {
 
   private static final long serialVersionUID = 6975015837634530711L;
-  final static String kTitleKEY = "TITLE";
-  final static String kAuthorKEY = "AUTHOR";
-  final static String kDescKEY = "DESC";
-  final static String kHTMLKEY = "HTML"; // rendu HTML de l'object
-  final static String kTextKEY = "TEXT"; // rendu HTML de l'object
+  private static final String TITLE_KEY = "TITLE";
+  private static final String AUTHOR_KEY = "AUTHOR";
+  private static final String DESC_KEY = "DESC";
+  private static final String TEXT_KEY = "TEXT"; // rendu HTML de l'object
 
-  private Date m_CreationDate = null;
-  private Properties m_KeyData = null;
+  private Date creationDate = null;
+  private Properties keyData;
 
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
    */
   public SilverpeasKeyData() {
-    m_KeyData = new Properties();
+    keyData = new Properties();
   }
 
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
    */
-  public void setTitle(String Title) {
-    m_KeyData.setProperty(kTitleKEY, Title);
+  public void setTitle(String title) {
+    keyData.setProperty(TITLE_KEY, title);
   }
 
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
    */
-  public void setAuthor(String Author) {
-    m_KeyData.setProperty(kAuthorKEY, Author);
+  public void setAuthor(String author) {
+    keyData.setProperty(AUTHOR_KEY, author);
   }
 
   /**
@@ -75,23 +74,23 @@ public class SilverpeasKeyData implements Serializable {
    * ------------------------------
    */
   public void setCreationDate(Date date) {
-    m_CreationDate = date;
+    creationDate = date;
   }
 
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
    */
-  public void setDesc(String Desc) {
-    m_KeyData.setProperty(kDescKEY, Desc);
+  public void setDesc(String desc) {
+    keyData.setProperty(DESC_KEY, desc);
   }
 
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
    */
-  public void setText(String Text) {
-    m_KeyData.setProperty(kTextKEY, Text);
+  public void setText(String text) {
+    keyData.setProperty(TEXT_KEY, text);
   }
 
   /**
@@ -99,10 +98,10 @@ public class SilverpeasKeyData implements Serializable {
    * ------------------------------
    */
   public void setProperty(String key, String value) throws SKDException {
-    if (m_KeyData.containsKey(key)) {
+    if (keyData.containsKey(key)) {
       throw new SKDException("The property already contains the key " + key);
     } else {
-      m_KeyData.setProperty(key, value);
+      keyData.setProperty(key, value);
     }
   }
 
@@ -111,7 +110,7 @@ public class SilverpeasKeyData implements Serializable {
    * ------------------------------
    */
   public String getTitle() {
-    return m_KeyData.getProperty(kTitleKEY);
+    return keyData.getProperty(TITLE_KEY);
   }
 
   /**
@@ -119,7 +118,7 @@ public class SilverpeasKeyData implements Serializable {
    * ------------------------------
    */
   public String getAuthor() {
-    return m_KeyData.getProperty(kAuthorKEY);
+    return keyData.getProperty(AUTHOR_KEY);
   }
 
   /**
@@ -127,7 +126,7 @@ public class SilverpeasKeyData implements Serializable {
    * ------------------------------
    */
   public Date getCreationDate() {
-    return m_CreationDate;
+    return creationDate;
   }
 
   /**
@@ -135,7 +134,7 @@ public class SilverpeasKeyData implements Serializable {
    * ------------------------------
    */
   public String getDesc() {
-    return m_KeyData.getProperty(kDescKEY);
+    return keyData.getProperty(DESC_KEY);
   }
 
   /**
@@ -143,7 +142,7 @@ public class SilverpeasKeyData implements Serializable {
    * ------------------------------
    */
   public String getText() {
-    return m_KeyData.getProperty(kTextKEY);
+    return keyData.getProperty(TEXT_KEY);
   }
 
   /**
@@ -151,14 +150,7 @@ public class SilverpeasKeyData implements Serializable {
    * ------------------------------
    */
   public String getProperty(String key) {
-    return m_KeyData.getProperty(key);
-  }
-
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
-  public void toDOM() {
+    return keyData.getProperty(key);
   }
 
 }

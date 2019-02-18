@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.pdc.classification;
 
-import org.silverpeas.core.exception.SilverpeasException;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import java.util.ArrayList;
@@ -67,7 +65,7 @@ public class Position<T extends Value> implements java.io.Serializable {
 
   public void addValue(T value) {
     if (alValues == null) {
-      alValues = new ArrayList<T>();
+      alValues = new ArrayList<>();
     }
     alValues.add(value);
   }
@@ -87,14 +85,12 @@ public class Position<T extends Value> implements java.io.Serializable {
   public void checkPosition() throws ClassifyEngineException {
     // Check the array of Values
     if (this.getValues() == null) {
-      throw new ClassifyEngineException("Position.checkPosition",
-          SilverpeasException.ERROR, "classifyEngine.EX_NULL_VALUE_POSITION");
+      throw new ClassifyEngineException("Null position");
     }
 
     // check that there is at least one value
     if (this.getValues().isEmpty()) {
-      throw new ClassifyEngineException("Position.checkPosition",
-          SilverpeasException.ERROR, "classifyEngine.EX_EMPTY_VALUE_POSITION");
+      throw new ClassifyEngineException("Empty position");
     }
 
     // Check each value

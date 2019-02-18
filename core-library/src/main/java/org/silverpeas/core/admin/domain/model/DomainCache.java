@@ -23,37 +23,59 @@
  */
 package org.silverpeas.core.admin.domain.model;
 
+import javax.inject.Singleton;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.silverpeas.core.admin.domain.model.Domain;
-
+/**
+ * Cache with all the Silverpeas domains being used.
+ */
+@Singleton
 public class DomainCache {
 
-  private static ConcurrentMap<String, Domain> map =
-      new ConcurrentHashMap<String, Domain>();
+  private ConcurrentMap<String, Domain> map = new ConcurrentHashMap<>();
 
-  public synchronized static void clearCache() {
+  protected DomainCache() {}
+
+  /**
+   * Clears the cache.
+   */
+  public synchronized void clearCache() {
     map.clear();
   }
 
-  public static Domain getDomain(String id) {
+  public Domain getDomain(String id) {
     return map.get(id);
   }
 
-  public static void setDomains(List<Domain> domains) {
+  /**
+   * Sets the following domains in the cache after clearing it.
+   * @param domains the domains to set in the cache. They replace all the domains present in the
+   * cache.
+   */
+  public void setDomains(List<Domain> domains) {
     clearCache();
     for (Domain domain : domains) {
       addDomain(domain);
     }
   }
 
-  public static void addDomain(Domain domain) {
-    map.putIfAbsent(domain.getId(), domain);
+  /**
+   * Adds the specified domain into the cache if and only if there is no yet a domain with the
+   * same unique identifier.
+   * @param domain the domain to add.
+   * @return either the added domain or the domain with the same identifier in the cache.
+   */
+  public Domain addDomain(Domain domain) {
+    return map.putIfAbsent(domain.getId(), domain);
   }
 
-  public static void removeDomain(String id) {
+  /**
+   * Removes from the cache the domain with the specified identifier.
+   * @param id the unique identifier of a domain.
+   */
+  public void removeDomain(String id) {
     map.remove(id);
   }
 

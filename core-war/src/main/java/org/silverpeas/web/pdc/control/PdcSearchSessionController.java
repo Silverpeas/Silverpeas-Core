@@ -23,6 +23,8 @@
  */
 package org.silverpeas.web.pdc.control;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -46,7 +48,6 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchEngineException;
 import org.silverpeas.core.index.search.model.SearchResult;
@@ -102,6 +103,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString;
@@ -380,7 +383,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       listDir =
           FileFolderManager.getAllSubFolder(extServerCfg.getDataPath() + File.separator
           + "index");
-    } catch (UtilException e) {
+    } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     if (!listDir.isEmpty()) {
@@ -555,54 +558,66 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private void processFacetsFormField(Map<String, Facet> fieldFacetsMap, GlobalSilverResult result) {
-    Map<String, String> fieldsForFacets = result.getFormFieldsForFacets();
+    final Map<String, String> fieldsForFacets = result.getFormFieldsForFacets();
     if (fieldsForFacets != null && !fieldsForFacets.isEmpty()) {
       // there is at least one field used to generate a facet
-      Set<String> facetIds = fieldsForFacets.keySet();
+      final Set<String> facetIds = fieldsForFacets.keySet();
       for (String facetId : facetIds) {
-        String[] splitted = getFormNameAndFieldName(facetId);
-        String formName = splitted[0];
-        String fieldName = splitted[1];
+        final String[] splitted = getFormNameAndFieldName(facetId);
+        final String formName = splitted[0];
+        final String fieldName = splitted[1];
         if (!isFieldStillAFacet(formName, fieldName)) {
           // this field is no more a facet
           continue;
         }
-        Facet facet = null;
-        if (!fieldFacetsMap.containsKey(facetId)) {
-          // new facet, adding it to result list
-          try {
-            FieldTemplate fieldTemplate = getFieldTemplate(formName, fieldName);
-            if (fieldTemplate.getTypeName().equals(DateField.TYPE)) {
-              facet = new FacetOnDates(facetId, fieldTemplate.getLabel(getLanguage()));
-            } else if (fieldTemplate.getDisplayerName().equals("checkbox")) {
-              facet = new FacetOnCheckboxes(facetId, fieldTemplate.getLabel(getLanguage()));
-            } else {
-              facet = new Facet(facetId, fieldTemplate.getLabel(getLanguage()));
-            }
-          } catch (Exception e) {
-            SilverLogger.getLogger(this).error(e.getMessage(), e);
-          }
-          fieldFacetsMap.put(facetId, facet);
-        } else {
-          // facet already initialized
-          facet = fieldFacetsMap.get(facetId);
-        }
-        if (facet != null) {
-          FacetEntryVO entry;
-          String fieldValueKey = fieldsForFacets.get(facetId);
-          if (facet instanceof FacetOnDates) {
-            ((FacetOnDates) facet).addEntry(fieldValueKey);
-          } else if (facet instanceof FacetOnCheckboxes) {
-            ((FacetOnCheckboxes) facet)
-                .addEntries(getFieldValues(formName, fieldName, fieldValueKey));
-          } else {
-            String fieldValueLabel = getFieldValue(formName, fieldName, fieldValueKey);
-            entry = new FacetEntryVO(fieldValueLabel, fieldValueKey);
-            facet.addEntry(entry);
-          }
-        }
+        final Facet facet = findFacet(formName, fieldName, facetId, fieldFacetsMap);
+        setFacetEntry(formName, fieldName, facetId, facet, fieldsForFacets);
       }
     }
+  }
+
+  private void setFacetEntry(final String formName, final String fieldName, final String facetId,
+      final Facet facet, final Map<String, String> fieldsForFacets) {
+    if (facet != null) {
+      FacetEntryVO entry;
+      String fieldValueKey = fieldsForFacets.get(facetId);
+      if (facet instanceof FacetOnDates) {
+        ((FacetOnDates) facet).addEntry(fieldValueKey);
+      } else if (facet instanceof FacetOnCheckboxes) {
+        ((FacetOnCheckboxes) facet)
+            .addEntries(getFieldValues(formName, fieldName, fieldValueKey));
+      } else {
+        String fieldValueLabel = getFieldValue(formName, fieldName, fieldValueKey);
+        entry = new FacetEntryVO(fieldValueLabel, fieldValueKey);
+        facet.addEntry(entry);
+      }
+    }
+  }
+
+  @Nullable
+  private Facet findFacet(final String formName, final String fieldName, final String facetId,
+      final Map<String, Facet> fieldFacetsMap) {
+    Facet facet = null;
+    if (!fieldFacetsMap.containsKey(facetId)) {
+      // new facet, adding it to result list
+      try {
+        FieldTemplate fieldTemplate = getFieldTemplate(formName, fieldName);
+        if (fieldTemplate.getTypeName().equals(DateField.TYPE)) {
+          facet = new FacetOnDates(facetId, fieldTemplate.getLabel(getLanguage()));
+        } else if (fieldTemplate.getDisplayerName().equals("checkbox")) {
+          facet = new FacetOnCheckboxes(facetId, fieldTemplate.getLabel(getLanguage()));
+        } else {
+          facet = new Facet(facetId, fieldTemplate.getLabel(getLanguage()));
+        }
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
+      }
+      fieldFacetsMap.put(facetId, facet);
+    } else {
+      // facet already initialized
+      facet = fieldFacetsMap.get(facetId);
+    }
+    return facet;
   }
 
   public Map<String, Facet> getFieldFacets() {
@@ -999,12 +1014,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         result.setDownloadLink(downloadLink);
       }
       result.setExportable(isCompliantResult(result));
-
-      if (getSelectedSilverContents() != null && getSelectedSilverContents().contains(result)) {
-        result.setSelected(true);
-      } else {
-        result.setSelected(false);
-      }
+      final boolean isSelected = getSelectedSilverContents() != null &&
+          getSelectedSilverContents().contains(result);
+      result.setSelected(isSelected);
 
       // Check if it's an external search before searching components information
       String place;
@@ -1299,8 +1311,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       Jargon theJargon = thesaurus.getJargon(getUserId());
       this.jargon = theJargon;
     } catch (ThesaurusException e) {
-      throw new PdcException("PdcSearchSessionController.initializeJargon",
-          SilverpeasException.ERROR, "pdcPeas.EX_CANT_INITIALIZE_JARGON", "", e);
+      throw new PdcException(e);
     }
   }
 
@@ -1308,9 +1319,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return this.jargon;
   }
 
-  private String getSynonymsQueryString(String queryString) {
-    String synonymsQueryString;
-    String header = "";
+  private String getSynonymsQueryString(final String queryString) {
+    final String synonymsQueryString;
     if (queryString == null || queryString.equals("") || !isThesaurusEnableByUser) {
       synonymsQueryString = queryString;
     } else {
@@ -1322,48 +1332,55 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       st.ordinaryChar(')');
       st.ordinaryChar('(');
       st.ordinaryChar(' ');
-      try {
-        StringBuilder synonymsString = new StringBuilder("");
-        while (st.nextToken() != StreamTokenizer.TT_EOF) {
-          String word = "";
-          String specialChar = "";
-          if ((st.ttype == StreamTokenizer.TT_WORD) || (st.ttype == QUOTE_CHAR)) {
-            word = st.sval;
-          } else {
-            specialChar = String.valueOf((char) st.ttype);
-          }
-          if (!word.isEmpty()) {
-            // Check that it's not a determiner or a lucene specific characters
-            if (!isKeyword(word)
-                && !(word.indexOf('*') >= 0 || word.indexOf('?') >= 0 || word.indexOf(':') >= 0
-                || word.indexOf('+') >= 0 || word.indexOf('-') >= 0)) {
-              if (word.indexOf(':') != -1) {
-                header = word.substring(0, word.indexOf(':') + 1);
-                word = word.substring(word.indexOf(':') + 1, word.length());
-              }
-
-              synonymsString.append("(\"").append(word).append("\"");
-              Collection<String> wordSynonyms = getSynonym(word);
-              for (String synonym : wordSynonyms) {
-                synonymsString.append(" OR " + "\"").append(synonym).append("\"");
-              }
-              synonymsString.append(")");
-            } else {
-              synonymsString.append(word);
-            }
-          }
-          if (!specialChar.isEmpty()) {
-            synonymsString.append(specialChar);
-          }
-        }
-        synonymsString.insert(0, header);
-        synonymsQueryString = synonymsString.toString();
-      } catch (IOException e) {
-        throw new PdcPeasRuntimeException("PdcSearchSessionController.setSynonymsQueryString",
-            SilverpeasException.ERROR, "pdcPeas.EX_GET_SYNONYMS", e);
-      }
+      synonymsQueryString = parseSynonymsQueryString(st);
     }
     return synonymsQueryString;
+  }
+
+  @NotNull
+  private String parseSynonymsQueryString(final StreamTokenizer st) {
+    final StringBuilder parsedSynonyms = new StringBuilder();
+    try {
+      String header = "";
+      while (st.nextToken() != StreamTokenizer.TT_EOF) {
+        String word = "";
+        String specialChar = "";
+        if ((st.ttype == StreamTokenizer.TT_WORD) || (st.ttype == QUOTE_CHAR)) {
+          word = st.sval;
+        } else {
+          specialChar = String.valueOf((char) st.ttype);
+        }
+        if (!word.isEmpty()) {
+          if (isNotDeterminerOrLuceneCharacter(word)) {
+            if (word.indexOf(':') != -1) {
+              header = word.substring(0, word.indexOf(':') + 1);
+              word = word.substring(word.indexOf(':') + 1);
+            }
+
+            parsedSynonyms.append("(\"").append(word).append("\"");
+            getSynonym(word)
+                .forEach(s -> parsedSynonyms.append(" OR " + "\"").append(s).append("\""));
+            parsedSynonyms.append(")");
+          } else {
+            parsedSynonyms.append(word);
+          }
+        }
+        if (!specialChar.isEmpty()) {
+          parsedSynonyms.append(specialChar);
+        }
+      }
+      parsedSynonyms.insert(0, header);
+    } catch (IOException e) {
+      throw new PdcPeasRuntimeException("PdcSearchSessionController.setSynonymsQueryString",
+          SilverpeasException.ERROR, "pdcPeas.EX_GET_SYNONYMS", e);
+    }
+    return parsedSynonyms.toString();
+  }
+
+  private boolean isNotDeterminerOrLuceneCharacter(final String word) {
+    return !isKeyword(word)
+        && !(word.indexOf('*') >= 0 || word.indexOf('?') >= 0 || word.indexOf(':') >= 0
+        || word.indexOf('+') >= 0 || word.indexOf('-') >= 0);
   }
 
   private Collection<String> getSynonym(String mot) {
@@ -1486,29 +1503,30 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public void buildComponentListWhereToSearch(String space, String component) {
-    componentList = new ArrayList<>();
-
     if (space == null) {
       // Il n'y a pas de restriction sur un espace particulier
       String[] allowedComponentIds = getUserAvailComponentIds();
       List<String> excludedComponentIds = getComponentsExcludedFromGlobalSearch();
-      for (int i = 0; i < allowedComponentIds.length; i++) {
-        if (isSearchable(allowedComponentIds[i], excludedComponentIds)) {
-          componentList.add(allowedComponentIds[i]);
-        }
-      }
+      componentList = Stream.of(allowedComponentIds)
+          .filter(c -> isSearchable(c, excludedComponentIds))
+          .collect(Collectors.toList());
     } else {
+      componentList = new ArrayList<>();
       if (component == null) {
         // Restriction sur un espace. La recherche doit avoir lieu
-        String[] asAvailCompoForCurUser = getOrganisationController().getAvailCompoIds(space,
-            getUserId());
-        for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
-          if (isSearchable(asAvailCompoForCurUser[nI])) {
-            componentList.add(asAvailCompoForCurUser[nI]);
-          }
-        }
+        addComponentsOfSpace(space, componentList);
       } else {
         componentList.add(component);
+      }
+    }
+  }
+
+  private void addComponentsOfSpace(final String space, final List<String> components) {
+    final String[] asAvailCompoForCurUser = getOrganisationController().getAvailCompoIds(space,
+        getUserId());
+    for (final String component: asAvailCompoForCurUser) {
+      if (isSearchable(component)) {
+        components.add(component);
       }
     }
   }
@@ -1564,13 +1582,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     } else {
       if (components == null) {
         // Restriction sur un espace. La recherche doit avoir lieu
-        String[] asAvailCompoForCurUser = getOrganisationController().getAvailCompoIds(space,
-            getUserId());
-        for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
-          if (isSearchable(asAvailCompoForCurUser[nI])) {
-            componentList.add(asAvailCompoForCurUser[nI]);
-          }
-        }
+        addComponentsOfSpace(space, componentList);
       } else {
         for (String component : components) {
           componentList.add(component);
@@ -2008,19 +2020,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @return true if search engine must search through this component, false else if
    */
   private boolean isDataTypeSearch(String curComp) {
-    boolean searchOn = false;
+    final boolean searchOn;
     if (isDataTypeDefined()) {
-      List<SearchTypeConfigurationVO> configs = getSearchTypeConfig();
-      for (SearchTypeConfigurationVO searchTypeConfigurationVO : configs) {
-        if (searchTypeConfigurationVO.getConfigId() == Integer.parseInt(getDataType())) {
-          List<String> components = searchTypeConfigurationVO.getComponents();
-          for (String authorizedComponent : components) {
-            if (curComp.startsWith(authorizedComponent)) {
-              return true;
-            }
-          }
-        }
-      }
+      final List<SearchTypeConfigurationVO> configs = getSearchTypeConfig();
+      searchOn = configs.stream().filter(c -> c.getConfigId() == Integer.parseInt(getDataType()))
+          .anyMatch(c -> c.getComponents().stream().anyMatch(curComp::startsWith));
     } else {
       searchOn = true;
     }

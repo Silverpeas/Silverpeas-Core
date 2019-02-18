@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.mail.extractor;
 
+import org.silverpeas.core.mail.MailException;
+
 import java.util.List;
 
 public interface MailExtractor {
 
-  public Mail getMail() throws Exception;
+  Mail getMail() throws MailException;
 
-  public List<MailAttachment> getAttachments() throws Exception;
+  List<MailAttachment> getAttachments() throws MailException;
 
 }

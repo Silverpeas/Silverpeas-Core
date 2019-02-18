@@ -50,6 +50,8 @@ public class ProfileInstManager {
   public static final String PROFILE = "profile";
   @Inject
   private OrganizationSchema organizationSchema;
+  @Inject
+  private RoleDAO roleDAO;
 
   /**
    * Constructor
@@ -262,7 +264,7 @@ public class ProfileInstManager {
     try {
       con = DBUtil.openConnection();
 
-      List<UserRoleRow> roles = RoleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId));
+      List<UserRoleRow> roles = roleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId));
       List<String> roleIds = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
@@ -292,7 +294,7 @@ public class ProfileInstManager {
       con = DBUtil.openConnection();
 
       List<UserRoleRow> roles =
-          RoleDAO.getAllComponentObjectRoles(con, groupIds, Integer.parseInt(sUserId));
+          roleDAO.getAllComponentObjectRoles(con, groupIds, Integer.parseInt(sUserId));
       List<String> roleIds = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
@@ -315,7 +317,7 @@ public class ProfileInstManager {
       con = DBUtil.openConnection();
 
       List<UserRoleRow> roles =
-          RoleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId), componentLocalId);
+          roleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId), componentLocalId);
       List<String> roleNames = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
@@ -346,7 +348,7 @@ public class ProfileInstManager {
 
       List<String> groupIds = new ArrayList<>();
       groupIds.add(sGroupId);
-      List<UserRoleRow> roles = RoleDAO.getRoles(con, groupIds, -1);
+      List<UserRoleRow> roles = roleDAO.getRoles(con, groupIds, -1);
       List<String> roleIds = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
@@ -373,7 +375,7 @@ public class ProfileInstManager {
     try {
       con = DBUtil.openConnection();
 
-      List<UserRoleRow> roles = RoleDAO.getAllComponentObjectRoles(con,
+      List<UserRoleRow> roles = roleDAO.getAllComponentObjectRoles(con,
           Collections.singletonList(groupId), -1);
       List<String> roleIds = new ArrayList<>();
 

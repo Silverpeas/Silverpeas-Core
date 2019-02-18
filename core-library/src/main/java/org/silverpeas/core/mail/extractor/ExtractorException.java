@@ -23,24 +23,21 @@
  */
 package org.silverpeas.core.mail.extractor;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 public class ExtractorException extends SilverpeasException {
 
-  private static final long serialVersionUID = 9169416970570371214L;
+  private static final long serialVersionUID = 457886793312549730L;
 
-  public ExtractorException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public ExtractorException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public ExtractorException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, null, nested);
+  public ExtractorException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  @Override
-  public String getModule() {
-    return "util";
+  public ExtractorException(final Throwable cause) {
+    super(cause);
   }
-
 }

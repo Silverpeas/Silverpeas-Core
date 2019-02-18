@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.mail.engine;
 
-import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailToSend;
 import org.silverpeas.core.mail.ReceiverMailAddressSet;
@@ -39,6 +39,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -93,7 +94,7 @@ public class SmtpMailSender implements MailSender {
       email.setHeader("Precedence", "list");
       email.setHeader("List-ID", fromAddress.getAddress());
       email.setSentDate(new Date());
-      email.setSubject(mail.getSubject(), CharEncoding.UTF_8);
+      email.setSubject(mail.getSubject(), StandardCharsets.UTF_8.name());
       mail.getContent().applyOn(email);
 
       // Sending.
@@ -102,7 +103,7 @@ public class SmtpMailSender implements MailSender {
     } catch (MessagingException | UnsupportedEncodingException e) {
       SilverLogger.getLogger(this).error(e);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 

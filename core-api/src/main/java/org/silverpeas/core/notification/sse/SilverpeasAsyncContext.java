@@ -49,7 +49,6 @@ public class SilverpeasAsyncContext implements AsyncContext {
   private final AsyncContext wrappedInstance;
   private final String sessionId;
   private final User user;
-  private final Object mutex;
   private Long lastServerEventId;
   private boolean heartbeat = false;
   private boolean complete = false;
@@ -61,7 +60,6 @@ public class SilverpeasAsyncContext implements AsyncContext {
    */
   private SilverpeasAsyncContext(final AsyncContext wrappedInstance, final String sessionId,
       final User user) {
-    this.mutex = this;
     this.wrappedInstance = wrappedInstance;
     this.sessionId = sessionId;
     this.user = user;
@@ -94,7 +92,7 @@ public class SilverpeasAsyncContext implements AsyncContext {
    * @return the mutex.
    */
   public Object getMutex() {
-    return mutex;
+    return this;
   }
 
   /**
@@ -187,49 +185,49 @@ public class SilverpeasAsyncContext implements AsyncContext {
   }
 
   boolean isHeartbeat() {
-    synchronized (mutex) {
+    synchronized (getMutex()) {
       return heartbeat;
     }
   }
 
   public void setHeartbeat(final boolean heartbeat) {
-    synchronized (mutex) {
+    synchronized (getMutex()) {
       this.heartbeat = heartbeat;
     }
   }
 
   boolean isComplete() {
-    synchronized (mutex) {
+    synchronized (getMutex()) {
       return complete;
     }
   }
 
   void setComplete(final boolean complete) {
-    synchronized (mutex) {
+    synchronized (getMutex()) {
       this.complete = complete;
     }
   }
 
   boolean isTimeout() {
-    synchronized (mutex) {
+    synchronized (getMutex()) {
       return timeout;
     }
   }
 
   void setTimeout(final boolean timeout) {
-    synchronized (mutex) {
+    synchronized (getMutex()) {
       this.timeout = timeout;
     }
   }
 
   boolean isError() {
-    synchronized (mutex) {
+    synchronized (getMutex()) {
       return error;
     }
   }
 
   void setError(final boolean error) {
-    synchronized (mutex) {
+    synchronized (getMutex()) {
       this.error = error;
     }
   }

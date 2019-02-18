@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2018 Silverpeas
+ * Copyright (C) 2000 - 2019 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,20 +21,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.process.management;
 
-import org.silverpeas.core.process.io.file.FileHandler;
+package org.silverpeas.core.mail;
 
-import java.io.IOException;
+import org.silverpeas.core.SilverpeasException;
 
 /**
- * @author Yohann Chastagnier
+ * Exception thrown when a mail operation failed.
+ * @author mmoquillon
  */
-class ThrowIoExceptionCheckFileTest extends AbstractFileProcessCheck {
+public class MailException extends SilverpeasException {
 
-  @Override
-  public void checkFiles(final ProcessExecutionContext context, final FileHandler fileHandler)
-      throws Exception {
-    throw new IOException();
+  private static final long serialVersionUID = 2501066470893186625L;
+
+  public MailException(final String message, final String... parameters) {
+    super(message, parameters);
+  }
+
+  public MailException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
+
+  public MailException(final Throwable cause) {
+    super(cause);
   }
 }
+  

@@ -31,6 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.process.ProcessProvider;
 import org.silverpeas.core.process.check.ProcessCheck;
@@ -43,7 +44,6 @@ import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import static org.apache.commons.io.FileUtils.*;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
@@ -301,7 +301,7 @@ public class ProcessManagementIT {
         });
       }
     };
-    final ProcessCheck check = new ThrowIoExceptionCheckFileTest();
+    final ProcessCheck check = new ThrowSilverpeasRuntimeExceptionCheckFileTest();
     check.init();
     try {
       assertThat(testResultFile.exists(), is(false));
@@ -317,9 +317,9 @@ public class ProcessManagementIT {
           is(" onFailure(B_B) onFailure(B_A) onFailure(A_B) onFailure(A_A) onFailure(B) onFailure" +
               "(A)"));
       assertThat(test.getErrorType(), is(ProcessErrorType.DURING_CHECKS_PROCESSING));
-      assertThat(test.getException(), instanceOf(IOException.class));
+      assertThat(test.getException(), instanceOf(SilverpeasRuntimeException.class));
       assertThat(test2.getErrorType(), is(ProcessErrorType.DURING_CHECKS_PROCESSING));
-      assertThat(test2.getException(), instanceOf(IOException.class));
+      assertThat(test2.getException(), instanceOf(SilverpeasRuntimeException.class));
       assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
     } finally {
       check.release();

@@ -23,27 +23,21 @@
  */
 package org.silverpeas.core.node.model;
 
+import org.silverpeas.core.clipboard.ClipboardSelection;
+import org.silverpeas.core.clipboard.SilverpeasKeyData;
+import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
 import java.text.ParseException;
 
-import org.silverpeas.core.index.indexing.model.IndexEntry;
-
-import org.silverpeas.core.clipboard.ClipboardSelection;
-import org.silverpeas.core.clipboard.SilverpeasKeyData;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.DateUtil;
-
 public class NodeSelection extends ClipboardSelection implements Serializable {
 
   private static final long serialVersionUID = -6462797069972573255L;
-  public static DataFlavor NodeDetailFlavor;
-
-  static {
-    NodeDetailFlavor = new DataFlavor(NodeDetail.class, "Node");
-  }
+  public static final DataFlavor NodeDetailFlavor = new DataFlavor(NodeDetail.class, "Node");
   private NodeDetail nodeDetail;
 
   public NodeSelection(NodeDetail node) {
@@ -85,7 +79,7 @@ public class NodeSelection extends ClipboardSelection implements Serializable {
     try {
       keyData.setCreationDate(DateUtil.parse(nodeDetail.getCreationDate()));
     } catch (ParseException e) {
-      SilverTrace.error("node", "NodeSelection.getKeyData()", "root.EX_NO_MESSAGE", e);
+      SilverLogger.getLogger(this).error(e);
     }
     keyData.setDesc(nodeDetail.getDescription());
     return keyData;

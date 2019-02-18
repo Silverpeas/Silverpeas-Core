@@ -57,7 +57,8 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 @Singleton
 public class UserRegistrationServiceLegacy implements UserRegistrationService {
 
-  LocalizationBundle multilang = null;
+  private LocalizationBundle multilang = null;
+  private Random random = new Random();
 
   @PostConstruct
   void init() {
@@ -127,7 +128,6 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
   }
 
   private String generatePassword() {
-    Random random = new Random();
     byte[] password = new byte[8];
     for (int i = 0; i < 8; i++) {
       password[i] = (byte) (65 + random.nextInt(26));
@@ -191,7 +191,7 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
       templates.put(DisplayI18NHelper.getDefaultLanguage(), template);
       notifMetaData.addLanguage(DisplayI18NHelper.getDefaultLanguage(), subject, "");
       notifMetaData.setSender("0");
-      notifMetaData.addUserRecipients(new UserRecipient[] { new UserRecipient(user.getId()) });
+      notifMetaData.addUserRecipients(new UserRecipient(user.getId()));
 
       notifyUser(notifMetaData, null);
     } catch (Exception e) {

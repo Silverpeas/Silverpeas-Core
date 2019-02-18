@@ -26,8 +26,6 @@ package org.silverpeas.core.node.service;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
@@ -36,8 +34,8 @@ import org.silverpeas.core.node.dao.NodeDAO;
 import org.silverpeas.core.node.dao.NodeI18NDAO;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodeI18NDetail;
-import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
@@ -46,6 +44,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
@@ -54,9 +53,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This is the default implementation of NodeService. A node is composed by some another nodes
@@ -74,16 +73,19 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   private static final SettingBundle nodeSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.node.nodeSettings");
 
+  @Inject
+  private NodeDAO nodeDAO;
+  @Inject
+  private NodeDeletion nodeDeletion;
+
   @Override
   @Transactional
   public void delete(final String componentInstanceId) {
     try {
       NodeI18NDAO.deleteComponentInstanceData(componentInstanceId);
-      NodeDAO.deleteComponentInstanceData(componentInstanceId);
+      nodeDAO.deleteComponentInstanceData(componentInstanceId);
     } catch (SQLException e) {
-      throw new NodeRuntimeException("DefaultNodeService.delete()",
-          SilverpeasRuntimeException.ERROR, "node.DELETING_COMPONENT_INSTANCE_PUBLICATIONS_FAILED",
-          "instanceId = " + componentInstanceId, e);
+      throw new NodeRuntimeException(e);
     }
   }
 
@@ -97,16 +99,14 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   private NodeDetail findNode(NodePK pk) {
     Connection con = getConnection();
     try {
-      NodeDetail nodeDetail = NodeDAO.selectByPrimaryKey(con, pk);
+      NodeDetail nodeDetail = nodeDAO.selectByPrimaryKey(con, pk);
       if (nodeDetail != null) {
         return nodeDetail;
       } else {
-        throw new NodeRuntimeException("NodeBmEJB.findNode()", SilverpeasRuntimeException.ERROR,
-            "node.NODE_UNFINDABLE", "nodeId = " + pk.getId());
+        throw new NodeRuntimeException("Node not found nodeId = " + pk.getId());
       }
     } catch (SQLException e) {
-      throw new NodeRuntimeException("NodeEJB.ejbFindByPrimaryKey()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_FIND_ENTITY", "NodeId = " + pk.getId(), e);
+      throw new NodeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -116,18 +116,16 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public NodeDetail getDetailByNameAndFatherId(NodePK pk, String name, int nodeFatherId) {
     Connection con = getConnection();
     try {
-      NodeDetail nodeDetail = NodeDAO.selectByNameAndFatherId(con, pk, name, nodeFatherId);
+      NodeDetail nodeDetail = nodeDAO.selectByNameAndFatherId(con, pk, name, nodeFatherId);
       if (nodeDetail != null) {
         return nodeDetail;
       } else {
-        throw new NodeRuntimeException("NodeBmEJB.getDetailByNameAndNodeFatherId()",
-            SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_DETAIL_FAILED",
-            "nodeId = " + pk.getId() + ",name=" + name + "nodeFatherId=" + nodeFatherId);
+        throw new NodeRuntimeException(
+            "Node not found nodeId = " + pk.getId() + ",name=" + name + "nodeFatherId=" +
+                nodeFatherId);
       }
     } catch (SQLException e) {
-      throw new NodeRuntimeException("NodeEJB.ejbFindByNameAndFatherId()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_FIND_ENTITY", "name = " + name
-          + ", component = " + pk.getComponentName() + ", parent ID = " + nodeFatherId, e);
+      throw new NodeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -141,7 +139,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    * @since 1.0
    */
   @Override
-  @Transactional(Transactional.TxType.NOT_SUPPORTED)
+  @Transactional(Transactional.TxType.SUPPORTS)
   public NodeDetail getDetail(NodePK pk) {
     try {
       NodeDetail nodeDetail = findNode(pk);
@@ -160,21 +158,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       }
       return nodeDetail;
     } catch (Exception re) {
-      throw new NodeRuntimeException("NodeBmEJB.getDetail()", SilverpeasRuntimeException.ERROR,
-          "node.GETTING_NODE_DETAIL_FAILED", "nodeId = " + pk.getId(), re);
+      throw new NodeRuntimeException(re);
     }
 
-  }
-
-  /**
-   * Get the attributes of a node and of its children with transaction support
-   *
-   * @return a NodeDetail
-   */
-  @Override
-  @Transactional(Transactional.TxType.SUPPORTS)
-  public NodeDetail getDetailTransactionally(NodePK pk) {
-    return getDetail(pk);
   }
 
   /**
@@ -188,74 +174,72 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     try {
       return NodeI18NDAO.getTranslations(con, nodeId);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getTranslations()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_TRANSLATIONS_FAILED", re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
   }
 
   @Override
-  public ArrayList<NodeDetail> getTree(NodePK pk) {
+  public List<NodeDetail> getTree(NodePK pk) {
     Connection con = getConnection();
     try {
-      return NodeDAO.getTree(con, pk);
+      return nodeDAO.getTree(con, pk);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getTree()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_TREE_FAILED", re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
   }
 
   @Override
-  public ArrayList<NodeDetail> getSubTree(NodePK pk) {
+  public List<NodeDetail> getSubTree(NodePK pk) {
 
     return getSubTree(pk, null, 0, null);
   }
 
   @Override
-  public ArrayList<NodeDetail> getSubTree(NodePK pk, String sorting) {
+  public List<NodeDetail> getSubTree(NodePK pk, String sorting) {
 
     return getSubTree(pk, null, 0, sorting);
   }
 
   @Override
-  public ArrayList<NodeDetail> getSubTreeByStatus(NodePK pk, String status) {
+  public List<NodeDetail> getSubTreeByStatus(NodePK pk, String status) {
 
     return getSubTree(pk, status, 0, null);
   }
 
   @Override
-  public ArrayList<NodeDetail> getSubTreeByStatus(NodePK pk, String status, String sorting) {
+  public List<NodeDetail> getSubTreeByStatus(NodePK pk, String status, String sorting) {
 
     return getSubTree(pk, status, 0, sorting);
   }
 
   @Override
-  public ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level) {
+  public List<NodeDetail> getSubTreeByLevel(NodePK pk, int level) {
 
     return getSubTree(pk, null, level, null);
   }
 
   @Override
-  public ArrayList<NodeDetail> getSubTreeByLevel(NodePK pk, int level, String sorting) {
+  public List<NodeDetail> getSubTreeByLevel(NodePK pk, int level, String sorting) {
 
     return getSubTree(pk, null, level, sorting);
   }
 
   @Override
-  public ArrayList<NodeDetail> getSubTree(NodePK pk, String status, int level, String sorting) {
+  public List<NodeDetail> getSubTree(NodePK pk, String status, int level, String sorting) {
 
     Connection con = getConnection();
     try {
-      List<NodeDetail> headers = NodeDAO.getAllHeaders(con, pk, sorting, level);
-      NodeDetail root = NodeDAO.loadRow(con, pk);
-      root.setChildrenDetails(new ArrayList<NodeDetail>());
-      Map<String, NodeDetail> tree = new HashMap<String, NodeDetail>();
+      List<NodeDetail> headers = nodeDAO.getAllHeaders(con, pk, sorting, level);
+      NodeDetail root = nodeDAO.loadRow(con, pk);
+      root.setChildrenDetails(new ArrayList<>());
+      Map<String, NodeDetail> tree = new HashMap<>();
       tree.put(root.getNodePK().getId(), root);
       for (NodeDetail header : headers) {
-        header.setChildrenDetails(new ArrayList<NodeDetail>());
+        header.setChildrenDetails(new ArrayList<>());
         tree.put(header.getNodePK().getId(), header);
       }
 
@@ -265,7 +249,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
           father.getChildrenDetails().add(header);
         }
       }
-      ArrayList<NodeDetail> result = new ArrayList<NodeDetail>();
+      ArrayList<NodeDetail> result = new ArrayList<>();
       if (level == 0) {
         root = tree.get(root.getNodePK().getId());
         result = (ArrayList<NodeDetail>) processNode(result, root);
@@ -276,8 +260,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       }
       return result;
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getSubTreeByStatus()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_SUBTREE_FAILED", re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -326,11 +309,10 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
         createIndex(newNode, true);
       }
 
-      NodeDAO.unvalidateTree(con, nodePK);
-      NodeDAO.unvalidateTree(con, toNode);
+      nodeDAO.unvalidateTree(con, nodePK);
+      nodeDAO.unvalidateTree(con, toNode);
     } catch (Exception e) {
-      throw new NodeRuntimeException("NodeBmEJB.moveNode()", SilverpeasRuntimeException.ERROR,
-          "node.MOVING_SUBTREE_FAILED", e);
+      throw new NodeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -362,12 +344,12 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     NodeDetail nd = getDetail(pk);
     Connection con = getConnection();
     try {
-      Collection<NodeDetail> children = NodeDAO.getChildrenDetails(con, pk);
-      List<NodeDetail> childrenDetail = new ArrayList<NodeDetail>();
+      Collection<NodeDetail> children = nodeDAO.getChildrenDetails(con, pk);
+      List<NodeDetail> childrenDetail = new ArrayList<>();
       for (NodeDetail childDetail : children) {
-        Collection<NodeDetail> subChildren = NodeDAO
-            .getChildrenDetails(con, childDetail.getNodePK());
-        List<NodeDetail> subChildrenDetail = new ArrayList<NodeDetail>();
+        Collection<NodeDetail> subChildren =
+            nodeDAO.getChildrenDetails(con, childDetail.getNodePK());
+        List<NodeDetail> subChildrenDetail = new ArrayList<>();
         for (NodeDetail subChild : subChildren) {
           subChildrenDetail.add(subChild);
         }
@@ -377,9 +359,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       nd.setChildrenDetails(childrenDetail);
       return nd;
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getTwoLevelDetails()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_DETAIL_FAILED", "nodeId = " + pk.
-          getId(), re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -389,10 +369,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public NodeDetail getHeader(NodePK pk, boolean getTranslations) {
     Connection con = getConnection();
     try {
-      return NodeDAO.loadRow(con, pk, getTranslations);
+      return nodeDAO.loadRow(con, pk, getTranslations);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getHeader()", SilverpeasRuntimeException.ERROR,
-          "node.GETTING_NODE_HEADER_FAILED", "nodeId = " + pk.getId(), re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -409,10 +388,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public NodeDetail getHeader(NodePK pk) {
     Connection con = getConnection();
     try {
-      return NodeDAO.loadRow(con, pk);
+      return nodeDAO.loadRow(con, pk);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getHeader()", SilverpeasRuntimeException.ERROR,
-          "node.GETTING_NODE_HEADER_FAILED", "nodeId = " + pk.getId(), re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -431,65 +409,71 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     NodeDetail oldNodeDetail = getHeader(nd.getNodePK());
     Connection con = getConnection();
     try {
-      // I18N
       if (nd.isRemoveTranslation()) {
-        // Remove of a translation is required
-        if ("-1".equals(nd.getTranslationId())) {
-          // Default language = translation
-          List<NodeI18NDetail> translations = NodeI18NDAO.getTranslations(con, nd.getId());
-          if (translations != null && !translations.isEmpty()) {
-            NodeI18NDetail translation = translations.get(0);
-            nd.setLanguage(translation.getLanguage());
-            nd.setName(translation.getName());
-            nd.setDescription(translation.getDescription());
-            NodeI18NDAO.removeTranslation(con, translation.getId());
-            updateNodeDetail(con, nd);
-          }
-        } else {
-          NodeI18NDAO.removeTranslation(con, Integer.parseInt(nd.getTranslationId()));
-        }
+        removeTranslation(con, nd);
       } else {
-        // Add or update a translation
-        if (nd.getLanguage() != null) {
-          String defaultLanguage = oldNodeDetail.getLanguage();
-          if (defaultLanguage == null) {
-            // translation for the first time
-            nd.setLanguage(I18NHelper.defaultLanguage);
-            defaultLanguage = nd.getLanguage();
-          }
-
-          String newLanguage = nd.getLanguage();
-
-          if (!newLanguage.equals(defaultLanguage)) {
-            NodeI18NDetail translation = new NodeI18NDetail(nd.getLanguage(), nd.getName(), nd.
-                getDescription());
-            translation.setNodeId(String.valueOf(nd.getId()));
-            String translationId = nd.getTranslationId();
-            if (translationId != null && !"-1".equals(translationId)) {
-              // update translation
-              translation.setId(Integer.parseInt(translationId));
-              translation.setNodeId(String.valueOf(nd.getId()));
-              NodeI18NDAO.updateTranslation(con, translation);
-            } else {
-              NodeI18NDAO.saveTranslation(con, translation);
-            }
-            NodeDAO.unvalidateTree(con, nd.getNodePK());
-          } else {
-            // the default language is modified
-            updateNodeDetail(con, nd);
-          }
-        } else {
-          // No i18n managed by this object
-          updateNodeDetail(con, nd);
-        }
+        addOrUpdateTranslation(con, oldNodeDetail, nd);
       }
-      // createIndex(nd);
       createIndex(nd.getNodePK());
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.setDetail()", SilverpeasRuntimeException.ERROR,
-          "node.UPDATING_NODE_FAILED", "nodeId = " + nd.getNodePK().getId(), re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
+    }
+  }
+
+  private void addOrUpdateTranslation(final Connection con, final NodeDetail oldNodeDetail,
+      final NodeDetail nd) throws SQLException {
+    // Add or update a translation
+    if (nd.getLanguage() != null) {
+      String defaultLanguage = oldNodeDetail.getLanguage();
+      if (defaultLanguage == null) {
+        // translation for the first time
+        nd.setLanguage(I18NHelper.defaultLanguage);
+        defaultLanguage = nd.getLanguage();
+      }
+
+      String newLanguage = nd.getLanguage();
+
+      if (!newLanguage.equals(defaultLanguage)) {
+        NodeI18NDetail translation = new NodeI18NDetail(nd.getLanguage(), nd.getName(), nd.
+            getDescription());
+        translation.setNodeId(String.valueOf(nd.getId()));
+        String translationId = nd.getTranslationId();
+        if (translationId != null && !"-1".equals(translationId)) {
+          // update translation
+          translation.setId(Integer.parseInt(translationId));
+          translation.setNodeId(String.valueOf(nd.getId()));
+          NodeI18NDAO.updateTranslation(con, translation);
+        } else {
+          NodeI18NDAO.saveTranslation(con, translation);
+        }
+        nodeDAO.unvalidateTree(con, nd.getNodePK());
+      } else {
+        // the default language is modified
+        updateNodeDetail(con, nd);
+      }
+    } else {
+      // No i18n managed by this object
+      updateNodeDetail(con, nd);
+    }
+  }
+
+  private void removeTranslation(final Connection con, final NodeDetail nd) throws SQLException {
+    // Remove of a translation is required
+    if ("-1".equals(nd.getTranslationId())) {
+      // Default language = translation
+      List<NodeI18NDetail> translations = NodeI18NDAO.getTranslations(con, nd.getId());
+      if (translations != null && !translations.isEmpty()) {
+        NodeI18NDetail translation = translations.get(0);
+        nd.setLanguage(translation.getLanguage());
+        nd.setName(translation.getName());
+        nd.setDescription(translation.getDescription());
+        NodeI18NDAO.removeTranslation(con, translation.getId());
+        updateNodeDetail(con, nd);
+      }
+    } else {
+      NodeI18NDAO.removeTranslation(con, Integer.parseInt(nd.getTranslationId()));
     }
   }
 
@@ -505,17 +489,11 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public void removeNode(NodePK pk) {
     Connection connection = getConnection();
     try {
-      NodeDeletion.deleteNodes(pk, connection, new AnonymousMethodOnNode() {
-        @Override
-        public void invoke(NodePK pk) throws Exception {
+      nodeDeletion.deleteNodes(pk, connection, pk1 ->
           // remove wysiwyg attached to node
-          WysiwygController.deleteWysiwygAttachments(pk.getInstanceId(), "Node_" + pk.getId());
-
-        }
-      });
+          WysiwygController.deleteWysiwygAttachments(pk1.getInstanceId(), "Node_" + pk1.getId()));
     } catch (Exception re) {
-      throw new NodeRuntimeException("NodeBmEJB.removeNode()", SilverpeasRuntimeException.ERROR,
-          "node.DELETING_NODE_FAILED", "nodeId = " + pk.getId(), re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(connection);
     }
@@ -534,10 +512,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public NodePath getPath(NodePK pk) {
     Connection con = getConnection();
     try {
-      return NodeDAO.getAnotherPath(con, pk);
+      return nodeDAO.getNodePath(con, pk);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getAnotherPath()", SilverpeasRuntimeException.ERROR,
-          "node.GETTING_NODE_PATH_FAILED", "nodeId = " + pk.getId(), re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -554,11 +531,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public Collection<NodeDetail> getChildrenDetails(NodePK pk) {
     Connection con = getConnection();
     try {
-      return NodeDAO.getChildrenDetails(con, pk);
+      return nodeDAO.getChildrenDetails(con, pk);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getChildrenDetails()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_SONS_FAILED", "nodeId = " + pk.
-          getId(), re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -590,11 +565,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public List<NodeDetail> getHeadersByLevel(NodePK pk, int level) {
     Connection con = getConnection();
     try {
-      return NodeDAO.getHeadersByLevel(con, pk, level);
+      return nodeDAO.getHeadersByLevel(con, pk, level);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getHeadersByLevel()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_NODES_BY_LEVEL_FAILED",
-          "nodeId = " + pk.getId() + ", level = " + level, re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -612,10 +585,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public Collection<NodeDetail> getAllNodes(NodePK nodePK) {
     Connection con = getConnection();
     try {
-      return NodeDAO.getAllHeaders(con, nodePK);
+      return nodeDAO.getAllHeaders(con, nodePK);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getAllNodes()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_ALL_NODES_FAILED", re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -631,11 +603,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public int getChildrenNumber(NodePK pk) {
     Connection con = getConnection();
     try {
-      return NodeDAO.getChildrenNumber(con, pk);
+      return nodeDAO.getChildrenNumber(con, pk);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getChildrenNumber()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_NUMBER_OF_SONS_FAILED", "nodeId = " + pk.
-          getId(), re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -663,8 +633,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       createIndex(newNode, false);
       return newNode.getNodePK();
     } catch (Exception e) {
-      throw new NodeRuntimeException("NodeBmEJB.createNode()",
-          SilverpeasRuntimeException.ERROR, "node.CREATING_NODE_FAILED", e);
+      throw new NodeRuntimeException(e);
     }
   }
 
@@ -695,8 +664,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       createIndex(newNode, false);
       return newNode.getNodePK();
     } catch (Exception re) {
-      throw new NodeRuntimeException("NodeBmEJB.createNode()",
-          SilverpeasRuntimeException.ERROR, "node.CREATING_NODE_FAILED", re);
+      throw new NodeRuntimeException(re);
     }
   }
 
@@ -714,19 +682,18 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     Connection con = getConnection();
     try {
       // insert row in the database
-      newNodePK = NodeDAO.insertRow(con, nd);
+      newNodePK = nodeDAO.insertRow(con, nd);
       int rightsDependsOn = nd.getRightsDependsOn();
       if (rightsDependsOn == 0) {
         rightsDependsOn = Integer.parseInt(newNodePK.getId());
       }
       if (nd.haveRights()) {
-        NodeDAO.updateRightsDependency(con, newNodePK, rightsDependsOn);
+        nodeDAO.updateRightsDependency(con, newNodePK, rightsDependsOn);
       }
       nd.setNodePK(newNodePK);
       createTranslations(con, nd);
     } catch (SQLException e) {
-      throw new NodeRuntimeException("NodeBMEJB.create()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_INSERT_ENTITY_ATTRIBUTES", e);
+      throw new NodeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -738,15 +705,14 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     try {
       updateNodeDetail(con, detail);
     } catch (SQLException ex) {
-      throw new NodeRuntimeException("NodeBMEJB.update()", SilverpeasRuntimeException.ERROR,
-          "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "NodeId = " + detail.getNodePK().getId(), ex);
+      throw new NodeRuntimeException(ex);
     } finally {
       DBUtil.close(con);
     }
   }
 
   private void updateNodeDetail(Connection con, NodeDetail detail) throws SQLException {
-    NodeDetail currentNode = NodeDAO.loadRow(con, detail.getNodePK());
+    NodeDetail currentNode = nodeDAO.loadRow(con, detail.getNodePK());
     if (detail.getName() != null) {
       currentNode.setName(detail.getName());
     }
@@ -782,23 +748,21 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     currentNode.setRightsDependsOn(detail.getRightsDependsOn());
     currentNode.setOrder(detail.getOrder());
     currentNode.setLanguage(detail.getLanguage());
-    NodeDAO.storeRow(con, currentNode);
+    nodeDAO.storeRow(con, currentNode);
   }
 
   private void delete(NodePK nodePK) {
     Connection con = getConnection();
     try {
-      NodeDAO.deleteRow(con, nodePK);
+      nodeDAO.deleteRow(con, nodePK);
     } catch (SQLException ex) {
-      throw new NodeRuntimeException("NodeBMEJB.delete()", SilverpeasRuntimeException.ERROR,
-          "root.EX_CANT_DELETE_ENTITY", "NodeId = " + nodePK.getId(), ex);
+      throw new NodeRuntimeException(ex);
     } finally {
       DBUtil.close(con);
     }
   }
 
-  private void createTranslations(Connection con, NodeDetail node) throws SQLException,
-      UtilException {
+  private void createTranslations(Connection con, NodeDetail node) throws SQLException {
     if (node.getTranslations() != null) {
       for (final NodeI18NDetail translation : node.getTranslations().values()) {
         if (node.getLanguage() != null && !node.getLanguage().equals(translation.getLanguage())) {
@@ -813,8 +777,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new NodeRuntimeException("NodeEJB.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new NodeRuntimeException(e);
     }
   }
 
@@ -830,12 +793,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public boolean isSameNameSameLevelOnCreation(NodeDetail nd) {
     Connection con = getConnection();
     try {
-      boolean result = NodeDAO.isSameNameSameLevelOnCreation(con, nd);
-      return result;
+      return nodeDAO.isSameNameSameLevelOnCreation(con, nd);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.isSameNameSameLevelOnCreation()",
-          SilverpeasRuntimeException.ERROR,
-          "node.KNOWING_IF_SAME_NAME_SAME_LEVEL_ON_CREATION_FAILED", re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -853,11 +813,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public boolean isSameNameSameLevelOnUpdate(NodeDetail nd) {
     Connection con = getConnection();
     try {
-      return NodeDAO.isSameNameSameLevelOnUpdate(con, nd);
+      return nodeDAO.isSameNameSameLevelOnUpdate(con, nd);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.isSameNameSameLevelOnUpdate()",
-          SilverpeasRuntimeException.ERROR,
-          "node.KNOWING_IF_SAME_NAME_SAME_LEVEL_ON_UPDATE_FAILED", re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -875,11 +833,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public Collection<NodePK> getChildrenPKs(NodePK nodePK) {
     Connection con = getConnection();
     try {
-      return NodeDAO.getChildrenPKs(con, nodePK);
+      return nodeDAO.getChildrenPKs(con, nodePK);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getChildrenPKs()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_PK_OF_SONS_FAILED",
-          "nodeId = " + nodePK.getId(), re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -897,11 +853,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public Collection<NodePK> getDescendantPKs(NodePK nodePK) {
     Connection con = getConnection();
     try {
-      return NodeDAO.getDescendantPKs(con, nodePK);
+      return nodeDAO.getDescendantPKs(con, nodePK);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getDescendantPKs()",
-          SilverpeasRuntimeException.ERROR,
-          "node.GETTING_PK_OF_DESCENDANTS_FAILED", "nodeId = " + nodePK.getId(), re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -920,11 +874,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public List<NodeDetail> getDescendantDetails(NodePK nodePK) {
     Connection con = getConnection();
     try {
-      return NodeDAO.getDescendantDetails(con, nodePK);
+      return nodeDAO.getDescendantDetails(con, nodePK);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getDescendantDetails()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_DETAIL_OF_DESCENDANTS_FAILED", "nodeId = "
-          + nodePK.getId(), re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -941,36 +893,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public List<NodeDetail> getDescendantDetails(NodeDetail node) {
     Connection con = getConnection();
     try {
-      return NodeDAO.getDescendantDetails(con, node);
+      return nodeDAO.getDescendantDetails(con, node);
     } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getDescendantDetails()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_DETAIL_OF_DESCENDANTS_FAILED", "nodeId = "
-          + node.getNodePK().getId(), re);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  /**
-   * Get the path from root to a node
-   *
-   * @param nodePK A NodePK
-   * @return A collection of NodeDetail
-   * @see NodePK
-   * @see NodeDetail
-   * @since 1.0
-   * @deprecated
-   */
-  @Override
-  public Collection<NodeDetail> getAnotherPath(NodePK nodePK) {
-    // TODO : methode a supprimer ! il faut utiliser getPath()
-    Connection con = getConnection();
-    try {
-      return NodeDAO.getAnotherPath(con, nodePK);
-    } catch (SQLException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getAnotherPath()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_PATH_FAILED",
-          "nodeId = " + nodePK.getId(), re);
+      throw new NodeRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -989,9 +914,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     try {
       spreadRightsDependency(nodeDetail, nodeDetail.getRightsDependsOn());
     } catch (SQLException e) {
-      throw new NodeRuntimeException("NodeBmEJB.updateRightsDependency()",
-          SilverpeasRuntimeException.ERROR, "node.SPREADING_RIGHTS_DEPENDENCY_FAILED", "nodeId = "
-          + nodeDetail.getNodePK().getId(), e);
+      throw new NodeRuntimeException(e);
     }
   }
 
@@ -1011,10 +934,9 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public void sortNodes(List<NodePK> nodePKs) {
     Connection con = getConnection();
     try {
-      NodeDAO.sortNodes(con, nodePKs);
+      nodeDAO.sortNodes(con, nodePKs);
     } catch (SQLException e) {
-      throw new NodeRuntimeException("NodeBmEJB.sortNodes()", SilverpeasRuntimeException.ERROR,
-          "node.SORTING_NODES_FAILED", e);
+      throw new NodeRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -1031,55 +953,48 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   }
 
   private void createIndex(NodeDetail nodeDetail, boolean processWysiwygContent) {
+    Objects.requireNonNull(nodeDetail);
+    final FullIndexEntry indexEntry =
+        new FullIndexEntry(nodeDetail.getNodePK().getComponentName(), "Node", nodeDetail.
+            getNodePK().getId());
 
-    FullIndexEntry indexEntry = null;
-
-    if (nodeDetail != null) {
-      // Index the Node
-      indexEntry = new FullIndexEntry(nodeDetail.getNodePK().getComponentName(), "Node", nodeDetail.
-          getNodePK().getId());
-
-      Iterator<String> languages = nodeDetail.getLanguages();
-      while (languages.hasNext()) {
-        String language = languages.next();
-        NodeI18NDetail translation = (NodeI18NDetail) nodeDetail.getTranslation(language);
-
-        indexEntry.setTitle(translation.getName(), language);
-        indexEntry.setPreview(translation.getDescription(), language);
-
-        if (processWysiwygContent) {
-          updateIndexEntryWithWysiwygContent(indexEntry, nodeDetail.getNodePK(), language);
-        }
+    final Collection<String> languages = nodeDetail.getLanguages();
+    languages.forEach(l -> {
+      NodeI18NDetail translation = nodeDetail.getTranslation(l);
+      indexEntry.setTitle(translation.getName(), l);
+      indexEntry.setPreview(translation.getDescription(), l);
+      if (processWysiwygContent) {
+        updateIndexEntryWithWysiwygContent(indexEntry, nodeDetail.getNodePK(), l);
       }
+    });
 
+    try {
+      indexEntry.setCreationDate(DateUtil.parse(nodeDetail.getCreationDate()));
+    } catch (ParseException e) {
+      SilverLogger.getLogger(this).warn(e);
+    }
+    final String userId;
+    // cas d'une creation (avec creatorId, creationDate)
+    if (nodeDetail.getCreatorId() != null) {
+      userId = nodeDetail.getCreatorId();
+      indexEntry.setCreationUser(userId);
+    } else {
+      // cas d'une modification
+      NodeDetail node = getHeader(nodeDetail.getNodePK());
       try {
-        indexEntry.setCreationDate(DateUtil.parse(nodeDetail.getCreationDate()));
+        indexEntry.setCreationDate(DateUtil.parse(node.getCreationDate()));
       } catch (ParseException e) {
         SilverLogger.getLogger(this).warn(e);
       }
-      String userId;
-      // cas d'une creation (avec creatorId, creationDate)
-      if (nodeDetail.getCreatorId() != null) {
-        userId = nodeDetail.getCreatorId();
-        indexEntry.setCreationUser(userId);
-      } else {
-        // cas d'une modification
-        NodeDetail node = getHeader(nodeDetail.getNodePK());
-        try {
-          indexEntry.setCreationDate(DateUtil.parse(node.getCreationDate()));
-        } catch (ParseException e) {
-          SilverLogger.getLogger(this).warn(e);
-        }
-        userId = node.getCreatorId();
-        indexEntry.setCreationUser(userId);
-      }
+      userId = node.getCreatorId();
+      indexEntry.setCreationUser(userId);
+    }
 
-      // index creator's full name
-      if (nodeSettings.getString("indexAuthorName").equals("true")) {
-        UserDetail ud = UserDetail.getById(userId);
-        if (ud != null) {
-          indexEntry.addTextContent(ud.getDisplayedName());
-        }
+    // index creator's full name
+    if (nodeSettings.getString("indexAuthorName").equals("true")) {
+      UserDetail ud = UserDetail.getById(userId);
+      if (ud != null) {
+        indexEntry.addTextContent(ud.getDisplayedName());
       }
     }
     IndexEngineProxy.addIndexEntry(indexEntry);

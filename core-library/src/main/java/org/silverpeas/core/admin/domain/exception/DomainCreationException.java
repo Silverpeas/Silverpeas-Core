@@ -23,34 +23,21 @@
  */
 package org.silverpeas.core.admin.domain.exception;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 public class DomainCreationException extends SilverpeasException {
 
-  private static final long serialVersionUID = 4613229711734532042L;
+  private static final long serialVersionUID = 3774970291974344082L;
 
-  @Override
-  public String getModule() {
-    return "admin";
+  public DomainCreationException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public DomainCreationException(String callingClass,
-      Exception nested) {
-    super(callingClass, SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", nested);
+  public DomainCreationException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public DomainCreationException(String callingClass,
-      String extraParams, Exception nested) {
-    super(callingClass, SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", extraParams, nested);
+  public DomainCreationException(final Throwable cause) {
+    super(cause);
   }
-
-  public DomainCreationException(String callingClass,
-      String extraParams) {
-    super(callingClass, SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", extraParams);
-  }
-
-  public DomainCreationException(String callingClass) {
-    super(callingClass, SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN");
-  }
-
 }

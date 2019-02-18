@@ -23,16 +23,14 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.classification.ObjectValuePair;
 import org.silverpeas.core.pdc.classification.PertinentAxis;
@@ -43,12 +41,12 @@ import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.pdc.tree.model.TreeNodePK;
 import org.silverpeas.core.pdc.tree.service.TreeService;
-import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -68,6 +66,7 @@ import java.util.Set;
 @Singleton
 public class GlobalPdcManager implements PdcManager {
 
+  private static final String UNKNOWN = "unknown";
   /**
    * SilverpeasBeanDAO is the main link with the SilverPeas persistence. We indicate the Object
    * SilverPeas which map the database.
@@ -121,11 +120,10 @@ public class GlobalPdcManager implements PdcManager {
           findSilverContentIdByPosition(containerPosition, componentIds, recursiveSearch,
               visibilitySensitive));
     } catch (PdcException c) {
-      throw new PdcRuntimeException("PdcBmEJB.findGlobalSilverContents",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", c);
+      throw new PdcRuntimeException(c);
     }
 
-    SearchContext searchContext = (SearchContext) containerPosition;
+    SearchContext searchContext = containerPosition;
     return getSilverContentsByIds(silverContentIds, searchContext.getUserId());
   }
 
@@ -141,8 +139,7 @@ public class GlobalPdcManager implements PdcManager {
           " AxisType='" + type + "' order by AxisOrder ");
       return persistence2AxisHeaders(axis);
     } catch (PersistenceException exSelect) {
-      throw new PdcException("GlobalPdcManager.getAxisByType", SilverpeasException.ERROR,
-          "Pdc.CANNOT_FIND_AXES_TYPE", exSelect);
+      throw new PdcException(exSelect);
     }
   }
 
@@ -193,8 +190,7 @@ public class GlobalPdcManager implements PdcManager {
           " 1=1 order by AxisType asc, AxisOrder asc ");
       return persistence2AxisHeaders(axis);
     } catch (PersistenceException exSelect) {
-      throw new PdcException("GlobalPdcManager.getAxis", SilverpeasException.ERROR,
-          "Pdc.CANNOT_FIND_AXES", exSelect);
+      throw new PdcException(exSelect);
     }
 
   }
@@ -213,7 +209,7 @@ public class GlobalPdcManager implements PdcManager {
    * @return the max number of axis
    */
   @Override
-  public int getNbMaxAxis() throws PdcException {
+  public int getNbMaxAxis() {
     return ClassifyEngine.getMaxAxis();
   }
 
@@ -257,9 +253,9 @@ public class GlobalPdcManager implements PdcManager {
 
         // build of the Value
         Value value =
-            new Value("unknown", Integer.toString(axisHeader.getRootId()), axisHeader.getName(),
+            new Value(UNKNOWN, Integer.toString(axisHeader.getRootId()), axisHeader.getName(),
                 axisHeader.getDescription(), axisHeader.getCreationDate(),
-                axisHeader.getCreatorId(), "unknown", -1, -1, "unknown");
+                axisHeader.getCreatorId(), UNKNOWN, -1, -1, UNKNOWN);
 
         value.setLanguage(axisHeader.getLanguage());
         value.setRemoveTranslation(axisHeader.isRemoveTranslation());
@@ -278,8 +274,7 @@ public class GlobalPdcManager implements PdcManager {
         commitTransaction(con);
       } catch (Exception exCreate) {
         rollbackTransaction(con);
-        throw new PdcException("GlobalPdcManager.createAxis", SilverpeasException.ERROR,
-            "Pdc.CANNOT_CREATE_AXE", exCreate);
+        throw new PdcException(exCreate);
       } finally {
         DBUtil.close(con);
       }
@@ -357,10 +352,9 @@ public class GlobalPdcManager implements PdcManager {
             !oldAxisHeader.getName().equalsIgnoreCase(axisHeader.getName())) {
           axisNameHasChanged = true;
         }
-        if (oldAxisHeader.getDescription() != null &&
-            !oldAxisHeader.getDescription().equalsIgnoreCase(axisHeader.getDescription())) {
-          axisDescHasChanged = true;
-        } else if (oldAxisHeader.getDescription() == null && axisHeader.getDescription() != null) {
+        if ((oldAxisHeader.getDescription() != null &&
+            !oldAxisHeader.getDescription().equalsIgnoreCase(axisHeader.getDescription())) ||
+            (oldAxisHeader.getDescription() == null && axisHeader.getDescription() != null)) {
           axisDescHasChanged = true;
         }
 
@@ -450,8 +444,7 @@ public class GlobalPdcManager implements PdcManager {
         commitTransaction(con);
       } catch (Exception exUpdate) {
         rollbackTransaction(con);
-        throw new PdcException("GlobalPdcManager.updateAxis", SilverpeasException.ERROR,
-            "Pdc.CANNOT_UPDATE_AXE", exUpdate);
+        throw new PdcException(exUpdate);
       } finally {
         DBUtil.close(con);
       }
@@ -490,8 +483,7 @@ public class GlobalPdcManager implements PdcManager {
       // suppression des traductions
       axisHeaderI18NDAO.deleteTranslations(con, Integer.parseInt(axisId));
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.deleteAxis", SilverpeasException.ERROR,
-          "Pdc.CANNOT_DELETE_AXE", e);
+      throw new PdcException(e);
     }
   }
 
@@ -537,8 +529,7 @@ public class GlobalPdcManager implements PdcManager {
       TreeNode node = treeService.getNode(con, new TreeNodePK(valueId), getTreeId(axisId));
       value = createValue(node);
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.getValue", SilverpeasException.ERROR,
-          "Pdc.CANNOT_ACCESS_VALUE", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -559,8 +550,7 @@ public class GlobalPdcManager implements PdcManager {
       con = openConnection();
       return createValue(treeService.getNode(con, new TreeNodePK(valueId), treeId));
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.getAxisValue", SilverpeasException.ERROR,
-          "Pdc.CANNOT_ACCESS_VALUE", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -581,8 +571,7 @@ public class GlobalPdcManager implements PdcManager {
       List<TreeNode> listTreeNodes = treeService.getNodesByName(con, valueName);
       return createValuesList(listTreeNodes);
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.getAxisValuesByName", SilverpeasException.ERROR,
-          "Pdc.CANNOT_FIND_VALUES", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -606,8 +595,7 @@ public class GlobalPdcManager implements PdcManager {
         listValuesString.add(value.getPK().getId());
       }
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.getDaughterValues", SilverpeasException.ERROR,
-          "Pdc.CANNOT_RETRIEVE_SUBNODES", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -632,8 +620,7 @@ public class GlobalPdcManager implements PdcManager {
       TreeNode treeNode = treeService.getRoot(con, Integer.toString(treeId));
       return createValue(treeNode);
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.getRoot", SilverpeasException.ERROR,
-          "Pdc.CANNOT_GET_VALUE", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -650,8 +637,7 @@ public class GlobalPdcManager implements PdcManager {
     try {
       return createValuesList(treeService.getTree(con, Integer.toString(treeId)));
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.getAxisValues", SilverpeasException.ERROR,
-          "Pdc.CANNOT_ACCESS_LIST_OF_VALUES", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -685,7 +671,7 @@ public class GlobalPdcManager implements PdcManager {
       if (refNode.getLevelNumber() != 0) {
         status = insertMotherValueToValue(con, valueToInsert, refValue, treeId);
       } else {
-        insertMotherValueToRootValue(con, valueToInsert, refValue, axisId, treeId);
+        insertMotherValueToRootValue(con, valueToInsert, refValue, treeId);
         status = 0;
       }
 
@@ -703,8 +689,7 @@ public class GlobalPdcManager implements PdcManager {
       commitTransaction(con);
     } catch (Exception e) {
       rollbackTransaction(con);
-      throw new PdcException("GlobalPdcManager.insertMotherValue", SilverpeasException.ERROR,
-          "Pdc.CANNOT_UPDATE_POSTION", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -737,15 +722,7 @@ public class GlobalPdcManager implements PdcManager {
       if (isValueNameExist(daughters, valueToMove)) {
         status = 1;
       } else {
-        try {
-          // l'idée : passer en paramètres : des TreeNodePK car le métier est
-          // basé sur les Tree
-          treeService.moveSubTreeToNewFather(con, new TreeNodePK(valueToMoveId),
-              new TreeNodePK(newFatherId), treeId, orderNumber);
-        } catch (Exception e) {
-          throw new PdcException("GlobalPdcManager.moveValueToNewFatherId",
-              SilverpeasException.ERROR, "Pdc.CANNOT_MOVE_VALUE", e);
-        }
+        moveSubTree(con, treeId, valueToMoveId, newFatherId, orderNumber);
       }
 
       // Warning, we must update the path of the Value(Classify)
@@ -762,12 +739,23 @@ public class GlobalPdcManager implements PdcManager {
       commitTransaction(con);
     } catch (Exception e) {
       rollbackTransaction(con);
-      throw new PdcException("GlobalPdcManager.moveValueToNewFatherId", SilverpeasException.ERROR,
-          "Pdc.CANNOT_MOVE_VALUE", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
     return status;
+  }
+
+  private void moveSubTree(final Connection con, final String treeId, final String valueToMoveId,
+      final String newFatherId, final int orderNumber) throws PdcException {
+    try {
+      // l'idée : passer en paramètres : des TreeNodePK car le métier est
+      // basé sur les Tree
+      treeService.moveSubTreeToNewFather(con, new TreeNodePK(valueToMoveId),
+          new TreeNodePK(newFatherId), treeId, orderNumber);
+    } catch (Exception e) {
+      throw new PdcException(e);
+    }
   }
 
   /**
@@ -820,8 +808,7 @@ public class GlobalPdcManager implements PdcManager {
       usersId = PdcRightsDAO.getUserIds(con, axisId, valueId);
       groupsId = PdcRightsDAO.getGroupIds(con, axisId, valueId);
     } catch (SQLException e) {
-      throw new PdcException("GlobalPdcManager.getManagers", SilverpeasException.ERROR,
-          "Pdc.CANNOT_GET_MANAGERS", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -853,8 +840,7 @@ public class GlobalPdcManager implements PdcManager {
 
       return isManager;
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.isUserManager", SilverpeasException.ERROR,
-          "Pdc.CANNOT_GET_MANAGERS", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -865,8 +851,7 @@ public class GlobalPdcManager implements PdcManager {
     try {
       return PdcRightsDAO.isGroupManager(con, groupIds);
     } catch (SQLException e) {
-      throw new PdcException("GlobalPdcManager.isGroupManager", SilverpeasException.ERROR,
-          "Pdc.CANNOT_GET_MANAGERS", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -895,8 +880,7 @@ public class GlobalPdcManager implements PdcManager {
       commitTransaction(con);
     } catch (SQLException e) {
       rollbackTransaction(con);
-      throw new PdcException("GlobalPdcManager.setManagers", SilverpeasException.ERROR,
-          "Pdc.CANNOT_SET_MANAGER", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -908,8 +892,7 @@ public class GlobalPdcManager implements PdcManager {
     try {
       PdcRightsDAO.deleteRights(con, axisId, valueId);
     } catch (SQLException e) {
-      throw new PdcException("GlobalPdcManager.razManagers", SilverpeasException.ERROR,
-          "Pdc.CANNOT_REMOVE_MANAGER", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -926,8 +909,7 @@ public class GlobalPdcManager implements PdcManager {
     try {
       PdcRightsDAO.deleteManager(con, userId);
     } catch (SQLException e) {
-      throw new PdcException("GlobalPdcManager.deleteManager", SilverpeasException.ERROR,
-          "Pdc.CANNOT_REMOVE_MANAGER", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -944,8 +926,7 @@ public class GlobalPdcManager implements PdcManager {
     try {
       PdcRightsDAO.deleteGroupManager(con, groupId);
     } catch (SQLException e) {
-      throw new PdcException("GlobalPdcManager.deleteGroupManager", SilverpeasException.ERROR,
-          "Pdc.CANNOT_REMOVE_MANAGER", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -967,7 +948,7 @@ public class GlobalPdcManager implements PdcManager {
         pathList.add(nodeTree.getPath() + nodeTree.getPK().getId() + "/");
       }
     } catch (Exception e) {
-
+      SilverLogger.getLogger(this).warn(e);
     }
     return pathList;
   }
@@ -976,19 +957,16 @@ public class GlobalPdcManager implements PdcManager {
    * Method declaration
    * @param valueToInsert
    * @param refValue
-   * @param axisId
    * @throws PdcException
    * @see
    */
-  private void insertMotherValueToRootValue(Connection con,
-      Value valueToInsert, String refValue, String axisId,
+  private void insertMotherValueToRootValue(Connection con, Value valueToInsert, String refValue,
       String treeId) throws PdcException {
     try {
       // Insertion de la nouvelle racine
       treeService.insertFatherToNode(con, valueToInsert, new TreeNodePK(refValue), treeId);
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.insertMotherValue", SilverpeasException.ERROR,
-          "Pdc.CANNOT_INSERT_VALUE", e);
+      throw new PdcException(e);
     }
   }
 
@@ -1015,8 +993,7 @@ public class GlobalPdcManager implements PdcManager {
       try {
         treeService.insertFatherToNode(con, valueToInsert, new TreeNodePK(refValue), treeId);
       } catch (Exception e) {
-        throw new PdcException("GlobalPdcManager.insertMotherValue", SilverpeasException.ERROR,
-            "Pdc.CANNOT_INSERT_VALUE", e);
+        throw new PdcException(e);
       }
     }
     return status;
@@ -1044,8 +1021,7 @@ public class GlobalPdcManager implements PdcManager {
       try {
         treeService.createSonToNode(con, valueToInsert, new TreeNodePK(refValue), treeId);
       } catch (Exception e) {
-        throw new PdcException("GlobalPdcManager.createDaughterValue", SilverpeasException.ERROR,
-            "Pdc.CANNOT_CREATE_VALUE", e);
+        throw new PdcException(e);
       } finally {
         DBUtil.close(con);
       }
@@ -1078,8 +1054,7 @@ public class GlobalPdcManager implements PdcManager {
         daughterId =
             treeService.createSonToNode(con, valueToInsert, new TreeNodePK(refValue), treeId);
       } catch (Exception e) {
-        throw new PdcException("GlobalPdcManager.createDaughterValueWithId",
-            SilverpeasException.ERROR, "Pdc.CANNOT_CREATE_VALUE", e);
+        throw new PdcException(e);
       } finally {
         DBUtil.close(con);
       }
@@ -1118,8 +1093,7 @@ public class GlobalPdcManager implements PdcManager {
         treeService.updateNode(con, node);
       }
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.updateValue", SilverpeasException.ERROR,
-          "Pdc.CANNOT_UPDATE_VALUE", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -1134,11 +1108,9 @@ public class GlobalPdcManager implements PdcManager {
   @Override
   public void deleteValueAndSubtree(Connection con, String valueId, String axisId, String treeId)
       throws PdcException {
-
-
     try {
       // first update any predefined classifications
-      List<PdcAxisValue> valuesToDelete = new ArrayList<PdcAxisValue>();
+      List<PdcAxisValue> valuesToDelete = new ArrayList<>();
       PdcAxisValue aValueToDelete = PdcAxisValue.aPdcAxisValue(valueId, axisId);
       valuesToDelete.add(aValueToDelete);
       valuesToDelete.addAll(findRecursivelyAllChildrenOf(aValueToDelete));
@@ -1160,7 +1132,7 @@ public class GlobalPdcManager implements PdcManager {
       String motherId = treeService.getNode(con, treeNodePK, treeId).getFatherId();
       TreeNodePK motherPK = new TreeNodePK(motherId);
       TreeNode mother = treeService.getNode(con, motherPK, treeId);
-      String motherPath = mother.getPath() + motherId + "/";
+      String motherPath = mother.getPath() + motherId + '/';
 
 
 
@@ -1173,16 +1145,17 @@ public class GlobalPdcManager implements PdcManager {
       // on efface les droits sur les valeurs
       for (TreeNode node : subtree) {
         Value value = createValue(node);
-        PdcRightsDAO.deleteRights(con, axisId, value.getPK().getId());
+        if (value != null) {
+          PdcRightsDAO.deleteRights(con, axisId, value.getPK().getId());
+        }
       }
       // Warning, we must update the path of the Value(Classify)
       if (!oldPath.isEmpty()) {
         // Après l'effacement de la valeur et de son arborescence, on recupere
         // les nouveaux chemins
-        // ArrayList newPath = getPathes(con,valueId);
         // Les nouveaux chemins sont tous identiques, c'est celui de la mère
-        ArrayList<String> newPath = new ArrayList<String>();
-        for (String anOldPath : oldPath) {
+        ArrayList<String> newPath = new ArrayList<>();
+        for (int i = 0; i < oldPath.size(); i++) {
           newPath.add(motherPath);
         }
         pdcSubscriptionManager
@@ -1193,8 +1166,7 @@ public class GlobalPdcManager implements PdcManager {
         pdcClassifyManager.createValuesAndReplace(con, axisId, oldPath, newPath);
       }
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.deleteValueAndSubtree", SilverpeasException.ERROR,
-          "Pdc.CANNOT_DELETE_VALUE_SUBTREE", e);
+      throw new PdcException(e);
     }
   }
 
@@ -1248,12 +1220,12 @@ public class GlobalPdcManager implements PdcManager {
           String pattern = "/" + valueId; // motif que l'on doit rechercher dans
           // l'ancien chemin pour le supprimer
           int lenOfPattern = pattern.length(); // longueur du motif
-          int pattern_idx; // position du pattern rechercher
+          int patternIdx; // position du pattern rechercher
           for (String path : oldPath) {
-            pattern_idx = path.indexOf(pattern); // ne peux etre à -1
-            path = path.substring(0, pattern_idx) +
-                path.substring(pattern_idx + lenOfPattern); // retire le motif
-            if (path.split("/").length <= 2) { // the split of /NODE_ID/ results to { "", NODE_IDE }
+            patternIdx = path.indexOf(pattern); // ne peux etre à -1
+            path = path.substring(0, patternIdx) +
+                path.substring(patternIdx + lenOfPattern); // retire le motif
+            if (path.split("/").length <= 2) {
               path = null;
             }
             newPath.add(path);
@@ -1267,8 +1239,7 @@ public class GlobalPdcManager implements PdcManager {
         }
       }
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.deleteValue", SilverpeasException.ERROR,
-          "Pdc.CANNOT_DELETE_VALUE", e);
+      throw new PdcException(e);
     }
     return possibleDaughterName;
   }
@@ -1287,8 +1258,7 @@ public class GlobalPdcManager implements PdcManager {
       List<TreeNode> listTreeNode = treeService.getFullPath(con, new TreeNodePK(valueId), treeId);
       return createValuesList(listTreeNode);
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.deleteValue", SilverpeasException.ERROR,
-          "Pdc.CANNOT_DELETE_VALUE", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -1310,11 +1280,10 @@ public class GlobalPdcManager implements PdcManager {
 
     while (it.hasNext()) {
       axisHeader = it.next();
-      if (axisHeader.getName().equalsIgnoreCase(axisNameToCheck)) {
-        if (!axisHeader.getPK().getId().equals(axisIdToCheck)) {
-          isExist = true;
-          break;
-        }
+      if (axisHeader.getName().equalsIgnoreCase(axisNameToCheck) &&
+          !axisHeader.getPK().getId().equals(axisIdToCheck)) {
+        isExist = true;
+        break;
       }
     }
 
@@ -1336,11 +1305,10 @@ public class GlobalPdcManager implements PdcManager {
 
     while (it.hasNext()) {
       value = it.next();
-      if (value.getName().equalsIgnoreCase(valueNameToCheck)) {
-        if (!value.getPK().getId().equals(valueIdToCheck)) {
-          isExist = true;
-          break;
-        }
+      if (value.getName().equalsIgnoreCase(valueNameToCheck) &&
+          !value.getPK().getId().equals(valueIdToCheck)) {
+        isExist = true;
+        break;
       }
     }
 
@@ -1380,11 +1348,11 @@ public class GlobalPdcManager implements PdcManager {
         axisHeader = new AxisHeader(axisHeaderPersistence);
 
         axisHeaders.put(axisHeader.getPK().getId(), axisHeader);
-      } catch (PersistenceException err_select) {
-
+      } catch (PersistenceException e) {
+        SilverLogger.getLogger(this).silent(e);
       }
     }
-    if (setTranslations) {
+    if (setTranslations && axisHeader != null) {
       setTranslations(axisHeader);
     }
     return axisHeader;
@@ -1406,17 +1374,13 @@ public class GlobalPdcManager implements PdcManager {
    * @return an AxisHeader
    */
   private AxisHeader getAxisHeader(Connection connection, String axisId) {
-    AxisHeader axisHeader = null;
-
     try {
       AxisHeaderPersistence axisHeaderPersistence =
           dao.findByPrimaryKey(connection, new AxisPK(axisId));
-      axisHeader = new AxisHeader(axisHeaderPersistence);
+      return new AxisHeader(axisHeaderPersistence);
     } catch (PersistenceException exSelect) {
-
+      throw new PdcRuntimeException(exSelect);
     }
-
-    return axisHeader;
   }
 
   /**
@@ -1447,8 +1411,8 @@ public class GlobalPdcManager implements PdcManager {
       AxisHeader axisHeader = getAxisHeader(axisId, false);
       int tId = axisHeader.getRootId();
       return getAxisValues(tId);
-    } catch (Exception err_list) {
-      SilverLogger.getLogger(this).warn(err_list.getMessage());
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e.getMessage());
     } finally {
       DBUtil.close(con);
     }
@@ -1550,7 +1514,7 @@ public class GlobalPdcManager implements PdcManager {
 
     // on vérifie d'abord que la nouvelle valeur de base est une valeur ascendante de la valeur
     // de base que l'on souhaite modifié
-    if (objectIdList.size() > 0 && !isAscendanteBaseValue(objectIdList, usedAxis)) {
+    if (!objectIdList.isEmpty() && !isAscendanteBaseValue(objectIdList, usedAxis)) {
       // la nouvelle valeur de base est soit une valeur d'un autre axe soit une valeur fille de
       // la valeur de base que l'on veut modifier on vérifie que l'axe courant n'a pas de
       // documents positionnés
@@ -1602,8 +1566,7 @@ public class GlobalPdcManager implements PdcManager {
     try {
       descendants = treeService.getSubTree(con, new TreeNodePK(baseValueToUpdate), treeId);
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.updateBaseValuesInInstances",
-          SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_VALUE", e);
+      throw new PdcException(e);
     }
 
     // recherche la valeur mère de baseValueToUpdate
@@ -1646,42 +1609,50 @@ public class GlobalPdcManager implements PdcManager {
       throws PdcException {
     List<UsedAxis> usedAxis = getUsedAxisByInstanceId(instanceId);
     if (usedAxis.isEmpty()) {
-      List<AxisHeader> headers = getAxis();
-      for (AxisHeader axisHeader : headers) {
-        UsedAxis axis =
-            new UsedAxis(axisHeader.getPK().getId(), instanceId, axisHeader.getRootId(), 0, 0, 1);
-        axis._setAxisHeader(axisHeader);
-        axis._setAxisName(axisHeader.getName());
-        axis._setAxisType(axisHeader.getAxisType());
-        axis._setBaseValueName(axisHeader.getName());
-        axis._setAxisRootId(axisHeader.getRootId());
-        axis._setAxisValues(getAxisValues(axisHeader.getRootId()));
-        usedAxis.add(axis);
-      }
+      fillUsedAxis(instanceId, usedAxis);
     } else {
-      for (UsedAxis axis : usedAxis) {
+      initUsedAxis(instanceId, silverObjectId, usedAxis);
+    }
+    return usedAxis;
+  }
 
-        if (I18NHelper.isI18nContentActivated) {
-          AxisHeader header = getAxisHeader(Integer.toString(axis.getAxisId()));
-          axis._setAxisHeader(header);
-        }
-
-        int axisRootId = axis._getAxisRootId();
-        axis._setAxisValues(getAxisValues(axisRootId));
-        if (axis.getVariant() == 0 && silverObjectId >= 0) {
-          // Si l'axe est invariant, il faut préciser la valeur obligatoire
-          List<ClassifyPosition> positions = getPositions(silverObjectId, instanceId);
-          String invariantValue = null;
-          if (!positions.isEmpty()) {
-            for (ClassifyPosition position : positions) {
-              invariantValue = position.getValueOnAxis(axis.getAxisId());
-              axis._setInvariantValue(invariantValue);
-            }
+  private void initUsedAxis(final String instanceId, final int silverObjectId,
+      final List<UsedAxis> usedAxis) throws PdcException {
+    for (UsedAxis axis : usedAxis) {
+      if (I18NHelper.isI18nContentActivated) {
+        AxisHeader header = getAxisHeader(Integer.toString(axis.getAxisId()));
+        axis._setAxisHeader(header);
+      }
+      int axisRootId = axis._getAxisRootId();
+      axis._setAxisValues(getAxisValues(axisRootId));
+      if (axis.getVariant() == 0 && silverObjectId >= 0) {
+        // Si l'axe est invariant, il faut préciser la valeur obligatoire
+        List<ClassifyPosition> positions = getPositions(silverObjectId, instanceId);
+        String invariantValue = null;
+        if (!positions.isEmpty()) {
+          for (ClassifyPosition position : positions) {
+            invariantValue = position.getValueOnAxis(axis.getAxisId());
+            axis._setInvariantValue(invariantValue);
           }
         }
       }
     }
-    return usedAxis;
+  }
+
+  private void fillUsedAxis(final String instanceId, final List<UsedAxis> usedAxis)
+      throws PdcException {
+    List<AxisHeader> headers = getAxis();
+    for (AxisHeader axisHeader : headers) {
+      UsedAxis axis =
+          new UsedAxis(axisHeader.getPK().getId(), instanceId, axisHeader.getRootId(), 0, 0, 1);
+      axis._setAxisHeader(axisHeader);
+      axis._setAxisName(axisHeader.getName());
+      axis._setAxisType(axisHeader.getAxisType());
+      axis._setBaseValueName(axisHeader.getName());
+      axis._setAxisRootId(axisHeader.getRootId());
+      axis._setAxisValues(getAxisValues(axisHeader.getRootId()));
+      usedAxis.add(axis);
+    }
   }
 
   public void addPositions(List<ClassifyPosition> positions, int objectId, String instanceId)
@@ -1816,7 +1787,7 @@ public class GlobalPdcManager implements PdcManager {
     List<ClassifyValue> classifyValueList = position.getValues();
     List classifyValues = new ArrayList();
     for (ClassifyValue cv : classifyValueList) {
-      if (invariantUsedAxis.contains(new Integer(cv.getAxisId()))) {
+      if (invariantUsedAxis.contains(cv.getAxisId())) {
         classifyValues.add(cv);
       }
     }
@@ -1824,7 +1795,7 @@ public class GlobalPdcManager implements PdcManager {
     pdcClassifyManager.updatePosition(position);
 
     // on update les axes invariants
-    if (classifyValues.size() > 0) {
+    if (!classifyValues.isEmpty()) {
       pdcClassifyManager.updatePositions(classifyValues, silverObjectId);
     }
 
@@ -1853,8 +1824,8 @@ public class GlobalPdcManager implements PdcManager {
 
       // transform Value to ClassifyValue
       ClassifyValue classifyValue = null;
-      org.silverpeas.core.pdc.classification.Value value = null;
-      ArrayList<ClassifyValue> classifyValues = new ArrayList<ClassifyValue>();
+      org.silverpeas.core.pdc.classification.Value value;
+      ArrayList<ClassifyValue> classifyValues = new ArrayList<>();
       String valuePath = "";
       String valueId = "";
       for (Object value1 : values) {
@@ -1868,7 +1839,7 @@ public class GlobalPdcManager implements PdcManager {
           if (valuePath != null) {
             // enleve le dernier /
             valuePath = valuePath.substring(0, valuePath.length() - 1);
-            valueId = valuePath.substring(valuePath.lastIndexOf("/") + 1, valuePath.length());
+            valueId = valuePath.substring(valuePath.lastIndexOf('/') + 1);
             classifyValue.setFullPath(getFullPath(valueId, String.valueOf(treeId)));
             classifyValues.add(classifyValue);
           }
@@ -1886,7 +1857,7 @@ public class GlobalPdcManager implements PdcManager {
   @Override
   public List<SearchAxis> getPertinentAxisByInstanceId(SearchContext searchContext, String axisType,
       String instanceId) throws PdcException {
-    List<String> instanceIds = new ArrayList<String>();
+    List<String> instanceIds = new ArrayList<>();
     instanceIds.add(instanceId);
     return getPertinentAxisByInstanceIds(searchContext, axisType, instanceIds);
   }
@@ -1897,7 +1868,7 @@ public class GlobalPdcManager implements PdcManager {
       String axisType, List<String> instanceIds) throws PdcException {
     List<AxisHeader> axis =
         pdcUtilizationService.getAxisHeaderUsedByInstanceIds(instanceIds);
-    ArrayList<Integer> axisIds = new ArrayList<Integer>();
+    ArrayList<Integer> axisIds = new ArrayList<>();
     String axisId = null;
     for (AxisHeader axisHeader : axis) {
       if (axisHeader.getAxisType().equals(axisType)) {
@@ -1913,7 +1884,7 @@ public class GlobalPdcManager implements PdcManager {
 
   private List<SearchAxis> transformPertinentAxisIntoSearchAxis(
       List<PertinentAxis> pertinentAxisList, List<AxisHeader> axis) throws PdcException {
-    List<SearchAxis> searchAxisList = new ArrayList<SearchAxis>();
+    List<SearchAxis> searchAxisList = new ArrayList<>();
     SearchAxis searchAxis;
     String axisId;
     for (PertinentAxis pertinentAxis : pertinentAxisList) {
@@ -1936,7 +1907,7 @@ public class GlobalPdcManager implements PdcManager {
   @Override
   public List<Value> getPertinentDaughterValuesByInstanceId(SearchContext searchContext,
       String axisId, String valueId, String instanceId) throws PdcException {
-    List<String> instanceIds = new ArrayList<String>();
+    List<String> instanceIds = new ArrayList<>();
     instanceIds.add(instanceId);
     return getPertinentDaughterValuesByInstanceIds(searchContext, axisId, valueId, instanceIds);
   }
@@ -1945,14 +1916,13 @@ public class GlobalPdcManager implements PdcManager {
   @Override
   public List<Value> getPertinentDaughterValuesByInstanceIds(SearchContext searchContext,
       String axisId, String valueId, List<String> instanceIds) throws PdcException {
-    List<Value> pertinentDaughters = filterValues(searchContext, axisId, valueId, instanceIds);
-    return pertinentDaughters;
+    return filterValues(searchContext, axisId, instanceIds);
   }
 
   @Override
   public List<Value> getFirstLevelAxisValuesByInstanceId(SearchContext searchContext, String axisId,
       String instanceId) throws PdcException {
-    List<String> instanceIds = new ArrayList<String>();
+    List<String> instanceIds = new ArrayList<>();
     instanceIds.add(instanceId);
     return getFirstLevelAxisValuesByInstanceIds(searchContext, axisId, instanceIds);
   }
@@ -1960,18 +1930,13 @@ public class GlobalPdcManager implements PdcManager {
   @Override
   public List<Value> getFirstLevelAxisValuesByInstanceIds(SearchContext searchContext,
       String axisId, List<String> instanceIds) throws PdcException {
-    // quelle est la racine de l'axe
-    String rootId = getRootId(axisId);
-
-    List<Value> pertinentDaughters = filterValues(searchContext, axisId, rootId, instanceIds);
-    return pertinentDaughters;
+    getRootId(axisId);
+    return filterValues(searchContext, axisId, instanceIds);
   }
 
   private String getRootId(String axisId) throws PdcException {
-    Connection con = openConnection();
-
-    String rootId = null;
-    try {
+    final String rootId;
+    try (final Connection con = openConnection()) {
       AxisHeader axisHeader = getAxisHeader(axisId, false); // get the header of
       // the axe to obtain
       // the rootId.
@@ -1979,19 +1944,15 @@ public class GlobalPdcManager implements PdcManager {
       TreeNode root = treeService.getRoot(con, Integer.toString(treeId));
       rootId = root.getPK().getId();
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.getRootId", SilverpeasException.ERROR,
-          "Pdc.CANNOT_GET_VALUE", e);
-    } finally {
-      DBUtil.close(con);
+      throw new PdcException(e);
     }
-
     return rootId;
   }
 
-  private List<Value> filterValues(SearchContext searchContext, String axisId, String motherId,
+  private List<Value> filterValues(SearchContext searchContext, String axisId,
       List<String> instanceIds) throws PdcException {
     List<Value> descendants = null;
-    ArrayList<String> emptyValues = new ArrayList<String>();
+    ArrayList<String> emptyValues = new ArrayList<>();
     Value descendant = null;
     Value nextDescendant = null;
     boolean isLeaf = false;
@@ -2067,7 +2028,7 @@ public class GlobalPdcManager implements PdcManager {
                   .getObjectValuePairs(searchContext, Integer.parseInt(axisId), instanceIds);
             }
 
-            List<String> countedObjects = new ArrayList<String>();
+            List<String> countedObjects = new ArrayList<>();
 
             int nbObjects = 0;
             for (ObjectValuePair ovp : objectValuePairs) {
@@ -2084,7 +2045,7 @@ public class GlobalPdcManager implements PdcManager {
                   }
 
                   if (componentAuthorization
-                      .isObjectAvailable(instanceId, searchContext.getUserId(), objectId.toString(),
+                      .isObjectAvailable(instanceId, searchContext.getUserId(), objectId,
                           "Publication")) {
                     nbObjects++;
                     countedObjects.add(objectId);
@@ -2112,8 +2073,7 @@ public class GlobalPdcManager implements PdcManager {
 
       return descendants;
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.getPertinentDaughterValues",
-          SilverpeasException.ERROR, "Pdc.CANNOT_FILTER_VALUES", e);
+      throw new PdcException(e);
     } finally {
       if (componentAuthorization != null) {
         componentAuthorization.disableCache();
@@ -2155,8 +2115,7 @@ public class GlobalPdcManager implements PdcManager {
         treeService.indexTree(con, rootId);
       }
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.indexAllAxis()", SilverpeasException.ERROR,
-          "Pdc.INDEXING_AXIS_FAILED", e);
+      throw new PdcException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -2170,20 +2129,18 @@ public class GlobalPdcManager implements PdcManager {
     try {
       con = DBUtil.openConnection();
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.openConnection()", SilverpeasException.ERROR,
-          "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new PdcException(e);
     }
     return con;
   }
 
   private Connection openTransaction() throws PdcException {
-    Connection con;
+    final Connection con;
     try {
       con = DBUtil.openConnection();
       con.setAutoCommit(false);
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.openTransaction()", SilverpeasException.ERROR,
-          "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new PdcException(e);
     }
     return con;
   }
@@ -2221,20 +2178,6 @@ public class GlobalPdcManager implements PdcManager {
    */
 
   /**
-   * Remove all the positions of the given content
-   */
-  public List<Integer> removePosition(Connection connection, int nSilverContentId)
-      throws PdcException {
-    try {
-      return pdcClassifyManager.removePosition(connection, nSilverContentId);
-    } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.removePosition",
-          SilverpeasException.ERROR, "containerManager.EX_INTERFACE_REMOVE_FUNCTIONS", e);
-    }
-
-  }
-
-  /**
    * Get the SearchContext of the first position for the given SilverContentId
    */
   @Override
@@ -2246,7 +2189,7 @@ public class GlobalPdcManager implements PdcManager {
 
       // Convert the first position in SearchContext
       SearchContext searchContext = new SearchContext(null);
-      if (alPositions != null && alPositions.size() > 0) {
+      if (alPositions != null && !alPositions.isEmpty()) {
         Position pos = (Position) alPositions.get(0);
         List alValues = pos.getValues();
         for (int nI = 0; alValues != null && nI < alValues.size(); nI++) {
@@ -2260,8 +2203,7 @@ public class GlobalPdcManager implements PdcManager {
 
       return searchContext;
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.getSilverContentIdPositions",
-          SilverpeasException.ERROR, "containerManager.EX_INTERFACE_FIND_FUNCTIONS", e);
+      throw new PdcException(e);
     }
   }
 
@@ -2285,8 +2227,7 @@ public class GlobalPdcManager implements PdcManager {
           .findSilverContentIdByPosition(containerPosition, alComponentId, authorId, DateUtil.formatDate(afterDate),
               DateUtil.formatDate(beforeDate), recursiveSearch, visibilitySensitive);
     } catch (Exception e) {
-      throw new PdcException("GlobalPdcManager.findSilverContentIdByPosition",
-          SilverpeasException.ERROR, "containerManager.EX_INTERFACE_FIND_FUNCTIONS", e);
+      throw new PdcException(e);
     }
   }
 
@@ -2326,8 +2267,7 @@ public class GlobalPdcManager implements PdcManager {
       alInstanceIds = contentManager.getInstanceId(silverContentIds);
 
     } catch (ContentManagerException c) {
-      throw new PdcRuntimeException("PdcBmEJB.getSilverContentsByIds",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", c);
+      throw new PdcRuntimeException(c);
     }
 
     // une fois la liste des instanceId définie, on parcourt cette liste pour
@@ -2342,8 +2282,7 @@ public class GlobalPdcManager implements PdcManager {
         allSilverContentIds = contentManager.getSilverContentIdByInstanceId(instanceId);
 
       } catch (ContentManagerException c) {
-        throw new PdcRuntimeException("PdcBmEJB.getSilverContentsByIds",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", c);
+        throw new PdcRuntimeException(c);
       }
 
       // une fois les SilverContentId de l'instanceId récupérés, on ne garde
@@ -2358,8 +2297,7 @@ public class GlobalPdcManager implements PdcManager {
           silverContentTempo = contentInterface
               .getSilverContentById(allSilverContentIds, instanceId, userId);
         } catch (Exception e) {
-          throw new PdcRuntimeException("PdcBmEJB.getSilverContentsByIds",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          throw new PdcRuntimeException(e);
         }
         alSilverContents.addAll(transformSilverContentsToGlobalSilverContents(silverContentTempo));
       }

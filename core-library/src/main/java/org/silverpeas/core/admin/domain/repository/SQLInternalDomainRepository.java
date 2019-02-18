@@ -23,15 +23,14 @@
  */
 package org.silverpeas.core.admin.domain.repository;
 
-import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.domain.exception.SQLDomainDAOException;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.io.FileInputStream;
@@ -40,6 +39,11 @@ import java.util.Properties;
 
 @Singleton
 public class SQLInternalDomainRepository implements SQLDomainRepository {
+
+  private static final String DOMAIN_TABLE = "Domain";
+  private static final String INT_NOT_NULL = "int NOT NULL";
+  private static final String PROPERTY = "property_";
+  private static final String PASS_PROP = "password";
 
   @Override
   public void createDomainStorage(Domain domain) throws SQLDomainDAOException {
@@ -57,15 +61,13 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
   }
 
   private JdbcSqlQuery generateGroupUserRelTableCreateStatement(String domainName) {
-    return JdbcSqlQuery.createTable("Domain" + domainName +
-        "_Group_User_Rel")
-        .addField("groupId", "int NOT NULL")
-        .addField("userId", "int NOT NULL");
+    return JdbcSqlQuery.createTable(DOMAIN_TABLE + domainName +
+        "_Group_User_Rel").addField("groupId", INT_NOT_NULL).addField("userId", INT_NOT_NULL);
   }
 
   private JdbcSqlQuery generateGroupTableCreateStatement(String domainName) {
-    return JdbcSqlQuery.createTable("Domain" + domainName +
-        "_Group").addField("id", "int NOT NULL")
+    return JdbcSqlQuery.createTable(DOMAIN_TABLE + domainName + "_Group")
+        .addField("id", INT_NOT_NULL)
         .addField("superGroupId", "int NULL")
         .addField("name", "varchar(100) NOT NULL")
         .addField("description", "varchar(400) NULL")
@@ -74,24 +76,21 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
 
   private JdbcSqlQuery generateUserTableCreateStatement(String domainName) throws IOException {
     Properties props = new Properties();
-    FileInputStream fis = null;
-    try {
-      fis = new FileInputStream(FileRepositoryManager.getDomainPropertiesPath(domainName));
+    try (final FileInputStream fis = new FileInputStream(
+        FileRepositoryManager.getDomainPropertiesPath(domainName))) {
       props.load(fis);
-    } finally {
-      IOUtils.closeQuietly(fis);
     }
     int numberOfColumns = Integer.parseInt(props.getProperty("property.Number"));
 
-    JdbcSqlQuery userTable = JdbcSqlQuery.createTable("Domain" + domainName + "_User ");
+    JdbcSqlQuery userTable = JdbcSqlQuery.createTable(DOMAIN_TABLE + domainName + "_User ");
 
     // Common columns
-    userTable.addField("id", "int NOT NULL")
+    userTable.addField("id", INT_NOT_NULL)
         .addField("firstName", "varchar(100) NULL")
         .addField("lastName", "varchar(100) NULL")
         .addField("email", "varchar(200) NULL")
         .addField("login", "varchar(50) NOT NULL")
-        .addField("password", "varchar(123) NULL")
+        .addField(PASS_PROP, "varchar(123) NULL")
         .addField("passwordValid", "char(1) NULL");
 
     // Domain specific columns
@@ -99,10 +98,10 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
     String specificColumnType;
     int specificColumnMaxLength;
     for (int i = 1; i <= numberOfColumns; i++) {
-      specificColumnType = props.getProperty("property_" + String.valueOf(i) + ".Type");
-      specificColumnName = props.getProperty("property_" + String.valueOf(i) + ".MapParameter");
+      specificColumnType = props.getProperty(PROPERTY + String.valueOf(i) + ".Type");
+      specificColumnName = props.getProperty(PROPERTY + String.valueOf(i) + ".MapParameter");
       String maxLengthPropertyValue =
-          props.getProperty("property_" + String.valueOf(i) + ".MaxLength");
+          props.getProperty(PROPERTY + String.valueOf(i) + ".MaxLength");
       if (StringUtil.isInteger(maxLengthPropertyValue)) {
         specificColumnMaxLength = Integer.parseInt(maxLengthPropertyValue);
       } else {
@@ -129,20 +128,19 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
       queries.add(generateGroupUserRelTableDropStatement(domainName));
       queries.execute();
     } catch (Exception e) {
-      SilverTrace.error("admin", "SQLInternalDomainRepository.deleteDomainStorage",
-          "admin.CANNOT_CREATE_DOMAIN_STORAGE", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
   private JdbcSqlQuery generateGroupUserRelTableDropStatement(String domainName) {
-    return JdbcSqlQuery.createDropFor("Domain" + domainName + "_Group_User_Rel");
+    return JdbcSqlQuery.createDropFor(DOMAIN_TABLE + domainName + "_Group_User_Rel");
   }
 
   private JdbcSqlQuery generateGroupTableDropStatement(String domainName) {
-    return JdbcSqlQuery.createDropFor("Domain" + domainName + "_Group");
+    return JdbcSqlQuery.createDropFor(DOMAIN_TABLE + domainName + "_Group");
   }
 
   private JdbcSqlQuery generateUserTableDropStatement(String domainName) {
-    return JdbcSqlQuery.createDropFor("Domain" + domainName + "_User");
+    return JdbcSqlQuery.createDropFor(DOMAIN_TABLE + domainName + "_User");
   }
 }

@@ -24,7 +24,6 @@
 package org.silverpeas.core.mail.extractor;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.AttachmentChunks;
@@ -32,7 +31,7 @@ import org.apache.poi.hsmf.datatypes.Chunks;
 import org.apache.poi.hsmf.datatypes.RecipientChunks;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.mail.MailException;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -46,6 +45,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ public class MSGExtractor implements MailExtractor {
     try {
       message = new MAPIMessage(file.getPath());
     } catch (IOException e) {
-      throw new ExtractorException("MSGExtractor.constructor", SilverpeasException.ERROR, "", e);
+      throw new ExtractorException(e);
     }
     message.setReturnNullOnMissingChunk(true);
   }
@@ -77,14 +77,40 @@ public class MSGExtractor implements MailExtractor {
     try {
       message = new MAPIMessage(file);
     } catch (IOException e) {
-      throw new ExtractorException("MSGExtractor.init", SilverpeasException.ERROR, "", e);
+      throw new ExtractorException(e);
     }
     message.setReturnNullOnMissingChunk(true);
   }
 
   @Override
-  public Mail getMail() throws Exception {
-    Mail mail = new Mail();
+  public Mail getMail() throws MailException {
+    try {
+      Mail mail = new Mail();
+      setMailDate(mail);
+      setMailSubject(mail);
+
+      Chunks mainChunks = message.getMainChunks();
+      InternetAddress from = new InternetAddress(mainChunks.getEmailFromChunk().getValue(),
+          mainChunks.getDisplayFromChunk().getValue());
+      mail.setFrom(from);
+
+      String[] toNames = StringUtils.split(message.getDisplayTo(), ';');
+      mail.setTo(getInChunks(toNames).toArray(new Address[toNames.length]));
+
+      String[] ccNames = StringUtils.split(message.getDisplayCC(), ';');
+      List<InternetAddress> ccAddresses = getInChunks(ccNames);
+      if (!ccAddresses.isEmpty()) {
+        mail.setCc(getInChunks(ccNames).toArray(new Address[ccNames.length]));
+      }
+
+      setMailBody(mail);
+      return mail;
+    } catch (ChunkNotFoundException | ParseException | UnsupportedEncodingException e) {
+      throw new MailException(e);
+    }
+  }
+
+  private void setMailDate(final Mail mail) throws ParseException {
     try {
       if (message.getMessageDate() != null) {
         mail.setDate(message.getMessageDate().getTime());
@@ -94,26 +120,17 @@ public class MSGExtractor implements MailExtractor {
     } catch (ChunkNotFoundException e) {
       SilverLogger.getLogger(this).warn(e);
     }
+  }
+
+  private void setMailSubject(final Mail mail) {
     try {
       mail.setSubject(message.getSubject());
     } catch (ChunkNotFoundException e) {
       SilverLogger.getLogger(this).warn(e);
     }
+  }
 
-    Chunks mainChunks = message.getMainChunks();
-    InternetAddress from = new InternetAddress(mainChunks.getEmailFromChunk().getValue(),
-        mainChunks.getDisplayFromChunk().getValue());
-    mail.setFrom(from);
-
-    String[] toNames = StringUtils.split(message.getDisplayTo(), ';');
-    mail.setTo(getInChunks(toNames).toArray(new Address[toNames.length]));
-
-    String[] ccNames = StringUtils.split(message.getDisplayCC(), ';');
-    List<InternetAddress> ccAddresses = getInChunks(ccNames);
-    if (ccAddresses != null && !ccAddresses.isEmpty()) {
-      mail.setCc(getInChunks(ccNames).toArray(new Address[ccNames.length]));
-    }
-
+  private void setMailBody(final Mail mail) {
     try {
       String body = message.getHtmlBody();
       if (body == null) {
@@ -126,11 +143,10 @@ public class MSGExtractor implements MailExtractor {
     } catch (ChunkNotFoundException e) {
       SilverLogger.getLogger(this).warn(e);
     }
-    return mail;
   }
 
   private List<InternetAddress> getInChunks(String[] names) throws UnsupportedEncodingException {
-    List<InternetAddress> result = new ArrayList<InternetAddress>(names.length);
+    List<InternetAddress> result = new ArrayList<>(names.length);
     for (String name : names) {
       InternetAddress address = getInChunks(name.trim());
       if (address != null) {
@@ -180,7 +196,7 @@ public class MSGExtractor implements MailExtractor {
       DocumentFormatConverterProvider.getToHTMLConverter().convert(
           new ByteArrayInputStream(rtfText.getBytes(Charsets.UTF_8)), inFormat(rtf), htmlText,
           inFormat(html));
-      return htmlText.toString(CharEncoding.UTF_8);
+      return htmlText.toString(StandardCharsets.UTF_8.name());
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Cannot convert RTF to HTML", e);
     }
@@ -188,21 +204,25 @@ public class MSGExtractor implements MailExtractor {
   }
 
   @Override
-  public List<MailAttachment> getAttachments() throws Exception {
-    AttachmentChunks[] attachmentChunks = message.getAttachmentFiles();
-    List<MailAttachment> mailAttachments = new ArrayList<MailAttachment>(attachmentChunks.length);
-    for (AttachmentChunks attachment : attachmentChunks) {
-      byte[] data = attachment.getAttachData().getValue();
-      String fileName = attachment.getAttachLongFileName().getValue();
-      MailAttachment mailAttachment = new MailAttachment(fileName);
-      String dir = FileRepositoryManager.getTemporaryPath() + "mail" + Calendar.getInstance().
-          getTimeInMillis();
-      File file = new File(dir, fileName);
-      FileUtils.writeByteArrayToFile(file, data);
-      mailAttachment.setPath(file.getAbsolutePath());
-      mailAttachment.setSize(file.length());
-      mailAttachments.add(mailAttachment);
+  public List<MailAttachment> getAttachments() throws MailException {
+    try {
+      AttachmentChunks[] attachmentChunks = message.getAttachmentFiles();
+      List<MailAttachment> mailAttachments = new ArrayList<>(attachmentChunks.length);
+      for (AttachmentChunks attachment : attachmentChunks) {
+        byte[] data = attachment.getAttachData().getValue();
+        String fileName = attachment.getAttachLongFileName().getValue();
+        MailAttachment mailAttachment = new MailAttachment(fileName);
+        String dir = FileRepositoryManager.getTemporaryPath() + "mail" + Calendar.getInstance().
+            getTimeInMillis();
+        File file = new File(dir, fileName);
+        FileUtils.writeByteArrayToFile(file, data);
+        mailAttachment.setPath(file.getAbsolutePath());
+        mailAttachment.setSize(file.length());
+        mailAttachments.add(mailAttachment);
+      }
+      return mailAttachments;
+    } catch (IOException e) {
+      throw new MailException(e);
     }
-    return mailAttachments;
   }
 }

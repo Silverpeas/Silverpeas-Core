@@ -66,6 +66,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
 import static org.silverpeas.core.util.ArrayUtil.EMPTY_STRING_ARRAY;
@@ -90,12 +91,6 @@ public class DefaultOrganizationController implements OrganizationController {
   @Inject
   private Administration admin;
 
-  /**
-   * Constructor declaration
-   */
-  public DefaultOrganizationController() {
-  }
-
   // -------------------------------------------------------------------
   // SPACES QUERIES
   // -------------------------------------------------------------------
@@ -112,9 +107,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public String[] getAllSubSpaceIds(String sSpaceId) {
     try {
-      String[] asSubSpaceIds = getAdminService().getAllSubSpaceIds(sSpaceId);
-
-      return asSubSpaceIds;
+      return getAdminService().getAllSubSpaceIds(sSpaceId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
@@ -124,8 +117,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public String[] getSpaceNames(String[] asSpaceIds) {
     try {
-      String[] asSpaceNames = getAdminService().getSpaceNames(asSpaceIds);
-      return asSpaceNames;
+      return getAdminService().getSpaceNames(asSpaceIds);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
@@ -135,8 +127,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public SpaceInstLight getSpaceInstLightById(String spaceId) {
     try {
-      SpaceInstLight spaceLight = getAdminService().getSpaceInstLightById(spaceId);
-      return spaceLight;
+      return getAdminService().getSpaceInstLightById(spaceId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
@@ -176,10 +167,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public String[] getAvailCompoIdsAtRoot(String sClientSpaceId, String sUserId) {
     try {
-      String[] asCompoIds = getAdminService().getAvailCompoIdsAtRoot(sClientSpaceId,
-          sUserId);
-
-      return asCompoIds;
+     return getAdminService().getAvailCompoIdsAtRoot(sClientSpaceId, sUserId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
@@ -202,7 +190,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAvailComponentInstLights(userId, componentName);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return new ArrayList<ComponentInstLight>();
+      return new ArrayList<>();
     }
 
   }
@@ -293,9 +281,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public UserDetail getUserDetail(String sUserId) {
     try {
-      UserDetail userDetail = getAdminService().getUserDetail(sUserId);
-
-      return userDetail;
+      return getAdminService().getUserDetail(sUserId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
@@ -308,7 +294,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getUserDetails(asUserIds);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return new UserDetail[0];
     }
   }
 
@@ -322,7 +308,7 @@ public class DefaultOrganizationController implements OrganizationController {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
 
     }
-    return null;
+    return new UserDetail[0];
   }
 
   @Override
@@ -334,7 +320,7 @@ public class DefaultOrganizationController implements OrganizationController {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
-    return null;
+    return new UserDetail[0];
   }
 
   @Override
@@ -346,7 +332,7 @@ public class DefaultOrganizationController implements OrganizationController {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
-    return null;
+    return new UserDetail[0];
   }
 
   @Override
@@ -356,7 +342,7 @@ public class DefaultOrganizationController implements OrganizationController {
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
@@ -366,7 +352,7 @@ public class DefaultOrganizationController implements OrganizationController {
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
@@ -388,16 +374,16 @@ public class DefaultOrganizationController implements OrganizationController {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
-    return null;
+    return new Group[0];
   }
 
   @Override
-  public UserDetail[] getFiltredDirectUsers(String sGroupId, String sUserLastNameFilter) {
+  public UserDetail[] getFilteredDirectUsers(String sGroupId, String sUserLastNameFilter) {
     try {
       return getAdminService().getFiltredDirectUsers(sGroupId, sUserLastNameFilter);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return new UserDetail[0];
     }
   }
 
@@ -437,7 +423,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllUsers().toArray(new UserDetail[0]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return new UserDetail[0];
     }
   }
 
@@ -450,7 +436,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllUsersFromNewestToOldest();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -467,7 +453,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return aUserDetail;
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return new UserDetail[0];
     }
   }
 
@@ -493,7 +479,7 @@ public class DefaultOrganizationController implements OrganizationController {
       if (!isToolAvailable(componentId)) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
-      return null;
+      return new String[0];
     }
   }
 
@@ -505,7 +491,7 @@ public class DefaultOrganizationController implements OrganizationController {
           componentId, userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return new String[0];
     }
   }
 
@@ -527,7 +513,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getProfilesByObject(objectId, objectType, componentId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -557,9 +543,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public Group getGroup(String sGroupId) {
     try {
-      Group group = getAdminService().getGroup(sGroupId);
-
-      return group;
+      return getAdminService().getGroup(sGroupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
@@ -637,9 +621,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public String[] getUserManageableSpaceIds(String sUserId) {
     try {
-      String[] asSpaceIds = getAdminService().getUserManageableSpaceIds(sUserId);
-
-      return asSpaceIds;
+      return getAdminService().getUserManageableSpaceIds(sUserId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return EMPTY_STRING_ARRAY;
@@ -869,14 +851,14 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllUsersIds();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return new String[0];
     }
   }
 
   @Override
   public String[] getUsersIdsByRoleNames(String componentId, List<String> profileNames) {
     try {
-      List<String> userIds = null;
+      List<String> userIds;
       ComponentInst componentInst = getComponentInst(componentId);
 
       List<ProfileInst> profiles = componentInst.getAllProfilesInst();
@@ -893,7 +875,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return userIds.toArray(new String[userIds.size()]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return new String[0];
     }
   }
 
@@ -905,7 +887,7 @@ public class DefaultOrganizationController implements OrganizationController {
       List<ProfileInst> profiles = getAdminService().getProfilesByObject(objectId, objectType.
           getCode(),
           componentId);
-      List<String> profileIds = new ArrayList<String>();
+      List<String> profileIds = new ArrayList<>();
       for (ProfileInst profile : profiles) {
         if (profile != null && profileNames.contains(profile.getName())) {
           profileIds.add(profile.getId());
@@ -920,7 +902,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return userIds.toArray(new String[userIds.size()]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return new String[0];
     }
   }
 
@@ -940,7 +922,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllDomains();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return new Domain[0];
     }
   }
 
@@ -996,29 +978,25 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @Override
   public List<String> getSearchableComponentsByCriteria(ComponentSearchCriteria criteria) {
-    List<String> componentIds = new ArrayList<String>();
-
+    final List<String> componentIds;
     if (criteria.hasCriterionOnWorkspace()) {
       if (criteria.hasCriterionOnComponentInstances()) {
+        componentIds = new ArrayList<>();
         componentIds.addAll(criteria.getComponentInstanceIds());
       } else {
         String[] availableComponentIds = getAvailCompoIds(criteria.getWorkspaceId(),
             criteria.getUser().getId());
-        for (String aComponentId : availableComponentIds) {
-          if (isSearchable(aComponentId, null)) {
-            componentIds.add(aComponentId);
-          }
-        }
+        componentIds = Stream.of(availableComponentIds)
+            .filter(c -> isSearchable(c, null))
+            .collect(Collectors.toList());
       }
     } else {
       String[] availableComponentIds = getAvailCompoIds(criteria.getUser().getId());
       List<String> excludedComponentIds = getComponentsExcludedFromGlobalSearch(
           criteria.getUser().getId());
-      for (String aComponentId : availableComponentIds) {
-        if (isSearchable(aComponentId, excludedComponentIds)) {
-          componentIds.add(aComponentId);
-        }
-      }
+      componentIds = Stream.of(availableComponentIds)
+          .filter(c -> isSearchable(c, excludedComponentIds))
+          .collect(Collectors.toList());
     }
     return componentIds;
   }
@@ -1032,18 +1010,14 @@ public class DefaultOrganizationController implements OrganizationController {
         || componentId.startsWith("kmelia")) {
       boolean isPrivateSearch = "yes".equalsIgnoreCase(
           getComponentParameterValue(componentId, "privateSearch"));
-      if (isPrivateSearch) {
-        return false;
-      } else {
-        return true;
-      }
+      return !isPrivateSearch;
     } else {
       return true;
     }
   }
 
   private List<String> getComponentsExcludedFromGlobalSearch(String userId) {
-    List<String> excluded = new ArrayList<String>();
+    List<String> excluded = new ArrayList<>();
 
     // exclude all components of all excluded spaces
     List<String> spaces = getItemsExcludedFromGlobalSearch("SpacesExcludedFromGlobalSearch");
@@ -1063,7 +1037,7 @@ public class DefaultOrganizationController implements OrganizationController {
   private List<String> getItemsExcludedFromGlobalSearch(String parameterName) {
     SettingBundle searchSettings = ResourceLocator.getSettingBundle(
         "org.silverpeas.pdcPeas.settings.pdcPeasSettings");
-    List<String> items = new ArrayList<String>();
+    List<String> items = new ArrayList<>();
     String param = searchSettings.getString(parameterName);
     if (StringUtil.isDefined(param)) {
       String[] componentIds = param.split(",");
@@ -1077,7 +1051,6 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   private static Set<String> getAvailableToolIds() {
-    Collection<String> propertyValues = toolIds;
     if (toolIds.isEmpty()) {
       final String availableToolIds =
           ResourceLocator.getGeneralSettingBundle().getString("availableToolIds", "");

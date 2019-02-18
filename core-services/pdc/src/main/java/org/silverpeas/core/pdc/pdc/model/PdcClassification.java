@@ -25,7 +25,6 @@ package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.pdc.pdc.model.constraints.UniquePositions;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
@@ -285,13 +284,7 @@ public class PdcClassification
         if (pdcPosition.getValues().contains(aDeletedValue)) {
           pdcPosition.getValues().remove(aDeletedValue);
           if (!aDeletedValue.isBaseValue()) {
-            PdcAxisValue parentValue = aDeletedValue.getParentValue();
-            while (deletedValues.contains(parentValue) && !parentValue.isBaseValue()) {
-              parentValue = parentValue.getParentValue();
-            }
-            if (!deletedValues.contains(parentValue)) {
-              pdcPosition.getValues().add(parentValue);
-            }
+            getDeletedValueInPosition(pdcPosition, deletedValues, aDeletedValue);
           }
           if (pdcPosition.isEmpty() || alreadyExists(pdcPosition)) {
             positionsToDelete.add(pdcPosition);
@@ -300,6 +293,17 @@ public class PdcClassification
       }
     }
     getPositions().removeAll(positionsToDelete);
+  }
+
+  private void getDeletedValueInPosition(final PdcPosition pdcPosition,
+      final List<PdcAxisValue> deletedValues, final PdcAxisValue aDeletedValue) {
+    PdcAxisValue parentValue = aDeletedValue.getParentValue();
+    while (deletedValues.contains(parentValue) && !parentValue.isBaseValue()) {
+      parentValue = parentValue.getParentValue();
+    }
+    if (!deletedValues.contains(parentValue)) {
+      pdcPosition.getValues().add(parentValue);
+    }
   }
 
   /**
@@ -357,8 +361,7 @@ public class PdcClassification
         classifyPositions.add(position.toClassifyPosition());
       }
     } catch (PdcException ex) {
-      throw new PdcRuntimeException(getClass().getSimpleName() + ".getClassifyPositions()",
-          SilverpeasException.ERROR, "root.EX_NO_MESSAGES", ex);
+      throw new PdcRuntimeException(ex);
     }
     return classifyPositions;
   }
@@ -401,5 +404,15 @@ public class PdcClassification
       }
     }
     return alreadyExist;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

@@ -23,74 +23,23 @@
  */
 package org.silverpeas.core.pdc.pdc.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
-/**
- * Class declaration
- * @author
- */
-public class PdcRuntimeException extends SilverpeasRuntimeException implements java.io.Serializable {
+import java.io.Serializable;
 
-  private static final long serialVersionUID = -8878326973134693349L;
+public class PdcRuntimeException extends SilverpeasRuntimeException implements Serializable {
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   *
-   */
-  public PdcRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  private static final long serialVersionUID = -2646825155904983084L;
+
+  public PdcRuntimeException(final String message) {
+    super(message);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   *
-   */
-  public PdcRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public PdcRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   *
-   */
-  public PdcRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public PdcRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   *
-   */
-  public PdcRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  public String getModule() {
-    return "Pdc";
-  }
-
 }

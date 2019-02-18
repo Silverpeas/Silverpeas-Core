@@ -21,13 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-//TODO : reporter dans CVS (done)
 package org.silverpeas.core.contact.info;
 
 import org.silverpeas.core.contact.info.model.InfoPK;
 import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,41 +35,34 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class InfoDAO {
 
-  public InfoDAO() {
-  }
+  private static final String UNKNOWN = "unknown";
 
   /**
    * @param con the database connection
    * @param contactPK the contact primary key
    * @param modelId the model identifier
    * @return true if an info already exists
-   * @throws SQLException
+   * @throws SQLException if an error occurs
    */
-  public static boolean hasInfo(Connection con, ContactPK contactPK, String modelId)
-      throws SQLException {
-
-    boolean result;
-    InfoPK infoPK = new InfoPK("unknown", contactPK);
-    String tableName = infoPK.getTableName();
-
-    String selectStatement =
+  private boolean hasInfo(Connection con, ContactPK contactPK, String modelId) throws SQLException {
+    final boolean result;
+    final InfoPK infoPK = new InfoPK(UNKNOWN, contactPK);
+    final String tableName = infoPK.getTableName();
+    final String selectStatement =
         "select infoId FROM " + tableName + " WHERE contactId = ? and instanceId = ? " +
             "and modelId = ?";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
+    try (final PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
       prepStmt.setInt(1, Integer.parseInt(contactPK.getId()));
       prepStmt.setString(2, contactPK.getComponentName());
       prepStmt.setString(3, modelId);
-      rs = prepStmt.executeQuery();
-      result = rs.next();
-      return result;
-    } finally {
-      DBUtil.close(rs, prepStmt);
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        result = rs.next();
+      }
     }
+    return result;
   }
 
   /**
@@ -79,74 +72,53 @@ public class InfoDAO {
    * @param modelId the model identifier
    * @param contactPK the contact primary key
    * @return an Info primary key
-   * @throws SQLException
+   * @throws SQLException if an error occurs
    */
-  public static InfoPK createInfo(Connection con, String modelId, ContactPK contactPK)
-      throws SQLException {
-    InfoPK infoPK = new InfoPK("unknown", contactPK);
-    String tableName = infoPK.getTableName();
-
+  public InfoPK createInfo(Connection con, String modelId, ContactPK contactPK) throws SQLException {
+    final InfoPK infoPK = new InfoPK(UNKNOWN, contactPK);
+    final String tableName = infoPK.getTableName();
     int newId = DBUtil.getNextId(tableName, "infoId");
     infoPK.setId(Integer.toString(newId));
-
     if (!hasInfo(con, contactPK, modelId)) {
       String insertStatement = "INSERT INTO " + tableName + " values ( ? , ? , ? , ? )";
-      PreparedStatement prepStmt = null;
-
-      try {
-        prepStmt = con.prepareStatement(insertStatement);
+      try (final PreparedStatement prepStmt = con.prepareStatement(insertStatement)) {
         prepStmt.setInt(1, Integer.parseInt(infoPK.getId()));
         prepStmt.setInt(2, Integer.parseInt(contactPK.getId()));
         prepStmt.setString(3, modelId);
         prepStmt.setString(4, contactPK.getComponentName());
         prepStmt.executeUpdate();
-        return infoPK;
-      } finally {
-        DBUtil.close(prepStmt);
       }
     }
-
     return infoPK;
   }
 
-  public static void deleteInfo(Connection con, InfoPK infoPK) throws SQLException {
-    String deleteStatement = "delete from " + infoPK.getTableName() + " where infoId=?";
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(deleteStatement);
+  private void deleteInfo(Connection con, InfoPK infoPK) throws SQLException {
+    final String deleteStatement = "delete from " + infoPK.getTableName() + " where infoId=?";
+    try (final PreparedStatement prepStmt = con.prepareStatement(deleteStatement)) {
       prepStmt.setInt(1, Integer.parseInt(infoPK.getId()));
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
-  public static void deleteInfoDetailByContactPK(Connection con, ContactPK contactPK)
-      throws SQLException {
-    ResultSet rs = null;
-    InfoPK infoPK = new InfoPK("unknown", contactPK);
-    String tableName = infoPK.getTableName();
-    String selectStatement =
+  public void deleteInfoDetailByContactPK(Connection con, ContactPK contactPK) throws SQLException {
+    InfoPK infoPK = new InfoPK(UNKNOWN, contactPK);
+    final String tableName = infoPK.getTableName();
+    final String selectStatement =
         "select * from " + tableName + " where contactId = ? and instanceId = ?";
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
+    try (final PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
       prepStmt.setInt(1, Integer.parseInt(contactPK.getId()));
       prepStmt.setString(2, infoPK.getComponentName());
-      rs = prepStmt.executeQuery();
-      String id;
-      while (rs.next()) {
-        id = Integer.toString(rs.getInt(1));
-        infoPK = new InfoPK(id, contactPK);
-
-        deleteInfo(con, infoPK);
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        String id;
+        while (rs.next()) {
+          id = Integer.toString(rs.getInt(1));
+          infoPK = new InfoPK(id, contactPK);
+          deleteInfo(con, infoPK);
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
   }
 
-  public static void deleteAllInfoByInstanceId(Connection con, String instanceId)
-      throws SQLException {
+  public void deleteAllInfoByInstanceId(Connection con, String instanceId) throws SQLException {
     final String sql = "DELETE FROM SB_Contact_Info WHERE instanceId = ?";
     try (PreparedStatement deletion = con.prepareStatement(sql)) {
       deletion.setString(1, instanceId);
@@ -154,25 +126,20 @@ public class InfoDAO {
     }
   }
 
-  public static List<String> getInfo(Connection con, ContactPK pubPK) throws SQLException {
-    List<String> modelIds = new ArrayList<String>();
-    InfoPK infoPK = new InfoPK("unknown", pubPK);
-    String tableName = infoPK.getTableName();
-
-    String selectStatement = "select modelId FROM " + tableName
-        + " WHERE contactId = ? and instanceId = ? ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
+  public List<String> getInfo(Connection con, ContactPK pubPK) throws SQLException {
+    final List<String> modelIds = new ArrayList<>();
+    final InfoPK infoPK = new InfoPK(UNKNOWN, pubPK);
+    final String tableName = infoPK.getTableName();
+    final String selectStatement =
+        "select modelId FROM " + tableName + " WHERE contactId = ? and instanceId = ? ";
+    try (final PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
       prepStmt.setInt(1, Integer.parseInt(pubPK.getId()));
       prepStmt.setString(2, pubPK.getComponentName());
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        modelIds.add(rs.getString("modelId"));
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          modelIds.add(rs.getString("modelId"));
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return modelIds;
   }

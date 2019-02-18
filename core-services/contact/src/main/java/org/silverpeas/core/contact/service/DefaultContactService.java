@@ -23,22 +23,23 @@
  */
 package org.silverpeas.core.contact.service;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.contact.info.InfoDAO;
 import org.silverpeas.core.contact.model.CompleteContact;
+import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.core.contact.model.ContactDetail;
 import org.silverpeas.core.contact.model.ContactFatherDetail;
 import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.core.contact.model.ContactRuntimeException;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contact.model.Contact;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.i18n.I18NHelper;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
@@ -51,24 +52,23 @@ import java.util.List;
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultContactService implements ContactService, ComponentInstanceDeletion {
 
-  public DefaultContactService() {
-  }
+  @Inject
+  private InfoDAO infoDAO;
+  @Inject
+  private ContactDAO contactDAO;
 
   @Override
   public ContactDetail getDetail(ContactPK contactPK) {
     Connection con = getConnection();
     try {
-      ContactPK primary = ContactDAO.selectByPrimaryKey(con, contactPK);
+      ContactPK primary = contactDAO.selectByPrimaryKey(con, contactPK);
       if (primary != null) {
         return primary.contactDetail;
       } else {
-        throw new ContactRuntimeException("DefaultContactService.getDetail()",
-            SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_NOT_FOUND");
+        throw new ContactRuntimeException("Contact not found with id = " + contactPK.getId());
       }
     } catch (SQLException | ParseException re) {
-      throw new ContactRuntimeException("DefaultContactService.getDetail()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED",
-          "id = " + contactPK.getId(), re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -81,7 +81,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
     try {
       int id = DBUtil.getNextId(contact.getPK().getTableName(), "contactId");
       contact.getPK().setId(String.valueOf(id));
-      ContactDAO.insertRow(con, contact);
+      contactDAO.insertRow(con, contact);
 
       if (contact instanceof CompleteContact) {
         CompleteContact fullContact = (CompleteContact) contact;
@@ -94,9 +94,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
       createIndex(contact);
       return contact.getPK();
     } catch (Exception e) {
-      throw new ContactRuntimeException("DefaultContactService.createContact()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_CREATE_FAILED",
-          "contactDetail = " + contact.toString(), e);
+      throw new ContactRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -108,24 +106,22 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
     Connection con = getConnection();
     try {
       // remove forms data
-      List<String> modelIds = InfoDAO.getInfo(con, contactPK);
+      List<String> modelIds = infoDAO.getInfo(con, contactPK);
       for(String modelId : modelIds) {
         CompleteContact completeContact = getCompleteContact(contactPK, modelId);
         completeContact.removeForm();
       }
 
       // remove forms association
-      InfoDAO.deleteInfoDetailByContactPK(con, contactPK);
+      infoDAO.deleteInfoDetailByContactPK(con, contactPK);
 
       // remove contact itself
-      ContactDAO.deleteContact(con, contactPK);
+      contactDAO.deleteContact(con, contactPK);
 
       // remove contact index
       deleteIndex(contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.removeContact()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_DELETE_FAILED", "pk = " + contactPK,
-          re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -135,7 +131,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public void setDetail(Contact contact) {
     Connection con = getConnection();
     try {
-      ContactDAO.storeRow(con, contact);
+      contactDAO.storeRow(con, contact);
 
       if (contact instanceof CompleteContact) {
         CompleteContact fullContact = (CompleteContact) contact;
@@ -144,9 +140,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
 
       createIndex(contact);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.setDetail()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_SET_CONTACT_DETAIL_FAILED",
-          "contactDetail = " + contact, re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -163,10 +157,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public void addFather(ContactPK contactPK, NodePK fatherPK) {
     Connection con = getConnection();
     try {
-      ContactDAO.addFather(con, contactPK, fatherPK);
+      contactDAO.addFather(con, contactPK, fatherPK);
     } catch (SQLException re) {
-      throw new ContactRuntimeException("ContactEJB.addFather()", SilverpeasRuntimeException.ERROR,
-          "contact.EX_CONTACT_ADD_TO_FATHER_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -183,11 +176,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public void removeFather(ContactPK contactPK, NodePK fatherPK) {
     Connection con = getConnection();
     try {
-      ContactDAO.removeFather(con, contactPK, fatherPK);
+      contactDAO.removeFather(con, contactPK, fatherPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.removeFather()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_REMOVE_FROM_FATHER_FAILED",
-          "fatherPK = " + fatherPK, re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -202,11 +193,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public void removeAllFather(ContactPK contactPK) {
     Connection con = getConnection();
     try {
-      ContactDAO.removeAllFather(con, contactPK);
+      contactDAO.removeAllFather(con, contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.removeAllFather()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_REMOVE_FROM_ALLFATHERS_FAILED",
-          "contactPK = " + contactPK, re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -223,11 +212,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public void removeAllIssue(NodePK originPK, ContactPK contactPK) {
     Connection con = getConnection();
     try {
-      ContactDAO.removeAllIssue(con, originPK, contactPK);
+      contactDAO.removeAllIssue(con, originPK, contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.removeAllIssue()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_REMOVE_ALLISSUES_FAILED",
-          "fatherPK = " + originPK, re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -237,10 +224,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public Collection<ContactDetail> getOrphanContacts(ContactPK contactPK) {
     Connection con = getConnection();
     try {
-      return ContactDAO.getOrphanContacts(con, contactPK);
+      return contactDAO.getOrphanContacts(con, contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.getOrphanContacts()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_WITHOUT_FATHERS_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -251,11 +237,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public void deleteOrphanContactsByCreatorId(ContactPK contactPK, String creatorId) {
     Connection con = getConnection();
     try {
-      ContactDAO.deleteOrphanContactsByCreatorId(con, contactPK, creatorId);
+      contactDAO.deleteOrphanContactsByCreatorId(con, contactPK, creatorId);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.deleteOrphanContactsByCreatorId()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_DELETE_CONTACTS_WITHOUT_FATHERS_FAILED",
-          re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -266,10 +250,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
       String publisherId, String nodeId) {
     Connection con = getConnection();
     try {
-      return ContactDAO.getUnavailableContactsByPublisherId(con, contactPK, publisherId, nodeId);
+      return contactDAO.getUnavailableContactsByPublisherId(con, contactPK, publisherId, nodeId);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.getUnavailableContactsByPublisherId()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -283,10 +266,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public Collection<NodePK> getAllFatherPK(ContactPK contactPK) {
     Connection con = getConnection();
     try {
-      return ContactDAO.getAllFatherPK(con, contactPK);
+      return contactDAO.getAllFatherPK(con, contactPK);
     } catch (SQLException re) {
-      throw new ContactRuntimeException("DefaultContactService.getAllFatherPK()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_FATHERS_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -300,10 +282,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public Collection<ContactDetail> getDetailsByFatherPK(NodePK fatherPK) {
     Connection con = getConnection();
     try {
-      return ContactDAO.selectByFatherPK(con, fatherPK);
+      return contactDAO.selectByFatherPK(con, fatherPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.getDetailsByFatherPK()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -313,10 +294,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public Collection<ContactDetail> getDetailsByLastName(ContactPK pk, String query) {
     Connection con = getConnection();
     try {
-      return ContactDAO.selectByLastName(con, pk, query);
+      return contactDAO.selectByLastName(con, pk, query);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.getDetailsByLastName()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -326,10 +306,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public Collection<ContactDetail> getDetailsByLastNameOrFirstName(ContactPK pk, String query) {
     Connection con = getConnection();
     try {
-      return ContactDAO.selectByLastNameOrFirstName(con, pk, query);
+      return contactDAO.selectByLastNameOrFirstName(con, pk, query);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.getDetailsByLastNameOrFirstName()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -340,10 +319,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
       String firstName) {
     Connection con = getConnection();
     try {
-      return ContactDAO.selectByLastNameAndFirstName(con, pk, lastName, firstName);
+      return contactDAO.selectByLastNameAndFirstName(con, pk, lastName, firstName);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.getDetailsByLastNameAndFirstName()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -354,10 +332,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public void createInfoModel(ContactPK contactPK, String modelId) {
     Connection con = getConnection();
     try {
-      InfoDAO.createInfo(con, modelId, contactPK);
+      infoDAO.createInfo(con, modelId, contactPK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.createInfoModel()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_INFOMODEL_CREATE_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -370,8 +347,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
       ContactDetail contact = getDetail(contactPK);
       return new CompleteContact(contact, modelId);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.getCompleteContact()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED", re);
+      throw new ContactRuntimeException(re);
     }
   }
 
@@ -381,15 +357,14 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
     try {
       // get detail
       ContactDetail contact = getDetail(contactPK);
-      List<String> modelIds = InfoDAO.getInfo(con, contactPK);
+      List<String> modelIds = infoDAO.getInfo(con, contactPK);
       String modelId = null;
       if (modelIds != null && !modelIds.isEmpty()) {
         modelId = modelIds.get(0);
       }
       return new CompleteContact(contact, modelId);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.getCompleteContact()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACT_DETAIL_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -399,10 +374,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public Collection<ContactDetail> getContacts(Collection<ContactPK> contactPKs) {
     Connection con = getConnection();
     try {
-      return ContactDAO.selectByContactPKs(con, contactPKs);
+      return contactDAO.selectByContactPKs(con, contactPKs);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.getContacts()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -412,10 +386,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public int getNbPubInFatherPKs(Collection<NodePK> fatherPKs) {
     Connection con = getConnection();
     try {
-      return ContactDAO.getNbPubInFatherPKs(con, fatherPKs);
+      return contactDAO.getNbPubInFatherPKs(con, fatherPKs);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.getNbPubInFatherPKs()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_NB_CONTACTS_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -426,10 +399,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
       ContactPK contactPK, NodePK nodePK) {
     Connection con = getConnection();
     try {
-      return ContactDAO.selectByFatherPKs(con, fatherPKs, contactPK, nodePK);
+      return contactDAO.selectByFatherPKs(con, fatherPKs, contactPK, nodePK);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.getContacts()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -439,10 +411,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath) {
     Connection con = getConnection();
     try {
-      return ContactDAO.getNbPubByFatherPath(con, fatherPK, fatherPath);
+      return contactDAO.getNbPubByFatherPath(con, fatherPK, fatherPath);
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.getNbPubByFatherPath()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_NB_CONTACTS_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -452,10 +423,9 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public List<CompleteContact> getVisibleContacts(String instanceId) {
     Connection con = getConnection();
     try {
-      return ContactDAO.getVisibleContacts(con, instanceId);
+      return contactDAO.getVisibleContacts(con, instanceId);
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.getVisibleContacts()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_GET_CONTACTS_FAILED", re);
+      throw new ContactRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -465,8 +435,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
     try {
       return DBUtil.openConnection();
     } catch (SQLException re) {
-      throw new ContactRuntimeException("DefaultContactService.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", re);
+      throw new ContactRuntimeException(re);
     }
   }
 
@@ -499,8 +468,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
         IndexEngineProxy.addIndexEntry(indexEntry);
       }
     } catch (Exception re) {
-      throw new ContactRuntimeException("DefaultContactService.createIndex()",
-          SilverpeasRuntimeException.ERROR, "contact.EX_CONTACT_CREATE_INDEX_FAILED", re);
+      throw new ContactRuntimeException(re);
     }
   }
 
@@ -522,10 +490,10 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   @Transactional
   public void delete(final String componentInstanceId) {
     try (Connection connection = DBUtil.openConnection()) {
-      ContactDAO.deleteAllContacts(connection, componentInstanceId);
-      InfoDAO.deleteAllInfoByInstanceId(connection, componentInstanceId);
+      contactDAO.deleteAllContacts(connection, componentInstanceId);
+      infoDAO.deleteAllInfoByInstanceId(connection, componentInstanceId);
     } catch (SQLException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 }

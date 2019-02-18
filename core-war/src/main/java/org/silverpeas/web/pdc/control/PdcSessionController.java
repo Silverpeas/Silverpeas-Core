@@ -26,7 +26,6 @@ package org.silverpeas.web.pdc.control;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
@@ -185,8 +184,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
     } catch (Exception e) {
       rollbackConnection(con);
-      throw new PdcException("PdcSessionController.deleteAxis",
-          SilverpeasException.ERROR, "pdcPeas.CANNOT_DELETE_AXIS", "", e);
+      throw new PdcException(e);
     } finally {
       closeConnection(con);
     }
@@ -284,8 +282,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
     } catch (Exception e) {
       rollbackConnection(con);
-      throw new PdcException("PdcSessionController.deleteValueAndSubtree",
-          SilverpeasException.ERROR, "pdcPeas.CANNOT_DELETE_VALUES", "", e);
+      throw new PdcException(e);
     } finally {
       closeConnection(con);
     }
@@ -314,8 +311,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
       }
     } catch (Exception e) {
       rollbackConnection(con);
-      throw new PdcException("PdcSessionController.deleteValue",
-          SilverpeasException.ERROR, "pdcPeas.CANNOT_DELETE_VALUE", "", e);
+      throw new PdcException(e);
     } finally {
       closeConnection(con);
     }
@@ -353,8 +349,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
       con = DBUtil.openConnection();
       con.setAutoCommit(false);
     } catch (Exception e) {
-      throw new PdcException("PdcSessionController.getConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new PdcException(e);
     }
     return con;
   }
@@ -364,8 +359,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
       try {
         con.close();
       } catch (Exception e) {
-        throw new PdcException("pdcPeas.closeConnection",
-            SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+        throw new PdcException(e);
       }
     }
   }

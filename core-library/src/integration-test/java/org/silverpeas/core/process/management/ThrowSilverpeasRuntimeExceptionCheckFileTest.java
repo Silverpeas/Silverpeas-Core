@@ -21,23 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.io.media.image.thumbnail;
+package org.silverpeas.core.process.management;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.process.io.file.FileHandler;
 
-public class ThumbnailException extends SilverpeasException {
+/**
+ * @author Yohann Chastagnier
+ */
+class ThrowSilverpeasRuntimeExceptionCheckFileTest extends AbstractFileProcessCheck {
 
-  private static final long serialVersionUID = 8352947513098763843L;
-
-  public ThumbnailException(final String message, final String... parameters) {
-    super(message, parameters);
-  }
-
-  public ThumbnailException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
-  public ThumbnailException(final Throwable cause) {
-    super(cause);
+  @Override
+  public void checkFiles(final ProcessExecutionContext context, final FileHandler fileHandler) {
+    throw new SilverpeasRuntimeException("");
   }
 }

@@ -23,23 +23,22 @@
  */
 package org.silverpeas.web.pdc.control;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.pdc.PdcServiceProvider;
-import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
-import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
-import org.silverpeas.core.pdc.thesaurus.model.Jargon;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.PdcRuntimeException;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.thesaurus.model.Jargon;
+import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
+import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,25 +69,25 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
   }
 
   public void setCurrentSilverObjectId(String silverObjectId) {
-    currentSilverObjectId = new Integer(silverObjectId).intValue();
+    currentSilverObjectId = Integer.parseInt(silverObjectId);
   }
 
   public void setCurrentSilverObjectId(int silverObjectId) {
     currentSilverObjectId = silverObjectId;
   }
 
-  public int getCurrentSilverObjectId() throws PdcException {
+  public int getCurrentSilverObjectId() {
     return currentSilverObjectId;
   }
 
   public void addCurrentSilverObjectId(String silverObjectId) {
     if (currentSilverObjectIds == null) {
-      currentSilverObjectIds = new ArrayList<String>();
+      currentSilverObjectIds = new ArrayList<>();
     }
     currentSilverObjectIds.add(silverObjectId);
   }
 
-  public List<String> getCurrentSilverObjectIds() throws PdcException {
+  public List<String> getCurrentSilverObjectIds() {
     return currentSilverObjectIds;
   }
 
@@ -136,19 +135,15 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
           result = getPdcManager().addPosition(getCurrentSilverObjectId(), position,
               getCurrentComponentId(), isSendSubscriptions());
         } else if (getCurrentSilverObjectIds() != null) {
-          String silverObjectId = null;
           for (int i = 0; i < getCurrentSilverObjectIds().size(); i++) {
-            silverObjectId = (String) getCurrentSilverObjectIds().get(i);
+            final String silverObjectId = getCurrentSilverObjectIds().get(i);
             getPdcManager().addPosition(Integer.parseInt(silverObjectId), position,
                 getCurrentComponentId(), isSendSubscriptions());
           }
         }
       }
     } catch (PdcRuntimeException pe) {
-      throw new PdcException(
-          "PdcClassifySessionController.addPosition()",
-          SilverpeasException.ERROR, pe.getMessage(),
-          pe);
+      throw new PdcException(pe);
     }
     return result;
   }
@@ -171,7 +166,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
   }
 
   public void deletePosition(String positionId) throws PdcException {
-    deletePosition(new Integer(positionId).intValue());
+    deletePosition(Integer.parseInt(positionId));
   }
 
   public List<ClassifyPosition> getPositions() throws PdcException {
@@ -190,7 +185,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
     }
   }
 
-  public synchronized boolean getActiveThesaurus() throws PdcException {
+  public synchronized boolean getActiveThesaurus() {
     return getPersonalization().isThesaurusEnabled();
   }
 
@@ -199,8 +194,7 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
       Jargon theJargon = thesaurus.getJargon(getUserId());
       this.jargon = theJargon;
     } catch (ThesaurusException e) {
-      throw new PdcException("PdcClassifySessionController.initializeJargon",
-          SilverpeasException.ERROR, "pdcPeas.EX_CANT_INITIALIZE_JARGON", "", e);
+      throw new PdcException(e);
     }
   }
 

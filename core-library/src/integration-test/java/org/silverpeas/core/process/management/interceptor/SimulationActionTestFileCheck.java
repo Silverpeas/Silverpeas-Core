@@ -50,7 +50,7 @@ public class SimulationActionTestFileCheck extends AbstractFileProcessCheck {
 
   @Override
   public void checkFiles(final ProcessExecutionContext processExecutionContext,
-      final FileHandler fileHandler) throws Exception {
+      final FileHandler fileHandler) {
     Logger.getAnonymousLogger().info("The check after processes execution is performed...");
     Logger.getAnonymousLogger().info("File handler session: " +
         fileHandler.getHandledFile(FileBasePath.UPLOAD_PATH, "interceptor.test").getFile()

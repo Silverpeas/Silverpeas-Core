@@ -23,14 +23,7 @@
  */
 package org.silverpeas.core.node.coordinates.service;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.node.coordinates.model.Coordinate;
 import org.silverpeas.core.node.coordinates.model.CoordinatePK;
@@ -38,7 +31,13 @@ import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
 import org.silverpeas.core.node.coordinates.model.CoordinateRuntimeException;
 import org.silverpeas.core.node.coordinates.persistence.CoordinatesDAO;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+
+import javax.transaction.Transactional;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Class declaration
@@ -56,8 +55,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new CoordinateRuntimeException("CoordinatesBmEJB.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new CoordinateRuntimeException(e);
     }
   }
 
@@ -80,8 +78,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
 
       return CoordinatesDAO.selectByFatherIds(con, fatherIds, pk);
     } catch (SQLException e) {
-      throw new CoordinateRuntimeException("CoordinatesBmEJB.getCoordinatesByFatherIds()",
-          SilverpeasRuntimeException.ERROR, "coordinates.COORDINATES_LIST_NOT_AVAILABLE", e);
+      throw new CoordinateRuntimeException("No coordinates available by father id", e);
     } finally {
       DBUtil.close(con);
     }
@@ -93,8 +90,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     try {
       return CoordinatesDAO.selectByFatherPaths(con, fatherPaths, pk);
     } catch (SQLException e) {
-      throw new CoordinateRuntimeException("CoordinatesBmEJB.getCoordinatesByFatherPaths()",
-          SilverpeasRuntimeException.ERROR, "coordinates.COORDINATES_LIST_NOT_AVAILABLE", e);
+      throw new CoordinateRuntimeException("No coordinates available by father path", e);
     } finally {
       DBUtil.close(con);
     }
@@ -117,9 +113,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     try {
       return CoordinatesDAO.addCoordinate(con, pk, coordinatePoints);
     } catch (SQLException e) {
-      throw new CoordinateRuntimeException("CoordinatesBmEJB.addCoordinate()",
-          SilverpeasRuntimeException.ERROR,
-          "coordinates.ADDING_COORDINATE_FAILED", e);
+      throw new CoordinateRuntimeException("Coordinates adding failure", e);
     } finally {
       DBUtil.close(con);
     }
@@ -141,8 +135,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     try {
       CoordinatesDAO.removeCoordinates(con, pk, coordinates);
     } catch (SQLException e) {
-      throw new CoordinateRuntimeException("CoordinatesBmEJB.deleteCoordinates()",
-          SilverpeasRuntimeException.ERROR, "coordinates.DELETING_COORDINATES_FAILED", e);
+      throw new CoordinateRuntimeException("Coordinates deletion failure", e);
     } finally {
       DBUtil.close(con);
     }
@@ -164,8 +157,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     try {
       CoordinatesDAO.removeCoordinatesByPoints(con, pk, coordinatePoints);
     } catch (SQLException e) {
-      throw new CoordinateRuntimeException("CoordinatesBmEJB.deleteCoordinatesByPoints()",
-          SilverpeasRuntimeException.ERROR, "coordinates.DELETING_COORDINATES_BY_POINTS_FAILED", e);
+      throw new CoordinateRuntimeException("Coordinate deletion by points failure", e);
     } finally {
       DBUtil.close(con);
     }
@@ -187,8 +179,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     try {
       return CoordinatesDAO.selectCoordinatesByCoordinateIds(con, coordinateIds, pk);
     } catch (SQLException e) {
-      throw new CoordinateRuntimeException("CoordinatesBmEJB.getCoordinatesByCoordinateIds()",
-          SilverpeasRuntimeException.ERROR, "coordinates.COORDINATES_LIST_NOT_AVAILABLE", e);
+      throw new CoordinateRuntimeException("No available coordinates", e);
     } finally {
       DBUtil.close(con);
     }
@@ -210,8 +201,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     try {
       CoordinatesDAO.addPointToAllCoordinates(con, pk, point);
     } catch (SQLException e) {
-      throw new CoordinateRuntimeException("CoordinatesBmEJB.addPointToAllCoordinates()",
-          SilverpeasRuntimeException.ERROR, "coordinates.ADDING_A_POINT_TO_COORDINATES_FAILED", e);
+      throw new CoordinateRuntimeException("Points adding to coordinate failure", e);
     } finally {
       DBUtil.close(con);
     }
@@ -232,9 +222,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     try {
       return CoordinatesDAO.getCoordinateIdsByNodeId(con, pk, nodeId);
     } catch (SQLException e) {
-      throw new CoordinateRuntimeException("CoordinatesBmEJB.getCoordinateIdsByNodeId()",
-          SilverpeasRuntimeException.ERROR, "coordinates.COORDINATES_LIST_BY_POINTS_NOT_AVAILABLE",
-          e);
+      throw new CoordinateRuntimeException("Coordinate by node id getting failure", e);
     } finally {
       DBUtil.close(con);
     }
@@ -251,7 +239,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
     try (Connection connection = DBUtil.openConnection()) {
       CoordinatesDAO.removeCoordinatesByInstanceId(connection, componentInstanceId);
     } catch (SQLException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 }

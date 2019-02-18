@@ -26,11 +26,13 @@ package org.silverpeas.core.io.file;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 /**
  * A representation of a File in Silverpeas. This class abstracts the way the files are managed
@@ -105,7 +107,12 @@ public class SilverpeasFile extends File {
   public boolean delete() {
     boolean deleted = false;
     if (exists()) {
-      deleted = super.delete();
+      try {
+        Files.delete(toPath());
+        deleted = true;
+      } catch (IOException e) {
+        SilverLogger.getLogger(this).silent(e);
+      }
       SilverpeasFileProvider.processAfter(this, SilverpeasFileProcessor.ProcessingContext.DELETION);
     }
     return deleted;
@@ -136,13 +143,13 @@ public class SilverpeasFile extends File {
       throw new IOException("The '" + parentFile + "' directory cannot be created!");
     }
     if (!exists()) {
-      this.createNewFile();
+      Files.createFile(toPath());
     }
     if (!canWrite()) {
       throw new IOException("The file'" + getPath() + "' is read-only!");
     }
     if (!exists()) {
-      this.createNewFile();
+      Files.createFile(toPath());
     }
     FileUtils.copyInputStreamToFile(stream, this);
     SilverpeasFileProvider.processAfter(this, SilverpeasFileProcessor.ProcessingContext.WRITING);
@@ -236,5 +243,15 @@ public class SilverpeasFile extends File {
    */
   public boolean isOpenOfficeCompatible() {
     return FileUtil.isOpenOfficeCompatible(getPath());
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

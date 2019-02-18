@@ -457,9 +457,8 @@ public class IndexSearcher {
   }
 
   private void setIndexEntryLanguageData(final MatchingIndexEntry indexEntry, final Document doc) {
-    final Iterator<String> languages = I18NHelper.getLanguages();
-    while (languages.hasNext()) {
-      final String language = languages.next();
+    final Collection<String> languages = I18NHelper.getLanguages();
+    for (final String language: languages) {
       indexEntry.setTitle(doc.get(getFieldName(IndexManager.TITLE, language)), language);
       indexEntry.setPreview(doc.get(getFieldName(IndexManager.PREVIEW, language)), language);
     }

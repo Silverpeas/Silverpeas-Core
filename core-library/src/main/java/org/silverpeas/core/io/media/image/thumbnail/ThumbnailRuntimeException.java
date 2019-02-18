@@ -23,66 +23,21 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class ThumbnailRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 4187454705074755965L;
 
-  /**
-   * method of interface FromModule
-   */
-  public String getModule() {
-    return "thumbnail";
+  public ThumbnailRuntimeException(final String message) {
+    super(message);
   }
 
-  /**
-   * constructors
-   */
-
-  public ThumbnailRuntimeException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  public ThumbnailRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   *
-   */
-  public ThumbnailRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public ThumbnailRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   *
-   */
-  public ThumbnailRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   *
-   */
-  public ThumbnailRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
 }

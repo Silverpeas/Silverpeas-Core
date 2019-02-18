@@ -96,7 +96,7 @@ public class RequestParameterDecoder {
    * @return the decoded specified entity.
    */
   public static <O> O decode(HttpRequest request, Class<O> objectClass) {
-    return getInstance()._decode(request, objectClass);
+    return getInstance().decodeReq(request, objectClass);
   }
 
   public static <T> OffsetDateTime asOffsetDateTime(T object) {
@@ -205,7 +205,7 @@ public class RequestParameterDecoder {
   /**
    * The private implementation.
    */
-  private <O> O _decode(HttpRequest request, Class<O> objectClass) {
+  private <O> O decodeReq(HttpRequest request, Class<O> objectClass) {
     try {
 
       // New instance
@@ -261,7 +261,7 @@ public class RequestParameterDecoder {
       // Returning it.
       return newInstance;
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
@@ -275,7 +275,7 @@ public class RequestParameterDecoder {
    */
   @SuppressWarnings("unchecked")
   private Object getParameterValue(HttpRequest request, String parameterName,
-      Class<?> parameterClass, boolean unescapeHtml) throws Exception {
+      Class<?> parameterClass, boolean unescapeHtml) throws ParseException {
     final Object value;
     if (parameterClass.isAssignableFrom(RequestFile.class)) {
       value = request.getParameterAsRequestFile(parameterName);
@@ -288,7 +288,7 @@ public class RequestParameterDecoder {
   }
 
   private Object getParameterValues(Collection<?> finalValues, String[] values,
-      Class<?> parameterClass, boolean unescapeHtml) throws Exception {
+      Class<?> parameterClass, boolean unescapeHtml) {
     if (values != null) {
       for (String value : values) {
         finalValues.add(getValueAs(value, parameterClass, unescapeHtml));
@@ -306,8 +306,7 @@ public class RequestParameterDecoder {
    * @throws Exception
    */
   @SuppressWarnings("unchecked")
-  private <T> T getValueAs(String parameterValue, Class<?> parameterClass, boolean unescapeHtml)
-      throws Exception {
+  private <T> T getValueAs(String parameterValue, Class<?> parameterClass, boolean unescapeHtml) {
     final Object value;
     if (parameterClass.isAssignableFrom(String.class)) {
       if (unescapeHtml) {

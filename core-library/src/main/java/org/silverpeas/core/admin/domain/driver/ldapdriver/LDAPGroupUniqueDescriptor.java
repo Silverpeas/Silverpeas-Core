@@ -26,11 +26,13 @@ package org.silverpeas.core.admin.domain.driver.ldapdriver;
 import com.novell.ldap.LDAPEntry;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.Vector;
-
-import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class manage groups that are described as follows : The group object contains an attribute
@@ -40,40 +42,26 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
  */
 
 public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
-  protected String[] getMemberGroupIds(String lds, String memberId, boolean isGroup)
-      throws AdminException {
-    Vector<String> groupsVector = new Vector<>();
-    LDAPEntry[] theEntries;
-    LDAPEntry memberEntry;
-    int i;
 
-    SilverTrace
-        .info("admin", "LDAPGroupUniqueDescriptor.getMemberGroupIds()", "root.MSG_GEN_ENTER_METHOD",
-            "MemberId=" + memberId + ", isGroup=" + isGroup);
-    if (isGroup) {
-      memberEntry = LDAPUtility
-          .getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
-              driverSettings.getScope(), driverSettings.getGroupsIdFilter(memberId),
-              driverSettings.getGroupAttributes());
-    } else {
-      memberEntry = LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(),
-          driverSettings.getScope(), driverSettings.getUsersIdFilter(memberId),
-          driverSettings.getGroupAttributes());
-    }
-    if (memberEntry == null) {
-      throw new AdminException(unknown("LDAP group id", memberId));
-    }
+  private static final String LDAPGROUP_UNIQUE_DESCRIPTOR_GET_CHILD_GROUPS_ENTRY =
+      "LDAPGroupUniqueDescriptor.getChildGroupsEntry()";
+
+  private String[] getMemberGroupIds(String lds, String memberId, boolean isGroup)
+      throws AdminException {
+    List<String> groups = new ArrayList<>();
+    LDAPEntry[] theEntries;
+    int i;
+    LDAPEntry memberEntry = getMemberEntry(lds, memberId, isGroup);
     theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
         driverSettings.getScope(),
         "(&" + driverSettings.getGroupsFullFilter() + "(" + driverSettings.getGroupsMemberField() +
             "=" + LDAPUtility.dblBackSlashesForDNInFilters(memberEntry.getDN()) + "))",
         driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
     for (i = 0; i < theEntries.length; i++) {
-
-      groupsVector.add(
+      groups.add(
           LDAPUtility.getFirstAttributeValue(theEntries[i], driverSettings.getGroupsIdField()));
     }
-    return groupsVector.toArray(new String[groupsVector.size()]);
+    return groups.toArray(new String[0]);
   }
 
   @Override
@@ -87,137 +75,122 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
   }
 
   @Override
-  protected String[] getUserIds(String lds, LDAPEntry groupEntry) throws AdminException {
-    Vector<String> usersVector = new Vector<>();
-    LDAPEntry userEntry;
-    String[] stringVals;
-    int i;
-
-    SilverTrace
-        .info("admin", "LDAPGroupUniqueDescriptor.getUserIds()", "root.MSG_GEN_ENTER_METHOD");
-    stringVals = LDAPUtility.getAttributeValues(groupEntry, driverSettings.getGroupsMemberField());
-    for (i = 0; i < stringVals.length; i++) {
+  protected String[] getUserIds(String lds, LDAPEntry groupEntry) {
+    List<String> users = new ArrayList<>();
+    final String[] stringVals =
+        LDAPUtility.getAttributeValues(groupEntry, driverSettings.getGroupsMemberField());
+    for (final String stringVal : stringVals) {
       try {
-        userEntry = LDAPUtility
-            .getFirstEntryFromSearch(lds, stringVals[i], driverSettings.getScope(),
+        final LDAPEntry userEntry =
+            LDAPUtility.getFirstEntryFromSearch(lds, stringVal, driverSettings.getScope(),
                 driverSettings.getUsersFullFilter(), driverSettings.getGroupAttributes());
-        if (userEntry != null) {
-          String userSpecificId =
-              LDAPUtility.getFirstAttributeValue(userEntry, driverSettings.getUsersIdField());
-          // Verify that the user exist in the scope
-          if (LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(),
-              driverSettings.getScope(), driverSettings.getUsersIdFilter(userSpecificId),
-              driverSettings.getGroupAttributes()) != null) {
-            usersVector.add(userSpecificId);
-          }
+        final String userSpecificId = getSpecificId(lds, userEntry);
+        if (userSpecificId != null) {
+          users.add(userSpecificId);
         }
       } catch (AdminException e) {
-        SilverTrace
-            .error("admin", "LDAPGroupUniqueDescriptor.getUserIds()", "admin.MSG_ERR_LDAP_GENERAL",
-                "USER NOT FOUND : " + LDAPUtility.dblBackSlashesForDNInFilters(stringVals[i]), e);
+        SilverLogger.getLogger(this)
+            .error("USER NOT FOUND : " + LDAPUtility.dblBackSlashesForDNInFilters(stringVal), e);
       }
     }
 
-    return usersVector.toArray(new String[usersVector.size()]);
+    return users.toArray(new String[0]);
   }
 
   @Override
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId, String extraFilter)
       throws AdminException {
-    LDAPEntry theEntry;
-    LDAPEntry childGroupEntry;
-    LDAPEntry parentGroupEntry;
-    Vector<LDAPEntry> entryVector = new Vector<>();
-    String[] stringVals;
-    LDAPEntry[] theEntries;
-    int i;
-    String theFilter;
-
+    List<LDAPEntry> entries = new ArrayList<>();
     try {
       if ((parentId != null) && (parentId.length() > 0)) {
-
-        theEntry = getGroupEntry(lds, parentId);
-        stringVals =
+        final LDAPEntry theEntry = getGroupEntry(lds, parentId);
+        final String[] stringVals =
             LDAPUtility.getAttributeValues(theEntry, driverSettings.getGroupsMemberField());
-        for (i = 0; i < stringVals.length; i++) {
-          try {
-            if ((extraFilter != null) && (extraFilter.length() > 0)) {
-              theFilter = "(&" + extraFilter + driverSettings.getGroupsFullFilter() + ")";
-            } else {
-              theFilter = driverSettings.getGroupsFullFilter();
-            }
-            childGroupEntry = LDAPUtility
-                .getFirstEntryFromSearch(lds, stringVals[i], driverSettings.getScope(), theFilter,
-                    driverSettings.getGroupAttributes());
-            if (childGroupEntry != null) {
-              // Verify that the group exist in the scope
-              String groupSpecificId = LDAPUtility
-                  .getFirstAttributeValue(childGroupEntry, driverSettings.getGroupsIdField());
-              if (LDAPUtility
-                  .getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
-                      driverSettings.getScope(), driverSettings.getGroupsIdFilter(groupSpecificId),
-                      driverSettings.getGroupAttributes()) != null) {
-                entryVector.add(childGroupEntry);
-              }
-            }
-          } catch (AdminException e) {
-            SilverTrace.error("admin", "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
-                "admin.MSG_ERR_LDAP_GENERAL", "GROUP NOT FOUND : " + stringVals[i], e);
-          }
-        }
-      } else // Retreives the ROOT groups : the groups that are under the base
-      // DN but that are not member of another group...
-      {
+        entries = Stream.of(stringVals)
+            .map(v -> findGroupEntry(lds, v, extraFilter))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+      } else {
+        // Retreives the ROOT groups : the groups that are under the base
+        // DN but that are not member of another group...
+        final String theFilter;
         if ((extraFilter != null) && (extraFilter.length() > 0)) {
           theFilter = "(&" + extraFilter + driverSettings.getGroupsFullFilter() + ")";
         } else {
           theFilter = driverSettings.getGroupsFullFilter();
         }
-
-        theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
+        final LDAPEntry[] theEntries =
+            LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
             driverSettings.getScope(), theFilter, driverSettings.getGroupsNameField(),
             driverSettings.getGroupAttributes());
-        SynchroDomainReport.debug("LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
+        SynchroDomainReport.debug(LDAPGROUP_UNIQUE_DESCRIPTOR_GET_CHILD_GROUPS_ENTRY,
             "Récupération de " + theEntries.length +
                 " groupes en tout, recherche des groupes racine...");
-        for (i = 0; i < theEntries.length; i++) {
-          // Search for groups that have at least one member attribute that
-          // point to the group
-          try {
-            parentGroupEntry = LDAPUtility
-                .getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
-                    driverSettings.getScope(), "(&" + driverSettings.getGroupsFullFilter() + "(" +
-                        driverSettings.getGroupsMemberField() + "=" +
-                        LDAPUtility.dblBackSlashesForDNInFilters(theEntries[i].getDN()) + "))",
-                    driverSettings.getGroupAttributes());
-          } catch (AdminException e) {
-            SilverTrace.error("admin", "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
-                "admin.MSG_ERR_LDAP_GENERAL", "IS ROOT GROUP ? : " + theEntries[i].getDN(), e);
-            parentGroupEntry = null; // If query failed, set this group as a
-            // root group
-          }
-          if (parentGroupEntry == null) // No parent...
-          {
-            entryVector.add(theEntries[i]);
-          }
-        }
+        entries = Stream.of(theEntries)
+            .map(e -> findGroupWithMember(lds, e))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
       }
     } catch (AdminException e) {
       if (synchroInProcess) {
-        SilverTrace.warn("admin", "LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
-            "admin.EX_ERR_CHILD_GROUPS", "ParentGroupId=" + parentId, e);
+        SilverLogger.getLogger(this).error(e);
         append("PB getting Group's subgroups : ").append(parentId).append("\n");
         if (parentId == null) {
-          SynchroDomainReport.error("LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
+          SynchroDomainReport.error(LDAPGROUP_UNIQUE_DESCRIPTOR_GET_CHILD_GROUPS_ENTRY,
               "Erreur lors de la récupération des groupes racine", e);
         } else {
-          SynchroDomainReport.error("LDAPGroupUniqueDescriptor.getChildGroupsEntry()",
+          SynchroDomainReport.error(LDAPGROUP_UNIQUE_DESCRIPTOR_GET_CHILD_GROUPS_ENTRY,
               "Erreur lors de la récupération des groupes fils du groupe " + parentId, e);
         }
       } else {
         throw e;
       }
     }
-    return entryVector.toArray(new LDAPEntry[entryVector.size()]);
+    return entries.toArray(new LDAPEntry[0]);
+  }
+
+  private Optional<LDAPEntry> findGroupWithMember(final String lds, final LDAPEntry theEntry) {
+    try {
+      return Optional.ofNullable(
+          LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
+              driverSettings.getScope(), "(&" + driverSettings.getGroupsFullFilter() + "(" +
+                  driverSettings.getGroupsMemberField() + "=" +
+                  LDAPUtility.dblBackSlashesForDNInFilters(theEntry.getDN()) + "))",
+              driverSettings.getGroupAttributes()));
+    } catch (AdminException e) {
+      SilverLogger.getLogger(this).error("IS ROOT GROUP ? : " + theEntry.getDN(), e);
+    }
+    return Optional.empty();
+  }
+
+  private Optional<LDAPEntry> findGroupEntry(final String lds, final String stringVal,
+      final String extraFilter) {
+    final String theFilter;
+    final LDAPEntry childGroupEntry;
+    try {
+      if ((extraFilter != null) && (extraFilter.length() > 0)) {
+        theFilter = "(&" + extraFilter + driverSettings.getGroupsFullFilter() + ")";
+      } else {
+        theFilter = driverSettings.getGroupsFullFilter();
+      }
+      childGroupEntry =
+          LDAPUtility.getFirstEntryFromSearch(lds, stringVal, driverSettings.getScope(), theFilter,
+              driverSettings.getGroupAttributes());
+      if (childGroupEntry != null) {
+        // Verify that the group exist in the scope
+        String groupSpecificId =
+            LDAPUtility.getFirstAttributeValue(childGroupEntry, driverSettings.getGroupsIdField());
+        if (LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
+            driverSettings.getScope(), driverSettings.getGroupsIdFilter(groupSpecificId),
+            driverSettings.getGroupAttributes()) != null) {
+          return Optional.of(childGroupEntry);
+        }
+      }
+    } catch (AdminException e) {
+      SilverLogger.getLogger(this).error("GROUP NOT FOUND : " + stringVal, e);
+    }
+    return Optional.empty();
   }
 }

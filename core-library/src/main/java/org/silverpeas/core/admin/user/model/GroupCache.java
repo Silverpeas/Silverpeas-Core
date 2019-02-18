@@ -23,28 +23,52 @@
  */
 package org.silverpeas.core.admin.user.model;
 
+import javax.inject.Singleton;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * Cache of user groups.
+ */
+@Singleton
 public class GroupCache {
 
-  private static ConcurrentMap<String, List<String>> map =
-      new ConcurrentHashMap<String, List<String>>();
+  private ConcurrentMap<String, List<String>> map = new ConcurrentHashMap<>();
 
-  public synchronized static void clearCache() {
+  /**
+   * Clears the cache.
+   */
+  public synchronized void clearCache() {
     map.clear();
   }
 
-  public static List<String> getAllGroupIdsOfUser(String userId) {
+  /**
+   * Gets all the groups in which the specified user is part of.
+   * @param userId the unique identifier of a user.
+   * @return a list of group identifiers.
+   */
+  public List<String> getAllGroupIdsOfUser(String userId) {
     return map.get(userId);
   }
 
-  public static void setAllGroupIdsOfUser(String userId, List<String> groupIds) {
-    map.putIfAbsent(userId, groupIds);
+  /**
+   * Sets the specified groups as being those in which the given user is part of. If the user has
+   * already a list of groups set, then nothing is done and that list is returned. Otherwise, the
+   * groups are cached as being the groups in which the user is part of and then returned.
+   * @param userId the unique identifier of a user.
+   * @param groupIds a list with the unique identifier of the groups.
+   * @return either the specified list of group identifiers or the one that is already cached.
+   */
+  public List<String> setAllGroupIdsOfUser(String userId, List<String> groupIds) {
+    return map.putIfAbsent(userId, groupIds);
   }
 
-  public static void removeCacheOfUser(String userId) {
+  /**
+   * Removes from the cache the specified user and therefore the groups in which he's part of.
+   * @param userId the unique identifier of a user.
+   */
+  public void removeCacheOfUser(String userId) {
     map.remove(userId);
   }
 

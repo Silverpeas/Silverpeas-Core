@@ -36,8 +36,9 @@ import org.silverpeas.core.util.DateUtil;
 
 import java.sql.Connection;
 import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -464,13 +465,13 @@ public abstract class AbstractContentInterface implements ContentInterface {
     }
 
     @Override
-    public Iterator<String> getLanguages() {
+    public Collection<String> getLanguages() {
       if (silverContentInterface != null) {
         return silverContentInterface.getLanguages();
       }
       // for now, no simple implementation of Contribution handles multi-language content.
       // only some kind of SilverContentInterface handle it.
-      return null;
+      return Collections.emptyList();
     }
   }
 }

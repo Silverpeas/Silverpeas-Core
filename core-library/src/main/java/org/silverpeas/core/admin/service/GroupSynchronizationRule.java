@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.service;
 
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPLocalException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
@@ -52,6 +53,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -126,6 +128,8 @@ class GroupSynchronizationRule {
       Pattern.compile("(?i)^\\s*dr_groups(withsubgroups)?\\s*=\\s*(.+)\\s*$");
 
   private static final Pattern EXPRESSION_PATTERN = Pattern.compile("(?i)^\\s*[(].+[)]\\s*$");
+  private static final String ADMIN_GET_USER_IDS_BY_SPECIFIC_PROPERTY =
+      "admin.getUserIdsBySpecificProperty";
 
   private final Group group;
   private final boolean isSharedDomain;
@@ -155,9 +159,9 @@ class GroupSynchronizationRule {
    * @return list of strings where each one represents a Silverpeas user identifier.
    * @throws AdminException
    */
-  public List<String> getUserIds() throws AdminException {
+  public List<String> getUserIds() {
     List<String> userIds = evaluateCombinationRule(group.getRule());
-    return userIds == null ? Collections.emptyList() : userIds;
+    return userIds == null || userIds.isEmpty() ? Collections.emptyList() : userIds;
   }
 
   /**
@@ -166,7 +170,7 @@ class GroupSynchronizationRule {
    * @return the expression.
    */
   private static String getRuleExpression(
-      PrefixedNotationExpressionEngine<List<String>> combinationEngine,
+      PrefixedNotationExpressionEngine<Optional<List<String>>> combinationEngine,
       final String combinationRule) {
     String rule = combinationRule != null ? combinationRule : "";
     Matcher matcher = EXPRESSION_PATTERN.matcher(rule);
@@ -180,53 +184,55 @@ class GroupSynchronizationRule {
    * Evaluates a combination of simple silverpeas rules.
    * @param combinationRule the combination rule to evaluate.
    * @return a list of user identifiers.
-   * @throws Error
+   * @throws RuleError
    */
-  private List<String> evaluateCombinationRule(String combinationRule) throws Error {
-    OperatorFunction<List<String>> NEGATE_FUNCTION =
+  private List<String> evaluateCombinationRule(String combinationRule) {
+    final OperatorFunction<Optional<List<String>>> negateFunction =
         new OperatorFunction<>("!", (computed, userIds) -> {
           try {
             List<String> safeComputed =
-                computed == null ? getCacheOfAllUserIds() : new ArrayList<>();
-            safeComputed.removeAll(userIds);
-            return safeComputed;
+                computed.isPresent() ? new ArrayList<>() : getCacheOfAllUserIds();
+            safeComputed.removeAll(userIds.orElse(Collections.emptyList()));
+            return Optional.of(safeComputed);
           } catch (AdminException e) {
-            throw new RuntimeException(e);
+            throw new SilverpeasRuntimeException(e);
           }
         });
 
-    OperatorFunction<List<String>> AND_FUNCTION =
+    final OperatorFunction<Optional<List<String>>> andFunction =
         new OperatorFunction<>("&", (computed, userIds) -> {
-          List<String> safeComputed = computed == null ? userIds : computed;
-          return intersection(safeComputed, userIds);
+          final List<String> defaultUsersId = userIds.orElse(Collections.emptyList());
+          List<String> safeComputed = computed.orElse(defaultUsersId);
+          return Optional.of(intersection(safeComputed, defaultUsersId));
         });
 
-    OperatorFunction<List<String>> OR_FUNCTION =
+    final OperatorFunction<Optional<List<String>>> orFunction =
         new OperatorFunction<>("|", (computed, userIds) -> {
-          List<String> safeComputed = computed == null ? Collections.emptyList() : computed;
-          return union(safeComputed, userIds);
+          List<String> safeComputed = computed.orElse(Collections.emptyList());
+          return Optional.of(union(safeComputed, userIds.orElse(Collections.emptyList())));
         });
 
-    Function<String, List<String>> simpleSilverpeasRuleToUserIds = simpleSilverpeasRule -> {
+    final Function<String, Optional<List<String>>> simpleSilverpeasRuleToUserIds =
+        simpleSilverpeasRule -> {
       try {
         return evaluateSimpleSilverpeasRule(simpleSilverpeasRule);
       } catch (AdminException e) {
-        throw new RuntimeException(e);
+        throw new SilverpeasRuntimeException(e);
       }
     };
 
-    @SuppressWarnings("unchecked") PrefixedNotationExpressionEngine<List<String>>
-        combinationEngine = PrefixedNotationExpressionEngine
-        .from(simpleSilverpeasRuleToUserIds, NEGATE_FUNCTION, AND_FUNCTION, OR_FUNCTION);
+    @SuppressWarnings("unchecked") PrefixedNotationExpressionEngine<Optional<List<String>>>
+        combinationEngine =
+        PrefixedNotationExpressionEngine.from(simpleSilverpeasRuleToUserIds, negateFunction,
+            andFunction, orFunction);
 
     try {
       String expression = getRuleExpression(combinationEngine, combinationRule);
-      return combinationEngine.evaluate(expression);
+      return combinationEngine.evaluate(expression).orElse(Collections.emptyList());
+    } catch (RuleError e) {
+      throw e;
     } catch (Exception e) {
-      if (e instanceof Error) {
-        throw (Error) e;
-      }
-      throw new Error(e);
+      throw new RuleError(e);
     }
   }
 
@@ -236,15 +242,15 @@ class GroupSynchronizationRule {
    * @return a list of user identifiers.
    * @throws AdminException
    */
-  private List<String> evaluateSimpleSilverpeasRule(final String simpleSilverpeasRule)
+  private Optional<List<String>> evaluateSimpleSilverpeasRule(final String simpleSilverpeasRule)
       throws AdminException {
     if (simpleSilverpeasRule == null) {
-      return null;
+      return Optional.empty();
     }
 
     Matcher matcher = ACCESSLEVEL_STANDARD_DATA_PATTERN.matcher(simpleSilverpeasRule);
     if (matcher.find()) {
-      return getUserIdsByAccessLevel(matcher.group(1));
+      return Optional.of(getUserIdsByAccessLevel(matcher.group(1)));
     }
 
     matcher = DOMAIN_STANDARD_DATA_PATTERN.matcher(simpleSilverpeasRule);
@@ -255,7 +261,7 @@ class GroupSynchronizationRule {
       for (String domainId : domainIds) {
         userIds.addAll(getUserIdsByDomain(domainId));
       }
-      return userIds;
+      return Optional.of(userIds);
     }
 
     matcher = GROUP_RULE_DATA_PATTERN.matcher(simpleSilverpeasRule);
@@ -264,7 +270,7 @@ class GroupSynchronizationRule {
       // Split parameters as a list using comma separator and trimming spaces
       String groupValues = matcher.group(2).replaceAll("\\s", "");
       List<String> groupIds = asList(groupValues.split(","));
-      return getUserIdsByGroups(groupIds, withSubGroups);
+      return Optional.of(getUserIdsByGroups(groupIds, withSubGroups));
     }
 
     matcher = COMPLEMENTARY_DATA_PATTERN.matcher(simpleSilverpeasRule);
@@ -274,7 +280,7 @@ class GroupSynchronizationRule {
       Set<String> userIds = new HashSet<>();
       userIds.addAll(getUserIdsBySpecificProperty(propertyName, propertyValue));
       userIds.addAll(getUserIdsByExtraFormFieldValue(propertyName, propertyValue));
-      return new ArrayList<>(userIds);
+      return Optional.of(new ArrayList<>(userIds));
     }
 
     SilverLogger.getLogger(this)
@@ -373,31 +379,23 @@ class GroupSynchronizationRule {
   }
 
   private List<String> getUserIdsByExtraFormFieldValue(String fieldName, String fieldValue) {
-    List<String> userIds = new ArrayList<>();
-    PublicationTemplate directoryTemplate =
+    final PublicationTemplate directoryTemplate =
         PublicationTemplateManager.getInstance().getDirectoryTemplate();
     if (directoryTemplate != null) {
       try {
-        List<DataRecord> records = directoryTemplate.getRecordSet().getRecords(fieldName, fieldValue);
-        for (DataRecord record : records) {
-          String userId = record.getId();
-          final User user = User.getById(userId);
-          if (user == null || user.isRemovedState()) {
-            continue;
-          }
-          if (isSharedDomain) {
-            userIds.add(userId);
-          } else {
-            if (user.getDomainId().equals(group.getDomainId())) {
-              userIds.add(userId);
-            }
-          }
-        }
+        final List<DataRecord> records =
+            directoryTemplate.getRecordSet().getRecords(fieldName, fieldValue);
+        return records.stream()
+            .map(r -> User.getById(r.getId()))
+            .filter(u -> u != null && !u.isRemovedState())
+            .filter(u -> isSharedDomain || u.getDomainId().equals(group.getDomainId()))
+            .map(User::getId)
+            .collect(Collectors.toList());
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
       }
     }
-    return userIds;
+    return Collections.emptyList();
   }
 
   /**
@@ -417,7 +415,7 @@ class GroupSynchronizationRule {
     try {
       domainDriver = domainDriverManager.getDomainDriver(domainId);
     } catch (Exception e) {
-      reportInfo("admin.getUserIdsBySpecificProperty",
+      reportInfo(ADMIN_GET_USER_IDS_BY_SPECIFIC_PROPERTY,
           "Erreur ! Domaine " + domainId + " inaccessible !");
     }
 
@@ -425,23 +423,21 @@ class GroupSynchronizationRule {
       try {
         users = domainDriver.getUsersBySpecificProperty(propertyName, propertyValue);
         if (ArrayUtil.isEmpty(users)) {
-          reportInfo("admin.getUserIdsBySpecificProperty",
+          reportInfo(ADMIN_GET_USER_IDS_BY_SPECIFIC_PROPERTY,
               "La propriété '" + propertyName + "' n'est pas définie dans le domaine " +
                   domainId);
         }
-      } catch (Exception e) {
-        if (e instanceof AdminException) {
-          Throwable cause = e.getCause();
-          if (cause instanceof LDAPLocalException ||
-              cause instanceof org.ietf.ldap.LDAPLocalException) {
-            reportInfo("admin.getUserIdsBySpecificProperty",
-                "Domain " + domainId + ": " + cause.toString());
-          } else {
-            throw (AdminException) e;
-          }
+      } catch (AdminException e) {
+        Throwable cause = e.getCause();
+        if (cause instanceof LDAPLocalException ||
+            cause instanceof org.ietf.ldap.LDAPLocalException) {
+          reportInfo(ADMIN_GET_USER_IDS_BY_SPECIFIC_PROPERTY,
+              "Domain " + domainId + ": " + cause.toString());
         } else {
-          throw new AdminException(failureOnGetting("users by property", propertyName), e);
+          throw e;
         }
+      } catch (Exception e) {
+        throw new AdminException(failureOnGetting("users by property", propertyName), e);
       }
     }
 
@@ -493,10 +489,10 @@ class GroupSynchronizationRule {
   /**
    * An error.
    */
-  public static class Error extends RuntimeException {
+  public static class RuleError extends RuntimeException {
     private static final long serialVersionUID = -3732193660967552614L;
 
-    public Error(final Throwable cause) {
+    public RuleError(final Throwable cause) {
       super(cause);
     }
 
@@ -509,16 +505,15 @@ class GroupSynchronizationRule {
       String message = "";
       Throwable exceptionSource = getCause();
       Throwable previousExceptionSource = null;
-      while (exceptionSource != null && previousExceptionSource != exceptionSource) {
+      while (exceptionSource != null && previousExceptionSource != exceptionSource &&
+          StringUtil.isNotDefined(message)) {
         previousExceptionSource = exceptionSource;
         if (StringUtil.isDefined(exceptionSource.getMessage()) &&
             exceptionSource.getMessage().startsWith("expression.")) {
           message = exceptionSource.getMessage();
-          break;
         } else if (exceptionSource instanceof LDAPException ||
             exceptionSource instanceof org.ietf.ldap.LDAPLocalException) {
           message = exceptionSource.toString();
-          break;
         }
         if (exceptionSource instanceof WithNested) {
           exceptionSource = ((WithNested) exceptionSource).getNested();
@@ -533,7 +528,7 @@ class GroupSynchronizationRule {
   /**
    * An error.
    */
-  static class GroundRuleError extends Error {
+  static class GroundRuleError extends RuleError {
     private static final long serialVersionUID = 4003102352897715610L;
 
     private final String baseRulePart;

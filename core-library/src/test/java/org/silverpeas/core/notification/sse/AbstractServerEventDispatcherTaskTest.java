@@ -98,6 +98,7 @@ abstract class AbstractServerEventDispatcherTaskTest {
     HttpServletRequest mockedRequest = mock(HttpServletRequest.class);
     HttpServletResponse mockedResponse = mock(HttpServletResponse.class);
     PrintWriter mockedPrintWriter = mock(PrintWriter.class);
+    when(mock.getMutex()).thenReturn(mock);
     when(mock.isSendPossible()).thenReturn(true);
     when(mock.getUser()).thenReturn(new UserDetail());
     when(mock.getRequest()).thenReturn(mockedRequest);

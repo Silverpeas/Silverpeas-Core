@@ -27,10 +27,9 @@ import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDAO;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
 
 import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,6 +37,9 @@ import java.sql.SQLException;
 @Singleton
 @Default
 public class ThumbnailServiceImpl implements ThumbnailService {
+
+  @Inject
+  private ThumbnailDAO thumbnailDAO;
 
   protected ThumbnailServiceImpl() {
     // This constructor declaration avoid the direct use of this implementation ...
@@ -47,94 +49,58 @@ public class ThumbnailServiceImpl implements ThumbnailService {
 
   @Override
   public ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-      return ThumbnailDAO.insertThumbnail(con, thumbDetail);
+    try (final Connection con = DBUtil.openConnection()) {
+      return thumbnailDAO.insertThumbnail(con, thumbDetail);
     } catch (SQLException se) {
-      throw new ThumbnailException("ThumbnailBmImpl.createThumbnail()",
-          SilverpeasException.ERROR,
-          "thumbnail.EX_INSERT_ROW", se);
-    } catch (UtilException e) {
-      throw new ThumbnailException("ThumbnailBmImpl.createThumbnail()",
-          SilverpeasException.ERROR,
-          "thumbnail.EX_MSG_RECORD_NOT_INSERT", e);
-    } finally {
-      DBUtil.close(con);
+      throw new ThumbnailException("Thumbnail creation failure", se);
     }
   }
 
   @Override
   public void updateThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-      ThumbnailDAO.updateThumbnail(con, thumbDetail);
+    try (final Connection con = DBUtil.openConnection()) {
+      thumbnailDAO.updateThumbnail(con, thumbDetail);
     } catch (SQLException se) {
-      throw new ThumbnailException("ThumbnailBmImpl.updateAttachment()",
-          SilverpeasException.ERROR,
-          "thumbnail.EX_MSG_RECORD_NOT_UPDATE", se);
-    } finally {
-      DBUtil.close(con);
+      throw new ThumbnailException("Thumbnail update failure", se);
     }
   }
 
   @Override
   public void deleteThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-      ThumbnailDAO.deleteThumbnail(con, thumbDetail.getObjectId(), thumbDetail.getObjectType(),
+    try (final Connection con = DBUtil.openConnection()) {
+      thumbnailDAO.deleteThumbnail(con, thumbDetail.getObjectId(), thumbDetail.getObjectType(),
           thumbDetail.getInstanceId());
     } catch (SQLException se) {
-      throw new ThumbnailException("ThumbnailBmImpl.deleteThumbnail()",
-          SilverpeasException.ERROR, "thumbnail.EX_MSG_RECORD_NOT_DELETE", se);
-    } finally {
-      DBUtil.close(con);
+      throw new ThumbnailException("Thumbnail deletion failure", se);
     }
   }
 
   @Override
   public ThumbnailDetail getCompleteThumbnail(ThumbnailDetail thumbDetail)
       throws ThumbnailException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-      return ThumbnailDAO.selectByKey(con, thumbDetail.getInstanceId(), thumbDetail.getObjectId(),
+    try (final Connection con = DBUtil.openConnection()) {
+      return thumbnailDAO.selectByKey(con, thumbDetail.getInstanceId(), thumbDetail.getObjectId(),
           thumbDetail.getObjectType());
     } catch (SQLException se) {
-      throw new ThumbnailException("ThumbnailBmImpl.getCompleteThumbnail()",
-          SilverpeasException.ERROR, "thumbnail.EX_MSG_NOT_FOUND", se);
-    } finally {
-      DBUtil.close(con);
+      throw new ThumbnailException("Thumbnail not found", se);
     }
   }
 
   @Override
   public void deleteAllThumbnail(String componentId) throws ThumbnailException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-      ThumbnailDAO.deleteAllThumbnails(con, componentId);
+    try (final Connection con = DBUtil.openConnection()) {
+      thumbnailDAO.deleteAllThumbnails(con, componentId);
     } catch (SQLException se) {
-      throw new ThumbnailException("ThumbnailBmImpl.deleteAllThumbnail()",
-          SilverpeasException.ERROR, "thumbnail_MSG_DELETE_ALL_FAILED", se);
-    } finally {
-      DBUtil.close(con);
+      throw new ThumbnailException("Thumbnail deletion failure", se);
     }
   }
 
   @Override
   public void moveThumbnail(ThumbnailDetail thumbDetail, String toInstanceId) throws ThumbnailException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-      ThumbnailDAO.moveThumbnail(con, thumbDetail, toInstanceId);
+    try (final Connection con = DBUtil.openConnection()) {
+      thumbnailDAO.moveThumbnail(con, thumbDetail, toInstanceId);
     } catch (SQLException se) {
-      throw new ThumbnailException("ThumbnailBmImpl.moveThumbnail()",
-          SilverpeasException.ERROR, "thumbnail.EX_MSG_CANT_MOVE_THUMBNAIL", se);
-    } finally {
-      DBUtil.close(con);
+      throw new ThumbnailException("Thumbnail move failure", se);
     }
   }
 }

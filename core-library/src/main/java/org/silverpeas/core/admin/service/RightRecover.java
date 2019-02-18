@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -45,8 +45,6 @@ public class RightRecover {
   }
 
   public void recoverRights() throws AdminException {
-    int oldTraceLevel = SilverTrace.getTraceLevel("admin", false);
-    SilverTrace.setTraceLevel("admin", SilverTrace.TRACE_LEVEL_WARN);
     String[] rootSpaceIds = admin.getAllRootSpaceIds();
     for (String spaceId : rootSpaceIds) {
       List<SpaceInstLight> subSpaces = admin.getSubSpaces(spaceId);
@@ -54,19 +52,9 @@ public class RightRecover {
         recoverSpaceRights(subSpace.getId());
       }
     }
-    SilverTrace.setTraceLevel("admin", oldTraceLevel);
   }
 
   public void recoverSpaceRights(String spaceId) throws AdminException {
-    recoverSpaceRights(spaceId, true);
-  }
-
-  private void recoverSpaceRights(String spaceId, boolean firstAccess) throws AdminException {
-    int oldTraceLevel = SilverTrace.TRACE_LEVEL_ERROR;
-    if (firstAccess) {
-      oldTraceLevel = SilverTrace.getTraceLevel("admin", false);
-      SilverTrace.setTraceLevel("admin", SilverTrace.TRACE_LEVEL_WARN);
-    }
     // check if space do not inherit rights but still have inherit rights
     SpaceInst space = admin.getSpaceInstById(spaceId);
     if (!space.isRoot()) {
@@ -74,7 +62,7 @@ public class RightRecover {
         List<SpaceProfileInst> profiles = space.getInheritedProfiles();
         if (!profiles.isEmpty()) {
           // an inconsistency have been detected
-          SilverTrace.warn("admin", "Recover.recoverSpaceRights", space.getName() +
+          SilverLogger.getLogger(this).warn(space.getName() +
               " does not inherit rights but still had inherit rights");
           // delete all inherited profiles
           for (SpaceProfileInst profile : profiles) {
@@ -90,17 +78,13 @@ public class RightRecover {
     // recover subspaces rights
     List<SpaceInst> subSpaces = space.getSubSpaces();
     for (SpaceInst aSubSpace : subSpaces) {
-      recoverSpaceRights(aSubSpace.getId(), false);
+      recoverSpaceRights(aSubSpace.getId());
     }
 
     // recover components rights
     List<ComponentInst> components = space.getAllComponentsInst();
     for (ComponentInst component : components) {
       recoverComponentRights(component, space);
-    }
-
-    if (firstAccess) {
-      SilverTrace.setTraceLevel("admin", oldTraceLevel);
     }
   }
 
@@ -111,7 +95,7 @@ public class RightRecover {
       List<ProfileInst> profiles = component.getInheritedProfiles();
       if (!profiles.isEmpty()) {
         // an inconsistency have been detected
-        SilverTrace.warn("admin", "Recover.recoverComponentRights", component.getLabel() +
+       SilverLogger.getLogger(this).warn(component.getLabel() +
             " does not inherit rights but still had inherit rights");
         // delete all inherited profiles
         for (ProfileInst profile : profiles) {

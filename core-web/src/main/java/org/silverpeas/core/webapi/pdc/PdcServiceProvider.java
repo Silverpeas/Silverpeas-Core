@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
+import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
@@ -41,7 +41,6 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -49,8 +48,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.silverpeas.core.webapi.pdc.UserThesaurusHolder.forUser;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import static org.silverpeas.core.webapi.pdc.UserThesaurusHolder.forUser;
 
 /**
  * A provider of services on the classification plan (named PdC). This class implements the adaptor
@@ -147,9 +146,7 @@ public class PdcServiceProvider {
     if (positions.size() == 1) {
       for (UsedAxis anAxis : axis) {
         if (anAxis.getMandatory() == 1) {
-          throw new PdcPositionDeletionException(getClass().getSimpleName(),
-              SilverpeasException.ERROR,
-              "Pdc.CANNOT_DELETE_VALUE");
+          throw new PdcPositionDeletionException("Cannot delete value");
         }
       }
     }
@@ -326,10 +323,6 @@ public class PdcServiceProvider {
 
   private ContentManager getContentManager() {
     return this.contentManager;
-  }
-
-  private ThesaurusManager getThesaurusManager() {
-    return this.thesaurusManager;
   }
 
   public OrganizationController getOrganisationController() {

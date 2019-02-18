@@ -68,6 +68,10 @@ public class SpaceInstManager {
   private SpaceEventNotifier notifier;
   @Inject
   private OrganizationSchema organizationSchema;
+  @Inject
+  private TreeCache treeCache;
+  @Inject
+  private SpaceDAO spaceDAO;
 
   protected SpaceInstManager() {
   }
@@ -352,7 +356,7 @@ public class SpaceInstManager {
   }
 
   private int getSpaceLevel(int spaceId) {
-    return TreeCache.getSpaceLevel(spaceId);
+    return treeCache.getSpaceLevel(spaceId);
   }
 
   /**
@@ -422,7 +426,7 @@ public class SpaceInstManager {
     try {
       con = DBUtil.openConnection();
 
-      return SpaceDAO.getRootSpaceIds(con);
+      return spaceDAO.getRootSpaceIds(con);
 
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("root spaces", ""), e);
@@ -683,7 +687,7 @@ public class SpaceInstManager {
     Connection con = null;
     try {
       con = DBUtil.openConnection();
-      return SpaceDAO.getManageableSpaceIds(con, userId, groupIds);
+      return spaceDAO.getManageableSpaceIds(con, userId, groupIds);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all spaces manageable by user", userId), e);
     } finally {

@@ -23,18 +23,19 @@
  */
 package org.silverpeas.core.mail.extractor;
 
-import java.io.File;
-
-import org.silverpeas.core.exception.SilverpeasException;
-
 import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
 
 public class Extractor {
 
+  private Extractor() {
+
+  }
+
   public static MailExtractor getExtractor(File file) throws ExtractorException {
     if (!file.exists() || file.isDirectory()) {
-      throw new ExtractorException("Extractor.getExtractor", SilverpeasException.ERROR,
-          "file not found");
+      throw new ExtractorException("file not found");
     }
     if (FilenameUtils.isExtension(file.getName(), "eml")) {
       return new EMLExtractor(file);
@@ -42,7 +43,6 @@ public class Extractor {
     if (FilenameUtils.isExtension(file.getName(), "msg")) {
       return new MSGExtractor(file);
     }
-    throw new ExtractorException("Extractor.getExtractor", SilverpeasException.ERROR,
-          "Extension not supported");
+    throw new ExtractorException("Extension not supported");
   }
 }

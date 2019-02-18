@@ -23,30 +23,27 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.control;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
+import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailRuntimeException;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
 import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailServiceProvider;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.ImageUtil;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.util.file.FileFolderManager;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.io.file.SilverpeasFile;
-import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
-import org.silverpeas.core.io.file.SilverpeasFileProvider;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
@@ -54,6 +51,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.List;
 
@@ -61,12 +59,6 @@ public class ThumbnailController implements ComponentInstanceDeletion {
 
   private static final SettingBundle publicationSettings = ResourceLocator.getSettingBundle(
       "org.silverpeas.publication.publicationSettings");
-
-  /**
-   * the constructor.
-   */
-  public ThumbnailController() {
-  }
 
   private static ThumbnailService getThumbnailService() {
     return ThumbnailServiceProvider.getThumbnailService();
@@ -80,22 +72,19 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     try {
       getThumbnailService().deleteAllThumbnail(componentInstanceId);
     } catch (Exception e) {
-      throw new ThumbnailRuntimeException("ThumbnailServiceImpl.delete()",
-          SilverpeasException.ERROR, "root.EX_RECORD_DELETE_FAILED", e);
+      throw new ThumbnailRuntimeException(e);
     }
 
     // 2 - delete directory where files are stored
     try {
       FileFolderManager.deleteFolder(getImageDirectory(componentInstanceId));
     } catch (Exception e) {
-      throw new ThumbnailRuntimeException("ThumbnailServiceImpl.delete()",
-          SilverpeasException.ERROR, "root.DELETING_DATA_DIRECTORY_FAILED", e);
+      throw new ThumbnailRuntimeException(e);
     }
   }
 
-  public static boolean processThumbnail(ResourceReference pk, String objectType, List<FileItem> parameters)
-      throws Exception {
-    boolean thumbnailChanged = false;
+  public static boolean processThumbnail(ResourceReference pk, List<FileItem> parameters)
+      throws IOException {
     String mimeType = null;
     String physicalName = null;
     FileItem uploadedFile = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
@@ -114,8 +103,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
           SilverpeasFile target = SilverpeasFileProvider.newFile(descriptor);
           target.writeFrom(uploadedFile.getInputStream());
         } else {
-          throw new ThumbnailRuntimeException("ThumbnailController.processThumbnail()",
-              SilverpeasRuntimeException.ERROR, "thumbnail_EX_MSG_WRONG_TYPE_ERROR");
+          throw new ThumbnailRuntimeException("Not an image");
         }
       }
     }
@@ -131,26 +119,33 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     }
 
     // If one image is defined, save it through Thumbnail service
+    final boolean thumbnailChanged;
     if (StringUtil.isDefined(physicalName)) {
       ThumbnailDetail detail = new ThumbnailDetail(pk.getInstanceId(),
           Integer.parseInt(pk.getId()),
           ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
       detail.setOriginalFileName(physicalName);
       detail.setMimeType(mimeType);
-      try {
-        ThumbnailController.updateThumbnail(detail);
-        thumbnailChanged = true;
-      } catch (ThumbnailRuntimeException e) {
-        SilverTrace.error("thumbnail", "KmeliaRequestRouter.processVignette",
-            "thumbnail_MSG_UPDATE_THUMBNAIL_KO", e);
-        try {
-          ThumbnailController.deleteThumbnail(detail);
-        } catch (Exception exp) {
-
-        }
-      }
+      thumbnailChanged = changeThumbnail(detail);
+    } else {
+      thumbnailChanged = false;
     }
     return thumbnailChanged;
+  }
+
+  private static boolean changeThumbnail(final ThumbnailDetail detail) {
+    try {
+      ThumbnailController.updateThumbnail(detail);
+      return true;
+    } catch (ThumbnailRuntimeException e) {
+      SilverLogger.getLogger(ThumbnailController.class).error(e);
+      try {
+        ThumbnailController.deleteThumbnail(detail);
+      } catch (Exception exp) {
+        SilverLogger.getLogger(ThumbnailController.class).silent(e);
+      }
+    }
+    return false;
   }
 
   /**
@@ -178,8 +173,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
       thumbDetail.setYStart(-1);
       getThumbnailService().createThumbnail(thumbDetail);
     } catch (Exception e) {
-      throw new ThumbnailRuntimeException("ThumbnailController.updateThumbnail()",
-          SilverpeasRuntimeException.ERROR, "thumbnail_MSG_UPDATE_THUMBNAIL_KO", e);
+      throw new ThumbnailRuntimeException(e);
     }
   }
 
@@ -200,9 +194,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
         getThumbnailService().deleteThumbnail(thumbDetail);
       }
     } catch (Exception fe) {
-      throw new ThumbnailRuntimeException(
-          "ThumbnailController.deleteThumbnail(ThumbnailDetail thumbDetail)",
-          SilverpeasRuntimeException.ERROR, "thumbnail_MSG_DELETE_THUMBNAIL_KO", fe);
+      throw new ThumbnailRuntimeException(fe);
     }
   }
 
@@ -217,8 +209,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
       }
       return thumdAdded;
     } catch (Exception e) {
-      throw new ThumbnailRuntimeException("ThumbnailController.createThumbnail()",
-          SilverpeasRuntimeException.ERROR, "thumbnail_MSG_CREATE_THUMBNAIL_KO", e);
+      throw new ThumbnailRuntimeException(e);
     }
   }
 
@@ -227,8 +218,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
       // get thumbnail
       return getThumbnailService().getCompleteThumbnail(thumbDetail);
     } catch (Exception e) {
-      throw new ThumbnailRuntimeException("ThumbnailController.getCompleteThumbnail()",
-          SilverpeasRuntimeException.ERROR, "thumbnail_MSG_GET_COMPLETE_THUMBNAIL_KO", e);
+      throw new ThumbnailRuntimeException(e);
     }
   }
 
@@ -274,8 +264,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
         getThumbnailService().createThumbnail(thumbDetail);
       }
     } catch (Exception e) {
-      throw new ThumbnailRuntimeException("ThumbnailController.copyThumbnail()",
-          SilverpeasRuntimeException.ERROR, "thumbnail_CANT_COPY_THUMBNAIL", e);
+      throw new ThumbnailRuntimeException(e);
     }
   }
 
@@ -307,8 +296,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
         getThumbnailService().moveThumbnail(thumbnail, toPK.getInstanceId());
       }
     } catch (Exception e) {
-      throw new ThumbnailRuntimeException("ThumbnailController.moveThumbnail()",
-          SilverpeasRuntimeException.ERROR, "thumbnail_CANT_MOVE_THUMBNAIL", e);
+      throw new ThumbnailRuntimeException(e);
     }
   }
 
@@ -324,7 +312,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
       // create empty file
       File cropFile = new File(pathCropFile);
       if (!cropFile.exists()) {
-        cropFile.createNewFile();
+        Files.createFile(cropFile.toPath());
       }
 
       File originalFile = new File(pathOriginalFile);
@@ -345,10 +333,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
       String extension = FilenameUtils.getExtension(originalFile.getName());
       ImageIO.write(cropPictureFinal, extension, cropFile);
     } catch (Exception e) {
-      SilverTrace.warn("thumbnail", "ThumbnailController.createThumbnailFileOnServer()",
-          "thumbnail_MSG_CREATE_CROP_FILE_KO", "originalFileName=" +
-          thumbnail.getOriginalFileName()
-          + " cropFileName = " + thumbnail.getCropFileName(), e);
+      SilverLogger.getLogger(ThumbnailController.class).warn(e);
     }
   }
 
@@ -358,9 +343,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
       SilverpeasFile image = SilverpeasFileProvider.getFile(path);
       image.delete();
     } catch (Exception e) {
-      SilverTrace.warn("thumbnail",
-          "ThumbnailController.deleteThumbnailFileOnServer(String componentId, String fileName)",
-          "thumbnail_MSG_NOT_DELETE_FILE", "filePath=" + path, e);
+      SilverLogger.getLogger(ThumbnailController.class).warn(e);
     }
   }
 
@@ -400,10 +383,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
         return new String[] { null, null };
       }
     } catch (Exception e) {
-      throw new ThumbnailRuntimeException(
-          "ThumbnailController.getCompleteThumbnail()",
-          SilverpeasRuntimeException.ERROR, "thumbnail_MSG_GET_IMAGE_KO",
-          e);
+      throw new ThumbnailRuntimeException(e);
     }
   }
 
@@ -434,10 +414,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
       getThumbnailService().updateThumbnail(thumbDetailComplete);
       return thumbDetailComplete;
     } catch (Exception e) {
-      throw new ThumbnailRuntimeException(
-          "ThumbnailController.cropThumbnail()",
-          SilverpeasRuntimeException.ERROR, "thumbnail_MSG_GET_IMAGE_KO",
-          e);
+      throw new ThumbnailRuntimeException(e);
     }
   }
 
@@ -479,11 +456,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     File originalFile = new File(pathOriginalFile);
     BufferedImage bufferOriginal = ImageIO.read(originalFile);
     if (bufferOriginal == null) {
-      SilverTrace.error("thumbnail", "ThumbnailController.cropFromPath(int thumbnailWidth, "
-          + "int thumbnailHeight,ThumbnailDetail thumbDetailComplete)",
-          "thumbnail.EX_MSG_NOT_AN_IMAGE", "pathOriginalFile=" + pathOriginalFile);
-      throw new ThumbnailException("ThumbnailBmImpl.cropFromPath()",
-          SilverpeasException.ERROR, "thumbnail.EX_MSG_NOT_AN_IMAGE");
+      throw new ThumbnailException("Not an image");
     } else {
       thumbDetailComplete.setXStart(0);
       thumbDetailComplete.setYStart(0);

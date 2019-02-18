@@ -72,6 +72,7 @@ public class SQLDriver extends AbstractDomainDriver {
    * (java.lang.String)
    */
   @Override
+  @Transactional(Transactional.TxType.REQUIRED)
   public String[] getGroupMemberGroupIds(String groupId) throws AdminException {
     GroupDetail group = getGroup(groupId);
     if ((group != null) && (group.getSuperGroupId() != null)) {

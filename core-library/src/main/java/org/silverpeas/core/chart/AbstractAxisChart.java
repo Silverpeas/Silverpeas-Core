@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.chart;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
 
 import java.lang.reflect.Constructor;
@@ -33,13 +34,13 @@ import java.util.Map;
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractAxisChart<XAXIS_DATA_TYPE, YAXIS_DATA_TYPE, ITEM_TYPE extends
-    AbstractAxisChartItem<XAXIS_DATA_TYPE, YAXIS_DATA_TYPE, ITEM_TYPE>>
-    extends AbstractChart<ITEM_TYPE> {
+public abstract class AbstractAxisChart<X, Y, I extends
+    AbstractAxisChartItem<X, Y, I>>
+    extends AbstractChart<I> {
 
   private ChartAxis x = new ChartAxis();
   private ChartAxis y = new ChartAxis();
-  private Map<XAXIS_DATA_TYPE, ITEM_TYPE> itemIndexedByX = new HashMap<>();
+  private Map<X, I> itemIndexedByX = new HashMap<>();
 
   /**
    * Gets the {@link ChartAxis} that represents the x axis.
@@ -72,12 +73,12 @@ public abstract class AbstractAxisChart<XAXIS_DATA_TYPE, YAXIS_DATA_TYPE, ITEM_T
    * @param xValue the x value.
    * @return the associated item, null if none.
    */
-  protected ITEM_TYPE getItemFrom(final XAXIS_DATA_TYPE xValue) {
+  protected I getItemFrom(final X xValue) {
     return itemIndexedByX.get(xValue);
   }
 
   @Override
-  protected <T extends AbstractChart<ITEM_TYPE>> T add(final ITEM_TYPE item) {
+  protected <T extends AbstractChart<I>> T add(final I item) {
     itemIndexedByX.put(item.getX(), item);
     return super.add(item);
   }
@@ -87,18 +88,18 @@ public abstract class AbstractAxisChart<XAXIS_DATA_TYPE, YAXIS_DATA_TYPE, ITEM_T
    * @return a new instance of char item.
    */
   @SuppressWarnings("unchecked")
-  private ITEM_TYPE createFor(XAXIS_DATA_TYPE x) {
+  private I createFor(X x) {
     try {
-      Class<XAXIS_DATA_TYPE> xClass =
-          ((Class<XAXIS_DATA_TYPE>) ((ParameterizedType) this.getClass().
+      Class<X> xClass =
+          ((Class<X>) ((ParameterizedType) this.getClass().
               getGenericSuperclass()).getActualTypeArguments()[0]);
-      Class<ITEM_TYPE> itemClass = ((Class<ITEM_TYPE>) ((ParameterizedType) this.getClass().
+      Class<I> itemClass = ((Class<I>) ((ParameterizedType) this.getClass().
           getGenericSuperclass()).getActualTypeArguments()[2]);
-      Constructor<ITEM_TYPE> constructor = itemClass.getDeclaredConstructor(xClass);
+      Constructor<I> constructor = itemClass.getDeclaredConstructor(xClass);
       constructor.setAccessible(true);
       return constructor.newInstance(x);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
@@ -107,8 +108,8 @@ public abstract class AbstractAxisChart<XAXIS_DATA_TYPE, YAXIS_DATA_TYPE, ITEM_T
    * @param xValue the x value.
    * @return
    */
-  public ITEM_TYPE forX(final XAXIS_DATA_TYPE xValue) {
-    ITEM_TYPE item = getItemFrom(xValue);
+  public I forX(final X xValue) {
+    I item = getItemFrom(xValue);
     if (item == null) {
       item = createFor(xValue);
       add(item);

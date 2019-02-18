@@ -33,8 +33,8 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,12 +48,13 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
  */
 public class LDAPUser {
 
-  LDAPSettings driverSettings = null;
-  LDAPSynchroCache synchroCache = null;
-  private StringBuffer synchroReport = null;
-  boolean synchroInProcess = false;
+  private static final String LDAPUSER_GET_ALL_USERS = "LDAPUser.getAllUsers()";
+  private LDAPSettings driverSettings = null;
+  private LDAPSynchroCache synchroCache = null;
+  private StringBuilder synchroReport = null;
+  private boolean synchroInProcess = false;
 
-  protected DomainDriver driverParent = null;
+  private DomainDriver driverParent = null;
 
   /**
    * Initialize the settings from the read ones
@@ -69,15 +70,15 @@ public class LDAPUser {
   /**
    * Called when Admin starts the synchronization
    */
-  public void beginSynchronization() {
-    synchroReport = new StringBuffer();
+  void beginSynchronization() {
+    synchroReport = new StringBuilder();
     synchroInProcess = true;
   }
 
   /**
    * Called when Admin ends the synchronization
    */
-  public String endSynchronization() {
+  String endSynchronization() {
     synchroInProcess = false;
     return synchroReport.toString();
   }
@@ -98,24 +99,24 @@ public class LDAPUser {
       theFilter = driverSettings.getUsersFullFilter();
     }
     SynchroDomainReport
-        .debug("LDAPUser.getAllUsers()", "Recherche des utilisateurs du domaine LDAP distant...");
+        .debug(LDAPUSER_GET_ALL_USERS, "Recherche des utilisateurs du domaine LDAP distant...");
     List<UserDetail> ldapUsers = new ArrayList<>();
     LDAPEntry[] theEntries = LDAPUtility
         .search1000Plus(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
             theFilter, driverSettings.getUsersLoginField(), driverSettings.getUserAttributes());
     for (i = 0; i < theEntries.length; i++) {
-      ldapUsers.add(translateUser(lds, theEntries[i]));
+      ldapUsers.add(translateUser(theEntries[i]));
 
       ldapUsers.get(i).traceUser();// Trace niveau Info ds
       // module 'admin' des infos user courant : ID, domaine, login, e-mail,...
-      SynchroDomainReport.debug("LDAPUser.getAllUsers()",
+      SynchroDomainReport.debug(LDAPUSER_GET_ALL_USERS,
           "Utilisateur trouvé no : " + i + ", login : " + ldapUsers.get(i).getLogin() + ", " +
               ldapUsers.get(i).getFirstName() + ", " + ldapUsers.get(i).getLastName() + ", " +
               ldapUsers.get(i).geteMail());
     }
-    SynchroDomainReport.debug("LDAPUser.getAllUsers()",
+    SynchroDomainReport.debug(LDAPUSER_GET_ALL_USERS,
         "Récupération de " + theEntries.length + " utilisateurs du domaine LDAP distant");
-    return ldapUsers.toArray(new UserDetail[ldapUsers.size()]);
+    return ldapUsers.toArray(new UserDetail[0]);
   }
 
   /**
@@ -138,7 +139,7 @@ public class LDAPUser {
     }
     LDAPEntry theEntry = LDAPUtility
         .getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
-            driverSettings.getUsersIdFilter(id), lAttrs.toArray(new String[lAttrs.size()]));
+            driverSettings.getUsersIdFilter(id), lAttrs.toArray(new String[0]));
     return translateUserFull(lds, theEntry, domainId);
   }
 
@@ -156,23 +157,67 @@ public class LDAPUser {
     theEntry = LDAPUtility
         .getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
             driverSettings.getUsersIdFilter(id), driverSettings.getUserAttributes());
-    return translateUser(lds, theEntry);
+    return translateUser(theEntry);
   }
 
-  public UserDetail getUserByLogin(String lds, String loginUser) throws AdminException {
+  UserDetail getUserByLogin(String lds, String loginUser) throws AdminException {
     LDAPEntry theEntry;
     theEntry = LDAPUtility
         .getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(), driverSettings.getScope(),
             driverSettings.getUsersLoginFilter(loginUser), driverSettings.getUserAttributes());
-    return translateUser(lds, theEntry);
+    return translateUser(theEntry);
   }
 
   /**
    * Centralizing the translation from LDAP user entry to Silverpeas user data.
-   * @param ldapUser
-   * @param silverpeasDistantUser
+   * @param ldapUser the LDAP entry of a user
+   * @param silverpeasUser the user detail in Silverpeas
    */
-  private void translateCommonUserData(LDAPEntry ldapUser, UserDetail silverpeasDistantUser) {
+  private void translateCommonUserData(LDAPEntry ldapUser, UserDetail silverpeasUser) {
+    setUserDetailCommonAttribute(ldapUser, silverpeasUser);
+
+    // Trying to get the information of that the user account is disabled or not
+    String userAccountControlAttribute = driverSettings.getUsersAccountControl();
+    String disabledUserAccountFlag = driverSettings.getUsersDisabledAccountFlag();
+    if (isRedirection(userAccountControlAttribute, disabledUserAccountFlag)) {
+      String usersAccountControl =
+          LDAPUtility.getFirstAttributeValue(ldapUser, userAccountControlAttribute);
+      if (!StringUtil.isDefined(usersAccountControl)) {
+        usersAccountControl = StringUtil.EMPTY;
+      }
+      setUserDetailState(silverpeasUser, disabledUserAccountFlag, usersAccountControl);
+    }
+  }
+
+  private void setUserDetailState(final UserDetail silverpeasDistantUser,
+      final String disabledUserAccountFlag, final String usersAccountControl) {
+    if (StringUtil.isLong(usersAccountControl)) {
+      if (StringUtil.isLong(disabledUserAccountFlag)) {
+        long currentAccountControlFlags = Long.parseLong(usersAccountControl);
+        long disabledUserAccountFlagAsLong = Long.parseLong(disabledUserAccountFlag);
+        if ((currentAccountControlFlags & disabledUserAccountFlagAsLong) ==
+            disabledUserAccountFlagAsLong) {
+          // The account is disabled
+          silverpeasDistantUser.setState(UserState.DEACTIVATED);
+        } else {
+          // The account is enabled
+          silverpeasDistantUser.setState(UserState.VALID);
+        }
+      }
+    } else {
+      if (usersAccountControl
+          .matches("(?i)(.*[ ;,|]+|)" + disabledUserAccountFlag + "([ ;,|]+.*|)")) {
+        // The account is disabled
+        silverpeasDistantUser.setState(UserState.DEACTIVATED);
+      } else {
+        // The account is enabled
+        silverpeasDistantUser.setState(UserState.VALID);
+      }
+    }
+  }
+
+  private void setUserDetailCommonAttribute(final LDAPEntry ldapUser,
+      final UserDetail silverpeasDistantUser) {
     silverpeasDistantUser.setSpecificId(
         LDAPUtility.getFirstAttributeValue(ldapUser, driverSettings.getUsersIdField()));
     silverpeasDistantUser.setLogin(
@@ -184,41 +229,6 @@ public class LDAPUser {
     silverpeasDistantUser.seteMail(
         LDAPUtility.getFirstAttributeValue(ldapUser, driverSettings.getUsersEmailField()));
     silverpeasDistantUser.setAccessLevel(null); // Put the default access level (user)...
-
-    // Trying to get the information of that the user account is disabled or not
-    String userAccountControlAttribute = driverSettings.getUsersAccountControl();
-    String disabledUserAccountFlag = driverSettings.getUsersDisabledAccountFlag();
-    if (StringUtil.isDefined(userAccountControlAttribute) &&
-        StringUtil.isDefined(disabledUserAccountFlag)) {
-      String usersAccountControl =
-          LDAPUtility.getFirstAttributeValue(ldapUser, userAccountControlAttribute);
-      if (!StringUtil.isDefined(usersAccountControl)) {
-        usersAccountControl = StringUtil.EMPTY;
-      }
-      if (StringUtil.isLong(usersAccountControl)) {
-        if (StringUtil.isLong(disabledUserAccountFlag)) {
-          long currentAccountControlFlags = Long.valueOf(usersAccountControl);
-          long disabledUserAccountFlagAsLong = Long.valueOf(disabledUserAccountFlag);
-          if ((currentAccountControlFlags & disabledUserAccountFlagAsLong) ==
-              disabledUserAccountFlagAsLong) {
-            // The account is disabled
-            silverpeasDistantUser.setState(UserState.DEACTIVATED);
-          } else {
-            // The account is enabled
-            silverpeasDistantUser.setState(UserState.VALID);
-          }
-        }
-      } else {
-        if (usersAccountControl
-            .matches("(?i)(.*[ ;,|]+|)" + disabledUserAccountFlag + "([ ;,|]+.*|)")) {
-          // The account is disabled
-          silverpeasDistantUser.setState(UserState.DEACTIVATED);
-        } else {
-          // The account is enabled
-          silverpeasDistantUser.setState(UserState.VALID);
-        }
-      }
-    }
   }
 
   /**
@@ -231,61 +241,70 @@ public class LDAPUser {
    */
   private UserFull translateUserFull(String lds, LDAPEntry userEntry, int domainId)
       throws AdminException {
-    UserFull userInfos = new UserFull(driverParent);
-    String subUserDN;
-    LDAPEntry subUserEntry;
-    String[] keys = driverParent.getPropertiesNames();
-    int i;
-    DomainProperty curProp;
-
+    final UserFull userInfos = new UserFull(driverParent);
+    final String[] keys = driverParent.getPropertiesNames();
     translateCommonUserData(userEntry, userInfos);
 
-    for (i = 0; i < keys.length; i++) {
-      curProp = driverParent.getProperty(keys[i]);
+    for (final String key : keys) {
+      final DomainProperty curProp = driverParent.getProperty(key);
       if (DomainProperty.PROPERTY_TYPE_USERID.equals(curProp.getType())) {
-        subUserDN = LDAPUtility.getFirstAttributeValue(userEntry, curProp.getMapParameter());
+        final String subUserDN = LDAPUtility.getFirstAttributeValue(userEntry, curProp.getMapParameter());
         if (subUserDN != null && subUserDN.length() > 0) {
-          try {
-            subUserEntry = LDAPUtility
-                .getFirstEntryFromSearch(lds, subUserDN, LDAPConnection.SCOPE_BASE,
-                    driverSettings.getUsersFullFilter(), driverSettings.getUserAttributes());
-          } catch (AdminException e) {
-            SilverTrace.warn("admin", "LDAPUser.translateUser", "admin.EX_ERR_BOSS_NOT_FOUND",
-                "subUserDN=" + subUserDN, e);
-            if (synchroInProcess) {
-              synchroReport.append("PB getting BOSS infos : ").append(subUserDN).append("\n");
-            }
-            subUserEntry = null;
-          }
-          if (subUserEntry != null) {
-            String login = LDAPUtility
-                .getFirstAttributeValue(subUserEntry, driverSettings.getUsersLoginField());
-            String anotherUserId = Administration.get()
-                .getUserIdByLoginAndDomain(login, String.valueOf(domainId));
-            userInfos.setValue(curProp.getName(), anotherUserId);
-          }
+          setBossProperty(lds, subUserDN, domainId, curProp, userInfos);
         }
-      } else if (StringUtil.isDefined(curProp.getRedirectOU()) &&
-          StringUtil.isDefined(curProp.getRedirectAttribute())) {
-        String cn = LDAPUtility.getFirstAttributeValue(userEntry, curProp.getMapParameter());
-        if (StringUtil.isDefined(cn)) {
-          String baseDN = curProp.getRedirectOU();
-          String filter = "(cn=" + cn + ")";
-          subUserEntry = LDAPUtility
-              .getFirstEntryFromSearch(lds, baseDN, LDAPConnection.SCOPE_SUB, filter,
-                  driverSettings.getUserAttributes());
-
-          if (subUserEntry != null) {
-            userInfos.setValue(curProp.getName(),
-                LDAPUtility.getFirstAttributeValue(subUserEntry, curProp.getRedirectAttribute()));
-          }
-        }
+      } else if (isRedirection(curProp.getRedirectOU(), curProp.getRedirectAttribute())) {
+        setRedirectedProperty(lds, userEntry, curProp, userInfos);
       } else {
         userInfos.setValue(curProp.getName(),
             LDAPUtility.getFirstAttributeValue(userEntry, curProp.getMapParameter()));
       }
     }
     return userInfos;
+  }
+
+  private void setBossProperty(final String lds, final String subUserDN, final int domainId,
+      final DomainProperty curProp, final UserFull userInfos) throws AdminException {
+    LDAPEntry subUserEntry;
+    try {
+      subUserEntry =
+          LDAPUtility.getFirstEntryFromSearch(lds, subUserDN, LDAPConnection.SCOPE_BASE,
+              driverSettings.getUsersFullFilter(), driverSettings.getUserAttributes());
+    } catch (AdminException e) {
+      SilverLogger.getLogger(this).warn(e);
+      if (synchroInProcess) {
+        synchroReport.append("PB getting BOSS infos : ").append(subUserDN).append("\n");
+      }
+      subUserEntry = null;
+    }
+    if (subUserEntry != null) {
+      String login = LDAPUtility.getFirstAttributeValue(subUserEntry,
+          driverSettings.getUsersLoginField());
+      String anotherUserId =
+          Administration.get().getUserIdByLoginAndDomain(login, String.valueOf(domainId));
+      userInfos.setValue(curProp.getName(), anotherUserId);
+    }
+  }
+
+  private void setRedirectedProperty(final String lds, final LDAPEntry userEntry,
+      final DomainProperty curProp, final UserFull userInfos) throws AdminException {
+    final LDAPEntry subUserEntry;
+    String cn = LDAPUtility.getFirstAttributeValue(userEntry, curProp.getMapParameter());
+    if (StringUtil.isDefined(cn)) {
+      String baseDN = curProp.getRedirectOU();
+      String filter = "(cn=" + cn + ")";
+      subUserEntry =
+          LDAPUtility.getFirstEntryFromSearch(lds, baseDN, LDAPConnection.SCOPE_SUB, filter,
+              driverSettings.getUserAttributes());
+
+      if (subUserEntry != null) {
+        userInfos.setValue(curProp.getName(),
+            LDAPUtility.getFirstAttributeValue(subUserEntry, curProp.getRedirectAttribute()));
+      }
+    }
+  }
+
+  private boolean isRedirection(final String redirectOU, final String redirectAttribute) {
+    return StringUtil.isDefined(redirectOU) && StringUtil.isDefined(redirectAttribute);
   }
 
   /**
@@ -297,7 +316,7 @@ public class LDAPUser {
    * @throws AdminException if an error occur during LDAP operations or if there is no userEntry
    * object
    */
-  public UserDetail translateUser(String lds, LDAPEntry userEntry) throws AdminException {
+  private UserDetail translateUser(LDAPEntry userEntry) throws AdminException {
     UserDetail userInfos = new UserDetail();
 
     if (userEntry == null) {
@@ -321,7 +340,7 @@ public class LDAPUser {
         lAttrs.addAll(Arrays.asList(driverParent.getMapParameters()));
       }
     }
-    return lAttrs.toArray(new String[lAttrs.size()]);
+    return lAttrs.toArray(new String[0]);
   }
 
 }

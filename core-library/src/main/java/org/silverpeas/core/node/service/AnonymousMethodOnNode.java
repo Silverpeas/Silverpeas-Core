@@ -23,18 +23,20 @@
  */
 package org.silverpeas.core.node.service;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.node.model.NodePK;
 
 /**
  * Representation of an anonymous method to invoke in some circumstances. This is class is for
  * passing a method invocation within another method call (second-order function).
  */
+@FunctionalInterface
 public interface AnonymousMethodOnNode {
 
   /**
    * Invokes the method with the specified node.
    * @param pk the primary key of the node.
-   * @throws Exception if an error occurs during the execution of the anonymous method.
+   * @throws SilverpeasException if an error occurs during the execution of the anonymous method.
    */
-  void invoke(final NodePK pk) throws Exception;
+  void invoke(final NodePK pk) throws SilverpeasException;
 }

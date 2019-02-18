@@ -23,33 +23,33 @@
  */
 package org.silverpeas.web.jobsearch;
 
+import org.jetbrains.annotations.NotNull;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.index.search.SearchEngineProvider;
+import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.ParseException;
+import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.web.pdc.QueryParameters;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.index.search.SearchEngineProvider;
-import org.silverpeas.core.index.search.model.MatchingIndexEntry;
-import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.web.pdc.QueryParameters;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -65,6 +65,7 @@ import java.util.List;
  */
 public class JobSearchPeasSessionController extends AbstractComponentSessionController {
 
+  private static final String JSP_DOMAIN_MIXT = "JSP.domainMixt";
   private AdminController myAdminController = ServiceProvider.getService(AdminController.class);
   private PublicationService publicationService = ServiceProvider.getService(PublicationService.class);
   private NodeService nodeService = NodeService.get();
@@ -167,8 +168,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         first = false;
       }
     } catch (Exception e) {
-      SilverTrace.warn("admin", "JobSearchPeasSessionController.getPathSpace()",
-          "admin.CANT_GET_SPACE_PATH", "spaceId = " + spaceId, e);
+      SilverLogger.getLogger(this).error(e);
     }
     return emplacement.toString();
   }
@@ -179,14 +179,14 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    */
   private List<SearchResult> searchResultSpaceId(String spaceId) {
 
-    List<SearchResult> result = new ArrayList<SearchResult>();
+    List<SearchResult> result = new ArrayList<>();
     SpaceInstLight spaceInstLight = getAdminController().getSpaceInstLight(spaceId);
     if (null != spaceInstLight) {
       String nom = spaceInstLight.getName(getLanguage());
       String desc = spaceInstLight.getDescription();
       Date dateCrea = spaceInstLight.getCreateDate();
       String nomCrea = getUserName(spaceInstLight.getCreatedBy());
-      List<String> listEmplacement = new ArrayList<String>();
+      List<String> listEmplacement = new ArrayList<>();
       String emplacement = getPathSpace(spaceId);
       listEmplacement.add(emplacement);
 
@@ -221,7 +221,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @throws PdcException
    */
   private List<SearchResult> searchEngineResultSpace(String searchField) throws PdcException {
-    List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
+    List<SearchResult> listSearchResult = new ArrayList<>();
     try {
       QueryParameters queryParameters = new QueryParameters();
       queryParameters.setKeywords(searchField);
@@ -237,7 +237,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
 
         SpaceInstLight spaceInstLight = getAdminController().getSpaceInstLight(spaceId);
         if (null != spaceInstLight) {
-          List<String> listEmplacement = new ArrayList<String>();
+          List<String> listEmplacement = new ArrayList<>();
           String emplacement = getPathSpace(spaceId);
           listEmplacement.add(emplacement);
           SearchResult searchResult = new SearchResult();
@@ -250,7 +250,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
             searchResult.setUrl("openSpace('" + spaceInstLight.getId() + "')");
           } else {
             SpaceInstLight rootSpaceInstLight = spaceInstLight;
-            while (null != rootSpaceInstLight && !rootSpaceInstLight.isRoot()) {
+            while (!rootSpaceInstLight.isRoot()) {
               String fatherId = rootSpaceInstLight.getFatherId();
               rootSpaceInstLight = getAdminController().getSpaceInstLight(fatherId);
             }
@@ -261,8 +261,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         }
       }
     } catch (ParseException e) {
-      throw new PdcException("JobSearchPeasSessionController.searchEngineResultSpace",
-          SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
+      throw new PdcException(e);
     }
     return listSearchResult;
 
@@ -310,14 +309,14 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    */
   private List<SearchResult> searchResultComponentId(String componentId) {
 
-    List<SearchResult> result = new ArrayList<SearchResult>();
+    List<SearchResult> result = new ArrayList<>();
     ComponentInstLight componentInstLight = getAdminController().getComponentInstLight(componentId);
     if (null != componentInstLight) {
       String nom = componentInstLight.getLabel(getLanguage());
       String desc = componentInstLight.getDescription(getLanguage());
       Date dateCrea = componentInstLight.getCreateDate();
       String nomCrea = getUserName(componentInstLight.getCreatedBy());
-      List<String> listEmplacement = new ArrayList<String>();
+      List<String> listEmplacement = new ArrayList<>();
       String emplacement = getPathComponent(componentId);
       listEmplacement.add(emplacement);
 
@@ -351,7 +350,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @throws PdcException
    */
   private List<SearchResult> searchEngineResultComponent(String searchField) throws PdcException {
-    List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
+    List<SearchResult> listSearchResult = new ArrayList<>();
 
     try {
       QueryParameters queryParameters = new QueryParameters();
@@ -366,7 +365,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         String creationDate = result.getCreationDate();
         String nomCrea = getUserName(Integer.parseInt(result.getCreationUser()));
         String componentId = result.getObjectId();
-        List<String> listEmplacement = new ArrayList<String>();
+        List<String> listEmplacement = new ArrayList<>();
         String emplacement = getPathComponent(componentId);
         listEmplacement.add(emplacement);
         SearchResult searchResult = new SearchResult();
@@ -379,9 +378,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         listSearchResult.add(searchResult);
       }
     } catch (ParseException e) {
-      throw new PdcException(
-          "JobSearchPeasSessionController.searchEngineResultComponent",
-          SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
+      throw new PdcException(e);
     }
     return listSearchResult;
 
@@ -410,7 +407,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @throws RemoteException
    */
   private List<SearchResult> searchResultPublication(String searchField) {
-    List<SearchResult> result = new ArrayList<SearchResult>();
+    List<SearchResult> result = new ArrayList<>();
 
     PublicationDetail publication;
     //id publication
@@ -430,7 +427,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       String nomCrea = getUserName(Integer.parseInt(creaId));
       PublicationPK pubPK = publication.getPK();
       String instanceId = pubPK.getInstanceId();
-      List<String> listEmplacement = new ArrayList<String>();
+      List<String> listEmplacement = new ArrayList<>();
       StringBuilder emplacementEspaceComposant = new StringBuilder("");
       //Espace > Sous-espace
       List<SpaceInstLight> spaceList = getAdminController().getPathToComponent(instanceId);
@@ -449,8 +446,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       if (null != fatherPKs) {
         for (NodePK pk : fatherPKs) {
           StringBuilder emplacement = new StringBuilder(emplacementEspaceComposant);
-          Collection<NodeDetail> path = getNodeService().getAnotherPath(pk);
-          List<NodeDetail> pathTab = new ArrayList<NodeDetail>(path);
+          Collection<NodeDetail> path = getNodeService().getPath(pk);
+          List<NodeDetail> pathTab = new ArrayList<>(path);
           Collections.reverse(pathTab);
           for (NodeDetail nodeDetail : pathTab) {
             emplacement.append(nodeDetail.getName(getLanguage())).append(" > ");
@@ -477,26 +474,27 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private String getPathGroup(Group group) {
-    StringBuilder emplacement = new StringBuilder("");
-    String groupId = group.getId();
-    String domainId = group.getDomainId();
-    if (null == domainId) {
-      domainId = "-1";
-    }
-    Domain domain = getAdminController().getDomain(domainId);
-    //nom du domaine
-    if (domain.isMixedOne()) {
-      //domaine mixte
-      emplacement.append(getString("JSP.domainMixt"));
-    } else {
-      emplacement.append(domain.getName());
-    }
+    final String groupId = group.getId();
+    final StringBuilder emplacement = setDomainInPath(group.getDomainId());
     //nom du(des) groupe(s) pères
-    List<String> groupList = getAdminController().getPathToGroup(groupId);
+    final List<String> groupList = getAdminController().getPathToGroup(groupId);
     for (String elementGroupId : groupList) {
       emplacement.append(" > ").append(getAdminController().getGroupName(elementGroupId));
     }
     return emplacement.toString();
+  }
+
+  @NotNull
+  private StringBuilder setDomainInPath(final String domainId) {
+    StringBuilder emplacement = new StringBuilder();
+    final String theDomainId = domainId == null ? "-1" : domainId;
+    final Domain domain = getAdminController().getDomain(theDomainId);
+    if (domain.isMixedOne()) {
+      emplacement.append(getString(JSP_DOMAIN_MIXT));
+    } else {
+      emplacement.append(domain.getName());
+    }
+    return emplacement;
   }
 
   /**
@@ -504,12 +502,12 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private List<SearchResult> searchResultGroupId(String searchField) {
-    List<SearchResult> result = new ArrayList<SearchResult>();
+    List<SearchResult> result = new ArrayList<>();
     Group group = getAdminController().getGroupById(searchField);
     if (null != group && null != group.getId()) {
       String nom = group.getName();
       String desc = group.getDescription();
-      List<String> listEmplacement = new ArrayList<String>();
+      List<String> listEmplacement = new ArrayList<>();
       String emplacement = getPathGroup(group);
       listEmplacement.add(emplacement);
 
@@ -532,7 +530,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @throws PdcException
    */
   private List<SearchResult> searchEngineResultGroup(String searchField) throws PdcException {
-    List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
+    List<SearchResult> listSearchResult = new ArrayList<>();
     try {
       QueryParameters queryParameters = new QueryParameters();
       queryParameters.setKeywords(searchField);
@@ -546,7 +544,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       for (MatchingIndexEntry result : plainSearchResults) {
         String groupId = result.getObjectId();
         Group group = getAdminController().getGroupById(groupId);
-        List<String> listEmplacement = new ArrayList<String>();
+        List<String> listEmplacement = new ArrayList<>();
         String emplacement = getPathGroup(group);
         listEmplacement.add(emplacement);
 
@@ -561,9 +559,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         listSearchResult.add(searchResult);
       }
     } catch (ParseException e) {
-      throw new PdcException(
-          "JobSearchPeasSessionController.searchEngineResultComponent",
-          SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
+      throw new PdcException(e);
     }
     return listSearchResult;
 
@@ -586,10 +582,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     return result;
   }
 
-  /**
-   * @param user
-   * @return
-   */
   private List<String> getListPathUser(UserDetail user) {
     List<String> listEmplacement = new ArrayList<>();
     String userId = user.getId();
@@ -598,15 +590,12 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     List<GroupDetail> groups = getAdminController().getDirectGroupsOfUser(userId);
     if (!groups.isEmpty()) {
       for (Group group : groups) {
-        String domainId = group.getDomainId();
-        if (null == domainId) {
-          domainId = "-1";
-        }
-        Domain domain = getAdminController().getDomain(domainId);
-        StringBuilder emplacement = new StringBuilder("");
+        final String domainId = group.getDomainId() == null ? "-1" : group.getDomainId();
+        final Domain domain = getAdminController().getDomain(domainId);
+        final StringBuilder emplacement = new StringBuilder();
         //nom du domaine
         if (domain.isMixedOne()) {
-          emplacement.append(getString("JSP.domainMixt"));
+          emplacement.append(getString(JSP_DOMAIN_MIXT));
         } else {
           emplacement.append(domain.getName());
         }
@@ -621,20 +610,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         listEmplacement.add(emplacement.toString());
       }
     } else {
-      StringBuilder emplacement = new StringBuilder("");
-      String domainId = user.getDomainId();
-      if (null == domainId) {
-        domainId = "-1";
-      }
-      Domain domain = getAdminController().getDomain(domainId);
-
-      //nom du domaine
-      if (domain.isMixedOne()) {
-        emplacement.append(getString("JSP.domainMixt"));
-      } else {
-        emplacement.append(domain.getName());
-      }
-
+      final StringBuilder emplacement = setDomainInPath(user.getDomainId());
       listEmplacement.add(emplacement.toString());
     }
     return listEmplacement;
@@ -645,7 +621,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private List<SearchResult> searchResultUserId(String searchField) {
-    List<SearchResult> result = new ArrayList<SearchResult>();
+    List<SearchResult> result = new ArrayList<>();
     UserDetail user = getAdminController().getUserDetail(searchField);
     if (null != user) {
       String nom = user.getDisplayedName();
@@ -672,7 +648,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @throws PdcException
    */
   private List<SearchResult> searchEngineResultUser(String searchField) throws PdcException {
-    List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
+    List<SearchResult> listSearchResult = new ArrayList<>();
     try {
       QueryParameters queryParameters = new QueryParameters();
       queryParameters.setKeywords(searchField);
@@ -699,8 +675,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         listSearchResult.add(searchResult);
       }
     } catch (ParseException e) {
-      throw new PdcException("JobSearchPeasSessionController.searchEngineResultUser",
-          SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
+      throw new PdcException(e);
     }
     return listSearchResult;
 

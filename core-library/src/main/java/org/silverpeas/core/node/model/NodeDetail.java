@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.node.model;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
-import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -50,14 +51,15 @@ import java.util.Collection;
 public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Serializable {
 
   private static final long serialVersionUID = -1401884517616404337L;
-  public final static String DEFAULT_TYPE = "default";
-  public final static String FILE_LINK_TYPE = "file_link";
-  public final static String STATUS_VISIBLE = "Visible";
-  public final static String STATUS_INVISIBLE = "Invisible";
+  private static final String UNKNOWN = "unknown";
+  public static final String DEFAULT_TYPE = "default";
+  public static final String FILE_LINK_TYPE = "file_link";
+  public static final String STATUS_VISIBLE = "Visible";
+  public static final String STATUS_INVISIBLE = "Invisible";
   private NodePK nodePK;
-  private String creationDate;
-  private String creatorId;
-  private String path;
+  private String creationDate = "";
+  private String creatorId = "";
+  private String path = "";
   private String fullPath;
   private int level;
   private String modelId = null;
@@ -74,15 +76,30 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
   private String userRole = null;
   private boolean useId = false;
 
-
-  public NodeDetail(NodeDetail detail) {
-    new NodeDetail(detail.nodePK, detail.getName(), detail.getDescription(), detail.creationDate,
-        detail.creatorId, detail.path, detail.level, detail.fatherPK, detail.modelId, detail.status,
-        null, detail.type);
-    setOrder(detail.order);
-    setLanguage(detail.getLanguage());
-    setRightsDependsOn(detail.rightsDependsOn);
-
+  /**
+   * Copy constructor of persisted entity, all data are deeply copied and id is set to "unknown"
+   * value.
+   * @param other the instance to copy.
+   */
+  public NodeDetail(final NodeDetail other) {
+    super(other);
+    this.nodePK = new NodePK(UNKNOWN, other.nodePK);
+    this.setPath(other.path);
+    this.creatorId = other.creatorId;
+    this.creationDate = other.creationDate;
+    this.level = other.level;
+    this.modelId = other.modelId;
+    this.status = other.status;
+    this.fatherPK = new NodePK(other.fatherPK.getId(), other.fatherPK.getInstanceId());
+    if (other.childrenDetails != null) {
+      this.childrenDetails = new ArrayList<>(other.childrenDetails);
+    }
+    this.type = other.type;
+    this.order = other.order;
+    this.rightsDependsOn = other.rightsDependsOn;
+    this.nbObjects = other.nbObjects;
+    this.userRole = other.userRole;
+    this.useId = other.useId;
   }
 
   /**
@@ -90,73 +107,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
    * @since 1.0
    */
   public NodeDetail() {
-    init(NodePK.ROOT_NODE_ID, "", "", "", "", "", "0", NodePK.ROOT_NODE_ID);
-  }
-
-  /**
-   * Create a new NodeDetail
-   * @since 1.0
-   */
-  private void init(String id, String name, String description,
-      String creationDate, String creatorId, String path, String level,
-      String fatherId) {
-    this.nodePK = new NodePK(id);
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.creatorId = creatorId;
-    this.path = path;
-    this.fullPath = path + id + "/";
-    this.level = new Integer(level);
-    this.fatherPK = new NodePK(fatherId);
-    this.childrenDetails = null;
-  }
-
-  private void init(String id, String name, String description,
-      String creationDate, String creatorId, String path, String level,
-      String fatherId, String type) {
-    this.nodePK = new NodePK(id);
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.creatorId = creatorId;
-    this.path = path;
-    this.fullPath = path + id + "/";
-    this.level = new Integer(level);
-    this.fatherPK = new NodePK(fatherId);
-    this.childrenDetails = null;
-    this.type = type;
-  }
-
-  /**
-   * Create a new NodeDetail
-   * @param nodePK NodePK of the node
-   * @param name The node name
-   * @param description The node description
-   * @param creationDate A string which represent the creation date
-   * @param creatorId The name of the node creator
-   * @param path The node path
-   * @param level The node level (root level = 1)
-   * @param fatherPK The nodePK of the father
-   * @param childrenDetails A NodeDetail collection which contains each child
-   * @see java.util.Collection
-   * @see NodePK
-   * @see NodeDetail
-   * @since 1.0
-   */
-  public NodeDetail(NodePK nodePK, String name, String description, String creationDate,
-      String creatorId, String path, int level, NodePK fatherPK,
-      Collection<NodeDetail> childrenDetails) {
-    this.nodePK = nodePK;
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.creatorId = creatorId;
-    this.path = path;
-    this.fullPath = path + nodePK.getId() + "/";
-    this.level = level;
-    this.fatherPK = fatherPK;
-    this.childrenDetails = childrenDetails;
+    this(NodePK.ROOT_NODE_ID, "", "", 0, NodePK.ROOT_NODE_ID);
   }
 
   /**
@@ -164,95 +115,34 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
    * @param id id of the node
    * @param name The node name
    * @param description The node description
-   * @param creationDate A string which represent the creation date
-   * @param creatorId The name of the node creator
-   * @param path The node path
    * @param level The node level (root level = 1)
    * @param fatherId The id of the father
-   * @see java.util.Collection
-   * @see NodeDetail
-   * @since 1.0
    */
-  public NodeDetail(String id, String name, String description, String creationDate,
-      String creatorId, String path, String level, String fatherId) {
-    init(id, name, description, creationDate, creatorId, path, level, fatherId);
-  }
-
-  public NodeDetail(String id, String name, String description,
-      String creationDate, String creatorId, String path, String level,
-      String fatherId, String type) {
-    init(id, name, description, creationDate, creatorId, path, level, fatherId, type);
-  }
-
-  public NodeDetail(NodePK nodePK, String name, String description,
-      String creationDate, String creatorId, String path, int level,
-      NodePK fatherPK, String modelId, String status,
-      Collection<NodeDetail> childrenDetails, String type) {
-    this.nodePK = nodePK;
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.creatorId = creatorId;
-    this.path = path;
-    this.fullPath = path + nodePK.getId() + "/";
-    this.level = level;
-    this.fatherPK = fatherPK;
-    this.modelId = modelId;
-    this.status = status;
-    this.childrenDetails = childrenDetails;
-    this.type = type;
-  }
-
-  public NodeDetail(String id, String name, String description,
-      String creationDate, String creatorId, String path, int level,
-      String fatherId, String modelId, String status,
-      Collection<NodeDetail> childrenDetails, String type) {
+  public NodeDetail(String id, String name, String description, int level, String fatherId) {
     this.nodePK = new NodePK(id);
     setName(name);
     setDescription(description);
-    this.creationDate = creationDate;
-    this.creatorId = creatorId;
-    this.path = path;
-    this.fullPath = path + id + "/";
+    this.fullPath = path + id + '/';
     this.level = level;
     this.fatherPK = new NodePK(fatherId);
-    this.modelId = modelId;
-    this.status = status;
     this.childrenDetails = null;
-    this.type = type;
   }
 
-  public NodeDetail(NodePK nodePK, String name, String description,
-      String creationDate, String creatorId, String path, int level,
-      NodePK fatherPK, String modelId, String status, Collection<NodeDetail> childrenDetails) {
-    this.nodePK = nodePK;
+  /**
+   * Create a new NodeDetail
+   * @param pk id of the node
+   * @param name The node name
+   * @param description The node description
+   * @param level The node level (root level = 1)
+   * @param fatherId The id of the father
+   */
+  public NodeDetail(NodePK pk, String name, String description, int level, String fatherId) {
+    this.nodePK = pk;
     setName(name);
     setDescription(description);
-    this.creationDate = creationDate;
-    this.creatorId = creatorId;
-    this.path = path;
-    this.fullPath = path + nodePK.getId() + "/";
+    this.fullPath = path + pk.getId() + '/';
     this.level = level;
-    this.fatherPK = fatherPK;
-    this.modelId = modelId;
-    this.status = status;
-    this.childrenDetails = childrenDetails;
-  }
-
-  public NodeDetail(String id, String name, String description,
-      String creationDate, String creatorId, String path, int level,
-      String fatherId, String modelId, String status, Collection<NodeDetail> childrenDetails) {
-    this.nodePK = new NodePK(id);
-    setName(name);
-    setDescription(description);
-    this.creationDate = creationDate;
-    this.creatorId = creatorId;
-    this.path = path;
-    this.fullPath = path + id + "/";
-    this.level = level;
-    this.fatherPK = new NodePK(fatherId);
-    this.modelId = modelId;
-    this.status = status;
+    this.fatherPK = new NodePK(fatherId, pk.getInstanceId());
     this.childrenDetails = null;
   }
 
@@ -412,7 +302,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
    */
   public void setPath(String path) {
     this.path = path;
-    this.fullPath = path + nodePK.getId() + "/";
+    this.fullPath = path + nodePK.getId() + '/';
   }
 
   /**
@@ -474,10 +364,6 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
   @Override
   public int hashCode() {
     return toString().hashCode();
-  }
-
-  public String getDefaultUrl(String componentName) {
-    return URLUtil.getURL(null, getNodePK().getInstanceId()) + getURL();
   }
 
   public String getURL() {
@@ -553,39 +439,15 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
     return fullPath;
   }
 
-  public NodeDetail clone() {
-    NodeDetail node = new NodeDetail();
-    node.setNodePK(nodePK);
-    node.setCreatorId(getCreatorId());
-    node.setName(getName());
-    node.setDescription(getDescription());
-    node.setLanguage(getLanguage());
-    node.setTranslations(getTranslations());
-    node.setRightsDependsOn(getRightsDependsOn());
-    node.setCreationDate(getCreationDate());
-    node.setStatus(getStatus());
-    node.setOrder(getOrder());
-    node.setFatherPK(getFatherPK());
-    node.setLevel(getLevel());
-    node.setModelId(getModelId());
-    node.setPath(getPath());
-    node.setType(getType());
-    return node;
-  }
-
   public boolean isFatherOf(NodeDetail node) {
     boolean isFather = false;
     // Compare componentId
-    if (this.getNodePK().getInstanceId().equals(node.getNodePK().getInstanceId())) {
-      // Compare if they are same node
-      if (this.getNodePK().getId().equals(node.getNodePK().getId())) {
-        isFather = false;
-      } else {
-        String thisNodePath = this.getFullPath();
-        String nodePath = node.getFullPath();
-        if (nodePath.startsWith(thisNodePath)) {
-          isFather = true;
-        }
+    if (this.getNodePK().getInstanceId().equals(node.getNodePK().getInstanceId()) &&
+        !this.getNodePK().getId().equals(node.getNodePK().getId())) {
+      String thisNodePath = this.getFullPath();
+      String nodePath = node.getFullPath();
+      if (nodePath.startsWith(thisNodePath)) {
+        isFather = true;
       }
     }
     return isFather;

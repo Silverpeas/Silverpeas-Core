@@ -50,6 +50,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.Temporal;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.calendar.DayOfWeekOccurrence.ALL_OCCURRENCES;
@@ -118,10 +119,12 @@ public class ICal4JRecurrenceCodec {
       if (eventRecurrence.getFrequency().getInterval() > 1) {
         recur.setInterval(eventRecurrence.getFrequency().getInterval());
       }
+
+      final Optional<Temporal> reccurrenceEndDate = eventRecurrence.getRecurrenceEndDate();
       if (eventRecurrence.getRecurrenceCount() != NO_RECURRENCE_COUNT) {
         recur.setCount(eventRecurrence.getRecurrenceCount());
-      } else if (eventRecurrence.getRecurrenceEndDate().isPresent()) {
-        final Temporal endDate = eventRecurrence.getRecurrenceEndDate().get();
+      } else if (reccurrenceEndDate.isPresent()) {
+        final Temporal endDate = reccurrenceEndDate.get();
         TemporalConverter.consumeByType(endDate,
             date -> recur.setUntil(iCal4JDateCodec.encode(date)),
             dateTime -> recur.setUntil(iCal4JDateCodec.encode(dateTime)));
@@ -173,7 +176,6 @@ public class ICal4JRecurrenceCodec {
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
   public Recurrence decode(final VEvent vEvent, final ZoneId defaultZoneId) {
-    final boolean isOnAllDay = !(vEvent.getStartDate().getDate() instanceof DateTime);
     Recur recur = ((RRule) vEvent.getProperty(Property.RRULE)).getRecur();
     if (recur == null) {
       throw new IllegalArgumentException("VEVENT recurrence missing!");
@@ -189,35 +191,38 @@ public class ICal4JRecurrenceCodec {
     if (recur.getDayList() != null && !recur.getDayList().isEmpty()) {
       recurrence.on(recur.getDayList().stream().map(this::decode).collect(Collectors.toList()));
     }
-    vEvent.getProperties(ExDate.EXDATE).forEach(e -> {
-      final DateList exDates = ((ExDate) e).getDates();
-
-      // TODO activating following commented forEach after fix of EXDATE UTC management (iCal4J)
-      // cf. https://github.com/ical4j/ical4j/issues/113 for example
-
-      // exDates.forEach(exDate -> recurrence
-      //    .excludeEventOccurrencesStartingAt(iCal4JDateCodec.decode(exDate, defaultZoneId)));
-
-      // Deleting following forEach after fix of EXDATE UTC management (iCal4J)
-      // cf. https://github.com/ical4j/ical4j/issues/113 for example
-      exDates.forEach(exDate -> {
-        final LocalDate dateToExclude;
-        if (isOnAllDay) {
-          dateToExclude = iCal4JDateCodec.decode(exDate);
-        } else {
-          final DateTime startDateTime = (DateTime) vEvent.getStartDate().getDate();
-          if (startDateTime.isUtc()) {
-            dateToExclude = iCal4JDateCodec.decode((DateTime) exDate, ZoneOffset.UTC).toLocalDate();
-          } else {
-            ZoneId zoneId = startDateTime.getTimeZone() != null ?
-                TimeZoneUtil.toZoneId(startDateTime.getTimeZone().getID()) : defaultZoneId;
-            dateToExclude = iCal4JDateCodec.decode((DateTime) exDate, zoneId).toLocalDate();
-          }
-        }
-        recurrence.excludeEventOccurrencesStartingAt(dateToExclude);
-      });
-    });
+    processExclusionDates(vEvent, recurrence, defaultZoneId);
     return recurrence;
+  }
+
+  private void processExclusionDates(final VEvent vEvent, final Recurrence recurrence,
+      final ZoneId defaultZoneId) {
+    /* TODO activating following commented forEach after fix of EXDATE UTC management (iCal4J)
+       cf. https://github.com/ical4j/ical4j/issues/113 for example
+
+       <code>exDates.forEach(exDate -> recurrence
+          .excludeEventOccurrencesStartingAt(iCal4JDateCodec.decode(exDate, defaultZoneId)));</code>
+
+      Deleting following forEach after fix of EXDATE UTC management (iCal4J)
+      cf. https://github.com/ical4j/ical4j/issues/113 for example
+      */
+    vEvent.getProperties(ExDate.EXDATE).forEach(e -> ((ExDate) e).getDates().forEach(exDate -> {
+      final boolean isOnAllDay = !(vEvent.getStartDate().getDate() instanceof DateTime);
+      final LocalDate dateToExclude;
+      if (isOnAllDay) {
+        dateToExclude = iCal4JDateCodec.decode(exDate);
+      } else {
+        final DateTime startDateTime = (DateTime) vEvent.getStartDate().getDate();
+        if (startDateTime.isUtc()) {
+          dateToExclude = iCal4JDateCodec.decode((DateTime) exDate, ZoneOffset.UTC).toLocalDate();
+        } else {
+          final ZoneId zoneId = startDateTime.getTimeZone() != null ?
+              TimeZoneUtil.toZoneId(startDateTime.getTimeZone().getID()) : defaultZoneId;
+          dateToExclude = iCal4JDateCodec.decode((DateTime) exDate, zoneId).toLocalDate();
+        }
+      }
+      recurrence.excludeEventOccurrencesStartingAt(dateToExclude);
+    }));
   }
 
   private String asICal4JFrequency(final RecurrencePeriod period) {
@@ -244,6 +249,8 @@ public class ICal4JRecurrenceCodec {
       case YEAR:
         freq += Recur.YEARLY;
         break;
+      default:
+        throw new SilverpeasRuntimeException("Recurrence frequency not supported: " + freq);
     }
     return freq;
   }

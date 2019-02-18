@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.pdc.classification;
 
-import org.silverpeas.core.exception.SilverpeasException;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -69,8 +67,7 @@ public class Value implements java.io.Serializable {
   public void checkValue() throws ClassifyEngineException {
     // Check the axisId
     if (this.getAxisId() < 0) {
-      throw new ClassifyEngineException("Value.checkValue", SilverpeasException.ERROR,
-          "classifyEngine.EX_INCORRECT_AXISID_VALUE");
+      throw new ClassifyEngineException("Incorrect axis id");
     }
   }
 
