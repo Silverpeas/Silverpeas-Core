@@ -82,6 +82,9 @@ public class PublicationAccessController extends AbstractAccessController<Public
   private boolean isUserAuthorizedByContext(String userId, PublicationPK pubPk,
       final AccessControlContext context, Set<SilverpeasRole> userRoles) {
     boolean authorized = !userRoles.isEmpty();
+    if (!authorized) {
+      return false;
+    }
     boolean isRoleVerificationRequired = false;
     SilverpeasRole highestUserRole = SilverpeasRole.getHighestFrom(userRoles);
     if (highestUserRole == null) {
@@ -101,6 +104,15 @@ public class PublicationAccessController extends AbstractAccessController<Public
     // Verifying persist actions are possible
     if (authorized && isPersistActionFrom(context.getOperations())) {
       isRoleVerificationRequired = true;
+    }
+
+    if (componentAccessController.isTopicTrackerSupported(pubPk.getInstanceId()) &&
+        SilverpeasRole.user.equals(highestUserRole)) {
+      PublicationDetail publicationDetail =
+          context.get(PUBLICATION_DETAIL_KEY, PublicationDetail.class);
+      if (publicationDetail != null) {
+        authorized = publicationDetail.isValid() && publicationDetail.isVisible();
+      }
     }
 
     // Verifying roles if necessary
