@@ -88,8 +88,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
     if (!isTopicTrackerSupported(componentId)) {
       return false;
     }
-    String value =
-        getOrganisationController().getComponentParameterValue(componentId, parameterName);
+    final String value = controller.getComponentParameterValue(componentId, parameterName);
     if ("1".equals(value)) {
       return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
     } else if ("2".equals(value)) {
@@ -100,16 +99,14 @@ public class ComponentAccessController extends AbstractAccessController<String>
 
   private boolean isComponentInstanceParameterEnabled(String componentId,
       String componentParameterName) {
-    return getBooleanValue(getOrganisationController().
+    return getBooleanValue(controller.
         getComponentParameterValue(componentId, componentParameterName));
   }
 
-  @SuppressWarnings("ConstantConditions")
   @Override
   public boolean isTopicTrackerSupported(String componentId) {
     boolean isSupported = false;
-    Optional<SilverpeasComponentInstance> optionalComponent =
-        getOrganisationController().getComponentInstance(componentId);
+    Optional<SilverpeasComponentInstance> optionalComponent = controller.getComponentInstance(componentId);
     if (optionalComponent.isPresent()) {
       isSupported = optionalComponent.get().isTopicTracker();
     }
@@ -125,10 +122,8 @@ public class ComponentAccessController extends AbstractAccessController<String>
   @Override
   protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
       String userId, String componentId) {
-    final Predicate<User> isUserNotValidState =
-        u -> u == null || (!u.isActivatedState() && !u.isAnonymous());
-    final Predicate<String> isTool =
-        c -> c == null || getOrganisationController().isToolAvailable(c);
+    final Predicate<User> isUserNotValidState = u -> u == null || (!u.isActivatedState() && !u.isAnonymous());
+    final Predicate<String> isTool = c -> c == null || controller.isToolAvailable(c);
 
     // If userId corresponds to nothing or to a deleted or deactivated user, then no role is
     // retrieved.
@@ -153,55 +148,34 @@ public class ComponentAccessController extends AbstractAccessController<String>
       return;
     }
 
-    if (getOrganisationController().isComponentAvailable(componentId, userId)) {
-      Set<SilverpeasRole> roles =
-          SilverpeasRole.from(getOrganisationController().getUserProfiles(userId, componentId));
-      // If component is available, but user has no rights -> public component
-      if (roles.isEmpty()) {
-        userRoles.add(SilverpeasRole.user);
-      } else {
-        userRoles.addAll(roles);
-      }
+    if (controller.isComponentAvailable(componentId, userId)) {
+      userRoles.addAll(SilverpeasRole.from(controller.getUserProfiles(userId, componentId)));
     }
   }
 
   private boolean fillUserRolesFromComponentInstance(final String userId, final String componentId,
       final AccessControlContext context, final Set<SilverpeasRole> userRoles) {
-    Optional<SilverpeasComponentInstance> optionalInstance =
-        getOrganisationController().getComponentInstance(componentId);
+    final Optional<SilverpeasComponentInstance> optionalInstance = controller.getComponentInstance(componentId);
     if (!optionalInstance.isPresent()) {
       return true;
     }
 
-    SilverpeasComponentInstance componentInstance = optionalInstance.get();
+    final Set<AccessControlOperation> operations = context.getOperations();
+    final SilverpeasComponentInstance componentInstance = optionalInstance.get();
     if (componentInstance.isPersonal()) {
       userRoles.addAll(componentInstance.getSilverpeasRolesFor(User.getById(userId)));
-      if (AccessControlOperation.isPersistActionFrom(context.getOperations()) ||
-          AccessControlOperation.isDownloadActionFrom(context.getOperations()) ||
-          AccessControlOperation.isSharingActionFrom(context.getOperations())) {
+      if (AccessControlOperation.isPersistActionFrom(operations) ||
+          AccessControlOperation.isDownloadActionFrom(operations) ||
+          AccessControlOperation.isSharingActionFrom(operations)) {
         userRoles.remove(SilverpeasRole.user);
       }
       return true;
     }
 
-    if (componentInstance.isPublic() || getBooleanValue(
-        getOrganisationController().getComponentParameterValue(componentId, "publicFiles"))) {
+    if (componentInstance.isPublic() ||
+        getBooleanValue(controller.getComponentParameterValue(componentId, "publicFiles"))) {
       userRoles.add(SilverpeasRole.user);
-      if (!AccessControlOperation.isPersistActionFrom(context.getOperations()) &&
-          !AccessControlOperation.isDownloadActionFrom(context.getOperations()) &&
-          !AccessControlOperation.isSharingActionFrom(context.getOperations())) {
-        // In that case, it is not necessary to check deeper the user rights
-        return true;
-      }
     }
     return false;
-  }
-
-  /**
-   * Gets the organization controller used for performing its task.
-   * @return an organization controller instance.
-   */
-  private OrganizationController getOrganisationController() {
-    return controller;
   }
 }

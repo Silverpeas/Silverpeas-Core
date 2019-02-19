@@ -44,6 +44,7 @@ public abstract class AbstractAccessController<T> implements AccessController<T>
     return isUserAuthorized(userId, object, AccessControlContext.init());
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public final Set<SilverpeasRole> getUserRoles(String userId, T object,
       AccessControlContext context) {
