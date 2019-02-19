@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2018 Silverpeas
+ * Copyright (C) 2000 - 2019 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,24 +22,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.contribution;
+package org.silverpeas.core.util;
 
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import javax.inject.Singleton;
-import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
-import static org.silverpeas.core.contribution.ComponentInstanceContributionManager.getByInstanceId;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author silveryocha
  */
-@Singleton
-public class DefaultContributionManager implements ContributionManager {
+class MemoizedBooleanSupplierTest {
 
-  @Override
-  public Optional<Contribution> getById(final ContributionIdentifier contributionId) {
-    return getByInstanceId(contributionId.getComponentInstanceId()).getById(contributionId);
+  private int count;
+
+  @BeforeEach
+  void reset() {
+    count = 0;
+  }
+
+  @Test
+  void shouldBeMemoized() {
+    final BooleanSupplier supplier = () -> count++ % 2 == 0;
+    final BooleanSupplier memoizedSupplier = new MemoizedBooleanSupplier(supplier);
+    assertThat(memoizedSupplier.getAsBoolean(), is(true));
+    assertThat(memoizedSupplier.getAsBoolean(), is(true));
+    assertThat(supplier.getAsBoolean(), is(false));
+    assertThat(supplier.getAsBoolean(), is(true));
+    assertThat(supplier.getAsBoolean(), is(false));
+    assertThat(supplier.getAsBoolean(), is(true));
+    assertThat(memoizedSupplier.getAsBoolean(), is(true));
+    assertThat(memoizedSupplier.getAsBoolean(), is(true));
   }
 }

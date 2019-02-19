@@ -37,10 +37,10 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
  * @author Yohann Chastagnier
  */
 @EnableSilverTestEnv
-public class AccessControlOperationTest {
+class AccessControlOperationTest {
 
   @Test
-  public void testGeneralities() {
+  void testGeneralities() {
     assertThat(from(null), is(AccessControlOperation.unknown));
     assertThat(from("toto"), is(AccessControlOperation.unknown));
 
@@ -49,7 +49,7 @@ public class AccessControlOperationTest {
   }
 
   @Test
-  public void testIsPersistActionFrom() {
+  void testIsPersistActionFrom() {
     assertThat(isPersistActionFrom(null), is(false));
     assertThat(isPersistActionFrom(EnumSet.noneOf(AccessControlOperation.class)), is(false));
     assertThat(isPersistActionFrom(EnumSet.of(sharing)), is(false));
@@ -73,7 +73,7 @@ public class AccessControlOperationTest {
   }
 
   @Test
-  public void testIsSharingActionFrom() {
+  void testIsSharingActionFrom() {
     assertThat(isSharingActionFrom(null), is(false));
     assertThat(isSharingActionFrom(EnumSet.noneOf(AccessControlOperation.class)), is(false));
     Set<AccessControlOperation> allExceptingSharing = EnumSet.allOf(AccessControlOperation.class);
@@ -85,7 +85,7 @@ public class AccessControlOperationTest {
   }
 
   @Test
-  public void testIsDownloadActionFrom() {
+  void testIsDownloadActionFrom() {
     assertThat(isDownloadActionFrom(null), is(false));
     assertThat(isDownloadActionFrom(EnumSet.noneOf(AccessControlOperation.class)), is(false));
     Set<AccessControlOperation> allExceptingDownload = EnumSet.allOf(AccessControlOperation.class);

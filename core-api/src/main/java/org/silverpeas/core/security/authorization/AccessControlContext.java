@@ -35,7 +35,7 @@ import java.util.Set;
 public class AccessControlContext {
 
   private Set<AccessControlOperation> operations = EnumSet.noneOf(AccessControlOperation.class);
-  private Map<String, Object> cache = new HashMap<String, Object>();
+  private Map<String, Object> cache = new HashMap<>();
 
   /**
    * Gets an initialized instance of access control context.
