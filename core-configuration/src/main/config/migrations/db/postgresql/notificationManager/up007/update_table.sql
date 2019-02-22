@@ -1,2 +1,2 @@
 ALTER TABLE st_notificationresource
-  ADD COLUMN resourceDetails VARCHAR(10000) NULL;
+  ADD COLUMN resourceDetails VARCHAR(8000) NULL;
