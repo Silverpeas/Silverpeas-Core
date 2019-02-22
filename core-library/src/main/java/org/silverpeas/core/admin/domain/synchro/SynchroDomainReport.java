@@ -63,7 +63,7 @@ public class SynchroDomainReport {
   }
 
   public static Level getReportLevel() {
-    return level;
+    return level != null ? level : Level.WARNING;
   }
 
   /**
@@ -144,7 +144,7 @@ public class SynchroDomainReport {
   }
 
   protected static void addMessage(Level msgLevel, String msg) {
-    if (msgLevel.value() >= level.value()) {
+    if (msgLevel.value() >= getReportLevel().value()) {
       synchronized (messages) {
         messages.add(msg);
       }

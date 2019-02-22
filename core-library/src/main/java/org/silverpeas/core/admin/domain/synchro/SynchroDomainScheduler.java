@@ -91,7 +91,7 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
           SimpleUserNotification.fromSystem()
               .toUsers(admins)
               .withTitle(l -> bundle(l).getStringWithParams("admin.domain.sync.error.notif.title", domain.getName()))
-              .andMessage(l -> bundle(l).getStringWithParams("admin.domain.sync.error.notif.message", domain.getName()))
+              .andMessage(l -> bundle(l).getStringWithParams("admin.domain.sync.error.notif.message", domain.getName(), e.getMessage()))
               .send();
         }
       }
