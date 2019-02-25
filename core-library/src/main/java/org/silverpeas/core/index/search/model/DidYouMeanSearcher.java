@@ -86,8 +86,11 @@ public class DidYouMeanSearcher {
       try {
         parsedQuery = queryParser.parse(queryDescription.getQuery());
       } catch (org.apache.lucene.queryparser.classic.ParseException exception) {
-        throw new org.silverpeas.core.index.search.model.ParseException("DidYouMeanSearcher",
-                exception);
+        try {
+          parsedQuery = queryParser.parse(QueryParser.escape(queryDescription.getQuery()));
+        } catch (org.apache.lucene.queryparser.classic.ParseException pe) {
+          throw new org.silverpeas.core.index.search.model.ParseException("DidYouMeanSearcher", pe);
+        }
       }
 
       // splits the query to realize a separated search with each word
