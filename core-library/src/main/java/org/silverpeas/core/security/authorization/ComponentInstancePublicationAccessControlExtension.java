@@ -57,11 +57,20 @@ import javax.enterprise.util.AnnotationLiteral;
 public interface ComponentInstancePublicationAccessControlExtension {
 
   /**
-   * The predefined suffix that must compound the name of each implementation of this interface.
-   * An implementation of this interface by a Silverpeas application named Kmelia must be named
-   * <code>kmelia[NAME_SUFFIX]</code> where NAME_SUFFIX is the predefined suffix as defined below.
+   * Constants are predefined value used by a contribution manager to work with and that carries a
+   * semantic that has to be shared by all the implementations of this interface.
    */
-  String NAME_SUFFIX = "InstancePublicationAccessControlExtension";
+  class Constants {
+
+    private Constants() {}
+
+    /**
+     * The predefined suffix that must compound the name of each implementation of this interface.
+     * An implementation of this interface by a Silverpeas application named Kmelia must be named
+     * <code>kmelia[NAME_SUFFIX]</code> where NAME_SUFFIX is the predefined suffix as defined below.
+     */
+    public static final String NAME_SUFFIX = "InstancePublicationAccessControlExtension";
+  }
 
   /**
    * Gets the {@link ComponentInstancePublicationAccessControlExtension} according to the given
@@ -79,22 +88,22 @@ public interface ComponentInstancePublicationAccessControlExtension {
     final SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
     final String cacheKey = ComponentInstancePublicationAccessControlExtension.class.getName() + "###" + instanceId;
 
-    final Mutable<ComponentInstancePublicationAccessControlExtension> componentInstanceManager =
+    final Mutable<ComponentInstancePublicationAccessControlExtension> accessControlExtension =
         Mutable.ofNullable(cache.get(cacheKey, ComponentInstancePublicationAccessControlExtension.class));
-    if (componentInstanceManager.isPresent()) {
-      return componentInstanceManager.get();
+    if (accessControlExtension.isPresent()) {
+      return accessControlExtension.get();
     }
 
     try {
-      componentInstanceManager.set(ServiceProvider
-          .getServiceByComponentInstanceAndNameSuffix(instanceId, NAME_SUFFIX));
+      accessControlExtension.set(ServiceProvider
+          .getServiceByComponentInstanceAndNameSuffix(instanceId, Constants.NAME_SUFFIX));
     } catch (IllegalStateException e) {
       // Default implementation if none existing for the component
-      componentInstanceManager.set(ServiceProvider.getService(
+      accessControlExtension.set(ServiceProvider.getService(
           ComponentInstancePublicationAccessControlExtension.class, new AnnotationLiteral<Base>() {}));
     }
-    cache.put(cacheKey, componentInstanceManager.get());
-    return componentInstanceManager.get();
+    cache.put(cacheKey, accessControlExtension.get());
+    return accessControlExtension.get();
   }
 
   boolean canPublicationBePersistedOrDeletedBy(final PublicationDetail publication,

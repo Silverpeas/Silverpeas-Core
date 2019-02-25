@@ -58,11 +58,22 @@ import java.util.Optional;
 public interface ComponentInstanceContributionManager {
 
   /**
-   * The predefined suffix that must compound the name of each implementation of this interface.
-   * An implementation of this interface by a Silverpeas application named Kmelia must be named
-   * <code>kmelia[NAME_SUFFIX]</code> where NAME_SUFFIX is the predefined suffix as defined below.
+   * Constants are predefined value used by a contribution manager to work with and that carries a
+   * semantic that has to be shared by all the implementations of this interface.
    */
-  String NAME_SUFFIX = "InstanceContributionManager";
+  class Constants {
+
+    private Constants() {
+
+    }
+
+    /**
+     * The predefined suffix that must compound the name of each implementation of this interface.
+     * An implementation of this interface by a Silverpeas application named Kmelia must be named
+     * <code>kmelia[NAME_SUFFIX]</code> where NAME_SUFFIX is the predefined suffix as defined below.
+     */
+    public static final String NAME_SUFFIX = "InstanceContributionManager";
+  }
 
   /**
    * Gets the {@link ComponentInstanceContributionManager} according to the given identifier of
@@ -87,7 +98,7 @@ public interface ComponentInstanceContributionManager {
 
     try {
       componentInstanceManager.set(ServiceProvider
-          .getServiceByComponentInstanceAndNameSuffix(instanceId, NAME_SUFFIX));
+          .getServiceByComponentInstanceAndNameSuffix(instanceId, Constants.NAME_SUFFIX));
     } catch (IllegalStateException e) {
       throw new SilverpeasRuntimeException(MessageFormat
           .format("no ComponentInstanceContributionManager implementation for {0}", instanceId), e);
