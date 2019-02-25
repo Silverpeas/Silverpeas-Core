@@ -27,7 +27,7 @@ package org.silverpeas.core.admin.component.model;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
- * This API permits ti get data about component specified into sub hidden projects at core-api
+ * This API permits to get data about component specified into sub hidden projects at core-api
  * level.
  * @author silveryocha
  */

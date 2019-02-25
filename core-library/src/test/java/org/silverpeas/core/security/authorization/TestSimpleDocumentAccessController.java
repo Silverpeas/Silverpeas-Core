@@ -27,7 +27,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.internal.stubbing.answers.Returns;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -52,8 +51,6 @@ import java.util.EnumSet;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**
@@ -1849,12 +1846,9 @@ public class TestSimpleDocumentAccessController {
       when(componentAccessController.isCoWritingEnabled(anyString()))
           .then(new Returns(isCoWriting));
       when(componentAccessController.isFileSharingEnabledForRole(anyString(), anyObject()))
-          .thenAnswer(new Answer<Boolean>() {
-            @Override
-            public Boolean answer(final InvocationOnMock invocationOnMock) throws Throwable {
-              SilverpeasRole role = (SilverpeasRole) invocationOnMock.getArguments()[1];
-              return fileSharingRole != null && role.isGreaterThanOrEquals(fileSharingRole);
-            }
+          .thenAnswer((Answer<Boolean>) invocationOnMock -> {
+            SilverpeasRole role = (SilverpeasRole) invocationOnMock.getArguments()[1];
+            return fileSharingRole != null && role.isGreaterThanOrEquals(fileSharingRole);
           });
       when(nodeAccessController
           .getUserRoles(anyString(), any(NodePK.class), any(AccessControlContext.class))).then(

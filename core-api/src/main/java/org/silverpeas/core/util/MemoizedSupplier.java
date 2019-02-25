@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2018 Silverpeas
+ * Copyright (C) 2000 - 2019 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,24 +22,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.contribution;
+package org.silverpeas.core.util;
 
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
-
-import javax.inject.Singleton;
-import java.util.Optional;
-
-import static org.silverpeas.core.contribution.ComponentInstanceContributionManager.getByInstanceId;
+import java.util.function.Supplier;
 
 /**
+ * Represents a memoized supplier of a result.
+ *
+ * <p>So same result is returned each time the supplier is invoked.
+ *
+ * <p>This is kind of wrapper of a
+ * <a href="package-summary.html">functional interface implementation</a>
+ * whose functional method is {@link #get()}.
+ * @param <T> the type of results supplied by this supplier
  * @author silveryocha
  */
-@Singleton
-public class DefaultContributionManager implements ContributionManager {
+public class MemoizedSupplier<T> implements Supplier<T> {
+  private final Supplier<T> supplier;
+  private boolean memoized = false;
+  private T value;
+
+  public MemoizedSupplier(final Supplier<T> supplier) {
+    this.supplier = supplier;
+  }
 
   @Override
-  public Optional<Contribution> getById(final ContributionIdentifier contributionId) {
-    return getByInstanceId(contributionId.getComponentInstanceId()).getById(contributionId);
+  public T get() {
+    if (!memoized) {
+      memoized = true;
+      value = supplier.get();
+    }
+    return value;
   }
 }

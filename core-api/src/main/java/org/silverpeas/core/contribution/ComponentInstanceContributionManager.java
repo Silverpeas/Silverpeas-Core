@@ -24,10 +24,16 @@
 
 package org.silverpeas.core.contribution;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.ServiceProvider;
 
+import java.text.MessageFormat;
 import java.util.Optional;
 
 /**
@@ -50,6 +56,56 @@ import java.util.Optional;
  * @author silveryocha
  */
 public interface ComponentInstanceContributionManager {
+
+  /**
+   * Constants are predefined value used by a contribution manager to work with and that carries a
+   * semantic that has to be shared by all the implementations of this interface.
+   */
+  class Constants {
+
+    private Constants() {
+
+    }
+
+    /**
+     * The predefined suffix that must compound the name of each implementation of this interface.
+     * An implementation of this interface by a Silverpeas application named Kmelia must be named
+     * <code>kmelia[NAME_SUFFIX]</code> where NAME_SUFFIX is the predefined suffix as defined below.
+     */
+    public static final String NAME_SUFFIX = "InstanceContributionManager";
+  }
+
+  /**
+   * Gets the {@link ComponentInstanceContributionManager} according to the given identifier of
+   * component instance.
+   * <p>
+   * Instances of {@link ComponentInstanceContributionManager} are request scoped (or thread scoped
+   * on backend treatments).
+   * </p>
+   * @param instanceId the identifier of a component instance from which the qualified name of the
+   * implementation will be extracted.
+   * @return a {@link ComponentInstanceContributionManager} implementation.
+   */
+  static ComponentInstanceContributionManager getByInstanceId(final String instanceId) {
+    final SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    final String cacheKey = ComponentInstanceContributionManager.class.getName() + "###" + instanceId;
+
+    final Mutable<ComponentInstanceContributionManager> componentInstanceManager =
+        Mutable.ofNullable(cache.get(cacheKey, ComponentInstanceContributionManager.class));
+    if (componentInstanceManager.isPresent()) {
+      return componentInstanceManager.get();
+    }
+
+    try {
+      componentInstanceManager.set(ServiceProvider
+          .getServiceByComponentInstanceAndNameSuffix(instanceId, Constants.NAME_SUFFIX));
+    } catch (IllegalStateException e) {
+      throw new SilverpeasRuntimeException(MessageFormat
+          .format("no ComponentInstanceContributionManager implementation for {0}", instanceId), e);
+    }
+    cache.put(cacheKey, componentInstanceManager.get());
+    return componentInstanceManager.get();
+  }
 
   /**
    * Gets the {@link Contribution} instance linked to the given contribution identifier.
