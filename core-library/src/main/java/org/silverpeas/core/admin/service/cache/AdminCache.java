@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -100,11 +101,11 @@ public class AdminCache {
     }
   }
 
-  public SpaceInst getSpaceInst(int spaceId) {
+  public Optional<SpaceInst> getSpaceInst(int spaceId) {
     if (useCache && useSpaceInstCache) {
-      return spaceInstCache.get(spaceId);
+      return Optional.ofNullable(spaceInstCache.get(spaceId));
     }
-    return null;
+    return Optional.empty();
   }
 
   private void removeUserInSpaceInst(String userId) {
@@ -164,11 +165,11 @@ public class AdminCache {
     }
   }
 
-  public ComponentInst getComponentInst(int componentId) {
+  public Optional<ComponentInst> getComponentInst(int componentId) {
     if (useCache && useComponentInstCache) {
-      return componentInstCache.get(componentId);
+      return Optional.ofNullable(componentInstCache.get(componentId));
     }
-    return null;
+    return Optional.empty();
   }
 
   private void removeUserInComponentInst(String userId) {
@@ -206,11 +207,11 @@ public class AdminCache {
     }
   }
 
-  public ProfileInst getProfileInst(String profileId) {
+  public Optional<ProfileInst> getProfileInst(String profileId) {
     if (useCache && useProfileInstCache) {
-      return profileInstCache.get(profileId);
+      return Optional.ofNullable(profileInstCache.get(profileId));
     } else {
-      return null;
+      return Optional.empty();
     }
   }
 
@@ -254,11 +255,11 @@ public class AdminCache {
     }
   }
 
-  public UserDetail getUserDetail(String userId) {
+  public Optional<UserDetail> getUserDetail(String userId) {
     if (useCache && useUserDetailCache) {
-      return userDetailCache.get(userId);
+      return Optional.ofNullable(userDetailCache.get(userId));
     } else {
-      return null;
+      return Optional.empty();
     }
   }
 
@@ -281,11 +282,11 @@ public class AdminCache {
     }
   }
 
-  public Integer[] getManageableSpaceIds(String userId) {
+  public Optional<Integer[]> getManageableSpaceIds(String userId) {
     if (useCache && useManageableSpaceIdsCache) {
-      return manageableSpaceIdsCache.getOrDefault(userId, new Integer[0]);
+      return Optional.ofNullable(manageableSpaceIdsCache.get(userId));
     } else {
-      return new Integer[0];
+      return Optional.empty();
     }
   }
 
@@ -312,14 +313,14 @@ public class AdminCache {
     }
   }
 
-  public String[] getAvailCompoIds(int spaceId, String userId) {
+  public Optional<String[]> getAvailCompoIds(int spaceId, String userId) {
     if (useCache && useAvailCompoIdsCache) {
       Map<String, String[]> spaceTable = availCompoIdsCache.get(String.valueOf(spaceId));
       if (spaceTable != null) {
-        return spaceTable.getOrDefault(userId, new String[0]);
+        return Optional.ofNullable(spaceTable.get(userId));
       }
     }
-    return new String[0];
+    return Optional.empty();
   }
 
   /*
@@ -341,11 +342,11 @@ public class AdminCache {
     }
   }
 
-  public String[] getProfileIds(String userId) {
+  public Optional<String[]> getProfileIds(String userId) {
     if (useCache && useProfileIdsCache) {
-      return profileIdsCache.getOrDefault(userId, new String[0]);
+      return Optional.ofNullable(profileIdsCache.get(userId));
     } else {
-      return new String[0];
+      return Optional.empty();
     }
   }
 
@@ -356,7 +357,7 @@ public class AdminCache {
    * ---------------------------------------------------
    */
   // ----- Spaces -----
-  public void opAddSpace(SpaceInst theSpace) {
+  public void opAddSpace(final SpaceInst theSpace) {
     if ((theSpace.getDomainFatherId() != null)
         && (theSpace.getDomainFatherId().length() > 0)
         && (!theSpace.getDomainFatherId().equals("0"))) { // This is a subSpace
@@ -364,12 +365,12 @@ public class AdminCache {
       // space
       Integer spaceId = getLocalSpaceId(theSpace.getDomainFatherId());
       if (spaceId != null) {
-        SpaceInst theFather = getSpaceInst(spaceId);
-        if (theFather != null) {
-          List<SpaceInst> subSpaces = new ArrayList<>(theFather.getSubSpaces());
+        Optional<SpaceInst> optionalFather = getSpaceInst(spaceId);
+        optionalFather.ifPresent(f -> {
+          final List<SpaceInst> subSpaces = new ArrayList<>(f.getSubSpaces());
           subSpaces.add(theSpace);
-          theFather.setSubSpaces(subSpaces);
-        }
+          f.setSubSpaces(subSpaces);
+        });
       }
     }
   }
@@ -378,7 +379,7 @@ public class AdminCache {
     opResetSpace(theSpace);
   }
 
-  public void opRemoveSpace(SpaceInst theSpace) {
+  public void opRemoveSpace(final SpaceInst theSpace) {
     if ((theSpace.getDomainFatherId() != null)
         && (theSpace.getDomainFatherId().length() > 0)
         && (!theSpace.getDomainFatherId().equals("0"))) { // This is a subSpace
@@ -386,15 +387,15 @@ public class AdminCache {
       // space
       Integer spaceId = getLocalSpaceId(theSpace.getDomainFatherId());
       if (spaceId != null) {
-        SpaceInst theFather = getSpaceInst(spaceId);
-        if (theFather != null) {
-          List<SpaceInst> subSpaces = new ArrayList<>(theFather.getSubSpaces());
+        Optional<SpaceInst> theFather = getSpaceInst(spaceId);
+        theFather.ifPresent(f -> {
+          final List<SpaceInst> subSpaces = new ArrayList<>(f.getSubSpaces());
           subSpaces.stream()
               .filter(s -> s.getLocalId() == theSpace.getLocalId())
               .findFirst()
               .ifPresent(subSpaces::remove);
-          theFather.setSubSpaces(subSpaces);
-        }
+          f.setSubSpaces(subSpaces);
+        });
       }
     }
     opResetSpace(theSpace);
@@ -437,10 +438,8 @@ public class AdminCache {
   private void removeComponent(final ComponentInst component) {
     Integer spaceId = getLocalSpaceId(component.getDomainFatherId());
     if (spaceId != null) {
-      SpaceInst theSpace = getSpaceInst(spaceId);
-      if (theSpace != null) {
-        removeSpaceInst(theSpace.getLocalId());
-      }
+      Optional<SpaceInst> theSpace = getSpaceInst(spaceId);
+      theSpace.ifPresent(s -> removeSpaceInst(s.getLocalId()));
     }
     removeComponentInst(component);
   }
@@ -461,46 +460,40 @@ public class AdminCache {
   private void opResetProfile(ProfileInst profile) {
     // First level cache reset : it's not the best but it's simple : remove all
     // structs from cache that includes the profile
-    ComponentInst theComponent = getComponentInst(Integer.parseInt(profile.getComponentFatherId()));
-    if (theComponent != null) {
-      removeComponent(theComponent);
-    }
+    Optional<ComponentInst> theComponent = getComponentInst(Integer.parseInt(profile.getComponentFatherId()));
+    theComponent.ifPresent(this::removeComponent);
     removeProfileInst(profile);
     resetProfileIds();
     resetAvailCompoIds();
   }
 
   // ----- Space Profiles -----
-  public void opAddSpaceProfile(SpaceProfileInst profile) {
+  public void opAddSpaceProfile(final SpaceProfileInst profile) {
     Integer spaceId = getLocalSpaceId(profile.getSpaceFatherId());
     if (spaceId != null) {
-      SpaceInst theSpace = getSpaceInst(spaceId);
-      if (theSpace != null) {
-        theSpace.addSpaceProfileInst(profile);
-      }
+      Optional<SpaceInst> theSpace = getSpaceInst(spaceId);
+      theSpace.ifPresent(s -> s.addSpaceProfileInst(profile));
     }
     resetManageableSpaceIds();
   }
 
-  public void opUpdateSpaceProfile(SpaceProfileInst profile) {
+  public void opUpdateSpaceProfile(final SpaceProfileInst profile) {
     Integer spaceId = getLocalSpaceId(profile.getSpaceFatherId());
     if (spaceId != null) {
-      SpaceInst theSpace = getSpaceInst(spaceId);
-      if (theSpace != null) {
-        theSpace.deleteSpaceProfileInst(profile);
-        theSpace.addSpaceProfileInst(profile);
-      }
+      Optional<SpaceInst> theSpace = getSpaceInst(spaceId);
+      theSpace.ifPresent(s -> {
+        s.deleteSpaceProfileInst(profile);
+        s.addSpaceProfileInst(profile);
+      });
     }
     resetManageableSpaceIds();
   }
 
-  public void opRemoveSpaceProfile(SpaceProfileInst profile) {
+  public void opRemoveSpaceProfile(final SpaceProfileInst profile) {
     Integer spaceId = getLocalSpaceId(profile.getSpaceFatherId());
     if (spaceId != null) {
-      SpaceInst theSpace = getSpaceInst(spaceId);
-      if (theSpace != null) {
-        theSpace.deleteSpaceProfileInst(profile);
-      }
+      Optional<SpaceInst> theSpace = getSpaceInst(spaceId);
+      theSpace.ifPresent(s -> s.deleteSpaceProfileInst(profile));
     }
     resetManageableSpaceIds();
   }

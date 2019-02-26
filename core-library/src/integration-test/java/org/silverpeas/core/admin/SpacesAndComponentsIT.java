@@ -185,18 +185,18 @@ public class SpacesAndComponentsIT {
 
     SpaceInst space = organizationController.getSpaceInstById("WA1");
     assertThat(space.getStatus(), is("R"));
-    assertThat(treeCache.getSpaceInstLight(1), is(nullValue()));
-    assertThat(treeCache.getSpaceInstLight(2), is(nullValue()));
+    assertThat(treeCache.getSpaceInstLight(1).isPresent(), is(false));
+    assertThat(treeCache.getSpaceInstLight(2).isPresent(), is(false));
 
     admin.restoreSpaceFromBasket("WA1");
     space = organizationController.getSpaceInstById("WA1");
     assertThat(space.getStatus(), is(nullValue()));
 
-    assertThat(treeCache.getSpaceInstLight(1), is(notNullValue()));
+    assertThat(treeCache.getSpaceInstLight(1).isPresent(), is(true));
     assertThat(treeCache.getSubSpaces(1), hasSize(1));
     assertThat(treeCache.getComponentsInSpaceAndSubspaces(1), hasSize(3));
-    assertThat(treeCache.getComponent("kmelia1"), is(notNullValue()));
-    assertThat(treeCache.getComponent("almanach2"), is(notNullValue()));
+    assertThat(treeCache.getComponent("kmelia1").isPresent(), is(true));
+    assertThat(treeCache.getComponent("almanach2").isPresent(), is(true));
   }
 
   @Test
@@ -259,9 +259,9 @@ public class SpacesAndComponentsIT {
     admin.deleteComponentInst(userId, "kmelia1", false);
     ComponentInst component = adminController.getComponentInst("kmelia1");
     assertThat(component.getStatus(), is("R"));
-    assertThat(treeCache.getComponent("kmelia1"), is(nullValue()));
+    assertThat(treeCache.getComponent("kmelia1").isPresent(), is(false));
     adminController.restoreComponentFromBasket("kmelia1");
-    assertThat(treeCache.getComponent("kmelia1"), is(notNullValue()));
+    assertThat(treeCache.getComponent("kmelia1").isPresent(), is(true));
   }
 
   @Test

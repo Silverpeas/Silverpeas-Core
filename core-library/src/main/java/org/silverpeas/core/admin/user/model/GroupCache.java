@@ -25,6 +25,8 @@ package org.silverpeas.core.admin.user.model;
 
 import javax.inject.Singleton;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -48,8 +50,8 @@ public class GroupCache {
    * @param userId the unique identifier of a user.
    * @return a list of group identifiers.
    */
-  public List<String> getAllGroupIdsOfUser(String userId) {
-    return map.get(userId);
+  public Optional<List<String>> getAllGroupIdsOfUser(String userId) {
+    return Optional.ofNullable(map.get(userId));
   }
 
   /**
@@ -61,6 +63,7 @@ public class GroupCache {
    * @return either the specified list of group identifiers or the one that is already cached.
    */
   public List<String> setAllGroupIdsOfUser(String userId, List<String> groupIds) {
+    Objects.requireNonNull(groupIds);
     return map.putIfAbsent(userId, groupIds);
   }
 
