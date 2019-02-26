@@ -23,31 +23,31 @@
  */
 package org.silverpeas.core.admin.space.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Space {
 
-  SpaceInstLight space;
-  Map<String, ComponentInstLight> components = new LinkedHashMap<String, ComponentInstLight>();
-  List<SpaceInstLight> subspaces = new ArrayList<SpaceInstLight>();
+  private SpaceInstLight spaceInstLight;
+  private Map<String, ComponentInstLight> components = new LinkedHashMap<>();
+  private List<SpaceInstLight> subspaces = new ArrayList<>();
 
-  public SpaceInstLight getSpace() {
-    return space;
+  public SpaceInstLight getSpaceInstLight() {
+    return spaceInstLight;
   }
 
-  public void setSpace(SpaceInstLight space) {
-    this.space = space;
+  public void setSpaceInstLight(SpaceInstLight spaceInstLight) {
+    this.spaceInstLight = spaceInstLight;
   }
 
   public List<ComponentInstLight> getComponents() {
-    return new ArrayList<ComponentInstLight>(components.values());
+    return new ArrayList<>(components.values());
   }
 
   public void clearComponents() {
@@ -55,7 +55,7 @@ public class Space {
   }
 
   public List<String> getComponentIds() {
-    List<String> ids = new ArrayList<String>(components.size());
+    List<String> ids = new ArrayList<>(components.size());
     for (ComponentInstLight component : components.values()) {
       ids.add(component.getId());
     }
@@ -91,7 +91,7 @@ public class Space {
   public ComponentInstLight getComponent(String componentId) {
     ComponentInstLight component = components.get(componentId);
     // an application which belongs to a removed space must be considered as removed too
-    if (component != null && getSpace().isRemoved()) {
+    if (component != null && getSpaceInstLight().isRemoved()) {
       component.setStatus(ComponentInst.STATUS_REMOVED);
     }
     return component;
