@@ -35,6 +35,7 @@ import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class SetBundleTag extends TagSupport {
@@ -44,7 +45,7 @@ public class SetBundleTag extends TagSupport {
   private String var;
   private String basename;
 
-  private ResourceBundle bundle;
+  private transient ResourceBundle bundle;
 
   public void setVar(String var) {
     this.var = var;
@@ -65,12 +66,15 @@ public class SetBundleTag extends TagSupport {
   }
 
   public void setBundle(SilverpeasBundle bundle) {
+    Objects.requireNonNull(bundle);
     if (bundle instanceof LocalizationBundle) {
       this.bundle = (LocalizationBundle) bundle;
     } else if (bundle instanceof SettingBundle) {
       this.bundle = ((SettingBundle) bundle).asResourceBundle();
     } else {
-      throw new IllegalArgumentException("bundle must be of type LocalizationBundle or SettingBundle");
+      throw new IllegalArgumentException(
+          "Resource bundle is of type " + bundle.getClass().getSimpleName() +
+              ". It must be of type LocalizationBundle or SettingBundle");
     }
   }
 
