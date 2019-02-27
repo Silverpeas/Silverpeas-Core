@@ -25,6 +25,8 @@ package org.silverpeas.core.admin.domain.model;
 
 import javax.inject.Singleton;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -45,8 +47,8 @@ public class DomainCache {
     map.clear();
   }
 
-  public Domain getDomain(String id) {
-    return map.get(id);
+  public Optional<Domain> getDomain(String id) {
+    return Optional.ofNullable(map.get(id));
   }
 
   /**
@@ -68,6 +70,7 @@ public class DomainCache {
    * @return either the added domain or the domain with the same identifier in the cache.
    */
   public Domain addDomain(Domain domain) {
+    Objects.requireNonNull(domain);
     return map.putIfAbsent(domain.getId(), domain);
   }
 

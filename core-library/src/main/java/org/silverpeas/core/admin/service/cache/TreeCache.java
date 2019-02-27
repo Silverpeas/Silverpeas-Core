@@ -33,6 +33,8 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -61,12 +63,12 @@ public class TreeCache {
    * @param spaceId the unique identifier of a space in Silverpeas.
    * @return a {@link SpaceInstLight} object.
    */
-  public SpaceInstLight getSpaceInstLight(int spaceId) {
+  public Optional<SpaceInstLight> getSpaceInstLight(int spaceId) {
     Space space = getSpace(spaceId);
     if (space != null) {
-      return space.getSpace();
+      return Optional.ofNullable(space.getSpaceInstLight());
     }
-    return null;
+    return Optional.empty();
   }
 
   /**
@@ -77,6 +79,8 @@ public class TreeCache {
    * @return either the added space or the already cached space.
    */
   public Space addSpace(Integer spaceId, Space space) {
+    Objects.requireNonNull(spaceId);
+    Objects.requireNonNull(space);
     return map.putIfAbsent(spaceId, space);
   }
 
@@ -218,14 +222,12 @@ public class TreeCache {
    */
   public List<SpaceInstLight> getSpacePath(int spaceId) {
     List<SpaceInstLight> path = new ArrayList<>();
-    SpaceInstLight space = getSpaceInstLight(spaceId);
-    if (space != null) {
-      path.add(0, space);
-      while (space != null && !space.isRoot()) {
-        space = getSpaceInstLight(Integer.parseInt(space.getFatherId()));
-        if (space != null) {
-          path.add(0, space);
-        }
+    Optional<SpaceInstLight> space = getSpaceInstLight(spaceId);
+    if (space.isPresent()) {
+      path.add(0, space.get());
+      while (space.isPresent() && !space.get().isRoot()) {
+        space = getSpaceInstLight(Integer.parseInt(space.get().getFatherId()));
+        space.ifPresent(spaceInstLight -> path.add(0, spaceInstLight));
       }
     }
     return path;
@@ -236,15 +238,15 @@ public class TreeCache {
    * @param componentId the unique identifier of a component instance.
    * @return the a {@link org.silverpeas.core.admin.component.model.ComponentInstLight} object.
    */
-  public synchronized ComponentInstLight getComponent(String componentId) {
-    ComponentInstLight component = null;
+  public synchronized Optional<ComponentInstLight> getComponent(final String componentId) {
+    ComponentInstLight component;
     for (Space space : map.values()) {
       component = space.getComponent(componentId);
       if (component != null) {
-        return component;
+        return Optional.of(component);
       }
     }
-    return component;
+    return Optional.empty();
   }
 
   /**
@@ -252,13 +254,13 @@ public class TreeCache {
    * @param componentId the unique identifier of a component instance in the cache.
    * @return the {@link SpaceInstLight} instance that contains the specified component instance.
    */
-  public synchronized SpaceInstLight getSpaceContainingComponent(String componentId) {
+  public synchronized Optional<SpaceInstLight> getSpaceContainingComponent(String componentId) {
     for (Space space : map.values()) {
       if (space.containsComponent(componentId)) {
-        return space.getSpace();
+        return Optional.ofNullable(space.getSpaceInstLight());
       }
     }
-    return null;
+    return Optional.empty();
   }
 
   /**
@@ -268,11 +270,11 @@ public class TreeCache {
    * the component instance.
    */
   public List<SpaceInstLight> getComponentPath(String componentId) {
-    ComponentInstLight component = getComponent(componentId);
-    if (component != null && component.hasDomainFather()) {
-      return getSpacePath(getSpaceId(component));
-    }
-    return new ArrayList<>();
+    final List<SpaceInstLight> spaces = new ArrayList<>();
+    Optional<ComponentInstLight> component = getComponent(componentId);
+    component.filter(ComponentInstLight::hasDomainFather)
+        .ifPresent(c -> spaces.addAll(getSpacePath(getSpaceId(c))));
+    return spaces;
   }
 
   /**
@@ -284,7 +286,7 @@ public class TreeCache {
     if (spaceLight != null && StringUtil.isDefined(spaceLight.getId())) {
       Space space = getSpace(spaceLight.getLocalId());
       if (space != null) {
-        space.setSpace(spaceLight);
+        space.setSpaceInstLight(spaceLight);
         if (!spaceLight.isRoot()) {
           // update this space in parent space
           Space parent = getSpace(Integer.parseInt(spaceLight.getFatherId()));
