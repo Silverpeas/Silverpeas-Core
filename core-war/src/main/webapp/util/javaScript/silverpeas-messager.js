@@ -30,10 +30,6 @@
      * @type {{send: Window.sp.messager.send, open: Window.sp.messager.open}}
      */
     window.sp.messager = {
-      /**
-       * The promise of this deferred is resolved when the content of the popup is entirely loaded and ready to be displayed.
-       */
-      deferredContentReady : undefined,
 
       /**
        * Is the messager window already opened?
@@ -71,9 +67,7 @@
             }
           }
           sp.messager.opened = true;
-          sp.messager.deferredContentReady = sp.promise.deferred();
           jQuery.popup.load(messager, {method : 'POST', params : notification}).show('validation', {
-            contentReadyPromise : sp.messager.deferredContentReady.promise,
             title : 'Notification',
             width : 800,
             buttonTextYes : window.NotificationBundle.get('send'),

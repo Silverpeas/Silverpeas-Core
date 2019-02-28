@@ -40,6 +40,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -67,6 +68,9 @@ public abstract class AbstractJpaEntity<T extends IdentifiableEntity, U extends 
 
   @EmbeddedId
   private U id;
+
+  @Transient
+  private transient boolean idHasBeenSetByPersistence = false;
 
   @Override
   public String getId() {
@@ -185,7 +189,7 @@ public abstract class AbstractJpaEntity<T extends IdentifiableEntity, U extends 
   private void beforePersist() {
     boolean isExternalIdentifier =
         ExternalEntityIdentifier.class.isAssignableFrom(getEntityIdentifierClass());
-    if (!isExternalIdentifier) {
+    if (!idHasBeenSetByPersistence && !isExternalIdentifier) {
       if (this.id != null && StringUtil.isDefined(this.id.asString())) {
         SilverLogger.getLogger(this)
             .warn("As the entity identifier is not a ForeignEntityIdentifier one, " +
@@ -202,6 +206,7 @@ public abstract class AbstractJpaEntity<T extends IdentifiableEntity, U extends 
         primaryKey = attributeOverride.column().name();
       }
       this.id = (U) newIdentifierInstance().generateNewId(tableName, primaryKey);
+      this.idHasBeenSetByPersistence = true;
     }
     performBeforePersist();
   }
