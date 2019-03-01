@@ -210,7 +210,7 @@ public class DelayedNotificationManager implements DelayedNotification {
       userSettings.setChannel(channel);
     }
     userSettings.setFrequency(frequency);
-    dnUserSettingManager.saveAndFlush(userSettings);
+    dnUserSettingManager.save(userSettings);
     return userSettings;
   }
 

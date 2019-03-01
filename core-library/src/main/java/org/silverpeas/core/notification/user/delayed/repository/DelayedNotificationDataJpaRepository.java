@@ -77,8 +77,9 @@ public class DelayedNotificationDataJpaRepository
 
     // Query
     final StringBuilder query = new StringBuilder();
-    query.append("select distinct d.userId from DelayedNotificationData d ");
-    query.append("  left outer join d.delayedNotificationUserSetting p ");
+        query.append("select distinct d.userId from DelayedNotificationData d ");
+    query.append("left outer join DelayedNotificationUserSetting p on ");
+    query.append("  d.userId = p.userId and d.channel = p.channel ");
     query.append("where d.channel in (:");
     query.append(namedParameters.add("channels", toIds(aimedChannels)).getLastParameterName());
     query.append(") and ( ");

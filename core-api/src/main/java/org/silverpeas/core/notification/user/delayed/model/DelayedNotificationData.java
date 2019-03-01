@@ -84,13 +84,6 @@ public class DelayedNotificationData
   @JoinColumn(name = "notificationResourceId", referencedColumnName = "id", nullable = false)
   private NotificationResourceData resource;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumns({@JoinColumn(name = "userId", referencedColumnName = "userId", insertable = false,
-      updatable = false),
-      @JoinColumn(name = "channel", referencedColumnName = "channel", insertable = false,
-          updatable = false)})
-  private DelayedNotificationUserSetting delayedNotificationUserSetting;
-
   @Transient
   private boolean sendImmediately = false;
 
@@ -197,15 +190,6 @@ public class DelayedNotificationData
 
   public void setResource(final NotificationResourceData resource) {
     this.resource = resource;
-  }
-
-  public DelayedNotificationUserSetting getDelayedNotificationUserSetting() {
-    return delayedNotificationUserSetting;
-  }
-
-  public void setDelayedNotificationUserSetting(
-      final DelayedNotificationUserSetting delayedNotificationUserSetting) {
-    this.delayedNotificationUserSetting = delayedNotificationUserSetting;
   }
 
   public boolean isSendImmediately() {
