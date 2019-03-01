@@ -202,19 +202,12 @@
                 }
                 $popup.remove();
               };
-              var __displayPopup = function() {
-                setTimeout(function() {
-                  $popup.popup(type, options);
-                  resolve(data);
-                  jQuery.popup.hideWaiting();
-                }, 0);
-              };
-              if (sp.promise.isOne(params.contentReadyPromise)) {
-                setTimeout(function() {
-                  params.contentReadyPromise.then(__displayPopup);
-                }, 0);
+              $popup.popup(type, options);
+              resolve(data);
+              if (sp.promise.isOne(options.openPromise)) {
+                options.openPromise.then(jQuery.popup.hideWaiting);
               } else {
-                __displayPopup();
+                jQuery.popup.hideWaiting();
               }
             }, function(request) {
               notyError(request.responseText);
@@ -575,6 +568,7 @@
    */
   function __extendCommonSettings(options) {
     var settings = {
+      openPromise: undefined,
       title: '',
       callback: null,
       alternativeCallback: null,
@@ -718,23 +712,29 @@
       } else {
         $_this.dialog("option", "width", width);
       }
+      var __openPopup = function() {
+        // Dialog opening
+        var $dialog = $_this.dialog('open');
 
-      // Dialog opening
-      var $dialog = $_this.dialog('open');
+        // Since JQuery upgrade (jquery-1.10.1.min.js), HTML code in title is escaped.
+        // The below code surrounds this problem.
+        // For new version of jquery, please verify if it can be removed.
+        $dialog.data("uiDialog")._title = function(title) {
+          title.html(this.options.title);
+        };
+        $dialog.dialog('option', 'title', options.title);
 
-      // Since JQuery upgrade (jquery-1.10.1.min.js), HTML code in title is escaped.
-      // The below code surrounds this problem.
-      // For new version of jquery, please verify if it can be removed.
-      $dialog.data("uiDialog")._title = function(title) {
-        title.html(this.options.title);
+        // This below code handles the width of the dialog after it has been displayed.
+        if (options.isMaxWidth) {
+          // If max width is required, resizing and repositioning after the dialog open
+          $_this.dialog("widget").css('max-width', width);
+          $_this.dialog({position : $_this.dialog('option', 'position')});
+        }
       };
-      $dialog.dialog('option', 'title', options.title);
-
-      // This below code handles the width of the dialog after it has been displayed.
-      if (options.isMaxWidth) {
-        // If max width is required, resizing and repositioning after the dialog open
-        $_this.dialog("widget").css('max-width', width);
-        $_this.dialog({position : $_this.dialog('option', 'position')});
+      if (sp.promise.isOne(options.openPromise)) {
+        options.openPromise.then(__openPopup);
+      } else {
+        __openPopup();
       }
     });
   }

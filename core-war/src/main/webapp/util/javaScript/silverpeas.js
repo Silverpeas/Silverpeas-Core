@@ -1887,12 +1887,15 @@ if (typeof window.sp === 'undefined') {
                 var confirmationUrl = webContext +
                     '/wysiwyg/jsp/confirmUnvalidatedContentExistence.jsp';
                 var url = sp.url.format(confirmationUrl);
+                var deferredOpen = sp.promise.deferred();
                 jQuery.popup.load(url).show('confirmation', {
+                  openPromise : deferredOpen.promise,
                   callback : __unStash,
                   alternativeCallback : function() {this.clear()}.bind(this)
                 }).then(function() {
                   document.querySelector('#unvalidated-wysiwyg-content-container').innerHTML =
                       this.getUnvalidatedContent();
+                  deferredOpen.resolve();
                 }.bind(this));
               }
 

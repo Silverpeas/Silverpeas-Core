@@ -56,11 +56,16 @@
   var userSelectApi;
 
   function onPageReady() {
-     <view:wysiwyg replace="content" language="${language}"
-                   toolbar="userNotification"
-                   activateWysiwygBackupManager="false"
-                   height="300"/>
-    ${recipientsEditable ? 'userSelectApi.focus();' : 'document.querySelector("#notification-data-subject").focus();'}
+    var __editor = <view:wysiwyg replace="notification-data-message" language="${language}"
+        toolbar="userNotification"
+        activateWysiwygBackupManager="false"
+        height="300"/>
+    __editor.on('instanceReady', function() {
+      sp.messager.deferredContentReady.promise.then(function() {
+        ${recipientsEditable ? 'userSelectApi.focus();' : 'document.querySelector("#notification-data-subject").focus();'}
+      });
+      sp.messager.deferredContentReady.resolve();
+    });
   }
 
   function sendNotification(notification) {
@@ -125,7 +130,7 @@
       <div id="notification-data-container-message" class="field entireWidth">
         <label class="txtlibform" for="notification-data-message"><fmt:message key="GML.notification.message"/></label>
         <div class="champs">
-          <textarea id="notification-data-message" name="content" cols="49" rows="25"></textarea>
+          <textarea id="notification-data-message" name="content" cols="49" rows="9"></textarea>
         </div>
       </div>
     </div>
