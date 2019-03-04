@@ -116,14 +116,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   public NodeDetail getDetailByNameAndFatherId(NodePK pk, String name, int nodeFatherId) {
     Connection con = getConnection();
     try {
-      NodeDetail nodeDetail = nodeDAO.selectByNameAndFatherId(con, pk, name, nodeFatherId);
-      if (nodeDetail != null) {
-        return nodeDetail;
-      } else {
-        throw new NodeRuntimeException(
-            "Node not found nodeId = " + pk.getId() + ",name=" + name + "nodeFatherId=" +
-                nodeFatherId);
-      }
+      return nodeDAO.selectByNameAndFatherId(con, pk, name, nodeFatherId);
     } catch (SQLException e) {
       throw new NodeRuntimeException(e);
     } finally {

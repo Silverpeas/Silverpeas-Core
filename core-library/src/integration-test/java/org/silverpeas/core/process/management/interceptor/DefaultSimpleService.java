@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.process.management.interceptor;
 
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.ActionType;
+import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.util.annotation.Action;
 import org.silverpeas.core.util.annotation.SourceObject;
 import org.silverpeas.core.util.annotation.TargetPK;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 
@@ -44,7 +44,7 @@ public class DefaultSimpleService implements SimpleService {
   @Override
   public InterceptorTestFile create(@SourceObject final InterceptorTestFile file,
       @TargetPK final ResourceReference destination) {
-    SilverTrace.info("InterceptorTest", "DefaultSimpleService", "create called");
+    SilverLogger.getLogger(this).info("DefaultSimpleService", "create called");
     return null;
   }
 
@@ -52,13 +52,13 @@ public class DefaultSimpleService implements SimpleService {
   @Action(ActionType.DELETE)
   @Override
   public void delete(@SourceObject final InterceptorTestFile file, final ResourceReference destination) {
-    SilverTrace.info("InterceptorTest", "DefaultSimpleService", "delete called");
+    SilverLogger.getLogger(this).info("DefaultSimpleService", "delete called");
   }
 
   @SimulationActionProcess(elementLister = InterceptorTestFileElementLister.class)
   @Action(ActionType.MOVE)
   @Override
   public void move(final ResourceReference from, final ResourceReference destination) {
-    SilverTrace.info("InterceptorTest", "DefaultSimpleService", "move called");
+    SilverLogger.getLogger(this).info("DefaultSimpleService", "move called");
   }
 }

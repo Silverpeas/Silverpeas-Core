@@ -30,6 +30,7 @@ import org.silverpeas.core.ActionType;
 import org.silverpeas.core.util.annotation.Action;
 import org.silverpeas.core.util.annotation.SourceObject;
 import org.silverpeas.core.util.annotation.TargetPK;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ejb.Stateless;
 import javax.transaction.Transactional;
@@ -61,13 +62,13 @@ public class DefaultEjbService implements EjbService {
   @Override
   public void delete(@SourceObject final InterceptorTestFile file,
       @TargetPK final ResourceReference destination) {
-    SilverTrace.info("InterceptorTest", "DefaultEjbService", "delete called");
+    SilverLogger.getLogger(this).info("InterceptorTest", "DefaultEjbService", "delete called");
   }
 
   @SimulationActionProcess(elementLister = InterceptorTestFileElementLister.class)
   @Action(ActionType.MOVE)
   @Override
   public void move(final ResourceReference from, @TargetPK final ResourceReference destination) {
-    SilverTrace.info("InterceptorTest", "DefaultEjbService", "move called");
+    SilverLogger.getLogger(this).info("InterceptorTest", "DefaultEjbService", "move called");
   }
 }
