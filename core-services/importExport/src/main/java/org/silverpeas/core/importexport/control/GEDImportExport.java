@@ -616,13 +616,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         NodePK nodePK = new NodePK("unknown", componentId);
         String parentId = NodePK.ROOT_NODE_ID;
         for (String name : path) {
-          NodeDetail existingNode = null;
-          try {
-            existingNode = getNodeService()
+          NodeDetail existingNode = getNodeService()
                 .getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
-          } catch (Exception e) {
-            SilverLogger.getLogger(this).warn(e);
-          }
           if (existingNode != null) {
             // topic exists
             parentId = existingNode.getNodePK().getId();
