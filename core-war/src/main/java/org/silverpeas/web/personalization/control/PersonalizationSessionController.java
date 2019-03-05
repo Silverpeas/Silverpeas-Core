@@ -185,6 +185,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     try {
       final NotificationAddress address = new NotificationAddress()
           .setId(notifAddressId)
+          .setUserId(getUserId())
           .setName(aNotifName)
           .setChannelId(aChannelId)
           .setAddress(aAddress)
