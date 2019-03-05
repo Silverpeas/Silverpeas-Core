@@ -14,7 +14,7 @@
 					- link : <a href="ErrorGettingDomainServerDelegate+test+resource" target=_blank>Click here ...</a><br/>
 					- notification :
 					<div id="resource_item" style="margin-left:25px;">
-						. deleted by User 500, on 01/01/2012 at 08:10 AM
+						. deleted by User 500, on 01/01/2012 at 08:10
 					</div>
 				</div>
 			</div>

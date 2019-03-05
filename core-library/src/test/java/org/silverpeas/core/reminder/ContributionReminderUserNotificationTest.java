@@ -133,11 +133,11 @@ public class ContributionReminderUserNotificationTest {
     triggerDateTime(durationReminder, OffsetDateTime.parse("2018-02-21T00:00:00Z"));
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the contribution super test - 21.02.2018 00:00"));
-    assertThat(titles.get(EN), is("Reminder about the contribution super test - 02/21/2018 12:00 AM"));
+    assertThat(titles.get(EN), is("Reminder about the contribution super test - 02/21/2018 00:00"));
     assertThat(titles.get(FR), is("Rappel sur la contribution super test - 21/02/2018 00:00"));
     final Map<String, String> contents = computeNotificationContents(durationReminder);
     assertThat(contents.get(DE), is("You set a reminder <b>just</b> before the contribution <b>super test</b> (21.02.2018 00:00)."));
-    assertThat(contents.get(EN), is("You set a reminder <b>just</b> before the contribution <b>super test</b> (02/21/2018 12:00 AM)."));
+    assertThat(contents.get(EN), is("You set a reminder <b>just</b> before the contribution <b>super test</b> (02/21/2018 00:00)."));
     assertThat(contents.get(FR), is("Vous avez demandé un rappel <b>juste</b> avant la contribution <b>super test</b> (21/02/2018 00:00)."));
   }
 
@@ -148,11 +148,11 @@ public class ContributionReminderUserNotificationTest {
     triggerDateTime(durationReminder, OffsetDateTime.parse("2018-02-20T23:59:00Z"));
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the contribution super test - 21.02.2018 00:00"));
-    assertThat(titles.get(EN), is("Reminder about the contribution super test - 02/21/2018 12:00 AM"));
+    assertThat(titles.get(EN), is("Reminder about the contribution super test - 02/21/2018 00:00"));
     assertThat(titles.get(FR), is("Rappel sur la contribution super test - 21/02/2018 00:00"));
     final Map<String, String> contents = computeNotificationContents(durationReminder);
     assertThat(contents.get(DE), is("You set a reminder <b>1 minute</b> before the contribution <b>super test</b> (21.02.2018 00:00)."));
-    assertThat(contents.get(EN), is("You set a reminder <b>1 minute</b> before the contribution <b>super test</b> (02/21/2018 12:00 AM)."));
+    assertThat(contents.get(EN), is("You set a reminder <b>1 minute</b> before the contribution <b>super test</b> (02/21/2018 00:00)."));
     assertThat(contents.get(FR), is("Vous avez demandé un rappel <b>1 minute</b> avant la contribution <b>super test</b> (21/02/2018 00:00)."));
   }
 
@@ -163,11 +163,11 @@ public class ContributionReminderUserNotificationTest {
     triggerDateTime(durationReminder, OffsetDateTime.parse("2018-02-20T23:55:00Z"));
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the contribution super test - 21.02.2018 00:00"));
-    assertThat(titles.get(EN), is("Reminder about the contribution super test - 02/21/2018 12:00 AM"));
+    assertThat(titles.get(EN), is("Reminder about the contribution super test - 02/21/2018 00:00"));
     assertThat(titles.get(FR), is("Rappel sur la contribution super test - 21/02/2018 00:00"));
     final Map<String, String> contents = computeNotificationContents(durationReminder);
     assertThat(contents.get(DE), is("You set a reminder <b>5 minutes</b> before the contribution <b>super test</b> (21.02.2018 00:00)."));
-    assertThat(contents.get(EN), is("You set a reminder <b>5 minutes</b> before the contribution <b>super test</b> (02/21/2018 12:00 AM)."));
+    assertThat(contents.get(EN), is("You set a reminder <b>5 minutes</b> before the contribution <b>super test</b> (02/21/2018 00:00)."));
     assertThat(contents.get(FR), is("Vous avez demandé un rappel <b>5 minutes</b> avant la contribution <b>super test</b> (21/02/2018 00:00)."));
   }
 
@@ -180,11 +180,11 @@ public class ContributionReminderUserNotificationTest {
     triggerDateTime(durationReminder, OffsetDateTime.parse("2018-02-21T00:00:00Z"));
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the contribution super test - 21.02.2018 00:00 (UTC)"));
-    assertThat(titles.get(EN), is("Reminder about the contribution super test - 02/21/2018 12:00 AM (UTC)"));
+    assertThat(titles.get(EN), is("Reminder about the contribution super test - 02/21/2018 00:00 (UTC)"));
     assertThat(titles.get(FR), is("Rappel sur la contribution super test - 21/02/2018 00:00 (UTC)"));
     final Map<String, String> contents = computeNotificationContents(durationReminder);
     assertThat(contents.get(DE), is("You set a reminder <b>just</b> before the contribution <b>super test</b> (21.02.2018 00:00 (UTC))."));
-    assertThat(contents.get(EN), is("You set a reminder <b>just</b> before the contribution <b>super test</b> (02/21/2018 12:00 AM (UTC))."));
+    assertThat(contents.get(EN), is("You set a reminder <b>just</b> before the contribution <b>super test</b> (02/21/2018 00:00 (UTC))."));
     assertThat(contents.get(FR), is("Vous avez demandé un rappel <b>juste</b> avant la contribution <b>super test</b> (21/02/2018 00:00 (UTC))."));
   }
 
