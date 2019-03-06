@@ -457,9 +457,6 @@
     return error;
   }
 
-  // Initialization indicator.
-  var __i18nInitialized = false;
-
   /**
    * Private method that handles i18n.
    * @param key
@@ -468,16 +465,7 @@
    */
   function __getFromBundleKey(key) {
     if (webContext) {
-      if (!__i18nInitialized) {
-        window.i18n.properties({
-          name: 'generalMultilang',
-          path: webContext + '/services/bundles/org/silverpeas/multilang/',
-          language: '$$', /* by default the language of the user in the current session */
-          mode: 'map'
-        });
-        __i18nInitialized = true;
-      }
-      return window.i18n.prop(key);
+      return sp.i18n.get(key);
     }
     return key;
   }

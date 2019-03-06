@@ -50,6 +50,7 @@
   </style>
   <view:includePlugin name="jquery" />
   <view:script src="/util/javaScript/silverpeas.js" />
+  <view:script src="/util/javaScript/silverpeas-i18n.js" />
   <view:includePlugin name="fpviewer"/>
   <script type="text/javascript">
     whenSilverpeasReady(function() {

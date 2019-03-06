@@ -495,38 +495,6 @@ function getWindowScrollBarThicknessSize() {
   return r;
 }
 
-if (!window.SilverpeasPluginBundle) {
-  window.SilverpeasPluginBundle = function(bundle) {
-    var translations = bundle ? bundle : {};
-    this.getAsTextProperties = function() {
-      var text = '';
-      for(var key in translations) {
-        text = text + key + '=' + translations[key] + '\n';
-      }
-      return text;
-    };
-    this.get = function() {
-      var key = arguments[0];
-      var translation = translations[key];
-
-      var paramIndex = 0;
-      for (var i = 1; i < arguments.length; i++) {
-        var params = arguments[i];
-        if (params && typeof params === 'object' && params.length) {
-          params.forEach(function(param) {
-            translation =
-                translation.replace(new RegExp('[{]' + (paramIndex++) + '[}]', 'g'), param);
-          });
-        } else if (params && typeof params !== 'object') {
-          translation =
-              translation.replace(new RegExp('[{]' + (paramIndex++) + '[}]', 'g'), params);
-        }
-      }
-      return translation.replace(/[{][0-9]+[}]/g, '');
-    };
-  };
-}
-
 if (!window.SilverpeasPluginSettings) {
   window.SilverpeasPluginSettings = function(theSettings) {
     var settings = theSettings ? theSettings : {};
@@ -1147,6 +1115,12 @@ if (typeof window.sp === 'undefined') {
       }
     },
     object : new function() {
+      this.isEmpty = function (o) {
+        for (var k in o) {
+          return false;
+        }
+        return true;
+      };
       this.normalizeExistingValuesOf = function(value, level) {
         level = typeof level === 'undefined' ?  0 : level + 1;
         if (level >= 10) {

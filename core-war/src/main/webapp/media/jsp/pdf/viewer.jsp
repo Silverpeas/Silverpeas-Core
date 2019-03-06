@@ -38,6 +38,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <view:includePlugin name="polyfills"/>
   <view:script src="/util/javaScript/silverpeas.js" />
+  <view:script src="/util/javaScript/silverpeas-i18n.js" />
   <script type="text/javascript">
     window.SP_PDF_VIEWER_DEFERRED = sp.promise.deferred();
     window.DEFAULT_URL = '${silfn:escapeJs(contentUrl)}';

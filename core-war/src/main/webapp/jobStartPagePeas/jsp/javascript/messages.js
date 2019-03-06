@@ -22,21 +22,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-$(document).ready(function() {
-  messageTriggers.attach();
-});
-
 var messageTriggers = {
   initialized : false,
   doInitialize : function() {
     if (!messageTriggers.initialized) {
       messageTriggers.initialized = true;
-      window.i18n.properties({
-        name : 'jobStartPagePeasBundle',
-        path : webContext  + '/services/bundles/org/silverpeas/jobStartPagePeas/multilang/',
-        language : '$$', // by default the language of the user in the current session
-        mode : 'map'
-      });
+      sp.i18n.load('org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle');
     }
   },
   attach : function() {
@@ -49,7 +40,7 @@ var messageTriggers = {
               var $this = $(this);
               var html = $this.html()
                   + '<br/><br/>'
-                  + window.i18n.prop('Warning.dialog.confirmation.message.end');
+                  + sp.i18n.get('Warning.dialog.confirmation.message.end');
               $this.html(html);
             }).prev().change(function(event) {
               if (event.target.type == "checkbox") {
@@ -83,4 +74,8 @@ var messageTriggers = {
             });
     $warnings.trigger('addConfirmationMessageEnds');
   }
-}
+};
+
+$(document).ready(function() {
+  messageTriggers.attach();
+});

@@ -50,6 +50,7 @@
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
   <view:script src="/util/javaScript/silverpeas.js" />
+  <view:script src="/util/javaScript/silverpeas-i18n.js" />
   <view:includePlugin name="popup"/>
   <view:script src="/password.js"/>
   <!--[if lt IE 8]>

@@ -52,8 +52,9 @@
   <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
-  <view:includePlugin name="popup"/>
   <view:script src="/util/javaScript/silverpeas.js" />
+  <view:script src="/util/javaScript/silverpeas-i18n.js" />
+  <view:includePlugin name="popup"/>
   <view:script src="/password.js"/>
   <c:if test="${isEmailAddress}">
     <view:includePlugin name="qtip"/>

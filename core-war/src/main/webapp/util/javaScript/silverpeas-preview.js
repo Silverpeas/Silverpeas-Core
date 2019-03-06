@@ -29,19 +29,7 @@
 (function($) {
 
   $.preview = {
-    webServiceContext: webContext + '/services',
-    initialized: false,
-    doInitialize: function() {
-      if (!$.preview.initialized) {
-        window.i18n.properties({
-          name: 'generalMultilang',
-          path: webContext + '/services/bundles/org/silverpeas/multilang/',
-          language: '$$', /* by default the language of the user in the current session */
-          mode: 'map'
-        });
-        $.preview.initialized = true;
-      }
-    }
+    webServiceContext: webContext + '/services'
   };
 
   /**
@@ -87,7 +75,6 @@
       return false;
     }
 
-    $.preview.doInitialize();
     if (methods[method]) {
       return methods[ method ].apply(this, Array.prototype.slice.call(arguments, 1));
     } else if (typeof method === 'object' || !method) {
@@ -259,7 +246,7 @@
     } else {
       titlePropertyKey = 'GML.preview.help.file.next';
     }
-    $buttonContainer.attr('title', window.i18n.prop(titlePropertyKey));
+    $buttonContainer.attr('title', sp.i18n.get(titlePropertyKey));
 
     // This first call permits to load required images for a button hover event
     __configureVisualButtonAspect(type, true);

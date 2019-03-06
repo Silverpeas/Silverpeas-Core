@@ -52,21 +52,6 @@
   var __displayFullscreenModalBackground = FS_MANAGER.isWindowCompatible();
 
   $.popup = {
-    initialized: false,
-    /**
-     * Initializes the popup by setting some required properties before loading and using it.
-     */
-    doInitialize: function() {
-      if (!$.popup.initialized) {
-        window.i18n.properties({
-          name: 'generalMultilang',
-          path: webContext + '/services/bundles/org/silverpeas/multilang/',
-          language: '$$', /* by default the language of the user in the current session */
-          mode: 'map'
-        });
-        $.popup.initialized = true;
-      }
-    },
     /**
      * Shows a waiting information. Usually used while the popup is rendering or when the treatment
      * fired by the popup is being processed.
@@ -223,6 +208,10 @@
     }
   };
 
+  var __getLabel = function(key) {
+    return sp.i18n.get(key);
+  };
+
   /**
    * The different methods on messages handled by the plugin.
    */
@@ -310,12 +299,12 @@
       // Common settings
       var settings = __extendCommonSettings(options);
       if (!settings.title) {
-        settings.title = window.i18n.prop('GML.information.dialog.title');
+        settings.title = __getLabel('GML.information.dialog.title');
       }
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonTextNo: window.i18n.prop('GML.ok'),
+        buttonTextNo: __getLabel('GML.ok'),
         isMaxWidth: true
       }));
 
@@ -336,12 +325,12 @@
       // Common settings
       var settings = __extendCommonSettings(options);
       if (!settings.title) {
-        settings.title = window.i18n.prop('GML.error.dialog.title');
+        settings.title = __getLabel('GML.error.dialog.title');
       }
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonTextNo: window.i18n.prop('GML.ok'),
+        buttonTextNo: __getLabel('GML.ok'),
         isMaxWidth: true
       }));
 
@@ -362,12 +351,12 @@
       // Common settings
       var settings = __extendCommonSettings(options);
       if (!settings.title) {
-        settings.title = window.i18n.prop('GML.help.dialog.title');
+        settings.title = __getLabel('GML.help.dialog.title');
       }
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonTextNo: window.i18n.prop('GML.ok'),
+        buttonTextNo: __getLabel('GML.ok'),
         isMaxWidth: true,
         dialogClass: 'help-modal-message'
       }));
@@ -391,8 +380,8 @@
 
       // Internal settings
       settings = $.extend(__buildInternalSettings({
-        buttonTextYes: window.i18n.prop('GML.validate'),
-        buttonTextNo: window.i18n.prop('GML.cancel'),
+        buttonTextYes: __getLabel('GML.validate'),
+        buttonTextNo: __getLabel('GML.cancel'),
         isMaxWidth: true
       }), settings);
 
@@ -414,7 +403,7 @@
       // Common settings
       var settings = __extendCommonSettings(options);
       if (!settings.title) {
-        settings.title = window.i18n.prop('GML.confirmation.dialog.title');
+        settings.title = __getLabel('GML.confirmation.dialog.title');
       }
       var $title = $('<div>').attr('style', 'display: table;');
       var $titleRow = $('<div>').attr('style', 'display: table-row;');
@@ -430,8 +419,8 @@
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
-        buttonTextYes: window.i18n.prop('GML.yes'),
-        buttonTextNo: window.i18n.prop('GML.no'),
+        buttonTextYes: __getLabel('GML.yes'),
+        buttonTextNo: __getLabel('GML.no'),
         isMaxWidth: true
       }));
 
@@ -453,10 +442,10 @@
 
       // Common settings
       var settings = __extendCommonSettings(options);
-      settings.title = window.i18n.prop('GML.preview.dialog.title');
+      settings.title = __getLabel('GML.preview.dialog.title');
       if (options.title && options.title.length > 0) {
         settings.title =
-                settings.title + " " + window.i18n.prop('GML.preview.dialog.title.of') + " " + options.title;
+                settings.title + " " + __getLabel('GML.preview.dialog.title.of') + " " + options.title;
       }
 
       // Internal settings
@@ -493,10 +482,10 @@
 
       // Common settings
       var settings = __extendCommonSettings(options);
-      settings.title = window.i18n.prop('GML.view.dialog.title');
+      settings.title = __getLabel('GML.view.dialog.title');
       if (options.title && options.title.length > 0) {
         settings.title =
-                settings.title + " " + window.i18n.prop('GML.view.dialog.title.of') + " " + options.title;
+                settings.title + " " + __getLabel('GML.view.dialog.title.of') + " " + options.title;
       }
 
       // Internal settings
@@ -553,7 +542,6 @@
    * Here the popup namespace in JQuery in which methods on messages are provided.
    */
   $.fn.popup = function(method) {
-    $.popup.doInitialize();
     if (methods[method]) {
       return methods[ method ].apply(this, Array.prototype.slice.call(arguments, 1));
     } else if (typeof method === 'object' || !method) {
@@ -667,6 +655,8 @@
               // Closing the dialog if ok
               whenIsOk.then(function() {
                 $_this.dialog("close");
+              })['catch'](function() {
+                sp.log.debug('dialog not closed as validation failed');
               });
             }
           });

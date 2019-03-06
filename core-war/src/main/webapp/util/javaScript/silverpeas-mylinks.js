@@ -117,11 +117,9 @@
   function __getFromBundleKey(key) {
     if (webContext) {
       if (!__i18nInitialized) {
-        window.i18n.properties({
-          name: 'myLinksBundle',
-          path: webContext + '/services/bundles/org/silverpeas/mylinks/multilang/',
+        sp.i18n.load({
+          bundle: 'org.silverpeas.mylinks.multilang.myLinksBundle',
           language: getUserLanguage(),
-          mode: 'map'
         });
         __i18nInitialized = true;
       }

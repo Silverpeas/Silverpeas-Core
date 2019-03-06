@@ -426,7 +426,7 @@
     return deferred.promise();
   }
 
-// Initialization indicator.
+  // Initialization indicator.
   var __i18nInitialized = false;
 
   /**
@@ -439,15 +439,10 @@
   function __getFromBundleKey(key, params) {
     if (webContext) {
       if (!__i18nInitialized) {
-        window.i18n.properties({
-          name: 'passwordBundle',
-          path: webContext + '/services/bundles/org/silverpeas/password/multilang/',
-          language: '$$', /* by default the language of the user in the current session */
-          mode: 'map'
-        });
+        sp.i18n.load('org.silverpeas.password.multilang.passwordBundle');
         __i18nInitialized = true;
       }
-      return window.i18n.prop(key, params);
+      return sp.i18n.get(key, params);
     }
     return key;
   }

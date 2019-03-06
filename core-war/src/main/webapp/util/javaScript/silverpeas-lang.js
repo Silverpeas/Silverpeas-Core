@@ -29,10 +29,7 @@
   }
 
   $.lang = {
-    initialized: false,
     changeLanguage: function (lang) {
-      window.console &&
-        window.console.log("Changing user language using " + lang + ", currentUserLanguage = " + getUserLanguage());
       var ajaxUrl = webContext + '/services/mypreferences';
       var newLanguage = { "language": lang };
       jQuery.ajax({
@@ -67,8 +64,6 @@
             sel.append($("<option>").attr('value',this.lang).text(this.name)
                 .prop('selected', this.lang === getUserLanguage()));
           });
-          window.console &&
-            window.console.log('userLanguage = ' + getUserLanguage());
         }
       });
     }
@@ -82,12 +77,6 @@
    */
   function __getFromBundleKey(key) {
     if (webContext) {
-      window.i18n.properties({
-        name: 'generalMultilang',
-        path: webContext + '/services/bundles/org/silverpeas/multilang/',
-        language: getUserLanguage(),
-        mode: 'map'
-      });
       return getString(key);
     }
     return key;

@@ -24,6 +24,10 @@
 
 (function($) {
 
+  var __getLabel = function(key) {
+    return sp.i18n.get(key);
+  };
+
   /**
    * The structure with information about the current tooltip rendered with some data on a given
    * user:
@@ -128,14 +132,15 @@
   function connectionStatus(user) {
     if (user.connected) {
       var onlineStatus = webContext + '/util/icons/online.gif';
-      var onlineStatusAlt = window.i18n.prop('connected');
+      var onlineStatusAlt = __getLabel('connected');
     } else {
       var onlineStatus = webContext + '/util/icons/offline.gif';
-      var onlineStatusAlt = window.i18n.prop('notConnected');
+      var onlineStatusAlt = __getLabel('notConnected');
     }
     return $('<img>', {
       src: onlineStatus,
-      alt: onlineStatusAlt
+      alt: onlineStatusAlt,
+      title: onlineStatusAlt
     });
   }
 
@@ -152,17 +157,17 @@
     interactionBox.append(interactionActions);
     interactionBox.append($('<a>', {
       href: user.webPage
-    }).addClass('userzoom-tooltip-interaction-accessProfil').append($('<span>').append(window.i18n.prop('myProfile.tab.profile')))).
+    }).addClass('userzoom-tooltip-interaction-accessProfil').append($('<span>').append(__getLabel('myProfile.tab.profile')))).
     append($('<a>', {
       href: '#'
-    }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(window.i18n.prop('ToContact'))).click(function() {
+    }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(__getLabel('ToContact'))).click(function() {
       sp.messager.open(null, {recipientUsers: user.id, recipientEdition: false});
       $.userZoom.clear();
     }));
     if (user.chatEnabled) {
       interactionBox.addClass('chat-enabled').append($('<a>', {
         href: '#'
-      }).addClass('userzoom-tooltip-interaction-accessChat' + disabledCss).append($('<span>').append(window.i18n.prop('chat'))).click(function() {
+      }).addClass('userzoom-tooltip-interaction-accessChat' + disabledCss).append($('<span>').append(__getLabel('chat'))).click(function() {
         chatWith(user);
         $.userZoom.clear();
       }));
@@ -173,7 +178,7 @@
       if (contact) {
         var $link = $('<a>', {href : '#'}).addClass('userzoom-tooltip-interaction-action-relation');
         $link.addClass('delete-relation');
-        $link.append($('<span>').append(window.i18n.prop('relation.delete'))).relationShip(
+        $link.append($('<span>').append(__getLabel('relation.delete'))).relationShip(
             'deleteRelation', {user : contact});
         interactionActions.append($link);
       }
@@ -183,16 +188,16 @@
       var $link = $('<a>', {href : '#'}).addClass('userzoom-tooltip-interaction-action-invitation');
       if (!invitation) {
         $link.addClass('invitation');
-        $link.append($('<span>').append(window.i18n.prop('invitation.send'))).relationShip(
+        $link.append($('<span>').append(__getLabel('invitation.send'))).relationShip(
             'sendInvitation', {user : user});
       } else {
         if ($.userZoom.currentUser.id == invitation.receiverId) {
           $link.addClass('view-invitation');
-          $link.append($('<span>').append(window.i18n.prop('invitation.view'))).relationShip(
+          $link.append($('<span>').append(__getLabel('invitation.view'))).relationShip(
               'viewInvitation', {invitation : invitation});
         } else {
           $link.addClass('cancel-invitation');
-          $link.append($('<span>').append(window.i18n.prop('invitation.cancel'))).relationShip(
+          $link.append($('<span>').append(__getLabel('invitation.cancel'))).relationShip(
               'cancelInvitation', {invitation : invitation});
         }
       }
@@ -278,15 +283,11 @@
 
     if (!$.userZoom.initialized) {
       $.userZoom.initialized = true;
-      window.i18n.properties({
-        name: 'socialNetworkBundle',
-        path: webContext + '/services/bundles/org/silverpeas/social/multilang/',
-        language: '$$', /* by default the language of the user in the current session */
-        mode: 'map',
-        async: true,
-        callback: function() {
-          $.userZoom.initialize();
-        }
+      sp.i18n.load({
+        bundle: 'org.silverpeas.social.multilang.socialNetworkBundle',
+        async: true
+      }).then(function() {
+        $.userZoom.initialize();
       });
     }
 

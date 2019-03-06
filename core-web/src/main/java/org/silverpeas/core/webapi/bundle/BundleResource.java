@@ -23,19 +23,20 @@
  */
 package org.silverpeas.core.webapi.bundle;
 
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -43,6 +44,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.MissingResourceException;
 import java.util.Properties;
+import java.util.Set;
+
 
 /**
  * The bundle resource represents either a settings bundle or an i18n messages bundle.
@@ -70,8 +73,10 @@ import java.util.Properties;
 @Authenticated
 public class BundleResource extends RESTWebService {
 
-  private static final String GENERAL_SETTINGS = "org.silverpeas.general";
   static final String PATH = "bundles";
+  private static final String GENERAL_SETTINGS = "org.silverpeas.general";
+  private static final String PROPERTIES_FILE_EXT = ".properties";
+  private static final String LANG_SEPARATOR = "_";
 
   @Override
   protected String getResourceBasePath() {
@@ -88,11 +93,9 @@ public class BundleResource extends RESTWebService {
    * used here to identify the user behind the call if possible.
    *
    * @param validation the validation instance to use.
-   * @throws WebApplicationException
    */
   @Override
-  public void validateUserAuthentication(final UserPrivilegeValidation validation)
-      throws WebApplicationException {
+  public void validateUserAuthentication(final UserPrivilegeValidation validation) {
     try {
       super.validateUserAuthentication(validation);
     } catch (WebApplicationException wae) {
@@ -100,6 +103,32 @@ public class BundleResource extends RESTWebService {
         throw wae;
       }
     }
+  }
+
+  /**
+   * Asks for an i18n resource bundle either in the language of the current user in the session or
+   * in the specified language. The returned bundle does not provide the general Silverpeas i18n
+   * texts.
+   *
+   * The resource bundle is specified by its absolute path in the classpath of the WEB service.
+   *
+   * If the language is specified with the name of the bundle, it will be considered in place of the
+   * language of the current user in the underlying WEB session. For doing, the langage has to be
+   * indicated as expected with localized resource bundles. If the language isn't supported by
+   * Silverpeas, the default language will be taken. In order to work with some javascript plugins
+   * in charge of i18n texts, the method accepts also the particular wildcard $$ to specify
+   * explicitly the language of the current user.
+   *
+   * @see java.util.ResourceBundle
+   * @param bundle the absolute path of the resource bundle in the classpath of Silverpeas.
+   * @return an HTTP response with the asked properties or an HTTP error.
+   * @throws IOException if an error occurs while accessing the resource bundle.
+   */
+  @GET
+  @Path("just/{bundle: org/silverpeas/[a-zA-Z0-9/._$]+}")
+  @Produces(MediaType.TEXT_PLAIN)
+  public Response getLocalizedBundle(@PathParam("bundle") final String bundle) throws IOException {
+    return getLocalizedBundle(bundle, true);
   }
 
   /**
@@ -118,44 +147,37 @@ public class BundleResource extends RESTWebService {
    *
    * @see java.util.ResourceBundle
    * @param bundle the absolute path of the resource bundle in the classpath of Silverpeas.
+   * @param withoutGeneral true if the general bundle must not be merged into response.
    * @return an HTTP response with the asked properties or an HTTP error.
    * @throws IOException if an error occurs while accessing the resource bundle.
    */
   @GET
   @Path("{bundle: org/silverpeas/[a-zA-Z0-9/._$]+}")
   @Produces(MediaType.TEXT_PLAIN)
-  public Response getLocalizedBundle(@PathParam("bundle") final String bundle) throws IOException {
-    String language = getLanguage();
-    String localizedBundle = bundle;
-    if (bundle.endsWith(".properties")) {
-      localizedBundle = bundle.substring(0, bundle.indexOf(".properties"));
-    }
-    if (localizedBundle.lastIndexOf("_") == localizedBundle.length() - 3) {
-      String askedLanguage = localizedBundle.substring(bundle.lastIndexOf("_") + 1);
-      if (!askedLanguage.equals("$$")) {
-        language = askedLanguage;
-      }
-      localizedBundle = localizedBundle.substring(0, bundle.lastIndexOf("_"));
-    }
-    localizedBundle = localizedBundle.replaceAll("/", ".");
-    LocalizationBundle resource = ResourceLocator.getLocalizationBundle(localizedBundle, language);
-    String bundleName = resource.getBaseBundleName() + " - " + resource.getLocale().getLanguage();
-    String generalBundleName =
-        LocalizationBundle.GENERAL_BUNDLE_NAME + " - " + resource.getLocale().getLanguage();
+  public Response getLocalizedBundle(@PathParam("bundle") final String bundle,
+      @QueryParam("withoutGeneral") final boolean withoutGeneral) throws IOException {
+    boolean withGeneral = !withoutGeneral;
+    final LocalizationBundle resource = getBundle(bundle);
+    final String language = resource.getLocale().getLanguage();
+    final String bundleName = resource.getBaseBundleName() + " - " + language;
+    final String generalBundleName = LocalizationBundle.GENERAL_BUNDLE_NAME + " - " + language;
     try {
       if (!bundle.trim().isEmpty() && bundle.contains("multilang")) {
-        StringWriter messages = new StringWriter();
-        Properties properties = new Properties();
-        Properties generalProperties = new Properties();
-        for (String key : resource.keySet()) {
-          if (key.startsWith("GML.")) {
+        final StringWriter messages = new StringWriter();
+        final Properties properties = new Properties();
+        final Properties generalProperties = new Properties();
+        final Set<String> keys = withGeneral ? resource.keySet() : resource.specificKeySet();
+        for (String key : keys) {
+          if (withGeneral && key.startsWith("GML.")) {
             generalProperties.setProperty(key, resource.getString(key));
           } else {
             properties.setProperty(key, resource.getString(key));
           }
         }
         properties.store(messages, bundleName);
-        generalProperties.store(messages, generalBundleName);
+        if (withGeneral) {
+          generalProperties.store(messages, generalBundleName);
+        }
         return Response.ok(messages.toString()).build();
       } else {
         return Response.status(Response.Status.BAD_REQUEST).entity(
@@ -166,6 +188,23 @@ public class BundleResource extends RESTWebService {
     }
   }
 
+  private LocalizationBundle getBundle(final String bundle) {
+    String language = getLanguage();
+    String localizedBundle = bundle;
+    if (bundle.endsWith(PROPERTIES_FILE_EXT)) {
+      localizedBundle = bundle.substring(0, bundle.indexOf(PROPERTIES_FILE_EXT));
+    }
+    if (localizedBundle.lastIndexOf(LANG_SEPARATOR) == localizedBundle.length() - 3) {
+      String askedLanguage = localizedBundle.substring(bundle.lastIndexOf(LANG_SEPARATOR) + 1);
+      if (!askedLanguage.equals("$$")) {
+        language = askedLanguage;
+      }
+      localizedBundle = localizedBundle.substring(0, bundle.lastIndexOf(LANG_SEPARATOR));
+    }
+    localizedBundle = localizedBundle.replaceAll("/", ".");
+    return ResourceLocator.getLocalizationBundle(localizedBundle, language);
+  }
+
   /**
    * Asks for a settings bundle. The returned bundle is a merge of both the asked settings and the
    * general Silverpeas settings.
@@ -174,30 +213,34 @@ public class BundleResource extends RESTWebService {
    *
    * @see java.util.ResourceBundle
    * @param bundle the absolute path of the resource bundle in the classpath of Silverpeas.
+   * @param withGeneral true if the general settings must be added into response.
    * @return an HTTP response with the asked properties or an HTTP error.
    * @throws IOException if an error occurs while accessing the resource bundle.
    */
   @GET
   @Path("settings/{bundle: org/silverpeas/[a-zA-Z0-9/._$]+}")
   @Produces(MediaType.TEXT_PLAIN)
-  public Response getSettingsBundle(@PathParam("bundle") final String bundle) throws IOException {
+  public Response getSettingsBundle(@PathParam("bundle") final String bundle,
+      @QueryParam("withGeneral") final boolean withGeneral) throws IOException {
     String settingsBundle = bundle;
-    if (bundle.endsWith(".properties")) {
-      settingsBundle = bundle.substring(0, bundle.indexOf(".properties"));
+    if (bundle.endsWith(PROPERTIES_FILE_EXT)) {
+      settingsBundle = bundle.substring(0, bundle.indexOf(PROPERTIES_FILE_EXT));
     }
-    if (settingsBundle.lastIndexOf("_") == settingsBundle.length() - 3) {
-      settingsBundle = settingsBundle.substring(0, bundle.lastIndexOf("_"));
+    if (settingsBundle.lastIndexOf(LANG_SEPARATOR) == settingsBundle.length() - 3) {
+      settingsBundle = settingsBundle.substring(0, bundle.lastIndexOf(LANG_SEPARATOR));
     }
     settingsBundle = settingsBundle.replaceAll("/", ".");
-    SettingBundle generalSettings = ResourceLocator.getSettingBundle(GENERAL_SETTINGS);
-    SettingBundle settings = ResourceLocator.getSettingBundle(settingsBundle);
+    final SettingBundle settings = ResourceLocator.getSettingBundle(settingsBundle);
     try {
       if (!bundle.trim().isEmpty() && !bundle.contains("multilang")) {
-        StringWriter messages = new StringWriter();
-        Properties properties = new Properties();
-        Properties generalProperties = new Properties();
-        for (String key : generalSettings.keySet()) {
-          generalProperties.setProperty(key, generalSettings.getString(key));
+        final StringWriter messages = new StringWriter();
+        final Properties properties = new Properties();
+        final Properties generalProperties = new Properties();
+        if (withGeneral) {
+          final SettingBundle generalSettings = ResourceLocator.getSettingBundle(GENERAL_SETTINGS);
+          for (String key : generalSettings.keySet()) {
+            generalProperties.setProperty(key, generalSettings.getString(key));
+          }
         }
         for (String key : settings.keySet()) {
           properties.setProperty(key, settings.getString(key));

@@ -180,7 +180,6 @@ class WebCommonLookAndFeel {
         GraphicElementFactory.MOMENT_TIMEZONE_JS));
 
     // append javascript
-    // append javascript
     code.append("<script type=\"text/javascript\">var webContext='")
         .append(contextPath)
         .append("';")
@@ -207,6 +206,7 @@ class WebCommonLookAndFeel {
         GraphicElementFactory.JQUERYUI_JS));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
         GraphicElementFactory.I18N_JS));
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/silverpeas-i18n.js"));
 
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/jquery.cookie.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/silverpeas-jquery.js"));
@@ -305,7 +305,7 @@ class WebCommonLookAndFeel {
         .append("';").append(STR_NEW_LINE);
     globalJSVariableBuilder.append("function getUserLanguage() { return userLanguage;")
         .append(" }").append(STR_NEW_LINE);
-    globalJSVariableBuilder.append("function getString(key) { return window.i18n.prop(key); }")
+    globalJSVariableBuilder.append("function getString(key) { return sp.i18n.get(key); }")
         .append(STR_NEW_LINE);
     globalJSVariableBuilder.append("var currentUserId = '").append(controller.getUserId())
         .append("';").append(STR_NEW_LINE);

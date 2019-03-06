@@ -37,13 +37,10 @@ function handlePasswordForm(params) {
   if (!settings.passwordFormId || !settings.passwordInputId || !settings.passwordFormAction) {
     return false;
   }
-  window.i18n.properties({
-    name: 'authentication',
-    path: webContext + '/services/bundles/org/silverpeas/authentication/multilang/',
-    language: '$$', /* by default the language of the user in the current session */
-    mode: 'map'
+  sp.i18n.load({
+    bundle : 'org.silverpeas.authentication.multilang.authentication',
+    withGeneral : true
   });
-
   var $pwdInput = $('#' + settings.passwordInputId);
   $pwdInput.password();
   $('#' + settings.passwordFormId).on("submit", function() {
@@ -51,10 +48,10 @@ function handlePasswordForm(params) {
     var _self = this;
     var nextValidations = function() {
       if ($pwdInput.val() === $('#oldPassword').val()) {
-        errorStack.push(window.i18n.prop('authentication.password.newMustBeDifferentToOld'));
+        errorStack.push(sp.i18n.get('authentication.password.newMustBeDifferentToOld'));
       }
       if ($pwdInput.val() !== $('#confirmPassword').val()) {
-        errorStack.push(window.i18n.prop('authentication.password.different'));
+        errorStack.push(sp.i18n.get('authentication.password.different'));
       }
       var $submit = function() {
         if (errorStack.length) {
@@ -77,7 +74,7 @@ function handlePasswordForm(params) {
         nextValidations();
       },
       onError: function() {
-        errorStack.push(window.i18n.prop('authentication.password.error'));
+        errorStack.push(sp.i18n.get('authentication.password.error'));
         nextValidations();
       }
     });
