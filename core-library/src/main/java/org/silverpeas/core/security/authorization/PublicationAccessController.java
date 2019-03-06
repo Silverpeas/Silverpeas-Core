@@ -30,6 +30,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.MemoizedBooleanSupplier;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
@@ -176,8 +177,12 @@ public class PublicationAccessController extends AbstractAccessController<Public
       // (special treatment in case of the user has no access right on component instance)
       rolesFilled = fillTopicTrackerAliasRoles(userRoles, context, userId, pubDetail);
     } else if (componentAccessController.isRightOnTopicsEnabled(pubDetail.getInstanceId())) {
-      // If rights are not handled on folders, folder rights are not checked !
+      // If rights are handled on folders, folder rights are checked !
       rolesFilled = fillTopicTrackerNodeRoles(userRoles, context, userId, pubDetail);
+      if (CollectionUtil.isEmpty(userRoles)) {
+        // if user has no rights on folder, check if an alias of publication is authorized
+        rolesFilled = fillTopicTrackerAliasRoles(userRoles, context, userId, pubDetail);
+      }
     }
     return rolesFilled;
   }
