@@ -125,7 +125,7 @@ public class SimulationActionInterceptorIT {
     assertCheckNotCalled();
     assertThatLogContainsTheMessage(Level.WARNING, "Intercepted method " +
             "'delete', but SourcePK, SourceObject or TargetPK annotations are missing on " +
-            "parameter " + "specifications...");
+            "parameter specifications...");
     assertThatLogContainsTheMessage(Level.INFO, "InterceptorTest@DefaultSimpleService@delete called");
   }
 

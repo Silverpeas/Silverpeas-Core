@@ -44,7 +44,8 @@ public class DefaultSimpleService implements SimpleService {
   @Override
   public InterceptorTestFile create(@SourceObject final InterceptorTestFile file,
       @TargetPK final ResourceReference destination) {
-    SilverLogger.getLogger(this).info("DefaultSimpleService", "create called");
+    SilverLogger.getLogger(this).info("InterceptorTest@DefaultSimpleService@create called");
+
     return null;
   }
 
@@ -52,13 +53,13 @@ public class DefaultSimpleService implements SimpleService {
   @Action(ActionType.DELETE)
   @Override
   public void delete(@SourceObject final InterceptorTestFile file, final ResourceReference destination) {
-    SilverLogger.getLogger(this).info("DefaultSimpleService", "delete called");
+    SilverLogger.getLogger(this).info("InterceptorTest@DefaultSimpleService@delete called");
   }
 
   @SimulationActionProcess(elementLister = InterceptorTestFileElementLister.class)
   @Action(ActionType.MOVE)
   @Override
   public void move(final ResourceReference from, final ResourceReference destination) {
-    SilverLogger.getLogger(this).info("DefaultSimpleService", "move called");
+    SilverLogger.getLogger(this).info("InterceptorTest@DefaultSimpleService@move called");
   }
 }

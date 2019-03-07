@@ -23,10 +23,9 @@
  */
 package org.silverpeas.core.process.management.interceptor;
 
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.ActionType;
+import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.util.annotation.Action;
 import org.silverpeas.core.util.annotation.SourceObject;
 import org.silverpeas.core.util.annotation.TargetPK;
@@ -48,7 +47,7 @@ public class DefaultEjbService implements EjbService {
   @Override
   public InterceptorTestFile create(@SourceObject final InterceptorTestFile file,
       @TargetPK final ResourceReference destination) {
-    SilverTrace.info("InterceptorTest", "DefaultEjbService", "create called");
+    SilverLogger.getLogger(this).info("InterceptorTest@DefaultEjbService@create called");
     return null;
   }
 
@@ -62,13 +61,13 @@ public class DefaultEjbService implements EjbService {
   @Override
   public void delete(@SourceObject final InterceptorTestFile file,
       @TargetPK final ResourceReference destination) {
-    SilverLogger.getLogger(this).info("InterceptorTest", "DefaultEjbService", "delete called");
+    SilverLogger.getLogger(this).info("InterceptorTest@DefaultEjbService@delete called");
   }
 
   @SimulationActionProcess(elementLister = InterceptorTestFileElementLister.class)
   @Action(ActionType.MOVE)
   @Override
   public void move(final ResourceReference from, @TargetPK final ResourceReference destination) {
-    SilverLogger.getLogger(this).info("InterceptorTest", "DefaultEjbService", "move called");
+    SilverLogger.getLogger(this).info("InterceptorTest@DefaultEjbService@move called");
   }
 }
