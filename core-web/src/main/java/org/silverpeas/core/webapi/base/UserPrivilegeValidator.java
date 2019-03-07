@@ -106,6 +106,7 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
         sessionValidationContext.skipLastUserAccessTimeRegistering();
       }
       userSession = validateUserSession(sessionValidationContext);
+      response.setHeader(HTTP_SESSIONKEY, userSession.getSessionId());
     }
     if(!userSession.isDefined()) {
       userSession = authentication.authenticate(

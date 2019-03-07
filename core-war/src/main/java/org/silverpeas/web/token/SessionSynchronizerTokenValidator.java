@@ -66,9 +66,6 @@ public class SessionSynchronizerTokenValidator implements Filter {
   @Inject
   private SessionManagement sessionManagement;
 
-  public SessionSynchronizerTokenValidator() {
-  }
-
   /**
    * Validates the incoming request is performed within a valid user session.
    *
@@ -113,6 +110,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
    */
   @Override
   public void destroy() {
+    // nothing to destroy
   }
 
   /**
@@ -122,12 +120,12 @@ public class SessionSynchronizerTokenValidator implements Filter {
    */
   @Override
   public void init(FilterConfig filterConfig) {
-
+    // nothing to init
   }
 
   private void checkAuthenticatedRequest(HttpServletRequest request) throws
       UnauthenticatedRequestException {
-    if (!isCredentialManagement(request) && !isWebDAVResource(request)) {
+    if (!isWebDAVResource(request)) {
       boolean isAuthenticated = false;
       HttpSession session = request.getSession(false);
       if (session != null) {
@@ -165,8 +163,9 @@ public class SessionSynchronizerTokenValidator implements Filter {
 
   private boolean isProtectedResource(HttpServletRequest request) {
     return tokenService.isAProtectedResource(request) && !isFileDragAndDrop(request) &&
-        !isSsoAuthentication(request) && !(isWebServiceRequested(request) &&
-        StringUtil.isDefined(request.getHeader(UserPrivilegeValidation.HTTP_SESSIONKEY)));
+        !isCredentialManagement(request) && !isSsoAuthentication(request) &&
+        !(isWebServiceRequested(request) &&
+            StringUtil.isDefined(request.getHeader(UserPrivilegeValidation.HTTP_SESSIONKEY)));
   }
 
   private boolean isWebDAVResource(HttpServletRequest request) {

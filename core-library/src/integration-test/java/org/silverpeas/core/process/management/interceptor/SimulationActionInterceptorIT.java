@@ -92,9 +92,10 @@ public class SimulationActionInterceptorIT {
   }
 
   @After
-  public void tearDown() {
+  public void tearDown() throws IOException {
     checkTest.release();
     converter.release();
+    Files.deleteIfExists(getLogFile());
   }
 
 

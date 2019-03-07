@@ -50,7 +50,6 @@ import javax.ws.rs.core.Response;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -230,11 +229,14 @@ public class HTTPAuthentication {
   private static SessionInfo performTokenBasedAuthentication(final AuthenticationContext context) {
     final String token = context.getUserCredentials();
     final PersistentResourceToken userToken = PersistentResourceToken.getToken(token);
-    UserReference userRef = userToken.getResource(UserReference.class);
+    final UserReference userRef = userToken.getResource(UserReference.class);
     if (userRef != null) {
-      UserDetail user = userRef.getEntity();
+      final UserDetail user = userRef.getEntity();
       verifyUserCanLogin(user);
-      return new SessionInfo(UUID.randomUUID().toString(), user);
+      final SessionInfo session =
+          getSessionManagement().openSession(user, context.getHttpServletRequest());
+      context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
+      return session;
     }
     return null;
   }
