@@ -714,12 +714,9 @@ public class ClassifyEngine implements SilverContentPostUpdate {
     // Convert the Axis Ids
     final List<Criteria> allComputedCriteria = buildCriteriaOnAxis(alCriterias);
 
-    // Convert the logicalAxisId
-    final int physicalAxisId = this.getPhysicalAxisId(nAxisId);
-
     // build the statements
     final String sSQLStatement =
-        sqlStatement.buildGetPertinentAxisStatementByJoin(allComputedCriteria, physicalAxisId,
+        sqlStatement.buildGetPertinentAxisStatementByJoin(allComputedCriteria, nAxisId,
             sRootValue, instanceIds, todayFormatted);
 
     PertinentAxis pertinentAxis = singlePertinentAxis.get(sSQLStatement);
@@ -730,7 +727,7 @@ public class ClassifyEngine implements SilverContentPostUpdate {
 
         // Fetch the results
         pertinentAxis = new PertinentAxis();
-        pertinentAxis.setAxisId(this.getLogicalAxisId(physicalAxisId));
+        pertinentAxis.setAxisId(this.getLogicalAxisId(nAxisId));
         int nDocs = 0;
         while (resSet.next()) {
           nDocs += resSet.getInt(1);
