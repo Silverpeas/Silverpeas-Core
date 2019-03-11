@@ -27,6 +27,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,11 +36,13 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.util.SilverProperties;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.Level;
 
 import javax.ejb.EJBException;
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,6 +70,15 @@ public class SimulationActionInterceptorIT {
   @Inject
   private SimpleService simpleService;
 
+  private static Path logFile;
+
+  static {
+    final SilverProperties props =
+        MavenTargetDirectoryRule.loadPropertiesForTestClass(SimulationActionInterceptorIT.class);
+    final File wildflyHome = MavenTargetDirectoryRule.getWildflyHomeFile(props);
+    logFile = Paths.get(wildflyHome.getPath(), "standalone", "log", "server.log");
+  }
+
   private SimulationActionTestFileCheck checkTest = new SimulationActionTestFileCheck();
   private SimulationActionTestDummyFileElementConverter converter =
       new SimulationActionTestDummyFileElementConverter();
@@ -92,9 +104,13 @@ public class SimulationActionInterceptorIT {
   }
 
   @After
-  public void tearDown() throws IOException {
+  public void tearDown() {
     checkTest.release();
     converter.release();
+  }
+
+  @AfterClass
+  public static void clearLogs() throws IOException {
     Files.deleteIfExists(getLogFile());
   }
 
@@ -164,8 +180,7 @@ public class SimulationActionInterceptorIT {
     }
   }
 
-  private Path getLogFile() {
-    return Paths.get(mavenTargetDirectoryRule.getWildflyHomeFile().getPath(), "standalone", "log",
-        "server.log");
+  private static Path getLogFile() {
+    return logFile;
   }
 }
