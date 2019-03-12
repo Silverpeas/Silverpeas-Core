@@ -41,7 +41,7 @@ public class ValidationAnswerHandler extends ChangeQuestionAnswerFunctionHandler
     String login = request.getParameter("Login");
     String domainId = request.getParameter("DomainId");
     String answer = request.getParameter("answer");
-    boolean answerCrypted = getAuthenticationSettings().getBoolean("loginAnswerCrypted", false);
+    boolean answerCrypted = getAuthenticationSettings().getBoolean("loginAnswerEncrypted", false);
 
     try {
       String userId = getAdminService().getUserIdByLoginAndDomain(login, domainId);

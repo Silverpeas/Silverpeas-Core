@@ -46,7 +46,7 @@ public class ValidationQuestionHandler extends FunctionHandler {
   public String doAction(HttpServletRequest request) {
     HttpSession session = request.getSession();
     String key = (String) session.getAttribute("svplogin_Key");
-    boolean answerCrypted = getAuthenticationSettings().getBoolean("loginAnswerCrypted", false);
+    boolean answerCrypted = getAuthenticationSettings().getBoolean("loginAnswerEncrypted", false);
 
     try {
       String userId = getAdminService().identify(key, session.getId(), false, false);

@@ -168,9 +168,6 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
 
     storeLogin(response, authenticationParameters);
 
-    // if required by user, store password in cookie
-    storePassword(response, authenticationParameters);
-
     if (request.getAttribute("skipTermsOfServiceAcceptance") == null) {
       UserMustAcceptTermsOfServiceVerifier verifier = AuthenticationUserVerifierFactory.
           getUserMustAcceptTermsOfServiceVerifier(authenticationParameters.getCredential());
@@ -194,7 +191,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     // fetch the new opened session
     HttpSession session = request.getSession(false);
     session.
-        setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
+        setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getPassword());
     writeSessionCookie(response, session, authenticationParameters.isSecuredAccess());
 
     response.sendRedirect(response.encodeRedirectURL(absoluteUrl));
@@ -208,7 +205,6 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       throws ServletException, IOException {
     String url = "";
     HttpSession session = request.getSession();
-    removeStoredPassword(response, authenticationParameters.isSecuredAccess());
     if (authenticationParameters.isCasMode()) {
       url = "/admin/jsp/casAuthenticationError.jsp";
     } else {
@@ -315,30 +311,6 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     dispatcher.forward(request, response);
   }
 
-  private void storePassword(HttpServletResponse response, AuthenticationParameters params) {
-    if (!isAnonymousAuthentication(params)) {
-      String clearPassword = params.getClearPassword();
-      boolean secured = params.isSecuredAccess();
-      if (StringUtil.getBooleanValue(params.getStoredPassword())) {
-        if (params.isNewEncryptionMode()) {
-          writeCookie(response, "var2", credentialEncryption.encode(clearPassword), -1, secured);
-          writeCookie(response, "var2", credentialEncryption.encode(clearPassword), COOKIE_TIMELIFE,
-              secured);
-        } else {
-          writeCookie(response, COOKIE_PASSWORD, credentialEncryption.encode(clearPassword), -1,
-              secured);
-          writeCookie(response, COOKIE_PASSWORD, credentialEncryption.encode(clearPassword),
-              COOKIE_TIMELIFE, secured);
-        }
-      }
-    }
-  }
-
-  private void removeStoredPassword(HttpServletResponse response, boolean secured) {
-    writeCookie(response, "var2", "", 0, secured);
-    writeCookie(response, COOKIE_PASSWORD, "", 0, secured);
-  }
-
   private void storeLogin(HttpServletResponse response, AuthenticationParameters params) {
     if (!isAnonymousAuthentication(params)) {
       String sLogin = params.getLogin();
@@ -382,7 +354,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
             getDomainId()));
       } else {
         key = authService.authenticate(credential
-            .withAsPassword(authenticationParameters.getClearPassword())
+            .withAsPassword(authenticationParameters.getPassword())
             .withAsDomainId(authenticationParameters.getDomainId()));
       }
       authenticationParameters.setCredential(credential);

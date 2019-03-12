@@ -63,14 +63,13 @@
 
   String logo = general.getString("logo", m_context + "/images/logo.jpg");
   String styleSheet = general.getString("defaultLoginStyleSheet", m_context + "/style.css");
-  String favicon = general.getString("loginPage.favicon", "util/icons/favicon.ico");
+  String favicon = general.getString("loginPage.favicon", m_context + "/util/icons/favicon.ico");
 
 // Is "forgotten password" feature active ?
   String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");
   boolean forgottenPwdActive = !"false".equalsIgnoreCase(pwdResetBehavior);
   boolean changePwdFromLoginPageActive =
       authenticationSettings.getBoolean("changePwdFromLoginPageActive", false);
-  boolean rememberPwdActive = authenticationSettings.getBoolean("cookieEnabled", false);
   boolean newRegistrationActive = registrationSettings.isUserSelfRegistrationEnabled();
 
 // active social networks

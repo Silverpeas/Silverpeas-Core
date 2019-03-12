@@ -33,6 +33,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <fmt:setLocale value="${pageContext.request.locale.language}"/>
 <%@ include file="headLog.jsp" %>
 
@@ -94,19 +95,6 @@
       $("form").submit();
     }
 
-    function checkCookie() {
-      <% if (authenticationSettings.getBoolean("cookieEnabled", false)) { %>
-      var form = document.getElementById("formLogin");
-      if (GetCookie("svpPassword") !== document.getElementById("formLogin").Password.value) {
-        form.cryptedPassword.value = "";
-      } else {
-        if (form.storePassword.checked) {
-          form.storePassword.click();
-        }
-      }
-      <% } %>
-    }
-
     function loginQuestion() {
       var form = document.getElementById("formLogin");
       if (form.elements["Login"].value.length === 0) {
@@ -148,10 +136,6 @@
         if (event.keyCode === 13) {
           checkForm();
         }
-      });
-
-      $("form").submit(function() {
-        checkCookie();
       });
     });
     -->
@@ -206,10 +190,13 @@
             <img src="<%=logo%>" class="logo" alt="logo"/>
           </div>
           <div class="information" style="display: table-cell; width: 100%; text-align: right">
+            <c:set var="errorMessage"/>
+            <c:if test="${silfn:isDefined(param.ErrorCode) && '4' != param.ErrorCode}">
+              <fmt:message key="authentication.logon.${param.ErrorCode}" var="errorMessage"/>
+            </c:if>
             <c:choose>
-              <c:when test="${!empty param.ErrorCode && '4' != param.ErrorCode && 'null' != param.ErrorCode}">
-                <fmt:message key="authentication.logon.${param.ErrorCode}" var="errorMessage"/>
-                <span><c:out value="${errorMessage}" escapeXml="${fn:containsIgnoreCase(errorMessage, 'script') ? 'true' : 'false'}"/></span>
+              <c:when test="${silfn:isDefined(errorMessage) && !fn:startsWith(errorMessage, '???')}">
+                <span>${errorMessage}</span>
               </c:when>
               <c:otherwise>
                 <fmt:message key="authentication.logon.subtitle"/>
@@ -222,7 +209,7 @@
           <div class="clear"></div>
         </div>
         <p>
-          <label><span><fmt:message key="authentication.logon.login"/></span><input type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label>
+          <label><span><fmt:message key="authentication.logon.login"/></span><input type="text" name="Login" id="Login"/></label>
         </p>
 
         <p>
@@ -250,7 +237,7 @@
           <a href="#" class="<%=submitClass%>" onclick="checkForm()"><span><span>LOGIN</span></span></a>
         </p>
 
-        <% if (rememberPwdActive || forgottenPwdActive || changePwdFromLoginPageActive) { %>
+        <% if (forgottenPwdActive || changePwdFromLoginPageActive) { %>
         <% if (forgottenPwdActive) { %>
         <p>
           <span class="forgottenPwd">
@@ -278,16 +265,6 @@
           <% if (forgottenPwdActive || changePwdFromLoginPageActive) { %>
         </p>
         <% } %>
-
-        <% if (rememberPwdActive) { %>
-        <p>
-          <span class="rememberPwd">
-          <% if (forgottenPwdActive || changePwdFromLoginPageActive) { %>
-             <span class="separator">|</span>
-          <% } %>
-          <fmt:message key="authentication.logon.passwordRemember"/> <input type="checkbox" name="storePassword" id="storePassword" value="Yes"/></span>
-        </p>
-        <% } %>
         <% } %>
       </div>
     </div>
@@ -297,7 +274,6 @@
 <!-- Fin class="page" -->
 
 <script type="text/javascript">
-  var nbCookiesFound = 0;
   var domainId = <%=domainId%>;
 
   /* Si le domainId n'est pas dans la requete, alors recuperation depuis le cookie */
@@ -310,26 +286,10 @@
   }
 
   if (GetCookie("svpLogin")) {
-    nbCookiesFound = nbCookiesFound + 1;
     document.getElementById("Login").value = GetCookie("svpLogin").toString();
   }
 
-  <%  if (authenticationSettings.getBoolean("cookieEnabled", false)) { %>
-  if (GetCookie("svpPassword")) {
-    nbCookiesFound = nbCookiesFound + 1;
-    document.getElementById("Password").value = GetCookie("svpPassword").toString();
-  }
-  <%  } %>
-
-  if (nbCookiesFound === 2) {
-    document.getElementById("formLogin").cryptedPassword.value = "Yes";
-    <% if (!StringUtil.isDefined(request.getParameter("logout")) && authenticationSettings.getBoolean("autoSubmit", false)) { %>
-    document.getElementById("formLogin").submit();
-    <% } %>
-  } else {
-    document.getElementById("formLogin").Password.value = '';
-    document.getElementById("formLogin").Login.focus();
-  }
+  document.getElementById("formLogin").Password.value = '';
   document.getElementById("formLogin").Login.focus();
 </script>
 

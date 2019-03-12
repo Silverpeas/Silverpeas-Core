@@ -56,9 +56,6 @@ public class AuthenticationParameters {
   private String login;
   private String password;
   private String domainId;
-  private String storedPassword;
-  private String cryptedPassword;
-  private String clearPassword;
   private String domainIdParam;
   private boolean casMode;
   private SilverpeasSsoPrincipal ssoPrincipal;
@@ -71,8 +68,6 @@ public class AuthenticationParameters {
 
   AuthenticationParameters(HttpServletRequest request) {
     HttpSession session = request.getSession();
-    boolean cookieEnabled = authenticationSettings.getBoolean(
-        "cookieEnabled", false);
     UserDetail userByInternalAuthToken = getUserByInternalAuthToken(request);
     this.ssoPrincipal = getSSOPrincipal(request);
     this.casMode = (getCASUser(session) != null);
@@ -101,18 +96,14 @@ public class AuthenticationParameters {
       // nothing else to do
     } else if (useNewEncryptionMode) {
       login = request.getParameter("Var2");
-      password = request.getParameter("Var1");
-      storedPassword = request.getParameter("tq");
-      cryptedPassword = request.getParameter("dq");
+      password = request.getParameter("Password");
     } else {
       // Get the parameters from the login page
       login = request.getParameter("Login");
       password = request.getParameter("Password");
-      storedPassword = request.getParameter("storePassword");
-      cryptedPassword = request.getParameter("cryptedPassword");
     }
 
-    decodePassword(cookieEnabled, stringKey, useNewEncryptionMode);
+    decodeLogin(stringKey, useNewEncryptionMode);
   }
 
   public void setCredential(final AuthenticationCredential credential) {
@@ -137,14 +128,6 @@ public class AuthenticationParameters {
 
   public String getPassword() {
     return password;
-  }
-
-  public String getStoredPassword() {
-    return storedPassword;
-  }
-
-  public String getClearPassword() {
-    return clearPassword;
   }
 
   public boolean isCasMode() {
@@ -195,22 +178,9 @@ public class AuthenticationParameters {
     }
   }
 
-  private void decodePassword(boolean cookieEnabled, String stringKey,
-      boolean newEncryptMode) {
+  private void decodeLogin(String stringKey, boolean newEncryptMode) {
     CredentialEncryption encryption = CredentialEncryption.getInstance();
-    if (newEncryptMode) {
-      String decodedLogin = encryption.decode(login, stringKey, false);
-      clearPassword = ((!StringUtil.isDefined(cryptedPassword)) ? encryption
-          .decode(password, stringKey, false) : encryption.decode(
-          password, stringKey, true));
-      if (cookieEnabled && StringUtil.isDefined(cryptedPassword)) {
-        decodedLogin = encryption.decode(login, stringKey, true);
-      }
-      login = decodedLogin;
-    } else {
-      clearPassword = ((!StringUtil.isDefined(cryptedPassword)) ? password
-          : encryption.decode(password));
-    }
+    login = newEncryptMode ? encryption.decode(login, stringKey, false) : login;
   }
 
   /**
@@ -220,10 +190,11 @@ public class AuthenticationParameters {
    */
   private String convert2Alpha(String toConvert) {
     StringBuilder alphaString = new StringBuilder();
+    String convertInUpperCase = toConvert.toUpperCase();
     for (int i = 0; i < toConvert.length() && alphaString.length() < KEY_MAX_LENGTH; i++) {
-      int asciiCode = toConvert.toUpperCase().charAt(i);
+      int asciiCode = convertInUpperCase.charAt(i);
       if (asciiCode >= 65 && asciiCode <= 90) {
-        alphaString.append(toConvert.substring(i, i + 1));
+        alphaString.append(toConvert.charAt(i));
       }
     }
     // We fill the key to keyMaxLength char. if not enough letters in
