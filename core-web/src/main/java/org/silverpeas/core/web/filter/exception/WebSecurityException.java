@@ -23,19 +23,22 @@
  */
 package org.silverpeas.core.web.filter.exception;
 
-import org.silverpeas.core.date.DateTime;
+import org.silverpeas.core.SilverpeasException;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * User: Yohann Chastagnier
  * Date: 05/03/14
  */
-public abstract class WebSecurityException extends Exception {
+public abstract class WebSecurityException extends SilverpeasException {
 
   /**
    * Default constructor.
    * @param message
    */
   protected WebSecurityException(final String message) {
-    super(message + DateTime.now().toISO8601());
+    super(message + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
   }
 }

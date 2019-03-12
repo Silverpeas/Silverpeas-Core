@@ -66,6 +66,9 @@ public class WebCORSFilter implements Filter {
     final HttpServletRequest httpRequest = (HttpServletRequest) request;
     final HttpServletResponse httpResponse = (HttpServletResponse) response;
 
+    // Allow only framing (frame, iframe and objects) coming from the same origin
+    httpResponse.addHeader("X-Frame-Options", "SAMEORIGIN");
+
     // The allowed domains are always indicated
     httpResponse.addHeader("Access-Control-Allow-Origin", getAllowedDomains(httpRequest));
 
