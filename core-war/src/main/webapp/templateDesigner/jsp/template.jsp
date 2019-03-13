@@ -59,22 +59,13 @@ function openFieldWindow(url, displayer) {
 	if (displayer === 'pdc') {
 		SP_openWindow(url, "fieldWindow", "700", "450", "directories=0, menubar=0, toolbar=0, scrollbars=yes, alwaysRaised");
 	} else {
-		$.ajax({
-			url: url,
-			type: "GET",
-			dataType: "html",
-			success: function(data) {
-				$('#fieldArea').html(data);
-			}
-		});
-
-		$('#fieldDialog').popup('validation', {
-			title : "<%=resource.getString("templateDesigner.field")%>",
-		    callback : function() {
-		      return sendData();
-		    }
-		});
-	}
+    jQuery.popup.load(url).show('validation', {
+      title : "<%=resource.getString("templateDesigner.field")%>",
+      callback : function() {
+        return sendData();
+      }
+    });
+  }
 }
 
 <% if (context.isDesignMode()) { %>
@@ -164,9 +155,6 @@ out.println(tabbedPane.print());
 <%
     out.println(window.printAfter());
 %>
-<div id="fieldDialog" style="display:none">
-<div id="fieldArea"></div>
-</div>
 <form id="templateForm" method="post" action="DeleteField">
 <input id="fieldName" type="hidden" name="FieldName" />
 </form>

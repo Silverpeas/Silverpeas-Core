@@ -39,7 +39,7 @@ function handlePasswordForm(params) {
   }
   sp.i18n.load({
     bundle : 'org.silverpeas.authentication.multilang.authentication',
-    withGeneral : true
+    async : true
   });
   var $pwdInput = $('#' + settings.passwordInputId);
   $pwdInput.password();
