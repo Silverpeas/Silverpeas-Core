@@ -711,12 +711,10 @@ public class ClassifyEngine implements SilverContentPostUpdate {
   private PertinentAxis getSinglePertinentAxisByJoin(final Connection connection,
       final List<? extends Criteria> alCriterias, final int nAxisId, final String sRootValue,
       final List<String> instanceIds, final String todayFormatted) throws ClassifyEngineException {
-    // Convert the Axis Ids
-    final List<Criteria> allComputedCriteria = buildCriteriaOnAxis(alCriterias);
 
     // build the statements
     final String sSQLStatement =
-        sqlStatement.buildGetPertinentAxisStatementByJoin(allComputedCriteria, nAxisId,
+        sqlStatement.buildGetPertinentAxisStatementByJoin(alCriterias, nAxisId,
             sRootValue, instanceIds, todayFormatted);
 
     PertinentAxis pertinentAxis = singlePertinentAxis.get(sSQLStatement);
