@@ -192,7 +192,6 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     HttpSession session = request.getSession(false);
     session.
         setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getPassword());
-    writeSessionCookie(response, session, authenticationParameters.isSecuredAccess());
 
     response.sendRedirect(response.encodeRedirectURL(absoluteUrl));
   }
@@ -381,15 +380,6 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     doPost(request, response);
   }
 
-  private void writeSessionCookie(HttpServletResponse response, HttpSession session, boolean secured) {
-    Cookie cookie = new Cookie("JSESSIONID", session.getId());
-    cookie.setMaxAge(-1);
-    cookie.setPath(session.getServletContext().getContextPath());
-    cookie.setHttpOnly(true);
-    cookie.setSecure(secured);
-    response.addCookie(cookie);
-  }
-
   private void writeCookie(HttpServletResponse response, String name, String value, int duration,
       boolean secure) {
     String cookieValue;
@@ -400,11 +390,9 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       cookieValue = value;
     }
     Cookie cookie = new Cookie(name, cookieValue);
+    cookie.setSecure(secure);
     cookie.setMaxAge(duration);
     cookie.setPath("/");
-    if (secure) {
-      cookie.setSecure(true);
-    }
     response.addCookie(cookie);
   }
 }

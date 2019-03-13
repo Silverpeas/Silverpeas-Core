@@ -38,6 +38,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar;
@@ -49,6 +50,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationP
  */
 public abstract class AbstractWindow implements Window {
 
+  private static final String DIV = "</div>";
   private BrowseBar browseBar = null;
   private OperationPane operationPane = null;
   private GraphicElementFactory gef = null;
@@ -255,7 +257,8 @@ public abstract class AbstractWindow implements Window {
     sb.append("buttons: {\n");
     sb.append("\"").append(getGEF().getMultilang().getString("GEF.welcome.button.ok"))
         .append("\": function() {\n");
-    sb.append("$.cookie(welcomeMessageCookieName, \"IKnowIt\", { expires: 3650, path: '/' });\n");
+    sb.append("$.cookie(welcomeMessageCookieName, \"IKnowIt\", { expires: 3650, path: '/'");
+    sb.append(", secure: ").append(HttpRequest.isCurrentRequestSecure()).append(" });\n");
     sb.append("$(this).dialog(\"close\");\n");
     sb.append(" }, \n");
     sb.append("\"").append(getGEF().getMultilang().getString("GEF.welcome.button.reminder"))
@@ -316,8 +319,10 @@ public abstract class AbstractWindow implements Window {
       if (getOperationPane().nbOperations() > 0) {
         getOperationPane().addLine();
       }
-      final String viewMgrLabel, addFavLabel;
-      final String viewMgrAction, addFavAction;
+      final String viewMgrLabel;
+      final String addFavLabel;
+      final String viewMgrAction;
+      final String addFavAction;
       boolean addFavOperation = true;
       LocalizationBundle bundle = ResourceLocator.getGeneralLocalizationBundle(
           getGEF().getMultilang().getLocale().getLanguage());
@@ -373,15 +378,15 @@ public abstract class AbstractWindow implements Window {
       }
       result.append("<div class=\"cellBrowseBar\" >");
       result.append(getBrowseBar().print());
-      result.append("</div>");
+      result.append(DIV);
       if (nbCols == 2) {
         result.append("<div class=\"cellOperation\" >");
         result.append(getOperationPane().print());
-        result.append("</div>");
+        result.append(DIV);
       } else {
         result.append("<div class=\"cellOperation\" >");
         result.append("&nbsp;");
-        result.append("</div>");
+        result.append(DIV);
       }
 
     }
@@ -393,7 +398,7 @@ public abstract class AbstractWindow implements Window {
   public String printAfter() {
     StringBuilder result = new StringBuilder(200);
     String iconsPath = getIconsPath();
-    result.append("</div>");
+    result.append(DIV);
 
     if (!isPopup()) {
       result.append("<div class=\"sp_goToTop\"><a href=\"#topPage\"><img src=\"").append(iconsPath).append(
@@ -413,7 +418,7 @@ public abstract class AbstractWindow implements Window {
       }
     }
     if (StringUtil.isDefined(contextualDiv)) {
-      result.append("</div>");
+      result.append(DIV);
     }
 
     result.append(displayWelcomeMessage());
