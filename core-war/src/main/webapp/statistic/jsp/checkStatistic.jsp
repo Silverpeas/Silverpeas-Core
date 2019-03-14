@@ -26,10 +26,9 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
-response.setHeader( "Expires", "Tue, 21 Dec 1993 23:59:59 GMT" );
+response.setDateHeader("Expires", -1);
 response.setHeader( "Pragma", "no-cache" );
 response.setHeader( "Cache-control", "no-cache" );
-response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
 %>
 <%@ page import="org.silverpeas.core.ResourceReference"%>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser"%>

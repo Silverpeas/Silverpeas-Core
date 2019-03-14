@@ -37,11 +37,9 @@
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
 
 <%
-  response.setHeader("Expires", "Tue, 21 Dec 1993 23:59:59 GMT");
+  response.setDateHeader("Expires", -1);
   response.setHeader("Pragma", "no-cache");
   response.setHeader("Cache-control", "no-cache");
-  response.setHeader("Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT");
-  response.setStatus(HttpServletResponse.SC_CREATED);
 %>
 
 <%
