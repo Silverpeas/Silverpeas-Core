@@ -113,15 +113,15 @@
           <div class="clear"></div>
         </div>
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.old") %></span><input type="password" name="oldPassword" id="oldPassword"/></label>
+            "authentication.password.old") %></span><input type="password" autocomplete="false" name="oldPassword" id="oldPassword"/></label>
         </p>
 
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.new") %> </span><input type="password" name="newPassword" id="newPassword"/></label>
+            "authentication.password.new") %> </span><input type="password" autocomplete="false" name="newPassword" id="newPassword"/></label>
         </p>
 
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.confirm") %></span><input type="password" name="confirmPassword" id="confirmPassword"/></label>
+            "authentication.password.confirm") %></span><input type="password" autocomplete="false" name="confirmPassword" id="confirmPassword"/></label>
         </p>
 
         <div class="submit">

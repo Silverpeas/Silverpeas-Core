@@ -311,7 +311,7 @@
             file:</p>
         </div>
         <div class="row">
-          <input type="password" id="password" class="toolbarField">
+          <input type="password" autocomplete="false" id="password" class="toolbarField">
         </div>
         <div class="buttonRow">
           <button id="passwordCancel" class="overlayButton"><span data-l10n-id="password_cancel">Cancel</span>

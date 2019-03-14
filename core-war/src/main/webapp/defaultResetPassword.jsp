@@ -88,11 +88,11 @@
           <div class="clear"></div>
         </div>
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.new") %> </span><input type="password" name="password" id="password"/></label>
+            "authentication.password.new") %> </span><input type="password" autocomplete="false" name="password" id="password"/></label>
         </p>
 
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.confirm") %></span><input type="password" name="confirmPassword" id="confirmPassword"/></label>
+            "authentication.password.confirm") %></span><input type="password" autocomplete="false" name="confirmPassword" id="confirmPassword"/></label>
         </p>
 
         <div class="submit">
