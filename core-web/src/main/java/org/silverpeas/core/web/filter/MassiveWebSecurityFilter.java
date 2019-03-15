@@ -53,9 +53,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * For now, this filter verifies XSS and SQL injections in URLs.
- * User: Yohann Chastagnier
- * Date: 05/03/14
+ * Massive Web Security Protection.
+ *
+ * For now, this filter ensures HTTPS is used in secured connections, blocks content sniffing of
+ * web browsers, and checks XSS and SQL injections
+ * in URLs.
+ * @author Yohann Chastagnier
  */
 public class MassiveWebSecurityFilter implements Filter {
 
@@ -118,7 +121,7 @@ public class MassiveWebSecurityFilter implements Filter {
       final FilterChain chain) throws IOException, ServletException {
     final HttpRequest httpRequest = (HttpRequest) request;
     final HttpServletResponse httpResponse = (HttpServletResponse) response;
-
+    setDefaultSecurity(httpRequest, httpResponse);
     try {
       boolean isWebServiceMultipart =
           httpRequest.getRequestURI().startsWith(WEB_SERVICES_URI_PREFIX) &&
@@ -134,6 +137,11 @@ public class MassiveWebSecurityFilter implements Filter {
       // Verifying security only if all the prerequisite are satisfied
       if (!(isWebServiceMultipart || isWebPageMultiPart) &&
           (isWebSqlInjectionSecurityEnabled || isWebXssInjectionSecurityEnabled)) {
+        if (isWebXssInjectionSecurityEnabled) {
+          // this header isn't taken in charge by all web browsers.
+          httpResponse.setHeader("X-XSS-Protection", "1");
+        }
+
         checkSecurity(httpRequest, isWebSqlInjectionSecurityEnabled,
             isWebXssInjectionSecurityEnabled);
       }
@@ -151,13 +159,21 @@ public class MassiveWebSecurityFilter implements Filter {
     }
   }
 
+  private void setDefaultSecurity(final HttpServletRequest request,
+      final HttpServletResponse response) {
+    response.setHeader("X-Content-Type-Options", "nosniff");
+    if (request.isSecure() && SecuritySettings.isStrictTransportSecurityEnabled()) {
+      response.setHeader("Strict-Transport-Security",
+          "max-age=" + SecuritySettings.getStrictTransportSecurityExpirationTime() + "; preload");
+    }
+  }
+
   private void checkSecurity(final HttpRequest httpRequest,
       final boolean isWebSqlInjectionSecurityEnabled,
       final boolean isWebXssInjectionSecurityEnabled)
       throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
     long start = System.currentTimeMillis();
     try {
-
       // Browsing all parameters
       for (Map.Entry<String, String[]> parameterEntry : httpRequest.getParameterMap()
           .entrySet()) {
