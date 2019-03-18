@@ -29,6 +29,8 @@ import org.silverpeas.core.util.SettingBundle;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+
 /**
  * User: Yohann Chastagnier
  * Date: 05/03/14
@@ -152,5 +154,18 @@ public class SecuritySettings {
 
   public static String getAllowedStyleSourcesInCSP() {
     return settings.getString("security.web.protection.injection.content.styles", "");
+  }
+
+  /**
+   * Gets the formatted sandbox iframe attribute for external contents.
+   * @return the TAG attribute.
+   */
+  public static String getIFrameSandboxTagAttribute() {
+    final String sandbox = settings.getString("security.external.iframe.sandbox", "");
+    String tagAttribute = "";
+    if (!"deactivated".equals(sandbox)) {
+      tagAttribute = "sandbox=\"" + defaultStringIfNotDefined(sandbox) + "\"";
+    }
+    return tagAttribute;
   }
 }

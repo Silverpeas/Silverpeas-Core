@@ -23,41 +23,63 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page isELIgnored="false"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="check.jsp" %>
+
 <c:set var="connection" value="${requestScope.Connection}" scope="page"/>
-<html>
-  <head>
-    <view:looknfeel />
-    <script language="javascript">
-      function sendForm() {
-        document.connectionForm.submit();
-      }
-    </script>
-  </head>
-  <body onload="javascript:sendForm()">
-  <view:browseBar path='<%=resource.getString("webConnections.label")%>' extraInformations=" > ${connection.componentName}"/>
-    <view:window>
-    <view:frame>
-    <c:set var="connectionParams" value="${connection.param}" scope="page"/>
+<c:set var="newTabRequired" value="${connection.newWindow and !requestScope.IgnoreNewWindow}" scope="page"/>
+<c:set var="isAlreadyNewTab" value="${connection.newWindow and requestScope.IgnoreNewWindow}" scope="page"/>
+<c:set var="connectionParams" value="${connection.param}" scope="page"/>
+<c:choose>
+  <c:when test="${newTabRequired}">
+    <c:set var="target" value="_blank"/>
+  </c:when>
+  <c:when test="${isAlreadyNewTab}">
     <c:set var="target" value=""/>
-    <c:if test="${connection.newWindow && !requestScope.IgnoreNewWindow}">
-      <c:set var="target" value="_blank"/>
+  </c:when>
+  <c:otherwise>
+    <c:set var="target" value="SpExternalFullIFrameContainer"/>
+  </c:otherwise>
+</c:choose>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title></title>
+  <c:if test="${newTabRequired}">
+    <view:looknfeel/>
+  </c:if>
+  <script type="text/javascript">
+    function sendForm() {
+      document.connectionForm.submit();
+    }
+  </script>
+</head>
+<body onload="sendForm()">
+<c:if test="${newTabRequired}">
+  <view:browseBar path='<%=resource.getString("webConnections.label")%>' extraInformations=" > ${connection.componentName}"/>
+  <view:window>
+    <view:frame>
       <div class="inlineMessage">
         <%=resource.getString("webConnections.explanation")%>
       </div>
-    </c:if>
-    <% pageContext.setAttribute("entries", ((java.util.Map)pageContext.getAttribute("connectionParams")).entrySet()); %>
-    <form name="connectionForm" action="<c:out value="${connection.url}"/>" method="<c:out value="${connection.method}"/>" target="${target}">
-      <c:forEach items="${pageScope.entries}" var="connectionParam" >
-        <input type="hidden" name="<c:out value="${connectionParam.key}" />" value="<c:out value="${connectionParam.value}" />"/>
-      </c:forEach>
-    </form>
     </view:frame>
-    </view:window>
-  </body>
+  </view:window>
+</c:if>
+<% pageContext.setAttribute("entries",
+    ((java.util.Map) pageContext.getAttribute("connectionParams")).entrySet()); %>
+<form name="connectionForm" action="<c:out value="${connection.url}"/>" method="<c:out value="${connection.method}"/>" target="${target}">
+  <c:forEach items="${pageScope.entries}" var="connectionParam">
+    <input type="hidden" name="<c:out value="${connectionParam.key}" />" value="<c:out value="${connectionParam.value}" />"/>
+  </c:forEach>
+</form>
+<c:if test="${!newTabRequired and !isAlreadyNewTab}">
+  <viewTags:displayExternalFullIframe url="javascript:void(0)"/>
+</c:if>
+</body>
 </html>
