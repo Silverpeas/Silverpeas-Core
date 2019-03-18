@@ -108,7 +108,8 @@ public class SecuritySettings {
    * @return true of Strict Transport Security must be used, false otherwise.
    */
   public static boolean isStrictTransportSecurityEnabled() {
-    return settings.getLong("security.web.protection.httpsonly", 0) > 0;
+    return isWebProtectionEnabled() &&
+        settings.getLong("security.web.protection.httpsonly", 0) > 0;
   }
 
   /**
@@ -133,5 +134,23 @@ public class SecuritySettings {
   public static List<String> getAllowedDomains() {
     final String domains = settings.getString("security.web.protection.domain.allowed", "");
     return Arrays.asList(domains.split(", "));
+  }
+
+  /**
+   * Is the content injection security mechanism enabled? That is to say is the Content Security
+   * Policy enabled?
+   * @return true if the Content Security Policy is enabled for Silverpeas, false otherwise.
+   */
+  public static boolean isWebContentInjectionSecurityEnabled() {
+    return isWebProtectionEnabled() &&
+        settings.getBoolean("security.web.protection.injection.content", false);
+  }
+
+  public static String getAllowedScriptSourcesInCSP() {
+    return settings.getString("security.web.protection.injection.content.scripts", "");
+  }
+
+  public static String getAllowedStyleSourcesInCSP() {
+    return settings.getString("security.web.protection.injection.content.styles", "");
   }
 }

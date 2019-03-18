@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.filter;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
@@ -121,30 +122,9 @@ public class MassiveWebSecurityFilter implements Filter {
       final FilterChain chain) throws IOException, ServletException {
     final HttpRequest httpRequest = (HttpRequest) request;
     final HttpServletResponse httpResponse = (HttpServletResponse) response;
-    setDefaultSecurity(httpRequest, httpResponse);
     try {
-      boolean isWebServiceMultipart =
-          httpRequest.getRequestURI().startsWith(WEB_SERVICES_URI_PREFIX) &&
-              httpRequest.isContentInMultipart();
-      boolean isWebPageMultiPart =
-          httpRequest.getRequestURI().startsWith(WEB_PAGES_URI_PREFIX) &&
-              httpRequest.isContentInMultipart();
-      boolean isWebSqlInjectionSecurityEnabled =
-          SecuritySettings.isWebSqlInjectionSecurityEnabled();
-      boolean isWebXssInjectionSecurityEnabled =
-          SecuritySettings.isWebXssInjectionSecurityEnabled();
-
-      // Verifying security only if all the prerequisite are satisfied
-      if (!(isWebServiceMultipart || isWebPageMultiPart) &&
-          (isWebSqlInjectionSecurityEnabled || isWebXssInjectionSecurityEnabled)) {
-        if (isWebXssInjectionSecurityEnabled) {
-          // this header isn't taken in charge by all web browsers.
-          httpResponse.setHeader("X-XSS-Protection", "1");
-        }
-
-        checkSecurity(httpRequest, isWebSqlInjectionSecurityEnabled,
-            isWebXssInjectionSecurityEnabled);
-      }
+      setDefaultSecurity(httpRequest, httpResponse);
+      checkSecurity(httpRequest, httpResponse);
 
       // The request treatment continues.
       chain.doFilter(httpRequest, httpResponse);
@@ -168,7 +148,43 @@ public class MassiveWebSecurityFilter implements Filter {
     }
   }
 
-  private void checkSecurity(final HttpRequest httpRequest,
+  private void checkSecurity(final HttpRequest httpRequest, final HttpServletResponse httpResponse)
+      throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
+    boolean isWebServiceMultipart =
+        httpRequest.getRequestURI().startsWith(WEB_SERVICES_URI_PREFIX) &&
+            httpRequest.isContentInMultipart();
+    boolean isWebPageMultiPart = httpRequest.getRequestURI().startsWith(WEB_PAGES_URI_PREFIX) &&
+        httpRequest.isContentInMultipart();
+    boolean isWebSqlInjectionSecurityEnabled = SecuritySettings.isWebSqlInjectionSecurityEnabled();
+    boolean isWebXssInjectionSecurityEnabled = SecuritySettings.isWebXssInjectionSecurityEnabled();
+    boolean isCTPEnabled = SecuritySettings.isWebContentInjectionSecurityEnabled();
+
+    // Verifying security only if all the prerequisite are satisfied
+    if (!(isWebServiceMultipart || isWebPageMultiPart)) {
+      if (isWebSqlInjectionSecurityEnabled || isWebXssInjectionSecurityEnabled) {
+        if (isWebXssInjectionSecurityEnabled) {
+          // this header isn't taken in charge by all web browsers.
+          httpResponse.setHeader("X-XSS-Protection", "1");
+        }
+        checkRequestParametersForInjection(httpRequest, isWebSqlInjectionSecurityEnabled,
+            isWebXssInjectionSecurityEnabled);
+      }
+      if (isCTPEnabled) {
+        final User currentUser = User.getCurrentRequester();
+        final String secure = httpRequest.isSecure() ? " https: " : " ";
+        final String img = currentUser == null ? "" : "; img-src *" + secure;
+        httpResponse.setHeader("Content-Security-Policy",
+            "default-src 'self' blob: " + secure +
+                img +
+                "; script-src 'self' blob:  'unsafe-inline' 'unsafe-eval'" + secure +
+                SecuritySettings.getAllowedScriptSourcesInCSP() +
+                "; style-src 'self' 'unsafe-inline' " + secure +
+                SecuritySettings.getAllowedStyleSourcesInCSP());
+      }
+    }
+  }
+
+  private void checkRequestParametersForInjection(final HttpRequest httpRequest,
       final boolean isWebSqlInjectionSecurityEnabled,
       final boolean isWebXssInjectionSecurityEnabled)
       throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
@@ -191,7 +207,7 @@ public class MassiveWebSecurityFilter implements Filter {
     } finally {
       long end = System.currentTimeMillis();
       logger.debug("Massive Web Security Verify duration : " +
-            DurationFormatUtils.formatDurationHMS(end - start));
+          DurationFormatUtils.formatDurationHMS(end - start));
     }
   }
 
