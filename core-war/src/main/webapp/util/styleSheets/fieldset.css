@@ -174,6 +174,14 @@ span.txtsublibform {
 .champs .select-user-group-container .search-input-container .selectize-control{
   width: 90%;
   background: #FFF;
+  max-height: 6em;
+  overflow: auto;
+}
+
+#notification-data-container-recipients .champs{
+  display:block;
+  float:left;
+  width:97%;
 }
 
 .champs input[type="checkbox"] {
