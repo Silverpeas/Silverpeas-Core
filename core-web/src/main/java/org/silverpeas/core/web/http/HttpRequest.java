@@ -215,17 +215,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
     return found;
   }
 
-  @Override
-  public int getServerPort() {
-    return generalSettings.getInteger("server.http.port", super.getServerPort());
-  }
-
-  @Override
-  public boolean isSecure() {
-    return !generalSettings.getBoolean("server.mixed", false) &&
-        (super.isSecure() || generalSettings.getBoolean("server.ssl", false));
-  }
-
   /**
    * Gets the language of the user behind this request.
    *
