@@ -55,7 +55,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
     theEntries = LDAPUtility.search1000Plus(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
         driverSettings.getScope(),
         "(&" + driverSettings.getGroupsFullFilter() + "(" + driverSettings.getGroupsMemberField() +
-            "=" + LDAPUtility.dblBackSlashesForDNInFilters(memberEntry.getDN()) + "))",
+            "=" + LDAPUtility.normalizeFilterValue(memberEntry.getDN()) + "))",
         driverSettings.getGroupsNameField(), driverSettings.getGroupAttributes());
     for (i = 0; i < theEntries.length; i++) {
       groups.add(
@@ -98,7 +98,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
   }
 
   @Override
-  protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId, String extraFilter)
+    protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId, String extraFilter)
       throws AdminException {
     List<LDAPEntry> entries = new ArrayList<>();
     try {
@@ -128,9 +128,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
             "Récupération de " + theEntries.length +
                 " groupes en tout, recherche des groupes racine...");
         entries = Stream.of(theEntries)
-            .map(e -> findGroupWithMember(lds, e))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
+            .map(e -> findGroupWithMember(lds, e).orElse(e))
             .collect(Collectors.toList());
       }
     } catch (AdminException e) {
@@ -157,7 +155,7 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
           LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getGroupsSpecificGroupsBaseDN(),
               driverSettings.getScope(), "(&" + driverSettings.getGroupsFullFilter() + "(" +
                   driverSettings.getGroupsMemberField() + "=" +
-                  LDAPUtility.dblBackSlashesForDNInFilters(theEntry.getDN()) + "))",
+                  LDAPUtility.normalizeFilterValue(theEntry.getDN()) + "))",
               driverSettings.getGroupAttributes()));
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error("IS ROOT GROUP ? : " + theEntry.getDN(), e);
