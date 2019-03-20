@@ -52,6 +52,7 @@ import java.text.MessageFormat;
 import java.util.Set;
 
 import static java.util.Arrays.stream;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicationCacheService;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAsJson;
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
@@ -749,12 +750,34 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  static ElementContainer includeJQueryCss(final ElementContainer xhtml) {
+    xhtml.addElement(link(JQUERY_CSS_PATH + "ui-lightness/jquery-ui.min.css"));
+    return xhtml;
+  }
+
   static ElementContainer includeJQuery(final ElementContainer xhtml) {
-    xhtml.addElement(link(JQUERY_CSS_PATH + GraphicElementFactory.JQUERYUI_CSS));
-    xhtml.addElement(script(JQUERY_PATH + GraphicElementFactory.JQUERY_JS));
-    xhtml.addElement(script(JQUERY_PATH + GraphicElementFactory.JQUERYUI_JS));
-    xhtml.addElement(script(JQUERY_PATH + GraphicElementFactory.JQUERYJSON_JS));
-    xhtml.addElement(script(JAVASCRIPT_PATH + GraphicElementFactory.I18N_JS));
+    includeJQueryCss(xhtml);
+    final boolean isAuthenticatedPage = User.getCurrentRequester() != null && !User.getCurrentRequester().isAnonymous();
+    final String spJQueryScriptName = "silverpeas-jquery.js";
+    final Element spJQueryScript = script(JAVASCRIPT_PATH + spJQueryScriptName);
+    final boolean minifiedVersion = getApplicationCacheService().getCache()
+        .computeIfAbsent(spJQueryScriptName, Boolean.class,
+            () -> !spJQueryScript.toString().contains(spJQueryScriptName));
+    if (isAuthenticatedPage) {
+      xhtml.addElement(script(JQUERY_PATH + "jquery-2.2.4.min.js"));
+      xhtml.addElement(scriptContent("jQuery.migrateTrace = " + minifiedVersion + ";"));
+      xhtml.addElement(scriptContent("jQuery.migrateMute = " + minifiedVersion + ";"));
+      xhtml.addElement(script(JQUERY_PATH + "jquery-migrate-1.4.1.min.js"));
+    } else {
+      xhtml.addElement(script(JQUERY_PATH + "jquery-3.3.1.min.js"));
+      xhtml.addElement(scriptContent("jQuery.migrateTrace = " + minifiedVersion + ";"));
+      xhtml.addElement(scriptContent("jQuery.migrateMute = " + minifiedVersion + ";"));
+      xhtml.addElement(script(JQUERY_PATH + "jquery-migrate-3.0.1.min.js"));
+    }
+    xhtml.addElement(script(JQUERY_PATH + "jquery-ui.min.js"));
+    xhtml.addElement(script(JQUERY_PATH + "jquery.json-2.3.min.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "i18n.properties.js"));
+    xhtml.addElement(spJQueryScript);
     return xhtml;
   }
 

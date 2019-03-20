@@ -1128,7 +1128,7 @@
         modal: true,
         buttons: {
           "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.button.edit"/>": function() {
-            $.cookie(customProtocolCookieName, "IKnowIt", { expires: 3650, path: '/' });
+            $.cookie(customProtocolCookieName, "IKnowIt", { expires: 3650, path: '/', secure: ${pageContext.request.secure} });
             openDocViaCustomProtocol($(this).data('docId'), $(this).data('lang'));
             $(this).dialog("close");
           },

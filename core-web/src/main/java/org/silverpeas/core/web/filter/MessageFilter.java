@@ -70,12 +70,8 @@ public class MessageFilter implements Filter {
       MessageManager
           .addListener(new RequestMessageListener(httpRequest, httpResponse, registredKey));
       try {
-
         chain.doFilter(request, response);
-        return;
-
       } finally {
-
         // Remove message container if no message registered
         if (MessageManager.getMessageContainer(registredKey).getMessages().isEmpty()) {
           MessageManager.clear(registredKey);
@@ -85,10 +81,10 @@ public class MessageFilter implements Filter {
         // Remove from cache the registered key of messages (if any)
         MessageManager.destroy();
       }
+    } else {
+      // Executed if rules of the filter are not satisfied
+      chain.doFilter(request, response);
     }
-
-    // Executed if rules of the filter are not satisfied
-    chain.doFilter(request, response);
   }
 
   /*

@@ -32,14 +32,14 @@ import org.silverpeas.core.util.ServiceProvider;
  */
 public interface CredentialEncryption {
 
-  public static CredentialEncryption getInstance() {
+  static CredentialEncryption getInstance() {
     return ServiceProvider.getService(CredentialEncryption.class);
   }
 
-  public String encode(String str);
+  String encode(String str);
 
-  public String decode(String str);
+  String decode(String str);
 
-  public String decode(String str, String key, boolean extraCrypt);
+  String decode(String str, String key, boolean extraCrypt);
 
 }

@@ -26,6 +26,11 @@ package org.silverpeas.core.web.util.security;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+
 /**
  * User: Yohann Chastagnier
  * Date: 05/03/14
@@ -96,5 +101,71 @@ public class SecuritySettings {
   public static boolean isSessionTokenRenewEnabled() {
     return isWebSecurityByTokensEnabled() &&
         settings.getBoolean("security.web.protection.sessiontoken.renew", false);
+  }
+
+  /**
+   * Is the Strict Transport Security enabled? Strict Transport Security can be used only with
+   * secured connections. It ensures only HTTPS connections are used and hence asks the client to
+   * switch any HTTP connection to an HTTPS connection.
+   * @return true of Strict Transport Security must be used, false otherwise.
+   */
+  public static boolean isStrictTransportSecurityEnabled() {
+    return isWebProtectionEnabled() &&
+        settings.getLong("security.web.protection.httpsonly", 0) > 0;
+  }
+
+  /**
+   * How many seconds the client must memorize Silverpeas has to be accessed only by HTTPS.
+   * Strict Transport Security can be used only with
+   * secured connections. It ensures only HTTPS connections are used and hence asks the client to
+   * switch any HTTP connection to an HTTPS connection.
+   * @return a number of seconds or 0 if no expiration time.
+   */
+  public static long getStrictTransportSecurityExpirationTime() {
+    return settings.getLong("security.web.protection.httpsonly", 0);
+  }
+
+  /**
+   * Gets the URL of all of the domains that are authorized to be accessed from Silverpeas. By
+   * default, if empty, only web resources coming from Silverpeas itself should be authorized.
+   * If of size one and the first value is "*", no CORS protection is enabled. Otherwise, only the
+   * specified domains are authorized by the CORS protection to be accessed from Silverpeas.
+   * @return a list of URI identifying the domains that are authorized to be accessed from
+   * Silverpeas.
+   */
+  public static List<String> getAllowedDomains() {
+    final String domains = settings.getString("security.web.protection.domain.allowed", "");
+    return Arrays.asList(domains.split(", "));
+  }
+
+  /**
+   * Is the content injection security mechanism enabled? That is to say is the Content Security
+   * Policy enabled?
+   * @return true if the Content Security Policy is enabled for Silverpeas, false otherwise.
+   */
+  public static boolean isWebContentInjectionSecurityEnabled() {
+    return isWebProtectionEnabled() &&
+        settings.getBoolean("security.web.protection.injection.content", false);
+  }
+
+  public static String getAllowedScriptSourcesInCSP() {
+    return settings.getString("security.web.protection.injection.content.scripts", "");
+  }
+
+  public static String getAllowedStyleSourcesInCSP() {
+    return settings.getString("security.web.protection.injection.content.styles", "");
+  }
+
+  /**
+   * Gets the formatted sandbox iframe attribute for external contents.
+   * @return the TAG attribute.
+   */
+  public static String getIFrameSandboxTagAttribute() {
+    final String sandbox = settings.getString("security.external.iframe.sandbox", "");
+    String tagAttribute = "";
+    if (!"deactivated".equals(sandbox)) {
+      tagAttribute = "sandbox=\"" + defaultStringIfNotDefined(sandbox) + "\"";
+    }
+    return tagAttribute;
   }
 }

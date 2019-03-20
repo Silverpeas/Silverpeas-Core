@@ -26,10 +26,8 @@ package org.silverpeas.core.security.authentication.verifier;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 
-import static org.silverpeas.core.security.authentication.verifier.AbstractAuthenticationVerifier
-    .getUserByCredential;
-import static org.silverpeas.core.security.authentication.verifier.AbstractAuthenticationVerifier
-    .getUserById;
+import static org.silverpeas.core.security.authentication.verifier.AbstractAuthenticationVerifier.getUserByCredential;
+import static org.silverpeas.core.security.authentication.verifier.AbstractAuthenticationVerifier.getUserById;
 
 /**
  * Factory that provides some verifiers about user authentication :
@@ -39,6 +37,18 @@ import static org.silverpeas.core.security.authentication.verifier.AbstractAuthe
  * Date: 06/02/13
  */
 public class AuthenticationUserVerifierFactory {
+
+  private AuthenticationUserVerifierFactory() {
+    throw new IllegalStateException("Factory class");
+  }
+
+  /**
+   * Removes from request cache the given user.
+   * @param user a user instance.
+   */
+  public static void removeFromRequestCache(UserDetail user) {
+    AbstractAuthenticationVerifier.removeFromRequestCache(user);
+  }
 
   /**
    * Gets user state verifier from UserDetail.
@@ -91,7 +101,7 @@ public class AuthenticationUserVerifierFactory {
    * @return the verifier that checks if the user can try to login one more time after a login
    *         error
    */
-  public synchronized static UserCanTryAgainToLoginVerifier getUserCanTryAgainToLoginVerifier(
+  public static synchronized UserCanTryAgainToLoginVerifier getUserCanTryAgainToLoginVerifier(
       UserDetail user) {
     return UserCanTryAgainToLoginVerifier.get(user);
   }
@@ -132,8 +142,7 @@ public class AuthenticationUserVerifierFactory {
    * @param tosToken
    * @return the verifier that checks if the user must accept terms of service
    */
-  public synchronized static UserMustAcceptTermsOfServiceVerifier
-  getUserMustAcceptTermsOfServiceVerifier(
+  public static synchronized UserMustAcceptTermsOfServiceVerifier getUserMustAcceptTermsOfServiceVerifier(
       String tosToken) {
     return UserMustAcceptTermsOfServiceVerifier.get(tosToken);
   }

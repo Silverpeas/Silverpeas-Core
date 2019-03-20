@@ -144,7 +144,7 @@
           dialogClass : 'help-modal-message',
           buttons : {
             "<fmt:message key="GML.help.cookie.buttons.ok" />" : function() {
-              $.cookie(helpCookieName, "IKnowIt", { expires : 3650, path : '/' });
+              $.cookie(helpCookieName, "IKnowIt", { expires : 3650, path : '/', secure: ${pageContext.request.secure} });
               $(this).dialog("close");
             },
             "<fmt:message key="GML.help.cookie.buttons.remind" />" : function() {

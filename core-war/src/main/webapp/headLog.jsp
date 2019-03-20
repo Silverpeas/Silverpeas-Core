@@ -37,11 +37,9 @@
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
 
 <%
-  response.setHeader("Expires", "Tue, 21 Dec 1993 23:59:59 GMT");
+  response.setDateHeader("Expires", -1);
   response.setHeader("Pragma", "no-cache");
   response.setHeader("Cache-control", "no-cache");
-  response.setHeader("Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT");
-  response.setStatus(HttpServletResponse.SC_CREATED);
 %>
 
 <%
@@ -63,14 +61,13 @@
 
   String logo = general.getString("logo", m_context + "/images/logo.jpg");
   String styleSheet = general.getString("defaultLoginStyleSheet", m_context + "/style.css");
-  String favicon = general.getString("loginPage.favicon", "util/icons/favicon.ico");
+  String favicon = general.getString("loginPage.favicon", m_context + "/util/icons/favicon.ico");
 
 // Is "forgotten password" feature active ?
   String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");
   boolean forgottenPwdActive = !"false".equalsIgnoreCase(pwdResetBehavior);
   boolean changePwdFromLoginPageActive =
       authenticationSettings.getBoolean("changePwdFromLoginPageActive", false);
-  boolean rememberPwdActive = authenticationSettings.getBoolean("cookieEnabled", false);
   boolean newRegistrationActive = registrationSettings.isUserSelfRegistrationEnabled();
 
 // active social networks

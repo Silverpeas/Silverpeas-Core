@@ -23,12 +23,13 @@
  */
 package org.silverpeas.core.web.filter;
 
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.util.HttpMethod;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.util.HttpMethod;
+import org.silverpeas.core.web.util.security.SecuritySettings;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -39,7 +40,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,7 +52,6 @@ import java.util.List;
  */
 public class WebCORSFilter implements Filter {
 
-  private static final SettingBundle settings = ResourceLocator.getGeneralSettingBundle();
   private static final String ALL_DOMAINS_ALLOWED = "*";
 
   /*
@@ -66,15 +65,18 @@ public class WebCORSFilter implements Filter {
     final HttpServletRequest httpRequest = (HttpServletRequest) request;
     final HttpServletResponse httpResponse = (HttpServletResponse) response;
 
+    // Allow only framing (frame, iframe and objects) coming from the same origin
+    httpResponse.addHeader("X-Frame-Options", "SAMEORIGIN");
+
     // The allowed domains are always indicated
-    httpResponse.addHeader("Access-Control-Allow-Origin", getAllowedDomains(httpRequest));
+    httpResponse.addHeader("Access-Control-Allow-Origin", getAllowedDomain(httpRequest));
 
     // In case of detection of an OPTIONS HTTP method, additional headers are filled.
     if (HttpMethod.OPTIONS.name().equals(httpRequest.getMethod())) {
       httpResponse.addHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS");
-      httpResponse.addHeader("Access-Control-Allow-Headers", "Content-Type, " +
-          UserPrivilegeValidation.HTTP_SESSIONKEY + ", " +
-          UserPrivilegeValidation.HTTP_AUTHORIZATION);
+      httpResponse.addHeader("Access-Control-Allow-Headers",
+          "Content-Type, " + UserPrivilegeValidation.HTTP_SESSIONKEY + ", " +
+              UserPrivilegeValidation.HTTP_AUTHORIZATION);
     }
 
     // The request treatment continue.
@@ -82,19 +84,26 @@ public class WebCORSFilter implements Filter {
   }
 
   /**
-   * Computing the String value of allowed domains
-   * @return
+   * Check the URL of the domain behind the specified HTTP request is allowed to be accessed from
+   * Silverpeas. It is to establish a CORS protection.
+   * For doing, it gets from the security settings the URL of the domains authorized to be accessed
+   * from Silverpeas and checks the origin of the specified request is among the allowed domains.
+   * If the setting on the allowed domains is valued with "*" then no CORS protection is enabled.
+   * If the setting isn't valued, then only the web resource of Silverpeas are allowed to be
+   * accessed from Silverpeas itself.
+   * @param httpRequest the incoming HTTP request.
+   * @return the string identifying the domain allowed to access the resource targeted by the
+   * specified resource.
    */
-  private String getAllowedDomains(final HttpServletRequest httpRequest) {
-    final String allowedDomains = settings.getString("web.request.domain.allowed", "");
+  private String getAllowedDomain(final HttpServletRequest httpRequest) {
+    final List<String> allowedDomains = SecuritySettings.getAllowedDomains();
     final String allowedDomain;
-    if (ALL_DOMAINS_ALLOWED.equals(allowedDomains)) {
+    if (allowedDomains.contains(ALL_DOMAINS_ALLOWED)) {
       // No restrictions
       allowedDomain = ALL_DOMAINS_ALLOWED;
     } else {
       final String serverOrigin = httpRequest.getHeader("Origin");
-      final List<String> allowedDomainList = Arrays.asList(allowedDomains.split(", "));
-      if (StringUtil.isDefined(serverOrigin) && allowedDomainList.contains(serverOrigin)) {
+      if (StringUtil.isDefined(serverOrigin) && allowedDomains.contains(serverOrigin)) {
         allowedDomain = serverOrigin;
       } else {
         allowedDomain = URLUtil.getServerURL(httpRequest);

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -54,8 +54,7 @@ public class ChangeExpiredPasswordHandler extends ChangePasswordFunctionHandler 
           + domainId;
     } catch (AuthenticationException e) {
       // Error : go back to page
-      SilverTrace.error("peasCore", "ChangeExpiredPasswordHandler.doAction()",
-          "peasCore.EX_CANNOT_CHANGE_PWD", "login=" + login, e);
+      SilverLogger.getLogger(this).error("login=" + login, e);
       SettingBundle settings = ResourceLocator.getSettingBundle(
           "org.silverpeas.authentication.settings.passwordExpiration");
       return performUrlChangePasswordError(request,

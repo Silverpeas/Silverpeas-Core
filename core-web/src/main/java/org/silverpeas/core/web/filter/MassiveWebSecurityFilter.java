@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.filter;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
@@ -53,54 +54,57 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * For now, this filter verifies XSS and SQL injections in URLs.
- * User: Yohann Chastagnier
- * Date: 05/03/14
+ * Massive Web Security Protection.
+ *
+ * For now, this filter ensures HTTPS is used in secured connections, blocks content sniffing of
+ * web browsers, and checks XSS and SQL injections
+ * in URLs.
+ * @author Yohann Chastagnier
  */
 public class MassiveWebSecurityFilter implements Filter {
 
   private static final SilverLogger logger = SilverLogger.getLogger("silverpeas.core.security");
 
-  private final static String WEB_SERVICES_URI_PREFIX =
+  private static final String WEB_SERVICES_URI_PREFIX =
       SilverpeasWebResource.getBasePathBuilder().build().toString();
 
-  private final static String WEB_PAGES_URI_PREFIX =
+  private static final String WEB_PAGES_URI_PREFIX =
       UriBuilder.fromUri(URLUtil.getApplicationURL()).path("RwebPages").build().toString();
 
-  private final static List<Pattern> SQL_SKIPPED_PARAMETER_PATTERNS;
-  private final static List<Pattern> XSS_SKIPPED_PARAMETER_PATTERNS;
+  private static final List<Pattern> SQL_SKIPPED_PARAMETER_PATTERNS;
+  private static final List<Pattern> XSS_SKIPPED_PARAMETER_PATTERNS;
 
-  private final static List<Pattern> SQL_PATTERNS;
-  private final static List<Pattern> XSS_PATTERNS;
+  private static final List<Pattern> SQL_PATTERNS;
+  private static final List<Pattern> XSS_PATTERNS;
 
-  private final static Pattern ENDS_WITH_WORD_CHARACTER_OR_NUMERIC_PATTERN =
+  private static final Pattern ENDS_WITH_WORD_CHARACTER_OR_NUMERIC_PATTERN =
       Pattern.compile("(?i)[\\w\\-_éèçàëäüïöâêûîôµùÉÈÇÀËÄÜÏÖÂÊÛÎÔΜÙ]$");
 
 
-  private final static Pattern SQL_SELECT_FROM_PATTERN = Pattern.compile("(?i)select.*from");
-  private final static Pattern SQL_INSERT_VALUES_PATTERN =
+  private static final Pattern SQL_SELECT_FROM_PATTERN = Pattern.compile("(?i)select.*from");
+  private static final Pattern SQL_INSERT_VALUES_PATTERN =
       Pattern.compile("(?i)insert( .*|.* )into.*values");
-  private final static Pattern SQL_UPDATE_PATTERN = Pattern.compile("(?i)update.*set");
-  private final static Pattern SQL_DELETE_PATTERN = Pattern.compile("(?i)delete( .*|.* )from");
-  private static String SQL_SELECT_PATTERN_INSPECT_DEEPLY_CACHE_KEY = null;
+  private static final Pattern SQL_UPDATE_PATTERN = Pattern.compile("(?i)update.*set");
+  private static final Pattern SQL_DELETE_PATTERN = Pattern.compile("(?i)delete( .*|.* )from");
+  private static String sqlSelectPatternInspectDeeplyCacheKey = null;
 
 
   static {
 
     // In treatments each sequence of spaces is replaced by one space
 
-    SQL_SKIPPED_PARAMETER_PATTERNS = new ArrayList<Pattern>(1);
+    SQL_SKIPPED_PARAMETER_PATTERNS = new ArrayList<>(1);
     if (StringUtil.isDefined(SecuritySettings.skippedParametersAboutWebSqlInjectionSecurity())) {
       SQL_SKIPPED_PARAMETER_PATTERNS
           .add(Pattern.compile(SecuritySettings.skippedParametersAboutWebSqlInjectionSecurity()));
     }
-    XSS_SKIPPED_PARAMETER_PATTERNS = new ArrayList<Pattern>(1);
+    XSS_SKIPPED_PARAMETER_PATTERNS = new ArrayList<>(1);
     if (StringUtil.isDefined(SecuritySettings.skippedParametersAboutWebXssInjectionSecurity())) {
       XSS_SKIPPED_PARAMETER_PATTERNS
           .add(Pattern.compile(SecuritySettings.skippedParametersAboutWebXssInjectionSecurity()));
     }
 
-    SQL_PATTERNS = new ArrayList<Pattern>(6);
+    SQL_PATTERNS = new ArrayList<>(6);
     SQL_PATTERNS.add(Pattern.compile("(?i)(grant|revoke)" +
         "(( .*|.* )(select|insert|update|delete|references|alter|index|all))+( .*|.* )on"));
     SQL_PATTERNS.add(Pattern.compile("(?i)(create|drop|alter)( .*|.* )(table|database|schema)"));
@@ -109,7 +113,7 @@ public class MassiveWebSecurityFilter implements Filter {
     SQL_PATTERNS.add(SQL_UPDATE_PATTERN);
     SQL_PATTERNS.add(SQL_DELETE_PATTERN);
 
-    XSS_PATTERNS = new ArrayList<Pattern>(1);
+    XSS_PATTERNS = new ArrayList<>(1);
     XSS_PATTERNS.add(Pattern.compile("(?i)<[\\s/]*(script|iframe)"));
   }
 
@@ -118,70 +122,9 @@ public class MassiveWebSecurityFilter implements Filter {
       final FilterChain chain) throws IOException, ServletException {
     final HttpRequest httpRequest = (HttpRequest) request;
     final HttpServletResponse httpResponse = (HttpServletResponse) response;
-
     try {
-
-      boolean isWebServiceMultipart =
-          httpRequest.getRequestURI().startsWith(WEB_SERVICES_URI_PREFIX) &&
-              httpRequest.isContentInMultipart();
-      boolean isWebPageMultiPart =
-          httpRequest.getRequestURI().startsWith(WEB_PAGES_URI_PREFIX) &&
-              httpRequest.isContentInMultipart();
-      boolean isWebSqlInjectionSecurityEnabled =
-          SecuritySettings.isWebSqlInjectionSecurityEnabled();
-      boolean isWebXssInjectionSecurityEnabled =
-          SecuritySettings.isWebXssInjectionSecurityEnabled();
-
-      // Verifying security only if all the prerequisite are satisfied
-      if (!(isWebServiceMultipart || isWebPageMultiPart) &&
-          (isWebSqlInjectionSecurityEnabled || isWebXssInjectionSecurityEnabled)) {
-        long start = System.currentTimeMillis();
-        try {
-
-          // Browsing all parameters
-          Matcher patternMatcherFound;
-          for (Map.Entry<String, String[]> parameterEntry : httpRequest.getParameterMap()
-              .entrySet()) {
-
-            boolean sqlInjectionToVerify = isWebSqlInjectionSecurityEnabled &&
-                mustTheParameterBeVerifiedForSqlVerifications(parameterEntry.getKey());
-            boolean xssInjectionToVerify = isWebXssInjectionSecurityEnabled &&
-                mustTheParameterBeVerifiedForXssVerifications(parameterEntry.getKey());
-            if (!sqlInjectionToVerify && !xssInjectionToVerify) {
-              continue;
-            }
-
-            for (String parameterValue : parameterEntry.getValue()) {
-
-              // Each sequence of spaces is replaced by one space
-              parameterValue = parameterValue.replaceAll("\\s+", " ");
-
-              // SQL injections?
-              if (sqlInjectionToVerify && (patternMatcherFound =
-                  findPatternMatcherFromString(SQL_PATTERNS, parameterValue, true)) != null) {
-
-                if (!verifySqlDeeply(patternMatcherFound, parameterValue)) {
-                  patternMatcherFound = null;
-                }
-
-                if (patternMatcherFound != null) {
-                  throw new WebSqlInjectionSecurityException();
-                }
-              }
-
-              // XSS injections?
-              if (xssInjectionToVerify &&
-                  findPatternMatcherFromString(XSS_PATTERNS, parameterValue, false) != null) {
-                throw new WebXssInjectionSecurityException();
-              }
-            }
-          }
-        } finally {
-          long end = System.currentTimeMillis();
-          logger.debug("Massive Web Security Verify duration : " +
-                DurationFormatUtils.formatDurationHMS(end - start));
-        }
-      }
+      setDefaultSecurity(httpRequest, httpResponse);
+      checkSecurity(httpRequest, httpResponse);
 
       // The request treatment continues.
       chain.doFilter(httpRequest, httpResponse);
@@ -193,6 +136,108 @@ public class MassiveWebSecurityFilter implements Filter {
 
       // An HTTP error is sended to the client
       httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, wse.getMessage());
+    }
+  }
+
+  private void setDefaultSecurity(final HttpServletRequest request,
+      final HttpServletResponse response) {
+    response.setHeader("X-Content-Type-Options", "nosniff");
+    if (request.isSecure() && SecuritySettings.isStrictTransportSecurityEnabled()) {
+      response.setHeader("Strict-Transport-Security",
+          "max-age=" + SecuritySettings.getStrictTransportSecurityExpirationTime() + "; preload");
+    }
+  }
+
+  private void checkSecurity(final HttpRequest httpRequest, final HttpServletResponse httpResponse)
+      throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
+    boolean isWebServiceMultipart =
+        httpRequest.getRequestURI().startsWith(WEB_SERVICES_URI_PREFIX) &&
+            httpRequest.isContentInMultipart();
+    boolean isWebPageMultiPart = httpRequest.getRequestURI().startsWith(WEB_PAGES_URI_PREFIX) &&
+        httpRequest.isContentInMultipart();
+    boolean isWebSqlInjectionSecurityEnabled = SecuritySettings.isWebSqlInjectionSecurityEnabled();
+    boolean isWebXssInjectionSecurityEnabled = SecuritySettings.isWebXssInjectionSecurityEnabled();
+    boolean isCTPEnabled = SecuritySettings.isWebContentInjectionSecurityEnabled();
+
+    // Verifying security only if all the prerequisite are satisfied
+    if (!(isWebServiceMultipart || isWebPageMultiPart)) {
+      if (isWebSqlInjectionSecurityEnabled || isWebXssInjectionSecurityEnabled) {
+        if (isWebXssInjectionSecurityEnabled) {
+          // this header isn't taken in charge by all web browsers.
+          httpResponse.setHeader("X-XSS-Protection", "1");
+        }
+        checkRequestParametersForInjection(httpRequest, isWebSqlInjectionSecurityEnabled,
+            isWebXssInjectionSecurityEnabled);
+      }
+      if (isCTPEnabled) {
+        final User currentUser = User.getCurrentRequester();
+        final String secure = httpRequest.isSecure() ? " https: " : " ";
+        final String img = currentUser == null ? "" : "; img-src *" + secure;
+        httpResponse.setHeader("Content-Security-Policy",
+            "default-src 'self' blob: " + secure +
+                img +
+                "; script-src 'self' blob:  'unsafe-inline' 'unsafe-eval'" + secure +
+                SecuritySettings.getAllowedScriptSourcesInCSP() +
+                "; style-src 'self' 'unsafe-inline' " + secure +
+                SecuritySettings.getAllowedStyleSourcesInCSP());
+      }
+    }
+  }
+
+  private void checkRequestParametersForInjection(final HttpRequest httpRequest,
+      final boolean isWebSqlInjectionSecurityEnabled,
+      final boolean isWebXssInjectionSecurityEnabled)
+      throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
+    long start = System.currentTimeMillis();
+    try {
+      // Browsing all parameters
+      for (Map.Entry<String, String[]> parameterEntry : httpRequest.getParameterMap()
+          .entrySet()) {
+
+        boolean sqlInjectionToVerify = isWebSqlInjectionSecurityEnabled &&
+            mustTheParameterBeVerifiedForSqlVerifications(parameterEntry.getKey());
+        boolean xssInjectionToVerify = isWebXssInjectionSecurityEnabled &&
+            mustTheParameterBeVerifiedForXssVerifications(parameterEntry.getKey());
+        if (!sqlInjectionToVerify && !xssInjectionToVerify) {
+          continue;
+        }
+
+        checkParameterValues(parameterEntry, sqlInjectionToVerify, xssInjectionToVerify);
+      }
+    } finally {
+      long end = System.currentTimeMillis();
+      logger.debug("Massive Web Security Verify duration : " +
+          DurationFormatUtils.formatDurationHMS(end - start));
+    }
+  }
+
+  private void checkParameterValues(final Map.Entry<String, String[]> parameterEntry,
+      final boolean sqlInjectionToVerify, final boolean xssInjectionToVerify)
+      throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
+    Matcher patternMatcherFound;
+    for (String parameterValue : parameterEntry.getValue()) {
+
+      // Each sequence of spaces is replaced by one space
+      parameterValue = parameterValue.replaceAll("\\s+", " ");
+
+      // SQL injections?
+      if (sqlInjectionToVerify && (patternMatcherFound =
+          findPatternMatcherFromString(SQL_PATTERNS, parameterValue, true)) != null) {
+
+        if (!verifySqlDeeply(patternMatcherFound, parameterValue)) {
+          patternMatcherFound = null;
+        }
+
+        if (patternMatcherFound != null) {
+          throw new WebSqlInjectionSecurityException();
+        }
+      }
+
+      // XSS injections?
+      if (xssInjectionToVerify &&
+          findPatternMatcherFromString(XSS_PATTERNS, parameterValue, false) != null) {
+        throw new WebXssInjectionSecurityException();
+      }
     }
   }
 
@@ -263,9 +308,9 @@ public class MassiveWebSecurityFilter implements Filter {
    * @return
    */
   private synchronized Pattern getSqlTableNamesPattern() {
-    Pattern pattern = (SQL_SELECT_PATTERN_INSPECT_DEEPLY_CACHE_KEY != null) ?
+    Pattern pattern = (sqlSelectPatternInspectDeeplyCacheKey != null) ?
         CacheServiceProvider.getApplicationCacheService().getCache()
-            .get(SQL_SELECT_PATTERN_INSPECT_DEEPLY_CACHE_KEY, Pattern.class) : null;
+            .get(sqlSelectPatternInspectDeeplyCacheKey, Pattern.class) : null;
     if (pattern == null) {
       StringBuilder sbPattern = new StringBuilder("(");
       for (String tableName : DBUtil.getAllTableNames()) {
@@ -277,7 +322,7 @@ public class MassiveWebSecurityFilter implements Filter {
       sbPattern.append(")");
 
       pattern = Pattern.compile("(?i)" + sbPattern.toString());
-      SQL_SELECT_PATTERN_INSPECT_DEEPLY_CACHE_KEY =
+      sqlSelectPatternInspectDeeplyCacheKey =
           CacheServiceProvider.getApplicationCacheService().getCache().add(pattern);
     }
     return pattern;
@@ -315,11 +360,9 @@ public class MassiveWebSecurityFilter implements Filter {
     Matcher isMatcherFound = null;
     for (Pattern pattern : patterns) {
       Matcher matcher = pattern.matcher(string);
-      if (matcher.find()) {
-        if (startsAndEndsByWholeWord && (!verifyMatcherStartingByAWord(matcher, string) ||
-            !verifyMatcherEndingByAWord(matcher, string))) {
-          continue;
-        }
+      if (matcher.find() && !(startsAndEndsByWholeWord &&
+          (!verifyMatcherStartingByAWord(matcher, string) ||
+              !verifyMatcherEndingByAWord(matcher, string)))) {
         isMatcherFound = matcher;
         break;
       }

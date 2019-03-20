@@ -144,6 +144,7 @@
     </description>
     <filter-name>WebCORSFilter</filter-name>
     <filter-class>org.silverpeas.core.web.filter.WebCORSFilter</filter-class>
+    <async-supported>true</async-supported>
   </filter>
   <filter>
     <!-- MassiveWebSecurityFilter Filter -->
@@ -187,7 +188,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>WebCORSFilter</filter-name>
-    <url-pattern>/services/*</url-pattern>
+    <url-pattern>/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
     <!-- MassiveWebSecurityFilter Filter mapping -->

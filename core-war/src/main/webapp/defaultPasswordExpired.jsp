@@ -1,28 +1,26 @@
 <%--
-
-    Copyright (C) 2000 - 2018 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "https://www.silverpeas.org/legal/floss_exception.html"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
---%>
+  ~ Copyright (C) 2000 - 2019 Silverpeas
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ As a special exception to the terms and conditions of version 3.0 of
+  ~ the GPL, you may redistribute this Program in connection with Free/Libre
+  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.ui.DisplayI18NHelper" %>
@@ -46,6 +44,7 @@
   <link rel="icon" href="<%=favicon%>" />
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
+  <script type="text/javascript">var webContext = '<%=m_context%>';</script>
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
   <view:script src="/util/javaScript/silverpeas.js" />
@@ -90,15 +89,15 @@
           <div class="clear"></div>
         </div>
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.old") %></span><input type="password" name="oldPassword" id="oldPassword"/></label>
+            "authentication.password.old") %></span><input type="password" autocomplete="false" name="oldPassword" id="oldPassword"/></label>
         </p>
 
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.new") %></span><input type="password" name="newPassword" id="newPassword"/></label>
+            "authentication.password.new") %></span><input type="password" autocomplete="false" name="newPassword" id="newPassword"/></label>
         </p>
 
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.confirm") %></span><input type="password" name="confirmPassword" id="confirmPassword"/></label>
+            "authentication.password.confirm") %></span><input type="password" autocomplete="false" name="confirmPassword" id="confirmPassword"/></label>
         </p>
         <input type="hidden" name="login" value="${param.login}"/>
         <input type="hidden" name="domainId" value="${param.domainId}"/>
@@ -120,7 +119,6 @@
   </div>
 </form>
 <script type="text/javascript">
-  var webContext = '<%=m_context%>';
   setTimeout(function() {
     $('#oldPassword').focus();
     handlePasswordForm({

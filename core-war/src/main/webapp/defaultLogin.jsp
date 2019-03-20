@@ -1,28 +1,26 @@
 <%--
-
-    Copyright (C) 2000 - 2018 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "https://www.silverpeas.org/legal/floss_exception.html"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
---%>
+  ~ Copyright (C) 2000 - 2019 Silverpeas
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ As a special exception to the terms and conditions of version 3.0 of
+  ~ the GPL, you may redistribute this Program in connection with Free/Libre
+  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.web.util.DomainDetector" %>
@@ -33,6 +31,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <fmt:setLocale value="${pageContext.request.locale.language}"/>
 <%@ include file="headLog.jsp" %>
 
@@ -62,7 +61,6 @@
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
   <script type="text/javascript">
-    <!--
     // Public domain cookie code written by:
     // Bill Dortch, hIdaho Design
     // (bdortch@netw.com)
@@ -92,19 +90,6 @@
 
     function checkForm() {
       $("form").submit();
-    }
-
-    function checkCookie() {
-      <% if (authenticationSettings.getBoolean("cookieEnabled", false)) { %>
-      var form = document.getElementById("formLogin");
-      if (GetCookie("svpPassword") !== document.getElementById("formLogin").Password.value) {
-        form.cryptedPassword.value = "";
-      } else {
-        if (form.storePassword.checked) {
-          form.storePassword.click();
-        }
-      }
-      <% } %>
     }
 
     function loginQuestion() {
@@ -144,17 +129,12 @@
     }
 
     $(document).ready(function() {
-      $("#DomainId").keypress(function(event) {
+      $("#DomainId").on("keypress", function(event) {
         if (event.keyCode === 13) {
           checkForm();
         }
       });
-
-      $("form").submit(function() {
-        checkCookie();
-      });
     });
-    -->
   </script>
   <meta name="viewport" content="initial-scale=1.0"/>
 </head>
@@ -206,10 +186,13 @@
             <img src="<%=logo%>" class="logo" alt="logo"/>
           </div>
           <div class="information" style="display: table-cell; width: 100%; text-align: right">
+            <c:set var="errorMessage"/>
+            <c:if test="${silfn:isDefined(param.ErrorCode) && '4' != param.ErrorCode}">
+              <fmt:message key="authentication.logon.${param.ErrorCode}" var="errorMessage"/>
+            </c:if>
             <c:choose>
-              <c:when test="${!empty param.ErrorCode && '4' != param.ErrorCode && 'null' != param.ErrorCode}">
-                <fmt:message key="authentication.logon.${param.ErrorCode}" var="errorMessage"/>
-                <span><c:out value="${errorMessage}" escapeXml="${fn:containsIgnoreCase(errorMessage, 'script') ? 'true' : 'false'}"/></span>
+              <c:when test="${silfn:isDefined(errorMessage) && !fn:startsWith(errorMessage, '???')}">
+                <span>${errorMessage}</span>
               </c:when>
               <c:otherwise>
                 <fmt:message key="authentication.logon.subtitle"/>
@@ -222,11 +205,11 @@
           <div class="clear"></div>
         </div>
         <p>
-          <label><span><fmt:message key="authentication.logon.login"/></span><input type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label>
+          <label><span><fmt:message key="authentication.logon.login"/></span><input type="text" name="Login" id="Login"/></label>
         </p>
 
         <p>
-          <label><span><fmt:message key="authentication.logon.password"/></span><input type="password" name="Password" id="Password"/></label>
+          <label><span><fmt:message key="authentication.logon.password"/></span><input type="password" name="Password" id="Password" autocomplete="false"/></label>
         </p>
         <c:choose>
           <c:when test="${!pageScope.multipleDomains}">
@@ -250,7 +233,7 @@
           <a href="#" class="<%=submitClass%>" onclick="checkForm()"><span><span>LOGIN</span></span></a>
         </p>
 
-        <% if (rememberPwdActive || forgottenPwdActive || changePwdFromLoginPageActive) { %>
+        <% if (forgottenPwdActive || changePwdFromLoginPageActive) { %>
         <% if (forgottenPwdActive) { %>
         <p>
           <span class="forgottenPwd">
@@ -278,16 +261,6 @@
           <% if (forgottenPwdActive || changePwdFromLoginPageActive) { %>
         </p>
         <% } %>
-
-        <% if (rememberPwdActive) { %>
-        <p>
-          <span class="rememberPwd">
-          <% if (forgottenPwdActive || changePwdFromLoginPageActive) { %>
-             <span class="separator">|</span>
-          <% } %>
-          <fmt:message key="authentication.logon.passwordRemember"/> <input type="checkbox" name="storePassword" id="storePassword" value="Yes"/></span>
-        </p>
-        <% } %>
         <% } %>
       </div>
     </div>
@@ -297,7 +270,6 @@
 <!-- Fin class="page" -->
 
 <script type="text/javascript">
-  var nbCookiesFound = 0;
   var domainId = <%=domainId%>;
 
   /* Si le domainId n'est pas dans la requete, alors recuperation depuis le cookie */
@@ -310,26 +282,10 @@
   }
 
   if (GetCookie("svpLogin")) {
-    nbCookiesFound = nbCookiesFound + 1;
     document.getElementById("Login").value = GetCookie("svpLogin").toString();
   }
 
-  <%  if (authenticationSettings.getBoolean("cookieEnabled", false)) { %>
-  if (GetCookie("svpPassword")) {
-    nbCookiesFound = nbCookiesFound + 1;
-    document.getElementById("Password").value = GetCookie("svpPassword").toString();
-  }
-  <%  } %>
-
-  if (nbCookiesFound === 2) {
-    document.getElementById("formLogin").cryptedPassword.value = "Yes";
-    <% if (!StringUtil.isDefined(request.getParameter("logout")) && authenticationSettings.getBoolean("autoSubmit", false)) { %>
-    document.getElementById("formLogin").submit();
-    <% } %>
-  } else {
-    document.getElementById("formLogin").Password.value = '';
-    document.getElementById("formLogin").Login.focus();
-  }
+  document.getElementById("formLogin").Password.value = '';
   document.getElementById("formLogin").Login.focus();
 </script>
 

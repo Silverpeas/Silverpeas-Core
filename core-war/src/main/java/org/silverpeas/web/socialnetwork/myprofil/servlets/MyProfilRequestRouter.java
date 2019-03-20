@@ -281,7 +281,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       if (StringUtil.isDefined(userLoginAnswer)) {
         userLoginAnswer = WebEncodeHelper.htmlStringToJavaString(userLoginAnswer);
         // encrypt the answser if needed
-        boolean answerCrypted = authenticationSettings.getBoolean("loginAnswerCrypted", false);
+        boolean answerCrypted = authenticationSettings.getBoolean("loginAnswerEncrypted", false);
         if (answerCrypted) {
           userLoginAnswer = CryptMD5.encrypt(userLoginAnswer);
         }

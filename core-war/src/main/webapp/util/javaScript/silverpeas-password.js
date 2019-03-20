@@ -32,18 +32,23 @@
     rules: null,
     nbMatchingCombinedRules: null,
     combinedRules: null,
-    extraRuleMessage: null,
-    doInitialize : function() {
-      if ($.password.rules == null) {
-        __getJSonData($.password.webServiceContext + '/password/policy').then(function(policy) {
-          $.password.rules = policy.rules;
-          $.password.nbMatchingCombinedRules = policy.nbMatchingCombinedRules;
-          $.password.combinedRules = policy.combinedRules;
-          $.password.extraRuleMessage = $.trim(policy.extraRuleMessage);
-        });
-      }
-    }
+    extraRuleMessage: null
   };
+
+  var __uiPromises = [];
+  if (webContext) {
+    __uiPromises.push(sp.i18n.load({
+      bundle : 'org.silverpeas.password.multilang.passwordBundle',
+      async : true
+    }));
+    __uiPromises.push(__getJSonData($.password.webServiceContext + '/password/policy').then(function(policy) {
+      $.password.rules = policy.rules;
+      $.password.nbMatchingCombinedRules = policy.nbMatchingCombinedRules;
+      $.password.combinedRules = policy.combinedRules;
+      $.password.extraRuleMessage = $.trim(policy.extraRuleMessage);
+    }));
+  }
+  var __uiReady = Promise.all(__uiPromises);
 
   /**
    * The different password methods handled by the plugin.
@@ -73,7 +78,6 @@
    * Here the password namespace in JQuery.
    */
   $.fn.password = function(method) {
-    $.password.doInitialize();
     if (methods[method]) {
       return methods[ method ].apply(this, Array.prototype.slice.call(arguments, 1));
     } else if (typeof method === 'object' || !method) {
@@ -194,7 +198,9 @@
     }
 
     return $targets.each(function() {
-      __prepareUI($(this));
+      __uiReady.then(function() {
+        __prepareUI($(this));
+      }.bind(this));
     });
   }
 
@@ -256,7 +262,7 @@
     }
 
     // Events
-    $target.keyup(function(event) {
+    $target.on("keyup", function(event) {
       var deferred = new $.Deferred();
       // Toggle info box display on 'Escape'
       if (event.keyCode === 27) {
@@ -292,13 +298,13 @@
       });
     });
 
-    $(window).resize(function() {
+    $(window).on("resize", function() {
       // Position
       if ($box.css('display') !== 'none') {
         __setBoxInfoPosition($target, $box);
       }
     });
-    $target.focus(function() {
+    $target.on("focus", function() {
       var deferred = new $.Deferred();
       if ($target.val()) {
         __checking($target, $box, {}).then(function() {
@@ -313,11 +319,11 @@
       });
       return true;
     });
-    $target.blur(function() {
+    $target.on("blur", function() {
       $box.hide();
       return true;
     });
-    $box.click(function() {
+    $box.on("click", function() {
       $box.hide();
       return true;
     });
@@ -379,7 +385,7 @@
    * @private
    */
   function __getJSonData(url) {
-    return __performAjaxRequest({url : url, type : 'GET', dataType : 'json', async : false});
+    return __performAjaxRequest({url : url, type : 'GET', dataType : 'json', async : true});
   }
 
   /**
@@ -426,9 +432,6 @@
     return deferred.promise();
   }
 
-  // Initialization indicator.
-  var __i18nInitialized = false;
-
   /**
    * Private method that handles i18n.
    * @param key
@@ -438,10 +441,6 @@
    */
   function __getFromBundleKey(key, params) {
     if (webContext) {
-      if (!__i18nInitialized) {
-        sp.i18n.load('org.silverpeas.password.multilang.passwordBundle');
-        __i18nInitialized = true;
-      }
       return sp.i18n.get(key, params);
     }
     return key;

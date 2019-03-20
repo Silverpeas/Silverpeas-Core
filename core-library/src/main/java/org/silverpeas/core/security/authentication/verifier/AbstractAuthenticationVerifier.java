@@ -24,6 +24,7 @@
 package org.silverpeas.core.security.authentication.verifier;
 
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -80,7 +81,7 @@ class AbstractAuthenticationVerifier {
    * @return the user with the specified credentials
    */
   static UserDetail getUserByCredential(AuthenticationCredential credential) {
-    final String cacheKey = CACHE_KEY_PREFIX + credential.getLogin() + credential.getDomainId();
+    final String cacheKey = cacheKey(credential.getLogin(), credential.getDomainId());
     return getRequestCacheService().getCache().computeIfAbsent(cacheKey, UserDetail.class, () -> {
       try {
         return UserDetail.getById(getAdminService()
@@ -89,6 +90,17 @@ class AbstractAuthenticationVerifier {
         return null;
       }
     });
+  }
+
+  /**
+   * Removes from request cache the given user.
+   * @param user a user instance.
+   */
+  static void removeFromRequestCache(final User user) {
+    if (user != null) {
+      final String cacheKey = cacheKey(user.getLogin(), user.getDomainId());
+      getRequestCacheService().getCache().remove(cacheKey);
+    }
   }
 
   /**
@@ -113,5 +125,9 @@ class AbstractAuthenticationVerifier {
       translation = "";
     }
     return translation;
+  }
+
+  private static String cacheKey(final String login, final String domainId) {
+    return CACHE_KEY_PREFIX + login + "@domain" + domainId;
   }
 }

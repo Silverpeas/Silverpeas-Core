@@ -24,6 +24,7 @@
 package org.silverpeas.core.security.authentication;
 
 import org.silverpeas.core.SilverpeasExceptionMessages;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
@@ -36,15 +37,11 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationBadCr
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationPasswordMustBeChangedAtNextLogon;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationPasswordMustBeChangedOnFirstLogin;
+import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
+import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPwdNotAvailException;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationUserAccountBlockedException;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationUserAccountDeactivatedException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountBlockedException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationUserAccountDeactivatedException;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.core.security.authentication.verifier.UserMustChangePasswordVerifier;
@@ -378,21 +375,17 @@ public class AuthenticationService {
     }
 
     // Verify that the user can login
-    AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
-    Connection connection = null;
-    try {
-      // Open connection
-      connection = openConnection();
-
-      AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
-
-      // Authentication test
-      authenticationServer.changePassword(credential, newPassword);
+    final UserCanLoginVerifier userCanLoginVerifier = AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential);
+    userCanLoginVerifier.verify();
+    try (Connection connection = openConnection()) {
+      getAuthenticationServer(connection, domainId).changePassword(credential, newPassword);
+      AuthenticationUserVerifierFactory.removeFromRequestCache(userCanLoginVerifier.getUser());
     } catch (AuthenticationException ex) {
       SilverLogger.getLogger(this).warn(ex);
       throw ex;
-    } finally {
-      closeConnection(connection);
+    } catch (SQLException e) {
+      SilverLogger.getLogger(this).error(e);
+      throw new SilverpeasRuntimeException(e);
     }
 
     // Treatments on password change

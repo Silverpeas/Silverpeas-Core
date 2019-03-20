@@ -66,7 +66,7 @@ public class ResourceLocatorTest {
     SettingBundle bundle = ResourceLocator.getSettingBundle(
         "org.silverpeas.authentication.settings.authenticationSettings");
     assertThat(bundle, is(notNullValue()));
-    assertThat(bundle.getBoolean("loginAnswerCrypted"), is(false));
+    assertThat(bundle.getBoolean("loginAnswerEncrypted"), is(false));
   }
 
   @Test

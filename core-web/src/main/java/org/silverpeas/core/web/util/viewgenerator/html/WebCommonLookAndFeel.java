@@ -115,11 +115,10 @@ class WebCommonLookAndFeel {
 
     String specificJS = null;
 
-    code.append(getCSSLinkTag(contextPath + "/util/styleSheets/jquery/" +
-        GraphicElementFactory.JQUERYUI_CSS));
+    code.append(includeJQueryCss(new ElementContainer()).toString());
 
     // append default global CSS
-    code.append(getCSSLinkTagWithVersion(contextPath + STANDARD_CSS));
+    code.append(getCSSLinkTag(contextPath + STANDARD_CSS));
 
     // define CSS(default and specific) and JS (specific) dedicated to current component
     String defaultComponentCSS = null;
@@ -134,12 +133,12 @@ class WebCommonLookAndFeel {
         if (component.isWorkflow()) {
           genericComponentName = "processManager";
         }
-        defaultComponentCSS = getCSSLinkTagWithVersion(contextPath + "/" + genericComponentName
+        defaultComponentCSS = getCSSLinkTag(contextPath + "/" + genericComponentName
             + "/jsp/styleSheets/" + genericComponentName + ".css");
 
         String specificStyle = lookSettings.getString("StyleSheet." + componentName, "");
         if (StringUtil.isDefined(specificStyle)) {
-          specificComponentCSS = getCSSLinkTagWithVersion(specificStyle);
+          specificComponentCSS = getCSSLinkTag(specificStyle);
         }
 
         specificJS = lookSettings.getString("JavaScript." + componentName, "");
@@ -154,14 +153,14 @@ class WebCommonLookAndFeel {
     // append specific look CSS
     String css = lookSettings.getString("StyleSheet", "");
     if (StringUtil.isDefined(css)) {
-      code.append(getCSSLinkTagWithVersion(css));
+      code.append(getCSSLinkTag(css));
     }
 
     if (StringUtil.isDefined(spaceId)) {
       // load CSS file manually uploaded
       String cssUploadedOnSpace = SilverpeasLook.getSilverpeasLook().getCSSOfSpace(spaceId);
       if (StringUtil.isDefined(cssUploadedOnSpace)) {
-        code.append(getCSSLinkTagWithVersion(cssUploadedOnSpace));
+        code.append(getCSSLinkTag(cssUploadedOnSpace));
       }
     }
 
@@ -196,20 +195,9 @@ class WebCommonLookAndFeel {
         .append("</script>\n");
 
     code.append(getJavaScriptTagWithVersion(contextPath + "/util/javaScript/" + SILVERPEAS_JS));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
-        GraphicElementFactory.JQUERY_JS));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
-        GraphicElementFactory.JQUERY_MIGRATION));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
-        GraphicElementFactory.JQUERYJSON_JS));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
-        GraphicElementFactory.JQUERYUI_JS));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
-        GraphicElementFactory.I18N_JS));
+    code.append(includeJQuery(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/silverpeas-i18n.js"));
-
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/jquery.cookie.js"));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/silverpeas-jquery.js"));
 
     code.append(includeChat(new ElementContainer()).toString()).append(STR_NEW_LINE);
 
@@ -261,13 +249,7 @@ class WebCommonLookAndFeel {
   }
 
   private String getCSSLinkTag(String href) {
-    String normalizedUrl = getMinifiedWebResourceUrl(href);
-    return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + normalizedUrl + "\"/>\n";
-  }
-
-  private String getCSSLinkTagWithVersion(String href) {
-    String normalizedUrl = getMinifiedWebResourceUrl(href);
-    return getCSSLinkTag(URLUtil.appendVersion(normalizedUrl));
+    return link(href).toString();
   }
 
   private String getJavaScriptTag(String src) {

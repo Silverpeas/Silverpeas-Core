@@ -26,6 +26,7 @@ package org.silverpeas.core.web.http;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
@@ -67,6 +68,8 @@ import static org.silverpeas.core.web.http.RequestParameterDecoder.*;
  */
 public class HttpRequest extends HttpServletRequestWrapper {
 
+  private static final String SECURE_PROPERTY = "secure";
+
   private List<FileItem> fileItems = null;
   private SettingBundle generalSettings = ResourceLocator.getGeneralSettingBundle();
 
@@ -85,6 +88,9 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @return an HttpRequest instance decorating the specified request.
    */
   public static HttpRequest decorate(final HttpServletRequest request) {
+    CacheServiceProvider.getRequestCacheService()
+        .getCache()
+        .put(SECURE_PROPERTY, request.isSecure());
     return request instanceof HttpRequest ? (HttpRequest) request : new HttpRequest(request);
   }
 
@@ -97,6 +103,21 @@ public class HttpRequest extends HttpServletRequestWrapper {
    */
   public static HttpRequest decorate(final ServletRequest request) {
     return decorate((HttpServletRequest) request);
+  }
+
+  /**
+   * Is the HTTP request currently processed is secure (that is carried through a TLS connection)?
+   * @return true of the current HTTP request is secure, false otherwise.
+   */
+  public static boolean isCurrentRequestSecure() {
+    Boolean secure = CacheServiceProvider.getRequestCacheService()
+        .getCache()
+        .get(SECURE_PROPERTY, Boolean.class);
+    if (secure == null) {
+      throw new IllegalStateException(
+          "The current execution context isn't relative to an incoming HTTP request");
+    }
+    return secure;
   }
 
   /**
@@ -192,17 +213,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
       found = cookies[i].getName().equals(name);
     }
     return found;
-  }
-
-  @Override
-  public int getServerPort() {
-    return generalSettings.getInteger("server.http.port", super.getServerPort());
-  }
-
-  @Override
-  public boolean isSecure() {
-    return !generalSettings.getBoolean("server.mixed", false) &&
-        (super.isSecure() || generalSettings.getBoolean("server.ssl", false));
   }
 
   /**

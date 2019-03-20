@@ -54,8 +54,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPaneWA;
 import org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationList;
 import org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationListSilverpeasV5;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane;
-import org.silverpeas.core.web.util.viewgenerator.html.operationpanes
-    .OperationPaneSilverpeasV5Web20;
+import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPaneSilverpeasV5Web20;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationSP;
 import org.silverpeas.core.web.util.viewgenerator.html.progressmessage.ProgressMessage;
@@ -73,8 +72,7 @@ import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Set;
 
-import static org.silverpeas.core.web.mvc.controller.MainSessionController
-    .MAIN_SESSION_CONTROLLER_ATT;
+import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * The GraphicElementFactory is the only class to instanciate in this package. You should have one
@@ -90,31 +88,26 @@ public class GraphicElementFactory {
    */
   public static final String RESOURCES_KEY = "resources";
   public static final String GE_FACTORY_SESSION_ATT = "SessionGraphicElementFactory";
-  private final static SettingBundle settings = ResourceLocator.getSettingBundle(
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.util.viewGenerator.settings.graphicElementFactorySettings");
+  private static final String ARRAY_PANE = "ArrayPane";
   private static SettingBundle lookSettings = null;
   private SettingBundle favoriteLookSettings = null;
-  private final static String REQUEST_SPACE_ID = GraphicElementFactory.class + "_REQUEST_SPACE_ID";
-  private final static String REQUEST_COMPONENT_ID =
+  private static final String REQUEST_SPACE_ID = GraphicElementFactory.class + "_REQUEST_SPACE_ID";
+  private static final String REQUEST_COMPONENT_ID =
       GraphicElementFactory.class + "_REQUEST_COMPONENT_ID";
-  private final static String REQUEST_IS_COMPONENT_MAIN_PAGE =
+  private static final String REQUEST_IS_COMPONENT_MAIN_PAGE =
       GraphicElementFactory.class + "_REQUEST_IS_COMPONENT_MAIN_PAGE";
-  private final static String REQUEST_EXTERNAL_STYLESHEET =
+  private static final String REQUEST_EXTERNAL_STYLESHEET =
       GraphicElementFactory.class + "_REQUEST_EXTERNAL_STYLESHEET";
-  private final static String iconsPath =
+  private static final String ICONS_PATH =
       (URLUtil.getApplicationURL() + settings.getString("IconsPath")).replaceAll("/$", "");
   private LocalizationBundle multilang = null;
   private String currentLookName = null;
   private MainSessionController mainSessionController = null;
   public static final String defaultLookName = "Initial";
-  protected static final String MOMENT_JS = "moment-with-locales.min.js";
-  protected static final String MOMENT_TIMEZONE_JS = "moment-timezone-with-data.min.js";
-  protected static final String JQUERY_JS = "jquery-2.2.4.min.js";
-  protected static final String JQUERYUI_JS = "jquery-ui.min.js";
-  protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui.min.css";
-  protected static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
-  protected static final String I18N_JS = "i18n.properties.js";
-  protected static final String JQUERY_MIGRATION = "jquery-migrate-1.4.1.min.js";
+  static final String MOMENT_JS = "moment-with-locales.min.js";
+  static final String MOMENT_TIMEZONE_JS = "moment-timezone-with-data.min.js";
   public static final String STANDARD_CSS = "/util/styleSheets/silverpeas-main.css";
 
   static {
@@ -149,7 +142,7 @@ public class GraphicElementFactory {
   }
 
   public static String getIconsPath() {
-    return iconsPath;
+    return ICONS_PATH;
   }
 
   public LocalizationBundle getMultilang() {
@@ -307,8 +300,7 @@ public class GraphicElementFactory {
    */
   public List<String> getAvailableLooks() {
     SettingBundle theLookSettings = getLookSettings();
-    List<String> availableLooks = new ArrayList<>(theLookSettings.keySet());
-    return availableLooks;
+    return new ArrayList<>(theLookSettings.keySet());
   }
 
   public List<String> getAvailableLooksForUser() {
@@ -411,6 +403,7 @@ public class GraphicElementFactory {
    * @return returns an object implementing the FormButton interface. That's the new button to use.
    * @deprecated
    */
+  @Deprecated
   public Button getFormButton(String label, String action, boolean disabled, String imagePath) {
     return getFormButton(label, action, disabled);
   }
@@ -441,8 +434,9 @@ public class GraphicElementFactory {
    * @return An object implementing the ArrayPane interface.
    * @deprecated
    */
+  @Deprecated
   public ArrayPane getArrayPane(String name, javax.servlet.jsp.PageContext pageContext) {
-    String arrayPaneClassName = getFavoriteLookSettings().getString("ArrayPane");
+    String arrayPaneClassName = getFavoriteLookSettings().getString(ARRAY_PANE);
     ArrayPane arrayPane = null;
 
     try {
@@ -468,8 +462,9 @@ public class GraphicElementFactory {
    * @return An object implementing the ArrayPane interface.
    * @deprecated
    */
+  @Deprecated
   public ArrayPane getArrayPane(String name, ServletRequest request, HttpSession session) {
-    String arrayPaneClassName = getFavoriteLookSettings().getString("ArrayPane");
+    String arrayPaneClassName = getFavoriteLookSettings().getString(ARRAY_PANE);
     ArrayPane arrayPane = null;
     try {
       arrayPane = (ArrayPane) Class.forName(arrayPaneClassName).newInstance();
@@ -497,7 +492,7 @@ public class GraphicElementFactory {
    */
   public ArrayPane getArrayPane(String name, String url, ServletRequest request,
       HttpSession session) {
-    String arrayPaneClassName = getFavoriteLookSettings().getString("ArrayPane");
+    String arrayPaneClassName = getFavoriteLookSettings().getString(ARRAY_PANE);
     ArrayPane arrayPane = null;
     try {
       arrayPane = (ArrayPane) Class.forName(arrayPaneClassName).newInstance();

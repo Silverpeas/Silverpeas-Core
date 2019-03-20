@@ -1,31 +1,26 @@
 <%--
-
-    Copyright (C) 2000 - 2018 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "https://www.silverpeas.org/legal/floss_exception.html"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
---%>
-<%@ page import="org.silverpeas.core.ui.DisplayI18NHelper" %>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+  ~ Copyright (C) 2000 - 2019 Silverpeas
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ As a special exception to the terms and conditions of version 3.0 of
+  ~ the GPL, you may redistribute this Program in connection with Free/Libre
+  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -46,8 +41,12 @@
   <title><%=generalMultilang.getString("GML.popupTitle")%>  </title>
   <link rel="icon" href="<%=favicon%>" />
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
+  <script type="text/javascript">var webContext = '<%=m_context%>';</script>
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
+  <view:script src="/util/javaScript/silverpeas.js" />
+  <view:script src="/util/javaScript/silverpeas-i18n.js" />
+  <view:includePlugin name="popup"/>
   <!--[if lt IE 8]>
   <style type="text/css">
     input {
@@ -68,13 +67,13 @@
       $('#question').focus();
       $('#questionForm').on("submit", function() {
         if (this.elements["answer"].value.length === 0) {
-          alert("<%=authenticationBundle.getString("authentication.reminder.answer.empty") %>");
-          return false;
+          SilverpeasError.add("<%=authenticationBundle.getString("authentication.reminder.answer.empty") %>");
         } else if (this.elements["answerConfirmed"].value.length === 0) {
-          alert("<%=authenticationBundle.getString("authentication.reminder.answer.confirm") %>");
-          return false;
+          SilverpeasError.add("<%=authenticationBundle.getString("authentication.reminder.answer.confirm") %>");
         } else if (this.elements["answer"].value !== this.elements["answerConfirmed"].value) {
-          alert("<%=authenticationBundle.getString("authentication.reminder.answer.different") %>");
+          SilverpeasError.add("<%=authenticationBundle.getString("authentication.reminder.answer.different") %>");
+        }
+        if (SilverpeasError.show()) {
           return false;
         }
         this.action = '<c:url value="/CredentialsServlet/ValidateQuestion"/>';
@@ -117,11 +116,11 @@
         <br/><br/>
 
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.reminder.answer") %></span><input type="password" name="answer" id="answer"/></label>
+            "authentication.reminder.answer") %></span><input type="password" autocomplete="false" name="answer" id="answer"/></label>
         </p>
 
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.reminder.confirm") %></span><input type="password" name="answerConfirmed" id="answerConfirmed"/></label>
+            "authentication.reminder.confirm") %></span><input type="password" autocomplete="false" name="answerConfirmed" id="answerConfirmed"/></label>
         </p>
 
         <div class="submit">
