@@ -138,7 +138,9 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     final List<String> users = new ArrayList<>();
     try {
       if (!processedGroups.add(groupEntry.getDN())) {
-        final String warning = format("Potential cyclic group with DN {0}", groupEntry.getDN());
+        final String warning = format(
+            "Users of group with DN ''{0}'' have already been retrieved (please verify a potential circular case)",
+            groupEntry.getDN());
         SilverLogger.getLogger(this).warn(warning);
         SynchroDomainReport.warn(LDAPGROUP_ALL_ROOT_GET_CHILD_GROUPS_ENTRY, warning);
       } else {

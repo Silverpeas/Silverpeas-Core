@@ -48,11 +48,12 @@ public class GroupsSearchCriteria implements SearchCriteria {
   private static final String ROLE_NAMES = "roleIds";
   private static final String DOMAIN_IDS = "domainIds";
   private static final String INSTANCE_ID = "instanceId";
+  private static final String WITH_CHILDREN = "withChildren";
   private static final String RESOURCE_ID = "resourceId";
   private static final String ROOT_GROUP = "mustBeRoot";
   private static final String NAME = "name";
   private static final String PAGINATION = "pagination";
-  private Map<String, Object> criteria = new HashMap<String, Object>();
+  private Map<String, Object> criteria = new HashMap<>();
 
   @Override
   public GroupsSearchCriteria onName(String name) {
@@ -62,11 +63,26 @@ public class GroupsSearchCriteria implements SearchCriteria {
     return this;
   }
 
+  public GroupsSearchCriteria clearOnName() {
+    criteria.remove(NAME);
+    return this;
+  }
+
   @Override
   public GroupsSearchCriteria onComponentInstanceId(String instanceId) {
     if (isDefined(instanceId)) {
       criteria.put(INSTANCE_ID, instanceId);
     }
+    return this;
+  }
+
+  /**
+   * Indicates to service to retrieve all the children (of matching groups) which are matching
+   * the criteria.
+   * @return the criteria enriched with the directive of getting also the children.
+   */
+  public GroupsSearchCriteria withChildren() {
+    criteria.put(WITH_CHILDREN, true);
     return this;
   }
 
@@ -188,6 +204,10 @@ public class GroupsSearchCriteria implements SearchCriteria {
 
   public boolean isCriterionOnPaginationSet() {
     return criteria.containsKey(PAGINATION);
+  }
+
+  public boolean childrenRequired() {
+    return criteria.containsKey(WITH_CHILDREN);
   }
 
   public boolean mustBeRoot() {
@@ -360,6 +380,11 @@ public class GroupsSearchCriteria implements SearchCriteria {
   @Override
   public SearchCriteria onPagination(PaginationPage page) {
     criteria.put(PAGINATION, page);
+    return this;
+  }
+
+  public SearchCriteria clearPagination() {
+    criteria.remove(PAGINATION);
     return this;
   }
 }

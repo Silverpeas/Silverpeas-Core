@@ -78,6 +78,7 @@
       }
       if (typeof params === 'object') {
         if (!params.id && !params.ids) {
+          params.withChildren = true;
           if (this.options.hideDeactivatedState) {
             params.userStatesToExclude = ['DEACTIVATED'];
           }

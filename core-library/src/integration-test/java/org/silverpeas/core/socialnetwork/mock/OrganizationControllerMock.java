@@ -48,6 +48,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.SilverpeasList;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
@@ -216,7 +217,7 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public ListSlice<Group> searchGroups(final GroupsSearchCriteria criteria) {
+  public SilverpeasList<Group> searchGroups(final GroupsSearchCriteria criteria) {
     return null;
   }
 

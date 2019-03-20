@@ -51,6 +51,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.SilverpeasList;
 
 import javax.inject.Singleton;
 import java.util.Collections;
@@ -1062,7 +1063,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public ListSlice<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria) {
+  public SilverpeasList<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria) {
     return null;
   }
 

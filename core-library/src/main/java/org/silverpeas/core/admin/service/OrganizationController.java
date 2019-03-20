@@ -43,6 +43,7 @@ import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.Collection;
 import java.util.List;
@@ -227,7 +228,7 @@ public interface OrganizationController extends java.io.Serializable {
    * @throws AdminException if an error occurs while getting the
    * user groups.
    */
-  <T extends Group> ListSlice<T> searchGroups(GroupsSearchCriteria criteria);
+  <T extends Group> SilverpeasList<T> searchGroups(GroupsSearchCriteria criteria);
 
   /**
    * Returns the total number of distinct users recursively contained in the specified group

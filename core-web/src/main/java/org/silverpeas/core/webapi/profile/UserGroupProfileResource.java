@@ -23,17 +23,17 @@
  */
 package org.silverpeas.core.webapi.profile;
 
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -48,8 +48,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.GROUPS_BASE_URI;
 import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.GROUPS_BASE_URI;
 
 /**
  * A REST-based Web service that acts on the user groups in Silverpeas. Each provided method is a
@@ -76,16 +76,11 @@ public class UserGroupProfileResource extends RESTWebService {
   private UserProfileService profileService;
 
   /**
-   * Creates a new instance of UserGroupProfileResource
-   */
-  public UserGroupProfileResource() {
-  }
-
-  /**
    * Gets all the root user groups in Silverpeas.
    *
    * @param groupIds requested group identifiers. If this parameter is filled, sub groups are also
    * returned.
+   * @param withChildren if true the sub groups are also returned.
    * @param name a pattern on the name of the root groups to retrieve. If null, all the root groups
    * are fetched.
    * @param domain the unique identifier of the domain the groups has to be related.
@@ -99,6 +94,7 @@ public class UserGroupProfileResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAllRootGroups(@QueryParam("ids") Set<String> groupIds,
+      @QueryParam("withChildren") boolean withChildren,
       @QueryParam("name") String name, @QueryParam("page") String page,
       @QueryParam("domain") String domain,
       @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
@@ -108,8 +104,8 @@ public class UserGroupProfileResource extends RESTWebService {
     // Ids or not ids ?
     if (CollectionUtil.isNotEmpty(groupIds)) {
       // In that case, sub groups are also returned
-      criteriaBuilder.withGroupIds(groupIds.toArray(new String[groupIds.size()]));
-    } else {
+      criteriaBuilder.withGroupIds(groupIds.toArray(new String[0]));
+    } else if (!withChildren) {
       criteriaBuilder.withRootGroupSet();
     }
 
@@ -121,16 +117,12 @@ public class UserGroupProfileResource extends RESTWebService {
     }
 
     // Users to exclude by their state
-    if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-      final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
-      statesToExclude.add(UserState.REMOVED);
-      criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
-    }
+    userStateFilter(criteriaBuilder, userStatesToExclude);
 
     // Common parameters
     criteriaBuilder.withDomainId(domainId).withName(name).withPaginationPage(fromPage(page));
 
-    ListSlice<Group> allGroups = getOrganisationController().searchGroups(criteriaBuilder.build());
+    SilverpeasList<Group> allGroups = getOrganisationController().searchGroups(criteriaBuilder.build());
     UserGroupProfileEntity[] entities =
         asWebEntity(allGroups, locatedAt(getUri().getAbsolutePath()));
     return Response.ok(entities).
@@ -144,6 +136,7 @@ public class UserGroupProfileResource extends RESTWebService {
    * fetched, no their subgroups.
    *
    * @param instanceId the unique identifier of the Silverpeas application instance.
+   * @param withChildren if true the sub groups are also returned.
    * @param roles the roles the groups must play. Null if no specific roles have to be played by the
    * groups.
    * @param resource the unique identifier of the resource in the component instance the groups to
@@ -165,7 +158,8 @@ public class UserGroupProfileResource extends RESTWebService {
   @GET
   @Path("application/{instanceId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getGroupsInApplication(@PathParam("instanceId") String instanceId,
+  public Response getGroupsInApplication(@PathParam("instanceId") String instanceId, //NOSONAR
+      @QueryParam("withChildren") boolean withChildren,
       @QueryParam("roles") String roles, @QueryParam("resource") String resource,
       @QueryParam("name") String name, @QueryParam("page") String page,
       @QueryParam("domain") String domain,
@@ -193,14 +187,14 @@ public class UserGroupProfileResource extends RESTWebService {
           withPaginationPage(fromPage(page));
     }
 
-    // Users to exclude by their state
-    if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-      final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
-      statesToExclude.add(UserState.REMOVED);
-      criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
+    if (withChildren) {
+      criteriaBuilder.withChildren();
     }
 
-    ListSlice<Group> groups = getOrganisationController().searchGroups(criteriaBuilder.build());
+    // Users to exclude by their state
+    userStateFilter(criteriaBuilder, userStatesToExclude);
+
+    SilverpeasList<Group> groups = getOrganisationController().searchGroups(criteriaBuilder.build());
     URI groupsUri = getUri().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
     return Response.ok(asWebEntity(groups, locatedAt(groupsUri))).
         header(RESPONSE_HEADER_GROUPSIZE, groups.originalListSize()).
@@ -234,6 +228,7 @@ public class UserGroupProfileResource extends RESTWebService {
    * this parameter is computed the part of groups to sent back: those between ((page number - 1)
    * item count in the page) and ((page number - 1) item count in the page + item count in the
    * page).
+   * @param withChildren if true the sub groups are also returned.
    * @param userStatesToExclude the user states that users taken into account must not be in.
    * @return a JSON representation of the array of the direct subgroups.
    */
@@ -242,6 +237,7 @@ public class UserGroupProfileResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getSubGroups(@PathParam("path") String groups, @QueryParam("name") String name,
       @QueryParam("page") String page,
+      @QueryParam("withChildren") boolean withChildren,
       @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
     String[] groupIds = groups.split("/groups/?");
     String groupId = groupIds[groupIds.length - 1]; // we don't check the correctness of the path
@@ -262,17 +258,26 @@ public class UserGroupProfileResource extends RESTWebService {
           withPaginationPage(fromPage(page));
     }
 
+    if (withChildren) {
+      criteriaBuilder.withChildren();
+    }
+
     // Users to exclude by their state
+    userStateFilter(criteriaBuilder, userStatesToExclude);
+
+    SilverpeasList<Group> subgroups = getOrganisationController().searchGroups(criteriaBuilder.build());
+    return Response.ok(asWebEntity(subgroups, locatedAt(getUri().getAbsolutePath()))).
+        header(RESPONSE_HEADER_GROUPSIZE, subgroups.originalListSize()).
+        header(RESPONSE_HEADER_ARRAYSIZE, subgroups.originalListSize()).build();
+  }
+
+  private void userStateFilter(final UserGroupsSearchCriteriaBuilder criteriaBuilder,
+      @QueryParam("userStatesToExclude") final Set<UserState> userStatesToExclude) {
     if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
       final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
       statesToExclude.add(UserState.REMOVED);
       criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
     }
-
-    ListSlice<Group> subgroups = getOrganisationController().searchGroups(criteriaBuilder.build());
-    return Response.ok(asWebEntity(subgroups, locatedAt(getUri().getAbsolutePath()))).
-        header(RESPONSE_HEADER_GROUPSIZE, subgroups.originalListSize()).
-        header(RESPONSE_HEADER_ARRAYSIZE, subgroups.originalListSize()).build();
   }
 
   @Override
@@ -306,12 +311,13 @@ public class UserGroupProfileResource extends RESTWebService {
     if (page != null && !page.isEmpty()) {
       String[] pageAttributes = page.split(";");
       try {
-        int nth = Integer.valueOf(pageAttributes[0]);
-        int count = Integer.valueOf(pageAttributes[1]);
+        int nth = Integer.parseInt(pageAttributes[0]);
+        int count = Integer.parseInt(pageAttributes[1]);
         if (count > 0) {
           paginationPage = new PaginationPage(nth, count);
         }
       } catch (NumberFormatException ex) {
+        // Nothing to do here
       }
     }
     return paginationPage;
