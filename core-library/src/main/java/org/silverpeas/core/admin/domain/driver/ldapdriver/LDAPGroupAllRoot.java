@@ -37,7 +37,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+
+import static java.text.MessageFormat.format;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
 
 /**
  * This class manage groups that are described as follows : The group object contains an attribute
@@ -49,6 +53,8 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
 
   private static final String LDAPGROUP_ALL_ROOT_GET_CHILD_GROUPS_ENTRY =
       "LDAPGroupAllRoot.getChildGroupsEntry()";
+  private static final String GROUP_CYCLIC_PROCESS_SECURITY_CACHE_KEY =
+      LDAPGroupAllRoot.class.getName() + "#getUserSpecificIds";
 
   private List<String> getMemberGroupIds(String lds, String memberId, boolean isGroup)
       throws AdminException {
@@ -125,49 +131,61 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     return usersManaged.toArray(new String[0]);
   }
 
+  @SuppressWarnings("unchecked")
   private List<String> getUserSpecificIds(String lds, LDAPEntry groupEntry) {
-    final List<String> usersVector = new ArrayList<>();
-    final String groupsMemberField = driverSettings.getGroupsMemberField();
-    final String[] stringVals = LDAPUtility.getAttributeValues(groupEntry, groupsMemberField);
-    for (String memberFieldValue : stringVals) {
-      try {
-        if ("memberUid".equals(groupsMemberField)) {
-          // Case of most common OpenLDAP implementation.  memberUid = specificId
-          LDAPEntry userEntry = getUserEntryByUID(lds, memberFieldValue);
-          if (userEntry != null) {
-            usersVector.add(memberFieldValue);
+    final Set<String> processedGroups = getThreadCacheService().getCache().computeIfAbsent(GROUP_CYCLIC_PROCESS_SECURITY_CACHE_KEY, Set.class, HashSet::new);
+    final boolean isFirstCall = processedGroups.isEmpty();
+    final List<String> users = new ArrayList<>();
+    try {
+      if (!processedGroups.add(groupEntry.getDN())) {
+        final String warning = format("Potential cyclic group with DN {0}", groupEntry.getDN());
+        SilverLogger.getLogger(this).warn(warning);
+        SynchroDomainReport.warn(LDAPGROUP_ALL_ROOT_GET_CHILD_GROUPS_ENTRY, warning);
+      } else {
+        final String groupsMemberField = driverSettings.getGroupsMemberField();
+        final String[] stringVals = LDAPUtility.getAttributeValues(groupEntry, groupsMemberField);
+        for (final String memberFieldValue : stringVals) {
+          try {
+            if ("memberUid".equals(groupsMemberField)) {
+              // Case of most common OpenLDAP implementation.  memberUid = specificId
+              Optional.ofNullable(getUserEntryByUID(lds, memberFieldValue))
+                      .ifPresent(e -> users.add(memberFieldValue));
+            } else {
+              // Case of ActiveDirectory, NDS, OpenDS or OpenDJ (member = dn)
+              // a group member can be a user of a group
+              // first case, get member as user
+              findUserIdsByDNOrUID(lds, memberFieldValue, users);
+            }
+          } catch (AdminException e) {
+            SilverLogger.getLogger(this).error("USER NOT FOUND : " + LDAPUtility.
+                dblBackSlashesForDNInFilters(memberFieldValue), e);
           }
-        } else {
-          // Case of ActiveDirectory, NDS, OpenDS or OpenDJ (member = dn)
-          // a group member can be a user of a group
-          // first case, get member as user
-          findUserIdsByDNOrUID(lds, memberFieldValue, usersVector);
         }
-      } catch (AdminException e) {
-        SilverLogger.getLogger(this).error("USER NOT FOUND : " + LDAPUtility.
-            dblBackSlashesForDNInFilters(memberFieldValue), e);
+      }
+    } finally {
+      if (isFirstCall) {
+        getThreadCacheService().getCache().remove(GROUP_CYCLIC_PROCESS_SECURITY_CACHE_KEY);
       }
     }
-
-    return usersVector;
+    return users;
   }
 
   private void findUserIdsByDNOrUID(final String lds, final String memberFieldValue,
-      final List<String> usersVector) throws AdminException {
+      final List<String> users) throws AdminException {
     LDAPEntry userEntry = getUserEntryByDN(lds, memberFieldValue);
     if (userEntry != null) {
       String userSpecificId = getUserId(userEntry);
       // Verify that the user exist in the scope
       userEntry = getUserEntryByUID(lds, userSpecificId);
       if (userEntry != null) {
-        usersVector.add(userSpecificId);
+        users.add(userSpecificId);
       }
     } else {
       // second case, get member as group
       // users of this group must be added to current group
       LDAPEntry gEntry = getGroupEntryByDN(lds, memberFieldValue);
       if (gEntry != null) {
-        usersVector.addAll(getUserSpecificIds(lds, gEntry));
+        users.addAll(getUserSpecificIds(lds, gEntry));
       }
     }
   }
