@@ -172,7 +172,7 @@ public class MassiveWebSecurityFilter implements Filter {
       if (isCTPEnabled) {
         final User currentUser = User.getCurrentRequester();
         final String secure = httpRequest.isSecure() ? " https: " : " ";
-        final String img = currentUser == null ? "" : "; img-src *" + secure;
+        final String img = currentUser == null ? "" : "; img-src * data:";
         httpResponse.setHeader("Content-Security-Policy",
             "default-src 'self' blob: " + secure +
                 img +

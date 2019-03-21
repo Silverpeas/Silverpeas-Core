@@ -171,20 +171,21 @@ public class PublicationAccessController extends AbstractAccessController<Public
   private boolean fillTopicTrackerRoles(final Set<SilverpeasRole> userRoles,
       final AccessControlContext context, final String userId,
       final boolean componentAccessAuthorized, final PublicationDetail pubDetail) {
-    boolean rolesFilled = false;
+    boolean rolesProcessed = false;
     if (!componentAccessAuthorized) {
       // Check if an alias of publication is authorized
       // (special treatment in case of the user has no access right on component instance)
-      rolesFilled = fillTopicTrackerAliasRoles(userRoles, context, userId, pubDetail);
+      rolesProcessed = fillTopicTrackerAliasRoles(userRoles, context, userId, pubDetail);
     } else if (componentAccessController.isRightOnTopicsEnabled(pubDetail.getInstanceId())) {
       // If rights are handled on folders, folder rights are checked !
-      rolesFilled = fillTopicTrackerNodeRoles(userRoles, context, userId, pubDetail);
-      if (CollectionUtil.isEmpty(userRoles)) {
-        // if user has no rights on folder, check if an alias of publication is authorized
-        rolesFilled = fillTopicTrackerAliasRoles(userRoles, context, userId, pubDetail);
+      rolesProcessed = fillTopicTrackerNodeRoles(userRoles, context, userId, pubDetail);
+      if (rolesProcessed && CollectionUtil.isEmpty(userRoles)) {
+        // if the publication is not on root node and if user has no rights on folder, check if
+        // an alias of publication is authorized
+        fillTopicTrackerAliasRoles(userRoles, context, userId, pubDetail);
       }
     }
-    return rolesFilled;
+    return rolesProcessed;
   }
 
   private boolean fillTopicTrackerNodeRoles(final Set<SilverpeasRole> userRoles,

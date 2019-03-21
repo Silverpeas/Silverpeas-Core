@@ -1194,8 +1194,10 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
-        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+        .verifyCallOfPublicationBmGetAllFatherPK()
+        .verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfNodeAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has ADMIN role on component
@@ -1209,8 +1211,10 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
-        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+        .verifyCallOfPublicationBmGetAllFatherPK()
+        .verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfNodeAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -1473,7 +1477,8 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
         .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
-        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+        .verifyCallOfNodeAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has ADMIN role on component
@@ -1489,7 +1494,8 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
         .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
-        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+        .verifyCallOfNodeAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component

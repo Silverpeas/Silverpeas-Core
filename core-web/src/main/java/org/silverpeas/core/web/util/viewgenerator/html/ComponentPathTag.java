@@ -153,6 +153,7 @@ public class ComponentPathTag extends SimpleTagSupport {
         href = URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId);
       }
       linkElement.setHref(href);
+      linkElement.setClass("sp-permalink");
       linkElement.addElement(path);
       linkElement.output(getOut());
     } else {
