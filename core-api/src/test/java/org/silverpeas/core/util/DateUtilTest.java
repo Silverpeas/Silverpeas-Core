@@ -63,44 +63,44 @@ public class DateUtilTest {
     assertThat(DateUtil.getOutputDateAndHour(day, LANGUAGE), is("05/22/2013"));
 
     Date hour = DateUtils.addHours(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("05/21/2013 01:00 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("05/21/2013 01:00"));
     hour = DateUtils.addHours(date, 12);
-    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("05/21/2013 12:00 PM"));
+    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("05/21/2013 12:00"));
     hour = DateUtils.addHours(date, 22);
-    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("05/21/2013 10:00 PM"));
+    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("05/21/2013 22:00"));
 
     Date minute = DateUtils.addMinutes(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("05/21/2013 12:01 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("05/21/2013 00:01"));
     minute = DateUtils.addMinutes(date, 59);
-    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("05/21/2013 12:59 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("05/21/2013 00:59"));
     minute = DateUtils.addMinutes(date, 60);
-    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("05/21/2013 01:00 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("05/21/2013 01:00"));
     minute = DateUtils.addMinutes(date, 61);
-    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("05/21/2013 01:01 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("05/21/2013 01:01"));
 
     Date second = DateUtils.addSeconds(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("05/21/2013 12:00 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("05/21/2013 00:00"));
     second = DateUtils.addSeconds(date, 59);
-    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("05/21/2013 12:00 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("05/21/2013 00:00"));
     second = DateUtils.addSeconds(date, 60);
-    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("05/21/2013 12:01 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("05/21/2013 00:01"));
     second = DateUtils.addSeconds(date, 61);
-    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("05/21/2013 12:01 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("05/21/2013 00:01"));
 
     Date millisecond = DateUtils.addMilliseconds(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("05/21/2013 12:00 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("05/21/2013 00:00"));
     millisecond = DateUtils.addMilliseconds(date, 999);
-    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("05/21/2013 12:00 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("05/21/2013 00:00"));
     millisecond = DateUtils.addMilliseconds(date, 1000);
-    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("05/21/2013 12:00 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("05/21/2013 00:00"));
     millisecond = DateUtils.addMilliseconds(date, 1001);
-    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("05/21/2013 12:00 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("05/21/2013 00:00"));
 
     // 2013-05-21 23:59:59.999
     date = DateUtils.addHours(
         DateUtils.addMinutes(DateUtils.addSeconds(DateUtils.addMilliseconds(date, 999), 59), 59),
         23);
-    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("05/21/2013 11:59 PM"));
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("05/21/2013 23:59"));
 
     // 2013-05-22 00:00:00.000
     date = DateUtils.addMilliseconds(date, 1);
@@ -108,7 +108,7 @@ public class DateUtilTest {
 
     // 2013-05-22 00:00:00.001
     date = DateUtils.addMilliseconds(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("05/22/2013 12:00 AM"));
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("05/22/2013 00:00"));
   }
 
   /**

@@ -14,11 +14,11 @@
 					- link : <a href="ErrorGettingDomainServerDelegate+test+resource" target=_blank>Click here ...</a><br/>
 					- notifications :
 					<div id="resource_item" style="margin-left:25px;">
-						. reported by User 100, on 01/01/2012 at 08:10 AM, with the following message :<br/>
+						. reported by User 100, on 01/01/2012 at 08:10, with the following message :<br/>
 							<div style="margin-left:30px;background-color:#FFF9D7;padding:5px;border:1px solid #E2C822;width:380px">
 								Message U3<br/>A la ligne
 							</div>
-						. created by User 20, on 01/01/2012 at 08:10 AM
+						. created by User 20, on 01/01/2012 at 08:10
 					</div>
 				</div>
 			</div>
@@ -29,8 +29,8 @@
 					- link : <a href="ErrorGettingDomainServerTest+resource+URL+no+desc" target=_blank>Click here ...</a><br/>
 					- notifications :
 					<div id="resource_item" style="margin-left:25px;">
-						. updated by User 500, on 01/01/2012 at 08:10 AM
-						<br/>. commented by User 500, on 01/01/2012 at 08:10 AM, with the following message :<br/>
+						. updated by User 500, on 01/01/2012 at 08:10
+						<br/>. commented by User 500, on 01/01/2012 at 08:10, with the following message :<br/>
 							<div style="margin-left:30px;background-color:#FFF9D7;padding:5px;border:1px solid #E2C822;width:380px">
 								Message U3 (2ème)<br/>A la ligne
 							</div>
