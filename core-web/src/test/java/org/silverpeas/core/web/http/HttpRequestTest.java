@@ -28,10 +28,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
-import org.silverpeas.core.util.SettingBundle;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -54,10 +52,6 @@ public class HttpRequestTest {
     when(httpServletRequestMock.getMethod()).thenReturn("GET");
 
     httpRequest = HttpRequest.decorate(httpServletRequestMock);
-    SettingBundle generalSettings =
-        mocker.mockField(httpRequest, SettingBundle.class, "generalSettings");
-    when(generalSettings.getString("tempPath")).thenReturn(
-        File.createTempFile("prefix", "suffix").getPath());
   }
 
   /*

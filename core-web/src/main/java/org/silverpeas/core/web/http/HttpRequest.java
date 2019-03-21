@@ -30,8 +30,6 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -71,7 +69,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
   private static final String SECURE_PROPERTY = "secure";
 
   private List<FileItem> fileItems = null;
-  private SettingBundle generalSettings = ResourceLocator.getGeneralSettingBundle();
 
   private HttpRequest(HttpServletRequest request) {
     super(request);

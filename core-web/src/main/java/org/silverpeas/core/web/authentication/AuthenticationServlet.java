@@ -54,6 +54,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -76,7 +77,6 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   private static final String INCORRECT_LOGIN_PWD = "1";
   private static final String INCORRECT_LOGIN_PWD_DOMAIN = "6";
   private static final String LOGIN_ERROR_PAGE = "/Login?ErrorCode=";
-  private static final String COOKIE_PASSWORD = "svpPassword";
   private static final int COOKIE_TIMELIFE = 31536000;
 
   @Inject
@@ -358,7 +358,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       }
       authenticationParameters.setCredential(credential);
       HttpSession session = request.getSession(false);
-      for (Map.Entry<String, Object> capability : credential.getCapabilities().entrySet()) {
+      for (Map.Entry<String, Serializable> capability : credential.getCapabilities().entrySet()) {
         session.setAttribute(capability.getKey(), capability.getValue());
       }
       return key;

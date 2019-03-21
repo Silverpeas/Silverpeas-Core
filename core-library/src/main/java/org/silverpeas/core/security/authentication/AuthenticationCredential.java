@@ -22,6 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.security.authentication;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public class AuthenticationCredential {
   private String password;
   private String domainId;
 
-  private Map<String, Object> capabilities = new HashMap<String, Object>();
+  private Map<String, Serializable> capabilities = new HashMap<>();
 
   private AuthenticationCredential() {
 
@@ -117,7 +118,7 @@ public class AuthenticationCredential {
    * @return a map of capabilities in which the key is the name of the capability and the value the
    * capability value.
    */
-  public Map<String, Object> getCapabilities() {
+  public Map<String, Serializable> getCapabilities() {
     return capabilities;
   }
 
