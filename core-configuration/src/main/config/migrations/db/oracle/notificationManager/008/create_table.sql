@@ -69,7 +69,7 @@ CREATE TABLE st_notificationresource (
    resourceLocation		varchar(500) NOT NULL ,
    resourceUrl			varchar(1000) NULL,
 	 attachmentTargetId	varchar(500) NULL,
-   resourceDetails			varchar(8000) NULL
+   resourceDetails			varchar(4000) NULL
 );
 
 CREATE TABLE st_delayednotification (
