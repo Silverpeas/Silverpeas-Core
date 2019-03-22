@@ -1874,7 +1874,8 @@ public class TestPublicationAccessController {
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
         .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
-        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+        .verifyCallOfNodeAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -1888,7 +1889,8 @@ public class TestPublicationAccessController {
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
         .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
-        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+        .verifyCallOfNodeAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -1902,7 +1904,8 @@ public class TestPublicationAccessController {
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
         .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
-        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+        .verifyCallOfNodeAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -1916,7 +1919,8 @@ public class TestPublicationAccessController {
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
         .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
-        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+        .verifyCallOfNodeAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -1930,7 +1934,8 @@ public class TestPublicationAccessController {
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
         .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
-        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+        .verifyCallOfNodeAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has ADMIN role on component
@@ -2299,8 +2304,10 @@ public class TestPublicationAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
-        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+        .verifyCallOfPublicationBmGetAllFatherPK()
+        .verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfNodeAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -2314,7 +2321,8 @@ public class TestPublicationAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetAllFatherPK()
+        .verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -2329,7 +2337,8 @@ public class TestPublicationAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetAllFatherPK()
+        .verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -2462,7 +2471,8 @@ public class TestPublicationAccessController {
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
         .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
-        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+        .verifyCallOfNodeAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -2777,8 +2787,10 @@ public class TestPublicationAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
-        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+        .verifyCallOfPublicationBmGetAllFatherPK()
+        .verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfNodeAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetailAndGetAlias();
     assertIsUserAuthorized(false);
 
     // User has USER role on component

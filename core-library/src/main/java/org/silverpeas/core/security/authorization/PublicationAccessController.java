@@ -30,6 +30,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.MemoizedBooleanSupplier;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
@@ -170,16 +171,21 @@ public class PublicationAccessController extends AbstractAccessController<Public
   private boolean fillTopicTrackerRoles(final Set<SilverpeasRole> userRoles,
       final AccessControlContext context, final String userId,
       final boolean componentAccessAuthorized, final PublicationDetail pubDetail) {
-    boolean rolesFilled = false;
+    boolean rolesProcessed = false;
     if (!componentAccessAuthorized) {
       // Check if an alias of publication is authorized
       // (special treatment in case of the user has no access right on component instance)
-      rolesFilled = fillTopicTrackerAliasRoles(userRoles, context, userId, pubDetail);
+      rolesProcessed = fillTopicTrackerAliasRoles(userRoles, context, userId, pubDetail);
     } else if (componentAccessController.isRightOnTopicsEnabled(pubDetail.getInstanceId())) {
-      // If rights are not handled on folders, folder rights are not checked !
-      rolesFilled = fillTopicTrackerNodeRoles(userRoles, context, userId, pubDetail);
+      // If rights are handled on folders, folder rights are checked !
+      rolesProcessed = fillTopicTrackerNodeRoles(userRoles, context, userId, pubDetail);
+      if (rolesProcessed && CollectionUtil.isEmpty(userRoles)) {
+        // if the publication is not on root node and if user has no rights on folder, check if
+        // an alias of publication is authorized
+        fillTopicTrackerAliasRoles(userRoles, context, userId, pubDetail);
+      }
     }
-    return rolesFilled;
+    return rolesProcessed;
   }
 
   private boolean fillTopicTrackerNodeRoles(final Set<SilverpeasRole> userRoles,
