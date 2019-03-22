@@ -97,7 +97,8 @@ public class BundleResource extends RESTWebService {
   @Override
   public void validateUserAuthentication(final UserPrivilegeValidation validation) {
     try {
-      super.validateUserAuthentication(validation);
+      super.validateUserAuthentication(
+          validation.skipLastUserAccessTimeRegistering(getHttpServletRequest()));
     } catch (WebApplicationException wae) {
       if (Response.Status.UNAUTHORIZED.getStatusCode() != wae.getResponse().getStatus()) {
         throw wae;
