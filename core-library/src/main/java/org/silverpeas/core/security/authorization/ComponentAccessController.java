@@ -149,7 +149,14 @@ public class ComponentAccessController extends AbstractAccessController<String>
     }
 
     if (controller.isComponentAvailable(componentId, userId)) {
-      userRoles.addAll(SilverpeasRole.from(controller.getUserProfiles(userId, componentId)));
+      final String[] userProfiles = controller.getUserProfiles(userId, componentId);
+      userRoles.addAll(SilverpeasRole.from(userProfiles));
+      if (userRoles.isEmpty() && userProfiles != null && userProfiles.length > 0) {
+        // Taking into account the case where the user has only specific profiles.
+        // In that case, even the user is an admin one (indicated by a specific profile)
+        // it is considered as a simple user.
+        userRoles.add(SilverpeasRole.user);
+      }
     }
   }
 
