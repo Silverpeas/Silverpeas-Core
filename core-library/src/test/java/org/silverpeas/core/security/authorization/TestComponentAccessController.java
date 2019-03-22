@@ -182,7 +182,7 @@ public class TestComponentAccessController {
    * Test of isUserAuthorized method, of class ComponentAccessController.
    */
   @Test
-  public void testIsUserAuthorized() throws Exception {
+  public void testIsUserAuthorized() {
     final UserDetail user = controller.getUserDetail(USER_ID);
     final UserDetail anonymous = controller.getUserDetail(ANONYMOUS_ID);
 
@@ -228,6 +228,57 @@ public class TestComponentAccessController {
 
     result = instance.isUserAuthorized(USER_ID, forbiddenComponent);
     assertFalse(result);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndUnknownContext() {
+    assertGetUserRolesAndIsUserAuthorizedForSpecificRole();
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndPersistContext() {
+    accessControlContext.onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
+    assertGetUserRolesAndIsUserAuthorizedForSpecificRole();
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndDownloadContext() {
+    accessControlContext.onOperationsOf(AccessControlOperation.download);
+    assertGetUserRolesAndIsUserAuthorizedForSpecificRole();
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithSpecificRoleRoleAndSharingContext() {
+    accessControlContext.onOperationsOf(AccessControlOperation.sharing);
+    assertGetUserRolesAndIsUserAuthorizedForSpecificRole();
+  }
+
+  private void assertGetUserRolesAndIsUserAuthorizedForSpecificRole() {
+    setupUser("specificRole", UserState.VALID);
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(personalComponentId, true, SilverpeasRole.admin);
   }
 
   /**
@@ -690,9 +741,6 @@ public class TestComponentAccessController {
 
   /**
    * Centralization.
-   * @param instanceId
-   * @param expectedUserAuthorization
-   * @param expectedUserRoles
    */
   private void assertGetUserRolesAndIsUserAuthorized(String instanceId,
       boolean expectedUserAuthorization, SilverpeasRole... expectedUserRoles) {
@@ -713,6 +761,10 @@ public class TestComponentAccessController {
   }
 
   private void setupUser(SilverpeasRole componentRole, UserState userState) {
+    setupUser(componentRole != null ? componentRole.name() : null, userState);
+  }
+
+  private void setupUser(String componentRole, UserState userState) {
     final UserDetail user = controller.getUserDetail(USER_ID);
     prepareUser(user, componentRole, userState);
     if (componentRole != null) {
@@ -720,7 +772,7 @@ public class TestComponentAccessController {
           publicFilesComponentIdWithUserRole, componentId, componentIdWithTopicRigths,
           componentIdWithoutTopicRigths}) {
         when(controller.getUserProfiles(USER_ID, instanceId))
-            .thenReturn(new String[]{componentRole.name()});
+            .thenReturn(new String[]{componentRole});
       }
     }
   }
@@ -731,8 +783,9 @@ public class TestComponentAccessController {
     user.setAccessLevel(UserAccessLevel.GUEST);
   }
 
-  private void prepareUser(final UserDetail user, final SilverpeasRole componentRole, final UserState userState) {
+  private void prepareUser(final UserDetail user, final String componentRoleAsString, final UserState userState) {
     currentUserId = user.getId();
+    final SilverpeasRole componentRole = SilverpeasRole.from(componentRoleAsString);
     if (SilverpeasRole.admin == componentRole) {
       user.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     } else {
