@@ -31,6 +31,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.SilverpeasWebResource;
+import org.silverpeas.core.web.attachment.WebDavProtocol;
 import org.silverpeas.core.web.filter.exception.WebSecurityException;
 import org.silverpeas.core.web.filter.exception.WebSqlInjectionSecurityException;
 import org.silverpeas.core.web.filter.exception.WebXssInjectionSecurityException;
@@ -171,7 +172,9 @@ public class MassiveWebSecurityFilter implements Filter {
       }
       if (isCTPEnabled) {
         final User currentUser = User.getCurrentRequester();
-        final String secure = httpRequest.isSecure() ? " https: " : " ";
+        final String secure =
+            httpRequest.isSecure() ? " https: " + WebDavProtocol.SECURED_WEBDAV_SCHEME + ":" :
+                WebDavProtocol.WEBDAV_SCHEME + ":";
         final String img = currentUser == null ? "" : "; img-src * data:";
         httpResponse.setHeader("Content-Security-Policy",
             "default-src 'self' blob: " + secure +

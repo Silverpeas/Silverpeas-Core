@@ -24,6 +24,7 @@
 package org.silverpeas.web.attachment;
 
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.attachment.WebDavProtocol;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.CharEncoding;
@@ -80,8 +81,8 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
     if (resources.getBoolean("attachment.onlineEditing.customProtocol", false)) {
       response.setContentType("application/javascript");
       response.setHeader("Content-Disposition", "inline; filename=launch.js");
-      String webDavUrl =
-          silverpeasJcrWebdavContext.getWebDavUrl().replaceFirst("^http", "spwebdav");
+      String webDavUrl = silverpeasJcrWebdavContext.getWebDavUrl()
+          .replaceFirst("^http", WebDavProtocol.WEBDAV_SCHEME);
       response.getWriter().append("window.location.href='").append(webDavUrl).append("';");
     } else {
       response.setContentType("application/x-java-jnlp-file");
