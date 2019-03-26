@@ -4330,8 +4330,10 @@ input.search:focus {
 }
 
 .select-user-group-container .search-input-container {
-  display: inline-flex;
-  align-items: center;
+ /* display: inline-flex;
+  align-items: center;*/
+  display:block;
+  float:left;
   min-width: 250px;
 }
 
@@ -4359,7 +4361,9 @@ input.search:focus {
 }
 
 .select-user-group-container .mandatory-icon {
-  margin-left:0.275em
+  position:absolute;
+  top:14px;
+  left: calc( 90% + 0.5em );
 }
 
 .select-user-group-container a.user-panel-button,
