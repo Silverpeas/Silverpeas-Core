@@ -51,6 +51,7 @@ import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -387,10 +388,11 @@ public class DefaultOrganizationController implements OrganizationController {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public <T extends Group> ListSlice<T> searchGroups(final GroupsSearchCriteria criteria) {
+  public <T extends Group> SilverpeasList<T> searchGroups(final GroupsSearchCriteria criteria) {
     try {
-      return (ListSlice<T>) getAdminService().searchGroups(criteria);
+      return (SilverpeasList<T>) getAdminService().searchGroups(criteria);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }

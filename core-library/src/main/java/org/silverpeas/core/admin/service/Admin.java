@@ -5368,12 +5368,16 @@ class Admin implements Administration {
   }
 
   @Override
-  public ListSlice<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria) throws
+  public SilverpeasList<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria) throws
       AdminException {
     SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
     GroupSearchCriteriaForDAO criteria = factory.getGroupSearchCriteriaDAO();
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
       makeCriteriaOnComponentInstanceId(searchCriteria, criteria);
+    }
+
+    if (searchCriteria.childrenRequired()) {
+      criteria.withChildren();
     }
 
     if (searchCriteria.mustBeRoot()) {

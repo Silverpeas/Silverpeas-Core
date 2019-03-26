@@ -49,6 +49,7 @@ import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.List;
 import java.util.Map;
@@ -1203,7 +1204,7 @@ public interface Administration {
 
   ListSlice<UserDetail> searchUsers(UserDetailsSearchCriteria searchCriteria) throws AdminException;
 
-  ListSlice<GroupDetail> searchGroups(GroupsSearchCriteria searchCriteria) throws AdminException;
+  SilverpeasList<GroupDetail> searchGroups(GroupsSearchCriteria searchCriteria) throws AdminException;
 
   // -------------------------------------------------------------------------
   // Node profile management

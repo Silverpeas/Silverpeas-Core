@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.admin.user;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.persistence.GroupUserRoleRow;
@@ -43,8 +45,8 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.notification.GroupEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
@@ -52,15 +54,13 @@ import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.model.Domain.MIXED_DOMAIN_ID;
+import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.likeIgnoreCase;
 
 @Singleton
 @Transactional(Transactional.TxType.MANDATORY)
@@ -100,30 +100,30 @@ public class GroupManager {
    * @return a slice of the list of user groups matching the criteria or an empty list of no ones are found.
    * @throws AdminException if an error occurs while getting the user groups.
    */
-  public ListSlice<GroupDetail> getGroupsMatchingCriteria(final GroupSearchCriteriaForDAO criteria) throws
+  public SilverpeasList<GroupDetail> getGroupsMatchingCriteria(final GroupSearchCriteriaForDAO criteria) throws
           AdminException {
     try (Connection connection = DBUtil.openConnection()){
-      ListSlice<GroupDetail> groups = groupDao.getGroupsByCriteria(connection, criteria);
-
+      final GroupCriteriaFilter filter = new GroupCriteriaFilter(connection, criteria, groupDao);
+      final SilverpeasList<GroupDetail> groups = filter.getFilteredGroups();
       String[] domainIdConstraint = new String[0];
-      List<String> domainIds = criteria.getCriterionOnDomainIds();
-      for (String domainId : domainIds) {
+      for (final String domainId : criteria.getCriterionOnDomainIds()) {
         if (!MIXED_DOMAIN_ID.equals(domainId)) {
           domainIdConstraint = new String[]{domainId};
           break;
         }
       }
-
-      SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
-      for (GroupDetail group : groups) {
-        List<String> groupIds = getAllSubGroupIdsRecursively(group.getId());
+      final SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
+      for (final GroupDetail group : groups) {
+        final List<String> groupIds = filter.getAllSubGroups(group.getId())
+            .stream()
+            .map(GroupDetail::getId)
+            .collect(Collectors.toList());
         groupIds.add(group.getId());
-        UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
-        UserState[] criterionOnUserStatesToExclude =
-            criteria.getCriterionOnUserStatesToExclude();
-        int userCount = userDao.getUserCountByCriteria(connection, criteriaOnUsers.
+        final UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
+        final UserState[] criterionOnUserStatesToExclude = criteria.getCriterionOnUserStatesToExclude();
+        final int userCount = userDao.getUserCountByCriteria(connection, criteriaOnUsers.
             onDomainIds(domainIdConstraint).
-            onGroupIds(groupIds.toArray(new String[groupIds.size()])).
+            onGroupIds(groupIds.toArray(new String[0])).
             onUserStatesToExclude(criterionOnUserStatesToExclude));
         group.setTotalNbUsers(userCount);
       }
@@ -869,5 +869,85 @@ public class GroupManager {
       return -1;
     }
   }
-  
+
+  private static class GroupCriteriaFilter {
+    private final Connection connection;
+    private final GroupSearchCriteriaForDAO criteria;
+    private final GroupDAO groupDao;
+    private final String nameFilter;
+    private final PaginationPage paginationPage;
+    private final boolean childrenRequired;
+    private final boolean logicalNameFiltering;
+    private final Map<String, List<GroupDetail>> subGroupsOfGroupsCache = new LinkedHashMap<>();
+
+    GroupCriteriaFilter(final Connection connection, final GroupSearchCriteriaForDAO criteria,
+        final GroupDAO groupDao) {
+      this.connection = connection;
+      this.criteria = criteria;
+      this.groupDao = groupDao;
+      this.nameFilter = criteria.getCriterionOnName();
+      this.paginationPage = criteria.getPagination();
+      this.childrenRequired = criteria.childrenRequired();
+      this.logicalNameFiltering = childrenRequired && isDefined(nameFilter);
+      if (childrenRequired) {
+        criteria.clearPagination();
+      }
+      if (logicalNameFiltering) {
+        criteria.clearOnName();
+      }
+    }
+
+    SilverpeasList<GroupDetail> getFilteredGroups() throws SQLException {
+      List<GroupDetail> groups = groupDao.getGroupsByCriteria(connection, criteria);
+      if (childrenRequired) {
+        final List<GroupDetail> allSubGroups = new LinkedList<>();
+        final Iterator<GroupDetail> it = groups.iterator();
+        while(it.hasNext()) {
+          final GroupDetail group = it.next();
+          if (logicalNameFiltering && !likeIgnoreCase(group.getName(), nameFilter)) {
+            it.remove();
+          }
+          final List<GroupDetail> subGroups = getAllSubGroups(group.getId());
+          if (logicalNameFiltering) {
+            subGroups.removeIf(g -> !likeIgnoreCase(g.getName(), nameFilter));
+          }
+          allSubGroups.addAll(subGroups);
+        }
+        groups.addAll(allSubGroups);
+        groups = groups
+            .stream()
+            .distinct()
+            .sorted(Comparator.comparing(GroupDetail::getName))
+            .collect(Collectors.toList());
+        if (paginationPage != null) {
+          groups = paginationPage.getPaginatedListFrom(groups);
+        }
+      }
+      return SilverpeasList.wrap(groups);
+    }
+
+    List<GroupDetail> getAllSubGroups(String fromGroupId) {
+      return getSubGroups(fromGroupId);
+    }
+
+    private List<GroupDetail> getSubGroups(String groupId) {
+      final List<GroupDetail> groups = new ArrayList<>();
+      final List<GroupDetail> directSubGroups = getDirectSubGroups(groupId);
+      for (final GroupDetail group : directSubGroups) {
+        groups.add(group);
+        groups.addAll(getSubGroups(group.getId()));
+      }
+      return groups;
+    }
+
+    private List<GroupDetail> getDirectSubGroups(final String groupId) {
+      return subGroupsOfGroupsCache.computeIfAbsent(groupId, i -> {
+        try {
+          return groupDao.getDirectSubGroups(connection, groupId);
+        } catch (SQLException e) {
+          throw new SilverpeasRuntimeException(e);
+        }
+      });
+    }
+  }
 }

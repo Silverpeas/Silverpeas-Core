@@ -84,6 +84,11 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
     return this;
   }
 
+  public GroupSearchCriteriaForDAO clearOnName() {
+    criteria.clearOnName();
+    return this;
+  }
+
   @Override
   public GroupSearchCriteriaForDAO onGroupIds(String... groupIds) {
     if (groupIds != ANY) {
@@ -151,6 +156,11 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
     return this;
   }
 
+  public SearchCriteria withChildren() {
+    this.criteria.withChildren();
+    return this;
+  }
+
   public SearchCriteria onAsRootGroup() {
     this.criteria.onAsRootGroup();
     return this;
@@ -208,8 +218,8 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
     return criteria.isEmpty();
   }
 
-  public boolean isCriterionOnDomainIdSet() {
-    return criteria.isCriterionOnDomainIdSet() || criteria.isCriterionOnMixedDomainIdSet();
+  public String getCriterionOnName() {
+    return criteria.getCriterionOnName();
   }
 
   public List<String> getCriterionOnDomainIds() {
@@ -225,6 +235,10 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   public UserState[] getCriterionOnUserStatesToExclude() {
     return this.criteria.getCriterionOnUserStatesToExclude();
+  }
+
+  public boolean childrenRequired() {
+    return criteria.childrenRequired();
   }
 
   @Override
@@ -244,6 +258,12 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
     }
     return this;
   }
+
+  public GroupSearchCriteriaForDAO clearPagination() {
+    criteria.clearPagination();
+    return this;
+  }
+
   /**
    * Gets the criterion on the pagination page to fetch.
    *

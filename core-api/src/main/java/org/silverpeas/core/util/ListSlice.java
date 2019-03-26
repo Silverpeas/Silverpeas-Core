@@ -35,8 +35,9 @@ import java.util.List;
  * @author mmoquillon
  */
 public class ListSlice<T> extends ArrayList<T> implements SilverpeasList<T> {
+  private static final long serialVersionUID = 679667310008767706L;
 
-  private int start = 0;
+  private int start;
   private int end;
   private long maxsize = -1;
 
@@ -68,7 +69,9 @@ public class ListSlice<T> extends ArrayList<T> implements SilverpeasList<T> {
    */
   public ListSlice(int sliceBeginIndex, int sliceEndIndex, long originalListSize) {
     this(sliceBeginIndex, sliceEndIndex);
-    assert originalListSize > 0;
+    if (originalListSize <= 0) {
+      throw new AssertionError();
+    }
     this.maxsize = originalListSize;
   }
 

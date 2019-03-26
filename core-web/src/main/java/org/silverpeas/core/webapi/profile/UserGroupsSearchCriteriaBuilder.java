@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -55,6 +55,11 @@ public class UserGroupsSearchCriteriaBuilder {
     if (isDefined(instanceId)) {
       searchCriteria.onComponentInstanceId(instanceId);
     }
+    return this;
+  }
+
+  public UserGroupsSearchCriteriaBuilder withChildren() {
+    searchCriteria.withChildren();
     return this;
   }
 
