@@ -6,6 +6,10 @@ package org.silverpeas.core.web.attachment;
  */
 public class WebDavProtocol {
 
+  private WebDavProtocol() {
+    throw new IllegalStateException("Constant class");
+  }
+
   /**
    * The WebDAV scheme protocol used by Silverpeas to edit online a document.
    */
