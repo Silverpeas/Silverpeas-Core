@@ -24,6 +24,9 @@
 
 package org.silverpeas.core.web.mvc.route;
 
+import org.silverpeas.core.html.PermalinkRegistry;
+import org.silverpeas.core.initialization.Initialization;
+
 import javax.inject.Named;
 
 /**
@@ -31,5 +34,11 @@ import javax.inject.Named;
  * @author silveryocha
  */
 @Named
-public final class DefaultComponentInstanceRoutingMap extends AbstractComponentInstanceRoutingMap {
+public final class DefaultComponentInstanceRoutingMap extends AbstractComponentInstanceRoutingMap
+    implements Initialization {
+
+  @Override
+  public void init() {
+    PermalinkRegistry.get().addUrlPart("Contribution");
+  }
 }

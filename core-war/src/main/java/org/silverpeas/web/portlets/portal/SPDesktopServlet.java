@@ -44,6 +44,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.http.SafeContentRedirect;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.portlets.portal.PortletWindowData;
@@ -123,7 +124,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
           spaceHomePage = baseURL + spaceHomePage.substring(1);
         }
       }
-      response.sendRedirect(spaceHomePage);
+      SafeContentRedirect.fromServlet(request, response).redirectTo(spaceHomePage);
     } else {
       spaceId = getSpaceId(request);
       UserDetail currentUser = UserDetail.getCurrentRequester();

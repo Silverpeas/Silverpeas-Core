@@ -33,6 +33,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.html.SupportedWebPlugins;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
@@ -955,9 +956,9 @@ public class JavascriptPluginInclusion {
       xhtml.addElement(scriptContent(bundleVariableName("WindowBundle")
             .add("e.t.r", errorBundle.getString("error.technical.responsive"))
             .produce()));
-      xhtml.addElement(scriptContent(bundleVariableName("AdminWindowBundle")
-            .add("e.t.r", errorBundle.getString("error.technical.responsive"))
-            .produce()));
+      xhtml.addElement(scriptContent(settingVariableName("WindowSettings")
+          .add("permalink.parts", PermalinkRegistry.get().streamAllUrlParts(), true)
+          .produce()));
       xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-window.js"));
       xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_LAYOUT));
       xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-admin-window.js"));

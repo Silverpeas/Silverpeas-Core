@@ -44,17 +44,13 @@
     return;
   }
 
-  if (!$window.AdminWindowBundle) {
-    $window.AdminWindowBundle = new SilverpeasPluginBundle();
-  }
-
   var __loadErrorListener = function(request) {
     if (request.status === 0 || request.status >= 500) {
       __logError("technical load error");
       top.location = webContext;
     } else {
       __logError("load error");
-      SilverpeasError.add(AdminWindowBundle.get('e.t.r')).show();
+      SilverpeasError.add(sp.i18n.get('e.t.r')).show();
     }
   };
 
