@@ -116,11 +116,11 @@
         <br/><br/>
 
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.reminder.answer") %></span><input type="password" autocomplete="false" name="answer" id="answer"/></label>
+            "authentication.reminder.answer") %></span><input type="password" autocomplete="off" name="answer" id="answer"/></label>
         </p>
 
         <p><label><span><%=authenticationBundle.getString(
-            "authentication.reminder.confirm") %></span><input type="password" autocomplete="false" name="answerConfirmed" id="answerConfirmed"/></label>
+            "authentication.reminder.confirm") %></span><input type="password" autocomplete="off" name="answerConfirmed" id="answerConfirmed"/></label>
         </p>
 
         <div class="submit">

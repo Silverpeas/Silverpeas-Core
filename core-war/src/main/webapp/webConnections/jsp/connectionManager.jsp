@@ -164,7 +164,7 @@ else {
     <div class="field">
       <label class="txtlibform"><%=resource.getString("webConnections.password") %></label>
       <div class="champs">
-        <input type="password" autocomplete="false" name="Password" maxlength="100" value="<%=password%>"/>
+        <input type="password" autocomplete="off" name="Password" maxlength="100" value="<%=password%>"/>
         <input type="hidden" name="ConnectionId" value="<%=connection.getConnectionId()%>"/>
         <input type="hidden" name="ComponentId" value="<%=connection.getComponentId()%>"/>
       </div>

@@ -209,7 +209,7 @@
         </p>
 
         <p>
-          <label><span><fmt:message key="authentication.logon.password"/></span><input type="password" name="Password" id="Password" autocomplete="false"/></label>
+          <label><span><fmt:message key="authentication.logon.password"/></span><input type="password" name="Password" id="Password" autocomplete="off"/></label>
         </p>
         <c:choose>
           <c:when test="${!pageScope.multipleDomains}">

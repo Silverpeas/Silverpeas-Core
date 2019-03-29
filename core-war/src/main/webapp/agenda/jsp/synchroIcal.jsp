@@ -126,7 +126,7 @@ function synchroIcal() {
 							<span class="txtlibform"><%=resources.getString("agenda.SynchroRemotePwd")%></span>
 						      </td>
 						      <td>
-							<input maxlength="50" size="50" type="password" autocomplete="false" name="PwdIcalendar" value="<%=pwdIcalendar%>"/>
+							<input maxlength="50" size="50" type="password" autocomplete="off" name="PwdIcalendar" value="<%=pwdIcalendar%>"/>
 						      </td>
 						    </tr>
 					      <tr>

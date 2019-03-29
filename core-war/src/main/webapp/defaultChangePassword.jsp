@@ -100,15 +100,15 @@
           <div class="clear"></div>
         </div>
         <p>
-          <label><span><fmt:message key="authentication.password.old" bundle="${authenticationBundle}"/></span><input type="password" name="oldPassword" id="oldPassword" autocomplete="false"/></label>
+          <label><span><fmt:message key="authentication.password.old" bundle="${authenticationBundle}"/></span><input type="password" name="oldPassword" id="oldPassword" autocomplete="off"/></label>
         </p>
 
         <p>
-          <label><span><fmt:message key="authentication.password.new" bundle="${authenticationBundle}"/></span><input type="password" name="newPassword" id="newPassword" autocomplete="false"/></label>
+          <label><span><fmt:message key="authentication.password.new" bundle="${authenticationBundle}"/></span><input type="password" name="newPassword" id="newPassword" autocomplete="off"/></label>
         </p>
 
         <p>
-          <label><span><fmt:message key="authentication.password.confirm" bundle="${authenticationBundle}"/></span><input type="password" name="confirmPassword" id="confirmPassword" autocomplete="false"/></label>
+          <label><span><fmt:message key="authentication.password.confirm" bundle="${authenticationBundle}"/></span><input type="password" name="confirmPassword" id="confirmPassword" autocomplete="off"/></label>
         </p>
         <c:if test="${isEmailAddress}">
           <p>

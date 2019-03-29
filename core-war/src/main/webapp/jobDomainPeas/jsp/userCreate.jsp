@@ -363,14 +363,14 @@ out.println(window.printBefore());
 	<div class="field" id="form-row-password">
 			<label class="txtlibform"><fmt:message key="GML.password"/></label>
 			<div class="champs">
-				<input type="password" autocomplete="false" name="userPassword" id="userPasswordId" size="50" maxlength="32" value=""/>
+				<input type="password" autocomplete="off" name="userPassword" id="userPasswordId" size="50" maxlength="32" value=""/>
 			</div>
 		</div>
 		<!--Password again-->
 	<div class="field" id="form-row-passwordAgain">
 			<label class="txtlibform"><fmt:message key="GML.passwordAgain"/></label>
 			<div class="champs">
-				<input type="password" autocomplete="false" name="userPasswordAgain" id="userPasswordAgainId" size="50" maxlength="32" value=""/>
+				<input type="password" autocomplete="off" name="userPasswordAgain" id="userPasswordAgainId" size="50" maxlength="32" value=""/>
 			</div>
 		</div>
 		<!--Send Email-->
