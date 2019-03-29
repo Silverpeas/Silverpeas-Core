@@ -30,6 +30,7 @@ import org.silverpeas.core.cache.model.Cache;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
+import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -354,7 +355,7 @@ public class URLUtil {
   }
 
   public static boolean isPermalink(String url) {
-    return Permalink.isCompliant(url);
+    return PermalinkRegistry.get().isCompliant(url);
   }
 
   public static String getSilverpeasVersion() {
@@ -419,17 +420,6 @@ public class URLUtil {
         }
       }
       return permalink;
-    }
-
-    public static boolean isCompliant(String url) {
-      boolean compliant = false;
-      for (Permalink aPermalink : values()) {
-        if (url != null && url.contains(aPermalink.getURLPrefix())) {
-          compliant = true;
-          break;
-        }
-      }
-      return compliant;
     }
 
     public int getType() {

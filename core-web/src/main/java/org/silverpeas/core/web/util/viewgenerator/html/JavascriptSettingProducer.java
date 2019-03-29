@@ -109,7 +109,7 @@ public class JavascriptSettingProducer {
   /**
    * Adds given key / value.
    * @param key the key to add.
-   * @param value the boolean value associated to the key.
+   * @param value the string value associated to the key.
    * @return itself.
    */
   public JavascriptSettingProducer add(final String key, final String value) {

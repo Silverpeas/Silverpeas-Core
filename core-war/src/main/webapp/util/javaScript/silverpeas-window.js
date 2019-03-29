@@ -114,8 +114,8 @@ function _spWindow_getSilverpeasMainWindow() {
     return;
   }
 
-  if (!$mainWindow.WindowBundle) {
-    $mainWindow.WindowBundle = new SilverpeasPluginBundle();
+  if (!$mainWindow.WindowSettings) {
+    $mainWindow.WindowSettings = new SilverpeasPluginSettings();
   }
 
   var __loadErrorListener = function(request) {
@@ -124,7 +124,7 @@ function _spWindow_getSilverpeasMainWindow() {
       top.location = webContext;
     } else {
       __logError("load error");
-      SilverpeasError.add(WindowBundle.get('e.t.r')).show();
+      SilverpeasError.add(sp.i18n.get('e.t.r')).show();
     }
   };
 
@@ -551,13 +551,17 @@ function _spWindow_getSilverpeasMainWindow() {
           webContext + "/RjobStartPagePeas/jsp/SetupComponent?ComponentId=" + componentId)['catch'](__loadErrorListener);
     };
 
+    var PERMALINK_PARTS = WindowSettings.get('permalink.parts');
     var __isPermalink = function(link) {
-      if (link.indexOf(webContext + '/autoRedirect.jsp') > 0) {
+      if (link.indexOf(webContext + '/autoRedirect.jsp') >= 0) {
         return true;
       }
-      var webContextIndex = link.indexOf(webContext);
-      var shortLink = webContextIndex >= 0 ? link.substr(webContextIndex + webContext.length + 1) : link;
-      return shortLink.split('/').length === 2;
+      for (var i = 0; i < PERMALINK_PARTS.length; i++) {
+        if (link.indexOf(PERMALINK_PARTS[i]) >= 0) {
+          return true;
+        }
+      }
+      return false;
     };
 
     var __getNavigationLink = function(id) {
