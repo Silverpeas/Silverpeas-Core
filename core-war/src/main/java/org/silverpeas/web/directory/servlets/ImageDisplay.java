@@ -46,6 +46,10 @@ public class ImageDisplay extends HttpServlet {
       logger.warn("The image {0} doesn't exist", avatarPath);
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
     } else {
+      res.setContentType(profile.getMimeType());
+      res.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+      res.setHeader("Pragma", "no-cache");
+      res.setDateHeader("Expires", -1);
       try (InputStream in = profile.getImage(); OutputStream out = res.getOutputStream()) {
         IOUtils.copy(in, out);
       } catch (IOException e) {

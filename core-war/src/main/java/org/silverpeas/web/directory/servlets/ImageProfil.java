@@ -23,16 +23,21 @@
  */
 package org.silverpeas.web.directory.servlets;
 
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Stream;
 
 public class ImageProfil {
 
@@ -49,7 +54,19 @@ public class ImageProfil {
     } catch (MimeTypeParseException e) {
       return false;
     }
+  }
 
+  /**
+   * Gets the MIME type of the image.
+   * @return the MIME type of the image.
+   */
+  public String getMimeType() {
+    try {
+      final MimeType type = new MimeType(FileUtil.getMimeType(photoFileName));
+      return type.toString();
+    } catch (MimeTypeParseException e) {
+      return MediaType.APPLICATION_OCTET_STREAM;
+    }
   }
 
   /**
@@ -68,8 +85,19 @@ public class ImageProfil {
   public void removeImage() {
     SilverpeasFile image = SilverpeasFileProvider.getFile(getImagePath());
     if (image.exists()) {
-      image.delete();
-      image.getParentFile().delete(); // remove the directory in the case of a last avatar
+      try {
+        Files.delete(image.toPath());
+        // remove the directory in the case of a last avatar
+        try(final Stream<Path> children = Files.list(image.getParentFile().toPath())) {
+          boolean isParentEmpty = children.findAny().isPresent();
+          if (isParentEmpty) {
+            Files.delete(image.getParentFile().toPath());
+          }
+        }
+      } catch (IOException e) {
+        SilverLogger.getLogger(e).error(e);
+      }
+
     }
   }
 
