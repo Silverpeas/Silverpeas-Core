@@ -179,7 +179,7 @@ public class MassiveWebSecurityFilter implements Filter {
         httpResponse.setHeader("Content-Security-Policy",
             "default-src 'self' blob: " + secure +
                 img +
-                "; script-src 'self' blob:  'unsafe-inline' 'unsafe-eval'" + secure +
+                "; script-src 'self' blob:  'unsafe-inline' 'unsafe-eval' " + secure +
                 SecuritySettings.getAllowedScriptSourcesInCSP() +
                 "; style-src 'self' 'unsafe-inline' " + secure +
                 SecuritySettings.getAllowedStyleSourcesInCSP());
