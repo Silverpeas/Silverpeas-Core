@@ -162,7 +162,8 @@
   width: 100%;
 }
 
-.champ-ui-dialog .select-user-group-container, .champ-ui-dialog .select-user-group-container .search-input-container {
+.champ-ui-dialog .select-user-group-container,
+.champ-ui-dialog .select-user-group-container .search-input-container {
   width: 100%;
   margin: 0;
 }
@@ -172,7 +173,12 @@
   background: #FFF;
 }
 
-.champ-ui-dialog .select-user-group-container a.user-panel-button, .champ-ui-dialog .select-user-group-container .remove-button {
+.champ-ui-dialog .select-user-group-container a.user-panel-button,
+.champ-ui-dialog .select-user-group-container .remove-button {
   right: 6%;
   top: 4px
+}
+
+.champ-ui-dialog .select-user-group-container .mandatory-icon {
+  left: calc( 95% + 0.75em );
 }
