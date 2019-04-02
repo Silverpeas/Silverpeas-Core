@@ -6979,6 +6979,11 @@ silverpeas-contribution-reminder a.add-action {
  * VueJS components.
  */
 
+.silverpeas-disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
 .silverpeas-form-pane .legend{
   clear: both;
   display: block;

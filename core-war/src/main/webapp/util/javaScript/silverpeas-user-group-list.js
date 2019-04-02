@@ -70,13 +70,12 @@
   var __globalIdCounter = 0;
 
   var UserGroupRequester = function(options) {
-    this.options = extendsObject({
-      hideDeactivatedState : false,
-      domainIdFilter : '',
-      componentIdFilter : ''
-    }, options);
-
     var __applyCommonParameters = function(params) {
+      this.options = extendsObject({
+        hideDeactivatedState : false,
+        domainIdFilter : '',
+        componentIdFilter : ''
+      }, options);
       if (typeof params === 'undefined') {
         params = {};
       }
@@ -473,6 +472,24 @@
       groupItems : []
     };
 
+    this.updateFilterOptions = function(options) {
+      if (typeof options.hideDeactivatedState !== 'undefined') {
+        this.options.hideDeactivatedState = options.hideDeactivatedState;
+      }
+      if (typeof options.domainIdFilter !== 'undefined') {
+        this.options.domainIdFilter = options.domainIdFilter;
+      }
+      if (typeof options.componentIdFilter !== 'undefined') {
+        this.options.componentIdFilter = options.componentIdFilter;
+      }
+      if (typeof options.roleFilter !== 'undefined') {
+        this.options.roleFilter = options.roleFilter;
+      }
+      if (typeof options.groupFilter !== 'undefined') {
+        this.options.groupFilter = options.groupFilter;
+      }
+    };
+
     this.removeAll = function() {
       this.context.currentUserIds = [];
       this.context.currentGroupIds = [];
@@ -511,7 +528,7 @@
       }.bind(this));
     };
 
-    var __requester = new UserGroupRequester(options);
+    var __requester = new UserGroupRequester(this.options);
 
     var _doSearchWith = function(search, callback) {
       var userDeferred = sp.promise.deferred();
@@ -786,7 +803,7 @@
     }
     this.context.currentUserId = __currentUserId;
 
-    var __requester = new UserGroupRequester(options);
+    var __requester = new UserGroupRequester(this.options);
 
     this.refreshAll = function() {
       this.refreshCommons();

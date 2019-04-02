@@ -227,6 +227,25 @@
               refresh : function() {
                 return this.initialize();
               },
+              updateFilterOptions : function() {
+                var domainIdFilter = Array.isArray(this.domainFilter)
+                    ? this.domainFilter
+                    : [this.domainFilter];
+                var roleFilter = Array.isArray(this.roleFilter)
+                    ? this.roleFilter
+                    : [this.roleFilter];
+                var groupFilter = Array.isArray(this.groupFilter)
+                    ? this.groupFilter
+                    : [this.groupFilter];
+                var options = {
+                  hideDeactivatedState : this.hideDeactivatedState,
+                  domainIdFilter : domainIdFilter,
+                  componentIdFilter : this.componentIdFilter,
+                  roleFilter : roleFilter,
+                  groupFilter : groupFilter
+                };
+                return this.selectionApi.updateFilterOptions(options);
+              },
               validateFormInput : function() {
                 var isNotValid = this.mandatory
                     && this.selectionApi.getSelectedUserIds().length === 0
@@ -243,6 +262,23 @@
           }.bind(this));
         }.bind(this));
         return this.readyPromise;
+      }
+    },
+    watch : {
+      domainFilter : function() {
+        this.api.updateFilterOptions && this.api.updateFilterOptions();
+      },
+      roleFilter : function() {
+        this.api.updateFilterOptions && this.api.updateFilterOptions();
+      },
+      groupFilter : function() {
+        this.api.updateFilterOptions && this.api.updateFilterOptions();
+      },
+      hideDeactivatedState : function() {
+        this.api.updateFilterOptions && this.api.updateFilterOptions();
+      },
+      componentIdFilter : function() {
+        this.api.updateFilterOptions && this.api.updateFilterOptions();
       }
     },
     computed : {

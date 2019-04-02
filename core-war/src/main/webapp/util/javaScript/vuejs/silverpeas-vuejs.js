@@ -57,7 +57,7 @@
  * This directive permits to initialize some data from the template by using mustache notations.
  * The HTML element holding the directive is removed from the DOM after the interpretations.
  */
-Vue.directive('init', {
+Vue.directive('sp-init', {
   bind : function(el) {
     el.style.display = 'none';
   },
@@ -69,12 +69,57 @@ Vue.directive('init', {
 /**
  * This directive permits to handle a focus.
  */
-Vue.directive('focus', {
+Vue.directive('sp-focus', {
   inserted : function(el) {
     setTimeout(function() {
       el.focus();
     }, 0);
   }
+});
+
+/**
+ * This directive permits to render an HTML element as disabled.
+ */
+Vue.directive('sp-disable-if', {
+  update : function(el, binding) {
+    if (binding.value) {
+      el.classList.add('silverpeas-disabled');
+      var disableElement = function(el) {
+        var tabIndex = el.tabIndex;
+        if (typeof tabIndex === 'number' && tabIndex !== -1) {
+          el.__sp_lastTabIndexValue = el.tabIndex;
+          el.tabIndex = -1;
+        }
+      };
+      disableElement(el);
+      sp.element.querySelectorAll('a,input', el).forEach(disableElement);
+    } else {
+      el.classList.remove('silverpeas-disabled');
+      var enableElement = function(el) {
+        if (typeof el.__sp_lastTabIndexValue === 'number') {
+          if (el.__sp_lastTabIndexValue === 0) {
+            el.removeAttribute('tabIndex');
+          } else {
+            el.setAttribute('tabIndex', el.__sp_lastTabIndexValue);
+          }
+          delete el.__sp_lastTabIndexValue;
+        }
+      };
+      enableElement(el);
+      sp.element.querySelectorAll('a,input', el).forEach(enableElement);
+    }
+  }
+});
+
+/**
+ * This filter permits to display simple array as joined string values separated with given string
+ * or space by default.
+ */
+Vue.filter('joinWith', function(array, options) {
+  if (Array.isArray(array)) {
+    return array.joinWith(options);
+  }
+  return array;
 });
 
 /**
@@ -128,8 +173,8 @@ Vue.filter('displayAsDateTime', function(dateAsText) {
  *   underline: true
  * }
  * - addMessages(messages): set messages to this.messages. Typically used from template definition
- * with Silverpeas's v-init directive. For example:
- * <div v-init>
+ * with Silverpeas's v-sp-init directive. For example:
+ * <div v-sp-init>
  *   {{addMessages({
  *   incumbentLabel : '${silfn:escapeJs(incumbentLabel)}',
  *   substituteLabel : '${silfn:escapeJs(substituteLabel)}',

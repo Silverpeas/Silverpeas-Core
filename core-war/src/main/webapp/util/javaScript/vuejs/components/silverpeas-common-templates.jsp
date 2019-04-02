@@ -46,7 +46,7 @@
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="form-pane">
   <div class="silverpeas-form-pane">
-    <div v-init>
+    <div v-sp-init>
       {{addMessages({
       mandatory : '${silfn:escapeJs(mandatoryMessage)}',
       mustBeDifferentFrom : '${silfn:escapeJs(mustBeDifferentFromMessage)}',
@@ -93,7 +93,7 @@
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="list">
   <div class="silverpeas-list-container">
-    <div v-init>
+    <div v-sp-init>
       {{addMessages({
       noItemLabel : '${noneLabel}'
       })}}
@@ -143,7 +143,7 @@
   <c:url var="linkIconUrl" value="/util/icons/link.gif"/>
 
   <div class="permalink" v-bind:class="{'simple' : simple}">
-    <div v-init>
+    <div v-sp-init>
       {{addMessages({
       copyOk : '${silfn:escapeJs(permalinkCopyOkMessage)}'
       })}}
