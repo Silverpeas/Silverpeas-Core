@@ -190,12 +190,21 @@
     }, params);
     var __load = function() {
       var promises = [];
-      promises.push(spAdminLayout.getBody().getNavigation().load(_params.navigationParams));
+      var navigationPromise = spAdminLayout.getBody().getNavigation().load(_params.navigationParams);
+      promises.push(navigationPromise);
       var _contentParams = sp.param.singleToObject('url', _params.contentParams);
       var _contentUrl = _contentParams.url;
       delete _contentParams.url;
       _contentUrl = sp.url.format(_contentUrl, _contentParams);
-      promises.push(spAdminLayout.getBody().getContent().load(_contentUrl));
+      if (params.navigationThenContent) {
+        __logDebug("__loadBody by loading first navigation and then the content");
+        navigationPromise.then(function() {
+          return spAdminLayout.getBody().getContent().load(_contentUrl);
+        });
+      } else {
+        __logDebug("__loadBody by loading navigation and content simultaneously");
+        promises.push(spAdminLayout.getBody().getContent().load(_contentUrl));
+      }
       return sp.promise.whenAllResolved(promises)['catch'](__loadErrorListener);
     };
     if (__spAdminWindowContext.queue.exists()) {
@@ -289,7 +298,10 @@
 
     this.loadUserAndGroupHomepage = function() {
       __logDebug("Loading space & component homepage");
-      return __loadUserAndGroupBody(sp.promise.resolveDirectlyWith());
+      return __loadUserAndGroupBody({
+        jsonPromise : sp.promise.resolveDirectlyWith(),
+        navigationThenContent : true
+      });
     };
 
     this.loadDomain = function(id) {

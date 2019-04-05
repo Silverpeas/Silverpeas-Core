@@ -224,6 +224,7 @@
           frameContentDocument.body.setAttribute('tabindex', '-1');
           frameContentDocument.body.focus();
 
+          spAdminLayout.getBody().resize();
           this.getContent().dispatchEvent("load");
           this.hideProgressMessage();
         }.bind(this));
@@ -425,8 +426,5 @@ function initializeSilverpeasAdminLayout(bodyLoadParameters) {
     $topWindow.spAdminWindow = window.spAdminWindow;
     spAdminLayout.getHeader().load({'layoutInitialization' : true});
     spAdminLayout.getBody().load(bodyLoadParameters);
-    setTimeout(function() {
-      spAdminLayout.getBody().resize();
-    }, 400);
   }
 }
