@@ -46,8 +46,8 @@
     </resources>
     <plugins>
       <plugin>
-        <groupId>net.alchim31.maven</groupId>
-        <artifactId>yuicompressor-maven-plugin</artifactId>
+        <groupId>org.silverpeas.maven</groupId>
+        <artifactId>silverpeas-ui-compressor-maven-plugin</artifactId>
         <executions>
           <execution>
             <goals>
