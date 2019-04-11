@@ -175,7 +175,7 @@ public class MassiveWebSecurityFilter implements Filter {
         final String secure = " https: " +
             (httpRequest.isSecure() ? WebDavProtocol.SECURED_WEBDAV_SCHEME + ": " :
                 WebDavProtocol.WEBDAV_SCHEME + ": ");
-        final String img = currentUser == null ? "" : "; img-src * data:";
+        final String img = currentUser == null ? "" : "; img-src * data: blob:";
         httpResponse.setHeader("Content-Security-Policy",
             "default-src 'self' blob: " + secure +
                 img +
