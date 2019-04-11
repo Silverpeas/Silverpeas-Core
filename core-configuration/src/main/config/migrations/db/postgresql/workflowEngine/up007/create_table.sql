@@ -16,3 +16,6 @@ CREATE TABLE SB_Workflow_Replacements (
 
 CREATE INDEX IDX_INCUMBENT ON SB_Workflow_Replacements(incumbentId, workflowId);
 CREATE INDEX IDX_SUBSTITUTE ON SB_Workflow_Replacements(substituteId, workflowId);
+
+ALTER TABLE sb_workflow_historystep
+  ADD COLUMN substituteId VARCHAR(40) NULL;

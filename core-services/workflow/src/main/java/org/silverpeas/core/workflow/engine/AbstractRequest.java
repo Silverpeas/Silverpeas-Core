@@ -59,6 +59,9 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
     if (event.getUser() != null) {
       newStep.setUserId(event.getUser().getUserId());
     }
+    if (event.getSubstitute() != null) {
+      newStep.setSubstituteId(event.getSubstitute().getUserId());
+    }
     newStep.setAction(descriptor.getActionName());
     newStep.setActionDate(descriptor.getActionDate());
     newStep.setUserRoleName(descriptor.getUserRoleName());

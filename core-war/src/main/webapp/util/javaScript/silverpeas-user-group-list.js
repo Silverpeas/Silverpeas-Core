@@ -358,8 +358,8 @@
       c._last_currentUserIds = [].concat(c.currentUserIds);
       c._last_currentGroupIds = [].concat(c.currentGroupIds);
       if (forceChangeTrigger || userIdsChange || groupIdsChange) {
-        if (typeof userGroupSelectInstance.options.onChange === 'function') {
-          var o = userGroupSelectInstance.options;
+        var o = userGroupSelectInstance.options;
+        if (typeof o.onChange === 'function') {
           setTimeout(function() {
             try {
               o.onChange(userGroupSelectInstance);

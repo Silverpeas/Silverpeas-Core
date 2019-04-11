@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.window;
 
+import org.apache.ecs.html.Div;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
@@ -357,13 +358,14 @@ public abstract class AbstractWindow implements Window {
   @Override
   public String printBefore() {
     StringBuilder result = new StringBuilder(200);
-    int nbCols = 1;
     if (!isPopup() && !getGEF().getMainSessionController().getCurrentUserDetail().isAnonymous() &&
         !OperationPaneType.personalSpace.equals(getOperationPane().getType())) {
       addSpaceOrComponentOperations();
     }
-    if (getOperationPane().nbOperations() > 0) {
-      nbCols = 2;
+    String browseBarClass = "cellBrowseBar";
+    boolean someOperations = getOperationPane().nbOperations() > 0;
+    if (!someOperations) {
+      browseBarClass += " cellBrowseBarWithoutOperation";
     }
 
     contextualDiv = getContextualDiv();
@@ -376,19 +378,14 @@ public abstract class AbstractWindow implements Window {
       if (isPopup()) {
         getBrowseBar().setClickable(false);
       }
-      result.append("<div class=\"cellBrowseBar\" >");
-      result.append(getBrowseBar().print());
-      result.append(DIV);
-      if (nbCols == 2) {
+      Div div = new Div(getBrowseBar().print());
+      div.setClass(browseBarClass);
+      result.append(div.toString());
+      if (someOperations) {
         result.append("<div class=\"cellOperation\" >");
         result.append(getOperationPane().print());
         result.append(DIV);
-      } else {
-        result.append("<div class=\"cellOperation\" >");
-        result.append("&nbsp;");
-        result.append(DIV);
       }
-
     }
     result.append("<div class=\"cellBodyWindows\">");
     return result.toString();

@@ -4,6 +4,7 @@ import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.TaskManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -68,7 +69,7 @@ class WorkflowTools {
     // Compute eligibility for states
     states = setEligibleStates(instance, oldActiveStates, eligibleStates);
 
-    Consequence consequence = null;
+    Consequence consequence;
     try {
       // Saving data of step and process instance
       if (event.getDataRecord() != null) {
@@ -149,27 +150,24 @@ class WorkflowTools {
     for (QualifiedUsers notifiedUsers : notifiedUsersList) {
       Actor[] actors = instance.getActors(notifiedUsers, null);
       Task[] tasks = taskManager.createTasks(actors, instance);
-      String message;
-      boolean linkDisabled;
+      String message = notifiedUsers.getMessage();
+      if (StringUtil.isNotDefined(message)) {
+        message = action.getDescription("", "");
+      }
+
+      // check if link has been disabled in the model
+      boolean linkDisabled = notifiedUsers.getLinkDisabled() != null && notifiedUsers.getLinkDisabled();
+
+      // check if sender has been hardcoded in the model
+      String senderId = notifiedUsers.getSenderId();
+      User forcedUser = null;
+      if (senderId != null) {
+        forcedUser = getForcedUser(senderId, event.getActionName());
+      }
+      User sender = (forcedUser == null) ? event.getUserOrSubstitute() : forcedUser;
 
       for (int i = 0; i < actors.length; i++) {
-        message = notifiedUsers.getMessage();
-        if (message == null || message.length() == 0) {
-          message = action.getDescription("", "");
-        }
-        
-        // check if link has been disabled in the model
-        linkDisabled = notifiedUsers.getLinkDisabled() != null && notifiedUsers.getLinkDisabled();
-
-        // check if sender has been hardcoded in the model
-        String senderId = notifiedUsers.getSenderId();
-        User forcedUser = null;
-        if (senderId != null) {
-          forcedUser = getForcedUser(senderId, event.getActionName());
-        }
-
-        User sender = (forcedUser == null) ? event.getUser() : forcedUser;
-        taskManager.notifyActor(tasks[i], sender, actors[i].getUser(), message, linkDisabled);
+        taskManager.notifyActor(tasks[i], sender, actors[i], message, linkDisabled);
       }
     }
   }

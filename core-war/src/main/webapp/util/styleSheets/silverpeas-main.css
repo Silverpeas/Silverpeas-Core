@@ -1038,6 +1038,10 @@ Style Utilise par le ViewGenerator
   padding-bottom: 0.5em;
 }
 
+.cellBrowseBar.cellBrowseBarWithoutOperation  {
+  padding-right: 0 !important;
+}
+
 .cellOperation {
   display: inline-block;
   width:210px;
@@ -3479,6 +3483,7 @@ select.mandatoryField option.emphasis {
 .inlineMessage-ok,
 .inlineMessage-nok,
 .inlineMessage-waiting,
+.inlineMessage-neutral,
 .MessageReadHighPriority,
 #portletPages h2#deploy-failed, #portletPages h2#deploy-success, #portletPages h2#undeploy-failed, #portletPages h2#undeploy-success, #portletPages h2#create-failed,
 #portletPages h2#create-success, #portletPages h2#modify-failed, #portletPages h2#modify-success  {
@@ -3492,7 +3497,8 @@ select.mandatoryField option.emphasis {
 .inlineMessage a,
 .inlineMessage-ok a,
 .inlineMessage-nok a,
-.inlineMessage-waiting a {
+.inlineMessage-waiting a,
+.inlineMessage-neutral a {
   text-decoration: underline;
 }
 
@@ -3542,6 +3548,12 @@ select.mandatoryField option.emphasis {
 .inlineMessage-waiting {
   background-color: #ffd49d;
   border-color:#ffb85b;
+}
+
+.inlineMessage-neutral {
+  background-color: #eaeaea;
+  border: 0;
+  text-align: left;
 }
 
 table.pdcPositionsField {

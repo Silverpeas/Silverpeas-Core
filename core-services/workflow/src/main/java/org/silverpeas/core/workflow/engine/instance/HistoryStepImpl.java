@@ -99,6 +99,9 @@ public class HistoryStepImpl extends BasicJpaEntity<HistoryStepImpl, UniqueInteg
   @Column(name = "tostate")
   private String resultingState = null;
 
+  @Column
+  private String substituteId = null;
+
   /**
    * Resulting status of action
    */
@@ -259,6 +262,15 @@ public class HistoryStepImpl extends BasicJpaEntity<HistoryStepImpl, UniqueInteg
    */
   public void setActionStatus(ActionStatus actionStatus) {
     this.actionStatus = actionStatus.getCode();
+  }
+
+  @Override
+  public String getSubstituteId() {
+    return substituteId;
+  }
+
+  public void setSubstituteId(String substituteId) {
+    this.substituteId = substituteId;
   }
 
   /**

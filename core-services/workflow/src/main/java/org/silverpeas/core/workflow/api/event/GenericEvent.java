@@ -70,4 +70,14 @@ public interface GenericEvent {
    * Returns the data associated to this event.
    */
   DataRecord getDataRecord();
+
+  User getSubstitute();
+
+  void setSubstitute(User substitute);
+
+  /**
+   * Returns substitute if defined, regular user otherwise
+   * @return a User
+   */
+  User getUserOrSubstitute();
 }

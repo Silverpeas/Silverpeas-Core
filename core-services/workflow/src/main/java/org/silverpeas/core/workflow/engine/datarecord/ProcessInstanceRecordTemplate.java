@@ -266,10 +266,12 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
       addField(new ActionActorTemplate(ACTION + action.getName()
           + ".actor", action, lang));
 
-      for(Item userItem: userItems) {
-        if (userItem != null) {
-          addField(new UserInfoTemplate(ACTION + action.getName()
-              + ".actor." + userItem.getName(), userItem, role, lang));
+      if (userItems != null) {
+        for (Item userItem : userItems) {
+          if (userItem != null) {
+            addField(new UserInfoTemplate(ACTION + action.getName() + ".actor." + userItem.getName(),
+                userItem, role, lang));
+          }
         }
       }
     }

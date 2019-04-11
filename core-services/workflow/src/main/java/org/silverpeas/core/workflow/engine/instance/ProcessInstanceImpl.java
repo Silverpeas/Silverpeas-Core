@@ -1124,7 +1124,7 @@ public class ProcessInstanceImpl
       // if step matches the searched state, tests if the step is most recent
       // choose this step, if no previous step found or action date is more
       // recent
-      if (stepMatch && mostRecentStep == null || step.getActionDate().after(actionDate)) {
+      if (stepMatch && (mostRecentStep == null || step.getActionDate().after(actionDate))) {
         mostRecentStep = step;
         actionDate = step.getActionDate();
       }

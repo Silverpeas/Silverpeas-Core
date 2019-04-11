@@ -74,4 +74,6 @@ public interface UpdatableHistoryStep extends HistoryStep {
    * @param userRoleName the role's name
    */
   void setUserRoleName(String userRoleName);
+
+  void setSubstituteId(String substituteId);
 }

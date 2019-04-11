@@ -83,5 +83,6 @@ public interface TaskManager {
   /**
    * Notify user that an action has been done
    */
-  void notifyActor(Task task, User sender, User user, String text, boolean linkDisabled) throws WorkflowException;
+  void notifyActor(Task task, User sender, Actor user, String text, boolean linkDisabled)
+      throws WorkflowException;
 }

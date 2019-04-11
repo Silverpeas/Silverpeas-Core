@@ -91,4 +91,9 @@ public interface HistoryStep extends Comparable<HistoryStep> {
    * Delete the data filled at this step
    */
   void deleteActionRecord() throws WorkflowException;
+
+  /**
+   * @return the optional substitute
+   */
+  String getSubstituteId();
 }

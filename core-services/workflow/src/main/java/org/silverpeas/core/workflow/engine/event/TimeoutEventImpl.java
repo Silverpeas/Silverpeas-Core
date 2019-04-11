@@ -97,11 +97,27 @@ public class TimeoutEventImpl implements TimeoutEvent {
     return "supervisor";
   }
 
+  @Override
+  public User getSubstitute() {
+    return substitute;
+  }
+
+  @Override
+  public void setSubstitute(User substitute) {
+    this.substitute = substitute;
+  }
+
+  @Override
+  public User getUserOrSubstitute() {
+    return (getSubstitute() == null) ? getUser() : getSubstitute();
+  }
+
   /*
    * Internal states.
    */
-  private ProcessInstance processInstance = null;
-  private Action action = null;
-  private State resolvedState = null;
-  private Date actionDate = null;
+  private ProcessInstance processInstance;
+  private Action action;
+  private State resolvedState;
+  private Date actionDate;
+  private User substitute;
 }
