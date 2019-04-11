@@ -63,10 +63,10 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    * @param <T> the class implementing the {@link Replacement} interface.
    * @return a list of replacements. If no such replacements exist, then an empty list is returned.
    */
-  static <T extends Replacement> List<T> getAllOf(final User incumbent,
+  static <T extends Replacement> ReplacementList<T> getAllOf(final User incumbent,
       final String workflowInstanceId) {
     Repository repository = ServiceProvider.getService(Repository.class);
-    return repository.findAllByIncumbentAndByWorkflow(incumbent, workflowInstanceId);
+    return new ReplacementList<>(repository.findAllByIncumbentAndByWorkflow(incumbent, workflowInstanceId));
   }
 
   /**
@@ -76,10 +76,10 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    * @param <T> the class implementing the {@link Replacement} interface.
    * @return a list of replacements. If no such replacements exist, then an empty list is returned.
    */
-  static <T extends Replacement> List<T> getAllBy(final User substitute,
+  static <T extends Replacement> ReplacementList<T> getAllBy(final User substitute,
       final String workflowInstanceId) {
     Repository repository = ServiceProvider.getService(Repository.class);
-    return repository.findAllBySubstituteAndByWorkflow(substitute, workflowInstanceId);
+    return new ReplacementList<>(repository.findAllBySubstituteAndByWorkflow(substitute, workflowInstanceId));
   }
 
   /**
@@ -91,10 +91,10 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    * @param <T> the class implementing the {@link Replacement} interface.
    * @return a list of replacements. If no such replacements exist, then an empty list is returned.
    */
-  static <T extends Replacement> List<T> getAllWith(final User incumbent, final User substitute,
+  static <T extends Replacement> ReplacementList<T> getAllWith(final User incumbent, final User substitute,
       final String workflowInstanceId) {
     Repository repository = ServiceProvider.getService(Repository.class);
-    return repository.findAllByUsersAndByWorkflow(incumbent, substitute, workflowInstanceId);
+    return new ReplacementList<>(repository.findAllByUsersAndByWorkflow(incumbent, substitute, workflowInstanceId));
   }
 
   /**
@@ -104,9 +104,9 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    * @return a list of all the replacements in the specified workflow instance. If no
    * replacements exist, then an empty list is returned.
    */
-  static <T extends Replacement> List<T> getAll(final String workflowInstanceId) {
+  static <T extends Replacement> ReplacementList<T> getAll(final String workflowInstanceId) {
     Repository repository = ServiceProvider.getService(Repository.class);
-    return repository.findAllByWorkflow(workflowInstanceId);
+    return new ReplacementList<>(repository.findAllByWorkflow(workflowInstanceId));
   }
 
   /**

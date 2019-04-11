@@ -283,7 +283,7 @@ public class Period {
    */
   public boolean includes(final Temporal dateTime) {
     OffsetDateTime dt = asOffsetDateTime(dateTime);
-    return dt.compareTo(startDateTime) >= 0 && dt.compareTo(endDateTime) <= 0;
+    return dt.compareTo(startDateTime) >= 0 && dt.compareTo(endDateTime) < 0;
   }
 
   /**
