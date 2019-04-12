@@ -80,8 +80,18 @@ public class ReplacementList <T extends Replacement> extends ArrayList<T> {
      * @param temporal an {@link Temporal} instance.
      * @return new instance of {@link FilterStream}.
      */
-    public FilterStream<R> filterAt(final Temporal temporal) {
+    public FilterStream<R> filterCurrentAt(final Temporal temporal) {
       return new FilterStream<>(super.stream().filter(r -> r.getPeriod().includes(temporal)));
+    }
+
+    /**
+     * Filters on the specified temporal. Only replacements which the period includes
+     * the specified temporal and replacements which the period is after the temporal will be kept.
+     * @param temporal an {@link Temporal} instance.
+     * @return new instance of {@link FilterStream}.
+     */
+    public FilterStream<R> filterCurrentAndNextAt(final Temporal temporal) {
+      return new FilterStream<>(super.stream().filter(r -> r.getPeriod().endsAfter(temporal)));
     }
 
     /**

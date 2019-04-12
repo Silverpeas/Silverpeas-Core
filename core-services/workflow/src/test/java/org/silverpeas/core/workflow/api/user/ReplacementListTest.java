@@ -106,34 +106,67 @@ class ReplacementListTest {
   }
 
   @Test
-  void filterAtOutOfRange() {
+  void filterCurrentAtOutOfRange() {
     List<ReplacementImpl> result = replacements
         .stream()
-        .filterAt(LocalDate.parse("2019-04-10"))
+        .filterCurrentAt(LocalDate.parse("2019-04-10"))
         .collect(Collectors.toList());
     assertThat(result, empty());
     result = replacements
         .stream()
-        .filterAt(LocalDate.parse("2019-04-14"))
+        .filterCurrentAt(LocalDate.parse("2019-04-14"))
         .collect(Collectors.toList());
     assertThat(result, empty());
   }
 
   @Test
-  void filterAt() {
+  void filterCurrentAndNextAtOutOfRange() {
     List<ReplacementImpl> result = replacements
         .stream()
-        .filterAt(LocalDate.parse("2019-04-11"))
+        .filterCurrentAndNextAt(LocalDate.parse("2019-04-14"))
+        .collect(Collectors.toList());
+    assertThat(result, empty());
+  }
+
+  @Test
+  void filterCurrentAt() {
+    List<ReplacementImpl> result = replacements
+        .stream()
+        .filterCurrentAt(LocalDate.parse("2019-04-11"))
         .collect(Collectors.toList());
     assertThat(toUserIdsAsString(result), is("12,56"));
     result = replacements
         .stream()
-        .filterAt(LocalDate.parse("2019-04-12"))
+        .filterCurrentAt(LocalDate.parse("2019-04-12"))
         .collect(Collectors.toList());
     assertThat(toUserIdsAsString(result), is("56,13"));
     result = replacements
         .stream()
-        .filterAt(LocalDate.parse("2019-04-13"))
+        .filterCurrentAt(LocalDate.parse("2019-04-13"))
+        .collect(Collectors.toList());
+    assertThat(toUserIdsAsString(result), is("34,56,13"));
+  }
+
+  @Test
+  void filterCurrentAndNextAt() {
+    List<ReplacementImpl> result = replacements
+        .stream()
+        .filterCurrentAndNextAt(LocalDate.parse("2019-04-10"))
+        .collect(Collectors.toList());
+    assertThat(toUserIdsAsString(result), is("12,34,56,13"));
+    result = replacements
+        .stream()
+        .filterCurrentAndNextAt(LocalDate.parse("2019-04-11"))
+        .collect(Collectors.toList());
+    assertThat(toUserIdsAsString(result), is("12,34,56,13"));
+    result = replacements
+        .stream()
+        .filterCurrentAndNextAt(LocalDate.parse("2019-04-12"))
+        .collect(Collectors.toList());
+    assertThat(toUserIdsAsString(result), is("34,56,13"));
+    result = replacements
+        .stream()
+        .filterCurrentAndNextAt(LocalDate.parse("2019-04-13"))
         .collect(Collectors.toList());
     assertThat(toUserIdsAsString(result), is("34,56,13"));
   }
@@ -190,19 +223,19 @@ class ReplacementListTest {
   void filterAtAndFilterOnAtLeastOneRole() {
     List<ReplacementImpl> result = replacements
         .stream()
-        .filterAt(LocalDate.parse("2019-04-11"))
+        .filterCurrentAt(LocalDate.parse("2019-04-11"))
         .filterOnAtLeastOneRole(ROLE_B)
         .collect(Collectors.toList());
     assertThat(toUserIdsAsString(result), is("12"));
     result = replacements
         .stream()
-        .filterAt(LocalDate.parse("2019-04-12"))
+        .filterCurrentAt(LocalDate.parse("2019-04-12"))
         .filterOnAtLeastOneRole(ROLE_B)
         .collect(Collectors.toList());
     assertThat(result, empty());
     result = replacements
         .stream()
-        .filterAt(LocalDate.parse("2019-04-12"))
+        .filterCurrentAt(LocalDate.parse("2019-04-12"))
         .filterOnAtLeastOneRole(ROLE_A, ROLE_B, ROLE_D)
         .collect(Collectors.toList());
     assertThat(toUserIdsAsString(result), is("56"));

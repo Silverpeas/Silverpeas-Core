@@ -280,7 +280,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
     User user = new UserImpl(UserDetail.getById(userId));
     return Replacement.getAllOf(user, componentInstanceId)
         .stream()
-        .filterAt(LocalDate.now())
+        .filterCurrentAt(LocalDate.now())
         .filterOnAtLeastOneRole(role)
         .map(Replacement::getSubstitute)
         .collect(Collectors.toList());

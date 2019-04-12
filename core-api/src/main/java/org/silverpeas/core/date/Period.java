@@ -277,7 +277,7 @@ public class Period {
   }
 
   /**
-   * Is this period includes the specified temporal?
+   * Is this period including the specified temporal?
    * @param dateTime either a date or a date time. Any other temporal type isn't supported.
    * @return true if the specified date is included in this period, false otherwise.
    */
@@ -287,7 +287,7 @@ public class Period {
   }
 
   /**
-   * Is this period ends before the specified temporal?
+   * Is this period ending before the specified temporal?
    * @param dateTime either a date or a date time. Any other temporal type isn't supported.
    * @return true if this period's end date is at or before the specified temporal (the period's
    * end date is exclusive).
@@ -298,7 +298,18 @@ public class Period {
   }
 
   /**
-   * Is this period starts after the specified temporal?
+   * Is this period ending after the specified temporal?
+   * @param dateTime either a date or a date time. Any other temporal type isn't supported.
+   * @return true if this period's end date is at or before the specified temporal (the period's
+   * end date is exclusive).
+   */
+  public boolean endsAfter(final Temporal dateTime) {
+    OffsetDateTime dt = asOffsetDateTime(dateTime);
+    return dt.compareTo(endDateTime) < 0;
+  }
+
+  /**
+   * Is this period starting after the specified temporal?
    * @param dateTime either a date or a date time. Any other temporal type isn't supported.
    * @return true if this period's start date is after the specified temporal (the period's
    * start date is inclusive).
