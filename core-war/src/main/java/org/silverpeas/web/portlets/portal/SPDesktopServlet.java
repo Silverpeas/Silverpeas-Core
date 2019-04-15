@@ -105,11 +105,9 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
     }
 
     if (isDefined(spaceHomePage)) {
-      String sRequestURL = request.getRequestURL().toString();
-      String m_sAbsolute =
-          sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
+      String serverURL = URLUtil.getServerURL(request);
       String baseURL =
-          ResourceLocator.getGeneralSettingBundle().getString("httpServerBase", m_sAbsolute);
+          ResourceLocator.getGeneralSettingBundle().getString("httpServerBase", serverURL);
       if (spaceHomePage.startsWith("/")) {
         // case of forward inside application /silverpeas
         String applicationContext = URLUtil.getApplicationURL();
