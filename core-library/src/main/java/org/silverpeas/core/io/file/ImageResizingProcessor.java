@@ -25,9 +25,9 @@ package org.silverpeas.core.io.file;
 
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -80,11 +80,10 @@ public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
         if (size.length == 2) {
           height = Integer.valueOf(size[1]);
         }
-        File imageSource =
-            new File(image.getParentFile().getParent() + File.separator + image.getName());
+        final File imageSource = new File(image.getParentFile().getParent(), image.getName());
         if (imageSource.exists() && (width != null || height != null)) {
-          File imageDestination =
-              new File(IMAGE_CACHE_PATH + parent + File.separator + imageSource.getName());
+          final String fileName = imageSource.lastModified() + "_" + imageSource.getName();
+          final File imageDestination = new File(IMAGE_CACHE_PATH + parent, fileName);
           parameters = new ResizingParameters(imageSource, imageDestination, width, height);
         }
       } catch (NumberFormatException ignore) {
