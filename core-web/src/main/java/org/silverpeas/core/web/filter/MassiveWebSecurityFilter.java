@@ -177,7 +177,7 @@ public class MassiveWebSecurityFilter implements Filter {
                 WebDavProtocol.WEBDAV_SCHEME + ": ");
         final String img = currentUser == null ? "" : "; img-src * data: blob:";
         httpResponse.setHeader("Content-Security-Policy",
-            "default-src 'self' blob: " + secure +
+            "default-src 'self' blob: mailto: " + secure +
                 img +
                 "; script-src 'self' blob:  'unsafe-inline' 'unsafe-eval' " + secure +
                 SecuritySettings.getAllowedScriptSourcesInCSP() +
