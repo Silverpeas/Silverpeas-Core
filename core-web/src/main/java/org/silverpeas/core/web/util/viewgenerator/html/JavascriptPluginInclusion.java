@@ -64,6 +64,7 @@ import static org.silverpeas.core.notification.user.client.NotificationManagerSe
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.isSseEnabled;
 import static org.silverpeas.core.reminder.ReminderSettings.getDefaultReminder;
 import static org.silverpeas.core.reminder.ReminderSettings.getPossibleReminders;
+import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptBundleProducer.bundleVariableName;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptSettingProducer.settingVariableName;
 
@@ -79,12 +80,11 @@ public class JavascriptPluginInclusion {
   private static final int NB_MONTHS = 12;
   private static final int NB_WEEK_DAYS = 7;
   private static final int SCRIPT_CONTENT_KEY_LENGTH = 150;
-  private static final String JAVASCRIPT_PATH = URLUtil.getApplicationURL() + "/util/javaScript/";
-  private static final String FLASH_PATH = URLUtil.getApplicationURL() + "/util/flash/";
-  private static final String STYLESHEET_PATH =
-      URLUtil.getApplicationURL() + "/util/styleSheets/";
-  private static final String FP_VIEWER_BASE = URLUtil.getApplicationURL() + "/media/jsp/fp";
-  private static final String PDF_VIEWER_BASE = URLUtil.getApplicationURL() + "/media/jsp/pdf";
+  private static final String JAVASCRIPT_PATH = getApplicationURL() + "/util/javaScript/";
+  private static final String FLASH_PATH = getApplicationURL() + "/util/flash/";
+  private static final String STYLESHEET_PATH = getApplicationURL() + "/util/styleSheets/";
+  private static final String FP_VIEWER_BASE = getApplicationURL() + "/media/jsp/fp";
+  private static final String PDF_VIEWER_BASE = getApplicationURL() + "/media/jsp/pdf";
   private static final String JQUERY_PATH = JAVASCRIPT_PATH + "jquery/";
   private static final String JQUERY_CSS_PATH = STYLESHEET_PATH + "jquery/";
   private static final String ANGULARJS_PATH = JAVASCRIPT_PATH + "angularjs/";
@@ -147,7 +147,7 @@ public class JavascriptPluginInclusion {
   private static final String STYLESHEET_TAGS = "tagit/tagit-stylish-yellow.css";
   private static final String SILVERPEAS_PASSWORD = "silverpeas-password.js";
   private static final String STYLESHEET_PASSWORD = "silverpeas-password.css";
-  private static final String WYSIWYG_PATH = URLUtil.getApplicationURL() + "/wysiwyg/jsp/";
+  private static final String WYSIWYG_PATH = getApplicationURL() + "/wysiwyg/jsp/";
   private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
   private static final String CODE_HIGHLIGHTER_JAVASCRIPT = "ckeditor/plugins/codesnippet/lib/highlight/highlight.pack.js";
   private static final String CODE_HIGHLIGHTER_CSS = "ckeditor/plugins/codesnippet/lib/highlight/styles/monokai_sublime.css";
@@ -265,15 +265,15 @@ public class JavascriptPluginInclusion {
       sb.append("jQuery(document).ready(function() {");
       sb.append("  if (typeof jQuery.").append(jqPluginName).append(" === 'undefined' &&");
       sb.append("      typeof window.").append(jqPluginName).append(" === 'undefined') {");
-      sb.append("    jQuery.getScript('").append(normalizeWebResourceUrl(src))
-          .append("', function() {");
+      sb.append("    jQuery.ajax({type:'GET',url:'").append(normalizeWebResourceUrl(src))
+          .append("',dataType:'script',cache:true,success:function() {");
       if (StringUtil.isDefined(jsCallbackContentOnSuccessfulLoad)) {
         sb.append("    ").append(jsCallbackContentOnSuccessfulLoad);
       }
       if (StringUtil.isDefined(jsCallback)) {
         sb.append("    ").append(jsCallback);
       }
-      sb.append("    })");
+      sb.append("    }})");
       sb.append("  } else {");
       if (StringUtil.isDefined(jsCallback)) {
         sb.append("    ").append(jsCallback);
@@ -474,7 +474,7 @@ public class JavascriptPluginInclusion {
       final LookHelper lookHelper) {
     xhtml.addElement(scriptContent(settingVariableName("UserSessionSettings")
         .add("us.cu.nb.i", lookHelper.getNBConnectedUsers())
-        .add("us.cu.v.u", URLUtil.getApplicationURL() + "/Rdirectory/jsp/connected")
+        .add("us.cu.v.u", getApplicationURL() + "/Rdirectory/jsp/connected")
         .produce()));
     xhtml.addElement(scriptContent(generateDynamicPluginLoadingPromise(USERSESSION,
         JAVASCRIPT_PATH + SILVERPEAS_USER_SESSION_JS)));
@@ -485,8 +485,8 @@ public class JavascriptPluginInclusion {
     final String myNotificationUrl = URLUtil.getURL(URLUtil.CMP_SILVERMAIL, null, null) + "Main";
     xhtml.addElement(scriptContent(settingVariableName("UserNotificationSettings")
         .add("un.nbu.i", getNbUnreadFor(User.getCurrentRequester().getId()))
-        .add("un.v.u", URLUtil.getApplicationURL() + myNotificationUrl)
-        .add("un.d.i.u", URLUtil.getApplicationURL() + getUserNotificationDesktopIconUrl())
+        .add("un.v.u", getApplicationURL() + myNotificationUrl)
+        .add("un.d.i.u", getApplicationURL() + getUserNotificationDesktopIconUrl())
         .produce()));
     xhtml.addElement(scriptContent(generateDynamicPluginLoadingPromise(USERNOTIFICATION,
         JAVASCRIPT_PATH + SILVERPEAS_USER_NOTIFICATION_JS)));
@@ -495,12 +495,8 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includeIFrameAjaxTransport(final ElementContainer xhtml) {
-    script iframeAjaxTransport = new script().setType(JAVASCRIPT_TYPE)
-        .setSrc(JQUERY_PATH + JQUERY_IFRAME_AJAX_TRANSPORT + ".js");
-    xhtml.addElement(iframeAjaxTransport);
-    script iframeAjaxTransportHelper = new script().setType(JAVASCRIPT_TYPE)
-        .setSrc(JQUERY_PATH + JQUERY_IFRAME_AJAX_TRANSPORT + "-helper.js");
-    xhtml.addElement(iframeAjaxTransportHelper);
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_IFRAME_AJAX_TRANSPORT + ".js"));
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_IFRAME_AJAX_TRANSPORT + "-helper.js"));
     return xhtml;
   }
 
@@ -567,6 +563,7 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includeWysiwygEditor(final ElementContainer xhtml, final String language) {
     xhtml.addElement(link(WYSIWYG_PATH+CODE_HIGHLIGHTER_CSS));
+    xhtml.addElement(scriptContent("window.CKEDITOR_BASEPATH = '" + getApplicationURL() + "/wysiwyg/jsp/ckeditor/';"));
     xhtml.addElement(script(WYSIWYG_PATH + JAVASCRIPT_CKEDITOR));
     xhtml.addElement(script(WYSIWYG_PATH + CODE_HIGHLIGHTER_JAVASCRIPT));
     xhtml.addElement(script(WYSIWYG_PATH + SILVERPEAS_WYSIWYG_TOOLBAR));
@@ -874,7 +871,7 @@ public class JavascriptPluginInclusion {
    */
   static ElementContainer includeChat(final ElementContainer xhtml) {
     if (ChatServer.isEnabled()) {
-      final String chatDir = URLUtil.getApplicationURL() + "/chat/";
+      final String chatDir = getApplicationURL() + "/chat/";
       final String jsxcDir = chatDir + "jsxc/";
       xhtml.addElement(script(jsxcDir + "lib/jquery.fullscreen.js"));
       xhtml.addElement(script(jsxcDir + "lib/jquery.slimscroll.js"));
@@ -887,7 +884,7 @@ public class JavascriptPluginInclusion {
       xhtml.addElement(link(chatDir + "css/silverchat.css"));
       xhtml.addElement(scriptContent(
           settingVariableName("SilverChatSettings")
-              .add("un.d.i.u", URLUtil.getApplicationURL() + getUserNotificationDesktopIconUrl())
+              .add("un.d.i.u", getApplicationURL() + getUserNotificationDesktopIconUrl())
               .produce()));
     }
     return xhtml;
@@ -954,16 +951,16 @@ public class JavascriptPluginInclusion {
       LayoutConfiguration layout = lookHelper.getLayoutConfiguration();
       includeQTip(xhtml, lookHelper.getLanguage());
       xhtml.addElement(scriptContent(settingVariableName("LayoutSettings")
-            .add("layout.header.url", URLUtil.getApplicationURL() + layout.getHeaderURL())
-            .add("layout.body.url", URLUtil.getApplicationURL() + layout.getBodyURL())
-            .add("layout.body.navigation.url", URLUtil.getApplicationURL() + layout.getBodyNavigationURL())
+            .add("layout.header.url", getApplicationURL() + layout.getHeaderURL())
+            .add("layout.body.url", getApplicationURL() + layout.getBodyURL())
+            .add("layout.body.navigation.url", getApplicationURL() + layout.getBodyNavigationURL())
             .add("layout.pdc.activated", lookHelper.displayPDCFrame())
-            .add("layout.pdc.baseUrl", URLUtil.getApplicationURL() + "/RpdcSearch/jsp/")
+            .add("layout.pdc.baseUrl", getApplicationURL() + "/RpdcSearch/jsp/")
             .add("layout.pdc.action.default", "ChangeSearchTypeToExpert")
             .add("sse.enabled", isSseEnabled())
             .produce()));
       xhtml.addElement(scriptContent(settingVariableName("AdminLayoutSettings")
-            .add("layout.header.url", URLUtil.getApplicationURL() + "/RjobManagerPeas/jsp/TopBarManager")
+            .add("layout.header.url", getApplicationURL() + "/RjobManagerPeas/jsp/TopBarManager")
             .add("layout.body.url", "")
             .add("layout.body.navigation.url", "")
             .produce()));
@@ -1099,6 +1096,6 @@ public class JavascriptPluginInclusion {
    */
   public static String normalizeWebResourceUrl(String url) {
     String normalizedUrl = URLUtil.getMinifiedWebResourceUrl(url);
-    return URLUtil.appendVersion(normalizedUrl);
+    return URLUtil.addFingerprintVersionOn(normalizedUrl);
   }
 }

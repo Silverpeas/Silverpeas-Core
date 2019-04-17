@@ -23,19 +23,19 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.file.FileServerUtils;
+import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.file.FileServerUtils;
 
 import java.io.PrintWriter;
 import java.util.Map;
 
-import static org.silverpeas.core.util.URLUtil.appendVersion;
-import static org.silverpeas.core.util.URLUtil.getMinifiedWebResourceUrl;
+import static org.silverpeas.core.util.URLUtil.*;
 
 public class Util {
 
@@ -65,7 +65,10 @@ public class Util {
   }
 
   public static String getJavascriptIncludes(String language) {
-    StringBuilder includes = new StringBuilder();
+    final StringBuilder includes = new StringBuilder();
+    includes.append(new script().setType("text/javascript").addElement(
+        "window.CKEDITOR_BASEPATH = '" + getApplicationURL() + "/wysiwyg/jsp/ckeditor/';")
+        .toString());
     addSilverpeasScript(includes, "/wysiwyg/jsp/ckeditor/ckeditor.js");
     addSilverpeasScript(includes, "/util/javaScript/dateUtils.js");
     addSilverpeasScript(includes, "/util/javaScript/checkForm.js");
@@ -90,21 +93,21 @@ public class Util {
 
   private static void addSilverpeasScript(StringBuilder includes, String script) {
     String normalizedUrl = getMinifiedWebResourceUrl(path + script);
-    includes.append("<script type=\"text/javascript\" src=\"").append(appendVersion(normalizedUrl))
-        .append("\"></script>\n");
+    includes.append("<script type=\"text/javascript\" src=\"")
+        .append(addFingerprintVersionOn(normalizedUrl)).append("\"></script>\n");
   }
 
   private static void addExternalStyleSheet(StringBuilder includes, String webContext,
       String styleSheet) {
     String normalizedUrl = getMinifiedWebResourceUrl(webContext + styleSheet);
     includes.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"")
-        .append(appendVersion(normalizedUrl)).append("\" />\n");
+        .append(addFingerprintVersionOn(normalizedUrl)).append("\" />\n");
   }
 
   private static void addExternalScript(StringBuilder includes, String webContext, String script) {
     String normalizedUrl = getMinifiedWebResourceUrl(webContext + script);
     includes.append("<script type=\"text/javascript\" src=\"")
-        .append(appendVersion(normalizedUrl)).append("\"></script>\n");
+        .append(addFingerprintVersionOn(normalizedUrl)).append("\"></script>\n");
   }
 
   public static void getJavascriptChecker(String fieldName,

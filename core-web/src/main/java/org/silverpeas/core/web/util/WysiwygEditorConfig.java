@@ -143,9 +143,9 @@ public class WysiwygEditorConfig implements Cloneable {
     List<String> stylesheets = new ArrayList<>();
     boolean isStylesheetCanBeSet = !wysiwygSettings.getBoolean("noCss", false);
     if (isStylesheetCanBeSet) {
-      stylesheets.add(URLUtil.getApplicationURL() + GraphicElementFactory.STANDARD_CSS);
+      stylesheets.add(URLUtil.addFingerprintVersionOn(URLUtil.getApplicationURL() + GraphicElementFactory.STANDARD_CSS));
       if (StringUtil.isDefined(stylesheet)) {
-        stylesheets.add(stylesheet);
+        stylesheets.add(URLUtil.addFingerprintVersionOn(stylesheet));
       }
     }
     return stylesheets;
@@ -169,7 +169,7 @@ public class WysiwygEditorConfig implements Cloneable {
     if (!configFile.startsWith("/") && !configFile.toLowerCase().startsWith("http")) {
       configFile = URLUtil.getApplicationURL() + "/" + configFile;
     }
-    return configFile;
+    return URLUtil.addFingerprintVersionOn(configFile);
   }
 
   /**
