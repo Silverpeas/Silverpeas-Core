@@ -24,6 +24,10 @@
 
 (function() {
 
+  if (window.UserGroupSelect && window.ListOfUsersAndGroups) {
+    return;
+  }
+
   var SELECT_NB_ITEM_PER_TYPE = 20;
   var SELECTION_TYPE = {
     USER : 0,
