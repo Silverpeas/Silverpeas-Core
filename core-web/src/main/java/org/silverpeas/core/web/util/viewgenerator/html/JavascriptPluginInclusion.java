@@ -680,6 +680,10 @@ public class JavascriptPluginInclusion {
 
     xhtml.addElement(scriptContent(settingVariableName("CalendarSettings")
         .add("c.c", stream(calendarSettings.getString("calendar.ui.colors").split(",")), true)
+        .add("c.v.d.e", calendarSettings.getBoolean("calendar.views.day.endHour", true))
+        .add("c.v.w.e", calendarSettings.getBoolean("calendar.views.week.endHour", true))
+        .add("c.v.m.e", calendarSettings.getBoolean("calendar.views.month.endHour", true))
+        .add("c.v.y.e", calendarSettings.getBoolean("calendar.views.year.endHour", true))
         .produce()));
 
     LocalizationBundle bundle = ResourceLocator

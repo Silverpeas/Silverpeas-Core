@@ -230,6 +230,38 @@
               if ($eventDotElement.length) {
                 var __eventDotElement = $eventDotElement[0];
                 __eventDotElement.style.borderColor = __eventDotElement.style.backgroundColor;
+                var $mainContainer = jQuery('<div>', {'class':'fields'});
+                var $title = jQuery('<h2>', {'class':'occurrence-name'});
+                var $titleLink = jQuery('<a>', {'href':'#'});
+                $titleLink.append(occurrence.title);
+                $title.append($titleLink);
+                $mainContainer.append($title);
+                if (occurrence.location || occurrence.externalUrl()) {
+                  var $mainExtra = jQuery('<div>', {'class':'occurrence-extra'});
+                  if (occurrence.location) {
+                    var $location = jQuery('<div>', {'class':'occurrence-location'});
+                    var $locationBloc = jQuery('<div>', {'class':'bloc'});
+                    $locationBloc.html('<span>' + occurrence.location + '</span>');
+                    $location.append($locationBloc);
+                    $mainExtra.append($location);
+                  }
+                  if (occurrence.externalUrl()) {
+                    var $externalUrl = jQuery('<div>', {'class':'occurrence-external-link'});
+                    var $locationLink = jQuery('<a>', {'target':'_blank', 'href':occurrence.externalUrl()});
+                    $locationLink.html(occurrence.externalUrl());
+                    var $externalUrlBloc = jQuery('<div>', {'class':'bloc'});
+                    $externalUrlBloc.append($locationLink);
+                    $externalUrl.append($externalUrlBloc);
+                    $mainExtra.append($externalUrl);
+                  }
+                  $mainContainer.append($mainExtra);
+                }
+                if (occurrence.description) {
+                  var $description = jQuery('<div>', {'class':'occurrence-description'});
+                  $description.html(occurrence.description);
+                  $mainContainer.append($description);
+                }
+                $eventDotElement.parent().parent().find('.fc-list-item-title').html($mainContainer);
               }
             }.bind(this);
             var _eventOccurrenceClick = function(occurrence) {
