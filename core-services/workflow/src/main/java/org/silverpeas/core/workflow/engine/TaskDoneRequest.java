@@ -39,6 +39,13 @@ class TaskDoneRequest extends AbstractRequest {
 
     // only to set the current step of instance to that step
     UpdatableHistoryStep step = (UpdatableHistoryStep) instance.getHistoryStep(stepId);
+    if (event.isResumingAction()) {
+      // set user and date of last action
+      step.setActionDate(event.getActionDate());
+      if (event.getUser().getUserId().equals(step.getUser().getUserId())) {
+        step.setSubstituteId(null);
+      }
+    }
     instance.updateHistoryStep(step);
 
     // special case : user is resuming creation action - working user must be explicitly removed
