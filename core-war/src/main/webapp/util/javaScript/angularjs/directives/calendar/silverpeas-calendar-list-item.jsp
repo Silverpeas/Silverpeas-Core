@@ -37,7 +37,7 @@
       </div>
     </div>
     <a class="check-visibility" href="#" ng-click="$ctrl.onCalendarVisibilityToggle({calendar:$ctrl.calendar})" title="{{$ctrl.calendar.notVisible ? 'Afficher' : 'Cacher'}}">{{$ctrl.calendar.notVisible ? 'Afficher' : 'Cacher'}}</a> 
-    <a class="show-menu" ng-if="!$ctrl.calendar.canBeRemoved && $ctrl.calendar.canBeModified"></a>
+    <a class="show-menu"></a>
     <a class="remove-calendar" href="#" ng-click="$ctrl.remove({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.canBeRemoved" title="Retirer">Retirer</a>
     <div class="silverpeas-calendar-list-item-menu" style="display: none">
       <ul>

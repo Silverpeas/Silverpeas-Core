@@ -626,11 +626,18 @@
       listDayFormat : 'LL',
       noEventsMessage : $window.CalendarBundle.get("c.e.n"),
       views: {
+        year: {
+          displayEventEnd: $window.CalendarSettings.get('c.v.y.e')
+        },
         month: {
-          displayEventEnd: false
+          displayEventEnd: $window.CalendarSettings.get('c.v.m.e')
         },
         week: {
-          columnFormat: 'ddd DD'
+          columnFormat: 'ddd DD',
+          displayEventEnd: $window.CalendarSettings.get('c.v.w.e')
+        },
+        day: {
+          displayEventEnd: $window.CalendarSettings.get('c.v.d.e')
         }
       },
       firstDay: calendarOptions.firstDayOfWeek - 1,
