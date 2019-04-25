@@ -26,8 +26,6 @@ package org.silverpeas.core.webapi.admin.scim.adaptation;
 
 import edu.psu.swe.scim.spec.protocol.data.PatchOperation;
 import edu.psu.swe.scim.spec.protocol.data.PatchOperationPath;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -38,8 +36,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 /**
  * @author silveryocha
  */
-@Data
-@EqualsAndHashCode
 @XmlType(propOrder={"operation", "path", "value"})
 @XmlAccessorType(XmlAccessType.NONE)
 public class SilverpeasPatchOperation extends PatchOperation {
@@ -47,4 +43,14 @@ public class SilverpeasPatchOperation extends PatchOperation {
   @XmlElement
   @XmlJavaTypeAdapter(SilverpeasPatchOperationPathAdapter.class)
   protected PatchOperationPath adaptedPath;
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 }

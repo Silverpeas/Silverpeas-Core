@@ -26,8 +26,6 @@ package org.silverpeas.core.webapi.admin.scim.adaptation;
 
 import edu.psu.swe.scim.spec.protocol.data.PatchOperation;
 import edu.psu.swe.scim.spec.protocol.data.PatchRequest;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,8 +37,7 @@ import java.util.stream.Collectors;
 /**
  * @author silveryocha
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
+
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class SilverpeasPatchRequest extends PatchRequest {
@@ -55,5 +52,15 @@ public class SilverpeasPatchRequest extends PatchRequest {
       return (PatchOperation) o;
     }).collect(Collectors.toList());
     setPatchOperationList(patchOperations);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }
