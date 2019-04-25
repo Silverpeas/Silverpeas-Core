@@ -51,8 +51,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -378,9 +380,8 @@ public class GenericRecordSetManager {
       select.setString(1, templateName);
       try (final ResultSet rs = select.executeQuery()){
         while (rs.next()) {
-          final String externalId = rs.getString(1);
           final int count = rs.getInt(2);
-          result.put(externalId.split(":")[0], count);
+          result.put(extractComponentId(rs), count);
         }
       }
     } catch (SQLException e) {
@@ -388,6 +389,27 @@ public class GenericRecordSetManager {
           FORM_EXP_SELECT_FAILED, e);
     }
     return result;
+  }
+
+  public Set<String> getAllComponentIdsOfRecords() throws FormException {
+    final Set<String> result = new LinkedHashSet<>();
+    try (final Connection con = getConnection();
+         final PreparedStatement select = con.prepareStatement(SELECT_ALL_EXTERNAL_IDS_OF_RECORDS)) {
+      try (final ResultSet rs = select.executeQuery()) {
+        while (rs.next()) {
+          result.add(extractComponentId(rs));
+        }
+      }
+    } catch (SQLException e) {
+      throw new FormException("GenericRecordSetManager.getAllComponentIdsOfRecords",
+          FORM_EXP_SELECT_FAILED, e);
+    }
+    return result;
+  }
+
+  private String extractComponentId(final ResultSet rs) throws SQLException {
+    final String externalId = rs.getString(1);
+    return externalId.split(":")[0];
   }
 
   private List<DataRecord> selectRecords(Connection con, IdentifiedRecordTemplate template,
@@ -1068,4 +1090,7 @@ public class GenericRecordSetManager {
           TEMPLATE_TABLE + " t, "+ RECORD_TABLE +" r " +
           "where r.templateid = t.templateid and t.templatename = ? " +
           "GROUP BY t.externalid";
+
+  private static final String SELECT_ALL_EXTERNAL_IDS_OF_RECORDS =
+      "select distinct externalid from " + TEMPLATE_TABLE;
 }
