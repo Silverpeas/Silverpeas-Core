@@ -693,22 +693,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
   public Map<String, Integer> getNumberOfRecordsByTemplateAndComponents(String templateName)
       throws FormException {
-    Map<String, Integer> result = new HashMap<>();
-    Map<String, Integer> map =
-        getGenericRecordSetManager().getNumberOfRecordsByTemplateAndComponents(templateName);
-
-    // check existence of each component
-    for (Map.Entry<String, Integer> entry : map.entrySet()) {
-      ComponentInstLight component =
-          OrganizationController.get().getComponentInstLight(entry.getKey());
-      if (component == null) {
-        // component no more exists but some data referenced to it exist, delete it
-        delete(entry.getKey());
-      } else {
-        result.put(entry.getKey(), entry.getValue());
-      }
-    }
-    return result;
+    return getGenericRecordSetManager().getNumberOfRecordsByTemplateAndComponents(templateName);
   }
 
 }
