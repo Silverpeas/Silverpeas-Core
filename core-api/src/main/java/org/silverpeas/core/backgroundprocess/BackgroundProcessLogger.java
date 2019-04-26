@@ -44,6 +44,11 @@ public class BackgroundProcessLogger implements Initialization {
   }
 
   @Override
+  public int getPriority() {
+    return 50;
+  }
+
+  @Override
   public void init() throws Exception {
     initLogger();
   }
