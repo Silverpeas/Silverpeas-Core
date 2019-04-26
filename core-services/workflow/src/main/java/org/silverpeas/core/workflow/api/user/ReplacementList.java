@@ -120,6 +120,16 @@ public class ReplacementList <T extends Replacement> extends ArrayList<T> {
       return new FilterStream<>(newStream);
     }
 
+    /**
+     * Filters on the given incumbent.
+     * @param incumbentId the incumbent id.
+     * @return new instance of {@link FilterStream}.
+     */
+    public FilterStream<R> filterOnIncumbent(String incumbentId) {
+      return new FilterStream<>(
+          super.stream().filter(r -> r.getIncumbent().getUserId().equals(incumbentId)));
+    }
+
     private List<String> getUserRoles(final User user, final String workflowInstanceId) {
       return userRoleCache.computeIfAbsent(user.getUserId(),
           i -> asList(OrganizationController.get().getUserProfiles(user.getUserId(), workflowInstanceId)));

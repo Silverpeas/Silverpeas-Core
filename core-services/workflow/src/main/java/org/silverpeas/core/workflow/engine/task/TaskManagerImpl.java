@@ -184,7 +184,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
       userIds.addAll(usersInRole.stream().map(User::getUserId).collect(Collectors.toList()));
     }
 
-    sendNotification(userIds, task, sender, text, linkDisabled);
+    sendNotification(userIds, task, sender, text, linkDisabled, null);
 
     // notify substitute(s) according to role (excluding potential substitutes who are
     // already regular actors)
@@ -193,22 +193,25 @@ public class TaskManagerImpl extends AbstractTaskManager {
           .stream()
           .filter(s -> !userIds.contains(s.getUserId())).collect(Collectors.toList());
       for (User substitute : substitutes) {
-        LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(MULTILANG_BUNDLE,
-            UserDetail.getById(substitute.getUserId()).getUserPreferences().getLanguage());
-        String incumbent = UserDetail.getById(userId).getDisplayedName();
-        String substituteMessage = text + "\n" + bundle.getStringWithParams("replacement.message.substitute.extra", incumbent);
-        sendNotification(substitute.getUserId(), task, sender, substituteMessage, linkDisabled);
+        sendNotificationToSubstitute(substitute.getUserId(), task, sender, text, linkDisabled,
+            userId);
       }
     }
   }
 
-  private void sendNotification(String userId, Task task, User sender, String text,
-      boolean linkDisabled) {
-    sendNotification(Collections.singletonList(userId), task, sender, text, linkDisabled);
+  private void sendNotificationToSubstitute(String userId, Task task, User sender, String text,
+      boolean linkDisabled, String incumbentId) {
+    LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(MULTILANG_BUNDLE,
+        UserDetail.getById(userId).getUserPreferences().getLanguage());
+    String incumbent = UserDetail.getById(incumbentId).getDisplayedName();
+    String substituteMessage = text + "\n\n" +
+        bundle.getStringWithParams("replacement.message.substitute.extra", incumbent);
+    sendNotification(Collections.singletonList(userId), task, sender, substituteMessage,
+        linkDisabled, incumbentId);
   }
 
   private void sendNotification(List<String> userIds, Task task, User sender, String text,
-      boolean linkDisabled) {
+      boolean linkDisabled, String incumbentId) {
     String componentId = task.getProcessInstance().getModelId();
     NotificationSender notifSender =
         notificationSenders.computeIfAbsent(componentId, NotificationSender::new);
@@ -229,6 +232,9 @@ public class TaskManagerImpl extends AbstractTaskManager {
       if (!linkDisabled) {
         String link = "/RprocessManager/" + componentId + "/searchResult?Type=ProcessInstance&Id=" +
             task.getProcessInstance().getInstanceId() + "&role=" + task.getUserRoleName();
+        if (StringUtil.isDefined(incumbentId)) {
+          link += "&IncumbentId="+incumbentId;
+        }
         notifMetaData.setLink(link);
       }
       notifSender.notifyUser(notifMetaData);
