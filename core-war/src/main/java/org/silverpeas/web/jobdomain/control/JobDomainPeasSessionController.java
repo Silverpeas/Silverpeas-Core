@@ -1480,11 +1480,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       targetDomainId = "";
     } else {
       List<String> manageableGroupIds = null;
+      targetDomainId = domainId;
       if (isOnlyGroupManager()) {
         manageableGroupIds = getUserManageableGroupIds();
       }
       targetDomain = new DomainNavigationStock(domainId, adminCtrl, manageableGroupIds);
-      targetDomainId = domainId;
     }
   }
 
@@ -1506,9 +1506,24 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     List<Domain> domains = new ArrayList<>();
     UserDetail ud = getUserDetail();
 
-    if (ud.isAccessDomainManager()) {
-      // return only domain of user
-      domains.add(adminCtrl.getDomain(ud.getDomainId()));
+    if (ud.isAccessDomainManager() || isOnlyGroupManager()) {
+      if (ud.isAccessDomainManager()) {
+        // return domain of user
+        domains.add(adminCtrl.getDomain(ud.getDomainId()));
+      }
+
+      // and other domains of manageable groups
+      List<Group> groups = getUserManageableGroups();
+      for (Group group : groups) {
+        Domain domain = adminCtrl.getDomain(group.getDomainId());
+        if (!domains.contains(domain)) {
+          if (domain.isMixedOne()) {
+            domains.add(0, domain);
+          } else {
+            domains.add(domain);
+          }
+        }
+      }
     } else if (ud.isAccessAdmin()) {
       // return mixed domain...
       domains.add(adminCtrl.getDomain(Domain.MIXED_DOMAIN_ID));
@@ -1524,19 +1539,22 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
       // and default domain
       domains.add(adminCtrl.getDomain("0"));
-    } else if (isOnlyGroupManager()) {
-      // return mixed domain...
-      domains.add(adminCtrl.getDomain(Domain.MIXED_DOMAIN_ID));
-
-      // and domain of user
-      domains.add(adminCtrl.getDomain(ud.getDomainId()));
     }
     return domains;
   }
 
   public boolean isOnlyGroupManager() {
-    return isGroupManager() && !getUserDetail().isAccessAdmin()
-        && !getUserDetail().isAccessDomainManager();
+    return isGroupManager() && !isManagerOfCurrentDomain();
+  }
+
+  private boolean isManagerOfCurrentDomain() {
+    if (getUserDetail().isAccessAdmin()) {
+      return true;
+    }
+    if (getUserDetail().isAccessDomainManager()) {
+      return getUserDetail().getDomainId().equals(targetDomainId);
+    }
+    return false;
   }
 
   public boolean isCommunityManager() {
