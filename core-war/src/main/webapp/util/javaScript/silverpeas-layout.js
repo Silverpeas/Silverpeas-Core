@@ -200,9 +200,13 @@
                 __logDebug("no promise to resolve about the body content loading on body layout load");
               }
 
-              var frameContentDocument = this.contentFrame.contentWindow.document;
-              frameContentDocument.body.setAttribute('tabindex', '-1');
-              frameContentDocument.body.focus();
+              try {
+                var frameContentDocument = this.contentFrame.contentWindow.document;
+                frameContentDocument.body.setAttribute('tabindex', '-1');
+                frameContentDocument.body.focus();
+              } catch (e) {
+                sp.log.error(e);
+              }
 
               this.getContent().dispatchEvent("load");
               this.hideProgressMessage();

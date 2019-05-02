@@ -425,7 +425,7 @@ function viewFile(target, attachmentId, versioned, componentId) {
 </script>
 </head>
 <body class="searchEngine" id="<%=pageId %>">
-<form name="AdvancedSearch" action="javascript:sendQuery()" method="post">
+<form name="AdvancedSearch" action="javascript:sendQuery()" method="get">
 <fmt:message var="resultLabel" key="pdcPeas.ResultPage" />
 <view:browseBar extraInformations="${resultLabel}" />
 <view:operationPane>

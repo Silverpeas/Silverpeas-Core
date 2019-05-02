@@ -354,7 +354,7 @@ function showExplorer() {
 out.println(window.printBefore());
 %>
 <center>
-<form name="AdvancedSearch" action="ViewAdvancedSearch" method="post">
+<form name="AdvancedSearch" action="ViewAdvancedSearch" method="get">
   <!-- champs cache pour voir ou non les axes secondaires -->
   <input type="hidden" name="ShowSndSearchAxis" value="<%=showSndSearchAxis%>"/>
   <input type="hidden" name="showNotOnlyPertinentAxisAndValues" value="<%=showNotOnlyPertinentAxisAndValues%>"/>
