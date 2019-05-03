@@ -5,6 +5,7 @@ import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
 import org.silverpeas.core.workflow.api.instance.UpdatableHistoryStep;
 import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
+import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
 
 /**
@@ -33,18 +34,17 @@ class TaskDoneRequest extends AbstractRequest {
   }
 
   @Override
-  protected boolean processEvent(UpdatableProcessInstance instance, String stepId)
+  protected boolean processEvent(final UpdatableProcessInstance instance, final String stepId)
       throws WorkflowException {
-    TaskDoneEvent event = getEvent();
+    final TaskDoneEvent event = getEvent();
 
-    // only to set the current step of instance to that step
-    UpdatableHistoryStep step = (UpdatableHistoryStep) instance.getHistoryStep(stepId);
+    // to set the current step of instance to that step
+    final UpdatableHistoryStep step = (UpdatableHistoryStep) instance.getHistoryStep(stepId);
     if (event.isResumingAction()) {
       // set user and date of last action
+      final User eventSubstitute = event.getSubstitute();
+      step.setSubstituteId(eventSubstitute != null ? eventSubstitute.getUserId() : null);
       step.setActionDate(event.getActionDate());
-      if (event.getUser().getUserId().equals(step.getUser().getUserId())) {
-        step.setSubstituteId(null);
-      }
     }
     instance.updateHistoryStep(step);
 

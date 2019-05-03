@@ -110,7 +110,7 @@ public class ReplacementList <T extends Replacement> extends ArrayList<T> {
      * @param roles an list of roles as string.
      * @return new instance of {@link FilterStream}.
      */
-    public FilterStream<R> filterOnAtLeastOneRole(List<String> roles) {
+    public FilterStream<R> filterOnAtLeastOneRole(final List<String> roles) {
       final Stream<R> newStream = super.stream().filter(r -> {
         final List<String> incumbentRoles = getUserRoles(r.getIncumbent(), r.getWorkflowInstanceId());
         final List<String> substituteRoles = getUserRoles(r.getSubstitute(), r.getWorkflowInstanceId());
@@ -121,13 +121,22 @@ public class ReplacementList <T extends Replacement> extends ArrayList<T> {
     }
 
     /**
-     * Filters on the given incumbent.
-     * @param incumbentId the incumbent id.
+     * Filters on given incumbents.
+     * @param incumbentIds incumbent ids.
      * @return new instance of {@link FilterStream}.
      */
-    public FilterStream<R> filterOnIncumbent(String incumbentId) {
-      return new FilterStream<>(
-          super.stream().filter(r -> r.getIncumbent().getUserId().equals(incumbentId)));
+    public FilterStream<R> filterOnIncumbent(String... incumbentIds) {
+      return filterOnIncumbent(Arrays.asList(incumbentIds));
+    }
+
+    /**
+     * Filters on given incumbents.
+     * @param incumbentIds incumbent ids.
+     * @return new instance of {@link FilterStream}.
+     */
+    public FilterStream<R> filterOnIncumbent(final List<String> incumbentIds) {
+      return new FilterStream<>(super.stream()
+          .filter(r -> incumbentIds.contains(r.getIncumbent().getUserId())));
     }
 
     private List<String> getUserRoles(final User user, final String workflowInstanceId) {

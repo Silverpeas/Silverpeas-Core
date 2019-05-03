@@ -129,6 +129,35 @@ class ReplacementListTest {
   }
 
   @Test
+  void filterOnIncumbentOutOfRange() {
+    List<ReplacementImpl> result = replacements
+        .stream()
+        .filterOnIncumbent((String) null)
+        .collect(Collectors.toList());
+    assertThat(result, empty());
+    result = replacements
+        .stream()
+        .filterOnIncumbent("")
+        .collect(Collectors.toList());
+    assertThat(result, empty());
+    result = replacements
+        .stream()
+        .filterOnIncumbent("A")
+        .collect(Collectors.toList());
+    assertThat(result, empty());
+    result = replacements
+        .stream()
+        .filterOnIncumbent("2")
+        .collect(Collectors.toList());
+    assertThat(result, empty());
+    result = replacements
+        .stream()
+        .filterOnIncumbent("2", "A")
+        .collect(Collectors.toList());
+    assertThat(result, empty());
+  }
+
+  @Test
   void filterCurrentAt() {
     List<ReplacementImpl> result = replacements
         .stream()
@@ -169,6 +198,30 @@ class ReplacementListTest {
         .filterCurrentAndNextAt(LocalDate.parse("2019-04-13"))
         .collect(Collectors.toList());
     assertThat(toUserIdsAsString(result), is("34,56,13"));
+  }
+
+  @Test
+  void filterOnIncumbent() {
+    List<ReplacementImpl> result = replacements
+        .stream()
+        .filterOnIncumbent("1")
+        .collect(Collectors.toList());
+    assertThat(toUserIdsAsString(result), is("12,13"));
+    result = replacements
+        .stream()
+        .filterOnIncumbent("3")
+        .collect(Collectors.toList());
+    assertThat(toUserIdsAsString(result), is("34"));
+    result = replacements
+        .stream()
+        .filterOnIncumbent("5")
+        .collect(Collectors.toList());
+    assertThat(toUserIdsAsString(result), is("56"));
+    result = replacements
+        .stream()
+        .filterOnIncumbent("5", "3")
+        .collect(Collectors.toList());
+    assertThat(toUserIdsAsString(result), is("34,56"));
   }
 
   @Test
