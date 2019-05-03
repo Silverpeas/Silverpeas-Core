@@ -615,8 +615,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   @Override
   public void removeAllFather(PublicationPK pubPK) {
-    SilverTrace
-        .info("publication", "PublicationEJB.removeAllFather()", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
       PublicationFatherDAO.removeAllFather(con, pubPK);

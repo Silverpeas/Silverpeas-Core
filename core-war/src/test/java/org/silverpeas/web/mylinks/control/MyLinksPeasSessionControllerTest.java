@@ -38,7 +38,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.webapi.mylinks.MyLinkEntity;
 
-import static org.apache.commons.lang.reflect.FieldUtils.writeDeclaredField;
+import static org.apache.commons.lang3.reflect.FieldUtils.writeDeclaredField;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.is;

@@ -66,11 +66,6 @@
     <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-jcr-commons</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
@@ -79,6 +74,10 @@
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
@@ -177,23 +176,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.tika</groupId>
-      <artifactId>tika-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tika</groupId>
-      <artifactId>tika-parsers</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.spec</groupId>
       <artifactId>jboss-javaee-all-7.0</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.rometools</groupId>
-      <artifactId>rome</artifactId>
     </dependency>
   </dependencies>
 

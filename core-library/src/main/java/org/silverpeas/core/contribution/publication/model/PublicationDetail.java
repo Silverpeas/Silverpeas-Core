@@ -47,6 +47,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WithAttachment;
+import org.silverpeas.core.contribution.model.WithThumbnail;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
@@ -101,7 +102,7 @@ import static org.silverpeas.core.util.StringUtil.split;
 @XmlAccessorType(XmlAccessType.NONE)
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     implements I18nContribution, SilverContentInterface, Rateable, Serializable,
-    Cloneable, WithAttachment {
+    Cloneable, WithAttachment, WithThumbnail {
 
   private static final long serialVersionUID = 9199848912262605680L;
   private PublicationPK pk;

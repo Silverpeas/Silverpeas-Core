@@ -24,6 +24,7 @@
 package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.io.FileUtils;
+import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
@@ -37,7 +38,9 @@ import org.silverpeas.core.io.media.image.imagemagick.Im4javaManager;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.test.util.SilverProperties;
+import org.silverpeas.core.util.ImageUtil;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.viewer.test.WarBuilder4Viewer;
 
 import java.io.File;
@@ -45,6 +48,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Yohann Chastagnier
@@ -153,5 +161,31 @@ public abstract class AbstractViewerIT {
 
   ViewerContext createViewerContext(final String originalFileName, final File originalSourceFile) {
     return new ViewerContext(DOC_ID, originalFileName, originalSourceFile, LANG);
+  }
+
+  void assertPreviewDimensions(final Preview preview, final DimensionOption... dimensions) {
+    final List<Integer> widths = Stream.of(dimensions)
+        .map(DimensionOption::getWidth)
+        .collect(Collectors.toList());
+    final List<Integer> heights = Stream.of(dimensions)
+        .map(DimensionOption::getHeight)
+        .collect(Collectors.toList());
+    assertThat(widths.stream().anyMatch(w ->
+        Matchers.closeTo(w, 1.0).matches(asDouble(preview.getWidth()))
+    ), is(true));
+    assertThat(heights.stream().anyMatch(h ->
+        Matchers.closeTo(h, 1.0).matches(asDouble(preview.getHeight()))
+    ), is(true));
+    final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
+    assertThat(widths.stream().anyMatch(w ->
+        Matchers.closeTo(w, 1.0).matches(asDouble(previewSize[0]))
+    ), is(true));
+    assertThat(heights.stream().anyMatch(h ->
+        Matchers.closeTo(h, 1.0).matches(asDouble(previewSize[1]))
+    ), is(true));
+  }
+
+  private static double asDouble(final String nb) {
+    return Double.parseDouble(nb);
   }
 }

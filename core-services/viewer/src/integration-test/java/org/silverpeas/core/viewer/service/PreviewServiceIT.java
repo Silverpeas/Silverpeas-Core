@@ -32,17 +32,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.core.util.ImageUtil;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.viewer.model.ViewerSettings;
 
 import javax.inject.Inject;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
@@ -327,22 +325,12 @@ public class PreviewServiceIT extends AbstractViewerIT {
       final DimensionOption... dimensions) {
     assertThat(preview, notNullValue());
     int nbFilesAtTempRoot = cacheUsed ? 2 : 1;
-    String[] widths = Stream.of(dimensions)
-        .map(DimensionOption::getWidth)
-        .map(String::valueOf)
-        .toArray(String[]::new);
-    String[] heights = Stream.of(dimensions)
-        .map(DimensionOption::getHeight)
-        .map(String::valueOf)
-        .toArray(String[]::new);
+
     assertThat(getTemporaryPath().listFiles(), arrayWithSize(nbFilesAtTempRoot));
     assertThat(preview.getPhysicalFile().getParentFile().listFiles(), arrayWithSize(1));
     assertThat(preview.getPhysicalFile().getName(), startsWith("file."));
     assertThat(preview.getPhysicalFile().getName().length(), is(8));
-    assertThat(preview.getWidth(), isIn(widths));
-    assertThat(preview.getHeight(), isIn(heights));
-    final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
-    assertThat(previewSize[0], isIn(widths));
-    assertThat(previewSize[1], isIn(heights));
+
+    assertPreviewDimensions(preview, dimensions);
   }
 }
