@@ -52,8 +52,7 @@ public class ReplacementNotifier
     Replacement previous = event.getTransition().getBefore();
     Replacement replacement = event.getTransition().getAfter();
     if (!previous.isSameAs(replacement)) {
-      if (!replacement.getIncumbent().getUserId().equals(previous.getIncumbent().getUserId()) &&
-          !replacement.getSubstitute().getUserId().equals(previous.getSubstitute().getUserId())) {
+      if (!replacement.getSubstitute().getUserId().equals(previous.getSubstitute().getUserId())) {
         notifyUsersIfEndInFuture(NotifAction.DELETE, previous);
         notifyUsersIfEndInFuture(NotifAction.CREATE, replacement);
       } else {

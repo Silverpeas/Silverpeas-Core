@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /silverpeas/
+Allow: /silverpeas/defaultLogin.jsp

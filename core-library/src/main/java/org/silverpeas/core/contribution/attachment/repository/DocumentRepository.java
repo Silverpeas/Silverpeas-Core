@@ -73,10 +73,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import static java.util.Optional.ofNullable;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
+import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 /**
@@ -476,19 +479,24 @@ public class DocumentRepository {
       if (StringUtil.isDefined(comment)) {
         documentNode.setProperty(SLV_PROPERTY_COMMENT, comment);
       }
-      SimpleDocument origin = converter.fillDocument(documentNode, I18NHelper.defaultLanguage);
+      final SimpleDocument origin = converter.fillDocument(documentNode, defaultLanguage);
       if (versionedNode) {
         removeHistory(documentNode);
         documentNode.removeMixin(MIX_SIMPLE_VERSIONABLE);
         documentNode.setProperty(SLV_PROPERTY_VERSIONED, false);
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 0);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
-        SimpleDocument target = converter.fillDocument(documentNode, I18NHelper.defaultLanguage);
+        final SimpleDocument target = converter.fillDocument(documentNode, defaultLanguage);
         moveMultilangContent(origin, target);
-        File currentDocumentDir = new File(target.getDirectoryPath(I18NHelper.defaultLanguage))
-            .getParentFile();
-        File[] contents = currentDocumentDir.getParentFile().listFiles();
-        for (File versionDirectory : contents) {
+        File currentDocumentDir = new File(target.getDirectoryPath(defaultLanguage)).getParentFile();
+        final Optional<File[]> files = ofNullable(currentDocumentDir.getParentFile().listFiles());
+        final File[] safeContents = files.orElseGet(() -> {
+          SilverLogger.getLogger(this).warn(
+              "During version state removing, attempting to delete {0} which does not exist whereas JCR is having a reference on it",
+              currentDocumentDir.getParentFile().toString());
+          return new File[0];
+        });
+        for (File versionDirectory : safeContents) {
           if (!versionDirectory.equals(currentDocumentDir)) {
             FileUtils.deleteDirectory(versionDirectory);
           }
@@ -498,7 +506,7 @@ public class DocumentRepository {
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 1);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
         documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
-        SimpleDocument target = converter.fillDocument(documentNode, I18NHelper.defaultLanguage);
+        final SimpleDocument target = converter.fillDocument(documentNode, defaultLanguage);
         VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
         documentNode.getSession().save();
         moveMultilangContent(origin, target);
@@ -506,7 +514,6 @@ public class DocumentRepository {
       }
       return new SimpleDocumentPK(documentNode.getIdentifier(), documentPk);
     } catch (ItemNotFoundException infex) {
-
       return documentPk;
     }
   }
@@ -592,7 +599,7 @@ public class DocumentRepository {
     while (iter.hasNext()) {
       final Node node = iter.nextNode();
       if (!iter.hasNext()) {
-        return converter.convertNode(node, I18NHelper.defaultLanguage);
+        return converter.convertNode(node, defaultLanguage);
       }
     }
     return null;
@@ -1043,7 +1050,7 @@ public class DocumentRepository {
     Node docNode = session.getNodeByIdentifier(pk.getId());
     String language = lang;
     if (!StringUtil.isDefined(language)) {
-      language = I18NHelper.defaultLanguage;
+      language = defaultLanguage;
     }
     SimpleDocument document = converter.fillDocument(docNode, language);
     return new BufferedInputStream(
