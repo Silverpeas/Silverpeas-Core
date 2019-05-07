@@ -100,12 +100,18 @@ public class ScimUserAdminService extends AbstractScimAdminService implements Pr
   @Override
   public ScimUser update(final UpdateRequest<ScimUser> updateRequest)
       throws UnableToUpdateResourceException {
-    if (updateRequest.getResource() != null) {
+    ScimUser resource;
+    try {
+      resource = updateRequest.getResource();
+    } catch (final UnsupportedOperationException e) {
+      resource = null;
+    }
+    if (resource != null) {
       logger().debug(() -> "updating user " + updateRequest.getOriginal());
       validateDomainExists();
       try {
         final UserFull user = getUserById(updateRequest.getId());
-        applyTo(updateRequest.getResource(), user);
+        applyTo(resource, user);
         return update(user);
       } catch (Exception e) {
         throw new UnableToUpdateResourceException(NOT_FOUND, e.getMessage());
