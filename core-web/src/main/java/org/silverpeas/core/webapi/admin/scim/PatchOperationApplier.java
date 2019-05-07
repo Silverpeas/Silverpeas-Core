@@ -63,7 +63,8 @@ public class PatchOperationApplier {
    * @param operation the operation to perform.
    */
   void apply(PatchOperation operation) {
-    final String attrName = operation.getPath().getAttributeReference().getFullAttributeName();
+    final String attrName =
+        operation.getPath().getValuePathExpression().getAttributePath().getFullAttributeName();
     if (attrName.equals("active")) {
       applyActiveData(operation);
     } else if (attrName.equals("externalId")) {

@@ -150,8 +150,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addClasses(EntityReference.class);
     addCalendarFeatures();
     addPackages(true, "org.silverpeas.core.util.logging.sys");
-    addMavenDependencies("org.apache.tika:tika-core");
-    addMavenDependencies("org.apache.tika:tika-parsers");
     addClasses(LogAnnotationProcessor.class, LogsAccessor.class);
     addAsResource("META-INF/services/test-org.silverpeas.core.util.logging.SilverLoggerFactory",
         "META-INF/services/org.silverpeas.core.util.logging.SilverLoggerFactory");

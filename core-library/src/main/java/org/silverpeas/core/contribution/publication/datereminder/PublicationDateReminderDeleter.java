@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2018 Silverpeas
+ * Copyright (C) 2000 - 2019 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,35 +22,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.webapi.admin.scim.adaptation;
+package org.silverpeas.core.contribution.publication.datereminder;
 
-import edu.psu.swe.scim.spec.protocol.data.PatchOperation;
-import edu.psu.swe.scim.spec.protocol.data.PatchOperationPath;
+import org.silverpeas.core.contribution.ContributionDeletion;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.datereminder.persistence.service.PersistentDateReminderService;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.inject.Inject;
 
 /**
- * @author silveryocha
+ * Deleter of date reminder related to publications.
+ * @author mmoquillon
  */
-@XmlType(propOrder={"operation", "path", "value"})
-@XmlAccessorType(XmlAccessType.NONE)
-public class SilverpeasPatchOperation extends PatchOperation {
+public class PublicationDateReminderDeleter implements ContributionDeletion {
 
-  @XmlElement
-  @XmlJavaTypeAdapter(SilverpeasPatchOperationPathAdapter.class)
-  protected PatchOperationPath adaptedPath;
+  @Inject
+  private PersistentDateReminderService dateReminderService;
 
   @Override
-  public boolean equals(final Object o) {
-    return super.equals(o);
-  }
-
-  @Override
-  public int hashCode() {
-    return super.hashCode();
+  public void delete(final Contribution contribution) {
+    if (contribution.getContributionType().equals(PublicationDetail.getResourceType())) {
+      PublicationNoteReference publicationNoteReference =
+          new PublicationNoteReference(contribution.getContributionId().getLocalId());
+      dateReminderService.remove(publicationNoteReference);
+    }
   }
 }
+  

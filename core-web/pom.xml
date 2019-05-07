@@ -88,6 +88,10 @@
       <artifactId>scim-server-common</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-api</artifactId>
       <version>${project.version}</version>

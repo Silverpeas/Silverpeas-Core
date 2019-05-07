@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2018 Silverpeas
+ * Copyright (C) 2000 - 2019 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,35 +22,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.webapi.admin.scim.adaptation;
+package org.silverpeas.core.comment.service;
 
-import edu.psu.swe.scim.spec.protocol.data.PatchOperation;
-import edu.psu.swe.scim.spec.protocol.data.PatchOperationPath;
+import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.comment.model.Comment;
+import org.silverpeas.core.contribution.ContributionDeletion;
+import org.silverpeas.core.contribution.model.Contribution;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.inject.Inject;
 
 /**
- * @author silveryocha
+ * Deleter of comments relative to a contribution that has been deleted.
+ * @author mmoquillon
  */
-@XmlType(propOrder={"operation", "path", "value"})
-@XmlAccessorType(XmlAccessType.NONE)
-public class SilverpeasPatchOperation extends PatchOperation {
+public class CommentDeleter implements ContributionDeletion {
 
-  @XmlElement
-  @XmlJavaTypeAdapter(SilverpeasPatchOperationPathAdapter.class)
-  protected PatchOperationPath adaptedPath;
+  @Inject
+  private CommentService commentService;
 
   @Override
-  public boolean equals(final Object o) {
-    return super.equals(o);
-  }
-
-  @Override
-  public int hashCode() {
-    return super.hashCode();
+  public void delete(final Contribution contribution) {
+    if (!contribution.getContributionType().equals(Comment.CONTRIBUTION_TYPE)) {
+      try {
+        final ResourceReference ref = ResourceReference.to(contribution.getContributionId());
+        commentService.deleteAllCommentsOnPublication(contribution.getContributionType(), ref);
+      } catch (Exception e) {
+        throw new SilverpeasRuntimeException(e);
+      }
+    }
   }
 }
+  

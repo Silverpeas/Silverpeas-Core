@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2018 Silverpeas
+ * Copyright (C) 2000 - 2019 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,35 +22,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.webapi.admin.scim.adaptation;
-
-import edu.psu.swe.scim.spec.protocol.data.PatchOperation;
-import edu.psu.swe.scim.spec.protocol.data.PatchOperationPath;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+package org.silverpeas.core.contribution.model;
 
 /**
- * @author silveryocha
+ * An interface to indicate that a resource or a contribution supports thumbnail. All resources
+ * or contributions that can have a thumbnail to represent them should implement this interface.
+ * This interface is used in Silverpeas Core for performing transverse operations on thumbnails
+ * like, for example, the deletion of the thumbnail of a contribution when this contribution is
+ * being deleted.
+ * @author mmoquillon
  */
-@XmlType(propOrder={"operation", "path", "value"})
-@XmlAccessorType(XmlAccessType.NONE)
-public class SilverpeasPatchOperation extends PatchOperation {
-
-  @XmlElement
-  @XmlJavaTypeAdapter(SilverpeasPatchOperationPathAdapter.class)
-  protected PatchOperationPath adaptedPath;
-
-  @Override
-  public boolean equals(final Object o) {
-    return super.equals(o);
-  }
-
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
+public interface WithThumbnail {
 }

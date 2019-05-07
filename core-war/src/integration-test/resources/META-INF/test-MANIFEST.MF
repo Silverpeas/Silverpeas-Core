@@ -1,11 +1,9 @@
 Manifest-Version: 1.0
 Created-By: Silverpeas
-Dependencies:  org.jboss.as.naming,
+Dependencies: org.jboss.as.naming,
+  org.slf4j,
   org.apache.xerces,
-  org.bouncycastle,
   com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider,
-  org.apache.commons.codec,
-  org.apache.commons.io,
   org.antlr,
   org.apache.lucene-7,
   deployment.jackrabbit-jca.rar
