@@ -927,7 +927,7 @@ Fixed Issues:
 * [#7634](https://dev.ckeditor.com/ticket/7634): Fixed: The [Flash Dialog](https://ckeditor.com/cke4/addon/flash) plugin omits the `allowFullScreen` parameter in the editor data if set to `true`.
 * [#11910](https://dev.ckeditor.com/ticket/11910): Fixed: [Enhanced Image](https://ckeditor.com/cke4/addon/image2) does not take [`config.baseHref`](https://docs.ckeditor.com/ckeditor4/docs/#!/api/CKEDITOR.config-cfg-baseHref) into account when updating image dimensions.
 * [#11753](https://dev.ckeditor.com/ticket/11753): Fixed: Wrong [`checkDirty()`](https://docs.ckeditor.com/ckeditor4/docs/#!/api/CKEDITOR.editor-method-checkDirty) method value after focusing or blurring a widget.
-* [#11830](https://dev.ckeditor.com/ticket/11830): Fixed: Impossible to pass some arguments to [CKBuilder](https://github.com/ckeditor/ckbuilder) when using the `/dev/builder/build.sh` script.
+* [#11830](https://dev.ckeditor.com/ticket/11830): Fixed: Impossible to pass some arguments to [CKBuilder](https://github.com/ckeditor/ckbuilder) when using the `/dev/constructor/build.sh` script.
 * [#11945](https://dev.ckeditor.com/ticket/11945): Fixed: [Form Elements](https://ckeditor.com/cke4/addon/forms) plugin should not change a core method.
 * [#11384](https://dev.ckeditor.com/ticket/11384): [IE9+] Fixed: `IndexSizeError` thrown when pasting into a non-empty selection anchored in one text node.
 
@@ -1276,7 +1276,7 @@ Fixed Issues:
 
 * Dropped compatibility support for Internet Explorer 7 and Firefox 3.6.
 
-* Both the Basic and the Standard distribution packages will not contain the new [Indent Block](https://ckeditor.com/cke4/addon/indentblock) plugin. Because of this the [Advanced Content Filter](https://docs.ckeditor.com/ckeditor4/docs/#!/guide/dev_advanced_content_filter) might remove block indentations from existing contents. If you want to prevent this, either [add an appropriate ACF rule to your filter](https://docs.ckeditor.com/ckeditor4/docs/#!/guide/dev_allowed_content_rules) or create a custom build based on the Basic/Standard package and add the Indent Block plugin in [CKBuilder](https://ckeditor.com/cke4/builder).
+* Both the Basic and the Standard distribution packages will not contain the new [Indent Block](https://ckeditor.com/cke4/addon/indentblock) plugin. Because of this the [Advanced Content Filter](https://docs.ckeditor.com/ckeditor4/docs/#!/guide/dev_advanced_content_filter) might remove block indentations from existing contents. If you want to prevent this, either [add an appropriate ACF rule to your filter](https://docs.ckeditor.com/ckeditor4/docs/#!/guide/dev_allowed_content_rules) or create a custom build based on the Basic/Standard package and add the Indent Block plugin in [CKBuilder](https://ckeditor.com/cke4/constructor).
 
 New Features:
 

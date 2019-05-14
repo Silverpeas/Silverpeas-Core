@@ -50,6 +50,7 @@ public class TextRoField extends TextField {
    * Changes nothing.
    */
   public void setStringValue(String value) {
+    // update not supported
   }
 
   /**
@@ -57,5 +58,15 @@ public class TextRoField extends TextField {
    */
   public boolean isReadOnly() {
     return true;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

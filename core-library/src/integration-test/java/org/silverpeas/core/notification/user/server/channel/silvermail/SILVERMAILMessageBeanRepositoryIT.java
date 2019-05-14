@@ -37,6 +37,7 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.util.SQLRequester;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -272,12 +273,12 @@ public class SILVERMAILMessageBeanRepositoryIT {
     assertThat(getUserNotificationTableLines(), hasSize(4));
   }
 
-  private List<DbSetupRule.TableLine> getUserNotificationTableLines() throws Exception {
+  private List<SQLRequester.ResultLine> getUserNotificationTableLines() throws Exception {
     return dbSetupRule.mapJdbcSqlQueryResultAsListOfMappedValues(
         JdbcSqlQuery.createSelect("* from ST_SilverMailMessage"));
   }
 
-  private List<DbSetupRule.TableLine> getUserNotificationReadTableLines() throws Exception {
+  private List<SQLRequester.ResultLine> getUserNotificationReadTableLines() throws Exception {
     return dbSetupRule.mapJdbcSqlQueryResultAsListOfMappedValues(
         JdbcSqlQuery.createSelect("* from ST_SilverMailMessage where readen = 1"));
   }

@@ -23,10 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.datarecord;
 
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.FormFatalException;
@@ -44,6 +40,10 @@ import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
 import org.silverpeas.core.workflow.engine.user.UserSettingsService;
 
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A ProcessInstanceDataRecord groups in a single DataRecord all the data items of a
  * ProcessInstance. The instance : instance instance.title instance.<columnName> The model : model
@@ -55,6 +55,8 @@ import org.silverpeas.core.workflow.engine.user.UserSettingsService;
 public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRecord {
 
   private static final long serialVersionUID = 1L;
+  private static final String LAZY_PROCESS_INSTANCE_DATA_RECORD = "LazyProcessInstanceDataRecord";
+  private static final String ACTOR = ".actor.";
 
   /**
    * Builds the data record representation of a process instance.
@@ -68,6 +70,7 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
   /**
    * Returns the data record id.
    */
+  @Override
   public String getId() {
     return instance.getInstanceId();
   }
@@ -76,14 +79,15 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
    * Returns the named field.
    * @throw FormException when the fieldName is unknown.
    */
+  @Override
   public Field getField(String fieldName) throws FormException {
     if (fieldName.startsWith("folder.") || fieldName.startsWith("instance.")) {
-      int pos = fieldName.indexOf(".");
+      int pos = fieldName.indexOf('.');
       return getFolderField(fieldName.substring(pos + 1, fieldName.length()));
     }
 
     if (fieldName.startsWith("action.")) {
-      int pos = fieldName.indexOf(".");
+      int pos = fieldName.indexOf('.');
       return getActionField(fieldName.substring(pos + 1, fieldName.length()));
     }
 
@@ -94,80 +98,94 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
 
     try {
       // Action label
-      if (fieldName.indexOf(".") == -1) {
+      if (fieldName.indexOf('.') == -1) {
         Field field = new TextFieldImpl();
         Action action = instance.getProcessModel().getAction(fieldName);
         field.setStringValue(action.getLabel(this.role, this.lang));
         return field;
       } // Action label
       else if (fieldName.endsWith(".label")) {
-        Field field = new TextFieldImpl();
-        String actionName = fieldName.substring(0, fieldName.length() - 6);
-        Action action = instance.getProcessModel().getAction(actionName);
-        field.setStringValue(action.getLabel(this.role, this.lang));
-        return field;
+        return getLabelRoField(fieldName);
       } // Action last realization date
       else if (fieldName.endsWith(".date")) {
-        String actionName = fieldName.substring(0, fieldName.length() - 5);
-        HistoryStep step = instance.getMostRecentStep(actionName);
-        if (step != null) {
-          return new DateRoField(step.getActionDate());
-        } else {
-          return new DateRoField(null);
-        }
+        return getDateRoField(fieldName);
       } // Action last actor
       else if (fieldName.endsWith(".actor")) {
-        String actionName = fieldName.substring(0, fieldName.length() - 6);
-        HistoryStep step = instance.getMostRecentStep(actionName);
-        if (step != null) {
-          return new TextRoField(step.getUser().getFullName());
-        } else {
-          return new TextRoField(null);
-        }
+        return getActorNameRoField(fieldName);
       } // Relation with action last actor
-      else if (fieldName.indexOf(".actor.") != -1) {
-        String actionName = fieldName.substring(0, fieldName.indexOf(".actor."));
-        HistoryStep step = instance.getMostRecentStep(actionName);
-        if (step != null) {
-          String shortFieldName = fieldName.substring(fieldName.indexOf(".actor.") + 7);
-          Item item = instance.getProcessModel().getUserInfos().getItem(shortFieldName);
-          if (item != null) {
-            if (item.getMapTo() != null && item.getMapTo().length() != 0) {
-              User user = Workflow.getUserManager().getUser(
-                  step.getUser().getUserId());
-
-              Field field = new TextFieldImpl();
-              if (user != null) {
-                field.setStringValue(user.getInfo(item.getMapTo()));
-              }
-              return field;
-            } else {
-              UserSettings settings = UserSettingsService.get().get(
-                  step.getUser().getUserId(), instance.getModelId());
-              UserInfo info = settings.getUserInfo(shortFieldName);
-
-              Field field = instance.getProcessModel().getUserInfos().toRecordTemplate(
-                  role, lang, false).getEmptyRecord().getField(shortFieldName);
-              if (field != null && info != null) {
-                field.setStringValue(info.getValue());
-              }
-              return field;
-            }
-          } else {
-            return new TextRoField(null);
-          }
-        } else {
-          return new TextRoField(null);
-        }
+      else if (fieldName.indexOf(ACTOR) != -1) {
+        return getRelationRoField(fieldName);
       } else {
-        throw new FormFatalException("LazyProcessInstanceDataRecord",
+        throw new FormFatalException(LAZY_PROCESS_INSTANCE_DATA_RECORD,
             "form.EXP_FIELD_NOT_FOUND", fieldName);
       }
     } catch (Exception e) {
-      throw new FormFatalException("LazyProcessInstanceDataRecord",
+      throw new FormFatalException(LAZY_PROCESS_INSTANCE_DATA_RECORD,
           "form.EXP_FIELD_CONSTRUCTION_FAILED", fieldName);
     }
 
+  }
+
+  private Field getLabelRoField(final String fieldName) throws WorkflowException, FormException {
+    Field field = new TextFieldImpl();
+    String actionName = fieldName.substring(0, fieldName.length() - 6);
+    Action action = instance.getProcessModel().getAction(actionName);
+    field.setStringValue(action.getLabel(this.role, this.lang));
+    return field;
+  }
+
+  private Field getRelationRoField(final String fieldName) throws WorkflowException, FormException {
+    int fieldIndex = fieldName.indexOf(ACTOR);
+    String actionName = fieldName.substring(0, fieldIndex);
+    String shortFieldName = fieldName.substring(fieldIndex + 7);
+    HistoryStep step = instance.getMostRecentStep(actionName);
+    Item item = instance.getProcessModel().getUserInfos().getItem(shortFieldName);
+    if (step != null && item != null) {
+      if (item.getMapTo() != null && item.getMapTo().length() != 0) {
+        User user = Workflow.getUserManager().getUser(step.getUser().getUserId());
+
+        Field field = new TextFieldImpl();
+        if (user != null) {
+          field.setStringValue(user.getInfo(item.getMapTo()));
+        }
+        return field;
+      } else {
+        UserSettings settings =
+            UserSettingsService.get().get(step.getUser().getUserId(), instance.getModelId());
+        UserInfo info = settings.getUserInfo(shortFieldName);
+
+        Field field = instance.getProcessModel()
+            .getUserInfos()
+            .toRecordTemplate(role, lang, false)
+            .getEmptyRecord()
+            .getField(shortFieldName);
+        if (field != null && info != null) {
+          field.setStringValue(info.getValue());
+        }
+        return field;
+      }
+    }
+    return new TextRoField(null);
+  }
+
+  private Field getActorNameRoField(final String fieldName) throws WorkflowException {
+    String actionName = fieldName.substring(0, fieldName.length() - 6);
+    HistoryStep step = instance.getMostRecentStep(actionName);
+    if (step != null) {
+      return new TextRoField(step.getUser().getFullName());
+    } else {
+      return new TextRoField(null);
+    }
+  }
+
+  private Field getDateRoField(final String fieldName) {
+    String actionName = fieldName.substring(0, fieldName.length() - 5);
+    HistoryStep step = instance.getMostRecentStep(actionName);
+    if (step != null) {
+      return new DateRoField(step.getActionDate());
+    } else {
+      return new DateRoField(null);
+    }
   }
 
   private Field getFolderField(String fieldName) throws FormException {
@@ -183,7 +201,7 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
 
       return field;
     } catch (Exception e) {
-      throw new FormFatalException("LazyProcessInstanceDataRecord",
+      throw new FormFatalException(LAZY_PROCESS_INSTANCE_DATA_RECORD,
           "form.EXP_FIELD_CONSTRUCTION_FAILED", fieldName);
     }
 
@@ -205,10 +223,12 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
    * Returns the field at the index position in the record.
    * @throw FormException when the fieldIndex is unknown.
    */
+  @Override
   public Field getField(int fieldIndex) throws FormException {
     return null;
   }
 
+  @Override
   public String[] getFieldNames() {
     return new String[0];
   }

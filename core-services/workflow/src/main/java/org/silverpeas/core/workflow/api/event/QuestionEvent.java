@@ -35,16 +35,16 @@ public interface QuestionEvent extends GenericEvent {
   /**
    * Returns the process model (peas).
    */
-  public ProcessModel getProcessModel();
+  ProcessModel getProcessModel();
 
   /**
    * Set the process instance.
    */
-  public void setProcessInstance(ProcessInstance instance);
+  void setProcessInstance(ProcessInstance instance);
 
   /**
    * Returns the discussed step id
    */
-  public String getStepId();
+  String getStepId();
 
 }

@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,9 +16,9 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.workflow.api.model;
@@ -31,43 +31,43 @@ public interface RelatedUser {
    * Get the referred participant
    * @return Participant object
    */
-  public Participant getParticipant();
+  Participant getParticipant();
 
   /**
    * Set the referred participant
    * @param participant Participant object
    */
-  public void setParticipant(Participant participant);
+  void setParticipant(Participant participant);
 
   /**
    * Get the referred item
    */
-  public Item getFolderItem();
+  Item getFolderItem();
 
   /**
    * Set the referred item
    */
-  public void setFolderItem(Item item);
+  void setFolderItem(Item item);
 
   /**
    * Get the relation between user and participant
    * @return relation, if null get the participant himself instead of searching related user
    */
-  public String getRelation();
+  String getRelation();
 
   /**
    * set the relation between user and participant
    */
-  public void setRelation(String strRelation);
+  void setRelation(String strRelation);
 
   /**
    * Get the role to which the related user will be affected
    * @return the role name
    */
-  public String getRole();
+  String getRole();
 
   /**
    * New method: Set the role the related user will be affected to
    */
-  public void setRole(String strRole);
+  void setRole(String strRole);
 }

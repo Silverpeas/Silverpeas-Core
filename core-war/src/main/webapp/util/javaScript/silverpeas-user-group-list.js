@@ -70,13 +70,12 @@
   var __globalIdCounter = 0;
 
   var UserGroupRequester = function(options) {
-    this.options = extendsObject({
-      hideDeactivatedState : false,
-      domainIdFilter : '',
-      componentIdFilter : ''
-    }, options);
-
     var __applyCommonParameters = function(params) {
+      this.options = extendsObject({
+        hideDeactivatedState : false,
+        domainIdFilter : '',
+        componentIdFilter : ''
+      }, options);
       if (typeof params === 'undefined') {
         params = {};
       }
@@ -233,10 +232,6 @@
       item.score = score;
     };
     var __updateIdContainers = function(id, isAdd) {
-      if (!userGroupSelectInstance.options.multiple) {
-        userGroupSelectInstance.context.currentUserIds = [];
-        userGroupSelectInstance.context.currentGroupIds = [];
-      }
       var idContainer = id.startsWith("user-") ?
           userGroupSelectInstance.context.currentUserIds :
           userGroupSelectInstance.context.currentGroupIds;
@@ -246,18 +241,16 @@
             this.getTotalOfSelectedUsers() > USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_VALUE) {
           __selectize.removeItem(id, true);
           __selectize.refreshOptions(true);
-          userGroupSelectInstance.showUserManuelNotificationUserReceiverLimitMessage();
+          userGroupSelectInstance.showUserManualNotificationUserReceiverLimitMessage();
           return;
         }
         if (!idContainer.updateElement(normalizedId)) {
           idContainer.addElement(normalizedId);
-          __onChange();
         }
       } else {
-        if (idContainer.removeElement(normalizedId)) {
-          __onChange();
-        }
+        idContainer.removeElement(normalizedId);
       }
+      __onChange();
       userGroupSelectInstance.refreshCommons();
     }.bind(this);
 
@@ -288,7 +281,7 @@
                   USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_VALUE) {
                 all.push(item);
               } else {
-                userGroupSelectInstance.showUserManuelNotificationUserReceiverLimitMessage();
+                userGroupSelectInstance.showUserManualNotificationUserReceiverLimitMessage();
               }
             }
 
@@ -353,19 +346,33 @@
       }
     })[0].selectize;
     function __onChange() {
-      if (typeof userGroupSelectInstance.options.onChange === 'function') {
-        setTimeout(function() {
-          try {
-            userGroupSelectInstance.options.onChange(userGroupSelectInstance);
-          } finally {
-            if (userGroupSelectInstance.options.navigationalBehavior) {
-              userGroupSelectInstance.removeAll();
+      var c = userGroupSelectInstance.context;
+      var forceChangeTrigger = false;
+      if (!c._last_currentUserIds) {
+        c._last_currentUserIds = [];
+        c._last_currentGroupIds = [];
+        forceChangeTrigger = true;
+      }
+      var userIdsChange = !sp.object.areExistingValuesEqual(c._last_currentUserIds.sort(), c.currentUserIds.sort());
+      var groupIdsChange = !sp.object.areExistingValuesEqual(c._last_currentGroupIds.sort(), c.currentGroupIds.sort());
+      c._last_currentUserIds = [].concat(c.currentUserIds);
+      c._last_currentGroupIds = [].concat(c.currentGroupIds);
+      if (forceChangeTrigger || userIdsChange || groupIdsChange) {
+        var o = userGroupSelectInstance.options;
+        if (typeof o.onChange === 'function') {
+          setTimeout(function() {
+            try {
+              o.onChange(userGroupSelectInstance);
+            } finally {
+              if (o.navigationalBehavior) {
+                userGroupSelectInstance.removeAll();
+              }
             }
+          }, 0);
+        } else {
+          if (o.navigationalBehavior) {
+            userGroupSelectInstance.removeAll();
           }
-        }, 0);
-      } else {
-        if (userGroupSelectInstance.options.navigationalBehavior) {
-          userGroupSelectInstance.removeAll();
         }
       }
     }
@@ -465,6 +472,24 @@
       groupItems : []
     };
 
+    this.updateFilterOptions = function(options) {
+      if (typeof options.hideDeactivatedState !== 'undefined') {
+        this.options.hideDeactivatedState = options.hideDeactivatedState;
+      }
+      if (typeof options.domainIdFilter !== 'undefined') {
+        this.options.domainIdFilter = options.domainIdFilter;
+      }
+      if (typeof options.componentIdFilter !== 'undefined') {
+        this.options.componentIdFilter = options.componentIdFilter;
+      }
+      if (typeof options.roleFilter !== 'undefined') {
+        this.options.roleFilter = options.roleFilter;
+      }
+      if (typeof options.groupFilter !== 'undefined') {
+        this.options.groupFilter = options.groupFilter;
+      }
+    };
+
     this.removeAll = function() {
       this.context.currentUserIds = [];
       this.context.currentGroupIds = [];
@@ -493,7 +518,7 @@
       return this.getSelectedUserIds().length > 0 || this.getSelectedGroupIds().length > 0;
     };
     
-    this.showUserManuelNotificationUserReceiverLimitMessage = function() {
+    this.showUserManualNotificationUserReceiverLimitMessage = function() {
       this.context.userManualNotificationUserReceiverLimitMessageTip.show();
     };
 
@@ -503,7 +528,7 @@
       }.bind(this));
     };
 
-    var __requester = new UserGroupRequester(options);
+    var __requester = new UserGroupRequester(this.options);
 
     var _doSearchWith = function(search, callback) {
       var userDeferred = sp.promise.deferred();
@@ -778,7 +803,7 @@
     }
     this.context.currentUserId = __currentUserId;
 
-    var __requester = new UserGroupRequester(options);
+    var __requester = new UserGroupRequester(this.options);
 
     this.refreshAll = function() {
       this.refreshCommons();

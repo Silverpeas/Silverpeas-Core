@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.util.SQLRequester;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
@@ -431,7 +432,7 @@ public class TransactionIsolationWithMultiServiceInstancesIT
    * Returns the list of user lines persisted into st_user table.
    * @return List of lines represented by a map between column name and value.
    */
-  private List<DbSetupRule.TableLine> getUserTableLines() throws Exception {
+  private List<SQLRequester.ResultLine> getUserTableLines() throws Exception {
     return dbSetupRule.mapJdbcSqlQueryResultAsListOfMappedValues(
         JdbcSqlQuery.createSelect("* from st_user").addSqlPart("order by id"));
   }

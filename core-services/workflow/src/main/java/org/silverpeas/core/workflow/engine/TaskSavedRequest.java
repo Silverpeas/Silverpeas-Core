@@ -3,6 +3,7 @@ package org.silverpeas.core.workflow.engine;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TaskSavedEvent;
+import org.silverpeas.core.workflow.api.instance.ActionStatus;
 import org.silverpeas.core.workflow.api.instance.UpdatableHistoryStep;
 import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
 
@@ -53,7 +54,7 @@ class TaskSavedRequest extends AbstractRequest {
     instance.unLock();
 
     // Saved
-    step.setActionStatus(UpdatableHistoryStep.ACTION_STATUS_SAVED);
+    step.setActionStatus(ActionStatus.SAVED);
 
     return false;
   }

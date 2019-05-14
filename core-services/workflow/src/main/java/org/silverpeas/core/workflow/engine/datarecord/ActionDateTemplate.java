@@ -33,8 +33,7 @@ import org.silverpeas.core.workflow.api.model.Action;
  * A ActionDateTemplate builds fields giving the title of a process instance.
  */
 public class ActionDateTemplate extends ProcessInstanceFieldTemplate {
-  public ActionDateTemplate(String fieldName, Action action, String role,
-      String lang) {
+  public ActionDateTemplate(String fieldName, Action action, String lang) {
     super(fieldName, "text", "text", Workflow.getLabel("actionDateFieldLabel",
         lang));
     actionName = action.getName();

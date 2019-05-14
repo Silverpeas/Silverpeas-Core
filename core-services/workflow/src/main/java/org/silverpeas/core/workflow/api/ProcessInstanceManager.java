@@ -36,6 +36,7 @@ import java.util.List;
  * The workflow engine services relate to process instance management.
  */
 public interface ProcessInstanceManager {
+
   /**
    * Get the list of process instances for a given peas Id, user and role.
    * @param peasId id of processManager instance

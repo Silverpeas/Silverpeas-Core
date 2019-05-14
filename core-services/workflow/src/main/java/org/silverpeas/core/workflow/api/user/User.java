@@ -33,18 +33,18 @@ public interface User {
    * Get the user id
    * @return user id
    */
-  public String getUserId();
+  String getUserId();
 
   /**
    * Get the user full name (firstname lastname)
    * @return user full name
    */
-  public String getFullName();
+  String getFullName();
 
   /**
    * Returns the named info
    */
-  public String getInfo(String infoName);
+  String getInfo(String infoName);
 
-  public List<String> getGroupIds();
+  List<String> getGroupIds();
 }

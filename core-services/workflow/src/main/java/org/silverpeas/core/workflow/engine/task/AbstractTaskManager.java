@@ -37,10 +37,11 @@ import org.silverpeas.core.workflow.engine.model.StateImpl;
 import org.silverpeas.core.util.StringUtil;
 
 /**
- * The AbstractTaskManager implements all the silverpeas internal TaskManager methods. This Class
- * will be extended for each external todo managenent system.
+ * The AbstractTaskManager implements all the silverpeas internal TaskManager methods. This class
+ * will be extended for each external task to do management system.
  */
-abstract public class AbstractTaskManager implements TaskManager {
+public abstract class AbstractTaskManager implements TaskManager {
+
   /**
    * Builds a new task (assigned or assignable).
    */

@@ -44,6 +44,10 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class WorkflowUtil {
 
+  /**
+   * The name of the parameter holding the process file name in a workflow application descriptor.
+   */
+  public static final String PROCESS_XML_FILE_NAME = "XMLFileName";
   private static final String SEVERAL_VALUE_DELIMITER = "##";
 
   /**

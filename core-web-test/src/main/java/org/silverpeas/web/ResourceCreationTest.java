@@ -111,7 +111,7 @@ public abstract class ResourceCreationTest extends RESTWebServiceTest
 
   @Test
   public void creationOfANewResourceByANonAuthorizedUser() {
-    denieAuthorizationToUsers();
+    denyAuthorizationToUsers();
     Response response = post(aResource(), at(aResourceURI()));
     int receivedStatus = response.getStatus();
     int forbidden = Status.FORBIDDEN.getStatusCode();

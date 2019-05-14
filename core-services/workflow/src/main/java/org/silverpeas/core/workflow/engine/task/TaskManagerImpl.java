@@ -23,30 +23,39 @@
  */
 package org.silverpeas.core.workflow.engine.task;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.DataRecordUtil;
-import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.task.Task;
-import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
-import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.model.Attendee;
+import org.silverpeas.core.personalorganizer.model.TodoDetail;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.instance.Actor;
+import org.silverpeas.core.workflow.api.task.Task;
+import org.silverpeas.core.workflow.api.user.Replacement;
+import org.silverpeas.core.workflow.api.user.User;
+import org.silverpeas.core.workflow.engine.user.UserImpl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -54,13 +63,17 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class TaskManagerImpl extends AbstractTaskManager {
-  static Hashtable<String, NotificationSender> notificationSenders = new Hashtable<>();
+
+  private static Map<String, NotificationSender> notificationSenders = new ConcurrentHashMap<>();
+  private static final String MULTILANG_BUNDLE =
+      "org.silverpeas.workflow.multilang.usernotification";
 
   @Inject
   private SilverpeasCalendar calendar;
 
   /**
-   * Adds a new task in the user's todos. Returns the external id given by the external todo system.
+   * Adds a new task in the user's todos. Returns the external id given by the external task to
+   * do system.
    */
   @Override
   public void assignTask(Task task, User delegator) throws WorkflowException {
@@ -88,7 +101,6 @@ public class TaskManagerImpl extends AbstractTaskManager {
 
     List<Attendee> attendees = new ArrayList<>();
     if (task.getUser() != null) {
-      // add todo to specified user
       attendees.add(new Attendee(task.getUser().getUserId()));
       todo.setAttendees(attendees);
       todo.setExternalId(getExternalId(task));
@@ -134,7 +146,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
   }
 
   /**
-   * Get the process instance Id referred by the todo with the given todo id
+   * Get the process instance Id referred by the task to do with the given identifier
    */
   @Override
   public String getProcessInstanceIdFromExternalTodoId(String externalTodoId)
@@ -143,7 +155,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
   }
 
   /**
-   * Get the role name of task referred by the todo with the given todo id
+   * Get the role name of task referred by the task to do with the given identifier
    */
   @Override
   public String getRoleNameFromExternalTodoId(String externalTodoId)
@@ -156,52 +168,78 @@ public class TaskManagerImpl extends AbstractTaskManager {
    * @throws WorkflowException
    */
   @Override
-  public void notifyActor(Task task, User sender, User user, String text, boolean linkDisabled) throws WorkflowException {
+  public void notifyActor(Task task, User sender, Actor user, String text, boolean linkDisabled)
+      throws WorkflowException {
     String componentId = task.getProcessInstance().getModelId();
     final List<String> userIds = new ArrayList<>();
+    String role = task.getUserRoleName();
     if (user != null) {
-      userIds.add(user.getUserId());
+      role = user.getUserRoleName();
+      userIds.add(user.getUser().getUserId());
     } else if (StringUtil.isDefined(task.getGroupId())) {
       List<User> usersInGroup = task.getProcessInstance().getUsersInGroup(task.getGroupId());
       userIds.addAll(usersInGroup.stream().map(User::getUserId).collect(Collectors.toList()));
     } else {
-      String role = task.getUserRoleName();
       List<User> usersInRole = task.getProcessInstance().getUsersInRole(role);
       userIds.addAll(usersInRole.stream().map(User::getUserId).collect(Collectors.toList()));
     }
 
-    NotificationSender notifSender = notificationSenders.get(componentId);
-    if (notifSender == null) {
-      notifSender = new NotificationSender(componentId);
-      notificationSenders.put(componentId, notifSender);
-    }
+    sendNotification(userIds, task, sender, text, linkDisabled, null);
 
+    // notify substitute(s) according to role (excluding potential substitutes who are
+    // already regular actors)
     for (String userId : userIds) {
-      try {
-        String title = task.getProcessInstance().getTitle(task.getUserRoleName(),
-            "");
-
-        DataRecord data = task.getProcessInstance().getAllDataRecord(task.getUserRoleName(), "");
-        text = DataRecordUtil.applySubstitution(text, data, "");
-
-        NotificationMetaData notifMetaData = new NotificationMetaData(
-            NotificationParameters.PRIORITY_NORMAL, title, text);
-        if (sender != null) {
-          notifMetaData.setSender(sender.getUserId());
-        } else {
-          notifMetaData.setSender(userId);
-        }
-        notifMetaData.addUserRecipient(new UserRecipient(userId));
-        if (!linkDisabled) {        
-            String link = "/RprocessManager/" + componentId
-                + "/searchResult?Type=ProcessInstance&Id="
-                + task.getProcessInstance().getInstanceId() + "&role=" + task.getUserRoleName();
-            notifMetaData.setLink(link);
-        }
-        notifSender.notifyUser(notifMetaData);
-      } catch (WorkflowException | NotificationException e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
+      List<User> substitutes = getSubstitutes(userId, role, componentId)
+          .stream()
+          .filter(s -> !userIds.contains(s.getUserId())).collect(Collectors.toList());
+      for (User substitute : substitutes) {
+        sendNotificationToSubstitute(substitute.getUserId(), task, sender, text, linkDisabled,
+            userId);
       }
+    }
+  }
+
+  private void sendNotificationToSubstitute(String userId, Task task, User sender, String text,
+      boolean linkDisabled, String incumbentId) {
+    LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(MULTILANG_BUNDLE,
+        UserDetail.getById(userId).getUserPreferences().getLanguage());
+    String incumbent = UserDetail.getById(incumbentId).getDisplayedName();
+    String substituteMessage = text + "\n\n" +
+        bundle.getStringWithParams("replacement.message.substitute.extra", incumbent);
+    sendNotification(Collections.singletonList(userId), task, sender, substituteMessage,
+        linkDisabled, incumbentId);
+  }
+
+  private void sendNotification(List<String> userIds, Task task, User sender, String text,
+      boolean linkDisabled, String incumbentId) {
+    String componentId = task.getProcessInstance().getModelId();
+    NotificationSender notifSender =
+        notificationSenders.computeIfAbsent(componentId, NotificationSender::new);
+    List<UserRecipient> userRecipients =
+        userIds.stream().map(UserRecipient::new).collect(Collectors.toList());
+    try {
+      String title = task.getProcessInstance().getTitle(task.getUserRoleName(), "");
+
+      DataRecord data = task.getProcessInstance().getAllDataRecord(task.getUserRoleName(), "");
+      text = DataRecordUtil.applySubstitution(text, data, "");
+
+      NotificationMetaData notifMetaData =
+          new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, title, text);
+      if (sender != null) {
+        notifMetaData.setSender(sender.getUserId());
+      }
+      notifMetaData.addUserRecipients(userRecipients);
+      if (!linkDisabled) {
+        String link = "/RprocessManager/" + componentId + "/searchResult?Type=ProcessInstance&Id=" +
+            task.getProcessInstance().getInstanceId() + "&role=" + task.getUserRoleName();
+        if (StringUtil.isDefined(incumbentId)) {
+          link += "&IncumbentId="+incumbentId;
+        }
+        notifMetaData.setLink(link);
+      }
+      notifSender.notifyUser(notifMetaData);
+    } catch (WorkflowException | NotificationException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
@@ -242,5 +280,15 @@ public class TaskManagerImpl extends AbstractTaskManager {
     }
 
     return items;
+  }
+
+  private static List<User> getSubstitutes(String userId, String role, String componentInstanceId) {
+    User user = new UserImpl(UserDetail.getById(userId));
+    return Replacement.getAllOf(user, componentInstanceId)
+        .stream()
+        .filterCurrentAt(LocalDate.now())
+        .filterOnAtLeastOneRole(role)
+        .map(Replacement::getSubstitute)
+        .collect(Collectors.toList());
   }
 }

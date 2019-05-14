@@ -45,11 +45,10 @@ public class StateTemplate extends ProcessInstanceFieldTemplate {
    * Returns a field built from this template and filled from the given process instance.
    */
   public Field getField(ProcessInstance instance) {
-    StringBuffer stateLabels = new StringBuffer();
-    String stateNames[] = instance.getActiveStates();
-    State state = null;
-    for (int i = 0; i < stateNames.length; i++) {
-      state = processModel.getState(stateNames[i]);
+    StringBuilder stateLabels = new StringBuilder();
+    String[] stateNames = instance.getActiveStates();
+    for (String stateName: stateNames) {
+      State state = processModel.getState(stateName);
       if (state != null) {
         if (stateLabels.length() > 0)
           stateLabels.append(" - ");

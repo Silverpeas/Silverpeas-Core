@@ -33,6 +33,7 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.instance.ActionStatus;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.instance.UpdatableHistoryStep;
@@ -53,6 +54,8 @@ import javax.persistence.Table;
 public class HistoryStepImpl extends BasicJpaEntity<HistoryStepImpl, UniqueIntegerIdentifier>
     implements UpdatableHistoryStep, Comparable<HistoryStep> {
 
+  private static final String WORKFLOW_ENGINE_EXP_UNKNOWN_FORM = "workflowEngine.EXP_UNKNOWN_FORM";
+  private static final String FORM = "form=";
   /**
    * Process instance whose an action has been logged by this history step
    */
@@ -96,11 +99,14 @@ public class HistoryStepImpl extends BasicJpaEntity<HistoryStepImpl, UniqueInteg
   @Column(name = "tostate")
   private String resultingState = null;
 
+  @Column
+  private String substituteId = null;
+
   /**
    * Resulting status of action
    */
   @Column
-  private int actionStatus = 0;
+  private int actionStatus = ActionStatus.TO_BE_PROCESSED.getCode();
 
   /**
    * Default constructor
@@ -245,30 +251,26 @@ public class HistoryStepImpl extends BasicJpaEntity<HistoryStepImpl, UniqueInteg
   /**
    * Get the resulting status of action logged in this history step
    * @return action status
-   * <ul>
-   * <li>-1 : Process failed
-   * <li>0 : To Be Processed
-   * <li>1 : Processed
-   * <li>2 : Affectations Done
-   * </ul>
    */
-  public int getActionStatus() {
-    return actionStatus;
+  public ActionStatus getActionStatus() {
+    return ActionStatus.from(actionStatus);
   }
 
   /**
    * Set the resulting status of action logged in this history step
-   * <ul>
-   * <li>-1 : Process failed
-   * <li>0 : To Be Processed
-   * <li>1 : Processed
-   * <li>2 : Affectations Done
-   * <li>3 : Saved (to be continued)
-   * </ul>
    * @param actionStatus action status
    */
-  public void setActionStatus(int actionStatus) {
-    this.actionStatus = actionStatus;
+  public void setActionStatus(ActionStatus actionStatus) {
+    this.actionStatus = actionStatus.getCode();
+  }
+
+  @Override
+  public String getSubstituteId() {
+    return substituteId;
+  }
+
+  public void setSubstituteId(String substituteId) {
+    this.substituteId = substituteId;
   }
 
   /**
@@ -291,7 +293,7 @@ public class HistoryStepImpl extends BasicJpaEntity<HistoryStepImpl, UniqueInteg
       return formSet.getRecord(formId);
     } catch (FormException e) {
       throw new WorkflowException("HistoryStepImpl",
-          "workflowEngine.EXP_UNKNOWN_FORM", "form=" + form.getName() + "("
+          WORKFLOW_ENGINE_EXP_UNKNOWN_FORM, FORM + form.getName() + "("
           + formId + ")", e);
     }
   }
@@ -324,7 +326,7 @@ public class HistoryStepImpl extends BasicJpaEntity<HistoryStepImpl, UniqueInteg
       formSet.save(data);
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl",
-          "workflowEngine.EXP_UNKNOWN_FORM", "form=" + form.getName() + "("
+          WORKFLOW_ENGINE_EXP_UNKNOWN_FORM, FORM + form.getName() + "("
           + formId + ")", e);
     }
   }
@@ -354,7 +356,7 @@ public class HistoryStepImpl extends BasicJpaEntity<HistoryStepImpl, UniqueInteg
       formSet.delete(formId);
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl",
-          "workflowEngine.EXP_UNKNOWN_FORM", "form=" + form.getName() + "("
+          WORKFLOW_ENGINE_EXP_UNKNOWN_FORM, FORM + form.getName() + "("
           + formId + ")", e);
     }
   }

@@ -27,8 +27,8 @@ import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.State;
 
 public class ActionAndState {
-  private Action action = null;
-  private State state = null;
+  private Action action;
+  private State state;
 
   public ActionAndState(Action action, State state) {
     super();

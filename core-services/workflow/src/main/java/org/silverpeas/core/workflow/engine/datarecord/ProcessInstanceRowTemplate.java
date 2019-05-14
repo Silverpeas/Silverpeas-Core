@@ -23,9 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.datarecord;
 
-import java.util.HashMap;
-import java.util.Iterator;
-
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -36,10 +33,17 @@ import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Presentation;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 /**
  * ProcessInstanceRowTemplate.
  */
 public class ProcessInstanceRowTemplate implements RecordTemplate {
+
+  private static final String PROCESS_INSTANCE_RECORD_TEMPLATE = "ProcessInstanceRecordTemplate";
+  private static final String FORM_EXP_UNKNOWN_FIELD = "form.EXP_UNKNOWN_FIELD";
+
   /**
    * Builds the record template of the process instance rows.
    */
@@ -99,8 +103,7 @@ public class ProcessInstanceRowTemplate implements RecordTemplate {
     IndexedFieldTemplate indexed = (IndexedFieldTemplate) fields.get(fieldName);
 
     if (indexed == null) {
-      throw new FormException("ProcessInstanceRecordTemplate",
-          "form.EXP_UNKNOWN_FIELD", fieldName);
+      throw new FormException(PROCESS_INSTANCE_RECORD_TEMPLATE, FORM_EXP_UNKNOWN_FIELD, fieldName);
     }
 
     return indexed.fieldTemplate;
@@ -114,8 +117,8 @@ public class ProcessInstanceRowTemplate implements RecordTemplate {
     if (0 <= fieldIndex && fieldIndex < fields.size()) {
       return getFieldTemplates()[fieldIndex];
     } else {
-      throw new FormException("ProcessInstanceRecordTemplate",
-          "form.EXP_UNKNOWN_FIELD", "" + fieldIndex);
+      throw new FormException(PROCESS_INSTANCE_RECORD_TEMPLATE,
+          FORM_EXP_UNKNOWN_FIELD, "" + fieldIndex);
     }
   }
 
@@ -127,8 +130,7 @@ public class ProcessInstanceRowTemplate implements RecordTemplate {
     IndexedFieldTemplate indexed = (IndexedFieldTemplate) fields.get(fieldName);
 
     if (indexed == null) {
-      throw new FormException("ProcessInstanceRecordTemplate",
-          "form.EXP_UNKNOWN_FIELD", fieldName);
+      throw new FormException(PROCESS_INSTANCE_RECORD_TEMPLATE, FORM_EXP_UNKNOWN_FIELD, fieldName);
     }
 
     return indexed.index;
@@ -193,7 +195,7 @@ public class ProcessInstanceRowTemplate implements RecordTemplate {
    * Inits the fields
    */
   private void init() {
-    addField(new TitleTemplate("title", processModel, role, lang));
+    addField(new TitleTemplate("title", role, lang));
     addField(new StateTemplate("instance.state", processModel, role, lang));
 
     Presentation presentation = processModel.getPresentation();

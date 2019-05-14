@@ -1,0 +1,7 @@
+$if(toSubstitute)$
+Period modification of your replacement as <b>$incumbent$</b>'s substitute: $replacementPeriod_en()$
+$endif$
+$if(toIncumbent)$
+Period modification of your replacement by <b>$substitute$</b>: $replacementPeriod_en()$
+$endif$
+.

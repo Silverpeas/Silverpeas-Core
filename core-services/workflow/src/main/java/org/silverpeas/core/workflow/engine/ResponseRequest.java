@@ -6,6 +6,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.workflow.api.TaskManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.ResponseEvent;
+import org.silverpeas.core.workflow.api.instance.ActionStatus;
 import org.silverpeas.core.workflow.api.instance.Participant;
 import org.silverpeas.core.workflow.api.instance.UpdatableHistoryStep;
 import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
@@ -64,7 +65,7 @@ class ResponseRequest extends AbstractRequest {
     instance.removeActiveState(event.getResolvedState());
 
     // change the action status of the step : Processed
-    step.setActionStatus(UpdatableHistoryStep.ACTION_STATUS_PROCESSED);
+    step.setActionStatus(ActionStatus.PROCESSED);
     instance.updateHistoryStep(step);
 
     // get the last participant for the discussed state
@@ -81,7 +82,7 @@ class ResponseRequest extends AbstractRequest {
     instance.removeWorkingUser(participant.getUser(), state, participant.getUserRoleName());
 
     // change the action status of the step : Affectations done
-    step.setActionStatus(UpdatableHistoryStep.ACTION_STATUS_AFFECTATIONSDONE);
+    step.setActionStatus(ActionStatus.AFFECTATIONS_DONE);
     instance.updateHistoryStep(step);
 
     // unlock process instance

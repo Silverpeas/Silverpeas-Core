@@ -324,4 +324,13 @@ public class QuestionImpl extends BasicJpaEntity<QuestionImpl, UniqueIntegerIden
     this.relevant = relevant ? 1 : 0;
   }
 
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 }

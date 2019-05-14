@@ -23,19 +23,14 @@
  */
 package org.silverpeas.core.workflow.api;
 
-import java.util.List;
-
 import org.silverpeas.core.workflow.api.model.ProcessModel;
+
+import java.util.List;
 
 /**
  * The workflow engine services related to process model management.
  */
 public interface ProcessModelManager {
-
-  /**
-   * The name of the parameter holding the process file name in a workflow application descriptor.
-   */
-  String PROCESS_XML_FILE_NAME = "XMLFileName";
 
   /**
    * List all the ProcessModels that are stored in the process model directory Retrieves all the

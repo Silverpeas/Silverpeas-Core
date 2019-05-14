@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,9 +16,9 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.workflow.api.model;
@@ -31,54 +31,54 @@ public interface Input extends Column {
    * Get the read-only attribute of this input
    * @return true if input is read-only
    */
-  public boolean isReadonly();
+  boolean isReadonly();
 
   /**
    * Set the readonly attribute
    */
-  public void setReadonly(boolean readonly);
+  void setReadonly(boolean readonly);
 
   /**
    * Get value of mandatory attribute
    * @return true if item must be filled
    */
-  public boolean isMandatory();
+  boolean isMandatory();
 
   /**
    * Set value of mandatory attribute
    * @param mandatory true if item must be filled
    */
-  public void setMandatory(boolean mandatory);
+  void setMandatory(boolean mandatory);
 
   /**
    * Get name of displayer used to show the item
    * @return displayer name
    */
-  public String getDisplayerName();
+  String getDisplayerName();
 
   /**
    * Set name of displayer used to show the item
    * @param displayerName displayer name
    */
-  public void setDisplayerName(String displayerName);
+  void setDisplayerName(String displayerName);
 
   /**
    * Get default value
    * @return default value
    */
-  public String getValue();
+  String getValue();
 
   /**
    * Set default value
    * @param value default value
    */
-  public void setValue(String value);
+  void setValue(String value);
 
   /**
    * Get all the labels
    * @return an object containing the collection of the labels
    */
-  public ContextualDesignations getLabels();
+  ContextualDesignations getLabels();
 
   /**
    * Get label in specific language for the given role
@@ -89,5 +89,5 @@ public interface Input extends Column {
    * found again, return the default label in default language, if not found again, return empty
    * string.
    */
-  public String getLabel(String role, String language);
+  String getLabel(String role, String language);
 }

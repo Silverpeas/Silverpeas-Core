@@ -31,11 +31,11 @@ public interface Column {
    * Get the item to show in this column
    * @return the item
    */
-  public Item getItem();
+  Item getItem();
 
   /**
    * Set the item to show in this column
    * @return the item
    */
-  public void setItem(Item item);
+  void setItem(Item item);
 }

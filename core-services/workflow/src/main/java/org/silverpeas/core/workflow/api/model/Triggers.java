@@ -34,6 +34,6 @@ public interface Triggers {
    * Iterate through the Trigger objects
    * @return an iterator
    */
-  public Iterator<Trigger> iterateTrigger();
+  Iterator<Trigger> iterateTrigger();
 
 }

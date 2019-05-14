@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,18 +16,18 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.workflow.api.model;
 
-import java.util.Iterator;
-
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.workflow.api.WorkflowException;
+
+import java.util.Iterator;
 
 /**
  * Interface describing a representation of the &lt;Form&gt; element of a Process Model.
@@ -37,87 +37,87 @@ public interface Form {
    * Get the name of this form
    * @return form's name
    */
-  public String getName();
+  String getName();
 
   /**
    * Set the name of this form
    * @param name form's name
    */
-  public void setName(String name);
+  void setName(String name);
 
   /**
    * Get the role
    * @return the role name
    */
-  public String getRole();
+  String getRole();
 
   /**
    * Set the role name
    * @param role name to set
    */
-  public void setRole(String role);
+  void setRole(String role);
 
   /**
    * Get the name of HTML file to show this form if no HTML file is defined, XMLForm will be used to
    * display the form
    * @return form's name
    */
-  public String getHTMLFileName();
+  String getHTMLFileName();
 
   /**
    * Set the name of HTML file to show this form if no HTML file is defined, XMLForm will be used to
    * display the form
    * @return form's name
    */
-  public void setHTMLFileName(String htmlFileName);
+  void setHTMLFileName(String htmlFileName);
 
   /**
    * Get the inputs
    * @return the inputs as a Vector
    */
-  public Input[] getInputs();
+  Input[] getInputs();
 
   /**
    * Get the input specified by the index
    * @param idx the index
    * @return the items as a Vector
    */
-  public Input getInput(int idx);
+  Input getInput(int idx);
 
   /**
    * Get the input specified by item and / or value
    * @param reference the reference object
    * @return the items as a Vector
    */
-  public Input getInput(Input reference);
+  Input getInput(Input reference);
 
   /**
    * Create and return and object implementing Input
    */
-  public Input createInput();
+  Input createInput();
 
   /**
    * Iterate through the inputs
    * @return an iterator
    */
-  public Iterator<Input> iterateInput();
+  Iterator<Input> iterateInput();
 
   /**
    * Add an input
    */
-  public void addInput(Input input);
+  void addInput(Input input);
 
   /**
    * Remove the input specified by the index
    * @param idx the index
    */
-  public void removeInput(int idx) throws WorkflowException;
+  void removeInput(int idx) throws WorkflowException;
 
   /**
    * Get all the titles
    * @return an object containing the collection of the tables
    */
-  public ContextualDesignations getTitles();
+  ContextualDesignations getTitles();
 
   /**
    * Get title in specific language for the given role
@@ -128,26 +128,26 @@ public interface Form {
    * found again, return the default title in default language, if not found again, return empty
    * string.
    */
-  public String getTitle(String role, String language);
+  String getTitle(String role, String language);
 
   /**
    * Converts this object in a DataRecord object
    * @return the resulting DataRecord object with the default values set
    */
-  public DataRecord getDefaultRecord(String role, String lang, DataRecord data)
+  DataRecord getDefaultRecord(String role, String lang, DataRecord data)
       throws WorkflowException;
 
   /**
    * Converts this object in a RecordTemplate object
    * @return the resulting RecordTemplate
    */
-  public RecordTemplate toRecordTemplate(String roleName, String language)
+  RecordTemplate toRecordTemplate(String roleName, String language)
       throws WorkflowException;
 
   /**
    * Converts this object in a RecordTemplate object
    * @return the resulting RecordTemplate
    */
-  public RecordTemplate toRecordTemplate(String roleName, String language,
+  RecordTemplate toRecordTemplate(String roleName, String language,
       boolean readOnly) throws WorkflowException;
 }

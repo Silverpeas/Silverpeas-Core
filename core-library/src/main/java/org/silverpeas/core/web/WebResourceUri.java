@@ -94,9 +94,7 @@ public class WebResourceUri {
   }
 
   public WebResourceUri(final String webResourcePath, final HttpServletRequest request) {
-    this.webResourcePath = webResourcePath;
-    this.request = request;
-    this.uriInfo = null;
+    this(webResourcePath, request, null);
   }
 
   /**

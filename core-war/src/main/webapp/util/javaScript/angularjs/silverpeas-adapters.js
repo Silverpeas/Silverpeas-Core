@@ -453,3 +453,9 @@
     };
   }
 })();
+
+/**
+ * Provider of the RESTAdapter angularjs engine for plain old javascript code.
+ * @type {RESTAdapter}
+ */
+var RESTAdapter = angular.injector(['ng', 'silverpeas', 'silverpeas.adapters']).get('RESTAdapter');

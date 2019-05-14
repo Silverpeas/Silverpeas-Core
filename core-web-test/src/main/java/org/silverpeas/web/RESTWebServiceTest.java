@@ -28,7 +28,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.web.environment.SilverpeasEnvironmentTest;
@@ -40,6 +41,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * The base class for testing REST web services in Silverpeas. This base class wraps all of the
@@ -55,8 +57,8 @@ public abstract class RESTWebServiceTest {
       "/org/silverpeas/web/environment/create-table-domain-user-group.sql",
       "/org/silverpeas/web/environment/create-table-space-component.sql",
       "/org/silverpeas/web/environment/create-table-profile.sql",
-      "/org/silverpeas/web/environment/create-table-token.sql",
-      getCreationTable());
+      "/org/silverpeas/web/environment/create-table-token.sql", getTableCreationScript())
+      .loadInitialDataSetFrom(getDataSetScript());
 
   @Before
   public void reloadAdminCaches() {
@@ -68,7 +70,16 @@ public abstract class RESTWebServiceTest {
    * specific to this test.
    * @return the path in the classpath of a SQL script file (or empty if no such SQL script).
    */
-  protected String getCreationTable() {
+  protected String getTableCreationScript() {
+    return StringUtil.EMPTY;
+  }
+
+  /**
+   * Gets the SQL script file in the classpath that contains statements to prepare the database used
+   * by this test with a data set.
+   * @return the path in the classpath of a SQL script file (or empty if no such SQL script)
+   */
+  protected String getDataSetScript() {
     return StringUtil.EMPTY;
   }
 
@@ -123,17 +134,24 @@ public abstract class RESTWebServiceTest {
    * @param theUser the user to authenticate.
    * @return the key of the opened session.
    */
-  public String getTokenKeyOf(final UserDetail theUser) {
+  public String getTokenKeyOf(final User theUser) {
     return getSilverpeasEnvironmentTest().getTokenOf(theUser);
   }
 
   /**
    * Denies the access to the silverpeas resources to all users.</br>
-   * TODO For now, the mechanism is about to update the dummy component in order to set it that
-   * it is not public. But this has to be improved in the future.
+   * It sets non public both the dummy component and all of the existing component instances on
+   * which the test is working.
    */
-  public void denieAuthorizationToUsers() {
-    ComponentInst component = getSilverpeasEnvironmentTest().getDummyPublicComponent();
+  public void denyAuthorizationToUsers() {
+    Stream.of(getExistingComponentInstances()).forEach(i -> {
+      final ComponentInst inst = OrganizationController.get().getComponentInst(i);
+      if (inst != null && inst.isPublic()) {
+        inst.setPublic(false);
+        getSilverpeasEnvironmentTest().updateComponent(inst);
+      }
+    });
+    final ComponentInst component = getSilverpeasEnvironmentTest().getDummyPublicComponent();
     component.setPublic(false);
     getSilverpeasEnvironmentTest().updateComponent(component);
   }
@@ -141,9 +159,9 @@ public abstract class RESTWebServiceTest {
   /**
    * Denies the access to the silverpeas spaces to all users.
    */
-  public void denieSpaceAuthorizationToUsers() {
+  public void denySpaceAuthorizationToUsers() {
     throw new NotImplementedException(
-        "Migration : the implementation of denieSpaceAuthorizationToUsers is not yet performed...");
+        "Migration : the implementation of denySpaceAuthorizationToUsers is not yet performed...");
   }
 
   protected WebTarget applyQueryParameters(String parameterQueryPart, WebTarget resource) {

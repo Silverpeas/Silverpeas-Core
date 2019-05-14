@@ -144,7 +144,7 @@ public interface OrganizationController extends java.io.Serializable {
    * In contrary to {@link #getComponentInst(String)}, {@link #getComponentInstLight(String)}
    * signatures, this one is able to return different kinds of implementation of {@link
    * SilverpeasComponentInstance}.<br>
-   * So, this signature is useful into contexts of transversal treatments.
+   * So, this signature is useful into contexts of transverse treatments.
    * @param componentInstanceIdentifier the identifier of the requested component instance.
    * @return an optional component instance.
    */

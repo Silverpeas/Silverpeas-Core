@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.webapi.base;
 
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -65,6 +67,9 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
 
   @Inject
   private SimpleDocumentAccessControl documentAccessController;
+
+  @Inject
+  private OrganizationController organizationController;
 
   @Inject
   private HTTPAuthentication authentication;
@@ -143,15 +148,22 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
 
   /**
    * Validates the authorization of the specified user to access the component instance with the
-   * specified unique identifier.
+   * specified unique identifier. If no such component instance exists then a
+   * {@link WebApplicationException} is thrown with the Not Found HTTP status code (404). If the
+   * user isn't authorized to access the component instance, a {@link WebApplicationException} is
+   * thrown with the Forbidden HTTP status code (403).
    *
    * @param user the user for whom the authorization has to be validated.
    * @param instanceId the unique identifier of the accessed component instance.
-   * @throws WebApplicationException exception if the validation failed.
+   * @throws WebApplicationException exception either if the component instance isn't found or
+   * if the validation failed.
    */
   @Override
   public void validateUserAuthorizationOnComponentInstance(final User user, String instanceId) {
-    if (user == null || !componentAccessController.isUserAuthorized(user.getId(), instanceId)) {
+    SilverpeasComponentInstance instance = organizationController.getComponentInstance(instanceId)
+        .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
+    if (user == null ||
+        !componentAccessController.isUserAuthorized(user.getId(), instance.getId())) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }

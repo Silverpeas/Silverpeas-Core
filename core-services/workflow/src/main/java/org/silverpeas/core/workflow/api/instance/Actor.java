@@ -27,26 +27,26 @@ import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.user.User;
 
 /**
- * A Actor object represents a 3-tuple user/roleName/state
+ * A Actor object represents a 3-tuple user/role name/state
  */
 public interface Actor {
   /**
    * Returns the actor as a User object
    */
-  public User getUser();
+  User getUser();
 
   /**
    * get the name of the role under which the user was/may be an actor
    * @return the role's name
    */
-  public String getUserRoleName();
+  String getUserRoleName();
 
   /**
    * get the name of the state for which the user was/may be an actor
    * @return the state's name
    */
-  public State getState();
+  State getState();
 
-  public String getGroupId();
+  String getGroupId();
 
 }

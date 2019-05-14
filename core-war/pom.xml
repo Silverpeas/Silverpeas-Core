@@ -220,6 +220,7 @@
             <exclude>**/*-min-*</exclude>
             <exclude>**/util/yui/**/*</exclude>
             <exclude>**/ckeditor*/**/*</exclude>
+            <exclude>**/vuejs/vue.js</exclude>
           </excludes>
         </configuration>
       </plugin>

@@ -61,6 +61,13 @@ public class StringUtil extends StringUtils {
     }
   }
 
+  public static String requireDefined(final String object, final String message) {
+    if (isNotDefined(object)) {
+      throw new AssertionError(message);
+    }
+    return object;
+  }
+
   /**
    * Normalizes the given string (which must be encoded into UTF-8) in order that the result
    * contains only unified chars.

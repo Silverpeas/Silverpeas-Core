@@ -46,85 +46,85 @@ public interface Task {
   /**
    * Returns the actor.
    */
-  public User getUser();
+  User getUser();
 
   /**
-   * Returns the name of the role which gived the responsability of this task to the user.
+   * Returns the name of the role required for the user to have the responsibility of this task.
    */
-  public String getUserRoleName();
+  String getUserRoleName();
 
-  public String getGroupId();
+  String getGroupId();
 
   /**
    * Returns the process model (peas). The id of this workflow internal information must be stored
    * by the external system to be sent to the workflow engine when the activity is done.
    */
-  public ProcessModel getProcessModel();
+  ProcessModel getProcessModel();
 
   /**
    * Returns the process instance. The id of this workflow internal information must be stored by
    * the external system to be sent to the workflow engine when the activity is done.
    */
-  public ProcessInstance getProcessInstance();
+  ProcessInstance getProcessInstance();
 
   /**
    * Returns the state/activity to be resolved by the user. The name of this workflow internal
    * information must be stored by the external system to be sent to the workflow engine when the
    * activity is done.
    */
-  public State getState();
+  State getState();
 
   /**
    * Returns the history steps that user can discussed (ask a question to the actor of that step).
    */
-  public HistoryStep[] getBackSteps();
+  HistoryStep[] getBackSteps();
 
   /**
    * Returns the question that must be answered
    */
-  public Question[] getPendingQuestions();
+  Question[] getPendingQuestions();
 
   /**
    * Returns the (non onsolete) questions that have been answered
    */
-  public Question[] getRelevantQuestions();
+  Question[] getRelevantQuestions();
 
   /**
    * Returns the question that have been asked and are waiting for a response
    */
-  public Question[] getSentQuestions();
+  Question[] getSentQuestions();
 
   /**
    * Returns the action names list from which the user must choose to resolve the activity.
    */
-  public String[] getActionNames();
+  String[] getActionNames();
 
   /**
    * When this Task is done, builds a TaskDoneEvent giving the choosed action name and the filled
    * form.
    */
-  public TaskDoneEvent buildTaskDoneEvent(String actionName, DataRecord data);
+  TaskDoneEvent buildTaskDoneEvent(String actionName, DataRecord data);
 
   /**
    * When this Task is saved, builds a TaskSavedEvent giving the choosed action name and the filled
    * form.
    */
-  public TaskSavedEvent buildTaskSavedEvent(String actionName, DataRecord data);
+  TaskSavedEvent buildTaskSavedEvent(String actionName, DataRecord data);
 
   /**
    * When this Question is asked for a task, builds a QuestionEvent giving the choosed step that
    * must give the answer.
    */
-  public QuestionEvent buildQuestionEvent(String stepId, DataRecord data);
+  QuestionEvent buildQuestionEvent(String stepId, DataRecord data);
 
   /**
    * When this Response is answer for a task, builds a ResponseEvent giving the question id that
    * must give the answer.
    */
-  public ResponseEvent buildResponseEvent(String questionId, DataRecord data);
+  ResponseEvent buildResponseEvent(String questionId, DataRecord data);
 
   /**
    * Set process instance associated with task
    */
-  public void setProcessInstance(ProcessInstance currentProcessInstance);
+  void setProcessInstance(ProcessInstance currentProcessInstance);
 }

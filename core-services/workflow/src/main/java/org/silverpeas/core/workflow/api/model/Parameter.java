@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,9 +16,9 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.workflow.api.model;
@@ -31,23 +31,23 @@ public interface Parameter {
    * Get the name of the Parameter
    * @return parameter's name
    */
-  public String getName();
+  String getName();
 
   /**
    * Set the name of the Parameter
    * @param name parameter's name
    */
-  public void setName(String name);
+  void setName(String name);
 
   /**
    * Get the value of the Parameter
    * @return parameter's value
    */
-  public String getValue();
+  String getValue();
 
   /**
    * Set the value of the Parameter
    * @param value parameter's value
    */
-  public void setValue(String value);
+  void setValue(String value);
 }

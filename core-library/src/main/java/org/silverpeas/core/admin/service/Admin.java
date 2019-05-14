@@ -790,7 +790,9 @@ class Admin implements Administration {
       if (personalComponentInstance.isPresent()) {
         instance = personalComponentInstance.get();
       } else {
-        instance = getComponentInstLight(componentInstanceIdentifier);
+        final SilverpeasComponentInstance componentInstance = getComponentInst(
+            componentInstanceIdentifier);
+        instance = "-1".equals(componentInstance.getId()) ? null : componentInstance;
       }
       return instance;
     } catch (Exception e) {

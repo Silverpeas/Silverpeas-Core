@@ -34,7 +34,7 @@ public interface Consequences {
    * Get the target consequences
    * @return the target consequences as a Vector
    */
-  public List<Consequence> getConsequenceList();
+  List<Consequence> getConsequenceList();
 
   /**
    * Iterate through the Consequence objects

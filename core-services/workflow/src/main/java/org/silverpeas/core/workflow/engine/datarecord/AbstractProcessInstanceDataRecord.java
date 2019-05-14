@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.workflow.engine.datarecord;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AbstractProcessInstanceDataRecord implements DataRecord {
 
@@ -37,7 +37,6 @@ public class AbstractProcessInstanceDataRecord implements DataRecord {
 
   @Override
   public String getId() {
-    // TODO Auto-generated method stub
     return null;
   }
 
@@ -59,26 +58,22 @@ public class AbstractProcessInstanceDataRecord implements DataRecord {
 
   @Override
   public Field getField(String fieldName) throws FormException {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public Field getField(String fieldName, int occurrence) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public Field getField(int fieldIndex) throws FormException {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public String[] getFieldNames() {
-    // TODO Auto-generated method stub
-    return null;
+    return new String[0];
   }
 
   @Override

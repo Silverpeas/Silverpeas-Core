@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.workflow.engine.datarecord;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.silverpeas.core.contribution.content.form.field.DateField;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 /**
  * A read only DateField
@@ -35,10 +37,11 @@ public class DateRoField extends DateField {
   private final String value;
 
   public DateRoField(Date value) {
-    if (value != null)
-      this.value = formatterBD.format(value);
-    else
+    if (value != null) {
+      this.value = formatterBD.format(LocalDateTime.ofInstant(value.toInstant(), ZoneId.systemDefault()));
+    } else {
       this.value = null;
+    }
   }
 
   /**
@@ -52,6 +55,7 @@ public class DateRoField extends DateField {
    * Changes nothing.
    */
   public void setStringValue(String value) {
+    // update isn't supported
   }
 
   /**
@@ -68,6 +72,15 @@ public class DateRoField extends DateField {
     return true;
   }
 
-  private static final SimpleDateFormat formatterBD = new SimpleDateFormat(
-      "yyyy/MM/dd");
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  private static final DateTimeFormatter formatterBD = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 }

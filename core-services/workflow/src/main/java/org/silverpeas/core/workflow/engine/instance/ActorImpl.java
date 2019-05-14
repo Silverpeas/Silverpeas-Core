@@ -32,13 +32,13 @@ import org.silverpeas.core.workflow.api.user.User;
  * state
  */
 public class ActorImpl implements Actor {
-  final private User user;
-  final private String groupId;
-  final private String userRoleName;
-  final private State state;
+  private final User user;
+  private final String groupId;
+  private final String userRoleName;
+  private final State state;
 
   /**
-   * Constructor Definitivly set the user, userRoleName and the state
+   * Constructor of an actor.
    * @param user user aka the actor
    * @param userRoleName name of the role under which the user was/may be an actor
    * @param state state for which the user was/may be an actor

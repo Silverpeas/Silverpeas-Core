@@ -185,12 +185,6 @@ span.txtsublibform {
 	width:auto;
 }
 
-input.dateToPick,
-.ui-dialog .champ-ui-dialog input.dateToPick {
-	width:68px;
-	margin:0;
-}
-
 input.int-5,
 .ui-dialog .champ-ui-dialog input.int-5 {
   width:36px;

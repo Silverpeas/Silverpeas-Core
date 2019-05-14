@@ -4,10 +4,12 @@ import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.TaskManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.GenericEvent;
+import org.silverpeas.core.workflow.api.instance.ActionStatus;
 import org.silverpeas.core.workflow.api.instance.Actor;
 import org.silverpeas.core.workflow.api.instance.Question;
 import org.silverpeas.core.workflow.api.instance.UpdatableHistoryStep;
@@ -26,6 +28,7 @@ import org.silverpeas.core.workflow.external.ExternalAction;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A TimeoutRequest indicates the workflow engine that an instance is in an active state since a
@@ -66,7 +69,7 @@ class WorkflowTools {
     // Compute eligibility for states
     states = setEligibleStates(instance, oldActiveStates, eligibleStates);
 
-    Consequence consequence = null;
+    Consequence consequence;
     try {
       // Saving data of step and process instance
       if (event.getDataRecord() != null) {
@@ -85,6 +88,7 @@ class WorkflowTools {
 
       // Find first consequence according to comparisons
       consequence = getFirstMatchingConsequence(instance, consequences);
+      Objects.requireNonNull(consequence);
 
       SilverLogger.getLogger(WorkflowTools.class)
           .info("Process action {0}: item = {1}, operator = {2}, value = {3}",
@@ -116,14 +120,14 @@ class WorkflowTools {
       notifyUsers(instance, event, taskManager, action, notifiedUsersList);
     } catch (Exception e) {
       // change the action status of the step : Process Failed
-      step.setActionStatus(-1);
+      step.setActionStatus(ActionStatus.PROCESS_FAILED);
       instance.updateHistoryStep(step);
       throw new WorkflowException("WorkflowEngineThread.process",
           "workflowEngine.EX_ERR_PROCESS_EVENT", e);
     }
 
     // change the action status of the step
-    step.setActionStatus(1); // Processed
+    step.setActionStatus(ActionStatus.PROCESS_FAILED); // Processed
     instance.updateHistoryStep(step);
 
     // Compute states and affectations
@@ -131,7 +135,7 @@ class WorkflowTools {
 
     // change the action status of the step
     // Affectations done
-    step.setActionStatus(UpdatableHistoryStep.ACTION_STATUS_AFFECTATIONSDONE);
+    step.setActionStatus(ActionStatus.AFFECTATIONS_DONE);
     instance.updateHistoryStep(step);
 
     // Process external actions
@@ -146,27 +150,24 @@ class WorkflowTools {
     for (QualifiedUsers notifiedUsers : notifiedUsersList) {
       Actor[] actors = instance.getActors(notifiedUsers, null);
       Task[] tasks = taskManager.createTasks(actors, instance);
-      String message;
-      boolean linkDisabled;
+      String message = notifiedUsers.getMessage();
+      if (StringUtil.isNotDefined(message)) {
+        message = action.getDescription("", "");
+      }
+
+      // check if link has been disabled in the model
+      boolean linkDisabled = notifiedUsers.getLinkDisabled() != null && notifiedUsers.getLinkDisabled();
+
+      // check if sender has been hardcoded in the model
+      String senderId = notifiedUsers.getSenderId();
+      User forcedUser = null;
+      if (senderId != null) {
+        forcedUser = getForcedUser(senderId, event.getActionName());
+      }
+      User sender = (forcedUser == null) ? event.getUserOrSubstitute() : forcedUser;
 
       for (int i = 0; i < actors.length; i++) {
-        message = notifiedUsers.getMessage();
-        if (message == null || message.length() == 0) {
-          message = action.getDescription("", "");
-        }
-        
-        // check if link has been disabled in the model
-        linkDisabled = notifiedUsers.getLinkDisabled() != null && notifiedUsers.getLinkDisabled();
-
-        // check if sender has been hardcoded in the model
-        String senderId = notifiedUsers.getSenderId();
-        User forcedUser = null;
-        if (senderId != null) {
-          forcedUser = getForcedUser(senderId, event.getActionName());
-        }
-
-        User sender = (forcedUser == null) ? event.getUser() : forcedUser;
-        taskManager.notifyActor(tasks[i], sender, actors[i].getUser(), message, linkDisabled);
+        taskManager.notifyActor(tasks[i], sender, actors[i], message, linkDisabled);
       }
     }
   }

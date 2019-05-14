@@ -103,6 +103,42 @@ if (!Array.prototype.addElement) {
       return false;
     }
   });
+  /**
+   * Permits to join elements of an array vy applying some rules given by options parameter.
+   * Options can be directly a string representing a separator which is inserted between each
+   * element of the array.
+   * If options is not defined, by default the separator is a space.
+   * Options can be an Object with attributes :
+   * - separator: the separator inserted between each element of the array
+   * - lastSeparator: the separator inserted between the two last elements of the array
+   */
+  Object.defineProperty(Array.prototype, 'joinWith', {
+    enumerable : false, value : function(options) {
+      if (typeof options !== 'object') {
+        options = {separator : options};
+      }
+      options = extendsObject({
+        separator : ' ',
+        lastSeparator : undefined
+      }, options);
+      if (!options.lastSeparator) {
+        options.lastSeparator = options.separator;
+      }
+      var join = '';
+      for (var i = 0; i < this.length ; i++) {
+        if (join.length) {
+          var lastItemIndex = (this.length - 1);
+          if (i !== lastItemIndex) {
+            join += options.separator;
+          } else if (i === lastItemIndex) {
+            join += options.lastSeparator;
+          }
+        }
+        join += this[i];
+      }
+      return join;
+    }
+  });
   Object.defineProperty(Array.prototype, 'extractElementAttribute', {
     enumerable : false, value : function(attributeName, mapper) {
       var isMapper = typeof mapper === 'function';
@@ -1155,10 +1191,10 @@ if (typeof window.sp === 'undefined') {
         }
         return level === 0 ? JSON.stringify(__value) : __value;
       };
-      this.compareExistingValuesBetween = function(a, b) {
+      this.areExistingValuesEqual = function(a, b) {
         var typeOfA = typeof a;
         var typeOfB = typeof b;
-        return ((typeOfA !== typeOfB) || this.normalizeExistingValuesOf(a) !== this.normalizeExistingValuesOf(b));
+        return typeOfA === typeOfB && this.normalizeExistingValuesOf(a) === this.normalizeExistingValuesOf(b);
       };
     },
     promise : {
@@ -1327,6 +1363,14 @@ if (typeof window.sp === 'undefined') {
        */
       displayAsDateTime : function(date) {
         return sp.moment.displayAsDate(date) + sp.moment.make(date).format('LT');
+      },
+      /**
+       * Formats the given UI date in order to get ISO representation of LocalDate as string.
+       * @param date an UI date.
+       * @private
+       */
+      formatAsLocalDate : function(date) {
+        return sp.moment.make(date).format().split('T')[0];
       },
       /**
        * Formats the given UI date in order to get ISO representation of LocalDate as string.

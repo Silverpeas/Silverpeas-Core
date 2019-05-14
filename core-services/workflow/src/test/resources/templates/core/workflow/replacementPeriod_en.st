@@ -1,0 +1,5 @@
+$if(end)$
+from <b>$start.dayDate$</b> to <b>$end.dayDate$</b>
+$else$
+on <b>$start.dayDate$</b>
+$endif$

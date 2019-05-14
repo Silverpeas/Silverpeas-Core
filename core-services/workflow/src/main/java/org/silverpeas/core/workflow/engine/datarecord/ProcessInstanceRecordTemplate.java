@@ -23,9 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.datarecord;
 
-import java.util.HashMap;
-import java.util.Iterator;
-
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -38,6 +35,9 @@ import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Presentation;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 /**
  * A ProcessInstanceRecordTemplate describes all the data grouped in a ProcessInstanceDataRecord.
  * The instance : instance instance.title instance.<columnName> The model : model model.label
@@ -46,6 +46,11 @@ import org.silverpeas.core.workflow.api.model.ProcessModel;
  * action.<actionName>.date action.<actionName>.actor The users : participant.<participantName>
  */
 public class ProcessInstanceRecordTemplate implements RecordTemplate {
+
+  private static final String PROCESS_INSTANCE_RECORD_TEMPLATE = "ProcessInstanceRecordTemplate";
+  private static final String FORM_EXP_UNKNOWN_FIELD = "form.EXP_UNKNOWN_FIELD";
+  private static final String ACTION = "action.";
+
   /**
    * Builds the record template of a process model.
    */
@@ -109,8 +114,7 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
     IndexedFieldTemplate indexed = (IndexedFieldTemplate) fields.get(fieldName);
 
     if (indexed == null) {
-      throw new FormException("ProcessInstanceRecordTemplate",
-          "form.EXP_UNKNOWN_FIELD", fieldName);
+      throw new FormException(PROCESS_INSTANCE_RECORD_TEMPLATE, FORM_EXP_UNKNOWN_FIELD, fieldName);
     }
 
     return indexed.fieldTemplate;
@@ -124,8 +128,8 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
     if (0 <= fieldIndex && fieldIndex < fields.size()) {
       return getFieldTemplates()[fieldIndex];
     } else {
-      throw new FormException("ProcessInstanceRecordTemplate",
-          "form.EXP_UNKNOWN_FIELD", "" + fieldIndex);
+      throw new FormException(PROCESS_INSTANCE_RECORD_TEMPLATE,
+          FORM_EXP_UNKNOWN_FIELD, "" + fieldIndex);
     }
   }
 
@@ -137,8 +141,7 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
     IndexedFieldTemplate indexed = (IndexedFieldTemplate) fields.get(fieldName);
 
     if (indexed == null) {
-      throw new FormException("ProcessInstanceRecordTemplate",
-          "form.EXP_UNKNOWN_FIELD", fieldName);
+      throw new FormException(PROCESS_INSTANCE_RECORD_TEMPLATE, FORM_EXP_UNKNOWN_FIELD, fieldName);
     }
 
     return indexed.index;
@@ -207,24 +210,14 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
     // instance.title
     // instance.state
 
-    addField(new TitleTemplate("instance", processModel, role, lang));
-    addField(new TitleTemplate("instance.title", processModel, role, lang));
+    addField(new TitleTemplate("instance", role, lang));
+    addField(new TitleTemplate("instance.title", role, lang));
     addField(new StateTemplate("instance.state", processModel, role, lang));
 
     // The instance columns : instance.<columnName>
 
     Presentation presentation = processModel.getPresentation();
-    if (presentation != null) {
-      Column[] columns = presentation.getColumns(role);
-      Item item;
-      for (int i = 0; columns != null && i < columns.length; i++) {
-        item = columns[i].getItem();
-        if (item != null) {
-          addField(new ItemTemplate("instance." + item.getName(), item, role,
-              lang));
-        }
-      }
-    }
+    addInstanceFields(presentation);
 
     // The model : model
     // model.label
@@ -235,13 +228,7 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
     // The folder : folder.<folderItem>
 
     Item[] items = processModel.getDataFolder().getItems();
-
-    for (int i = 0; items != null && i < items.length; i++) {
-      if (items[i] != null) {
-        addField(new ItemTemplate("folder." + items[i].getName(), items[i],
-            role, lang));
-      }
-    }
+    addFolderFields(items);
 
     // The forms : form.<formName>
     // form.<formName>.title
@@ -255,34 +242,61 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
     // action.<actionName>.actor
 
     Action[] actions = processModel.getActions();
+    addActionFields(actions);
+
+    // The users : participant.<participantName>
+
+    // xoxox a ecrire
+  }
+
+  private void addActionFields(final Action[] actions) {
     DataFolder userInfos = processModel.getUserInfos();
     Item[] userItems = null;
     if (userInfos != null) {
       userItems = userInfos.getItems();
     }
 
-    for (int i = 0; actions != null && i < actions.length; i++) {
-      addField(new ActionLabelTemplate("action." + actions[i].getName(),
-          actions[i], role, lang));
-      addField(new ActionLabelTemplate("action." + actions[i].getName()
-          + ".label", actions[i], role, lang));
-      addField(new ActionDateTemplate("action." + actions[i].getName()
-          + ".date", actions[i], role, lang));
-      addField(new ActionActorTemplate("action." + actions[i].getName()
-          + ".actor", actions[i], role, lang));
+    for (Action action: actions) {
+      addField(new ActionLabelTemplate(ACTION + action.getName(),
+          action, role, lang));
+      addField(new ActionLabelTemplate(ACTION + action.getName()
+          + ".label", action, role, lang));
+      addField(new ActionDateTemplate(ACTION + action.getName()
+          + ".date", action, lang));
+      addField(new ActionActorTemplate(ACTION + action.getName()
+          + ".actor", action, lang));
 
-      for (int j = 0; userItems != null && j < userItems.length; j++) {
-        if (userItems[j] != null) {
-          addField(new UserInfoTemplate("action." + actions[i].getName()
-              + ".actor." + userItems[j].getName(), userItems[j], role, lang));
+      if (userItems != null) {
+        for (Item userItem : userItems) {
+          if (userItem != null) {
+            addField(new UserInfoTemplate(ACTION + action.getName() + ".actor." + userItem.getName(),
+                userItem, role, lang));
+          }
         }
       }
-
     }
+  }
 
-    // The users : participant.<participantName>
+  private void addFolderFields(final Item[] items) {
+    for (Item item: items) {
+      if (item != null ) {
+        addField(new ItemTemplate("folder." + item.getName(), item,
+            role, lang));
+      }
+    }
+  }
 
-    // xoxox a ecrire
+  private void addInstanceFields(final Presentation presentation) {
+    if (presentation != null) {
+      Column[] columns = presentation.getColumns(role);
+      for(Column column: columns) {
+        Item item = column.getItem();
+        if (item != null) {
+          addField(new ItemTemplate("instance." + item.getName(), item, role,
+              lang));
+        }
+      }
+    }
   }
 
   /**

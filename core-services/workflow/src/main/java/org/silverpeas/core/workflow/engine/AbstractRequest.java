@@ -5,6 +5,7 @@ import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.workflow.api.ProcessInstanceManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.GenericEvent;
+import org.silverpeas.core.workflow.api.instance.ActionStatus;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.instance.UpdatableHistoryStep;
 import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
@@ -58,6 +59,9 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
     if (event.getUser() != null) {
       newStep.setUserId(event.getUser().getUserId());
     }
+    if (event.getSubstitute() != null) {
+      newStep.setSubstituteId(event.getSubstitute().getUserId());
+    }
     newStep.setAction(descriptor.getActionName());
     newStep.setActionDate(descriptor.getActionDate());
     newStep.setUserRoleName(descriptor.getUserRoleName());
@@ -65,7 +69,7 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
       newStep.setResolvedState(event.getResolvedState().getName());
     }
     // To be processed
-    newStep.setActionStatus(0);
+    newStep.setActionStatus(ActionStatus.TO_BE_PROCESSED);
     newStep.setProcessInstance(descriptor.getProcessInstance());
 
     // add the new newStep to the processInstance

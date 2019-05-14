@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,16 +16,16 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.workflow.api.model;
 
-import java.util.Iterator;
-
 import org.silverpeas.core.workflow.api.WorkflowException;
+
+import java.util.Iterator;
 
 /**
  * Interface describing a representation of the &lt;presentation&gt; element of a Process Model.
@@ -40,13 +40,13 @@ public interface Presentation {
    * found again, return the default title in default language, if not found again, return empty
    * string.
    */
-  public String getTitle(String role, String language);
+  String getTitle(String role, String language);
 
   /**
    * Get all the titles
    * @return an object containing the collection of the titles
    */
-  public ContextualDesignations getTitles();
+  ContextualDesignations getTitles();
 
   /**
    * Get the contents of the Columns object with the given role name, or of the 'Columns' for the
@@ -54,37 +54,37 @@ public interface Presentation {
    * @param roleName the name of the role
    * @return the contents of 'Columns' as an array of 'Column'
    */
-  public Column[] getColumns(String roleName);
+  Column[] getColumns(String roleName);
 
   /**
    * Get the Columns object referenced by the given role name
    * @param strRoleName the name of the Columns object
    * @return a Columns implementation
    */
-  public Columns getColumnsByRole(String strRoleName);
+  Columns getColumnsByRole(String strRoleName);
 
   /**
    * Iterate through the Column objects
    * @return an iterator
    */
-  public Iterator<Columns> iterateColumns();
+  Iterator<Columns> iterateColumns();
 
   /**
    * Add an column to the collection
    * @param columns to be added
    */
-  public void addColumns(Columns columns);
+  void addColumns(Columns columns);
 
   /**
    * Create an Column
    * @return an object implementing Column
    */
-  public Columns createColumns();
+  Columns createColumns();
 
   /**
    * Delete the Columns object with the given name
    * @param strRoleName the name of the Columns object (a role name)
    * @throws WorkflowException when the Columns for the given name have not been found.
    */
-  public void deleteColumns(String strRoleName) throws WorkflowException;
+  void deleteColumns(String strRoleName) throws WorkflowException;
 }

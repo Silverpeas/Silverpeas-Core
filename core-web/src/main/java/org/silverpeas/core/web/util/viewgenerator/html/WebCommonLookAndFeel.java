@@ -41,6 +41,8 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import java.time.ZoneId;
+
 import static org.silverpeas.core.util.URLUtil.getMinifiedWebResourceUrl;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
 
@@ -205,6 +207,7 @@ class WebCommonLookAndFeel {
         LookHelper.getLookHelper(controller.getHttpSession())).toString()).append(STR_NEW_LINE);
 
     code.append(includeAngular(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
+    code.append(includeVueJs(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
     code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeNotifier(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeSelectize(new ElementContainer()).toString()).append(STR_NEW_LINE);
@@ -280,6 +283,7 @@ class WebCommonLookAndFeel {
   @SuppressWarnings("StringBufferReplaceableByString")
   private String addGlobalJSVariable(MainSessionController controller) {
     final String language = controller.getFavoriteLanguage();
+    final ZoneId zoneId = controller.getFavoriteZoneId();
     StringBuilder globalJSVariableBuilder = new StringBuilder();
     globalJSVariableBuilder.append("moment.locale('").append(language).append("');")
         .append(STR_NEW_LINE);
@@ -294,7 +298,10 @@ class WebCommonLookAndFeel {
     globalJSVariableBuilder.append("var currentUser = ").append(JSONCodec.encodeObject(j -> {
       final UserDetail currentUserDetail = controller.getCurrentUserDetail();
       if (currentUserDetail != null) {
-        j.put("id", currentUserDetail.getId()).put("domainId", currentUserDetail.getDomainId());
+        j.put("id", currentUserDetail.getId())
+         .put("domainId", currentUserDetail.getDomainId())
+         .put("language", language)
+         .put("zoneId", zoneId.getId());
       }
       return j;
     })).append(";").append(STR_NEW_LINE);

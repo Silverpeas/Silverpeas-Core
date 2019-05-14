@@ -167,7 +167,7 @@ public abstract class ProcessInstanceFieldTemplate implements FieldTemplate {
   /**
    * Returns a field built from this template and filled from the given process instance.
    */
-  abstract public Field getField(ProcessInstance instance) throws FormException;
+  public abstract Field getField(ProcessInstance instance) throws FormException;
 
   /**
    * The field name.

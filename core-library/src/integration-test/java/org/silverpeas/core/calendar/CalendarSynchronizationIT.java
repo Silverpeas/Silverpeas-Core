@@ -36,8 +36,8 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.CalendarWarBuilder;
-import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.util.SQLRequester;
 
 import javax.inject.Inject;
 import java.net.MalformedURLException;
@@ -118,7 +118,7 @@ public class CalendarSynchronizationIT extends BaseCalendarTest {
 
   @Before
   public void calendarShouldBeEmpty() throws Exception {
-    List<DbSetupRule.TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
+    List<SQLRequester.ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.isEmpty(), is(true));
 
     emptyExternalUrl = getFilePath(EMPTY_EXTERNAL_URL);
