@@ -34,7 +34,6 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.classification.ObjectValuePair;
 import org.silverpeas.core.pdc.classification.PertinentAxis;
-import org.silverpeas.core.pdc.classification.PertinentValue;
 import org.silverpeas.core.pdc.classification.Position;
 import org.silverpeas.core.pdc.pdc.model.*;
 import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
@@ -1956,122 +1955,101 @@ public class GlobalPdcManager implements PdcManager {
     Value descendant = null;
     Value nextDescendant = null;
     boolean isLeaf = false;
-    boolean leafFind = false;
-    PertinentValue pertinentValue = null;
 
     // get the header of the axe to obtain the treeId.
     AxisHeader axisHeader = getAxisHeader(axisId, false);
     int treeId = axisHeader.getRootId();
 
-    List<ObjectValuePair> objectValuePairs = null;
+    List<ObjectValuePair> allObjectValuePairs = pdcClassifyManager
+        .getObjectValuePairs(searchContext, Integer.parseInt(axisId), instanceIds);
 
-    ComponentAuthorization componentAuthorization = null;
+    // filter objects according to user rights
+    List<ObjectValuePair> objectValuePairs =
+        filterAvailableContents(allObjectValuePairs, searchContext.getUserId());
 
-    try {
-      // Get all the values for this treeService
-      descendants = getAxisValues(treeId);
-      List<PertinentValue> pertinentValues = pdcClassifyManager
-          .getPertinentValues(searchContext, Integer.parseInt(axisId), instanceIds);
-      // Set the NbObject for all the pertinent values
-      String descendantPath = null;
-      for (int nI = 0; nI < descendants.size(); nI++) {
-        // Get the i descendant
-        descendant = descendants.get(nI);
-        descendantPath = descendant.getFullPath();
+    // Get all the values for this treeService
+    descendants = getAxisValues(treeId);
 
-        // check if it's a leaf or not
-        if (nI + 1 < descendants.size()) {
-          nextDescendant = descendants.get(nI + 1);
-          if (nextDescendant != null) {
-            isLeaf = (nextDescendant.getLevelNumber() <= descendant.getLevelNumber());
-          } else {
-            isLeaf = false;
-          }
+    // Set the NbObject for all the pertinent values
+    String descendantPath = null;
+    for (int nI = 0; nI < descendants.size(); nI++) {
+      // Get the i descendant
+      descendant = descendants.get(nI);
+      descendantPath = descendant.getFullPath();
+
+      // check if it's a leaf or not
+      if (nI + 1 < descendants.size()) {
+        nextDescendant = descendants.get(nI + 1);
+        if (nextDescendant != null) {
+          isLeaf = (nextDescendant.getLevelNumber() <= descendant.getLevelNumber());
         } else {
-          isLeaf = true;
+          isLeaf = false;
+        }
+      } else {
+        isLeaf = true;
+      }
+
+      if (isLeaf) {
+        // C'est une feuille, est-ce une feuille pertinente ?
+        int nbContents = getNumberOfContents(objectValuePairs, descendantPath, false);
+        if (nbContents > 0) {
+          descendant.setNbObjects(nbContents);
+        } else {
+          // Cette feuille n'est pas pertinente
+          emptyValues.add(descendantPath);
+          descendants.remove(nI--);
+        }
+      } else {
+        // OPTIMIZATION : Checks if it is a descendant of an empty value
+        boolean isEmpty = false;
+        String emptyPath = null;
+        for (int nJ = 0; nJ < emptyValues.size() && !isEmpty; nJ++) {
+          emptyPath = emptyValues.get(nJ);
+          if (descendantPath.startsWith(emptyPath)) {
+            isEmpty = true;
+          }
         }
 
-        if (isLeaf) {
-          // C'est une feuille, est-ce une feuille pertinente ?
-          // le calcul a déjà été fait par getPertinentValues()
-          pertinentValue = null;
-          leafFind = false;
-          for (int pv = 0; pv < pertinentValues.size() && !leafFind; pv++) {
-            pertinentValue = pertinentValues.get(pv);
-            if (pertinentValue.getValue().equals(descendantPath)) {
-              leafFind = true;
-              descendant.setNbObjects(pertinentValue.getNbObjects());
-            }
-          }
-          if (!leafFind) {
-            // Cette feuille n'est pas pertinente
+        // Set the real number of objects or remove the empty values
+        if (isEmpty) {
+          descendants.remove(nI--);
+        } else {
+          int nbObjects = getNumberOfContents(objectValuePairs, descendantPath, true);
+          if (nbObjects > 0) {
+            descendant.setNbObjects(nbObjects);
+          } else {
             emptyValues.add(descendantPath);
             descendants.remove(nI--);
           }
-        } else {
-          // OPTIMIZATION : Checks if it is a descendant of an empty value
-          boolean isEmpty = false;
-          String emptyPath = null;
-          for (int nJ = 0; nJ < emptyValues.size() && !isEmpty; nJ++) {
-            emptyPath = emptyValues.get(nJ);
-            if (descendantPath.startsWith(emptyPath)) {
-              isEmpty = true;
-            }
-          }
-
-          // Set the real number of objects or remove the empty values
-          if (isEmpty) {
-            descendants.remove(nI--);
-          } else {
-            if (objectValuePairs == null) {
-              objectValuePairs = pdcClassifyManager
-                  .getObjectValuePairs(searchContext, Integer.parseInt(axisId), instanceIds);
-            }
-
-            List<String> countedObjects = new ArrayList<>();
-
-            int nbObjects = 0;
-            for (ObjectValuePair ovp : objectValuePairs) {
-              String objectId = ovp.getObjectId();
-              String instanceId = ovp.getInstanceId();
-              if (ovp.getValuePath().startsWith(descendantPath) &&
-                  !countedObjects.contains(objectId)) {
-                // check if object is available for user
-                if (instanceId.startsWith("kmelia")) {
-                  if (componentAuthorization == null) {
-                    componentAuthorization = (ComponentAuthorization) Class
-                        .forName("org.silverpeas.components.kmelia.KmeliaAuthorization").newInstance();
-                    componentAuthorization.enableCache();
-                  }
-
-                  if (componentAuthorization
-                      .isObjectAvailable(instanceId, searchContext.getUserId(), objectId,
-                          "Publication")) {
-                    nbObjects++;
-                    countedObjects.add(objectId);
-                  }
-                } else {
-                  nbObjects++;
-                  countedObjects.add(objectId);
-                }
-              }
-            }
-
-            if (nbObjects > 0) {
-              descendant.setNbObjects(nbObjects);
-            } else {
-              emptyValues.add(descendantPath);
-              descendants.remove(nI--);
-            }
-
-            countedObjects = null;
-          }
         }
-        nextDescendant = null;
       }
+    }
 
+    return descendants;
 
-      return descendants;
+  }
+
+  private List<ObjectValuePair> filterAvailableContents(List<ObjectValuePair> ovps, String userId)
+      throws PdcException {
+    List<ObjectValuePair> availableContents = new ArrayList<>();
+    ComponentAuthorization componentAuthorization = null;
+    try {
+      for (ObjectValuePair ovp : ovps) {
+        if (ovp.getInstanceId().startsWith("kmelia")) {
+          if (componentAuthorization == null) {
+            componentAuthorization = (ComponentAuthorization) Class
+                .forName("org.silverpeas.components.kmelia.KmeliaAuthorization").newInstance();
+            componentAuthorization.enableCache();
+          }
+
+          if (componentAuthorization
+              .isObjectAvailable(ovp.getInstanceId(), userId, ovp.getObjectId(), "Publication")) {
+            availableContents.add(ovp);
+          }
+        } else {
+          availableContents.add(ovp);
+        }
+      }
     } catch (Exception e) {
       throw new PdcException(e);
     } finally {
@@ -2079,6 +2057,21 @@ public class GlobalPdcManager implements PdcManager {
         componentAuthorization.disableCache();
       }
     }
+    return availableContents;
+  }
+
+  private int getNumberOfContents(List<ObjectValuePair> ovps, String valuePath, boolean deeply) {
+    int nb = 0;
+    List<String> countedObjects = new ArrayList<>();
+    for (ObjectValuePair ovp : ovps) {
+      String key = ovp.getInstanceId()+"-"+ovp.getObjectId();
+      if ((deeply ? ovp.getValuePath().startsWith(valuePath) :
+          ovp.getValuePath().equals(valuePath)) && !countedObjects.contains(key)) {
+        nb++;
+        countedObjects.add(key);
+      }
+    }
+    return nb;
   }
 
   /**

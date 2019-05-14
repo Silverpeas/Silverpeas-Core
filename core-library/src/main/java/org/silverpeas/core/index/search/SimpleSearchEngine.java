@@ -181,7 +181,14 @@ public class SimpleSearchEngine implements SearchEngine {
     String componentId = mie.getComponent();
     ComponentAuthorization auth = getAuthorization(componentId, authorizations);
     if (auth != null) {
-      return auth.isObjectAvailable(componentId, userId, mie.getObjectId(), mie.getObjectType());
+      try {
+        return auth.isObjectAvailable(componentId, userId, mie.getObjectId(), mie.getObjectType());
+      } catch (Exception e) {
+        SilverLogger.getLogger(this)
+            .error("Check avaibility of {0} {1} in {2}", mie.getObjectType(), mie.getObjectId(),
+                componentId, e);
+        return false;
+      }
     }
 
     // verify rights onto others items type
