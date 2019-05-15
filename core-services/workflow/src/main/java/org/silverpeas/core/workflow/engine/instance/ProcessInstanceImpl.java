@@ -65,8 +65,14 @@ import org.silverpeas.core.workflow.engine.datarecord.LazyProcessInstanceDataRec
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceDataRecord;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord;
 
-import javax.persistence.*;
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -1246,7 +1252,7 @@ public class ProcessInstanceImpl
   /**
    * Returns all the state name assigned to the user.
    */
-  public String[] getAssignedStates(User user, String roleName) throws WorkflowException {
+  public String[] getAssignedStates(User user, String roleName) {
     List<String> stateNames = new ArrayList<>();
     String userId = user.getUserId();
 
@@ -1255,7 +1261,7 @@ public class ProcessInstanceImpl
       boolean usersRoleMatch =
           wkUser.getUsersRole() != null && wkUser.getUsersRole().equals(roleName);
       boolean userGroupsMatch = false;
-      if (StringUtil.isDefined(wkUser.getGroupId()) && user.getGroupIds() != null) {
+      if (StringUtil.isDefined(wkUser.getGroupId())) {
         // check if one of userGroups matches with working group
         userGroupsMatch = user.getGroupIds().contains(wkUser.getGroupId());
       }

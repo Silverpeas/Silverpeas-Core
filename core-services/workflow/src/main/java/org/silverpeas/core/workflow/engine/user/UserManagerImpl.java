@@ -25,8 +25,6 @@ package org.silverpeas.core.workflow.engine.user;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -36,7 +34,10 @@ import org.silverpeas.core.workflow.api.user.UserSettings;
 import org.silverpeas.core.workflow.engine.exception.UnknownUserException;
 
 import javax.inject.Singleton;
-import java.util.Arrays;
+import java.util.stream.Stream;
+
+import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 
 /**
  * A UserManager implementation built upon the silverpeas user management system.
@@ -52,13 +53,7 @@ public class UserManagerImpl implements UserManager {
    */
   @Override
   public User getUser(String userId) throws WorkflowException {
-    UserImpl user = new UserImpl(getUserDetail(userId));
-    String[] groupIds =  OrganizationControllerProvider.getOrganisationController()
-        .getAllGroupIdsOfUser(userId);
-    if (groupIds != null) {
-      user.setGroupIds(Arrays.asList(groupIds));
-    }
-    return user;
+    return new UserImpl(getUserDetail(userId));
   }
 
   /**
@@ -68,8 +63,9 @@ public class UserManagerImpl implements UserManager {
    * @throws WorkflowException
    * @throw WorkflowException if a userId is unknown.
    */
+  @Override
   public User[] getUsers(String[] userIds) throws WorkflowException {
-    User[] users = new User[userIds.length];
+    final User[] users = new User[userIds.length];
     for (int i = 0; i < userIds.length; i++) {
       users[i] = getUser(userIds[i]);
     }
@@ -85,40 +81,32 @@ public class UserManagerImpl implements UserManager {
    */
   @Override
   public User[] getUsersInRole(String roleName, String modelId) throws WorkflowException {
-    UserDetail[] userDetails = null;
+    UserDetail[] userDetails;
     try {
       // the modelId is the peasId.
-      ComponentInst peas = AdministrationServiceProvider.getAdminService().getComponentInst(modelId);
-      userDetails =  OrganizationControllerProvider.getOrganisationController().getUsers(
-          peas.getDomainFatherId(),
-          modelId, roleName);
+      final ComponentInst peas = getAdminService().getComponentInst(modelId);
+      userDetails = getOrganisationController().getUsers(peas.getDomainFatherId(), modelId, roleName);
     } catch (AdminException e) {
       throw new WorkflowException("UserManagerImpl.getUserInRole",
           "workflowEngine.EXP_UNKNOWN_ROLE", e);
     }
-
     if (userDetails == null) {
       userDetails = new UserDetail[0];
     }
-    return getUsers(userDetails);
+    return asUsers(userDetails);
   }
 
   @Override
   public User[] getUsersInGroup(String groupId) {
-    UserDetail[] userDetails =  OrganizationControllerProvider.getOrganisationController()
-        .getAllUsersOfGroup(groupId);
-
-    if (userDetails == null) {
-      userDetails = new UserDetail[0];
-    }
-    return getUsers(userDetails);
+    final UserDetail[] userDetails = getOrganisationController().getAllUsersOfGroup(groupId);
+    return asUsers(userDetails);
   }
 
   /**
    * returns the userDetail of a userId.
    */
   private UserDetail getUserDetail(String userId) throws WorkflowException {
-    UserDetail userDetail =  UserDetail.getById(userId);
+    final UserDetail userDetail =  UserDetail.getById(userId);
     if (userDetail == null) {
       throw new UnknownUserException("UserManagerImpl.getUserDetail", userId);
     }
@@ -128,17 +116,8 @@ public class UserManagerImpl implements UserManager {
   /**
    * Make a User[] from a UserDetail[].
    */
-  private User[] getUsers(UserDetail[] userDetails) {
-    UserImpl[] users = new UserImpl[userDetails.length];
-    for (int i = 0; i < userDetails.length; i++) {
-      users[i] = new UserImpl(userDetails[i]);
-      String[] groupIds =  OrganizationControllerProvider.getOrganisationController()
-          .getAllGroupIdsOfUser(userDetails[i].getId());
-      if (groupIds != null) {
-        users[i].setGroupIds(Arrays.asList(groupIds));
-      }
-    }
-    return users;
+  private User[] asUsers(UserDetail[] userDetails) {
+    return Stream.of(userDetails).map(UserImpl::new).toArray(User[]::new);
   }
 
   /**
@@ -152,20 +131,17 @@ public class UserManagerImpl implements UserManager {
   @Override
   public User getRelatedUser(User user, String relation, String peasId)
       throws WorkflowException {
-    UserSettings settings = UserSettingsService.get().get(user.getUserId(), peasId);
+    final UserSettings settings = UserSettingsService.get().get(user.getUserId(), peasId);
     if (settings == null) {
       throw new WorkflowException("UserManagerImpl.getRelatedUser",
           "workflowEngine.EXP_NO_USER_SETTING", "user id : " + user.getUserId());
     }
-
-    UserInfo info = settings.getUserInfo(relation);
+    final UserInfo info = settings.getUserInfo(relation);
     if (info == null) {
       throw new WorkflowException("UserManagerImpl.getRelatedUser",
           "workflowEngine.EXP_USERINFO_NOT_FOUND", "user id : "
           + user.getUserId() + ", info name : " + relation);
     }
-
     return getUser(info.getValue());
   }
-
 }

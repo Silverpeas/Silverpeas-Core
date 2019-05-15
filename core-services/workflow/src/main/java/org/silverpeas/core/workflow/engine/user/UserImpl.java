@@ -23,14 +23,17 @@
  */
 package org.silverpeas.core.workflow.engine.user;
 
-import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.workflow.api.user.User;
 
 import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 
 /**
  * A User implementation built upon the silverpeas user management system.
@@ -110,10 +113,9 @@ public final class UserImpl implements User {
 
   @Override
   public List<String> getGroupIds() {
+    if (groupIds == null) {
+      groupIds = asList(getOrganisationController().getAllGroupIdsOfUser(getUserId()));
+    }
     return groupIds;
-  }
-
-  public void setGroupIds(List<String> groupIds) {
-    this.groupIds = groupIds;
   }
 }
