@@ -36,6 +36,10 @@
     <script name="init.sql" type="sql"/>
   </current>
 
+  <upgrade fromVersion="005">
+    <script name="update_table.sql" type="sql"/>
+  </upgrade>
+
   <upgrade fromVersion="006">
     <script name="update_table.sql" type="sql"/>
   </upgrade>
