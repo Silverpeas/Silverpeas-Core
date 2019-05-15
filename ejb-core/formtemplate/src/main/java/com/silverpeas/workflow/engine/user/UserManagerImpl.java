@@ -184,11 +184,6 @@ public class UserManagerImpl implements UserManager {
     UserImpl[] users = new UserImpl[userDetails.length];
     for (int i = 0; i < userDetails.length; i++) {
       users[i] = new UserImpl(userDetails[i]);
-      String[] groupIds =  OrganisationControllerFactory.getOrganisationController()
-          .getAllGroupIdsOfUser(userDetails[i].getId());
-      if (groupIds != null) {
-        users[i].setGroupIds(Arrays.asList(groupIds));
-      }
     }
     return users;
   }

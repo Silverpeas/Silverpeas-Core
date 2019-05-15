@@ -69,6 +69,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * This class is one implementation of interface UpdatableProcessInstance. It uses Castor library
@@ -1460,8 +1461,10 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       boolean userGroupsMatch = false;
       if (StringUtil.isDefined(wkUser.getGroupId())) {
         // check if one of userGroups matches with working group
-        if (user.getGroupIds() != null) {
-          userGroupsMatch = user.getGroupIds().contains(wkUser.getGroupId());
+        List<String> groupIds =  Arrays.asList(OrganisationControllerFactory.getOrganisationController()
+            .getAllGroupIdsOfUser(wkUser.getId()));
+        if (groupIds != null) {
+          userGroupsMatch = groupIds.contains(wkUser.getGroupId());
         }
       }
 
