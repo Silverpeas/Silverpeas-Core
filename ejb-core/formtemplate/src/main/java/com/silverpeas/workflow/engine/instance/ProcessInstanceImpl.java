@@ -1461,11 +1461,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       boolean userGroupsMatch = false;
       if (StringUtil.isDefined(wkUser.getGroupId())) {
         // check if one of userGroups matches with working group
-        List<String> groupIds =  Arrays.asList(OrganisationControllerFactory.getOrganisationController()
-            .getAllGroupIdsOfUser(wkUser.getId()));
-        if (groupIds != null) {
-          userGroupsMatch = groupIds.contains(wkUser.getGroupId());
-        }
+        userGroupsMatch = user.getGroupIds().contains(wkUser.getGroupId());
       }
 
       SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getAssignedStates",

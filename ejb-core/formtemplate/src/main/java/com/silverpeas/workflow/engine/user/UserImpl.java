@@ -29,7 +29,10 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -120,10 +123,14 @@ public final class UserImpl implements User {
 
   @Override
   public List<String> getGroupIds() {
+    if (groupIds == null) {
+      String[] ids = OrganisationControllerFactory.getOrganisationController().getAllGroupIdsOfUser(getUserId());
+      if (ids != null) {
+        groupIds = Arrays.asList(ids);
+      } else {
+        groupIds = new ArrayList<String>();
+      }
+    }
     return groupIds;
-  }
-
-  public void setGroupIds(List<String> groupIds) {
-    this.groupIds = groupIds;
   }
 }

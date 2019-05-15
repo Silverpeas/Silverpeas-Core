@@ -69,11 +69,6 @@ public class UserManagerImpl implements UserManager {
   @Override
   public User getUser(String userId) throws WorkflowException {
     UserImpl user = new UserImpl(getUserDetail(userId));
-    String[] groupIds =  OrganisationControllerFactory.getOrganisationController()
-        .getAllGroupIdsOfUser(userId);
-    if (groupIds != null) {
-      user.setGroupIds(Arrays.asList(groupIds));
-    }
     return user;
   }
 
