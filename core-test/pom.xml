@@ -127,12 +127,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.forgerock.opendj</groupId>
+      <groupId>org.forgerock.ce.opendj</groupId>
       <artifactId>opendj-server</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.forgerock.commons</groupId>
+      <groupId>org.forgerock.ce.commons</groupId>
       <artifactId>json-resource-servlet</artifactId>
       <scope>compile</scope>
     </dependency>

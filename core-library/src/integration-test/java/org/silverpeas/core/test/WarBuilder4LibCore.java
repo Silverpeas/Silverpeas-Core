@@ -729,7 +729,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder with novell jldap
    */
   public WarBuilder4LibCore addLDAPFeatures() {
-    addMavenDependencies("com.novell.ldap:jldap", "org.forgerock.opendj:opendj-server");
+    addMavenDependencies("com.novell.ldap:jldap", "org.forgerock.ce.opendj:opendj-server");
     return this;
   }
 

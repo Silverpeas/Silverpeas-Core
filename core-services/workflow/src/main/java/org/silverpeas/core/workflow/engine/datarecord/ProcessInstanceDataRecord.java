@@ -49,10 +49,14 @@ public class ProcessInstanceDataRecord extends AbstractProcessInstanceDataRecord
    */
   public ProcessInstanceDataRecord(ProcessInstance instance, String role,
       String lang) throws WorkflowException {
-    this.instance = instance;
-    this.template = (ProcessInstanceRecordTemplate) instance.getProcessModel()
+    super(instance, role, lang);
+  }
+
+  @Override
+  protected ProcessInstanceTemplate getTemplate(final String role, final String lang)
+      throws WorkflowException {
+    return (ProcessInstanceRecordTemplate) instance.getProcessModel()
         .getAllDataTemplate(role, lang);
-    this.fields = template.buildFieldsArray();
   }
 
   /**
@@ -82,22 +86,6 @@ public class ProcessInstanceDataRecord extends AbstractProcessInstanceDataRecord
     return null;
   }
 
-  /**
-   * Returns the field at the index position in the record.
-   * @throw FormException when the fieldIndex is unknown.
-   */
-  @Override
-  public Field getField(int fieldIndex) throws FormException {
-    Field field = fields[fieldIndex];
-    if (field == null) {
-      ProcessInstanceFieldTemplate fieldTemplate = (ProcessInstanceFieldTemplate) template
-          .getFieldTemplate(fieldIndex);
-      field = fieldTemplate.getField(instance);
-      fields[fieldIndex] = field;
-    }
-    return field;
-  }
-
   @Override
   public String[] getFieldNames() {
     return template.getFieldNames();
@@ -107,20 +95,5 @@ public class ProcessInstanceDataRecord extends AbstractProcessInstanceDataRecord
   public ResourceReference getResourceReference() {
     return new ResourceReference(instance.getInstanceId(), instance.getModelId());
   }
-
-  /**
-   * The process instance whose data are managed by this data record.
-   */
-  final ProcessInstance instance;
-
-  /**
-   * The record template associated to this data record.
-   */
-  final ProcessInstanceRecordTemplate template;
-
-  /**
-   * The fields.
-   */
-  final Field[] fields;
 
 }

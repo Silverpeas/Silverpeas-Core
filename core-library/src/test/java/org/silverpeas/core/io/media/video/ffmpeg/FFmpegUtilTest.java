@@ -27,7 +27,6 @@ import org.apache.commons.exec.CommandLine;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.lang.SystemWrapper;
@@ -55,20 +54,15 @@ public class FFmpegUtilTest {
   }
 
   @Test
-  @Disabled
-  public void testIsActivated() {
-  }
-
-  @Test
   public void testBuildFFmpegThumbnailExtractorCommandLine() {
     System.setProperty(OS_KEY, "Linux");
     File inputFile = new File("/silverpeas/video/", "movie.mp4");
     File outputFile = new File("/silverpeas/viewer/", "thumb.jpg");
     CommandLine result =
-        FFmpegUtil.buildFFmpegThumbnailExtractorCommandLine(inputFile, outputFile, 30);
+        FFmpegUtil.buildFFmpegThumbnailExtractorCommandLine(inputFile, outputFile, 30d);
     assertThat(result, is(Matchers.notNullValue()));
     assertThat(String.join(" ", result.toStrings()),
-        is("ffmpeg -ss 30 -i " + inputFile.getAbsolutePath() + " -vframes 1 -vf scale=600:-1 " +
+        is("ffmpeg -ss 30.0 -i " + inputFile.getAbsolutePath() + " -vframes 1 -vf scale=600:-1 " +
             outputFile.getAbsolutePath()));
   }
 }

@@ -48,14 +48,14 @@ public class FFmpegUtil extends ExternalExecution {
   }
 
   static CommandLine buildFFmpegThumbnailExtractorCommandLine(File inputFile, File outputFile,
-      int seconds) {
+      double position) {
     Map<String, File> files = new HashMap<>(2);
     files.put("inputFile", inputFile);
     files.put("outputFile", outputFile);
     CommandLine commandLine = new CommandLine("ffmpeg");
     // Time of extract in seconds
     commandLine.addArgument("-ss", false);
-    commandLine.addArgument(Integer.toString(seconds), false);
+    commandLine.addArgument(Double.toString(position), false);
     commandLine.addArgument("-i", false);
     commandLine.addArgument("${inputFile}", false);
     // Only one frame
@@ -69,8 +69,19 @@ public class FFmpegUtil extends ExternalExecution {
     return commandLine;
   }
 
-  public static List<String> extractVideoThumbnail(File videoFile, File outputFile, int time) {
-    CommandLine cmd = buildFFmpegThumbnailExtractorCommandLine(videoFile, outputFile, time);
+  /**
+   * Extracts a frame of the specified video at the given position and stores the obtained image
+   * into the specified output file. The type of the image is get from the output file extension.
+   * @param videoFile the file containing the video.
+   * @param outputFile the file into which will be registered the extracted thumbnail.
+   * @param position the position of the frame in the video from which a thumbnail will be
+   * extracted. Note that in most formats it is not possible to seek exactly, so the extraction
+   * will seek to the closest seek point before the given position.
+   * @return a {@link List} of console lines written by the image extraction command.
+   */
+  public static List<String> extractVideoThumbnail(File videoFile, File outputFile,
+      double position) {
+    CommandLine cmd = buildFFmpegThumbnailExtractorCommandLine(videoFile, outputFile, position);
     try {
       return exec(cmd);
     } catch (ExternalExecutionException e) {

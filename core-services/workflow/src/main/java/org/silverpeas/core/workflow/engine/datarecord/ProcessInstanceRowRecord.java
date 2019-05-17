@@ -42,10 +42,13 @@ public class ProcessInstanceRowRecord extends AbstractProcessInstanceDataRecord 
    */
   public ProcessInstanceRowRecord(ProcessInstance instance, String role,
       String lang) throws WorkflowException {
-    this.instance = instance;
-    this.template = (ProcessInstanceRowTemplate) instance.getProcessModel()
-        .getRowTemplate(role, lang);
-    this.fields = template.buildFieldsArray();
+    super(instance, role, lang);
+  }
+
+  @Override
+  protected ProcessInstanceTemplate getTemplate(final String role, final String lang)
+      throws WorkflowException {
+    return (ProcessInstanceRowTemplate) instance.getProcessModel().getRowTemplate(role, lang);
   }
 
   /**
@@ -107,22 +110,6 @@ public class ProcessInstanceRowRecord extends AbstractProcessInstanceDataRecord 
     return getField(template.getFieldIndex(fieldName));
   }
 
-  /**
-   * Returns the field at the index position in the record.
-   * @throw FormException when the fieldIndex is unknown.
-   */
-  @Override
-  public Field getField(int fieldIndex) throws FormException {
-    Field field = fields[fieldIndex];
-    if (field == null) {
-      ProcessInstanceFieldTemplate fieldTemplate = (ProcessInstanceFieldTemplate) template
-          .getFieldTemplate(fieldIndex);
-      field = fieldTemplate.getField(instance);
-      fields[fieldIndex] = field;
-    }
-    return field;
-  }
-
   @Override
   public String[] getFieldNames() {
     return template.getFieldNames();
@@ -132,19 +119,6 @@ public class ProcessInstanceRowRecord extends AbstractProcessInstanceDataRecord 
     return instance;
   }
 
-  /**
-   * The process instance whose data are managed by this data record.
-   */
-  final ProcessInstance instance;
 
-  /**
-   * The record template associated to this data record.
-   */
-  final ProcessInstanceRowTemplate template;
-
-  /**
-   * The fields.
-   */
-  final Field[] fields;
 
 }

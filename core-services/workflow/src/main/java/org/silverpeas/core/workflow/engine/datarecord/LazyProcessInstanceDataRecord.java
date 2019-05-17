@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.workflow.engine.datarecord;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.FormFatalException;
@@ -61,10 +62,17 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
   /**
    * Builds the data record representation of a process instance.
    */
-  public LazyProcessInstanceDataRecord(ProcessInstance instance, String role, String lang) {
+  public LazyProcessInstanceDataRecord(ProcessInstance instance, String role, String lang)
+      throws WorkflowException {
+    super(instance, role, lang);
     this.instance = instance;
     this.role = role;
     this.lang = lang;
+  }
+
+  @Override
+  protected ProcessInstanceTemplate getTemplate(final String role, final String lang) {
+    return null;
   }
 
   /**
@@ -207,16 +215,16 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
 
   }
 
-  private String getFieldValue(String fieldName) throws WorkflowException, FormException {
-    String rawValue = null;
-    if (rawValues.get(fieldName) == null) {
-      String folderRecordSetName = instance.getProcessModel().getFolderRecordSetName();
-      rawValue = GenericRecordSetManager.getInstance().getRawValue(folderRecordSetName, instance.
-          getInstanceId(), fieldName);
-      rawValues.put(fieldName, rawValue);
-    }
-
-    return rawValue;
+  private String getFieldValue(String fieldName) {
+    return rawValues.computeIfAbsent(fieldName, k -> {
+      try {
+        String folderRecordSetName = instance.getProcessModel().getFolderRecordSetName();
+        return GenericRecordSetManager.getInstance().getRawValue(folderRecordSetName, instance.
+            getInstanceId(), fieldName);
+      } catch (Exception e) {
+        throw new SilverpeasRuntimeException(e);
+      }
+    });
   }
 
   /**
@@ -224,7 +232,7 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
    * @throw FormException when the fieldIndex is unknown.
    */
   @Override
-  public Field getField(int fieldIndex) throws FormException {
+  public Field getField(int fieldIndex) {
     return null;
   }
 

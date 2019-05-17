@@ -363,7 +363,7 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  static ElementContainer includeVueJs(final ElementContainer xhtml, String language) {
+  static ElementContainer includeVueJs(final ElementContainer xhtml) {
     xhtml.addElement(script(VUEJS_PATH + VUE_JS));
     xhtml.addElement(script(VUEJS_PATH + SILVERPEAS_VUE_JS));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "silverpeas-commons.js"));

@@ -27,7 +27,6 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.Column;
 import org.silverpeas.core.workflow.api.model.DataFolder;
@@ -45,7 +44,7 @@ import java.util.Iterator;
  * form.<formName>.<fieldItem> The actions : action.<actionName> action.<actionName>.label
  * action.<actionName>.date action.<actionName>.actor The users : participant.<participantName>
  */
-public class ProcessInstanceRecordTemplate implements RecordTemplate {
+public class ProcessInstanceRecordTemplate implements ProcessInstanceTemplate {
 
   private static final String PROCESS_INSTANCE_RECORD_TEMPLATE = "ProcessInstanceRecordTemplate";
   private static final String FORM_EXP_UNKNOWN_FIELD = "form.EXP_UNKNOWN_FIELD";
@@ -137,6 +136,7 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
    * Returns the Field index of the named field.
    * @throw FormException if the field name is unknown.
    */
+  @Override
   public int getFieldIndex(String fieldName) throws FormException {
     IndexedFieldTemplate indexed = (IndexedFieldTemplate) fields.get(fieldName);
 
@@ -157,17 +157,20 @@ public class ProcessInstanceRecordTemplate implements RecordTemplate {
   /**
    * Returns true if the data record is built on this template.
    */
+  @Override
   public boolean checkDataRecord(DataRecord record) {
     if (record instanceof ProcessInstanceDataRecord) {
       ProcessInstanceDataRecord instanceRecord = (ProcessInstanceDataRecord) record;
       return this == instanceRecord.template;
-    } else
+    } else {
       return false;
+    }
   }
 
   /**
    * Builds a Field[] with the correct size().
    */
+  @Override
   public Field[] buildFieldsArray() {
     return new Field[fields.size()];
   }

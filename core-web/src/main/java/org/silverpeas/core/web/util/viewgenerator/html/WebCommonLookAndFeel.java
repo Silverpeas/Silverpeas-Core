@@ -207,7 +207,7 @@ class WebCommonLookAndFeel {
         LookHelper.getLookHelper(controller.getHttpSession())).toString()).append(STR_NEW_LINE);
 
     code.append(includeAngular(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
-    code.append(includeVueJs(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
+    code.append(includeVueJs(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeNotifier(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeSelectize(new ElementContainer()).toString()).append(STR_NEW_LINE);

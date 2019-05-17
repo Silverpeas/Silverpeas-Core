@@ -1980,9 +1980,13 @@ public class ProcessInstanceImpl
     }
     if (template != null) {
       title = template.getTitle(role, lang);
-      LazyProcessInstanceDataRecord dataRecord =
-          new LazyProcessInstanceDataRecord(this, role, lang);
-      title = DataRecordUtil.applySubstitution(title, dataRecord, lang);
+      try {
+        LazyProcessInstanceDataRecord dataRecord =
+            new LazyProcessInstanceDataRecord(this, role, lang);
+        title = DataRecordUtil.applySubstitution(title, dataRecord, lang);
+      } catch (WorkflowException e) {
+        SilverLogger.getLogger(this).warn(e);
+      }
     }
 
     if (title == null) {
@@ -2026,7 +2030,7 @@ public class ProcessInstanceImpl
 
   @Override
   public boolean equals(Object obj) {
-    if (obj == null || !(obj instanceof ProcessInstanceImpl)) {
+    if (!(obj instanceof ProcessInstanceImpl)) {
       return false;
     }
     ProcessInstance instance = (ProcessInstance) obj;

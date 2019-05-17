@@ -59,7 +59,7 @@ public class FFmpegThumbnailExtractor implements VideoThumbnailExtractor {
       for (ThumbnailPeriod thumbPeriod : ThumbnailPeriod.ALL_VALIDS) {
         double timePeriod = thumbPeriod.getPercent() * duration.getTimeAsLong() / 1000;
         FFmpegUtil.extractVideoThumbnail(video,
-            new File(thumbnailDir, thumbPeriod.getFilename()), (int) timePeriod);
+            new File(thumbnailDir, thumbPeriod.getFilename()), timePeriod);
       }
     } else {
       SilverLogger.getLogger(this)

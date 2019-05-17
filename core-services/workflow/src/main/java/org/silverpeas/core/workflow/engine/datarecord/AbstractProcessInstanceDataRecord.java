@@ -27,13 +27,47 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class AbstractProcessInstanceDataRecord implements DataRecord {
+public abstract class AbstractProcessInstanceDataRecord implements DataRecord {
 
   private static final long serialVersionUID = 1L;
+
+  /**
+   * The fields.
+   */
+  protected final Field[] fields;
+
+  /**
+   * The process instance whose data are managed by this data record.
+   */
+  protected final ProcessInstance instance;
+
+  /**
+   * The record template associated to this data record.
+   */
+  protected final ProcessInstanceTemplate template;
+
+  /**
+   * Builds the data record representation of a process instance.
+   */
+  public AbstractProcessInstanceDataRecord(ProcessInstance instance, String role, String lang)
+      throws WorkflowException {
+    this.instance = instance;
+    this.template = getTemplate(role, lang);
+    if (this.template != null) {
+      this.fields = template.buildFieldsArray();
+    } else {
+      this.fields = new Field[0];
+    }
+  }
+
+  protected abstract ProcessInstanceTemplate getTemplate(final String role, final String lang)
+      throws WorkflowException;
 
   @Override
   public String getId() {
@@ -68,7 +102,14 @@ public class AbstractProcessInstanceDataRecord implements DataRecord {
 
   @Override
   public Field getField(int fieldIndex) throws FormException {
-    return null;
+    Field field = fields[fieldIndex];
+    if (field == null) {
+      ProcessInstanceFieldTemplate fieldTemplate =
+          (ProcessInstanceFieldTemplate) template.getFieldTemplate(fieldIndex);
+      field = fieldTemplate.getField(instance);
+      fields[fieldIndex] = field;
+    }
+    return field;
   }
 
   @Override

@@ -130,7 +130,7 @@ if (!Array.prototype.addElement) {
           var lastItemIndex = (this.length - 1);
           if (i !== lastItemIndex) {
             join += options.separator;
-          } else if (i === lastItemIndex) {
+          } else {
             join += options.lastSeparator;
           }
         }
@@ -277,7 +277,7 @@ if (!window.StringUtil) {
   window.StringUtil = new function() {
     var _self = this;
     this.isDefined = function(aString) {
-      return typeof aString === 'string' && aString != null && aString.isDefined();
+      return typeof aString === 'string' && aString.isDefined();
     };
     this.isNotDefined = function(aString) {
       return !_self.isDefined(aString);
@@ -1153,7 +1153,7 @@ if (typeof window.sp === 'undefined') {
     object : new function() {
       this.isEmpty = function (o) {
         for (var k in o) {
-          return false;
+          return k === undefined;
         }
         return true;
       };
@@ -1442,7 +1442,7 @@ if (typeof window.sp === 'undefined') {
         return sp.url.format(explodedUrl.base, explodedUrl.parameters);
       },
       format : function(url, params) {
-        var paramPart = url.indexOf('?') > 0 ? '&' : '?';
+        var paramPart = url.indexOf('?') >= 0 ? '&' : '?';
         if (params) {
           for (var key in params) {
             var paramList = params[key];
