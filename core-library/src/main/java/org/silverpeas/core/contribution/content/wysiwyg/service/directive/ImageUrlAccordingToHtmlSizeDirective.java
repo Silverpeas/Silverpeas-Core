@@ -27,13 +27,17 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerDirective;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.lang.Character.isDigit;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
@@ -58,38 +62,28 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
 
   @Override
   public String execute(final String wysiwygContent) {
-    String wysiwygToTransform = wysiwygContent != null ? wysiwygContent : "";
-    Source source = new Source(wysiwygToTransform);
-    List<Element> imgElements = source.getAllElements(HTMLElementName.IMG);
-    Map<String, String> replacements = new HashMap<>();
-    for (Element currentImg : imgElements) {
-
-      // The part that is not modified
-      String imgTagContent = currentImg.toString();
-
-      String src = currentImg.getAttributeValue("src");
-      if (src.contains("/attachmentId/") && !replacements.containsKey(imgTagContent)) {
-
-        // Computing the new src URL
-        // at first, removing the size from the URL
-        String newSrc = src.replaceFirst("(?i)/size/[0-9 x]+", "");
-
-        // then guessing the new src URL
-        String width = getWidth(currentImg);
-        String height = getHeight(currentImg);
-        StringBuilder sizeUrlPart = new StringBuilder().append(width).append("x").append(height);
-        if (sizeUrlPart.length() > 1) {
-          sizeUrlPart.insert(0, "/size/");
-          newSrc = newSrc.replaceFirst("/name/", sizeUrlPart + "/name/");
-        }
-
-        // Applying the new URL if necessary
-        if (!src.equals(newSrc)) {
-          replacements.put(imgTagContent, imgTagContent.replace(src, newSrc));
+    final String wysiwygToTransform = wysiwygContent != null ? wysiwygContent : "";
+    final Source source = new Source(wysiwygToTransform);
+    final List<Element> imgElements = source.getAllElements(HTMLElementName.IMG);
+    final Map<String, String> replacements = new HashMap<>();
+    if (!imgElements.isEmpty()) {
+      final List<SrcTranslator> translators = SrcTranslator.getAll();
+      for (Element currentImg : imgElements) {
+        final String imgTagContent = currentImg.toString();
+        final String src = currentImg.getAttributes().get("src").getValueSegment().toString();
+        if (!replacements.containsKey(imgTagContent)) {
+          final String width = getWidth(currentImg);
+          final String height = getHeight(currentImg);
+          translators
+              .stream()
+              .filter(s -> s.isCompliantUrl(src))
+              .findFirst()
+              .map(s -> s.translateUrl(src, width, height))
+              .filter(t -> !src.equals(t))
+              .ifPresent(t -> replacements.put(imgTagContent, imgTagContent.replace(src, t)));
         }
       }
     }
-
     String transformedWysiwygContent = wysiwygToTransform;
     for (Map.Entry<String, String> replacement : replacements.entrySet()) {
       transformedWysiwygContent =
@@ -133,5 +127,44 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
         .map(s -> isDigit(s.charAt(s.length() - 1)) ? s : s.substring(0, s.length() - 1))
         .findFirst()
         .orElse("");
+  }
+
+  /**
+   * This interface permits to the different provider of images to translate an URL with given
+   * height and width.
+   * <p>
+   * When {@link SrcTranslator} is called, the given MUST be an URL of an image.
+   * Implementations are not in charge to verify this fact.
+   * </p>
+   */
+  public interface SrcTranslator {
+
+    static List<SrcTranslator> getAll() {
+      final List<SrcTranslator> asList = ServiceProvider.getAllServices(SrcTranslator.class)
+          .stream()
+          .sorted(Comparator.comparing(o -> o.getClass().getSimpleName()))
+          .collect(Collectors.toList());
+      return Collections.unmodifiableList(asList);
+    }
+
+    /**
+     * Indicates if the given URL is compliant with the current implementation.
+     * @param url the URL to verify.
+     * @return true if compliant, false otherwise.
+     */
+    boolean isCompliantUrl(final String url);
+
+    /**
+     * Translates the given URL to a new one which is taking into account the given width and the
+     * given height.
+     * <p>
+     *   {@link #isCompliantUrl(String)} MUST be verified before calling this method.
+     * </p>
+     * @param url an URL as string.
+     * @param width a width which could be an empty string to represent no width.
+     * @param height a height which could be an empty string to represent no height.
+     * @return the translated URL as string.
+     */
+    String translateUrl(final String url, final String width, final String height);
   }
 }

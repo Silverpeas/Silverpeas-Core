@@ -29,23 +29,30 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.SimpleDocumentUrlToDataSourceScanner;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.content.LinkUrlDataSource;
+import org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerTest;
 import org.silverpeas.core.io.file.AttachmentUrlLinkProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBean;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUtil;
 
+import javax.activation.FileDataSource;
+import javax.activation.URLDataSource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -56,7 +63,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @EnableSilverTestEnv
-public class MailContentProcessTest {
+class MailContentProcessTest {
 
   private static final String ODT_NAME = "LibreOffice.odt";
   private static final String IMAGE_NAME = "image-test.jpg";
@@ -68,6 +75,10 @@ public class MailContentProcessTest {
 
   private static final String ODT_ATTACHMENT_ID = "72f56ba9-b089-40c4-b16c-255e93658259";
 
+  private static final String IMAGE_CKEDITOR_LINK =
+      "/silverpeas/wysiwyg/jsp/ckeditor/plugins/smiley/images/kiss.png";
+  private static final String IMAGE_GALLERY_LINK =
+      "/silverpeas/GalleryInWysiwyg/dummy?ImageId=187&amp;ComponentId=gallery4&amp;UseOriginal=false";
   private static final String IMAGE_ATTACHMENT_LINK =
       "/silverpeas/attached_file/componentId/infoLetter175/attachmentId/d07411cc-19af-49f8-af57" +
           "-16fc9fabf318/lang/fr/name/Aikido16.jpg";
@@ -86,9 +97,18 @@ public class MailContentProcessTest {
   private static final String IMAGE_ATTACHMENT_LINK_BIS =
       "http://www.toto.fr/silverpeas/File/d07411cc-19af-49f8-af57-16fc9fabf318-bis";
 
+  @TestManagedBean
+  private MailContentProcess.WysiwygCkeditorMediaLinkUrlToDataSourceScanner ckScanner;
+
+  @TestManagedBean
+  private SimpleDocumentUrlToDataSourceScanner attScanner;
+
+  @TestManagedBean
+  private WysiwygContentTransformerTest.GalleryLinkUrlDataSourceScanner4Test gallScanner;
+
   @SuppressWarnings("unchecked")
   @BeforeEach
-  public void setup() throws Exception {
+  void setup() throws Exception {
     originalOdt = new File(getClass().getResource("/" + ODT_NAME).getPath());
     assertThat(originalOdt.exists(), is(true));
     originalImage = new File(getClass().getResource("/" + IMAGE_NAME).getPath());
@@ -139,12 +159,13 @@ public class MailContentProcessTest {
     when(mockHttpServletRequest.getScheme()).thenReturn("http");
     when(mockHttpServletRequest.getServerName()).thenReturn("www.unit-test-silverpeas.org");
     when(mockHttpServletRequest.getServerPort()).thenReturn(80);
+    when(mockHttpServletRequest.getLocalPort()).thenReturn(8000);
     URLUtil.setCurrentServerUrl(mockHttpServletRequest);
   }
 
   @SuppressWarnings("unchecked")
   @AfterEach
-  public void destroy() throws Exception {
+  void destroy() throws Exception {
     FileUtils.deleteQuietly(originalImageWithResize100x.getParentFile());
     FileUtils.deleteQuietly(originalImageWithResize100x100.getParentFile());
 
@@ -155,7 +176,7 @@ public class MailContentProcessTest {
   }
 
   @Test
-  public void toMailContent() throws Exception {
+  void toMailContent() throws Exception {
     MailContentProcess mailContentProcess = new MailContentProcess();
     String wysiwygContentSource = getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt");
 
@@ -167,18 +188,28 @@ public class MailContentProcessTest {
   }
 
   @Test
-  public void extractAttachmentsByLinks() {
-    MailContentProcess mailContentProcess = new MailContentProcess();
+  void extractAllLinks() {
     String wysiwygContentSource = getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt");
 
-    List<String> attachmentLinks =
-        mailContentProcess.extractAllLinksOfReferencedAttachments(wysiwygContentSource);
+    List<LinkUrlDataSource> attachmentLinks = LinkUrlDataSourceScanner.getAll()
+        .stream()
+        .flatMap(u -> u.scanHtml(wysiwygContentSource).stream())
+        .collect(Collectors.toList());
 
-    assertThat(attachmentLinks.size(), is(6));
-    assertThat(attachmentLinks,
-        contains(IMAGE_ATTACHMENT_LINK, IMAGE_ATTACHMENT_LINK_WITH_SIZE_100x,
+    assertThat(attachmentLinks.size(), is(8));
+    assertThat(attachmentLinks.stream().map(LinkUrlDataSource::getLinkUrl).collect(Collectors.toList()),
+        contains(IMAGE_GALLERY_LINK, IMAGE_ATTACHMENT_LINK, IMAGE_ATTACHMENT_LINK_WITH_SIZE_100x,
             IMAGE_ATTACHMENT_LINK_WITH_SIZE_100x100, LINK_ATTACHMENT_LINK_BIS, LINK_ATTACHMENT_LINK,
-            IMAGE_ATTACHMENT_LINK_BIS));
+            IMAGE_ATTACHMENT_LINK_BIS, IMAGE_CKEDITOR_LINK));
+    assertThat(attachmentLinks.stream()
+                              .map(LinkUrlDataSource::getDataSource)
+                              .filter(d -> d instanceof FileDataSource)
+                              .allMatch(d -> ((FileDataSource)d).getFile().exists()), is(true));
+    assertThat(attachmentLinks.stream()
+                              .map(LinkUrlDataSource::getDataSource)
+                              .filter(d -> d instanceof URLDataSource)
+                              .allMatch(d -> ((URLDataSource)d).getURL().toString().startsWith("http://localhost:8000")), is(true));
+
   }
 
   /*

@@ -398,8 +398,11 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
         all.add(bean);
         when(TestBeanContainer.getMockedBeanContainer()
             .getAllBeansByType(type, qualifiers)).thenReturn(all);
-        when(TestBeanContainer.getMockedBeanContainer().getBeanByType(type, qualifiers)).thenThrow(
-            new AmbiguousResolutionException("A bean of type " + type + " already exist!"));
+        if (existing.size() == 1) {
+          when(TestBeanContainer.getMockedBeanContainer().getBeanByType(type, qualifiers))
+              .thenThrow(
+                  new AmbiguousResolutionException("A bean of type " + type + " already exist!"));
+        }
       }
     } else {
       when(TestBeanContainer.getMockedBeanContainer().getBeanByType(type, qualifiers)).thenReturn(
