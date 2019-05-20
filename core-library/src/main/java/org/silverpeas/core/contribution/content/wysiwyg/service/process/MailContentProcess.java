@@ -24,27 +24,33 @@
 package org.silverpeas.core.contribution.content.wysiwyg.service.process;
 
 import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.contribution.content.LinkUrlDataSource;
+import org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerProcess;
-import org.silverpeas.core.io.file.SilverpeasFile;
-import org.silverpeas.core.io.file.SilverpeasFileProvider;
+import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.activation.URLDataSource;
+import javax.inject.Singleton;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.MimeBodyPart;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexps;
+import static java.util.Collections.singletonList;
+import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.core.util.StringDataExtractor.from;
+import static org.silverpeas.core.util.file.FileUtil.isImage;
 
 /**
  * Transforms all referenced content links in order to be handled in mail sending. A content can be
@@ -54,77 +60,76 @@ import static org.silverpeas.core.util.StringDataExtractor.from;
 public class MailContentProcess
     implements WysiwygContentTransformerProcess<MailContentProcess.MailResult> {
 
-  private static final List<Pattern> CKEDITOR_LINK_PATTERNS =
-      Arrays.asList(Pattern.compile("(?i)=\"([^\"]*/wysiwyg/jsp/ckeditor/[^\"]+)"));
-
-  private static final List<Pattern> ATTACHMENT_LINK_PATTERNS = Arrays
-      .asList(Pattern.compile("(?i)=\"([^\"]*/attachmentId/[a-z\\-0-9]+/[^\"]+)"),
-          Pattern.compile("(?i)=\"([^\"]*/File/[a-z\\-0-9]+[^\"]*)"));
-
-  private static final List<Pattern> GALLERY_CONTENT_LINK_PATTERNS =
-      Arrays.asList(Pattern.compile("(?i)=\"([^\"]*/GalleryInWysiwyg/[^\"]+)"));
-
   @Override
   public MailResult execute(final String wysiwygContent) throws SilverpeasException {
     try {
-      String transformedWysiwygContent = wysiwygContent;
-      List<MimeBodyPart> bodyParts = new ArrayList<>();
-      int idCount = 0;
-
-      // Handling CKEditor and Gallery links
-      List<Pattern> linkPatterns = new ArrayList<>(CKEDITOR_LINK_PATTERNS);
-      linkPatterns.addAll(GALLERY_CONTENT_LINK_PATTERNS);
-      for (String link : from(transformedWysiwygContent).withDirectives(regexps(linkPatterns, 1)).extract()) {
-
-        String cid = "link-content-" + (idCount++);
-
-        // CID links
-        transformedWysiwygContent = replaceLinkByCid(transformedWysiwygContent, link, cid);
-
-        // CID references
-        MimeBodyPart mbp = new MimeBodyPart();
-        String linkForDataSource = link;
-        if (!linkForDataSource.toLowerCase().startsWith(URLUtil.getCurrentServerURL().toLowerCase())) {
-          linkForDataSource = (URLUtil.getCurrentServerURL() + link);
-        }
-        linkForDataSource = linkForDataSource.replace("&amp;", "&");
-
-        URLDataSource uds = new URLDataSource(new URL(linkForDataSource));
-        mbp.setDataHandler(new DataHandler(uds));
-        mbp.setHeader("Content-ID", "<" + cid + ">");
-        bodyParts.add(mbp);
-      }
-
-      // Handling attachments
-      Map<String, String> attachmentCidCache = new HashMap<>();
-      for (String attachmentUrlLink : extractAllLinksOfReferencedAttachments(
-          transformedWysiwygContent)) {
-
-        SilverpeasFile attachmentFile = SilverpeasFileProvider.getFile(attachmentUrlLink);
-        if (attachmentFile.exists() && attachmentFile.isImage()) {
-          String cid = attachmentCidCache.get(attachmentUrlLink);
-          if (cid == null) {
-            cid = "attachment-content-" + (idCount++);
-            attachmentCidCache.put(attachmentUrlLink, cid);
-          }
-
-          // CID links
-          transformedWysiwygContent =
-              replaceLinkByCid(transformedWysiwygContent, attachmentUrlLink, cid);
-
-          // CID references
-          MimeBodyPart mbp = new MimeBodyPart();
-          FileDataSource fds = new FileDataSource(attachmentFile);
-          mbp.setDataHandler(new DataHandler(fds));
-          mbp.setHeader("Content-ID", "<" + cid + ">");
-          bodyParts.add(mbp);
-        }
-      }
-
-      // Returning the result of complete parsing
-      return new MailResult(transformedWysiwygContent, bodyParts);
+      final List<MimeBodyPart> bodyParts = new ArrayList<>();
+      final Map<String, Optional<String>> mailAttachmentCidCache = new HashMap<>();
+      final Mutable<String> transformedWysiwygContent = Mutable.of(wysiwygContent);
+      final IdentifierGenerator idCount = new IdentifierGenerator();
+      LinkUrlDataSourceScanner.getAll().forEach(u ->
+        u.scanHtml(transformedWysiwygContent.get())
+          .forEach(d -> mailAttachmentCidCache.computeIfAbsent(d.getLinkUrl(), l -> {
+            final Mutable<String> cid = generateCid(idCount, d);
+            cid.ifPresent(c -> {
+              try {
+                // CID references
+                final MimeBodyPart mbp = new MimeBodyPart();
+                mbp.setDataHandler(new DataHandler(d.getDataSource()));
+                mbp.setHeader("Content-ID", "<" + c + ">");
+                bodyParts.add(mbp);
+                // CID links
+                final String previousContent = transformedWysiwygContent.get();
+                transformedWysiwygContent.set(replaceLinkByCid(previousContent, l, c));
+              } catch (MessagingException me) {
+                throw new SilverpeasRuntimeException(me);
+              }
+            });
+            return Optional.ofNullable(cid.orElse(null));
+          })));
+      return new MailResult(transformedWysiwygContent.get(), bodyParts);
     } catch (Exception e) {
       throw new SilverpeasException(e);
+    }
+  }
+
+  private Mutable<String> generateCid(final IdentifierGenerator idCount, final LinkUrlDataSource d) {
+    final Mutable<String> cid = Mutable.empty();
+    if (d.getDataSource() instanceof FileDataSource) {
+      final FileDataSource fileDataSource = (FileDataSource) d.getDataSource();
+      if (fileDataSource.getFile().exists() && isImage(fileDataSource.getFile().getPath())) {
+        cid.set(idCount.newOne());
+      }
+    } else {
+      cid.set(idCount.newOne());
+    }
+    return cid;
+  }
+
+  @Singleton
+  public static class WysiwygCkeditorMediaLinkUrlToDataSourceScanner
+      implements LinkUrlDataSourceScanner {
+
+    private static final Pattern CKEDITOR_LINK_PATTERNS =
+        Pattern.compile("(?i)=\"([^\"]*/wysiwyg/jsp/ckeditor/[^\"]+)");
+
+    @Override
+    public List<LinkUrlDataSource> scanHtml(final String htmlContent) {
+      final List<LinkUrlDataSource> result = new ArrayList<>();
+      from(htmlContent).withDirectives(singletonList(regexp(CKEDITOR_LINK_PATTERNS, 1))).extract().forEach(l -> {
+        String linkForDataSource = l;
+        if (linkForDataSource.trim().toLowerCase().startsWith("/")) {
+          linkForDataSource = URLUtil.getCurrentLocalServerURL() + l;
+        }
+        linkForDataSource = linkForDataSource.replace("&amp;", "&");
+        try {
+          final URL url = new URL(linkForDataSource);
+          result.add(new LinkUrlDataSource(l, () -> new URLDataSource(url)));
+        } catch (MalformedURLException e) {
+          throw new SilverpeasRuntimeException(e);
+        }
+      });
+      return result;
     }
   }
 
@@ -171,11 +176,17 @@ public class MailContentProcess
   }
 
   /**
-   * Extracts from a WYSIWYG content all the links of referenced attachments.
-   * @param wysiwygContent a WYSIWYG content.
-   * @return a link list of referenced attachments, empty if no attachment detected.
+   * Generates identifiers for mail content attachments.
    */
-  List<String> extractAllLinksOfReferencedAttachments(final String wysiwygContent) {
-    return from(wysiwygContent).withDirectives(regexps(ATTACHMENT_LINK_PATTERNS, 1)).extract();
+  private static class IdentifierGenerator {
+    private int count = 0;
+
+    /**
+     * Generates a new identifier.
+     * @return a string.
+     */
+    String newOne() {
+      return "mail-content-attachment-" + (count++);
+    }
   }
 }
