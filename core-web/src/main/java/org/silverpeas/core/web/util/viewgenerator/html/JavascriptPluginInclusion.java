@@ -490,6 +490,7 @@ public class JavascriptPluginInclusion {
         .produce()));
     xhtml.addElement(scriptContent(generateDynamicPluginLoadingPromise(USERNOTIFICATION,
         JAVASCRIPT_PATH + SILVERPEAS_USER_NOTIFICATION_JS)));
+    xhtml.addElement(script(VUEJS_COMPONENT_PATH + "notification/silverpeas-user-notifications.js"));
     return xhtml;
   }
 

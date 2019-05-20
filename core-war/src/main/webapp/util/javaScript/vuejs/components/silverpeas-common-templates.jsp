@@ -89,20 +89,35 @@
 </silverpeas-component-template>
 
 <fmt:message key="GML.none" var="noneLabel"/>
+<fmt:message key="GML.noneF" var="noneLabelFemale"/>
 
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="list">
   <div class="silverpeas-list-container">
     <div v-sp-init>
       {{addMessages({
-      noItemLabel : '${noneLabel}'
+      noItemLabel : '${noneLabel}',
+      noItemLabelFemale : '${noneLabelFemale}'
       })}}
     </div>
     <slot name="before"></slot>
-    <ul v-if="isData" class="silverpeas-list">
-      <slot></slot>
-    </ul>
-    <span v-if="!isData && !$slots.noItem" v-html="noItemMessage"></span>
+    <template v-if="isData">
+      <template v-if="withFadeTransition">
+        <transition-group name="normal-fade" tag="ul" class="silverpeas-list" appear
+                          v-on:before-enter="$emit('before-enter',$event)"
+                          v-on:enter="$emit('enter',$event)"
+                          v-on:after-enter="$emit('after-enter',$event)"
+                          v-on:before-leave="$emit('before-leave',$event)"
+                          v-on:leave="$emit('leave',$event)"
+                          v-on:after-leave="$emit('after-leave',$event)">
+          <slot></slot>
+        </transition-group>
+      </template>
+      <ul v-else class="silverpeas-list">
+        <slot></slot>
+      </ul>
+    </template>
+    <div class="no-item" v-if="!isData && !$slots.noItem" v-html="noItemMessage"></div>
     <slot v-if="!isData" name="noItem"></slot>
     <slot name="after"></slot>
   </div>
@@ -112,11 +127,11 @@
 <silverpeas-component-template name="list-item">
   <li class="silverpeas-list-item">
     <slot name="header"></slot>
-    <div class="body">
-      <div class="content">
+    <div class="silverpeas-list-item-body">
+      <div class="silverpeas-list-item-content">
         <slot></slot>
       </div>
-      <div v-if="isActions" class="actions">
+      <div v-if="$slots.actions" class="silverpeas-list-item-actions">
         <silverpeas-button-pane>
           <slot name="actions"></slot>
         </silverpeas-button-pane>
@@ -166,6 +181,23 @@
       <slot></slot>
     </div>
   </div>
+</silverpeas-component-template>
+
+<!-- ########################################################################################### -->
+<silverpeas-component-template name="attached-popin">
+  <silverpeas-fade-transition v-bind:duration-type="fadeDurationType">
+    <div class="silverpeas-attached-popin"
+         ref="popin"
+         v-bind:style="{'minWidth':minWidth+'px','maxWidth':maxWidth+'px','minHeight':minHeight+'px','maxHeight':maxHeight+'px'}">
+      <div v-if="$slots.header" class="silverpeas-attached-popin-header"><slot name="header"></slot></div>
+      <div class="silverpeas-attached-popin-content" ref="content"><slot></slot></div>
+    </div>
+  </silverpeas-fade-transition>
+</silverpeas-component-template>
+
+<!-- ########################################################################################### -->
+<silverpeas-component-template name="link">
+  <a href="javascript:void(0)" v-bind:alt="help" v-on:click="hideTitle"><slot></slot></a>
 </silverpeas-component-template>
 
 <!-- ########################################################################################### -->

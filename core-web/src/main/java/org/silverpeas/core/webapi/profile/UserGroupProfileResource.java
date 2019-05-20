@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.Group;
@@ -304,22 +303,5 @@ public class UserGroupProfileResource extends RESTWebService {
 
   private UserGroupProfileEntity asWebEntity(Group group, URI groupUri) {
     return UserGroupProfileEntity.fromGroup(group).withAsUri(groupUri);
-  }
-
-  private PaginationPage fromPage(String page) {
-    PaginationPage paginationPage = null;
-    if (page != null && !page.isEmpty()) {
-      String[] pageAttributes = page.split(";");
-      try {
-        int nth = Integer.parseInt(pageAttributes[0]);
-        int count = Integer.parseInt(pageAttributes[1]);
-        if (count > 0) {
-          paginationPage = new PaginationPage(nth, count);
-        }
-      } catch (NumberFormatException ex) {
-        // Nothing to do here
-      }
-    }
-    return paginationPage;
   }
 }

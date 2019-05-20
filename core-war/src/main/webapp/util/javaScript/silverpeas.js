@@ -104,7 +104,7 @@ if (!Array.prototype.addElement) {
     }
   });
   /**
-   * Permits to join elements of an array vy applying some rules given by options parameter.
+   * Permits to join elements of an array by applying some rules given by options parameter.
    * Options can be directly a string representing a separator which is inserted between each
    * element of the array.
    * If options is not defined, by default the separator is a space.
@@ -219,6 +219,13 @@ if (!String.prototype.noHTML) {
         .replace(/&/g, '&amp;')
         .replace(/>/g, '&gt;')
         .replace(/</g, '&lt;');
+  };
+}
+
+if (!String.prototype.asInteger) {
+  String.prototype.asInteger = function(defaultValue) {
+    var value = parseInt(this, 10);
+    return isNaN(value) ? defaultValue : value;
   };
 }
 
@@ -854,7 +861,7 @@ if (typeof window.silverpeasAjax === 'undefined') {
       } else {
 
         // little trick for old browsers
-        var options = {
+        var jqOptions = {
           url : params.url,
           type : params.method,
           cache : false,
@@ -876,12 +883,12 @@ if (typeof window.silverpeasAjax === 'undefined') {
 
         // Adding settings
         if (params.data) {
-          options.data = jQuery.toJSON(params.data);
-          options.contentType = "application/json";
+          jqOptions.data = jQuery.toJSON(params.data);
+          jqOptions.contentType = "application/json";
         }
 
         // Ajax request
-        jQuery.ajax(options);
+        jQuery.ajax(jqOptions);
       }
     });
   };
@@ -1184,8 +1191,8 @@ if (typeof window.sp === 'undefined') {
             __keyValueMap.sort(function(a, b) {
               return ((a < b) ? -1 : ((a > b) ? 1 : 0));
             });
-            __keyValueMap.forEach(function(attrName) {
-              __value[attrName] = __keyValueMap[attrName];
+            __keyValueMap.forEach(function(attName) {
+              __value[attName] = __keyValueMap[attName];
             });
           }
         }
@@ -1511,6 +1518,24 @@ if (typeof window.sp === 'undefined') {
       isHidden: function (element) {
         return !sp.element.isVisible(element);
       },
+      getRealStyleValues : function(el, styleNames, depthComputationLimit, depthComputation) {
+        depthComputationLimit = depthComputationLimit ? depthComputationLimit : 0;
+        depthComputation = depthComputation ? depthComputation : 0;
+        var values = {};
+        var styles = getComputedStyle(el);
+        styleNames.forEach(function(name) {
+          values[name] = styles[name].asInteger(0);
+        });
+        if (depthComputation < depthComputationLimit && depthComputation < 10) {
+          for(var i = 0 ; i < el.children.length ; i++) {
+            var childValues = sp.element.getRealStyleValues(el.children[i], styleNames, depthComputationLimit, depthComputation + 1);
+            styleNames.forEach(function(name) {
+              values[name] = Math.max(values[name], childValues[name]);
+            });
+          }
+        }
+        return values;
+      },
       offset: function(elementOrCssSelector, intoElement) {
         var result = {top : 0, left : 0};
         var into = typeof intoElement !== 'undefined' ? intoElement : document.body;
@@ -1610,6 +1635,106 @@ if (typeof window.sp === 'undefined') {
         } else {
           $jqView[0].scrollTop = scrollTop;
         }
+      },
+      createPositionManager : function(attachedElement, toElement) {
+        return new function() {
+          var options = {};
+          this.setOptions = function(newOptions) {
+            options = extendsObject({
+              depthComputation : 1,
+              anchorPoint : {
+                ofBase : 'bottom-left',
+                ofAttached : 'top-left'
+              },
+              viewport : document.body,
+              flip : true
+            },newOptions);
+            options.orig = extendsObject({}, options);
+          };
+          this.setOptions({});
+          this.position = function(nbAttempts) {
+            if (!nbAttempts) {
+              nbAttempts = 1;
+              extendsObject(options, options.orig);
+            }
+            var baseTop = toElement.offsetTop;
+            var baseLeft = toElement.offsetLeft;
+            var baseHeight = toElement.offsetHeight;
+            var baseWidth = toElement.offsetWidth;
+            var attachedStyles = sp.element.getRealStyleValues(attachedElement, ['width', 'maxWidth', 'height', 'maxHeight'], 1);
+            var attachedHeight = Math.max(attachedElement.offsetHeight, attachedStyles.height, attachedStyles.maxHeight);
+            var attachedWidth = Math.max(attachedElement.offsetWidth, attachedStyles.width, attachedStyles.maxWidth);
+            var top = 0;
+            var left = 0;
+            if (options.anchorPoint.ofBase.startsWith('top')) {
+              top = baseTop;
+            } else if (options.anchorPoint.ofBase.startsWith('center')) {
+              top = baseTop + (baseHeight / 2);
+            } else if (options.anchorPoint.ofBase.startsWith('bottom')) {
+              top = baseTop + baseHeight;
+            }
+            if (options.anchorPoint.ofAttached.startsWith('center')) {
+              top -= (attachedHeight / 2);
+            } else if (options.anchorPoint.ofAttached.startsWith('bottom')) {
+              top -= attachedHeight;
+            }
+
+            if (options.anchorPoint.ofBase.endsWith('left')) {
+              left = baseLeft;
+            } else if (options.anchorPoint.ofBase.endsWith('center')) {
+              left = baseLeft + (baseWidth / 2);
+            } else if (options.anchorPoint.ofBase.endsWith('right')) {
+              left = baseLeft + baseWidth;
+            }
+            if (options.anchorPoint.ofAttached.endsWith('center')) {
+              left -= (attachedWidth / 2);
+            } else if (options.anchorPoint.ofAttached.endsWith('right')) {
+              left -= attachedWidth;
+            }
+            attachedElement.style.top = top + 'px';
+            attachedElement.style.left = left + 'px';
+            if (nbAttempts < 4 && options.flip) {
+              var viewportHeight = options.viewport.offsetHeight;
+              var viewportWidth = options.viewport.offsetWidth;
+              var offset = sp.element.offset(attachedElement, options.viewport);
+              var flipHorizontally = offset.left < 0 || offset.left > viewportWidth;
+              var flipVertically = offset.top < 0 || offset.top > viewportHeight;
+              if (flipHorizontally) {
+                __flipHorizontally();
+              }
+              if (flipVertically) {
+                __flipVertically();
+              }
+              if (flipHorizontally || flipVertically) {
+                this.position(nbAttempts + 1);
+              }
+            }
+          };
+          var __flipHorizontally = function() {
+            if (options.anchorPoint.ofBase.endsWith('right')) {
+              options.anchorPoint.ofBase = options.anchorPoint.ofBase.replace('-right', '-left');
+            } else if (options.anchorPoint.ofBase.endsWith('left')) {
+              options.anchorPoint.ofBase = options.anchorPoint.ofBase.replace('-left', '-right');
+            }
+            if (options.anchorPoint.ofAttached.endsWith('right')) {
+              options.anchorPoint.ofAttached = options.anchorPoint.ofAttached.replace('-right', '-left');
+            } else if (options.anchorPoint.ofAttached.endsWith('left')) {
+              options.anchorPoint.ofAttached = options.anchorPoint.ofAttached.replace('-left', '-right');
+            }
+          };
+          var __flipVertically = function() {
+            if (options.anchorPoint.ofBase.startsWith('top')) {
+              options.anchorPoint.ofBase = options.anchorPoint.ofBase.replace('top-', 'bottom-');
+            } else if (options.anchorPoint.ofBase.startsWith('bottom')) {
+              options.anchorPoint.ofBase = options.anchorPoint.ofBase.replace('bottom-', 'top-');
+            }
+            if (options.anchorPoint.ofAttached.startsWith('top')) {
+              options.anchorPoint.ofAttached = options.anchorPoint.ofAttached.replace('top-', 'bottom-');
+            } else if (options.anchorPoint.ofAttached.startsWith('bottom')) {
+              options.anchorPoint.ofAttached = options.anchorPoint.ofAttached.replace('bottom-', 'top-');
+            }
+          };
+        };
       }
     },
     selection : {
@@ -1661,18 +1786,18 @@ if (typeof window.sp === 'undefined') {
               }
             }
             checkboxesToHandle.push(checkboxReference);
-            checkboxesToHandle.forEach(function(checkbox) {
-              checkbox.checked = checkboxReference.checked;
-              if (checkbox.checked) {
-                if (__selectedAtStart.indexOf(checkbox.value) < 0) {
-                  __selected.addElement(checkbox.value);
+            checkboxesToHandle.forEach(function(ckbox) {
+              ckbox.checked = checkboxReference.checked;
+              if (ckbox.checked) {
+                if (__selectedAtStart.indexOf(ckbox.value) < 0) {
+                  __selected.addElement(ckbox.value);
                 }
-                __unselected.removeElement(checkbox.value);
+                __unselected.removeElement(ckbox.value);
               } else {
-                if (__selectedAtStart.indexOf(checkbox.value) >= 0) {
-                  __unselected.addElement(checkbox.value);
+                if (__selectedAtStart.indexOf(ckbox.value) >= 0) {
+                  __unselected.addElement(ckbox.value);
                 }
-                __selected.removeElement(checkbox.value);
+                __selected.removeElement(ckbox.value);
               }
             });
           };
@@ -1727,15 +1852,15 @@ if (typeof window.sp === 'undefined') {
         }
         var $container = jQuery(containerCssSelector);
         var __ajaxRequest = function(url, forcedParams) {
-          var options = extendsObject({}, params, forcedParams);
+          var __options = extendsObject({}, params, forcedParams);
           var ajaxRequest = sp.ajaxRequest(url);
           ajaxRequest.withParam("ajaxRequest", true);
-          if (typeof options.before === 'function') {
-            options.before(ajaxRequest);
+          if (typeof __options.before === 'function') {
+            __options.before(ajaxRequest);
           }
           return ajaxRequest.send().then(function(request) {
-            if (typeof options.success === 'function') {
-              var result = options.success(request);
+            if (typeof __options.success === 'function') {
+              var result = __options.success(request);
               if (sp.promise.isOne(result)) {
                 return result;
               }

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -473,19 +472,6 @@ public class UserProfileResource extends RESTWebService {
     } else {
       return getUserFullById(identifier);
     }
-  }
-
-  private PaginationPage fromPage(String page) {
-    PaginationPage paginationPage = null;
-    if (page != null && !page.isEmpty()) {
-      String[] pageAttributes = page.split(";");
-      int nth = Integer.valueOf(pageAttributes[0]);
-      int count = Integer.valueOf(pageAttributes[1]);
-      if (count > 0) {
-        paginationPage = new PaginationPage(nth, count);
-      }
-    }
-    return paginationPage;
   }
 
   private boolean isCurrentUser(String identifier) {

@@ -51,7 +51,7 @@ a {
 }
 
 a:hover {
- /* color: #666699;*/
+  /* color: #666699;*/
 }
 
 input {
@@ -327,12 +327,12 @@ Definition des class de style Silverpeas
 }
 
 #agenda .grille {
-    background-color: #CCC;
+  background-color: #CCC;
 }
 
 #agenda .intfdcolor {
   background-color:#FFF;
-} 
+}
 
 #agenda #agendaView {
   float: left;
@@ -432,7 +432,7 @@ Definition des class de style Silverpeas
   font-weight: bold;
   color: #000
 }
-  
+
 .txtnav3 {
   font-size: 1em;
   color: #666;
@@ -477,21 +477,21 @@ Definition des class de style Silverpeas
 }
 
 #outilsAdmin {
-	position:absolute;
-	right:1em;
-	top:0;
+  position: absolute;
+  right: 1em;
+  top: 0;
 }
 
 #outilsAdmin a{
-	padding-right:2em;
-	line-height: 30px;
+  padding-right: 2em;
+  line-height: 30px;
 }
 
 #outilsAdmin a img {
-	margin-right:0.5em;
+  margin-right: 0.5em;
 }
 #outilsAdmin a span{
-	display:none;
+  display: none;
 }
 
 #sp-admin-layout-header-part {
@@ -500,97 +500,97 @@ Definition des class de style Silverpeas
 }
 
 .sp_menuAdmin{
-	list-style-type:none;
-	padding:0;
-	margin:0;
-	background-color:#f7f7f7;
-	border-bottom:1px solid #dcdcdc;
-	height:46px;
-	line-height:46px;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #dcdcdc;
+  height: 46px;
+  line-height: 46px;
 }
 
 .sp_menuAdmin li{
-	display:inline-block;
-	padding:0 1em;
-	position:relative;
+  display: inline-block;
+  padding: 0 1em;
+  position: relative;
 }
 
 .sp_menuAdmin li.select span {
-	font-size:1.2em;
+  font-size: 1.2em;
 }
 
 .sp_menuAdmin li.select:after {
-	background:transparent url(/silverpeas/jobManagerPeas/jsp/icons/sp_menuAdmin_select.png) bottom center no-repeat;
-	display:block;
-	content:" ";
-	position:absolute;
-	top: 39px;
-	width: 100%;
-	height: 8px;
-	left: 0;
+  background: transparent url(/silverpeas/jobManagerPeas/jsp/icons/sp_menuAdmin_select.png) bottom center no-repeat;
+  display: block;
+  content: " ";
+  position: absolute;
+  top: 39px;
+  width: 100%;
+  height: 8px;
+  left: 0;
 }
 
 .sp_menuAdmin li.select .textePetitBold {
-	color:#dd4b39;
-	font-size:1.2em;
+  color: #dd4b39;
+  font-size: 1.2em;
 }
 
 .sp_sousMenuAdmin .select,
 .sp_sousMenuAdmin a{
-	line-height:30px;
-	height:30px;
-	margin:0 1em;
+  line-height: 30px;
+  height: 30px;
+  margin: 0 1em;
 }
 
 
 .sp_sousMenuAdmin .select {
-	border-bottom:3px solid #dd4b39;
-	display:inline-block;
+  border-bottom: 3px solid #dd4b39;
+  display: inline-block;
 }
 
 #sp-admin-layout-header-part .sp_back_front{
-	background:#f7f7f7 url(../../util/icons/back.png) 1em  1.25em no-repeat;
-    line-height: 16px;
-    padding: 1.25em 1em 1.25em 3.5em;
-    font-weight: bold;
-    display:inline-block;
-	text-align: center;
-	border-bottom: 1px solid #dcdcdc;
-	border-right: 1px solid #ccc;
-	margin-right: 2em;
-	border-left: 1px solid #ccc;
+  background: #f7f7f7 url(../../util/icons/back.png) 1em 1.25em no-repeat;
+  line-height: 16px;
+  padding: 1.25em 1em 1.25em 3.5em;
+  font-weight: bold;
+  display: inline-block;
+  text-align: center;
+  border-bottom: 1px solid #dcdcdc;
+  border-right: 1px solid #ccc;
+  margin-right: 2em;
+  border-left: 1px solid #ccc;
 }
 
 #sp-admin-layout-body-part-layout-navigation-part,
 #sp-admin-layout-body-part-layout-navigation-part {
-	padding:1em 0 1em 0.5em;
+  padding: 1em 0 1em 0.5em;
 }
 
 #sp-admin-layout-body-part-layout-navigation-part .domains-label,
 #sp-admin-layout-body-part-layout-navigation-part .treeview-label {
-	padding:0em 0.25em 1em 0.25em;
-	display:inline-block;
+  padding: 0em 0.25em 1em 0.25em;
+  display: inline-block;
 }
 #sp-admin-layout-body-part-layout-navigation-part .domainsNamesForm{
-	padding:1em 0.25em;
+  padding: 1em 0.25em;
 }
 
 .treeview_selectSpace{
-	padding:1em 0.25em 0.25em;
+  padding: 1em 0.25em 0.25em;
 }
 .treeview_selectSpace select{
-	width: 90% !important;
+  width: 90% !important;
 }
 .treeview_contentSpace{
-	padding:0.25em 0.25em 1em;
-	white-space: nowrap;
+  padding: 0.25em 0.25em 1em;
+  white-space: nowrap;
 }
 .domain-group-list{
-	padding:0.25em 0.25em 1em;
+  padding: 0.25em 0.25em 1em;
 }
 
 #admin-component, .page_content_admin , .admin-users{
-	padding-left:1em;
+  padding-left: 1em;
 }
 .intfdcolor1 {
   background-color: #666
@@ -1009,7 +1009,7 @@ Style Utilise par le ViewGenerator
 .browseComponent a {
   vertical-align: middle;
 }
- 
+
 .browseIconComponent {
   margin: 2px;
   margin-right: 4px;
@@ -1082,11 +1082,11 @@ Style Utilise par le ViewGenerator
 #searchLine  .sp_button,
 .container-filter #search .sp_button,
 #thumbnailInputs .sp_button {
-	 padding: 1px 10px;
-	 font-size:9pt !important;
-	 height:17px;
-	 line-height:17px;
-} 
+  padding: 1px 10px;
+  font-size: 9pt !important;
+  height: 17px;
+  line-height: 17px;
+}
 
 .sp_button:hover , button.button:hover {
   background-color:#75af30;
@@ -1209,18 +1209,18 @@ Style Utilise par le ViewGenerator
 .navigationList {
   margin:0;
   padding:0;
-	display: flex;
-	flex-direction: row ;
-	flex-wrap:wrap;
-	justify-content: center;
-	align-items: initial;
-	align-content: flex-start;
-	list-style-type:none;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: initial;
+  align-content: flex-start;
+  list-style-type: none;
 }
 
 .navigationList li{
-	float:left;
-	flex-grow:1;
+  float: left;
+  flex-grow: 1;
   background: #efefef url(../icons/folder.png) 3px 1px no-repeat;
   margin: 0.5em 0 0 0.5em;
   padding: 7px 5px 5px 27px;
@@ -1368,7 +1368,7 @@ Style Utilise par le ViewGenerator
   height:1.1em;
 }
 
-.pageNav .pageJumper .jumper:focus{ 
+.pageNav .pageJumper .jumper:focus {
   box-shadow: inset 0px 1px 2px rgba(0,0,0,0.3);
   border-color:#1c94d4;
 }
@@ -1376,18 +1376,19 @@ Style Utilise par le ViewGenerator
 .pageNav .pageJumper .jumper {
   visibility: hidden;
 }
- .footerNav td{
+
+.footerNav td {
   position:relative;
- }
- 
- .footerNav .exportlinks {
+}
+
+.footerNav .exportlinks {
   position:absolute;
   right:1em;
   top:0;
   width:inherit;
   padding:1.5em 0 ;
- }
- 
+}
+
 /*- [Specific export BEGIN ] ---------------- */
 .exportlinks {
   width: 165px;
@@ -1613,7 +1614,7 @@ span.csv {
   margin: 5px 0;
 }
 
-#portletPages dl.sort dt { 
+#portletPages dl.sort dt {
   cursor: move;
   float: left;
   line-height: 2;
@@ -1885,7 +1886,7 @@ span.csv {
 
 
 #portlet-myFeed .a_new {
-    min-height: 35px;
+  min-height: 35px;
 }
 
 #portlet-myFeed hr{
@@ -2203,7 +2204,7 @@ ul#globalResultListDetails {
 }
 
 #searchGroupValues ul li.selected {
-  background-color: #7fd0ff; 
+  background-color: #7fd0ff;
   color:#FFF;
 }
 
@@ -2557,9 +2558,9 @@ caption {
 }
 
 #directory .info ul a {
-  color:#909090; 
+  color: #909090;
   font-size:1em;
- }
+}
 #directory .info ul a:hover {color:#000}
 
 #directory .info ul li.userName a {
@@ -2597,10 +2598,10 @@ caption {
 /*- [ directory END ] --------------------------- */
 /*- [ myProfile BEGIN ] --------------------------- */
 #publicProfileFiche p,
-#myProfileFiche p{ 
-  margin:0; 
+#myProfileFiche p {
+  margin: 0;
   padding:0;
- }
+}
 
 #myProfile #myProfileFiche,
 #publicProfile #publicProfileFiche  {
@@ -2629,7 +2630,7 @@ caption {
   font-size:1em;
   width:132px;
   margin-bottom:8px;
-  float:right; 
+  float: right;
   clear:right;
 }
 
@@ -2698,15 +2699,15 @@ caption {
 
 #myProfileFiche,
 #publicProfileFiche {
-  color:#909090; 
+  color: #909090;
   font-size:1em;
- }
+}
 
 #myProfileFiche h3,
 #publicProfileFiche h3 {
-  color:#26334A; 
-  font-size:1em; 
-  padding:10px 0 5px; 
+  color: #26334A;
+  font-size: 1em;
+  padding: 10px 0 5px;
   margin:0;
 }
 
@@ -2719,8 +2720,8 @@ caption {
 }
 
 #myProfileFiche .infoConnection,
-#publicProfileFiche .infoConnection { 
-  font-size:1em; 
+#publicProfileFiche .infoConnection {
+  font-size: 1em;
   padding:10px 0 15px
 }
 
@@ -2843,8 +2844,8 @@ caption {
 }
 
 #publicProfile #publicProfileFiche .unContact {
-  width:126px; 
-  float:left; 
+  width: 126px;
+  float: left;
   height:100%;
 }
 
@@ -3122,7 +3123,7 @@ hr.sep  {
 /* class actuellement utilis?e dans l'annuaire expert ? g?n?raliser */
 .linkMore {
   background-color: #efefef;
-   background: linear-gradient(#fff, #e7e7e7) repeat scroll 0 0 #fff;
+  background: linear-gradient(#fff, #e7e7e7) repeat scroll 0 0 #fff;
   border-bottom: 1px solid #CCC;
   border-top: 1px solid #CCC;
   clear: both;
@@ -3141,7 +3142,7 @@ hr.sep  {
 }
 
 .linkMore:hover, .linkMore:focus  {
-   background: linear-gradient(#e7e7e7, #fff) repeat scroll 0 0 #efefef;
+  background: linear-gradient(#e7e7e7, #fff) repeat scroll 0 0 #efefef;
 }
 
 /* Forbidden download */
@@ -3425,7 +3426,8 @@ ul#attachmentList li.attachmentListItem .linkAllVersions {
   text-indent: 41px;
   white-space: normal;
 }
-.commentaires .oneComment .text a { 
+
+.commentaires .oneComment .text a {
   font-size: 1.1em;
 }
 
@@ -3755,7 +3757,7 @@ table.pdcPositionsField {
   background:transparent url("../../util/icons/update.gif") right 0 no-repeat ;
   padding:2px 20px 2px 0;
 }
-  
+
 #okForAll {
   background-image:url("../../util/icons/ok.gif") ;
 }
@@ -4342,25 +4344,25 @@ input.search:focus {
 }
 
 .select-user-group-container .search-input-container {
- /* display: inline-flex;
-  align-items: center;*/
+  /* display: inline-flex;
+   align-items: center;*/
   display:block;
   float:left;
   min-width: 250px;
 }
 
 .select-user-group-container .inline-layout {
-   float: left;
+  float: left;
 }
 
 .field .select-user-group-container, .field .select-user-group-container .search-input-container {
-    width: 100%;
-    margin: 0;
+  width: 100%;
+  margin: 0;
 }
 
 .field .select-user-group-container .search-input-container .selectize-control {
-    width: 90%;
-    background: #FFF;
+  width: 90%;
+  background: #FFF;
 }
 
 .select-user-group-container {
@@ -4697,7 +4699,7 @@ input.search:focus {
   font-size:11px;
   color:#000;
   font-weight:bold;
-  padding:0; 
+  padding: 0;
   margin:0;
 }
 
@@ -5052,7 +5054,7 @@ input.search:focus {
 .droparea-cover-help-publication-list {
   bottom: 24px;
   right: 22px;
-  }
+}
 
 .droparea-cover-help-attachment {
   top: 5px;
@@ -5066,7 +5068,7 @@ input.search:focus {
 
 .droparea-cover-help-content {
   max-width: 600px;
- }
+}
 
 .droparea-cover-overlay {
   display: none;
@@ -5328,7 +5330,7 @@ ul.tagit li.tagit-choice a.tagit-close {
 }
 
 .notification .champ-ui-dialog {
- white-space: nowrap;
+  white-space: nowrap;
 }
 
 .ui-dialog .filedset-ui-dialog.validity legend {
@@ -5642,11 +5644,11 @@ p.wysiwyg-important{
 }
 
 blockquote {
-    border-left:1px solid #E4E4E4;
-    margin:0;
-    padding-left:1.5em;
-    font-style:italic;
-    color:#666;
+  border-left: 1px solid #E4E4E4;
+  margin: 0;
+  padding-left: 1.5em;
+  font-style: italic;
+  color: #666;
 }
 
 span.sp-variable.cke_widget_element {
@@ -5691,9 +5693,9 @@ span.sp-variable.cke_widget_element {
 }
 
 .forms .fields .fieldInput {
-	padding: 0 2em 0 2em;
-    flex: 4;
-    min-width: 180px;
+  padding: 0 2em 0 2em;
+  flex: 4;
+  min-width: 180px;
 }
 
 .forms .fields .fieldInput p {
@@ -5702,15 +5704,15 @@ span.sp-variable.cke_widget_element {
 
 .forms.mode-design .fields label {
   background:transparent url("../icons/grippy_large.png") 0 0 no-repeat ;
-    cursor: move;
+  cursor: move;
 }
 
 .forms .fields label, .forms .operators {
-	display: block;
-	padding: 0px 15px 7px 15px;
-	white-space: normal;
-	flex:1;
-	min-width:180px;
+  display: block;
+  padding: 0px 15px 7px 15px;
+  white-space: normal;
+  flex: 1;
+  min-width: 180px;
 }
 
 #richContent .fields {
@@ -5730,13 +5732,13 @@ span.sp-variable.cke_widget_element {
 }
 
 .forms .fields > li{
-	padding:10px 0 5px 0;
-	margin:0;
-	position:relative;
-	display: flex;
-	flex-wrap: nowrap;
-	min-height: 28px;
-	width:100%;
+  padding: 10px 0 5px 0;
+  margin: 0;
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  min-height: 28px;
+  width: 100%;
 }
 /* design and edition modes */
 form .forms .fields > li:nth-child(odd) {
@@ -5770,31 +5772,31 @@ form .forms .fields > li:nth-child(even) {
 }
 
 .forms .field .moreField{
-	display: block;
-    width: 100%;
+  display: block;
+  width: 100%;
 }
 
 .forms .field .fileArea img {
-	vertical-align:middle;
+  vertical-align: middle;
 }
 
 .forms .field .thumbnailArea,
 .forms .field .video{
-	width:100%;
-	padding: 0 0 0.5em 0;
+  width: 100%;
+  padding: 0 0 0.5em 0;
 }
 
 .forms .field .repeatable-field-list .thumbnailArea,
 .forms .field .repeatable-field-list .video{
-	padding: 1.5em 0 0.25em 0;
+  padding: 1.5em 0 0.25em 0;
 }
 .forms .field .repeatable-field-list .repeatable-field-list-element0 .thumbnailArea,
 .forms .field .repeatable-field-list .repeatable-field-list-element0 .video{
-	padding: 0 0 0.25em 0;
+  padding: 0 0 0.25em 0;
 }
 
 .forms .field .video > div {
-	display:inline-block;
+  display: inline-block;
 }
 
 .forms .field ul.repeatable-field-list li.field-occurrence-shown {
@@ -5827,7 +5829,7 @@ form .forms .fields > li:nth-child(even) {
 
 #profil-groups-belong #form-row-desc,
 #profil-groups-belong #form-row-rule {
-   width:98%
+  width: 98%
 }
 
 .skinFieldset .fields  {
@@ -5835,7 +5837,7 @@ form .forms .fields > li:nth-child(even) {
 }
 
 #identity-main legend {
-    background: url("../icons/contactCard.gif") no-repeat scroll 11px 0 transparent;
+  background: url("../icons/contactCard.gif") no-repeat scroll 11px 0 transparent;
 }
 
 #profil table.tableArrayPane {
@@ -5843,18 +5845,18 @@ form .forms .fields > li:nth-child(even) {
 }
 
 #profil-groups-belong legend {
-    background: url("../icons/groups.png") no-repeat scroll 7px 0 transparent;
+  background: url("../icons/groups.png") no-repeat scroll 7px 0 transparent;
 }
 
 .admin-user #manageable-spaces legend,
 .admin-group #manageable-spaces legend,
 .admin-user #user-manageable-groups legend {
-    background: url("../icons/cog.png") no-repeat scroll 11px 0 transparent;
+  background: url("../icons/cog.png") no-repeat scroll 11px 0 transparent;
 }
 
 .admin-user #user-profiles legend,
 .admin-group #group-profiles legend {
-    background: url("../icons/characteristic.png") no-repeat scroll 11px 0 transparent;
+  background: url("../icons/characteristic.png") no-repeat scroll 11px 0 transparent;
 }
 
 #affected-profil .champ-ui-dialog img{
@@ -5880,7 +5882,7 @@ div.silverpeas-rating {
 .silverpeas-rating .rateit .rateit-preset-rtl,
 .silverpeas-rating .rateit .rateit-selected,
 .silverpeas-rating .rateit .rateit-hover {
-       background-image: url(../icons/rateit/star.png) ;
+  background-image: url(../icons/rateit/star.png);
 }
 
 /**** Surchage plugin jquery rate it - small view ****/
@@ -5889,33 +5891,33 @@ div.silverpeas-rating {
 .rateit.smallStars .rateit-preset-rtl,
 .rateit.smallStars .rateit-selected,
 .rateit.smallStars .rateit-hover {
-       background-image: url(../icons/rateit/star-small.png) ;
+  background-image: url(../icons/rateit/star-small.png);
 }
 
 .rateit.smallStars .rateit-range{
-    background:  url(../icons/rateit/star-small.png);
-    height: 12px;
+  background: url(../icons/rateit/star-small.png);
+  height: 12px;
 }
 
 .rateit.smallStars .rateit-hover{
-    background: url(../icons/rateit/star-small.png) left -24px;
+  background: url(../icons/rateit/star-small.png) left -24px;
 }
 
 .rateit.smallStars .rateit-hover-rtl{
-    background-position: right -24px;
+  background-position: right -24px;
 }
 
 .rateit.smallStars .rateit-selected{
-    background: url(../icons/rateit/star-small.png) left -12px;
+  background: url(../icons/rateit/star-small.png) left -12px;
 }
 
 .rateit.smallStars .rateit-selected-rtl{
-    background-position: right -12px;
+  background-position: right -12px;
 }
 
 .rateit.smallStars .rateit-preset,
 .rateit.smallStars .rateit-preset-rtl{
-    background: url(../icons/rateit/star-small.png) left -36px;
+  background: url(../icons/rateit/star-small.png) left -36px;
 }
 
 /**** Fragment User Card *****/
@@ -6021,14 +6023,14 @@ div.user-card .field{
 }
 
 #sp-ticker .ticker-wrapper.has-js {
-    background-color: transparent;
-    border-radius: 0;
-    display: block;
-    font-size: 0.75em;
-    height: 22px;
-    margin:0;
-    padding: 0;
-    width: 100%;
+  background-color: transparent;
+  border-radius: 0;
+  display: block;
+  font-size: 0.75em;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
 }
 
 #sp-ticker {
@@ -6036,12 +6038,12 @@ div.user-card .field{
 }
 
 #sp-ticker .ticker {
-    background-color: transparent;
-    display: block;
-    height: 22px;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
+  background-color: transparent;
+  display: block;
+  height: 22px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
 }
 
 #sp-ticker .ticker-title {
@@ -6121,11 +6123,278 @@ iframe.embed {
 }
 
 /*********************** Presentation pop up des notifications *********************/
-.unread-user-notification a {
+
+.silverpeas-user-notifications {
+  display: inline-block;
+}
+
+.all-read-user-notification #notification-count.btn-header {
+  background-color: #fbf7aa;
+  border-color: #f9e98e;
+}
+
+.all-read-user-notification #notification-count.btn-header a {
+  color: #333 !important;
+}
+
+.silverpeas-user-notifications .silverpeas-attached-popin {
+  z-index: 1000;
+  white-space: normal;
+  text-align: left;
+}
+
+.silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-attached-popin-content {
+  position: relative !important;
+  padding: 0;
+  min-height: 200px;
+  max-height: 600px;
+  width: 425px;
+}
+
+.silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-attached-popin-content .silverpeas-list,
+#infoConnection .silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-attached-popin-content .silverpeas-list {
+  position: relative;
+  border: none;
+  background-color: inherit;
+  left: auto;
+  top: auto;
+  white-space: inherit;
+}
+
+.silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-attached-popin-content  .user-notification-content div {
+  max-width:380px;
+}
+
+.unread-user-notification > span > a {
   background-color: #7eb73b;
   padding: 1px 5px 0 5px;
 }
-.unread-user-notification-inbox {
+
+.silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-attached-popin-header {
+  background-color: #2a2a2a;
+  position: relative;
+  height: 3em;
+}
+
+#infoConnection .silverpeas-user-notifications ul li a:hover {
+  background-color: inherit;
+}
+
+.silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-attached-popin-header a.view-all {
+  color: #FFF;
+  text-decoration: underline;
+  margin: 0 0.5em;
+  line-height: 3em !important;
+}
+
+.silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-attached-popin-header a.close {
+  position: absolute;
+  width: 16px;
+  padding: 0;
+  display: inline-block;
+  text-indent: -99999px;
+  height: 16px;
+  top: 50%;
+  right: 0.5em;
+  margin-top: -8px;
+  margin-left: -8px;
+  background: #FFF url("jquery/ui-lightness/images/ui-icons_ef8c08_256x240.png") -96px -128px;
+
+}
+
+.silverpeas-user-notifications .unread-user-notification-inbox {
+  color: #000;
+}
+
+.silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-list-item,
+#infoConnection .silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-list-item {
+  padding: 0.75em;
+  position: relative;
+  border-bottom: solid 1px #CCC;
+}
+
+.silverpeas-user-notifications .silverpeas-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  color: #000;
+}
+
+.silverpeas-user-notifications .silverpeas-list .user-notification-subject {
+  color: #757575;
+  margin-bottom: 1em;
+  margin-right: 2.25em;
+}
+
+.silverpeas-user-notifications .unread-user-notification-inbox .user-notification-subject {
+  color: #000;
+}
+
+.silverpeas-user-notifications .silverpeas-list li:nth-child(odd) {
+  background-color: #FFF
+}
+
+.silverpeas-user-notifications .silverpeas-list li:nth-child(even) {
+  background-color: #F0F0F0;
+}
+
+.silverpeas-user-notifications .date-from {
+  padding: 0.25em 0;
+  height: 1.25em;
+}
+
+.silverpeas-user-notifications .user-notification-from {
+  float: left;
+}
+
+.silverpeas-user-notifications .user-notification-date {
+  color: #777;
+  float: right;
+}
+
+.silverpeas-user-notifications .user-notification-source {
+  padding: 1em 0 0;
+
+}
+
+.silverpeas-user-notifications .silverpeas-user-notification-list-item::after {
+  display: block;
+  content: ' ';
+  width: 100%;
+  height: 1em;
+  clear: both;
+}
+
+.silverpeas-user-notifications .user-notification-content {
+  clear: left;
+  padding-top: 2em;
+}
+
+.silverpeas-user-notifications .content-button-close {
+  background: transparent url(../icons/arrow/open.gif) no-repeat 0 0;
+  width: 16px;
+  height: 16px;
+  text-indent: -300em;
+  display: block;
+  position: absolute;
+  top: 1em;
+  right: 0.8em;
+}
+
+.silverpeas-user-notifications .content-button-open {
+  background: transparent url(../icons/arrow/closed.gif) no-repeat 0 0;
+  width: 16px;
+  height: 16px;
+  text-indent: -300em;
+  display: block;
+  position: absolute;
+  top: 1em;
+  right: 0.8em;
+}
+
+#infoConnection .silverpeas-user-notifications .read-button,
+#infoConnection .silverpeas-user-notifications .cancel-deletion-button,
+.silverpeas-user-notifications .read-button,
+.silverpeas-user-notifications .cancel-deletion-button {
+  display: block;
+  position: absolute;
+  bottom: 1.5em;
+  right: 3em;
+  border: 1px solid #CCC;
+  border-radius: 6px;
+  font-style: italic;
+  padding: 0 0.5em;
+  color: #3e3e3e !important;
+  background-color: #FFF;
+  line-height: 1.5em;
+}
+
+#infoConnection .silverpeas-user-notifications .cancel-deletion-button {
+  z-index: 10
+}
+
+#infoConnection .silverpeas-user-notifications .cancel-deletion-button:hover {
+  background-color: #FFF;
+}
+
+.silverpeas-user-notifications .cancel-deletion-button {
+  right: 1em;
+}
+
+.silverpeas-user-notifications .silverpeas-user-notification-list-item.deleted-user-notification > div {
+  opacity: 0.3;
+}
+
+#infoConnection .silverpeas-user-notifications .delete-button,
+.silverpeas-user-notifications .delete-button {
+  display: block;
+  position: absolute;
+  bottom: 1.5em;
+  right: 1em;
+  border-radius: 6px;
+  font-style: italic;
+  width: 16px;
+  height: 20px;
+  padding: 0;
+  background-color: #FFF;
+  text-indent: -3000em;
+  background: transparent url(../icons/delete.gif) 0 0 no-repeat;
+}
+
+.silverpeas-user-notifications .cancel-deletion-button::after {
+  content: ' ';
+  display: inline-block;
+  float: right;
+  width: 16px;
+  height: 20px;
+  background: #FFF url(../icons/back.png) 0 center no-repeat;
+  margin-left: 0.5em;
+  z-index: 101;
+}
+
+.silverpeas-user-notifications .silverpeas-list li:nth-child(odd) .read-button,
+#infoConnection .silverpeas-user-notifications .silverpeas-list li:nth-child(odd) .read-button:hover,
+#infoConnection .silverpeas-user-notifications .silverpeas-list li:nth-child(odd) .read-button {
+  background-color: #F0F0F0
+}
+
+.silverpeas-user-notifications .silverpeas-list li:nth-child(even) .read-button,
+#infoConnection .silverpeas-user-notifications .silverpeas-list li:nth-child(even) .read-button:hover,
+#infoConnection .silverpeas-user-notifications .silverpeas-list li:nth-child(even) .read-button {
+  background-color: #FFF;
+}
+
+
+.silverpeas-user-notifications .read-button::after {
+  content: ' ';
+  display: inline-block;
+  float: right;
+  width: 16px;
+  height: 20px;
+  background: transparent url(../icons/ok.gif) 0 center no-repeat;
+  margin-left: 0.5em;
+}
+
+.silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-list-item .with-resource-view-url {
+  cursor: pointer;
+}
+
+.silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-list-item:last-child {
+  padding: 2px 0 0 0;
+  border: none;
+}
+
+.silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-list-item .silverpeas-attached-popin-content {
+  max-width: 445px !important;
+}
+
+.silverpeas-user-notifications .silverpeas-attached-popin .no-item {
+  padding-top: 82px;
+  text-align: center;
+  font-size: 2em;
+}
+
+.unread-user-notification-inbox .user-notification-subject {
   font-weight: bold;
 }
 .popup-read-notification {
@@ -6220,7 +6489,7 @@ a.navigation-button {
   padding: 2px 0 2px 24px;
 }
 #goToApplication a.navigation-button span {
-    background: url("../icons/go-to.png") no-repeat scroll 0 1px transparent;
+  background: url("../icons/go-to.png") no-repeat scroll 0 1px transparent;
 }
 
 /** Generic list of users and groups **/
@@ -6290,7 +6559,7 @@ a.navigation-button {
 
 .fields .contentWithButtonPanel {
   margin-top: 2px;
- }
+}
 
 .fields .explorePanel, .fields .emptyList {
   background-color: #f4f4f4;
@@ -6326,16 +6595,17 @@ a.navigation-button {
   }
   .header h4 {
     min-width: 210px;
-   }
+  }
   .rightContent .attachments {
     min-width:auto;
   }
   .principalContent {
     margin-right: 245px;
   }
-   #directory .aff_colonnes li {
-  float:none;
-  width:auto;
+
+  #directory .aff_colonnes li {
+    float: none;
+    width: auto;
   }
   .fields .explorePanel  span, .fields .emptyList span{
     text-indent:-3000px;
@@ -7005,6 +7275,45 @@ input.dateToPick,
 .ui-dialog .champ-ui-dialog input.dateToPick {
   width:68px;
   margin:0;
+}
+
+.fast-fade-enter-active, .fast-fade-leave-active {
+  transition: opacity 0.25s;
+}
+
+.normal-fade-enter-active, .normal-fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.long-fade-enter-active, .long-fade-leave-active {
+  transition: opacity 1s;
+}
+
+.fast-fade-leave, .fast-fade-enter-to,
+.normal-fade-leave, .normal-fade-enter-to,
+.long-fade-leave, .long-fade-enter-to {
+  opacity: 1;
+}
+
+.fast-fade-enter, .fast-fade-leave-to,
+.normal-fade-enter, .normal-fade-leave-to,
+.long-fade-enter, .long-fade-leave-to {
+  opacity: 0;
+}
+
+.silverpeas-attached-popin {
+  position: absolute;
+  width: auto;
+  height: auto;
+  background-color: #FFF;
+  border-radius: 4px;
+  box-shadow: 0 2px 7px 1px rgba(0, 0, 0, 0.3);
+  vertical-align: middle;
+}
+
+.silverpeas-attached-popin .silverpeas-attached-popin-content {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /************ Variables ******************/
