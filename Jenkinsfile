@@ -5,9 +5,9 @@ node {
     docker.image('silverpeas/silverbuild').inside('-u root -v $HOME/.m2/settings.xml:/root/.m2/settings.xml -v $HOME/.m2/settings-security.xml:/root/.m2/settings-security.xml -v $HOME/.gitconfig:/root/.gitconfig -v $HOME/.ssh:/root/.ssh -v $HOME/.gnupg:/root/.gnupg') {
       stage('Preparation') {
         withSonarQubeEnv {
-          echo "BRANCH NAME IS ${BRANCH_NAME}"
-          echo "CHANGE ID IS ${CHANGE_ID}"
-          echo "GIT URL IS ${GIT_URL}"
+          echo "BRANCH NAME IS ${env.BRANCH_NAME}"
+          echo "CHANGE ID IS ${env.CHANGE_ID}"
+          echo "GIT URL IS ${env.GIT_URL}"
           echo "SONAR MAVEN GOAL IS $SONAR_MAVEN_GOAL"
           echo "GITHUB OAUTH IS $SONAR_GITHUB_OAUTH"
           echo "SONAR HOST URL IS $SONAR_HOST_URL"
