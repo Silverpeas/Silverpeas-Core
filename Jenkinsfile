@@ -6,7 +6,7 @@ node {
       stage('Preparation') {
         withSonarQubeEnv {
           echo "BRANCH NAME IS ${env.BRANCH_NAME}"
-          echo "CHANGE ID IS ${env.CHANGE_ID}"
+          echo "CHANGE ID IS ${env.ghprbPullId}"
           echo "GIT URL IS ${env.GIT_URL}"
           echo "SONAR MAVEN GOAL IS $SONAR_MAVEN_GOAL"
           echo "GITHUB OAUTH IS $SONAR_GITHUB_OAUTH"
