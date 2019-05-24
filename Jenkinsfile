@@ -1,13 +1,16 @@
 node {
   catchError {
-    def remoteUrl = 'https://github.com'
+    def repo = 'https://github.com/Silverpeas/Silverpeas-Core.git'
     def remote = [:]
     docker.image('silverpeas/silverbuild').inside('-u root -v $HOME/.m2/settings.xml:/root/.m2/settings.xml -v $HOME/.m2/settings-security.xml:/root/.m2/settings-security.xml -v $HOME/.gitconfig:/root/.gitconfig -v $HOME/.ssh:/root/.ssh -v $HOME/.gnupg:/root/.gnupg') {
       stage('Preparation') {
         withSonarQubeEnv {
-          echo "BRANCH NAME IS ${BRANCH_NAME}"
-          echo "CHANGE ID IS ${CHANGE_ID}"
-          echo "GIT URL IS ${GIT_URL}"
+          echo "BRANCH NAME IS ${env.BRANCH_NAME}"
+          echo "CHANGE ID IS ${env.CHANGE_ID}"
+          echo "CHANGE_TITLE IS ${env.CHANGE_TITLE}"
+          echo "CHANGE URL IS ${env.CHANGE_URL}"
+          echo "CHANGE AUTHOR IS ${env.CHANGE_AUTHOR}"
+          echo "CHANGE TARGET IS ${env.CHANGE_TARGET}"
           echo "SONAR MAVEN GOAL IS $SONAR_MAVEN_GOAL"
           echo "GITHUB OAUTH IS $SONAR_GITHUB_OAUTH"
           echo "SONAR HOST URL IS $SONAR_HOST_URL"
