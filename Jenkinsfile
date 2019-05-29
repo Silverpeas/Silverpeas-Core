@@ -7,7 +7,8 @@ node {
         checkout scm
       }
       stage('Build') {
-        sh "mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci"
+        echo "Branch name is ${env.BRANCH_NAME}"
+        echo "Git branch is ${env.GIT_BRANCH}"
       }
       stage('Quality Analysis') {
         // quality analyse with our SonarQube service is performed only for PR against our main
