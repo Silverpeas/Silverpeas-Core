@@ -10,6 +10,7 @@ node {
       }
       stage('Build') {
         def version = computeSnapshotVersion()
+        echo "Change title is ${env.CHANGE_TITLE}"
         echo "Computed version is ${version}"
         //sh "mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci"
       }
@@ -48,7 +49,7 @@ mvn ${SONAR_MAVEN_GOAL} -Dsonar.analysis.mode=issues \\
 
 def computeSnapshotVersion() {
   def pom = readMavenPom()
-  Matcher m = title =~ /^(Bug #\d+|Feature #\d+).*$/
+  Matcher m = env.CHANGE_TITLE =~ /^(Bug #\d+|Feature #\d+).*$/
   final String snapshot =
       m.matches() ? m.group(1).toLowerCase().replaceAll(' #', '') : env.BRANCH_NAME
   return "${pom.properties['next.release']}-${snapshot}"
