@@ -173,7 +173,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
     String componentId = task.getProcessInstance().getModelId();
     final List<String> userIds = new ArrayList<>();
     String role = task.getUserRoleName();
-    if (user != null) {
+    if (user != null && user.getUser() != null) {
       role = user.getUserRoleName();
       userIds.add(user.getUser().getUserId());
     } else if (StringUtil.isDefined(task.getGroupId())) {
