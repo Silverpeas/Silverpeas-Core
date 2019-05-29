@@ -1,3 +1,5 @@
+import java.util.regex.Matcher
+
 node {
   catchError {
     def nexusRepo = 'https://www.silverpeas.org/nexus/content/repositories/snapshots/'
@@ -7,8 +9,9 @@ node {
         checkout scm
       }
       stage('Build') {
-        echo "Branch name is ${env.BRANCH_NAME}"
-        echo "Git branch is ${env.GIT_BRANCH}"
+        def version = computeSnapshotVersion()
+        echo "Computed version is ${version}"
+        //sh "mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci"
       }
       stage('Quality Analysis') {
         // quality analyse with our SonarQube service is performed only for PR against our main
@@ -33,7 +36,7 @@ mvn ${SONAR_MAVEN_GOAL} -Dsonar.analysis.mode=issues \\
         // deployment to ensure dependencies on this snapshot version of Silverpeas Core for other
         // projects to build downstream. By doing so, we keep clean the local maven repository for
         // reproducibility reason
-        sh "mvn deploy -DaltDeploymentRepository=silverpeas::default::${nexusRepo} -Pdeployment -Djava.awt.headless=true -Dmaven.test.skip=true"
+        //sh "mvn deploy -DaltDeploymentRepository=silverpeas::default::${nexusRepo} -Pdeployment -Djava.awt.headless=true -Dmaven.test.skip=true"
       }
     }
   }
@@ -41,4 +44,12 @@ mvn ${SONAR_MAVEN_GOAL} -Dsonar.analysis.mode=issues \\
         notifyEveryUnstableBuild: true,
         recipients              : "miguel.moquillon@silverpeas.org, yohann.chastagnier@silverpeas.org, nicolas.eysseric@silverpeas.org",
         sendToIndividuals       : true])
+}
+
+def computeSnapshotVersion() {
+  def pom = readMavenPom()
+  Matcher m = title =~ /^(Bug #\d+|Feature #\d+).*$/
+  final String snapshot =
+      m.matches() ? m.group(1).toLowerCase().replaceAll(' #', '') : env.BRANCH_NAME
+  return "${pom.properties['next.release']}-${snapshot}"
 }
