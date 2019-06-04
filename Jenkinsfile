@@ -1,3 +1,5 @@
+import java.util.regex.Matcher
+
 node {
   catchError {
     def nexusRepo = 'https://www.silverpeas.org/nexus/content/repositories/snapshots/'
@@ -7,7 +9,11 @@ node {
         checkout scm
       }
       stage('Build') {
-        sh "mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci"
+        def version = computeSnapshotVersion()
+        sh """
+mvn -U versions:set -DgenerateBackupPoms=false -DnewVersion=${version}
+mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
+"""
       }
       stage('Quality Analysis') {
         // quality analyse with our SonarQube service is performed only for PR against our main
@@ -40,4 +46,12 @@ mvn ${SONAR_MAVEN_GOAL} -Dsonar.analysis.mode=issues \\
         notifyEveryUnstableBuild: true,
         recipients              : "miguel.moquillon@silverpeas.org, yohann.chastagnier@silverpeas.org, nicolas.eysseric@silverpeas.org",
         sendToIndividuals       : true])
+}
+
+def computeSnapshotVersion() {
+  def pom = readMavenPom()
+  Matcher m = env.CHANGE_TITLE =~ /^(Bug #\d+|Feature #\d+).*$/
+  final String snapshot =
+      m.matches() ? m.group(1).toLowerCase().replaceAll(' #', '') : env.BRANCH_NAME
+  return "${pom.properties['next.release']}-${snapshot}"
 }
