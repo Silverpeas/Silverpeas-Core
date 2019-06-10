@@ -23,12 +23,11 @@
  */
 package org.silverpeas.core.questioncontainer.score.service;
 
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.score.dao.ScoreDAO;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
 import org.silverpeas.core.questioncontainer.score.model.ScorePK;
 import org.silverpeas.core.questioncontainer.score.model.ScoreRuntimeException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -49,8 +48,7 @@ public class DefaultScoreService implements ScoreService {
     try {
       return DBUtil.openConnection();
     } catch (Exception re) {
-      throw new ScoreRuntimeException("DefaultScoreService.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", re);
+      throw new ScoreRuntimeException(re);
     }
   }
 
@@ -63,8 +61,7 @@ public class DefaultScoreService implements ScoreService {
     try {
       return ScoreDAO.getUserNbParticipationsByFatherId(con, scorePK, fatherId, userId);
     } catch (Exception re) {
-      throw new ScoreRuntimeException("DefaultScoreService.getUserNbParticipationsByFatherId()",
-          SilverpeasRuntimeException.ERROR, "score.EX_GET_USER_NB_PARTICIPATION_FAILED", re);
+      throw new ScoreRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -81,9 +78,7 @@ public class DefaultScoreService implements ScoreService {
       return ScoreDAO.getUserPositionByFatherIdAndParticipationId(con, scorePK, fatherId, userId,
           participationId);
     } catch (Exception e) {
-      throw new ScoreRuntimeException(
-          "DefaultScoreService.getUserPositionByFatherIdAndParticipationId()",
-          SilverpeasRuntimeException.ERROR, "score.EX_GET_USER_POSITION_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -137,8 +132,7 @@ public class DefaultScoreService implements ScoreService {
     try {
       ScoreDAO.addScore(con, scoreDetail);
     } catch (Exception e) {
-      throw new ScoreRuntimeException("DefaultScoreService.addScore()",
-          SilverpeasRuntimeException.ERROR, "score.EX_CREATE_SCORE_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -154,8 +148,7 @@ public class DefaultScoreService implements ScoreService {
     try {
       ScoreDAO.updateScore(con, scoreDetail);
     } catch (Exception e) {
-      throw new ScoreRuntimeException("DefaultScoreService.updateScore()",
-          SilverpeasRuntimeException.ERROR, "score.EX_UPDATE_SCORE_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -172,8 +165,7 @@ public class DefaultScoreService implements ScoreService {
 
       ScoreDAO.deleteScore(con, scorePK);
     } catch (Exception e) {
-      throw new ScoreRuntimeException("DefaultScoreService.deleteScore()",
-          SilverpeasRuntimeException.ERROR, "score.EX_DELETE_SCORE_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -188,8 +180,7 @@ public class DefaultScoreService implements ScoreService {
     try {
       ScoreDAO.deleteScoreByFatherPK(con, scorePK, fatherId);
     } catch (Exception e) {
-      throw new ScoreRuntimeException("DefaultScoreService.deleteScoreByFatherPK()",
-          SilverpeasRuntimeException.ERROR, "score.EX_DELETE_SCORE_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -207,8 +198,7 @@ public class DefaultScoreService implements ScoreService {
       setPositions(allScores);
       return allScores;
     } catch (Exception e) {
-      throw new ScoreRuntimeException("DefaultScoreService.getAllScores()",
-          SilverpeasRuntimeException.ERROR, "score.EX_GET_ALL_SCORES_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -226,8 +216,7 @@ public class DefaultScoreService implements ScoreService {
       setPositions(userScores);
       return userScores;
     } catch (Exception e) {
-      throw new ScoreRuntimeException("DefaultScoreService.getUserScores()",
-          SilverpeasRuntimeException.ERROR, "score.EX_GET_USER_SCORES_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -248,8 +237,7 @@ public class DefaultScoreService implements ScoreService {
       setPositions(userScores);
       return userScores;
     } catch (Exception e) {
-      throw new ScoreRuntimeException("DefaultScoreService.getUserScoresByFatherId()",
-          SilverpeasRuntimeException.ERROR, "score.EX_GET_PARTICIPATION_USER_SCORES_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -269,8 +257,7 @@ public class DefaultScoreService implements ScoreService {
       setPositions(bestScores);
       return bestScores;
     } catch (Exception e) {
-      throw new ScoreRuntimeException("DefaultScoreService.getBestScoresByFatherId()",
-          SilverpeasRuntimeException.ERROR, "score.EX_GET_BEST_SCORES_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -290,8 +277,7 @@ public class DefaultScoreService implements ScoreService {
       setPositions(worstScores);
       return worstScores;
     } catch (Exception e) {
-      throw new ScoreRuntimeException("DefaultScoreService.getWorstScoresByFatherId()",
-          SilverpeasRuntimeException.ERROR, "score.EX_GET_WORST_SCORES_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -306,8 +292,7 @@ public class DefaultScoreService implements ScoreService {
     try {
       return ScoreDAO.getNbVotersByFatherId(con, scorePK, fatherId);
     } catch (Exception e) {
-      throw new ScoreRuntimeException("DefaultScoreService.getNbVotersByFatherId()",
-          SilverpeasRuntimeException.ERROR, "score.EX_GET_NB_PLAYERS_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -322,8 +307,7 @@ public class DefaultScoreService implements ScoreService {
     try {
       return ScoreDAO.getAverageScoreByFatherId(con, scorePK, fatherId);
     } catch (Exception e) {
-      throw new ScoreRuntimeException("DefaultScoreService.getAverageScoreByFatherId()",
-          SilverpeasRuntimeException.ERROR, "score.EX_GET_AVERAGE_SCORE_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -344,9 +328,7 @@ public class DefaultScoreService implements ScoreService {
       setPosition(scoreDetail);
       return scoreDetail;
     } catch (Exception e) {
-      throw new ScoreRuntimeException(
-          "DefaultScoreService.getUserScoreByFatherIdAndParticipationId()",
-          SilverpeasRuntimeException.ERROR, "score.EX_GET_USER_SCORE_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -364,8 +346,7 @@ public class DefaultScoreService implements ScoreService {
       setPositions(scores);
       return scores;
     } catch (Exception e) {
-      throw new ScoreRuntimeException("DefaultScoreService.getScoresByFatherId()",
-          SilverpeasRuntimeException.ERROR, "score.EX_GET_SCORES_FAILED", e);
+      throw new ScoreRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }

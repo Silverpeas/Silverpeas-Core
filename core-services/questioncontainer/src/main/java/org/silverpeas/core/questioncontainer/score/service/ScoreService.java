@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,9 +16,9 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.questioncontainer.score.service;
@@ -41,27 +41,27 @@ public interface ScoreService {
   /**
    * @param scoreDetail the scrore detail to add
    */
-  public void addScore(ScoreDetail scoreDetail);
+  void addScore(ScoreDetail scoreDetail);
 
   /**
    * Method: deleteScore
    * @param scorePK the score identifier
    */
-  public void deleteScore(ScorePK scorePK);
+  void deleteScore(ScorePK scorePK);
 
   /**
    * Methode: deleteScoreByFatherPK
    * @param scorePK the score identifier
    * @param fatherId the father identifier
    */
-  public void deleteScoreByFatherPK(ScorePK scorePK, String fatherId);
+  void deleteScoreByFatherPK(ScorePK scorePK, String fatherId);
 
   /**
    * Method: getAllScores
    * @param scorePK the score identifier
    * @return
    */
-  public Collection<ScoreDetail> getAllScores(ScorePK scorePK);
+  Collection<ScoreDetail> getAllScores(ScorePK scorePK);
 
   /**
    * Method: getUserScores
@@ -69,7 +69,7 @@ public interface ScoreService {
    * @param userId the user identifier
    * @return
    */
-  public Collection<ScoreDetail> getUserScores(ScorePK scorePK, String userId);
+  Collection<ScoreDetail> getUserScores(ScorePK scorePK, String userId);
 
   /**
    * Method: getUserScoresByFatherId
@@ -78,7 +78,7 @@ public interface ScoreService {
    * @param userId the user identifier
    * @return
    */
-  public Collection<ScoreDetail> getUserScoresByFatherId(ScorePK scorePK, String fatherId,
+  Collection<ScoreDetail> getUserScoresByFatherId(ScorePK scorePK, String fatherId,
       String userId);
 
   /**
@@ -88,7 +88,7 @@ public interface ScoreService {
    * @param fatherId the father identifier
    * @return
    */
-  public Collection<ScoreDetail> getBestScoresByFatherId(ScorePK scorePK, int nbBestScores,
+  Collection<ScoreDetail> getBestScoresByFatherId(ScorePK scorePK, int nbBestScores,
       String fatherId);
 
   /**
@@ -98,7 +98,7 @@ public interface ScoreService {
    * @param fatherId the father identifier
    * @return
    */
-  public Collection<ScoreDetail> getWorstScoresByFatherId(ScorePK scorePK, int nbWorstScores,
+  Collection<ScoreDetail> getWorstScoresByFatherId(ScorePK scorePK, int nbWorstScores,
       String fatherId);
 
   /**
@@ -107,7 +107,7 @@ public interface ScoreService {
    * @param fatherId the father identifier
    * @return
    */
-  public int getNbVotersByFatherId(ScorePK scorePK, String fatherId);
+  int getNbVotersByFatherId(ScorePK scorePK, String fatherId);
 
   /**
    * Method: getAverageScoreByFatherId
@@ -115,7 +115,7 @@ public interface ScoreService {
    * @param fatherId the father identifier
    * @return
    */
-  public float getAverageScoreByFatherId(ScorePK scorePK, String fatherId);
+  float getAverageScoreByFatherId(ScorePK scorePK, String fatherId);
 
   /**
    * Method: getUserScoresByFatherIdAndParticipationId
@@ -125,7 +125,7 @@ public interface ScoreService {
    * @param participationId
    * @return
    */
-  public ScoreDetail getUserScoreByFatherIdAndParticipationId(ScorePK scorePK, String fatherId,
+  ScoreDetail getUserScoreByFatherIdAndParticipationId(ScorePK scorePK, String fatherId,
       String userId, int participationId);
 
   /**
@@ -134,7 +134,7 @@ public interface ScoreService {
    * @param fatherId the father identifier
    * @return
    */
-  public Collection<ScoreDetail> getScoresByFatherId(ScorePK scorePK, String fatherId);
+  Collection<ScoreDetail> getScoresByFatherId(ScorePK scorePK, String fatherId);
 
   /**
    * @param scorePK the score identifier
@@ -142,10 +142,10 @@ public interface ScoreService {
    * @param userId the user identifier
    * @return
    */
-  public int getUserNbParticipationsByFatherId(ScorePK scorePK, String fatherId, String userId);
+  int getUserNbParticipationsByFatherId(ScorePK scorePK, String fatherId, String userId);
 
   /**
    * @param scoreDetail the score detail to update
    */
-  public void updateScore(ScoreDetail scoreDetail);
+  void updateScore(ScoreDetail scoreDetail);
 }

@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,9 +16,9 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.questioncontainer.answer.service;
@@ -41,46 +41,46 @@ public interface AnswerService {
    * @param questionPK the QuestionPK (question id)
    * @return a Collection of Answer
    */
-  public Collection<Answer> getAnswersByQuestionPK(ResourceReference questionPK);
+  Collection<Answer> getAnswersByQuestionPK(ResourceReference questionPK);
 
   /**
    * Record that the answer (answerPK) has been chosen to the question (questionPK)
    * @param questionPK the QuestionPK (question id)
    * @param answerPK the AnswerPK (answer id)
    */
-  public void recordThisAnswerAsVote(ResourceReference questionPK, AnswerPK answerPK);
+  void recordThisAnswerAsVote(ResourceReference questionPK, AnswerPK answerPK);
 
   /**
    * Add some answers to a question
    * @param answers a Collection of Answer
    * @param questionPK the QuestionPK (question id)
    */
-  public void addAnswersToAQuestion(Collection<Answer> answers, ResourceReference questionPK);
+  void addAnswersToAQuestion(Collection<Answer> answers, ResourceReference questionPK);
 
   /**
    * Add an answer to a question
    * @param answer the Answer
    * @param questionPK the QuestionPK (question id)
    */
-  public void addAnswerToAQuestion(Answer answer, ResourceReference questionPK);
+  void addAnswerToAQuestion(Answer answer, ResourceReference questionPK);
 
   /**
    * Update an answer to a question
    * @param questionPK the QuestionPK (question id)
    * @param answer the Answer
    */
-  public void updateAnswerToAQuestion(ResourceReference questionPK, Answer answer);
+  void updateAnswerToAQuestion(ResourceReference questionPK, Answer answer);
 
   /**
    * Delete all answers to a given question
    * @param questionPK the QuestionPK (question id)
    */
-  public void deleteAnswersToAQuestion(ResourceReference questionPK);
+  void deleteAnswersToAQuestion(ResourceReference questionPK);
 
   /**
    * Delete an answer to a question
    * @param questionPK the QuestionPK (question id)
    * @param answerId the answer id
    */
-  public void deleteAnswerToAQuestion(ResourceReference questionPK, String answerId);
+  void deleteAnswerToAQuestion(ResourceReference questionPK, String answerId);
 }

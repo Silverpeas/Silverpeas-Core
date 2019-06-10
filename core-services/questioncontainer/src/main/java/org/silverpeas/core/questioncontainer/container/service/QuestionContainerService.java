@@ -42,7 +42,7 @@ import java.util.Map;
  */
 public interface QuestionContainerService {
 
-  static QuestionContainerService getInstance() {
+  static QuestionContainerService get() {
     return ServiceProvider.getService(QuestionContainerService.class);
   }
 
