@@ -44,9 +44,6 @@ import java.util.Collection;
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultQuestionResultService implements QuestionResultService {
 
-  protected DefaultQuestionResultService() {
-  }
-
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void setQuestionResultToUser(QuestionResult result) {

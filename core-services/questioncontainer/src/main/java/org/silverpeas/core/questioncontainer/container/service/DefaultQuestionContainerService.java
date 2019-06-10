@@ -58,6 +58,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.io.FileOutputStream;
@@ -86,17 +87,14 @@ public class DefaultQuestionContainerService
   private static final String OPENED_ANSWER = "OA";
   private static final float PERCENT_MULTIPLICATOR = 100f;
 
+  @Inject
   private QuestionService questionService;
+  @Inject
   private QuestionResultService questionResultService;
+  @Inject
   private AnswerService answerService;
+  @Inject
   private ScoreService scoreService;
-
-  protected DefaultQuestionContainerService() {
-    questionService = QuestionService.get();
-    questionResultService = QuestionResultService.get();
-    answerService = AnswerService.get();
-    scoreService = ScoreService.get();
-  }
 
   @Override
   public Collection<QuestionContainerHeader> getQuestionContainerHeaders(
@@ -115,30 +113,17 @@ public class DefaultQuestionContainerService
     List<QuestionContainerHeader> result = new ArrayList<>();
 
     while (it.hasNext()) {
-      int nbMaxPoints = 0;
       QuestionContainerHeader questionContainerHeader = it.next();
-      QuestionPK questionPK = new QuestionPK(null, questionContainerHeader.getPK());
-      Collection<Question> questions;
-      try {
-        questions =
-            questionService.getQuestionsByFatherPK(questionPK, questionContainerHeader.getPK().getId());
-      } catch (Exception e) {
-        throw new QuestionContainerRuntimeException(e);
-      }
-      for (Question question : questions) {
-        nbMaxPoints += question.getNbPointsMax();
-      }
-      questionContainerHeader.setNbMaxPoints(nbMaxPoints);
+      setNbMaxPoint(questionContainerHeader);
       result.add(questionContainerHeader);
     }
     return result;
   }
 
   private QuestionContainerHeader setNbMaxPoint(QuestionContainerHeader questionContainerHeader) {
-
     int nbMaxPoints = 0;
-    Collection<Question> questions;
     QuestionPK questionPK = new QuestionPK(null, questionContainerHeader.getPK());
+    Collection<Question> questions;
     try {
       questions = questionService.getQuestionsByFatherPK(questionPK, questionContainerHeader.getPK().
           getId());
@@ -614,7 +599,7 @@ public class DefaultQuestionContainerService
     return finalQuestionContainerPK;
   }
 
-  @Transactional(Transactional.TxType.REQUIRED)
+  @Transactional
   @Override
   public void updateQuestionContainerHeader(QuestionContainerHeader questionContainerHeader) {
     try (Connection con = getConnection()) {
@@ -647,6 +632,35 @@ public class DefaultQuestionContainerService
     }
   }
 
+  @Transactional
+  @Override
+  public void deleteQuestionContainer(QuestionContainerPK questionContainerPK) {
+    ScorePK scorePK = new ScorePK(questionContainerPK.getId(), questionContainerPK.getSpace(),
+        questionContainerPK.getComponentName());
+    QuestionPK questionPK =
+        new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(),
+            questionContainerPK.getComponentName());
+    try {
+      scoreService.deleteScoreByFatherPK(scorePK, questionContainerPK.getId());
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(e);
+    }
+    try {
+      questionService.deleteQuestionsByFatherPK(questionPK, questionContainerPK.getId());
+      deleteIndex(questionContainerPK);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(e);
+    }
+    try (Connection con = getConnection()) {
+      QuestionContainerDAO.deleteComments(con, questionContainerPK);
+      QuestionContainerDAO.deleteQuestionContainerHeader(con, questionContainerPK);
+      QuestionContainerContentManager.deleteSilverContent(con, questionContainerPK);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(e);
+    }
+  }
+
+  @Transactional
   @Override
   public void deleteVotes(QuestionContainerPK questionContainerPK) {
 
@@ -684,34 +698,6 @@ public class DefaultQuestionContainerService
         }
       }
 
-    } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(e);
-    }
-  }
-
-  @Transactional(Transactional.TxType.REQUIRED)
-  @Override
-  public void deleteQuestionContainer(QuestionContainerPK questionContainerPK) {
-    ScorePK scorePK = new ScorePK(questionContainerPK.getId(), questionContainerPK.getSpace(),
-        questionContainerPK.getComponentName());
-    QuestionPK questionPK =
-        new QuestionPK(questionContainerPK.getId(), questionContainerPK.getSpace(),
-            questionContainerPK.getComponentName());
-    try {
-      scoreService.deleteScoreByFatherPK(scorePK, questionContainerPK.getId());
-    } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(e);
-    }
-    try {
-      questionService.deleteQuestionsByFatherPK(questionPK, questionContainerPK.getId());
-      deleteIndex(questionContainerPK);
-    } catch (Exception e) {
-      throw new QuestionContainerRuntimeException(e);
-    }
-    try (Connection con = getConnection()) {
-      QuestionContainerDAO.deleteComments(con, questionContainerPK);
-      QuestionContainerDAO.deleteQuestionContainerHeader(con, questionContainerPK);
-      QuestionContainerContentManager.deleteSilverContent(con, questionContainerPK);
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(e);
     }
@@ -883,10 +869,8 @@ public class DefaultQuestionContainerService
    */
   @Override
   public void deleteIndex(QuestionContainerPK pk) {
-
     IndexEntryKey indexEntry =
         new IndexEntryKey(pk.getComponentName(), "QuestionContainer", pk.getId());
-
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
