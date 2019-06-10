@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.notification.system.asynchronous;
 
-import org.silverpeas.core.notification.system.GenericTestResource;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,10 +31,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.notification.system.GenericTestResource;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.notification.system.TestResource;
 import org.silverpeas.core.notification.system.TestResourceEvent;
 import org.silverpeas.core.notification.system.TestResourceEventBucket;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.TestStatisticRule;
 import org.silverpeas.core.util.ServiceProvider;
@@ -186,7 +186,7 @@ public class MassiveAsynchronousNotificationIT {
   }
 
   private void waitForReception(int nbSend) throws InterruptedException {
-    Thread.sleep(1000 + (nbSend * 10));
+    Thread.sleep(2000 + (nbSend * 10));
   }
 
   private void assertThatEventIsWellReceived(int nbListeners,

@@ -53,7 +53,8 @@ mvn ${SONAR_MAVEN_GOAL} -Dsonar.analysis.mode=issues \\
 def computeSnapshotVersion() {
   def pom = readMavenPom()
   final String version = pom.version
-  final String defaultVersion = env.BRANCH_NAME == 'master' ? version : env.BRANCH_NAME
+  final String defaultVersion = env.BRANCH_NAME == 'master' ? version :
+      env.BRANCH_NAME.toLowerCase().replaceAll('[# -]', '')
   Matcher m = env.CHANGE_TITLE =~ /^(Bug #\d+|Feature #\d+).*$/
   final String snapshot =
       m.matches() ? m.group(1).toLowerCase().replaceAll(' #', '') : ''
