@@ -37,6 +37,7 @@ import org.silverpeas.core.contribution.content.LinkUrlDataSource;
 import org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageUrlAccordingToHtmlSizeDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
+import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.io.file.AttachmentUrlLinkProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProcessor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
@@ -95,6 +96,9 @@ public class WysiwygContentTransformerTest {
 
   @TestManagedBean
   private GalleryImageUrlAccordingToHtmlSizeDirectiveTranslator4Test gallTranslator;
+
+  @TestManagedBean
+  private PermalinkRegistry permalinkRegistry;
 
   @SuppressWarnings("unchecked")
   @BeforeEach
@@ -184,6 +188,17 @@ public class WysiwygContentTransformerTest {
 
     assertThat(result, is(getContentOfDocumentNamed(
         "wysiwygWithSeveralImagesTransformedForImageResizingResult.txt")));
+  }
+
+  @Test
+  public void applyingSilverpeasLinkCss() throws Exception {
+    WysiwygContentTransformer transformer =
+        WysiwygContentTransformer.on(getContentOfDocumentNamed("wysiwygWithSeveralTypesOfLink.txt"));
+
+    String result = transformer.applySilverpeasLinkCssDirective().transform();
+
+    assertThat(result, is(getContentOfDocumentNamed(
+        "wysiwygWithSeveralTypesOfLinkTransformedForCssLinkApplierResult.txt")));
   }
 
   /*
