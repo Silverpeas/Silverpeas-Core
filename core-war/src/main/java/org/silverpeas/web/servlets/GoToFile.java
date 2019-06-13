@@ -23,15 +23,15 @@
  */
 package org.silverpeas.web.servlets;
 
-import org.silverpeas.core.web.util.servlet.GoTo;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.codec.CharEncoding;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.web.util.ClientBrowserUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.util.ClientBrowserUtil;
+import org.silverpeas.core.web.util.servlet.GoTo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,15 +53,12 @@ public class GoToFile extends GoTo {
     String componentId = attachment.getInstanceId();
     String foreignId = attachment.getForeignId();
 
-    if (isUserLogin(req)) {
-      // Has the user access rights
-      if (attachment.canBeAccessedBy(UserDetail.getCurrentRequester())) {
-        res.setCharacterEncoding(CharEncoding.UTF_8);
-        res.setContentType("text/html; charset=utf-8");
-        String fileName = ClientBrowserUtil.rfc2047EncodeFilename(req, attachment.getFilename());
-        res.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
-        return URLUtil.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
-      }
+    if (isUserLogin(req) && attachment.canBeAccessedBy(UserDetail.getCurrentRequester())) {
+      res.setCharacterEncoding(CharEncoding.UTF_8);
+      res.setContentType(attachment.getContentType() + "; charset=utf-8");
+      String fileName = ClientBrowserUtil.rfc2047EncodeFilename(req, attachment.getFilename());
+      res.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
+      return URLUtil.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
     }
 
     if (StringUtil.isDefined(req.getParameter("ComponentId"))) {

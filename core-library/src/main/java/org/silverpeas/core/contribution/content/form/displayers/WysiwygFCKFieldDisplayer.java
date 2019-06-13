@@ -180,8 +180,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     final WysiwygContentTransformer wysiwygContentTransformer =
         WysiwygContentTransformer.on(code)
             .modifyImageUrlAccordingToHtmlSizeDirective()
-            .resolveVariablesDirective();
-
+            .resolveVariablesDirective()
+            .applySilverpeasLinkCssDirective();
     out.println(wysiwygContentTransformer.transform());
   }
 

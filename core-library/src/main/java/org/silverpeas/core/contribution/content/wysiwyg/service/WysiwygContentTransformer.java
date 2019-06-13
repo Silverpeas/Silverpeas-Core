@@ -24,8 +24,9 @@
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
 import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.contribution.content.wysiwyg.service.directive.VariablesReplacementDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageUrlAccordingToHtmlSizeDirective;
+import org.silverpeas.core.contribution.content.wysiwyg.service.directive.SilverpeasLinkCssApplierDirective;
+import org.silverpeas.core.contribution.content.wysiwyg.service.directive.VariablesReplacementDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
 
 import java.util.ArrayList;
@@ -76,6 +77,15 @@ public class WysiwygContentTransformer {
   }
 
   /**
+   * Applies the sp-permalink or sp-link css classes to links HTML elements.
+   * @return the instance of the current {@link WysiwygContentTransformer}.
+   */
+  public WysiwygContentTransformer applySilverpeasLinkCssDirective() {
+    directives.add(new SilverpeasLinkCssApplierDirective());
+    return this;
+  }
+
+  /**
    * Default method in order to apply all the transformation directives and recover immediately the
    * result as string.
    * @return the transformed wysiwyg content.
@@ -107,6 +117,8 @@ public class WysiwygContentTransformer {
    * @throws SilverpeasException on technical error.
    */
   public MailContentProcess.MailResult toMailContent() throws SilverpeasException {
-    return modifyImageUrlAccordingToHtmlSizeDirective().transform(new MailContentProcess());
+    return modifyImageUrlAccordingToHtmlSizeDirective()
+        .resolveVariablesDirective()
+        .transform(new MailContentProcess());
   }
 }
