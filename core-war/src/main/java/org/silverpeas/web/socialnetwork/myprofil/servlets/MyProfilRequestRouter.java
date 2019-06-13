@@ -94,7 +94,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     SocialNetworkHelper socialNetworkHelper = ServiceProvider.getService(SocialNetworkHelper.class);
 
     try {
-      if (route == MyInfos) {
+      if (route == Main || route == MyInfos) {
         // Détermination du domaine du user
         boolean domainRW = myProfilSC.isUserDomainRW();
 
@@ -155,7 +155,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       } else if (route == MyProfileRoutes.MyWall) {
         request.setAttribute("View", function);
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
-      } else if (route == Main || route == MyProfileRoutes.MyFeed) {
+      } else if (route == MyProfileRoutes.MyFeed) {
         request.setAttribute("View", MyProfileRoutes.MyFeed.toString());
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if ("MyEvents".equalsIgnoreCase(function)) {

@@ -24,6 +24,7 @@
 package org.silverpeas.web.directory.servlets;
 
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
@@ -74,13 +75,15 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     try {
       List<String> lDomainIds = processDomains(request, directorySC);
 
-      DirectoryItemList users = new DirectoryItemList();
+      DirectoryItemList users;
       if ("Main".equalsIgnoreCase(function)) {
 
         String groupId = request.getParameter("GroupId");
         String groupIds = request.getParameter("GroupIds");
         String spaceId = request.getParameter("SpaceId");
         String userId = request.getParameter("UserId");
+        // case of a direct access to directory of contacts of once component
+        String componentId = request.getParameter("ComponentId");
 
         String sort = request.getParameter("Sort");
         if (StringUtil.isDefined(sort)) {
@@ -88,6 +91,9 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         } else {
           directorySC.setCurrentSort(DirectorySessionController.SORT_ALPHA);
         }
+
+        String doNotUseContactsComponents = request.getParameter("DoNotUseContacts");
+        directorySC.setDoNotUseContacts(StringUtil.getBooleanValue(doNotUseContactsComponents));
 
         if (StringUtil.isDefined(groupId)) {
           users = directorySC.getAllUsersByGroup(groupId);
@@ -97,10 +103,15 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         } else if (StringUtil.isDefined(spaceId)) {
           users = directorySC.getAllUsersBySpace(spaceId);
         } else if (!lDomainIds.isEmpty()) {
+          directorySC.initSources(true);
           users = directorySC.getAllUsersByDomains();
         } else if (StringUtil.isDefined(userId)) {
           users = directorySC.getAllContactsOfUser(userId);
+        } else if (StringUtil.isDefined(componentId)) {
+          directorySC.setCurrentDirectory(DirectorySessionController.DIRECTORY_COMPONENT);
+          users = directorySC.getContacts(componentId, true);
         } else {
+          directorySC.initSources(false);
           users = directorySC.getAllUsers();
         }
 
@@ -155,12 +166,8 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         users = directorySC.getUsersByIndex(function);
         destination = doPagination(request, users, directorySC);
 
-      } else if ("pagination".equalsIgnoreCase(function)) {
-
-        users = directorySC.getLastListOfUsersCalled();
-        destination = doPagination(request, users, directorySC);
-
-      } else if ("ChangeNumberItemsPerPage".equalsIgnoreCase(function)) {
+      } else if ("pagination".equalsIgnoreCase(function) ||
+          "ChangeNumberItemsPerPage".equalsIgnoreCase(function)) {
 
         users = directorySC.getLastListOfUsersCalled();
         destination = doPagination(request, users, directorySC);
@@ -173,6 +180,21 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
       } else if ("Clear".equals(function)) {
         directorySC.clear();
         destination = getDestination("Main", directorySC, request);
+      } else if ("LimitTo".equals(function)) {
+        // case of an access to directory but limited to one source
+        String limitedToSourceId = request.getParameter("SourceId");
+        directorySC.setSelectedSource(limitedToSourceId);
+        if ("-1".equals(limitedToSourceId)) {
+          users = directorySC.getAllUsers();
+        } else if (limitedToSourceId.startsWith("yellow")){
+          directorySC.setCurrentDirectory(DirectorySessionController.DIRECTORY_CONTACTS);
+          users = directorySC.getContacts(limitedToSourceId, true);
+        } else {
+          directorySC.setCurrentDomains(Arrays.asList(limitedToSourceId));
+          directorySC.setCurrentDirectory(DirectorySessionController.DIRECTORY_DOMAIN);
+          users = directorySC.getAllUsersByDomains();
+        }
+        destination = doPagination(request, users, directorySC);
       }
     } catch (DirectoryException e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
@@ -185,7 +207,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
   /**
    * return true if this searche by index
    */
-  boolean isSearchByIndex(String lettre) {
+  private boolean isSearchByIndex(String lettre) {
     if (lettre != null && lettre.length() == 1) {
       return Character.isLetter(lettre.charAt(0));
     } else {
@@ -197,7 +219,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
    * do pagination
    * @param request
    */
-  String doPagination(HttpRequest request, DirectoryItemList users,
+  private String doPagination(HttpRequest request, DirectoryItemList users,
       DirectorySessionController directorySC) {
     boolean doNotUseExtraForm = request.getParameterAsBoolean("DoNotUseExtraForm");
     final PaginationPage currentPagination = directorySC.getMemberPage();
@@ -217,6 +239,15 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     request.setAttribute("Sort", directorySC.getCurrentSort());
     request.setAttribute("ShowHelp", false);
     request.setAttribute("QuickUserSelectionEnabled", directorySC.isQuickUserSelectionEnabled());
+    if (directorySC.getCurrentDirectory() == DirectorySessionController.DIRECTORY_DEFAULT ||
+        directorySC.getCurrentDirectory() == DirectorySessionController.DIRECTORY_DOMAIN ||
+        directorySC.getCurrentDirectory() == DirectorySessionController.DIRECTORY_CONTACTS) {
+      request.setAttribute("DirectorySources", directorySC.getDirectorySources());
+    }
+    SilverpeasComponentInstance component = directorySC.getCurrentComponent();
+    if (component != null) {
+      doNotUseExtraForm = true;
+    }
     if (!doNotUseExtraForm) {
       request.setAttribute("ExtraForm", directorySC.getExtraForm());
       request.setAttribute("ExtraFormContext", directorySC.getExtraFormContext());
@@ -274,6 +305,12 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
             .append(directorySC.getCurrentSpace().getName(directorySC.getLanguage()));
         break;
 
+      case DirectorySessionController.DIRECTORY_CONTACTS:
+      case DirectorySessionController.DIRECTORY_COMPONENT:
+        breadCrumb.append(" ")
+            .append(directorySC.getCurrentComponent().getLabel(directorySC.getLanguage()));
+        break;
+
       default:
         break;
     }
@@ -284,7 +321,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
       DirectorySessionController directorySC) {
     String domainId = request.getParameter("DomainId");
     String domainIds = request.getParameter("DomainIds");
-    List<String> lDomainIds = new ArrayList<String>();
+    List<String> lDomainIds = new ArrayList<>();
     if (StringUtil.isDefined(domainId)) {
       lDomainIds.add(domainId);
     } else if (StringUtil.isDefined(domainIds)) {

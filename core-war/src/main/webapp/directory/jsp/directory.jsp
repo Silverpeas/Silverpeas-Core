@@ -60,6 +60,16 @@
 <c:set var="quickUserSelectionEnabled" value="${requestScope.QuickUserSelectionEnabled}"/>
 <c:set var="domains" value="${requestScope.Domains}"/>
 <c:set var="groups" value="${requestScope.Groups}"/>
+<c:set var="sources" value="${requestScope.DirectorySources}"/>
+
+<c:set var="currentSource" value=""/>
+<c:set var="currentSourceCSS" value=""/>
+<c:forEach var="source" items="${sources}">
+  <c:if test="${source.selected}">
+    <c:set var="currentSource" value="${source}"/>
+    <c:set var="currentSourceCSS" value="source-${source.id}"/>
+  </c:if>
+</c:forEach>
 
 <fmt:message key="GML.print" var="labelPrint"/>
 
@@ -83,7 +93,7 @@
   %>
   <script type="text/javascript">
     function viewIndex(index) {
-      $.progressMessage();
+      spProgressMessage.show();
       location.href = index;
     }
 
@@ -111,7 +121,7 @@
       if (!queryOK) {
         $("#dialog-message").dialog("open");
       } else {
-        $.progressMessage();
+        spProgressMessage.show();
         $(document.search).submit();
       }
     }
@@ -124,12 +134,12 @@
     }
 
     function clear() {
-      $.progressMessage();
+      spProgressMessage.show();
       location.href = "Clear";
     }
 
     function sort(val) {
-      $.progressMessage();
+      spProgressMessage.show();
       location.href = "Sort?Type=" + val;
     }
 
@@ -161,16 +171,22 @@
       });
     }
 
+    function showContact(url) {
+      jQuery.popup.load(url).show('free', {
+        title : 'Contact'
+      });
+    }
+
     <c:if test="${(scope == DIRECTORY_MINE)}">
     function deleteRelationCallback(withUser) {
-      $.progressMessage();
+      spProgressMessage.show();
       var currentParams = location.href.split('?');
       var url = '<c:url value="/Rdirectory/jsp/RemoveUserFromLists?UserId="/>' + withUser.id;
       if (currentParams.length > 1) {
         url += '&' + currentParams[1];
       }
       sp.ajaxRequest(url).loadTarget('#myContacts', true).then(function() {
-        $.closeProgressMessage();
+        spProgressMessage.hide();
         activateUserZoom();
       });
     }
@@ -196,6 +212,11 @@
           return false;
         }
         return true;
+      });
+
+      $("#sources select").change(function() {
+        spProgressMessage.show();
+        location.href = "LimitTo?SourceId="+$(this).val();
       });
 
       var flip = 0;
@@ -232,7 +253,8 @@
   </script>
 
 </head>
-<body id="directory">
+
+<body id="directory" class="${currentSourceCSS}">
 <view:browseBar extraInformations="${breadcrumb}"/>
 <view:operationPane>
   <view:operation action="javascript:window.print()" altText="${labelPrint}"/>
@@ -276,6 +298,25 @@
         <c:set var="indexCSS" value="${(VIEW_CONNECTED eq view) ? 'class=\"active\"' : ''}"/>
         <a ${indexCSS} href="javascript:viewIndex('${VIEW_CONNECTED}')"><fmt:message key="directory.scope.connected"/></a>
       </div>
+
+      <c:if test="${not empty sources && fn:length(sources)>1}">
+        <div id="sources">
+          Voir :
+          <select name="SourceId">
+            <option value="-1">Tout</option>
+            <c:forEach var="source" items="${sources}">
+              <c:choose>
+                <c:when test="${source.selected}">
+                  <option value="${source.id}" selected="selected">${source.label}</option>
+                </c:when>
+                <c:otherwise>
+                  <option value="${source.id}">${source.label}</option>
+                </c:otherwise>
+              </c:choose>
+            </c:forEach>
+          </select>
+        </div>
+      </c:if>
 
       <% if (extraForm != null) { %>
       <div id="extraForm">
