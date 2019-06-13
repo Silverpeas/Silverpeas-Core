@@ -30,12 +30,15 @@ import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.contribution.attachment.SimpleDocumentUrlAccordingToHtmlSizeDirectiveTranslator;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerTest;
+import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerTest;
+import org.silverpeas.core.util.file.FileUtil;
 
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -46,6 +49,9 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.silverpeas.core.util.CollectionUtil.asSet;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 @UnitTest
 @BenchmarkOptions(benchmarkRounds = 500, warmupRounds = 500)
@@ -58,7 +64,12 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
   public BenchmarkRule benchmarkRule = new BenchmarkRule();
 
   @Test
-  public void manageImageResizing() throws Exception {
+  public void manageImageResizing() {
+    when(TestBeanContainer.getMockedBeanContainer()
+        .getAllBeansByType(ImageUrlAccordingToHtmlSizeDirective.SrcTranslator.class)).thenReturn(
+        asSet(new SimpleDocumentUrlAccordingToHtmlSizeDirectiveTranslator(),
+            new GalleryImageUrlAccordingToHtmlSizeDirectiveTranslator4Test()));
+
     ImageUrlAccordingToHtmlSizeDirective directive = new ImageUrlAccordingToHtmlSizeDirective();
     String wysiwygContentSource = getContentOfDocumentNamed("wysiwygWithSeveralImages.txt");
 
@@ -69,21 +80,21 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
   }
 
   @Test
-  public void manageImageResizingOnEmptyContent() throws Exception {
+  public void manageImageResizingOnEmptyContent() {
     ImageUrlAccordingToHtmlSizeDirective directive = new ImageUrlAccordingToHtmlSizeDirective();
     String result = directive.execute("");
     assertThat(result, is(""));
   }
 
   @Test
-  public void manageImageResizingOnNullContent() throws Exception {
+  public void manageImageResizingOnNullContent() {
     ImageUrlAccordingToHtmlSizeDirective directive = new ImageUrlAccordingToHtmlSizeDirective();
     String result = directive.execute(null);
     assertThat(result, is(""));
   }
 
   @Test
-  public void manageImageResizingButNoImageToResize() throws Exception {
+  public void manageImageResizingButNoImageToResize() {
     ImageUrlAccordingToHtmlSizeDirective directive = new ImageUrlAccordingToHtmlSizeDirective();
     String wysiwygContentSource = getContentOfDocumentNamed("wysiwygWithoutAttachmentImages.txt");
 
@@ -93,14 +104,14 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
   }
 
   @Test
-  public void imageResizingPerformanceWithCurrentImpl() throws Exception {
+  public void imageResizingPerformanceWithCurrentImpl() {
     ImageUrlAccordingToHtmlSizeDirective directive = new ImageUrlAccordingToHtmlSizeDirective();
     String wysiwygContentSource = getContentOfDocumentNamed("wysiwygWithSeveralImages.txt");
     directive.execute(wysiwygContentSource);
   }
 
   @Test
-  public void oldImageResizingPerformance() throws Exception {
+  public void oldImageResizingPerformance() {
     String wysiwygContentSource = getContentOfDocumentNamed("wysiwygWithSeveralImages.txt");
     updateURLOfImagesAccordingToSizes(wysiwygContentSource);
   }
@@ -192,6 +203,21 @@ public class ImageUrlAccordingToHtmlSizeDirectiveTest {
       return new File(documentLocation.toURI());
     } catch (URISyntaxException e) {
       return null;
+    }
+  }
+
+  @Singleton
+  public static class GalleryImageUrlAccordingToHtmlSizeDirectiveTranslator4Test
+      implements ImageUrlAccordingToHtmlSizeDirective.SrcTranslator {
+
+    @Override
+    public boolean isCompliantUrl(final String url) {
+      return defaultStringIfNotDefined(url).contains("/GalleryInWysiwyg/");
+    }
+
+    @Override
+    public String translateUrl(final String url, final String width, final String height) {
+      return url + "&amp;Size=TEST";
     }
   }
 }

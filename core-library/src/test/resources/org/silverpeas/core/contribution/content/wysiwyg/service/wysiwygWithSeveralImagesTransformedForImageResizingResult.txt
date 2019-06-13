@@ -8,7 +8,7 @@
 
 <p>Photot&egrave;que :</p>
 
-<p><img alt="" border="0" src="/silverpeas/GalleryInWysiwyg/dummy?ImageId=187&amp;ComponentId=gallery4&amp;UseOriginal=false" /></p>
+<p><img alt="" border="0" src="/silverpeas/GalleryInWysiwyg/dummy?ImageId=187&amp;ComponentId=gallery4&amp;UseOriginal=false&amp;Size=TEST" /></p>
 
 <p>Upload image :</p>
 
