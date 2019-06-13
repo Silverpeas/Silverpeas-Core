@@ -1,5 +1,13 @@
 .cellOperation, #indexAndSearch, .ArrayNavigation,
 #users .infoConnection, #users .userType, #users .status,
-#pagination, .sp_goToTop {
+#pagination, .sp_goToTop, div.action {
   display: none;
 }
+
+a[href]:after {
+  content: none !important;
+}﻿
+
+a {
+ text-decoration: none !important;
+}﻿

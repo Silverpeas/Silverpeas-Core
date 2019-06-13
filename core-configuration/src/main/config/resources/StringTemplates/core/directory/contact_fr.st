@@ -1,9 +1,9 @@
 <div class="profilPhoto">
-	<a href="javascript:SP_openWindow('$context$$url$')">$avatar$</a>
+	<a href="javascript:showContact('$context$$url$')">$avatar$</a>
  </div>
  <div class="info">
    <ul>
-     <li class="userName"> <a href="javascript:SP_openWindow('$context$$url$')">$contact.lastName$ $contact.firstName$</a></li>
+     <li class="userName"> <a href="javascript:showContact('$context$$url$')">$contact.lastName$ $contact.firstName$</a></li>
      <li class="userMail">
 	 <a href="mailto:$mail$">$mail$</a>
      </li>

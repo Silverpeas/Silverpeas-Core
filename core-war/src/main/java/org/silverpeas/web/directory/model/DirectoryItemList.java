@@ -83,6 +83,10 @@ public class DirectoryItemList extends ArrayList<DirectoryItem> {
     }
   }
 
+  public void addContactItems(DirectoryItemList contactItems) {
+    super.addAll(contactItems);
+  }
+
   public boolean contains(final CompleteContact completeContact) {
     return super.contains(new ContactItem(completeContact));
   }

@@ -45,6 +45,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -64,7 +65,12 @@ public class DirectorySessionControllerTest {
   }
 
   @Test
-  public void testGetAllUsers() throws Exception {
+  public void testGetAllUsers() {
+    Domain domain = new Domain();
+    domain.setId("0");
+    domain.setName("Silverpeas");
+    Domain[] domains = new Domain[1];
+    domains[0] = domain;
     List<User> users = new ArrayList<>();
     UserDetail user1 = new UserDetail();
     user1.setId("1");
@@ -94,10 +100,13 @@ public class DirectorySessionControllerTest {
     when(mockOrganizationController.getAllUsers()).thenReturn(users.toArray(new UserDetail[3]));
     when(mockOrganizationController.getComponentIdsForUser(anyString(), anyString()))
         .thenReturn(new String[0]);
+    when(mockOrganizationController.getUsersOfDomains(anyList())).thenReturn(users);
+    when(mockOrganizationController.getAllDomains()).thenReturn(domains);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
     // All users
+    directoryDSC.initSources(false);
     DirectoryItemList userCalledItems = directoryDSC.getAllUsers();
     assertNotNull(userCalledItems);
     assertEquals(3, userCalledItems.size());
@@ -184,7 +193,7 @@ public class DirectorySessionControllerTest {
   }
 
   @Test
-  public void testGetAllUsersByDomain() throws Exception {
+  public void testGetAllUsersByDomain() {
     List<User> usersOfDomain = new ArrayList<>();
     UserDetail user1 = new UserDetail();
     user1.setId("1");
@@ -214,6 +223,10 @@ public class DirectorySessionControllerTest {
 
     Domain domain = new Domain();
     domain.setId("3");
+    domain.setName("Customers");
+    Domain[] domains = new Domain[1];
+    domains[0] = domain;
+
     MainSessionController controller = mock(MainSessionController.class);
     when(controller.getCurrentUserDetail()).thenReturn(user1);
     List<String> domainIds = new ArrayList<>();
@@ -222,6 +235,8 @@ public class DirectorySessionControllerTest {
     when(mockOrganizationController.getDomain("3")).thenReturn(domain);
     when(mockOrganizationController.getComponentIdsForUser(anyString(), anyString()))
         .thenReturn(new String[0]);
+    when(mockOrganizationController.getUsersOfDomains(anyList())).thenReturn(usersOfDomain);
+    when(mockOrganizationController.getAllDomains()).thenReturn(domains);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
