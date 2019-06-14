@@ -39,12 +39,18 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "markAllMessagesAsReadByUserIdAndIds",
         query = "update SILVERMAILMessageBean m set m.readen = 1 where m.userId = :userId " +
             "and m.readen != 1 and m.id in :ids"),
+    @NamedQuery(name = "getLongTextIdsOfAllMessagesByUserIdAndIds",
+        query = "select distinct m.body from SILVERMAILMessageBean m where m.userId = :userId " +
+            "and m.id in :ids"),
     @NamedQuery(name = "deleteAllMessagesByUserIdAndIds",
         query = "delete SILVERMAILMessageBean m where m.userId = :userId " +
             "and m.id in :ids"),
     @NamedQuery(name = "markAllMessagesAsReadByUserIdAndFolderId",
         query = "update SILVERMAILMessageBean m set m.readen = 1 where m.userId = :userId " +
             "and m.folderId = :folderId and m.readen != 1"),
+    @NamedQuery(name = "getLongTextIdsOfAllMessagesByUserIdAndFolderId",
+        query = "select distinct m.body from SILVERMAILMessageBean m where m.userId = :userId " +
+            "and m.folderId = :folderId"),
     @NamedQuery(name = "deleteAllMessagesByUserIdAndFolderId",
         query = "delete SILVERMAILMessageBean m where m.userId = :userId " +
             "and m.folderId = :folderId")})

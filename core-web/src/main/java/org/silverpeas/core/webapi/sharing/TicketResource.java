@@ -126,17 +126,4 @@ public class TicketResource extends RESTWebService {
   private SharingTicketService getFileSharingService() {
     return getSharingTicketService();
   }
-
-  private PaginationPage fromPage(String page) {
-    PaginationPage paginationPage = null;
-    if (page != null && !page.isEmpty()) {
-      String[] pageAttributes = page.split(";");
-      int nth = Integer.parseInt(pageAttributes[0]);
-      int count = Integer.parseInt(pageAttributes[1]);
-      if (count > 0) {
-        paginationPage = new PaginationPage(nth, count);
-      }
-    }
-    return paginationPage;
-  }
 }

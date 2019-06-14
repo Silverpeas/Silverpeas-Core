@@ -45,6 +45,7 @@
             sp.log.error("TemplateRepository - " + msg);
             return "<div>" + msg + "</div>";
           }
+          componentConfiguration = componentConfiguration ? componentConfiguration : {};
           componentConfiguration.template = templates.substring(start, end);
           resolve(componentConfiguration);
         });
@@ -80,34 +81,33 @@ Vue.directive('sp-focus', {
 /**
  * This directive permits to render an HTML element as disabled.
  */
-Vue.directive('sp-disable-if', {
-  update : function(el, binding) {
-    if (binding.value) {
-      el.classList.add('silverpeas-disabled');
-      var disableElement = function(el) {
-        var tabIndex = el.tabIndex;
-        if (typeof tabIndex === 'number' && tabIndex !== -1) {
-          el.__sp_lastTabIndexValue = el.tabIndex;
-          el.tabIndex = -1;
+Vue.directive('sp-disable-if', function(el, binding) {
+  if (binding.value) {
+    el.classList.add('silverpeas-disabled');
+    var disableElement = function(elToDisable) {
+      var tabIndex = elToDisable.tabIndex;
+      if (typeof tabIndex === 'number' && tabIndex !== -1) {
+        elToDisable.__sp_lastTabIndexValue = elToDisable.tabIndex;
+        elToDisable.tabIndex = -1;
+      }
+    };
+    disableElement(el);
+    el.blur();
+    sp.element.querySelectorAll('a,input', el).forEach(disableElement);
+  } else {
+    el.classList.remove('silverpeas-disabled');
+    var enableElement = function(elToEnable) {
+      if (typeof elToEnable.__sp_lastTabIndexValue === 'number') {
+        if (elToEnable.__sp_lastTabIndexValue === 0) {
+          elToEnable.removeAttribute('tabIndex');
+        } else {
+          elToEnable.setAttribute('tabIndex', elToEnable.__sp_lastTabIndexValue);
         }
-      };
-      disableElement(el);
-      sp.element.querySelectorAll('a,input', el).forEach(disableElement);
-    } else {
-      el.classList.remove('silverpeas-disabled');
-      var enableElement = function(el) {
-        if (typeof el.__sp_lastTabIndexValue === 'number') {
-          if (el.__sp_lastTabIndexValue === 0) {
-            el.removeAttribute('tabIndex');
-          } else {
-            el.setAttribute('tabIndex', el.__sp_lastTabIndexValue);
-          }
-          delete el.__sp_lastTabIndexValue;
-        }
-      };
-      enableElement(el);
-      sp.element.querySelectorAll('a,input', el).forEach(enableElement);
-    }
+        delete elToEnable.__sp_lastTabIndexValue;
+      }
+    };
+    enableElement(el);
+    sp.element.querySelectorAll('a,input', el).forEach(enableElement);
   }
 });
 
@@ -416,3 +416,27 @@ window.VuejsProgressMessageMixin = {
     }
   }
 };
+
+/**
+ * Silverpeas's fade transition.
+ */
+Vue.component('silverpeas-fade-transition', {
+  template : '<transition v-bind:name="name" appear ' +
+               'v-on:before-enter="$emit(\'before-enter\',$event)" ' +
+               'v-on:enter="$emit(\'enter\',$event)" ' +
+               'v-on:after-enter="$emit(\'after-enter\',$event)" ' +
+               'v-on:before-leave="$emit(\'before-leave\',$event)" ' +
+               'v-on:leave="$emit(\'leave\',$event)" ' +
+               'v-on:after-leave="$emit(\'after-leave\',$event)"><slot></slot></transition>',
+  props : {
+    durationType : {
+      'type' : String,
+      'default' : 'normal'
+    }
+  },
+  computed : {
+    name : function() {
+      return this.durationType + '-fade';
+    }
+  }
+});

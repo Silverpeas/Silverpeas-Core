@@ -28,6 +28,9 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters
 import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.Collection;
+import java.util.List;
+
+import static java.util.Collections.emptyList;
 
 /**
  * JPA repository of <code>SILVERMAILMessageBean</code> instances.
@@ -37,6 +40,7 @@ public class SILVERMAILMessageBeanRepository
     extends BasicJpaEntityRepository<SILVERMAILMessageBean> {
 
   private static final String USER_ID = "userId";
+  private static final String FOLDER_ID = "folderId";
 
   /**
    * Finds user notifications according to the given criteria.
@@ -71,7 +75,7 @@ public class SILVERMAILMessageBeanRepository
    */
   public long markAsReadAllMessagesByUserIdAndFolderId(String userId, String folderId) {
     NamedParameters parameters = newNamedParameters();
-    parameters.add(USER_ID, Long.parseLong(userId)).add("folderId", Long.parseLong(folderId));
+    parameters.add(USER_ID, Long.parseLong(userId)).add(FOLDER_ID, Long.parseLong(folderId));
     return updateFromNamedQuery("markAllMessagesAsReadByUserIdAndFolderId", parameters);
   }
 
@@ -93,6 +97,19 @@ public class SILVERMAILMessageBeanRepository
   }
 
   /**
+   * Gets all long text ids of the messages of folder specified by given identifier which belong
+   * to the user represented by the given identifier.
+   * @param userId the identifier of a user.
+   * @param folderId the identifier of a folder.
+   * @return a list of string identifier.
+   */
+  public List<String> getLongTextIdsOfAllMessagesByUserIdAndFolderId(String userId, String folderId) {
+    NamedParameters parameters = newNamedParameters();
+    parameters.add(USER_ID, Long.parseLong(userId)).add(FOLDER_ID, Long.parseLong(folderId));
+    return listFromNamedQuery("getLongTextIdsOfAllMessagesByUserIdAndFolderId", parameters, String.class);
+  }
+
+  /**
    * Deletes all the messages of folder specified by given identifier which belong to the user
    * represented by the given identifier.
    * @param userId the identifier of a user.
@@ -101,8 +118,25 @@ public class SILVERMAILMessageBeanRepository
    */
   public long deleteAllMessagesByUserIdAndFolderId(String userId, String folderId) {
     NamedParameters parameters = newNamedParameters();
-    parameters.add(USER_ID, Long.parseLong(userId)).add("folderId", Long.parseLong(folderId));
+    parameters.add(USER_ID, Long.parseLong(userId)).add(FOLDER_ID, Long.parseLong(folderId));
     return updateFromNamedQuery("deleteAllMessagesByUserIdAndFolderId", parameters);
+  }
+
+  /**
+   * Gets all long text ids of the messages specified by given identifiers which belong to the
+   * user represented by the given identifier.
+   * @param userId the identifier of a user.
+   * @param ids the identifiers of user notifications.
+   * @return a list of string identifier.
+   */
+  public List<String> getLongTextIdsOfMessagesByUserIdAndByIds(String userId, Collection<String> ids) {
+    if (ids.isEmpty()) {
+      return emptyList();
+    }
+    NamedParameters parameters = newNamedParameters();
+    parameters.add(USER_ID, Long.parseLong(userId))
+        .add("ids", getIdentifierConverter().convertToEntityIdentifiers(ids));
+    return listFromNamedQuery("getLongTextIdsOfAllMessagesByUserIdAndIds", parameters, String.class);
   }
 
   /**

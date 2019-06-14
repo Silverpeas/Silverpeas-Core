@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.base;
 
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -31,6 +32,7 @@ import org.silverpeas.core.personalization.service.PersonalizationServiceProvide
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.SilverpeasWebResource;
 import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -356,5 +358,35 @@ public abstract class RESTWebService implements ProtectedWebResource {
   protected URI identifiedBy(final UriBuilder base, final String... id) {
     Stream.of(id).forEach(base::path);
     return base.build();
+  }
+
+  /**
+   * Computes the {@link PaginationPage} according to the given asked page data.
+   * <p>
+   * Page data is a String composed of two values separated by a semicolon :
+   * <ul>
+   *   <li>Left value represents the page number. First page is '1'.</li>
+   *   <li>Right value represents the number of data per page.</li>
+   * </ul>
+   * </p>
+   * @param page the page information.
+   * @return the initialized {@link PaginationPage}.
+   */
+  protected PaginationPage fromPage(String page) {
+    PaginationPage paginationPage = null;
+    if (page != null && !page.isEmpty()) {
+      String[] pageAttributes = page.split(";");
+      try {
+        int nth = Integer.parseInt(pageAttributes[0]);
+        int count = Integer.parseInt(pageAttributes[1]);
+        if (count > 0) {
+          paginationPage = new PaginationPage(nth, count);
+        }
+      } catch (NumberFormatException ex) {
+        SilverLogger.getLogger(this).warn(ex);
+        paginationPage = PaginationPage.DEFAULT;
+      }
+    }
+    return paginationPage;
   }
 }

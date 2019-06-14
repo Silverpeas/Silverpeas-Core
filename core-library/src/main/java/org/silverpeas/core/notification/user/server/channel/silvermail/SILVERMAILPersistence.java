@@ -25,6 +25,8 @@ package org.silverpeas.core.notification.user.server.channel.silvermail;
 
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
+import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
@@ -47,6 +49,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.Collections.singletonList;
 
 public class SILVERMAILPersistence {
 
@@ -81,7 +85,6 @@ public class SILVERMAILPersistence {
   /**
    * @param criteria the criteria with which the search is parametrized.
    * @return the list of {@link SILVERMAILMessage} instances.
-   * @throws SILVERMAILException
    */
   private static SilverpeasList<SILVERMAILMessage> findByCriteria(SilvermailCriteria criteria) {
     final SilverpeasList<SILVERMAILMessageBean> messageBeans =
@@ -165,11 +168,18 @@ public class SILVERMAILPersistence {
    * Gets a message by its identifier.
    * @param msgId the message identifier.
    */
-  public static SILVERMAILMessage getMessage(long msgId) throws SILVERMAILException {
-    SILVERMAILMessage silverMailMessage =
-        findByCriteria(SilvermailCriteria.get().byId(msgId)).stream().findFirst().orElse(null);
+  public static SILVERMAILMessage getMessage(long msgId) {
+    return findByCriteria(SilvermailCriteria.get().byId(msgId)).stream().findFirst().orElse(null);
+  }
+
+  /**
+   * Gets a message by its identifier and mark it as read.
+   * @param msgId the message identifier.
+   */
+  public static SILVERMAILMessage getMessageAndMarkAsRead(long msgId) throws SILVERMAILException {
+    final SILVERMAILMessage silverMailMessage = getMessage(msgId);
     if (silverMailMessage != null) {
-      SILVERMAILMessageBean smb = getRepository().getById(String.valueOf(msgId));
+      final SILVERMAILMessageBean smb = getRepository().getById(String.valueOf(msgId));
       markMessageAsRead(smb);
     }
     return silverMailMessage;
@@ -187,12 +197,7 @@ public class SILVERMAILPersistence {
         //check rights : check that the current user has the rights to delete the message
         // notification
         if (Long.parseLong(userId) == toDel.getUserId()) {
-          try {
-            int longTextId = Integer.parseInt(toDel.getBody());
-            LongText.removeLongText(longTextId);
-          } catch (Exception e) {
-            SilverLogger.getLogger(SILVERMAILPersistence.class).error(e);
-          }
+          BackgroundProcessTask.push(new LongTextDeletionRequest(toDel.getBody()));
           repository.delete(toDel);
         } else {
           throw new ForbiddenRuntimeException(
@@ -209,8 +214,11 @@ public class SILVERMAILPersistence {
 
   public static void deleteAllMessagesInFolder(String currentUserId) {
     String folderId = "0";
-    long nbDeleted = Transaction.performInOne(() -> getRepository()
-        .deleteAllMessagesByUserIdAndFolderId(currentUserId, folderId));
+    long nbDeleted = Transaction.performInOne(() -> {
+      final List<String> longTextIds = getRepository().getLongTextIdsOfAllMessagesByUserIdAndFolderId(currentUserId, folderId);
+      BackgroundProcessTask.push(new LongTextDeletionRequest(longTextIds));
+      return getRepository().deleteAllMessagesByUserIdAndFolderId(currentUserId, folderId);
+    });
 
     if (nbDeleted > 0) {
       DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clear(currentUserId));
@@ -226,8 +234,11 @@ public class SILVERMAILPersistence {
   }
 
   public static void deleteMessages(String currentUserId, Collection<String> ids) {
-    long nbDeleted = Transaction.performInOne(() -> getRepository()
-        .deleteMessagesByUserIdAndByIds(currentUserId, ids));
+    long nbDeleted = Transaction.performInOne(() -> {
+      final List<String> longTextIds = getRepository().getLongTextIdsOfMessagesByUserIdAndByIds(currentUserId, ids);
+      BackgroundProcessTask.push(new LongTextDeletionRequest(longTextIds));
+      return getRepository().deleteMessagesByUserIdAndByIds(currentUserId, ids);
+    });
 
     if (nbDeleted > 0) {
       DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clear(currentUserId));
@@ -261,5 +272,37 @@ public class SILVERMAILPersistence {
     silverMailMessage.setDate(msgDate);
     silverMailMessage.setReaden(smb.getReaden());
     return silverMailMessage;
+  }
+
+  /**
+   * Suppression of long text is performed in background in order to increase performances.
+   */
+  private static class LongTextDeletionRequest extends AbstractBackgroundProcessRequest {
+
+    private final List<String> longTextIds;
+
+    private LongTextDeletionRequest(final String longTextId) {
+      this.longTextIds = singletonList(longTextId);
+    }
+
+    private LongTextDeletionRequest(final List<String> longTextIds) {
+      this.longTextIds = longTextIds;
+    }
+
+    @Override
+    protected void process() {
+      Transaction.performInOne(() -> {
+        longTextIds.forEach(id -> {
+          try {
+            LongText.removeLongText(Integer.parseInt(id));
+          } catch (NumberFormatException e) {
+            SilverLogger.getLogger(SILVERMAILPersistence.class).silent(e);
+          } catch (Exception e) {
+            SilverLogger.getLogger(SILVERMAILPersistence.class).error(e);
+          }
+        });
+        return null;
+      });
+    }
   }
 }

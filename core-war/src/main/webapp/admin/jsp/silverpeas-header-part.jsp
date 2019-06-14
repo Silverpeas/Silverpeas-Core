@@ -132,21 +132,7 @@ window.USERSESSION_PROMISE.then(function() {
     }
   }, 'connectedUsersChanged@TopBar');
 });
-window.USERNOTIFICATION_PROMISE.then(function() {
-  var $container = jQuery("#userNotifications");
-  spUserNotification.addEventListener('unreadUserNotificationsChanged', function(event) {
-    var unreadUserNotificationCount = event.detail.data.nbUnread;
-    $container.addClass("unread-user-notification");
-    var label = unreadUserNotificationCount + " ${labelUnreadUserNotifications}";
-    if (unreadUserNotificationCount === 1) {
-      label = unreadUserNotificationCount + " ${labelUnreadUserNotification}";
-    } else if (unreadUserNotificationCount === 0) {
-      label = "${labelUserNotifications}";
-      $container.removeClass("unread-user-notification");
-    }
-    jQuery("a", $container).text(label);
-  }, 'unreadUserNotificationsChanged@TopBar');
-});
+
 </script>
 <div id="topBar">
     <div id="backHome">
@@ -160,14 +146,25 @@ window.USERNOTIFICATION_PROMISE.then(function() {
 		<% } %>
 		<div class="userNav">
       <c:if test="${not isAnonymousAccess}">
-      <span id="connectedUsers" style="display:none">
-        <a href="#" onclick="javascript:onClick=spUserSession.viewConnectedUsers();"></a>
-        <span> | </span>
-      </span>
-      <span id="userNotifications">
-        <a href="javascript:void(0)" onclick="spUserNotification.view();">${labelUserNotifications}</a>
-        <span> | </span>
-      </span>
+        <span id="connectedUsers" style="display:none">
+          <a href="#" onclick="javascript:onClick=spUserSession.viewConnectedUsers();"></a>
+          <span> | </span>
+        </span>
+        <silverpeas-user-notifications no-unread-label="${labelUserNotifications}"
+                                       one-unread-label="${labelUnreadUserNotification}"
+                                       several-unread-label="${labelUnreadUserNotifications}">
+          <span>
+            <a href="javascript:void(0)"></a>
+            <span> | </span>
+          </span>
+        </silverpeas-user-notifications>
+        <script type="text/javascript">
+          whenSilverpeasReady(function() {
+            new Vue({
+              el : 'silverpeas-user-notifications'
+            });
+          });
+        </script>
       </c:if>
       <% if (!isAnonymousAccess && helper.getSettings("directoryVisible", true)) {
         outilDisplayed = true;

@@ -206,7 +206,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
 
   public SILVERMAILMessage getMessage(long messageId)
       throws SILVERMAILException {
-    return SILVERMAILPersistence.getMessage(messageId);
+    return SILVERMAILPersistence.getMessageAndMarkAsRead(messageId);
   }
 
   /**

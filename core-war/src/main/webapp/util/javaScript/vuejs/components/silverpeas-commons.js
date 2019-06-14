@@ -116,6 +116,8 @@
    *
    * One attribute is handled:
    * @param items permits to handle some UI displays.
+   * @param itemFeminineGender (Optional) permits to indicate the gender of the managed data (for
+   *     built-in labels).
    * @param noItemLabel (Optional) permits to override the default label displayed when no item
    *     exists.
    *
@@ -137,9 +139,17 @@
           'type' : Array,
           'required' : true
         },
+        itemFeminineGender : {
+          'type' : Boolean,
+          'default' : false
+        },
         noItemLabel : {
           'type' : String,
           'default' : 'N/A'
+        },
+        withFadeTransition : {
+          'type' : Boolean,
+          'default' : false
         }
       },
       computed : {
@@ -147,7 +157,12 @@
           return this.items.length > 0;
         },
         noItemMessage : function() {
-          return this.noItemLabel !== 'N/A' ? this.noItemLabel : this.messages.noItemLabel;
+          var label = this.noItemLabel !== 'N/A'
+              ? this.noItemLabel
+              : this.itemFeminineGender
+                  ? this.messages.noItemLabelFemale
+                  : this.messages.noItemLabel;
+          return '<span>' + label + '</span>';
         }
       }
     }));
@@ -177,13 +192,7 @@
    *            <silverpeas-list-item>
    */
   Vue.component('silverpeas-list-item',
-    commonAsyncComponentRepository.get('list-item', {
-      computed : {
-        isActions : function() {
-          return !!this.$slots.actions;
-        }
-      }
-    }));
+    commonAsyncComponentRepository.get('list-item'));
 
   /**
    */
@@ -241,6 +250,125 @@
         },
         close : function() {
           this.jqDialog.popup('close');
+        }
+      }
+    }));
+
+  /**
+   * silverpeas-attached-popin handles the display of a popin attached to an HTML element.
+   *
+   * It defines several attributes:
+   * {relatedId} - String or HTML element - .
+   * {minWidth} - Number (optional) - the minimal width of the popin.
+   * {maxWidth} - Number (optional) - the maximal width of the popin.
+   * {minHeight} - Number (optional) -  the minimal height of the popin.
+   * {maxHeight} - Number (optional) -  the maximal height of the popin.
+   * {openPromise} - Promise (optional) - a promise which MUST be resolved before displaying the
+   * popin.
+   * {scrollEndEvent} - Number (optional) - If filled, it activates the management of scroll event
+   * which permits to send event when the scroll is at end (or almost). The value to filled is the
+   * size in pixel before the real scroll end at which 'scroll-end' event is emitted.
+   *
+   * The following example illustrates the only one possible use of the directive:
+   * <silverpeas-attached-popin ...>...</silverpeas-attached-popin>
+   */
+  Vue.component('silverpeas-attached-popin',
+    commonAsyncComponentRepository.get('attached-popin', {
+      props : {
+        'toElement' : {
+          'required' : true
+        },
+        'minWidth' : {
+          'type' : Number,
+          'default' : undefined
+        },
+        'maxWidth' : {
+          'type' : Number,
+          'default' : undefined
+        },
+        'minHeight' : {
+          'type' : Number,
+          'default' : undefined
+        },
+        'maxHeight' : {
+          'type' : Number,
+          'default' : undefined
+        },
+        scrollEndEvent : {
+          'type' : Number,
+          'default' : undefined
+        },
+        anchor : {
+          'type' : String,
+          'default' : 'left'
+        },
+        fadeDurationType : {
+          'type' : String,
+          'default' : 'normal'
+        }
+      },
+      data : function() {
+        return {
+          $elBase : undefined,
+          domContext : {
+            lastScrollHeight : 0,
+            scrollEndEventEmitted : false
+          }
+        };
+      },
+      created : function() {
+        if (typeof this.toElement === 'string') {
+          this.$elBase = document.querySelector('#' + this.toElement);
+        } else {
+          this.$elBase = this.toElement;
+        }
+      },
+      mounted : function() {
+        this.positionMonitor.position();
+        if (typeof this.scrollEndEvent === 'number') {
+          this.$refs.content.addEventListener('scroll', this.scrollListener);
+        }
+        window.addEventListener('resize', function() {
+          this.positionMonitor.position();
+        }.bind(this));
+      },
+      beforeDestroy : function() {
+        this.$refs.content.removeEventListener('scroll', this.scrollListener);
+      },
+      methods : {
+        scrollListener : function() {
+          var lastScrollHeight = this.domContext.lastScrollHeight;
+          var scrollHeight = this.$refs.content.scrollHeight;
+          if (this.domContext.scrollEndEventEmitted && lastScrollHeight === scrollHeight) {
+            return;
+          }
+          this.domContext.lastScrollHeight = scrollHeight;
+          this.domContext.scrollEndEventEmitted = false;
+          var currentScroll = scrollHeight - this.$refs.content.scrollTop - this.$refs.content.offsetHeight;
+          if (currentScroll <= this.scrollEndEvent) {
+            this.domContext.scrollEndEventEmitted = true;
+            this.$emit('scroll-end');
+          }
+        }
+      },
+      computed : {
+        positionMonitor : function() {
+          var positionMonitor = sp.element.createPositionManager(this.$refs.popin, this.$elBase);
+          var __options = {
+            anchorPoint : {
+              ofBase : 'bottom-right',
+              ofAttached : 'top-right'
+            }
+          };
+          if (this.anchor === 'center') {
+            __options.anchorPoint.ofBase = 'bottom-center';
+            __options.anchorPoint.ofAttached = 'top-center';
+          } else if (this.anchor === 'left') {
+            __options.anchorPoint.ofBase = 'bottom-left';
+            __options.anchorPoint.ofAttached = 'top-left';
+          }
+          positionMonitor.setOptions(__options);
+          return positionMonitor;
         }
       }
     }));
@@ -453,6 +581,7 @@
           },
           validate : function() {
             notyReset();
+            var __errMsg = "silverpeas-form - no data updated...";
             return _validateInputs().then(function() {
               return _validate().then(function() {
                 var data = _updateData();
@@ -460,24 +589,24 @@
                   this.$emit('data-update', data);
                   return data;
                 } else {
-                  sp.log.error("silverpeas-form - no data updated...");
-                  return sp.promise.rejectDirectlyWith();
+                  sp.log.error(__errMsg);
+                  return sp.promise.rejectDirectlyWith(__errMsg);
                 }
               }.bind(this))['catch'](function() {
-                sp.log.debug("silverpeas-form - form validation failed...");
+                sp.log.debug(__errMsg);
                 this.$emit('validation-fail', {
                   failOnInputValidation : false,
                   failOnFormValidation : true
                 });
-                return sp.promise.rejectDirectlyWith();
+                return sp.promise.rejectDirectlyWith(__errMsg);
               }.bind(this));
             }.bind(this))['catch'](function() {
-              sp.log.debug("silverpeas-form-pane - input validation failed...");
+              sp.log.debug(__errMsg);
               this.$emit('validation-fail', {
                 failOnInputValidation : true,
                 failOnFormValidation : false
               });
-              return sp.promise.rejectDirectlyWith();
+              return sp.promise.rejectDirectlyWith(__errMsg);
             }.bind(this));
           },
           cancel : function() {
@@ -519,6 +648,66 @@
     }));
 
   /**
+   * silverpeas-link is an HTML element which display an HTML link.
+   *
+   * @param iconUrl (Optional) can be used to override the default icon url.
+   *
+   * The following example illustrates a possible use of the component:
+   * @example <silverpeas-mandatory-indicator></silverpeas-mandatory-indicator>
+   */
+  Vue.component('silverpeas-link',
+      commonAsyncComponentRepository.get('link', {
+        props : {
+          title : {
+            'type': String,
+            'default' : ''
+          }
+        },
+        data : function() {
+          return {
+            ready : false,
+            tipApi : undefined
+          }
+        },
+        mounted : function() {
+          this.ready = true;
+        },
+        beforeDestroy : function() {
+          if (this.tipApi) {
+            this.tipApi.destroy(true);
+          }
+        },
+        methods : {
+          hideTitle : function() {
+            if (this.tipApi) {
+              this.tipApi.hide();
+            }
+          }
+        },
+        computed : {
+          help : function() {
+            if (this.ready) {
+              if (this.title) {
+                if (!this.tipApi) {
+                  this.tipApi = TipManager.simpleHelp(this.$el, this.title, {
+                    show : {
+                      delay : 1000
+                    }
+                  });
+                } else {
+                  this.tipApi.set('content.text', this.title);
+                }
+              } else if (this.tipApi) {
+                this.tipApi.destroy(true);
+                this.tipApi = undefined;
+              }
+            }
+            return this.title;
+          }
+        }
+      }));
+
+  /**
    * silverpeas-mandatory-indicator is an HTML element which display an indicator of mandatory form
    * input.
    *
@@ -528,7 +717,8 @@
    * @example <silverpeas-mandatory-indicator></silverpeas-mandatory-indicator>
    */
   Vue.component('silverpeas-mandatory-indicator', {
-    template : '<span>&#160;<img v-bind:src="iconUrl" height="5" width="5" alt=""/></span>', props : {
+    template : '<span>&#160;<img v-bind:src="iconUrl" height="5" width="5" alt=""/></span>',
+    props : {
       iconUrl : {
         'type' : String,
         'default' : webContext + '/util/icons/mandatoryField.gif'
