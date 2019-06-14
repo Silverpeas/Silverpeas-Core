@@ -221,7 +221,7 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
         String label = Util.getString("GML.thumbnail.gallery", language);
         stringBuilder
             .append("<a href=\"#\" class=\"button-imageBank\" onclick=\"openGalleryFileManager")
-            .append(fieldNameFunction).append("('").append(component.getId()).append("') title=\"")
+            .append(fieldNameFunction).append("('").append(component.getId()).append("')\" title=\"")
             .append(title).append("\">").append(label).append("</a>");
       }
       out.println(stringBuilder.toString());
