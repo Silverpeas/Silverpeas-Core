@@ -33,7 +33,7 @@ import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -58,7 +58,7 @@ import java.util.List;
 @Service
 @RequestScoped
 @Path(MyLinksResource.PATH)
-@Authorized
+@Authenticated
 public class MyLinksResource extends RESTWebService {
 
   private static final String PATH_SEPARATOR = " > ";
