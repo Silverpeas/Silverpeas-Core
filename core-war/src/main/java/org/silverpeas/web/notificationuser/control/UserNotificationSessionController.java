@@ -23,27 +23,26 @@
  */
 package org.silverpeas.web.notificationuser.control;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
-import org.silverpeas.core.notification.user.ManualUserNotificationSuppliers;
+import org.silverpeas.core.notification.user.ComponentInstanceManualUserNotification;
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
-import org.silverpeas.web.notificationuser.Notification;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class UserNotificationSessionController extends AbstractComponentSessionController {
   private static final long serialVersionUID = 4415724531986026943L;
@@ -116,23 +115,6 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
     this.currentNotification = null;
   }
 
-  @Override
-  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
-    return c -> {
-      final int priority;
-      if (c.containsKey("priorityId")) {
-        priority = Integer.parseInt(c.get("priorityId"));
-      } else {
-        priority = 0;
-      }
-      Notification manualNotification = new Notification();
-      manualNotification.setPriority(priority);
-      manualNotification.setSource(getString("manualNotification"));
-      manualNotification.setAddressId(c.get("notificationId"));
-      return manualNotification;
-    };
-  }
-
   /**
    * Sends the notification described by the specified context.
    * @param context the context of the notification to send. It contains all the properties
@@ -140,11 +122,10 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
    */
   public void sendNotification(final NotificationContext context) {
     final UserNotificationWrapper userNotification = getUserNotification(context);
-    final String contributionId = context.containsKey(NotificationContext.PUBLICATION_ID) ?
-        context.get(NotificationContext.PUBLICATION_ID) :
-        context.get(NotificationContext.CONTRIBUTION_ID);
-    userNotification.setTitle(context.get("title"))
-        .setContent(context.get("content").replaceAll("[\\n\\r\\t]", ""))
+    final String contributionId = context.containsKey(NotificationContext.PUBLICATION_ID) ? context
+        .getPublicationId() : context.getContributionId();
+    userNotification.setTitle(context.getTitle())
+        .setContent(context.getContent().replaceAll("[\\n\\r\\t]", ""))
         .setAttachmentLinksFor(contributionId)
         .setSender(getUserDetail())
         .setRecipientUsers(context.getAsList("recipientUsers"))
@@ -155,18 +136,20 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
   }
 
   private UserNotificationWrapper supplyUserNotification(final NotificationContext context) {
-    final String componentId =
-        context.getOrDefault(NotificationContext.COMPONENT_ID, getComponentRootName());
-    final String componentName;
-    if (!getComponentRootName().equals(componentId) &&
-        !PersonalComponentInstance.from(componentId).isPresent()) {
-      componentName = ComponentInst.getComponentName(componentId);
+    final Optional<ComponentInstanceManualUserNotification> service;
+    final String componentId = context.getComponentId();
+    if (isDefined(componentId)) {
+      service = ComponentInstanceManualUserNotification.get(componentId);
     } else {
-      componentName = componentId;
+      service = Optional.empty();
     }
-    final ManualUserNotificationSuppliers suppliers =
-        ServiceProvider.getService(ManualUserNotificationSuppliers.class);
-    return new UserNotificationWrapper(suppliers.get(componentName, context), getLanguage());
+    final UserNotification manualUserNotification = service
+        .orElseGet(() -> ComponentInstanceManualUserNotification
+            .get(getComponentRootName())
+            .orElseThrow(() -> new SilverpeasRuntimeException(
+              "default implementation of ComponentInstanceManualUserNotification is not available!!!")))
+        .initializesWith(context);
+    return new UserNotificationWrapper(manualUserNotification, getLanguage());
   }
 
   private UserNotificationWrapper getUserNotification(final NotificationContext context) {

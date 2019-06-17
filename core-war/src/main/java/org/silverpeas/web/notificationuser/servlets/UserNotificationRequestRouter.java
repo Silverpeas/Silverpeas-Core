@@ -35,6 +35,8 @@ import org.silverpeas.web.notificationuser.control.UserNotificationSessionContro
 import javax.servlet.annotation.WebServlet;
 import java.util.Enumeration;
 
+import static org.silverpeas.core.admin.user.model.User.getCurrentRequester;
+
 @WebServlet()
 public class UserNotificationRequestRouter
     extends ComponentRequestRouter<UserNotificationSessionController> {
@@ -91,8 +93,7 @@ public class UserNotificationRequestRouter
         } else {
           areRecipientsEditable = true;
         }
-        request.setAttribute(NotificationContext.COMPONENT_ID,
-            context.get(NotificationContext.COMPONENT_ID));
+        request.setAttribute(NotificationContext.COMPONENT_ID, context.getComponentId());
         request.setAttribute(RECIPIENT_EDITION_PARAM, areRecipientsEditable);
         destination = "/userNotification/jsp/notificationSender.jsp";
       } else if (SENDING_FUNCTION.equals(function)) {
@@ -115,7 +116,7 @@ public class UserNotificationRequestRouter
   }
 
   private NotificationContext getNotificationContext(final HttpRequest request) {
-    final NotificationContext context = new NotificationContext();
+    final NotificationContext context = new NotificationContext(getCurrentRequester());
     Enumeration<String> parameters = request.getParameterNames();
     while (parameters.hasMoreElements()) {
       final String name = parameters.nextElement();

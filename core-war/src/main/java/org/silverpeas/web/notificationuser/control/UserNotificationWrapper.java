@@ -10,12 +10,16 @@ import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static org.silverpeas.core.util.ResourceLocator.getLocalizationBundle;
+import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
  * A wrapper of a {@link org.silverpeas.core.notification.user.UserNotification} object with
@@ -51,11 +55,15 @@ public class UserNotificationWrapper implements UserNotification {
     if (StringUtil.isDefined(title) &&
         !title.equals(getNotificationMetaData().getTitle(this.language))) {
       final NotificationMetaData metaData = notification.getNotificationMetaData();
-      metaData.setTitle(Encode.forHtml(title));
+      final boolean isSimpleContents = metaData.getTemplateContents().isEmpty();
+      final Map<String, String> simpleContents = metaData.getSimpleContents();
       for (String lang : DisplayI18NHelper.getLanguages()) {
-        LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
-            "org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle", lang);
-        metaData.addLanguage(lang, title, bundle.getString("AuthorMessage") + " :");
+        metaData.setTitle(Encode.forHtml(title), lang);
+        if (isSimpleContents && isNotDefined(simpleContents.get(lang))) {
+          final LocalizationBundle bundle = getLocalizationBundle(
+              "org.silverpeas.alertUserPeas.multilang.alertUserPeasBundle", lang);
+          metaData.addLanguage(lang, title, bundle.getString("AuthorMessage"));
+        }
       }
     }
     return this;
@@ -69,9 +77,14 @@ public class UserNotificationWrapper implements UserNotification {
   public UserNotificationWrapper setContent(final String content) {
     if (StringUtil.isDefined(content)) {
       final NotificationMetaData metaData = notification.getNotificationMetaData();
-      metaData.setContent(content);
+      final boolean isSimpleContents = metaData.getTemplateContents().isEmpty();
+      final Map<String, String> simpleContents = metaData.getSimpleContents();
       for (String lang : DisplayI18NHelper.getLanguages()) {
-        metaData.addExtraMessage(content, lang);
+        if (!isSimpleContents || isDefined(simpleContents.get(lang))) {
+          metaData.addExtraMessage(content, lang);
+        } else {
+          metaData.setContent(content, lang);
+        }
       }
     }
     return this;
@@ -98,7 +111,7 @@ public class UserNotificationWrapper implements UserNotification {
   public UserNotificationWrapper setSender(final User sender) {
     final NotificationMetaData metaData = notification.getNotificationMetaData();
     metaData.setSender(sender.getId());
-    for (SilverpeasTemplate template : metaData.getTemplates().values()) {
+    for (SilverpeasTemplate template : metaData.getTemplateContents().values()) {
       template.setAttribute("sender", sender);
       template.setAttribute("senderName", sender.getDisplayedName());
     }

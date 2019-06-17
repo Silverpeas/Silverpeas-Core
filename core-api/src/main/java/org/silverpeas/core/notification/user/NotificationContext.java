@@ -1,5 +1,6 @@
 package org.silverpeas.core.notification.user;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import static org.apache.commons.lang3.StringUtils.split;
  * which a user notification can be built.
  * @author mmoquillon
  */
-public class NotificationContext extends HashMap<String, String> {
+public class NotificationContext extends HashMap<String, Object> {
   private static final long serialVersionUID = 341715544034127254L;
 
   /**
@@ -42,6 +43,42 @@ public class NotificationContext extends HashMap<String, String> {
    */
   public static final String PUBLICATION_ID = "publicationId";
 
+  /**
+   * The predefined key in the context mapped with the unique identifier of a node. Used to
+   * specify the unique identifier of a node or a folder with contributions.
+   */
+  public static final String NODE_ID = "nodeId";
+
+  private final User sender;
+
+  public NotificationContext(final User sender) {
+    this.sender = sender;
+  }
+
+  public String getComponentId() {
+    return get(COMPONENT_ID);
+  }
+
+  public String getNodeId() {
+    return get(NODE_ID);
+  }
+
+  public String getPublicationId() {
+    return get(PUBLICATION_ID);
+  }
+
+  public String getContributionId() {
+    return get(CONTRIBUTION_ID);
+  }
+
+  public String getTitle() {
+    return get("title");
+  }
+
+  public String getContent() {
+    return get("content");
+  }
+
   public List<String> getAsList(final String key) {
     final String value = get(key);
     return asList(split(value, ","));
@@ -50,6 +87,30 @@ public class NotificationContext extends HashMap<String, String> {
   public boolean getAsBoolean(final String key) {
     final String value = get(key);
     return StringUtil.getBooleanValue(value);
+  }
+
+  public User getSender() {
+    return sender;
+  }
+
+  @Override
+  public String get(final Object key) {
+    return (String) super.get(key);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T getObject(final Object key) {
+    return (T) super.get(key);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }
   

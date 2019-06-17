@@ -23,14 +23,12 @@
  */
 package org.silverpeas.core.web.mvc.route;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.CoreContributionType;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.notification.user.ManualUserNotificationSuppliers;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
@@ -204,7 +202,6 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         return destination;
       }
       ctrl = setComponentSessionController(session, mainSessionCtrl, spaceId, componentId);
-      registerManualUserNotificationSupplier(componentId, ctrl);
     }
 
     setNavigationContext(request, ctrl);
@@ -246,21 +243,6 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     request.setAttribute(getSessionControlBeanName(), ctrl);
 
     return destination;
-
-  }
-
-  private void registerManualUserNotificationSupplier(final String componentId, final T ctrl) {
-    if (StringUtil.isNotDefined(componentId)) {
-      final String componentName = getSessionControlBeanName();
-      ManualUserNotificationSuppliers suppliers =
-          ServiceProvider.getService(ManualUserNotificationSuppliers.class);
-      suppliers.set(componentName, ctrl.getManualUserNotificationSupplier());
-    } else if (!PersonalComponentInstance.from(componentId).isPresent()) {
-      final String componentName = ComponentInst.getComponentName(componentId);
-      ManualUserNotificationSuppliers suppliers =
-          ServiceProvider.getService(ManualUserNotificationSuppliers.class);
-      suppliers.set(componentName, ctrl.getManualUserNotificationSupplier());
-    }
   }
 
   private String computeNextDestination(final HttpRequest httpRequest, final String componentId,

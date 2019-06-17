@@ -143,7 +143,11 @@ public class NotificationMetaData implements java.io.Serializable {
     return languages;
   }
 
-  public Map<String, SilverpeasTemplate> getTemplates() {
+  public Map<String, String> getSimpleContents() {
+    return Collections.unmodifiableMap(contents);
+  }
+
+  public Map<String, SilverpeasTemplate> getTemplateContents() {
     return Collections.unmodifiableMap(templates);
   }
 

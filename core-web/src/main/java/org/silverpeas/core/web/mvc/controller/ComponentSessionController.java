@@ -29,8 +29,6 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.clipboard.ClipboardSelection;
-import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
-import org.silverpeas.core.notification.user.NullUserNotification;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
@@ -140,9 +138,4 @@ public interface ComponentSessionController extends Serializable {
   int getClipboardSize() throws SilverpeasException;
 
   void removeClipboardElement(int index) throws SilverpeasException;
-
-  default ManualUserNotificationSupplier getManualUserNotificationSupplier() {
-    return c -> new NullUserNotification();
-  }
-
 }

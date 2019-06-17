@@ -26,11 +26,7 @@ package org.silverpeas.core.web.calendar;
 
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.notification.user.CalendarEventOccurrenceNotifyUserNotificationBuilder;
-import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
-import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
@@ -114,17 +110,6 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
       }
     }
     return getCalendarTimeWindowContext();
-  }
-
-  @Override
-  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
-    return c -> {
-      final String occurrenceId = c.get(NotificationContext.CONTRIBUTION_ID);
-      final CalendarEventOccurrence occurrence =
-          AbstractCalendarWebRequestContext.getCalendarEventOccurrence(occurrenceId);
-      return new CalendarEventOccurrenceNotifyUserNotificationBuilder(occurrence,
-          UserDetail.getCurrentRequester()).build();
-    };
   }
 
   @POST
