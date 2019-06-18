@@ -439,9 +439,9 @@ function _spWindow_getSilverpeasMainWindow() {
       }
       var explodedUrl = sp.url.explode(normalizedPermalink);
       explodedUrl.parameters['fromResponsiveWindow'] = true;
-      return sp.ajaxRequest(sp.url.formatFromExploded(explodedUrl)).sendAndPromiseJsonResponse().then(function(data) {
-        __logDebug("received data " + JSON.stringify(data));
-        var context = extendsObject({
+      var formattedUrl = sp.url.formatFromExploded(explodedUrl);
+      return sp.ajaxRequest(formattedUrl).send().then(function(request) {
+        var context = {
           contentUrl : undefined,
           RedirectToPersonalComponentId : undefined,
           RedirectToComponentId : undefined,
@@ -449,7 +449,15 @@ function _spWindow_getSilverpeasMainWindow() {
           mainUrl : undefined,
           errorContentUrl : undefined,
           errorMessage : undefined
-        }, data);
+        };
+        var contentType = request.getResponseHeader('Content-Type');
+        if (contentType && contentType.indexOf('json') < 0) {
+          __logDebug("received content type " + contentType + ", request will be again performed as content url");
+          context.contentUrl = formattedUrl;
+        } else {
+          __logDebug("received data " + request.response);
+          context = extendsObject(context, request.responseAsJson());
+        }
         var contentUrl = context.contentUrl;
         if (contentUrl) {
           if (!contentUrl.startsWith(webContext)) {
@@ -505,9 +513,9 @@ function _spWindow_getSilverpeasMainWindow() {
           top.location = context.mainUrl;
         } else if (context.errorContentUrl) {
           __logDebug("displaying error from " + context.errorContentUrl);
-          var explodedUrl = sp.url.explode(context.errorContentUrl);
-          explodedUrl.parameters['fromResponsiveWindow'] = true;
-          spLayout.getSplash().load(sp.url.formatFromExploded(explodedUrl));
+          var explodedErrorContentUrl = sp.url.explode(context.errorContentUrl);
+          explodedErrorContentUrl.parameters['fromResponsiveWindow'] = true;
+          spLayout.getSplash().load(sp.url.formatFromExploded(explodedErrorContentUrl));
         }  else if (context.errorMessage) {
           __logDebug("displaying error message");
           SilverpeasError.add(context.errorMessage).show();
