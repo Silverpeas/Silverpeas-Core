@@ -35,7 +35,6 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
-import org.silverpeas.core.notification.user.ManualUserNotificationSuppliers;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedBeans;
@@ -74,7 +73,7 @@ import static org.mockito.Mockito.*;
  */
 @EnableSilverTestEnv
 @TestManagedMocks({Administration.class, SessionManager.class, SilverStatisticsManager.class})
-@TestManagedBeans({SynchronizerTokenService.class, ManualUserNotificationSuppliers.class})
+@TestManagedBeans({SynchronizerTokenService.class})
 public abstract class WebComponentRequestRouterTest {
 
   @TestManagedMock

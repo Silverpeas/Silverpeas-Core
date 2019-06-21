@@ -23,64 +23,21 @@
  */
 package org.silverpeas.core.questioncontainer.score.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
-/**
- * Class declaration
- * @author
- */
 public class ScoreRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = 6321958237587957340L;
+  private static final long serialVersionUID = 3758095556999976753L;
 
-  /**
-   * --------------------------------------------------------------------------
-   * constructors
-   */
-  public ScoreRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public ScoreRuntimeException(final String message) {
+    super(message);
   }
 
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   */
-  public ScoreRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public ScoreRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   */
-  public ScoreRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public ScoreRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   */
-  public ScoreRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * --------------------------------------------------------------------------
-   * getModule
-   */
-  public String getModule() {
-    return "score";
-  }
-
 }

@@ -21,46 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.notification.user;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
+package org.silverpeas.web.usercalendar.notification;
 
-import java.util.Collection;
-import java.util.Collections;
+import org.silverpeas.core.web.calendar.notification.AbstractCalendarInstanceManualUserNotification;
+
+import javax.inject.Named;
 
 /**
- * The centralization of the construction of the calendar occurrence notifications
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
-public class CalendarEventOccurrenceNotifyUserNotificationBuilder
-    extends AbstractCalendarEventUserNotificationBuilder<CalendarEventOccurrence> {
-
-  public CalendarEventOccurrenceNotifyUserNotificationBuilder(
-      final CalendarEventOccurrence occurrence, final User user) {
-    super(occurrence, user);
-  }
-
-  @Override
-  protected Collection<String> getUserIdsToNotify() {
-    // Users to notify are not handled here.
-    return Collections.emptyList();
-  }
-
-  @Override
-  protected NotifAction getAction() {
-    return NotifAction.REPORT;
-  }
-
-  @Override
-  protected boolean stopWhenNoUserToNotify() {
-    return false;
-  }
-
-  @Override
-  protected String getTemplateFileName() {
-    return "notification";
-  }
-
-}
+@Named
+public class UserCalendarInstanceManualUserNotification
+    extends AbstractCalendarInstanceManualUserNotification {}

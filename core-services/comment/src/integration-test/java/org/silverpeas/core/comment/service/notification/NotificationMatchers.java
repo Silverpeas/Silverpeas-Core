@@ -65,7 +65,7 @@ public final class NotificationMatchers {
     @Override
     public boolean matches(Object item) {
       Comment expectedComment = (Comment) item;
-      Map<String, SilverpeasTemplate> templates = notif.getTemplates();
+      Map<String, SilverpeasTemplate> templates = notif.getTemplateContents();
       Set<String> languages = I18NHelper.getAllSupportedLanguages();
       for (String language : languages) {
         SilverpeasTemplate template = templates.get(language);

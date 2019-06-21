@@ -166,7 +166,13 @@ public final class ServiceProvider {
       componentName.set(componentInstanceIdOrComponentName);
     }
     final String serviceName;
-    if (SilverpeasComponentDataProvider.get().isWorkflow(componentName.get())) {
+    boolean workflow = false;
+    try {
+      workflow = SilverpeasComponentDataProvider.get().isWorkflow(componentName.get());
+    } catch (IllegalStateException ignore) {
+      // it is not a workflow
+    }
+    if (workflow) {
       serviceName = "processManager" + nameSuffix;
     } else {
       serviceName =
