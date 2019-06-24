@@ -41,6 +41,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import static java.text.MessageFormat.format;
+
 /**
  * Servlet to access a simple document directly.
  *
@@ -88,7 +90,7 @@ public class SimpleDocumentServer extends GoTo {
         res.setCharacterEncoding(CharEncoding.UTF_8);
         res.setContentType("text/html; charset=utf-8");
         String fileName = ClientBrowserUtil.rfc2047EncodeFilename(req, attachment.getFilename());
-        res.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
+        res.setHeader("Content-Disposition", format("inline; filename=\"{0}\"", fileName));
         return URLUtil.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
       }
     }

@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 
+import static java.text.MessageFormat.format;
 import static org.silverpeas.web.sharing.servlets.FileSharingConstants.PARAM_KEYFILE;
 
 public class GetLinkFileServlet extends HttpServlet {
@@ -78,8 +79,8 @@ public class GetLinkFileServlet extends HttpServlet {
       try {
         File realFile = new File(filePath);
         response.setContentType(fileType);
-        response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
-        response.setHeader( "Content-Length", String.valueOf(fileSize));
+        response.setHeader("Content-Disposition", format("inline; filename=\"{0}\"", fileName));
+        response.setHeader("Content-Length", String.valueOf(fileSize));
         input = new BufferedInputStream(FileUtils.openInputStream(realFile));
         IOUtils.copy(input, out);
         DownloadDetail download = new DownloadDetail(ticket, new Date(), request.getRemoteAddr());

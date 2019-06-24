@@ -38,6 +38,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import static java.text.MessageFormat.format;
+
 public class GoToFile extends GoTo {
 
   private static final long serialVersionUID = 1L;
@@ -55,9 +57,9 @@ public class GoToFile extends GoTo {
 
     if (isUserLogin(req) && attachment.canBeAccessedBy(UserDetail.getCurrentRequester())) {
       res.setCharacterEncoding(CharEncoding.UTF_8);
-      res.setContentType(attachment.getContentType() + "; charset=utf-8");
+      res.setContentType(format("{0}; charset=utf-8", attachment.getContentType()));
       String fileName = ClientBrowserUtil.rfc2047EncodeFilename(req, attachment.getFilename());
-      res.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
+      res.setHeader("Content-Disposition", format("inline; filename=\"{0}\"", fileName));
       return URLUtil.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
     }
 
