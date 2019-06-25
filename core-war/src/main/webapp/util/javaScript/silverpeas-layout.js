@@ -55,8 +55,26 @@
   /**
    * Common behavior
    */
+  var __transversePartContexts = {};
+  var __updateCommonTransverseContext = function(transverseContext, options) {
+    options = extendsObject({
+      hideSurely : false,
+      hideSurelyTimeout : 500,
+      showSurely : false,
+      showSurelyTimeout : 500
+    }, options);
+    if (options.hideSurely) {
+      transverseContext.hideSurely = true;
+      transverseContext.hideSurelyTimeout = options.hideSurelyTimeout;
+    }
+    if (options.showSurely) {
+      transverseContext.showSurely = true;
+      transverseContext.showSurelyTimeout = options.showSurelyTimeout;
+    }
+  };
   var Part = SilverpeasClass.extend({
     initialize : function(mainLayout, selector) {
+      this.name = this.name ? this.name : 'unknown';
       this.mainLayout = mainLayout;
       this.selector = selector;
       this.eventNamePrefix =
@@ -64,6 +82,33 @@
               /[ -\\#]/g, "");
       this.container = $mainWindow.document.querySelector(selector);
       this.lastStartLoadTime = 0;
+      var transverseContext = this.getTransverseContext();
+      if (typeof transverseContext.lastHideTime === 'undefined') {
+        transverseContext.lastHideTime = 0;
+        transverseContext.hideSurely = false;
+        transverseContext.hideSurelyTimeout = 0;
+        transverseContext.lastShowTime = 0;
+        transverseContext.showSurely = false;
+        transverseContext.showSurelyTimeout = 0;
+      } else if (transverseContext.hideSurely) {
+        this.hide({
+          hideSurely : transverseContext.hideSurely,
+          hideSurelyTimeout : transverseContext.hideSurelyTimeout,
+          showSurely : transverseContext.showSurely,
+          showSurelyTimeout : transverseContext.showSurelyTimeout
+        });
+      }
+    },
+    getTransverseContext : function() {
+      var contextName = "ctx_" + this.name;
+      if (!__transversePartContexts[contextName]) {
+        __transversePartContexts[contextName] = {
+          clear : function() {
+            delete __transversePartContexts[contextName];
+          }
+        };
+      }
+      return __transversePartContexts[contextName];
     },
     getMainLayout : function() {
       return this.mainLayout;
@@ -71,13 +116,28 @@
     getContainer : function() {
       return this.container;
     },
-    hide : function() {
-      this.getContainer().style.display = 'none';
-      this.dispatchEvent("hide");
+    hide : function(options) {
+      var transverseContext = this.getTransverseContext();
+      transverseContext.lastHideTime = new Date().getTime();
+      __updateCommonTransverseContext(transverseContext, options);
+      var timeElapsedSinceLastShowInMs = new Date().getTime() - transverseContext.lastShowTime;
+      var showSurely = timeElapsedSinceLastShowInMs < transverseContext.showSurelyTimeout;
+      if (!transverseContext.showSurely || !showSurely) {
+        this.getContainer().style.display = 'none';
+        this.dispatchEvent("hide");
+      }
     },
-    show : function() {
-      this.getContainer().style.display = '';
-      this.dispatchEvent("show");
+    show : function(options) {
+      var transverseContext = this.getTransverseContext();
+      transverseContext.lastShowTime = new Date().getTime();
+      __updateCommonTransverseContext(transverseContext, options);
+      var timeElapsedSinceLastHideInMs = new Date().getTime() - transverseContext.lastHideTime;
+      var hideSurely = timeElapsedSinceLastHideInMs < transverseContext.hideSurelyTimeout;
+      if (!transverseContext.hideSurely || !hideSurely) {
+        transverseContext.hideSurely = false;
+        this.getContainer().style.display = '';
+        this.dispatchEvent("show");
+      }
     },
     isShown : function() {
       return this.getContainer().style.display !== 'none';
@@ -113,6 +173,10 @@
 
   // Header Part
   var HeaderPart = Part.extend({
+    initialize : function(mainLayout, partSelector) {
+      this.name = 'headerPart';
+      this._super(mainLayout, partSelector);
+    },
     load : function(urlParameters) {
       __logDebug("loading header part");
       var headerPartURL = $mainWindow.LayoutSettings.get("layout.header.url");
@@ -127,6 +191,7 @@
   // Body Part
   var BodyPart = Part.extend({
     initialize : function(mainLayout, partSelectors) {
+      this.name = 'bodyPart';
       this._super(mainLayout, partSelectors.body);
       this.partSelectors = partSelectors;
       this.__nb_subLoads = 0;
@@ -230,6 +295,7 @@
   // Toggle Part
   var BodyTogglePart = Part.extend({
     initialize : function(mainLayout, partSelector) {
+      this.name = 'bodyTogglePart';
       this._super(mainLayout, partSelector);
       this.headerToggle = $mainWindow.document.querySelector("#header-toggle");
       this.navigationToggle = $mainWindow.document.querySelector("#navigation-toggle");
@@ -285,6 +351,7 @@
   // Navigation Part
   var BodyNavigationPart = Part.extend({
     initialize : function(mainLayout, partSelector) {
+      this.name = 'bodyNavigationPart';
       this._super(mainLayout, partSelector);
       this.addEventListener("start-load", function() {
         spLayout.getBody().showProgressMessage();
@@ -318,15 +385,21 @@
           this._super(eventName, listener);
       }
     },
-    hide : function(withToggle) {
-      if (withToggle) {
+    hide : function(options) {
+      options = typeof options === 'boolean' ? {withToggle : options} : options;
+      options = extendsObject({
+        withToggle : false
+      }, options);
+      if (options.withToggle) {
         spLayout.getBody().getToggles().hideNavigationToggle();
       }
-      this._super();
+      this._super(options);
     },
-    show : function() {
-      spLayout.getBody().getToggles().showNavigationToggle();
-      this._super();
+    show : function(options) {
+      this._super(options);
+      if (this.isShown()) {
+        spLayout.getBody().getToggles().showNavigationToggle();
+      }
     }
   });
 
@@ -336,6 +409,10 @@
 
   // Content Part
   var BodyContentPart = Part.extend({
+    initialize : function(mainLayout, partSelector) {
+      this.name = 'bodyContentPart';
+      this._super(mainLayout, partSelector);
+    },
     load : function(url) {
       __logDebug("loading body content part");
       spLayout.getBody().__nb_subLoads += 1;
@@ -390,6 +467,10 @@
 
   // Footer Part
   var FooterPart = Part.extend({
+    initialize : function(mainLayout, partSelector) {
+      this.name = 'footerPart';
+      this._super(mainLayout, partSelector);
+    },
     loadPdc : function(urlParameters) {
       if (PDC_ACTIVATED) {
         __logDebug("loading PDC part");
@@ -438,6 +519,7 @@
   // Content Part
   var SplashContentUrlPart = Part.extend({
     initialize : function(mainLayout) {
+      this.name = 'splashContentPart';
       var overlay = document.createElement('div');
       overlay.classList.add('sp-layout-splash-content-url-part-overlay');
       overlay.style.display = 'none';

@@ -61,12 +61,16 @@ function _spWindow_getSilverpeasMainWindow() {
               event.preventDefault();
               var webContextIndex = link.href.indexOf(webContext);
               var normalizedLink = webContextIndex >= 0 ? link.href.substr(webContextIndex) : link.href;
+              var options = {};
+              if (link.classList.contains('sp-hide-navigation')) {
+                options.hideNavigation = true;
+              }
               if (link.__isLoadLink) {
                 __logDebug("loading link " + normalizedLink);
-                spWindow.loadLink(normalizedLink);
+                spWindow.loadLink(normalizedLink, options);
               } else {
                 __logDebug("loading permalink " + normalizedLink);
-                spWindow.loadPermalink(normalizedLink);
+                spWindow.loadPermalink(normalizedLink, options);
               }
             };
             link.addEventListener('click', link.__linkHook);
@@ -194,16 +198,34 @@ function _spWindow_getSilverpeasMainWindow() {
     manualContentLoad : false,
     lastNavigationEventData : {}
   };
-  var __dispatchClickOn = function($link) {
+
+  var  __navigationDisplayManagement = function(options) {
+    if (options && typeof options.hideNavigation === 'boolean') {
+      if (options.hideNavigation) {
+        spLayout.getBody().getNavigation().hide({
+          withToggle : true,
+          hideSurely : true
+        });
+      } else {
+        spLayout.getBody().getNavigation().show({
+          showSurely : true
+        });
+      }
+    }
+  };
+
+  var __dispatchClickOn = function($link, options) {
     return new Promise(function(resolve) {
       if (__spWindowContext.queue.exists()) {
         __spWindowContext.queue.push(function() {
           __logDebug("click event on " + $link.href);
+          __navigationDisplayManagement(options);
           $link.click();
           resolve();
         });
       } else {
         __logDebug("click event on " + $link.href);
+        __navigationDisplayManagement(options);
         $link.click();
         resolve();
       }
@@ -227,6 +249,7 @@ function _spWindow_getSilverpeasMainWindow() {
       return new Promise(function(resolve, reject) {
         __spWindowContext.queue.push(function() {
           __logDebug("load body with " + JSON.stringify(params));
+          __navigationDisplayManagement(params);
           spLayout.getBody().load(params).then(function() {
             resolve();
           })['catch'](function(request) {
@@ -237,6 +260,7 @@ function _spWindow_getSilverpeasMainWindow() {
       });
     } else {
       __logDebug("load body with " + JSON.stringify(params));
+      __navigationDisplayManagement(params);
       return spLayout.getBody().load(params)['catch'](__loadErrorListener);
     }
   };
@@ -246,6 +270,7 @@ function _spWindow_getSilverpeasMainWindow() {
       return new Promise(function(resolve, reject) {
         __spWindowContext.queue.push(function() {
           __logDebug("load navigation with " + JSON.stringify(params));
+          __navigationDisplayManagement(params);
           spLayout.getBody().getNavigation().load(params).then(function(data) {
             resolve(data);
           }, function(request) {
@@ -256,6 +281,7 @@ function _spWindow_getSilverpeasMainWindow() {
       });
     } else {
       __logDebug("load navigation with " + JSON.stringify(params));
+      __navigationDisplayManagement(params);
       return spLayout.getBody().getNavigation().load(params)['catch'](__loadErrorListener);
     }
   };
@@ -272,14 +298,16 @@ function _spWindow_getSilverpeasMainWindow() {
     }
   };
 
-  var __loadContent = function(url) {
+  var __loadContent = function(url, options) {
     if (__spWindowContext.queue.exists()) {
       __spWindowContext.queue.push(function() {
         __logDebug("load content with URL " + url);
+        __navigationDisplayManagement(options);
         spLayout.getBody().getContent().load(url);
       });
     } else {
       __logDebug("load content with URL " + url);
+      __navigationDisplayManagement(options);
       spLayout.getBody().getContent().load(url);
     }
   };
@@ -304,14 +332,14 @@ function _spWindow_getSilverpeasMainWindow() {
       if (!loadParams.navigationMustBeReloaded) {
         var $link = __getNavigationLink(loadId);
         if ($link) {
-          return __dispatchClickOn($link);
+          return __dispatchClickOn($link, loadParams);
         }
       }
       __showProgressMessage();
       var personalComponent = personalSpaceManager.getByComponentId(loadId);
       if (personalComponent && personalComponent.url.indexOf('javascript:') < 0) {
         var personalContentUrl = webContext + personalComponent.url;
-        __loadContent(personalContentUrl);
+        __loadContent(personalContentUrl, loadParams);
         return spWindow.loadPersonalSpace({
           loadOnlyNavigation : true,
           componentId : personalComponent.id,
@@ -384,13 +412,14 @@ function _spWindow_getSilverpeasMainWindow() {
         if (options.componentId && !options.navigationMustBeReloaded) {
           var $link = __getNavigationLink(options.componentId);
           if ($link) {
-            return __dispatchClickOn($link);
+            return __dispatchClickOn($link, options);
           }
         }
         __showProgressMessage();
         return __loadNavigation({
           "FromMySpace" : '1',
-          "component_id" : options.componentId
+          "component_id" : options.componentId,
+          "hideNavigation" : options.hideNavigation
         });
       }
       __logDebug("Loading personal space navigation and content");
@@ -416,18 +445,22 @@ function _spWindow_getSilverpeasMainWindow() {
       return __loadingWindowData(componentId, loadParams);
     };
 
-    this.loadContent = function(url) {
+    this.loadContent = function(url, options) {
       __logDebug("Loading content from url " + url);
-      return __loadContent(url)
+      return __loadContent(url, options)
     };
 
     /**
      * Using this method when the given parameter is for sure a permalink.
      * Otherwise, try loadLink which will handle several link cases.
      * @param permalink a permalink.
+     * @param options the options.
      * @returns {*}
      */
-    this.loadPermalink = function(permalink) {
+    this.loadPermalink = function(permalink, options) {
+      options = extendsObject({
+        hideNavigation : undefined
+      }, options);
       spLayout.getSplash().close();
       var serverReplace = new RegExp('^.+' + webContext, 'g');
       var normalizedPermalink = permalink.replace(serverReplace, webContext);
@@ -477,28 +510,33 @@ function _spWindow_getSilverpeasMainWindow() {
           __spWindowContext.manualContentLoad = true;
           __spWindowContext.queue.init();
           try {
-            __loadContent(contentUrl);
+            __loadContent(contentUrl, options);
             if (loadId) {
               var $link = __getNavigationLink(loadId);
               if ($link) {
-                return __dispatchClickOn($link);
+                return __dispatchClickOn($link, options);
               }
               if (personalSpace) {
                 spWindow.loadPersonalSpace({
-                  loadOnlyNavigation : true, componentId : loadId
+                  loadOnlyNavigation : true,
+                  componentId : loadId,
+                  hideNavigation : options.hideNavigation
                 });
               } else {
                 __showProgressMessage();
                 __loadNavigation({
                   "component_id" : context.RedirectToComponentId,
-                  "privateDomain" : context.RedirectToSpaceId
+                  "privateDomain" : context.RedirectToSpaceId,
+                  "hideNavigation" : options.hideNavigation
                 }).then(function() {
                   spLayout.getBody().getNavigation().show();
                 });
               }
             } else if (personalSpace) {
               spWindow.loadPersonalSpace({
-                loadOnlyNavigation : true, componentId : personalSpace.id
+                loadOnlyNavigation : true,
+                componentId : personalSpace.id,
+                hideNavigation : options.hideNavigation
               });
             } else {
               __dispatchNavigationEvent('start-load', {
@@ -521,10 +559,10 @@ function _spWindow_getSilverpeasMainWindow() {
           SilverpeasError.add(context.errorMessage).show();
         } else if (context.RedirectToComponentId) {
           __logDebug("loading navigation and then body for componentId=" + context.RedirectToComponentId);
-          spWindow.loadComponent(context.RedirectToComponentId);
+          spWindow.loadComponent(context.RedirectToComponentId, options);
         } else if (context.RedirectToSpaceId) {
           __logDebug("loading navigation and then body for spaceId=" + context.RedirectToSpaceId);
-          spWindow.loadSpace(context.RedirectToSpaceId);
+          spWindow.loadSpace(context.RedirectToSpaceId, options);
         } else {
           __logDebug("reloading all the layout");
           top.location = webContext;
@@ -535,8 +573,9 @@ function _spWindow_getSilverpeasMainWindow() {
     /**
      * Load the layout according to the given link.
      * @param link the link to handle.
+     * @param options the options.
      */
-    this.loadLink = function(link) {
+    this.loadLink = function(link, options) {
       var permalink = link;
       if (!__isPermalink(link)) {
         var webContextIndex = link.indexOf(webContext);
@@ -544,7 +583,7 @@ function _spWindow_getSilverpeasMainWindow() {
         permalink = webContext + '/autoRedirect.jsp?domainId=' + this.currentUser.domainId + '&goto=' + encodeURIComponent(shortLink);
         __logDebug(link + " is not a permalink");
       }
-      this.loadPermalink(permalink);
+      this.loadPermalink(permalink, options);
     };
 
     /**
