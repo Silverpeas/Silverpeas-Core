@@ -390,6 +390,11 @@ out.println(window.printBefore());
               </c:if>
             </div>
           </c:if>
+          <c:if test="${not empty userInfos.tosAcceptanceDate}">
+            <div class="tosAcceptanceDate">
+              <fmt:message key="GML.user.tosAcceptanceDate"/> <view:formatDateTime value="${userInfos.tosAcceptanceDate}"/>
+            </div>
+          </c:if>
           <div class="domain"><img class="img-label" src="../../util/icons/component/domainSmall.gif" alt="Domaine" title="Domaine"  />${userInfos.domain.name}</div>
           <div class="access"> <span class="login"><img class="img-label" src="../../util/icons/Login.gif" alt="<fmt:message key="GML.login"/>" title="<fmt:message key="GML.login"/>" />${displayedLogin}</span></div>
           <div class="email"><img  class="img-label" src="../../admin/jsp/icons/icoOutilsMail.gif" alt="Login" title="Login" /> <a href="mailto:${displayedEmail}">${displayedEmail}</a></div>

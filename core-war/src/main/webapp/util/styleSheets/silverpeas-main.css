@@ -6820,12 +6820,14 @@ ul.sm-map {
   font-size:2em;
 }
 
-.admin-user .profile .lastConnection ,
+.admin-user .profile .lastConnection,
+.admin-user .profile .tosAcceptanceDate,
 .admin-user .profile .access,
 .admin-user .profile .email{
   margin-bottom:1em;
 }
-.admin-user .profile .lastConnection {
+.admin-user .profile .lastConnection,
+.admin-user .profile .tosAcceptanceDate {
   font-style:italic;
   color:#666;
   line-height: 1em;
