@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.index.components;
 
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.pdc.pdc.service.PdcIndexer;
@@ -70,9 +69,6 @@ public class ApplicationIndexer extends AbstractIndexer {
     ComponentIndexation componentIndexer = getIndexer(compoInst);
     if (componentIndexer != null) {
       try {
-        if (!spaceId.equals(compoInst.getSpaceId()) && !compoInst.isPersonal()) {
-          ((ComponentInstLight) compoInst).setDomainFatherId(spaceId);
-        }
         componentIndexer.index(compoInst, !isIndexAllProcess());
       } catch (Exception e) {
         SilverLogger.getLogger(this)
