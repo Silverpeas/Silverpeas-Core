@@ -175,7 +175,7 @@
                 $box.show();
               }
             } catch (e) {
-              alert("Silverpeas JQuery password plugin error ...");
+              console.error("Silverpeas JQuery password plugin error ...");
               if (options.onError) {
                 options.onError.call(this);
               }

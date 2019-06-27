@@ -54,7 +54,7 @@
 
       // Light checking
       if (!options.componentInstanceId || !options.attachmentId) {
-        alert("Bad component instance id or attachment id");
+        console.error("Bad component instance id or attachment id");
         return false;
       }
 
@@ -73,7 +73,7 @@
   $.fn.view = function( method ) {
 
     if (!$().popup) {
-      alert("Silverpeas Popup JQuery Plugin is required.");
+      console.error("Silverpeas Popup JQuery Plugin is required.");
       return false;
     }
 

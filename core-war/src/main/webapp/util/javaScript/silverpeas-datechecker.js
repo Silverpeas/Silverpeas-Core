@@ -302,7 +302,7 @@
   function __buildDateContext(dateOrDateContext) {
 
     if (!$().datepicker) {
-      alert("JQuery datepicker Plugin is required.");
+      console.error("JQuery datepicker Plugin is required.");
       return false;
     }
 

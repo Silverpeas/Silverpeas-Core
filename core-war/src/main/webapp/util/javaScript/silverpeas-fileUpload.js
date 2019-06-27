@@ -73,12 +73,12 @@
   $.fn.fileUpload = function(method) {
 
     if (!$().popup) {
-      alert("Silverpeas Popup JQuery Plugin is required.");
+      console.error("Silverpeas Popup JQuery Plugin is required.");
       return false;
     }
 
     if (!window.notyError) {
-      alert("Silverpeas Notifier JQuery Plugin is required.");
+      console.error("Silverpeas Notifier JQuery Plugin is required.");
       return false;
     }
 
@@ -680,7 +680,7 @@
           xhr.send(data);
         }
       } else {
-        alert('Technical error ...');
+        console.error('Technical error ...');
       }
     };
 

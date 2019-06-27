@@ -37,7 +37,7 @@
       ['context', '$scope', 'CalendarService', '$timeout', 'visibleFilter', 'defaultFilter',
         function(context, $scope, CalendarService, $timeout, visibleFilter, defaultFilter) {
           $scope.getCalendarService = function() {
-            alert('Please implement this method into the child controller.')
+            console.error('Please implement this method into the child controller.')
           };
           $scope.participation =
               new ParticipationCache(context.componentUriBase + "_participation");

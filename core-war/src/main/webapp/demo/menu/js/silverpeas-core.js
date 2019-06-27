@@ -156,7 +156,7 @@
         }
       },
       error : function(jqXHR, textStatus, errorThrown) {
-        alert(errorThrown);
+        console.error(errorThrown);
       }
     };
 

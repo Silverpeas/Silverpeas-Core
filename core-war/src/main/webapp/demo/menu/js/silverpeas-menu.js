@@ -582,7 +582,7 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
     expand : function(menuItem, callback) {
 
       if (!menuItem instanceof MenuItem) {
-        alert('expand method error, the parameter is not a MenuItem as required')
+        console.error('expand method error, the parameter is not a MenuItem as required')
         return false;
       }
 
@@ -722,7 +722,7 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
           }
         },
         error : function(jqXHR, textStatus, errorThrown) {
-          alert(errorThrown);
+          console.error(errorThrown);
         }
       });
     });

@@ -1413,7 +1413,7 @@ whenSilverpeasReady(function() {
   currentLook = getLook();
   try {
     currentSpaceWithCSSApplied = StringUtil.defaultStringIfNotDefined(getSpaceWithCSSToApply());
-    // alert("set currentSpaceCSS to '" + currentSpaceWithCSSApplied + "'");
+    // console.error("set currentSpaceCSS to '" + currentSpaceWithCSSApplied + "'");
   } catch (e) {
     // look do not provide getSpaceCSS() function
   }

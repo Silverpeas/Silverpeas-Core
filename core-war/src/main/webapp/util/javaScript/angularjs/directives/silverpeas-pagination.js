@@ -69,7 +69,7 @@
                   scope.onPage({page: pageNb});
                   return true;
                 } else {
-                  alert("silverpeas-pagination: on-page not set!");
+                  console.error("silverpeas-pagination: on-page not set!");
                   return false;
                 }
               }

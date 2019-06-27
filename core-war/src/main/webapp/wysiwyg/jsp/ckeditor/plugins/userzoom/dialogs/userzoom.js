@@ -73,7 +73,7 @@ CKEDITOR.dialog.add( 'userzoom', function( editor ) {
               },
 				              error: function (jqXHR, status) {
 				                // error handler
-				                alert('error');
+                        console.error('error');
 				              }
 				            });
 				          }

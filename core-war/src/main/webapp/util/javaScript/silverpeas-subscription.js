@@ -90,12 +90,12 @@
       options.mode = 'notificationSendingConfirmationOnUpdate';
       if (typeof options.callback !== 'function') {
         options.callback = function() {
-          alert("No callback function is defined!");
+          console.error("No callback function is defined!");
         }
       }
       if (options.validationCallback && typeof options.validationCallback !== 'function') {
         options.validationCallback = function() {
-          alert("The validation callback is not well specified!");
+          console.error("The validation callback is not well specified!");
         }
       }
       return this.each(function() {

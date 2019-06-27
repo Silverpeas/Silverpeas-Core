@@ -1,5 +1,5 @@
-    function confirmRemove( strURL, strQuestion )
-    {
-        if ( confirm( strQuestion ) )
-            location.href = strURL;
-    }
+function confirmRemove(strURL, strQuestion) {
+  jQuery.popup.confirm(strQuestion, function() {
+    location.href = strURL;
+  });
+}

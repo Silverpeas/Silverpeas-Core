@@ -300,7 +300,7 @@
      */
     RESTAdapter.prototype.findByCriteria = function(url, criteria) {
       if (!url) {
-        alert('[RESTAdapter#findByCriteria] URL undefined!');
+        console.error('[RESTAdapter#findByCriteria] URL undefined!');
         return null;
       }
       var requestedUrl = url;

@@ -252,7 +252,7 @@ function notySetupAjaxMessages() {
     if (!jQuery.trim(errorMsg)) {
       errorMsg = errorThrown;
     }
-    window.console && window.console.log('Silverpeas JQuery Ajax - ERROR - ' + errorMsg);
+    window.console && window.console.error('Silverpeas JQuery Ajax - ERROR - ' + errorMsg);
   };
   jQuery.ajaxSetup({
     error: function(jqXHR, textStatus, errorThrown) {

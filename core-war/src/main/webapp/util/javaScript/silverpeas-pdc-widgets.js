@@ -322,7 +322,7 @@ function deletePosition(uri, position, confirmationMsg, onSuccess, onError) {
             message: errorThrown
           });
         else
-          alert(errorThrown);
+          console.error(errorThrown);
       }
     });
   }
@@ -359,7 +359,7 @@ function postPosition(uri, position, onSuccess, onError) {
           message: errorThrown
         });
       else
-        alert(errorThrown);
+        console.error(errorThrown);
     }
   });
 }
@@ -398,7 +398,7 @@ function updatePosition(uri, position, onSuccess, onError) {
           message: errorThrown
         });
       else
-        alert(errorThrown);
+        console.error(errorThrown);
     }
   });
 }

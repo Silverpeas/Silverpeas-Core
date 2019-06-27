@@ -53,7 +53,7 @@ function addComponent(name) {
             jQuery("#addComponent").remove();
           }
         } else {
-          alert(data.exception);
+          console.error(data.exception);
         }
       });
 }
@@ -83,7 +83,7 @@ function removeComponent(id) {
               jQuery("#availables").append(liElem);
             }
           } else {
-            alert(data.exception);
+            console.error(data.exception);
           }
         });
     return true;
