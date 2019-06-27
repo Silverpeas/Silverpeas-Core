@@ -35,6 +35,8 @@
 
 <fmt:message var="deletedUserLabel" key="JDP.deletedUsers"/>
 
+<c:url var="displayDeletedUsers" value="/RjobDomainPeas/jsp/displayDeletedUsers"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -88,7 +90,7 @@
         <fmt:message var="anonymize"    key="JDP.blankUser"/>
         <fmt:message var="validate"     key="GML.validate"/>
         <fmt:message var="cancel"       key="GML.cancel"/>
-        <view:arrayPane var="deletedUsers" routingAddress="displayDeletedUsers" numberLinesPerPage="25">
+        <view:arrayPane var="deletedUsers" routingAddress="${displayDeletedUsers}" numberLinesPerPage="25">
           <view:arrayColumn title="${lastName}"     compareOn="${u -> u.lastName}" />
           <view:arrayColumn title="${firstName}"    compareOn="${u -> u.firstName}"/>
           <view:arrayColumn title="${deletionDate}" compareOn="${u -> u.stateSaveDate}"/>
