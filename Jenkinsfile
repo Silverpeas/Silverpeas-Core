@@ -16,6 +16,7 @@ pipeline {
       steps {
         script {
           version = computeSnapshotVersion()
+          waitForDependencyRunningBuildIfAny(version, 'core')
           lockFilePath = createLockFile(version, 'core')
           sh """
 mvn -U versions:set -DgenerateBackupPoms=false -DnewVersion=${version}
@@ -103,4 +104,16 @@ def isLockFileExisting(lockFilePath) {
     return exitCode == 0
   }
   return false
+}
+
+def waitForDependencyRunningBuildIfAny(version, projectName) {
+  final String dependencyLockFilePath = createLockFilePath(version, projectName)
+  timeout(time: 3, unit: 'HOURS') {
+    waitUntil {
+      return !isLockFileExisting(dependencyLockFilePath)
+    }
+  }
+  if (isLockFileExisting(dependencyLockFilePath)) {
+    error "After timeout dependency lock file ${dependencyLockFilePath} is yet existing!!!!"
+  }
 }
