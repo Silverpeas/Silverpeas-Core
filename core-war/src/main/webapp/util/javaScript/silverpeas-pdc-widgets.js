@@ -303,7 +303,6 @@ function loadClassification(uri, onSuccess, onError) {
  * silently deleted.
  */
 function deletePosition(uri, position, confirmationMsg, onSuccess, onError) {
-  var confirmed = true;
   if (confirmationMsg && confirmationMsg.length > 0) {
     $.popup.confirm(confirmationMsg, function() {
       var uri_parts = splitUri(uri);

@@ -236,15 +236,7 @@
         width: 'auto'
       }), settings);
 
-      if (__isIE7()) {
-        // Width & Height
-        if (options.width) {
-          settings.width = options.width;
-        }
-        if (options.height) {
-          settings.height = Number(options.height) + 27;
-        }
-      }
+      updateSettingsForIE7(settings, options);
 
       // Dialog
       return __openPopup($(this), settings);
@@ -272,15 +264,7 @@
         width: 'auto'
       }));
 
-      if (__isIE7()) {
-        // Width & Height
-        if (options.width) {
-          settings.width = options.width;
-        }
-        if (options.height) {
-          settings.height = Number(options.height) + 27;
-        }
-      }
+      updateSettingsForIE7(settings, options);
 
       // Dialog
       return __openPopup($(this), settings);
@@ -454,15 +438,7 @@
         width: 'auto'
       }));
 
-      if (__isIE7()) {
-        // Width & Height
-        if (options.width) {
-          settings.width = options.width;
-        }
-        if (options.height) {
-          settings.height = Number(options.height) + 27;
-        }
-      }
+      updateSettingsForIE7(settings, options);
 
       // Dialog
       return __openPopup($(this), settings);
@@ -494,15 +470,7 @@
         width: 'auto'
       }));
 
-      if (__isIE7()) {
-        // Width & Height
-        if (options.width) {
-          settings.width = options.width;
-        }
-        if (options.height) {
-          settings.height = Number(options.height) + 27;
-        }
-      }
+      updateSettingsForIE7(settings, options);
 
       // Dialog
       return __openPopup($(this), settings);
@@ -597,6 +565,18 @@
    */
   function __isIE7() {
     return (navigator.appVersion.indexOf("MSIE 7.") !== -1);
+  }
+
+  function updateSettingsForIE7(settings, options) {
+    if (__isIE7()) {
+      // Width & Height
+      if (options.width) {
+        settings.width = options.width;
+      }
+      if (options.height) {
+        settings.height = Number(options.height) + 27;
+      }
+    }
   }
 
   /**
