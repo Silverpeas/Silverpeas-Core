@@ -19,7 +19,7 @@ function loadNodeData(node, fnLoadComplete)  {
 						messages = YAHOO.lang.JSON.parse(oResponse.responseText);
                     }
 					catch (x) {
-						alert("JSON Parse failed!"+x);
+						console.error("JSON Parse failed!", x);
 						return;
 					}
 

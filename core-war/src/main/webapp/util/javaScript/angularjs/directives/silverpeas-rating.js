@@ -68,7 +68,7 @@
               var label_RatingVoteDelete = $labels.attr('label_RatingVoteDelete');
               var label_RatingVoteYours = $labels.attr('label_RatingVoteYours');
               var label_RatingVoteNone = $labels.attr('label_RatingVoteNone');
-              var param_userAnonymous = eval($labels.attr('param_userAnonymous'));
+              var param_userAnonymous = Number($labels.attr('param_userAnonymous'));
 
               /*
               Treatments
@@ -80,7 +80,7 @@
                 if (scope.raterrating) {
                   scope.raterrating = Rating.wrap(scope.raterrating);
                 } else {
-                  scope.raterrating = Rating.wrap(eval(attrs.raterrating));
+                  scope.raterrating = Rating.wrap(Number(attrs.raterrating));
                 }
                 scope.contributionid = scope.raterrating.contributionId;
                 scope.contributiontype = scope.raterrating.contributionType;

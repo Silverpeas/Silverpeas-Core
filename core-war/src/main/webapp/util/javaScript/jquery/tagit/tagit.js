@@ -99,7 +99,6 @@
             //tagValue: value of tag that was changed
             //action e.g. removed, added, sorted
             tagsChanged:function (tagValue, action, element) {
-                ;
             },
             maxTags:undefined,
             //should 'paste' event trigger 'blur', thus potentially adding a new tag

@@ -114,7 +114,7 @@
 
     // Function to navigate between images
     jQuery(document).bind('keydown', function(e) {
-      var keyCode = eval(e.keyCode);
+      var keyCode = Number(e.keyCode);
       if (__docViewApi && 37 <= keyCode && keyCode <= 40) {
         e.preventDefault();
         if (39 === keyCode) {

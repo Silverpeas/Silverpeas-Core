@@ -286,6 +286,7 @@ function openComponent(componentId, componentLevel, componentURL) {
         spWindow.loadContent(getContext() + componentURL);
       }
     } else {
+      console.log('ALERT navigation.js#openComponent(componentId, componentLevel, componentURL): componentURL is a javascript statement: ', componentURL);
       eval(componentURL);
     }
   }

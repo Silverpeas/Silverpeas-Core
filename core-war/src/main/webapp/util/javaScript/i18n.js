@@ -25,7 +25,7 @@ function showFieldTranslation(fieldId, varName)
 {
 	try
 	{
-		document.getElementById(fieldId).value = eval(varName);
+		document.getElementById(fieldId).value = varName;
 		document.getElementById("delTranslationLink").style.display='inline';
 	}
 	catch (e)

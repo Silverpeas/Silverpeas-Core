@@ -242,7 +242,7 @@
           settings.width = options.width;
         }
         if (options.height) {
-          settings.height = eval(options.height) + 27;
+          settings.height = Number(options.height) + 27;
         }
       }
 
@@ -278,7 +278,7 @@
           settings.width = options.width;
         }
         if (options.height) {
-          settings.height = eval(options.height) + 27;
+          settings.height = Number(options.height) + 27;
         }
       }
 
@@ -460,7 +460,7 @@
           settings.width = options.width;
         }
         if (options.height) {
-          settings.height = eval(options.height) + 27;
+          settings.height = Number(options.height) + 27;
         }
       }
 
@@ -500,7 +500,7 @@
           settings.width = options.width;
         }
         if (options.height) {
-          settings.height = eval(options.height) + 27;
+          settings.height = Number(options.height) + 27;
         }
       }
 

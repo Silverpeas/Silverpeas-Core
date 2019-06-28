@@ -109,15 +109,6 @@
   var settingHandlersDone = false;
 
   /**
-   * Open a new WEB page into another browser window.
-   */
-  function openWindow(url, windowName, width, height, options) {
-    var top = (screen.height - height) / 2;
-    var left = (screen.width - width) / 2;
-    window.open(url, windowName, "top=" + top + ",left=" + left + ",width=" + width + ",height=" + height + "," + options);
-  }
-
-  /**
    * Open the Silverpeas chat WEB page.
    */
   function chatWith(user) {
@@ -130,12 +121,14 @@
    * Returns the HTML element with which the user status information is displayed.
    */
   function connectionStatus(user) {
+    var onlineStatus;
+    var onlineStatusAlt;
     if (user.connected) {
-      var onlineStatus = webContext + '/util/icons/online.gif';
-      var onlineStatusAlt = __getLabel('connected');
+      onlineStatus = webContext + '/util/icons/online.gif';
+      onlineStatusAlt = __getLabel('connected');
     } else {
-      var onlineStatus = webContext + '/util/icons/offline.gif';
-      var onlineStatusAlt = __getLabel('notConnected');
+      onlineStatus = webContext + '/util/icons/offline.gif';
+      onlineStatusAlt = __getLabel('notConnected');
     }
     return $('<img>', {
       src: onlineStatus,
@@ -235,8 +228,8 @@
     var isTooltipArrowOnRight = targetPosition.left > tooltipPosition.left;
     var toolTipClass = position + (isTooltipArrowOnRight ? ' right' : ' left');
     if (isTooltipArrowOnRight) {
-      var paddingAndMarginLeftOffset = eval(target.css('padding-left').replace(/[^0-9]/g, '')) +
-          eval(target.css('margin-left').replace(/[^0-9]/g, ''));
+      var paddingAndMarginLeftOffset = Number(target.css('padding-left').replace(/[^0-9]/g, '')) +
+          Number(target.css('margin-left').replace(/[^0-9]/g, ''));
       tooltip.position({
         of : target,
         at : 'left bottom+' + tooltipEdgeYOffset,
@@ -267,7 +260,7 @@
       }
       $dataContainer.data(dataCssKey, cachedArrowCssValue);
     }
-    return eval(cachedArrowCssValue);
+    return Number(cachedArrowCssValue);
   }
 
   /**
@@ -394,9 +387,9 @@
     if (!settingHandlersDone) {
       $(document).mousedown(function(event) {
         if ($.userZoom.currentTooltip !== null && $.userZoom.currentTooltip !== undefined) {
-          var target = $(event.target);
-          if (!target.hasClass('userzoom-tooltip') &&
-              target.parents('.userzoom-tooltip').length === 0) {
+          var eventTarget = $(event.target);
+          if (!eventTarget.hasClass('userzoom-tooltip') &&
+              eventTarget.parents('.userzoom-tooltip').length === 0) {
             $.userZoom.clear();
           }
         }

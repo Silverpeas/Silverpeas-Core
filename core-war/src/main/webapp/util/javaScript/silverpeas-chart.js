@@ -164,12 +164,10 @@
       }
       var chartTitle = params.chart.title ? (params.chart.title + '.png') : 'image.png';
       params.downloadButton.hide();
-      html2canvas(params.downloadContainer, {
-        onrendered : function(canvas) {
+      html2canvas(params.downloadContainer).then(function(canvas) {
           // canvas is the final rendered <canvas> element
           var image = canvas.toDataURL();
           download(image, chartTitle, "image/png");
-        }
       });
       params.downloadButton.show();
       return true;

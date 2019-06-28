@@ -172,8 +172,8 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_USER_NOTIFICATION_JS = "silverpeas-user-notification.js";
   private static final String TICKER_JS = "ticker/jquery.ticker.js";
   private static final String TICKER_CSS = "ticker/ticker-style.css";
-  private static final String HTML2CANVAS_JS = "html2canvas.js";
-  private static final String DOWNLOAD_JS = "download.js";
+  private static final String HTML2CANVAS_JS = "html2canvas.min.js";
+  private static final String DOWNLOAD_JS = "download.min.js";
 
   private static final String CHART_JS = "flot/jquery.flot.min.js";
   private static final String CHART_PIE_JS = "flot/jquery.flot.pie.min.js";

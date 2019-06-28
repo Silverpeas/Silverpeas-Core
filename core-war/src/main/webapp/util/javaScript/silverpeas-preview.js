@@ -166,7 +166,7 @@
 
     // Function to navigate between images
     __previousOrNextPreview = function(e) {
-      var keyCode = eval(e.keyCode);
+      var keyCode = Number(e.keyCode);
       if (previousIndex >= 0 && 37 <= keyCode && keyCode <= 40) {
         e.preventDefault();
         var previousOrNextPreviewTarget = null;
