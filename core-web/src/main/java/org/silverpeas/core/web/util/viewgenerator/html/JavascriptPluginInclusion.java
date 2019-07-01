@@ -104,10 +104,10 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_VUE_JS = "silverpeas-vuejs.js";
   private static final String SILVERPEAS_EMBED_PLAYER = "silverpeas-embed-player.js";
   private static final String SILVERPEAS_MEDIA_PLAYER = "silverpeas-media-player.js";
-  private static final String FLOWPLAYER_CSS = "flowplayer-7.0.2/skin/skin.css";
-  private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-7.0.2.min.js";
-  private static final String FLOWPLAYER_SWF = "flowplayer/flowplayer-7.0.2.swf";
-  private static final String FLOWPLAYER_SWF_HLS = "flowplayer/flowplayerhls-7.0.2.swf";
+  private static final String FLOWPLAYER_CSS = "flowplayer-7.2.7/skin/skin.min.css";
+  private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-7.2.7.min.js";
+  private static final String FLOWPLAYER_SWF = "flowplayer/flowplayer-7.2.7.swf";
+  private static final String FLOWPLAYER_SWF_HLS = "flowplayer/flowplayerhls-7.2.7.swf";
   private static final String JQUERY_QTIP = "jquery.qtip";
   private static final String SILVERPEAS_TIP = "silverpeas-tip.js";
   private static final String JQUERY_IFRAME_AJAX_TRANSPORT = "jquery-iframe-transport";
