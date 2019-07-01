@@ -242,12 +242,16 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   private DirectoryItemList getUsersOfDomainsSorted(List<String> domainIds) {
-    if (SORT_NEWEST.equals(getCurrentSort())) {
-      return new DirectoryItemList(
+    final DirectoryItemList result;
+    if (domainIds.isEmpty()) {
+      result = new DirectoryItemList();
+    } else if (SORT_NEWEST.equals(getCurrentSort())) {
+      result = new DirectoryItemList(
           getOrganisationController().getUsersOfDomainsFromNewestToOldest(domainIds));
     } else {
-      return new DirectoryItemList(getOrganisationController().getUsersOfDomains(domainIds));
+      result = new DirectoryItemList(getOrganisationController().getUsersOfDomains(domainIds));
     }
+    return result;
   }
 
   /**
