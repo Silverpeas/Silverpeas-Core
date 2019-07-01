@@ -25,6 +25,7 @@ package org.silverpeas.web.directory.control;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -74,9 +75,9 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
 import org.silverpeas.web.directory.DirectoryException;
 import org.silverpeas.web.directory.model.ContactItem;
+import org.silverpeas.web.directory.model.DirectorySource;
 import org.silverpeas.web.directory.model.DirectoryItem;
 import org.silverpeas.web.directory.model.DirectoryItemList;
-import org.silverpeas.web.directory.model.DirectoryUserItem;
 import org.silverpeas.web.directory.model.UserFragmentVO;
 import org.silverpeas.web.directory.model.UserItem;
 
@@ -93,7 +94,6 @@ import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
  */
 public class DirectorySessionController extends AbstractComponentSessionController {
 
-  public static final String VIEW_QUERY = "query";
   public static final String VIEW_ALL = "tous";
   public static final String VIEW_CONNECTED = "connected";
   public static final String SORT_ALPHA = "ALPHA";
@@ -127,6 +127,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * Display all the users that can access a given space.
    */
   public static final int DIRECTORY_SPACE = 6;
+
+  // Display only contacts of a 'yellowPages' component from a global directory
+  public static final int DIRECTORY_CONTACTS = 7;
+
+  // Display contacts from a 'yellowPages' component
+  public static final int DIRECTORY_COMPONENT = 8;
+
   private static final int DEFAULT_ELEMENTS_PER_PAGE = 10;
   private static final String CONTEXT_ATTR = "context";
   private int currentDirectory = DIRECTORY_DEFAULT;
@@ -139,6 +146,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private List<Group> currentGroups;
   private List<Domain> currentDomains;
   private SpaceInstLight currentSpace;
+  private SilverpeasComponentInstance currentComponent;
   private RelationShipService relationShipService;
   private String currentQuery;
   private String initSort = SORT_ALPHA;
@@ -153,6 +161,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private SilverpeasTemplate template;
   private PaginationPage memberPage;
+
+  private List<DirectorySource> directorySources = new ArrayList<>();
+  private boolean doNotUseContactsComponents = false;
 
   private final Function<DirectoryItem, UserFragmentVO> asFragment = item -> {
     SilverpeasTemplate fragmentTemplate = getFragmentTemplate();
@@ -206,29 +217,23 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentView(VIEW_ALL);
     setCurrentDirectory(DIRECTORY_DEFAULT);
     setCurrentQuery(null);
+    setCurrentComponent(null);
     return getUsers();
   }
 
   private DirectoryItemList getUsers() {
-    if (DomainProperties.areDomainsVisibleToAll()) {
-      lastAllListUsersCalled = getUsersSorted();
-    } else if (DomainProperties.areDomainsNonVisibleToOthers()) {
-      lastAllListUsersCalled = getUsersOfCurrentUserDomain();
-    } else if (DomainProperties.areDomainsVisibleOnlyToDefaultOne()) {
-      String currentUserDomainId = getUserDetail().getDomainId();
-      if ("0".equals(currentUserDomainId)) {
-        lastAllListUsersCalled = getUsersSorted();
-      } else {
-        lastAllListUsersCalled = getUsersOfCurrentUserDomain();
-      }
-    }
+    //getting users according to restricted domains
+    lastAllListUsersCalled = getUsersOfDomainsSorted(getDomainSources());
 
-    //add contacts
-    DirectoryItemList contacts = getContacts();
-    if (!contacts.isEmpty()) {
-      lastAllListUsersCalled.addAll(contacts);
-      lastListUsersCalled = lastAllListUsersCalled;
-      sort(getCurrentSort());
+    if (!isDoNotUseContacts() && (getSelectedSource() == null ||
+        (getSelectedSource() != null && getSelectedSource().isContactsComponent()))) {
+      //add contacts only in a global view or a component view
+      DirectoryItemList contacts = getContacts();
+      if (!contacts.isEmpty()) {
+        lastAllListUsersCalled.addAll(contacts);
+        lastListUsersCalled = lastAllListUsersCalled;
+        sort(getCurrentSort());
+      }
     }
 
     setInitialSort(getCurrentSort());
@@ -236,53 +241,17 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return lastAllListUsersCalled;
   }
 
-  private DirectoryItemList getUsersSorted() {
-    if (getCurrentDirectory() == DIRECTORY_DOMAIN) {
-      return getUsersOfDomainsSorted();
-    } else {
-      return getAllUsersSorted();
-    }
-  }
-
-  private DirectoryItemList getAllUsersSorted() {
-    if (SORT_NEWEST.equals(getCurrentSort())) {
-      return new DirectoryItemList(getOrganisationController().getAllUsersFromNewestToOldest());
-    } else {
-      return new DirectoryItemList(getOrganisationController().getAllUsers());
-    }
-  }
-
-  private DirectoryItemList getUsersOfDomainsSorted() {
-    List<String> domainIds = getCurrentDomainIds();
-    if (SORT_NEWEST.equals(getCurrentSort())) {
-      return new DirectoryItemList(
+  private DirectoryItemList getUsersOfDomainsSorted(List<String> domainIds) {
+    final DirectoryItemList result;
+    if (domainIds.isEmpty()) {
+      result = new DirectoryItemList();
+    } else if (SORT_NEWEST.equals(getCurrentSort())) {
+      result = new DirectoryItemList(
           getOrganisationController().getUsersOfDomainsFromNewestToOldest(domainIds));
     } else {
-      return new DirectoryItemList(getOrganisationController().getUsersOfDomains(domainIds));
+      result = new DirectoryItemList(getOrganisationController().getUsersOfDomains(domainIds));
     }
-  }
-
-  private List<String> getCurrentDomainIds() {
-    List<String> ids = new ArrayList<>();
-    for (Domain domain : getCurrentDomains()) {
-      ids.add(domain.getId());
-    }
-    return ids;
-  }
-
-  private DirectoryItemList getUsersOfCurrentUserDomain() {
-    String currentUserDomainId = getUserDetail().getDomainId();
-    DirectoryItemList allItems = getAllUsersSorted();
-    DirectoryItemList userItems = new DirectoryItemList();
-    for (DirectoryItem item : allItems) {
-      if (item instanceof DirectoryUserItem) {
-        DirectoryUserItem userItem = (DirectoryUserItem) item;
-        if (currentUserDomainId.equals(userItem.getDomainId())) {
-          userItems.add(userItem);
-        }
-      }
-    }
-    return userItems;
+    return result;
   }
 
   /**
@@ -323,7 +292,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    */
   public DirectoryItemList getUsersByQuery(QueryDescription queryDescription,
       boolean globalSearch) throws DirectoryException {
-    setCurrentView(VIEW_QUERY);
     if (globalSearch) {
       setCurrentDirectory(DIRECTORY_DEFAULT);
     }
@@ -364,9 +332,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    *
    */
   public DirectoryItemList getAllUsersByGroup(String groupId) {
-    setCurrentView(VIEW_ALL);
+    resetDirectorySession();
     setCurrentDirectory(DIRECTORY_GROUP);
-    setCurrentQuery(null);
     currentGroups = new ArrayList<>();
     currentGroups.add(getOrganisationController().getGroup(groupId));
     lastAllListUsersCalled = new DirectoryItemList(getOrganisationController().getAllUsersOfGroup(groupId));
@@ -380,9 +347,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    *
    */
   public DirectoryItemList getAllUsersByGroups(List<String> groupIds) {
-    setCurrentView(VIEW_ALL);
+    resetDirectorySession();
     setCurrentDirectory(DIRECTORY_GROUP);
-    setCurrentQuery(null);
 
     DirectoryItemList tmpList = new DirectoryItemList();
 
@@ -442,9 +408,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    *
    */
   public DirectoryItemList getAllUsersBySpace(String spaceId) {
-    setCurrentView(VIEW_ALL);
+    resetDirectorySession();
     setCurrentDirectory(DIRECTORY_SPACE);
-    setCurrentQuery(null);
     currentSpace = getOrganisationController().getSpaceInstLightById(spaceId);
     DirectoryItemList lus = new DirectoryItemList();
     String[] componentIds = getOrganisationController().getAllComponentIdsRecur(spaceId);
@@ -482,12 +447,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    */
   public DirectoryItemList getAllUsersByDomains() {
     setCurrentQuery(null);
+    setCurrentComponent(null);
     return getUsers();
   }
 
   public DirectoryItemList getAllContactsOfUser(String userId) {
-    setCurrentView(VIEW_ALL);
-    setCurrentQuery(null);
+    resetDirectorySession();
     if (getUserId().equals(userId)) {
       setCurrentDirectory(DIRECTORY_MINE);
     } else {
@@ -508,7 +473,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public DirectoryItemList getCommonContacts(String userId) {
-    setCurrentView(VIEW_ALL);
+    resetDirectorySession();
     setCurrentDirectory(DIRECTORY_COMMON);
     commonUserDetail = getUserDetail(userId);
     lastAllListUsersCalled = new DirectoryItemList();
@@ -672,7 +637,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return currentDirectory;
   }
 
-  private void setCurrentDirectory(int currentDirectory) {
+  public void setCurrentDirectory(int currentDirectory) {
     this.currentDirectory = currentDirectory;
   }
 
@@ -780,12 +745,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private DirectoryItemList getContacts() {
     DirectoryItemList items = new DirectoryItemList();
     for (String componentId : getContactComponentIds()) {
-      List<CompleteContact> componentContacts = getContactBm().getVisibleContacts(componentId);
-      for (CompleteContact completeContact : componentContacts) {
-        if (StringUtil.isNotDefined(completeContact.getUserId())) {
-          items.add(completeContact);
-        }
-      }
+      items.addContactItems(getContacts(componentId, false));
     }
     return items;
   }
@@ -923,6 +883,143 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("directory");
     }
     return template;
+  }
+
+  private List<SilverpeasComponentInstance> getContactComponents() {
+    List<SilverpeasComponentInstance> components = new ArrayList<>();
+    List<String> componentIds = getContactComponentIds();
+    for (String componentId : componentIds) {
+      components.add(getOrganisationController().getComponentInstLight(componentId));
+    }
+    return components;
+  }
+
+  /**
+   * Gets contacts of a given 'yellowPages' component.
+   * @return the list of complete contact of component.
+   */
+  public DirectoryItemList getContacts(String componentId, boolean componentScope) {
+    DirectoryItemList items = new DirectoryItemList();
+    List<CompleteContact> componentContacts = getContactBm().getVisibleContacts(componentId);
+    for (CompleteContact completeContact : componentContacts) {
+      if (StringUtil.isNotDefined(completeContact.getUserId())) {
+        items.add(completeContact);
+      }
+    }
+    SilverpeasComponentInstance component =
+        getOrganisationController().getComponentInstLight(componentId);
+    if (componentScope) {
+      setCurrentComponent(component);
+      lastAllListUsersCalled = items;
+      lastListUsersCalled = lastAllListUsersCalled;
+    }
+    return items;
+  }
+
+  public SilverpeasComponentInstance getCurrentComponent() {
+    return currentComponent;
+  }
+
+  private void setCurrentComponent(final SilverpeasComponentInstance currentComponent) {
+    this.currentComponent = currentComponent;
+  }
+
+  private void processDomainsAsSources(boolean domainsRestriction, Domain... domains) {
+    for (Domain domain : domains) {
+      if (!domainsRestriction || isDomainOneOfAsked(domain)) {
+        addSource(domain);
+      }
+    }
+  }
+
+  public void initSources(boolean domainsRestriction) {
+    directorySources = new ArrayList<>();
+    Domain userDomain = getUserDetail().getDomain();
+    Domain[] domains = getOrganisationController().getAllDomains();
+    if (DomainProperties.areDomainsVisibleToAll()) {
+      processDomainsAsSources(domainsRestriction, domains);
+    } else if (DomainProperties.areDomainsNonVisibleToOthers()) {
+      processDomainsAsSources(domainsRestriction, userDomain);
+    } else if (DomainProperties.areDomainsVisibleOnlyToDefaultOne()) {
+      if ("0".equals(userDomain.getId())) {
+        processDomainsAsSources(domainsRestriction, domains);
+      } else {
+        processDomainsAsSources(domainsRestriction, userDomain);
+      }
+    }
+
+    if (!isDoNotUseContacts()) {
+      List<SilverpeasComponentInstance> components = getContactComponents();
+      for (SilverpeasComponentInstance component : components) {
+        addSource(component);
+      }
+    }
+  }
+
+  private boolean isDomainOneOfAsked(Domain domain) {
+    for (Domain aDomain : getCurrentDomains()) {
+      if (aDomain.getId().equals(domain.getId())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private void addSource(final SilverpeasComponentInstance component) {
+    directorySources.add(new DirectorySource(component.getId(), component.getLabel(getLanguage()),
+        component.getDescription(getLanguage())));
+  }
+
+  private void addSource(final Domain domain) {
+    directorySources.add(new DirectorySource(domain.getId(), domain.getName(), domain.getDescription()));
+  }
+
+  public void setSelectedSource(String id) {
+    for (DirectorySource source : directorySources) {
+      source.setSelected(source.getId().equals(id));
+    }
+  }
+
+  private DirectorySource getSelectedSource() {
+    for (DirectorySource source : directorySources) {
+      if (source.isSelected()) {
+        return source;
+      }
+    }
+    return null;
+  }
+
+  public List<DirectorySource> getDirectorySources() {
+    return directorySources;
+  }
+
+  private List<String> getDomainSources() {
+    List<String> ids = new ArrayList<>();
+    for (DirectorySource source : directorySources) {
+      if (!source.isContactsComponent()) {
+        if (source.isSelected()) {
+          return Arrays.asList(source.getId());
+        }
+        ids.add(source.getId());
+      }
+    }
+    return ids;
+  }
+
+  private void resetDirectorySession() {
+    setCurrentView(VIEW_ALL);
+    setCurrentQuery(null);
+    setCurrentComponent(null);
+    directorySources = new ArrayList<>();
+    setDoNotUseContacts(false);
+  }
+
+  public void setDoNotUseContacts(boolean doNotUse) {
+    this.doNotUseContactsComponents = doNotUse;
+  }
+
+  private boolean isDoNotUseContacts() {
+    return doNotUseContactsComponents;
   }
 
   /**
