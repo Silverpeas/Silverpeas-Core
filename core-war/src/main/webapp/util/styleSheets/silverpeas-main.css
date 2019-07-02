@@ -6112,6 +6112,7 @@ input[title] {
 /*********************** MEDIA PLAYER *********************/
 iframe.embed {
   overflow: hidden;
+  max-width:100%;
 }
 
 /*********************** Style pour les elements en lecture seule de type tagit *********************/
