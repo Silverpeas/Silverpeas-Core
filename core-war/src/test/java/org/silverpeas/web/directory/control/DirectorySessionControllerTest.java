@@ -37,35 +37,30 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.web.directory.model.DirectoryItemList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @EnableSilverTestEnv
-public class DirectorySessionControllerTest {
+class DirectorySessionControllerTest {
 
   @TestManagedMock
   private OrganizationController mockOrganizationController;
 
   @BeforeEach
-  public void setup(@TestManagedMock SilverpeasComponentInstanceProvider mockProvider) {
-    when(mockProvider.getComponentName(any())).thenAnswer(i -> {
-      String componentName = i.getArgument(0);
-      return componentName;
-    });
+  void setup(@TestManagedMock SilverpeasComponentInstanceProvider mockProvider) {
+    when(mockProvider.getComponentName(any())).thenAnswer(i -> i.<String>getArgument(0));
   }
 
   @Test
-  public void testGetAllUsers() {
+  void testGetAllUsers() {
     Domain domain = new Domain();
     domain.setId("0");
     domain.setName("Silverpeas");
@@ -97,7 +92,7 @@ public class DirectorySessionControllerTest {
 
     MainSessionController controller = mock(MainSessionController.class);
     when(controller.getCurrentUserDetail()).thenReturn(user1);
-    when(mockOrganizationController.getAllUsers()).thenReturn(users.toArray(new UserDetail[3]));
+    when(mockOrganizationController.getAllUsers()).thenReturn(users.toArray(new User[0]));
     when(mockOrganizationController.getComponentIdsForUser(anyString(), anyString()))
         .thenReturn(new String[0]);
     when(mockOrganizationController.getUsersOfDomains(anyList())).thenReturn(users);
@@ -135,7 +130,7 @@ public class DirectorySessionControllerTest {
   }
 
   @Test
-  public void testGetAllUsersByGroup() throws Exception {
+  void testGetAllUsersByGroup() {
     List<User> groupOfUsers = new ArrayList<>();
     UserDetail user2 = new UserDetail();
     user2.setId("2");
@@ -156,7 +151,7 @@ public class DirectorySessionControllerTest {
     MainSessionController controller = mock(MainSessionController.class);
     when(controller.getCurrentUserDetail()).thenReturn(user2);
     when(mockOrganizationController.getAllUsersOfGroup("2"))
-        .thenReturn(groupOfUsers.toArray(new UserDetail[2]));
+        .thenReturn(groupOfUsers.toArray(new User[0]));
     when(mockOrganizationController.getComponentIdsForUser(anyString(), anyString()))
         .thenReturn(new String[0]);
     ComponentContext context = mock(ComponentContext.class);
@@ -193,7 +188,7 @@ public class DirectorySessionControllerTest {
   }
 
   @Test
-  public void testGetAllUsersByDomain() {
+  void testGetAllUsersByDomain() {
     List<User> usersOfDomain = new ArrayList<>();
     UserDetail user1 = new UserDetail();
     user1.setId("1");
@@ -240,9 +235,15 @@ public class DirectorySessionControllerTest {
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
-    directoryDSC.setCurrentDomains(Arrays.asList("3"));
+    directoryDSC.setCurrentDomains(singletonList("3"));
+    // All users By domain when no source
     DirectoryItemList usersOfDomainCalledItems = directoryDSC.getAllUsersByDomains();
+    assertNotNull(usersOfDomainCalledItems);
+    assertEquals(0, usersOfDomainCalledItems.size());
+    // Adding source
+    directoryDSC.initSources(false);
     // All users By domain
+    usersOfDomainCalledItems = directoryDSC.getAllUsersByDomains();
     assertNotNull(usersOfDomainCalledItems);
     assertEquals(3, usersOfDomainCalledItems.size());
     assertEquals(usersOfDomainExpectedItems.get(0), usersOfDomainCalledItems.get(0));
@@ -275,7 +276,7 @@ public class DirectorySessionControllerTest {
   }
 
   @Test
-  public void testGetAllUsersBySpace() throws Exception {
+  void testGetAllUsersBySpace() {
     List<User> usersOfSpace = new ArrayList<>();
     UserDetail user1 = new UserDetail();
     user1.setId("1");
@@ -353,7 +354,7 @@ public class DirectorySessionControllerTest {
   }
 
   @Test
-  public void testMergeList(){
+  void testMergeList(){
     MainSessionController controller = mock(MainSessionController.class);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
