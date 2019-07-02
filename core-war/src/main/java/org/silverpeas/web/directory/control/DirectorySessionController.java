@@ -75,9 +75,9 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
 import org.silverpeas.web.directory.DirectoryException;
 import org.silverpeas.web.directory.model.ContactItem;
-import org.silverpeas.web.directory.model.DirectorySource;
 import org.silverpeas.web.directory.model.DirectoryItem;
 import org.silverpeas.web.directory.model.DirectoryItemList;
+import org.silverpeas.web.directory.model.DirectorySource;
 import org.silverpeas.web.directory.model.UserFragmentVO;
 import org.silverpeas.web.directory.model.UserItem;
 
@@ -225,8 +225,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     //getting users according to restricted domains
     lastAllListUsersCalled = getUsersOfDomainsSorted(getDomainSources());
 
-    if (!isDoNotUseContacts() && (getSelectedSource() == null ||
-        (getSelectedSource() != null && getSelectedSource().isContactsComponent()))) {
+    final DirectorySource selectedSource = getSelectedSource();
+    if (!isDoNotUseContacts() && (selectedSource == null || selectedSource.isContactsComponent())) {
       //add contacts only in a global view or a component view
       DirectoryItemList contacts = getContacts();
       if (!contacts.isEmpty()) {
