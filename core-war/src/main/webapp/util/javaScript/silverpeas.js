@@ -103,6 +103,11 @@ if (!Array.prototype.addElement) {
       return false;
     }
   });
+  Object.defineProperty(Array.prototype, 'removeAll', {
+    enumerable : false, value : function(elt /*, discriminator*/) {
+      return this.splice(0, this.length);
+    }
+  });
   /**
    * Permits to join elements of an array by applying some rules given by options parameter.
    * Options can be directly a string representing a separator which is inserted between each

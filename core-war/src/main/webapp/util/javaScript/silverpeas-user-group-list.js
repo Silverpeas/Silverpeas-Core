@@ -56,7 +56,6 @@
   var NB_DOMAINS = UserGroupListSettings.get("d.nb");
 
   var USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_MESSAGE = UserGroupListBundle.get("n.m.r.l.m.w");
-  var LABEL_USERS = UserGroupListBundle.get("GML.user_s");
   var LABEL_DELETE = UserGroupListBundle.get("GML.delete");
   var LABEL_DELETE_ALL = UserGroupListBundle.get("GML.deleteAll");
   var LABEL_CONFIRM_DELETE_ALL = UserGroupListBundle.get("GML.confirmation.deleteAll");
@@ -231,11 +230,14 @@
       item.name = item.getFullName();
       item.score = score;
     };
-    var __updateIdContainers = function(id, isAdd) {
+    var __normalizeId = function(id) {
+      return id.replace(/[^0-9]/g, '');
+    };
+    var __updateIdContainers = function(id, allValues) {
+      var isAdd = Array.isArray(allValues);
       var idContainer = id.startsWith("user-") ?
           userGroupSelectInstance.context.currentUserIds :
           userGroupSelectInstance.context.currentGroupIds;
-      var normalizedId = id.replace(/[^0-9]/g, '');
       if (isAdd) {
         if (userGroupSelectInstance.options.userManualNotificationUserReceiverLimit &&
             this.getTotalOfSelectedUsers() > USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_VALUE) {
@@ -244,11 +246,12 @@
           userGroupSelectInstance.showUserManualNotificationUserReceiverLimitMessage();
           return;
         }
-        if (!idContainer.updateElement(normalizedId)) {
-          idContainer.addElement(normalizedId);
-        }
+        idContainer.removeAll();
+        allValues.forEach(function(anId) {
+          idContainer.addElement(__normalizeId(anId));
+        });
       } else {
-        idContainer.removeElement(normalizedId);
+        idContainer.removeElement(__normalizeId(id));
       }
       __onChange();
       userGroupSelectInstance.refreshCommons();
@@ -353,8 +356,8 @@
         c._last_currentGroupIds = [];
         forceChangeTrigger = true;
       }
-      var userIdsChange = !sp.object.areExistingValuesEqual(c._last_currentUserIds.sort(), c.currentUserIds.sort());
-      var groupIdsChange = !sp.object.areExistingValuesEqual(c._last_currentGroupIds.sort(), c.currentGroupIds.sort());
+      var userIdsChange = !sp.object.areExistingValuesEqual(__copyAndSort(c._last_currentUserIds), __copyAndSort(c.currentUserIds));
+      var groupIdsChange = !sp.object.areExistingValuesEqual(__copyAndSort(c._last_currentGroupIds), __copyAndSort(c.currentGroupIds));
       c._last_currentUserIds = [].concat(c.currentUserIds);
       c._last_currentGroupIds = [].concat(c.currentGroupIds);
       if (forceChangeTrigger || userIdsChange || groupIdsChange) {
@@ -382,10 +385,10 @@
       }
       this.refresh(true).then(function() {
         __selectize.on('item_remove', function(id) {
-          __updateIdContainers(id, false);
+          __updateIdContainers(id);
         });
         __selectize.on('item_add', function(id) {
-          __updateIdContainers(id, true);
+          __updateIdContainers(id, __selectize.getValue());
         });
         setTimeout(function() {
           this.notifyReady();
@@ -472,21 +475,21 @@
       groupItems : []
     };
 
-    this.updateFilterOptions = function(options) {
-      if (typeof options.hideDeactivatedState !== 'undefined') {
-        this.options.hideDeactivatedState = options.hideDeactivatedState;
+    this.updateFilterOptions = function(filterOptions) {
+      if (typeof filterOptions.hideDeactivatedState !== 'undefined') {
+        this.options.hideDeactivatedState = filterOptions.hideDeactivatedState;
       }
-      if (typeof options.domainIdFilter !== 'undefined') {
-        this.options.domainIdFilter = options.domainIdFilter;
+      if (typeof filterOptions.domainIdFilter !== 'undefined') {
+        this.options.domainIdFilter = filterOptions.domainIdFilter;
       }
-      if (typeof options.componentIdFilter !== 'undefined') {
-        this.options.componentIdFilter = options.componentIdFilter;
+      if (typeof filterOptions.componentIdFilter !== 'undefined') {
+        this.options.componentIdFilter = filterOptions.componentIdFilter;
       }
-      if (typeof options.roleFilter !== 'undefined') {
-        this.options.roleFilter = options.roleFilter;
+      if (typeof filterOptions.roleFilter !== 'undefined') {
+        this.options.roleFilter = filterOptions.roleFilter;
       }
-      if (typeof options.groupFilter !== 'undefined') {
-        this.options.groupFilter = options.groupFilter;
+      if (typeof filterOptions.groupFilter !== 'undefined') {
+        this.options.groupFilter = filterOptions.groupFilter;
       }
     };
 
@@ -1315,5 +1318,9 @@
       return array;
     }
     return element;
+  }
+  
+  function __copyAndSort(data) {
+    return [].concat(data).sort();
   }
 })();
