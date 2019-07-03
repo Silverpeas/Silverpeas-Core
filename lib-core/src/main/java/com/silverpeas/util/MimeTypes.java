@@ -37,8 +37,6 @@ public interface MimeTypes {
   public final String POWERPOINT_MIME_TYPE2 = "application/vnd.ms-powerpoint";
   public final String MSPROJECT_MIME_TYPE = "application/vnd.ms-project";
 
-  public final String OPENPROJECT_MIME_TYPE = "application/x-openproj";
-
   public final String SPINFIRE_MIME_TYPE = "application/xview3d-3d";
   public final String HTML_MIME_TYPE = "text/html";
   public final String XML_MIME_TYPE = "text/xml";
@@ -95,7 +93,7 @@ public interface MimeTypes {
   public final String MIME_TYPE_OO_MASTER = "application/vnd.oasis.opendocument.text-master";
   public static final Set<String> MS_OFFICE_MIME_TYPES = new HashSet<String>(Arrays
       .asList(
-          new String[]{WORD_MIME_TYPE, EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, POWERPOINT_MIME_TYPE1,
+          new String[]{WORD_2007_EXTENSION, WORD_MIME_TYPE, EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, POWERPOINT_MIME_TYPE1,
             POWERPOINT_MIME_TYPE2, MSPROJECT_MIME_TYPE}));
   public static final Set<String> OPEN_OFFICE_MIME_TYPES = new HashSet<String>(Arrays.asList(
       new String[]{WORD_MIME_TYPE, WORD_2007_MIME_TYPE, WORD_2007_TEMPLATE_MIME_TYPE,
