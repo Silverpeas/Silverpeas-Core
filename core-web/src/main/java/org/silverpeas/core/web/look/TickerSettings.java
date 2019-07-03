@@ -32,21 +32,23 @@ import org.silverpeas.core.util.StringUtil;
 public class TickerSettings {
 
   private String label = "";
-  private Map<String, String> params = new HashMap<String, String>();
+  private Map<String, String> params = new HashMap<>();
   private boolean linkOnItem = false;
   private int refreshDelay = 60;
+  private boolean displayDescription = false;
 
   public TickerSettings(SettingBundle settings) {
     for (String key : settings.keySet()) {
       if (key.startsWith("ticker.plugin")) {
         String param = settings.getString(key, null);
         if (param != null) {
-          params.put(key.substring(key.lastIndexOf(".")+1), param);
+          params.put(key.substring(key.lastIndexOf('.')+1), param);
         }
       }
     }
     linkOnItem = settings.getBoolean("ticker.linkOnItem", false);
     refreshDelay = settings.getInteger("ticker.autocheck.delay", 60);
+    displayDescription = settings.getBoolean("ticker.items.description", false);
   }
 
   public void setLabel(String label) {
@@ -70,6 +72,10 @@ public class TickerSettings {
 
   public int getRefreshDelay() {
     return refreshDelay;
+  }
+
+  public boolean isDescriptionDisplayed() {
+    return displayDescription;
   }
 
 }

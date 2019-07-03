@@ -102,7 +102,13 @@ var tickerNews = [];
             var li = $("<li>").attr("class", "news-item").appendTo("#js-news");
             var date = $("<span>").attr("class", "ticker-item-date").text(__getTime(item) + " - ");
             date.appendTo(li);
-            var span = $("<span>").attr("title", item.description).text(item.title);
+            var span = $("<span>").attr("title", item.description);
+            var newsLabel = $("<span>").attr("class", "ticker-item-title").text(item.title);
+            span.append(newsLabel);
+            if (${settings.descriptionDisplayed}) {
+              var newsDesc = $("<span>").attr("class", "ticker-item-description").text(item.description);
+              span.append(newsDesc);
+            }
             if (${settings.linkOnItem}) {
               var a = $("<a>").addClass("sp-permalink").attr("href", item.permalink).attr("target", "_top");
               span.appendTo(a);

@@ -6062,7 +6062,7 @@ div.user-card .field{
   text-transform: uppercase;
 }
 #sp-ticker .ticker-content {
-  margin: 0px;
+  margin: 0;
   padding-top: 3px;
   position: absolute;
   color: #333;
@@ -6072,6 +6072,12 @@ div.user-card .field{
   white-space: nowrap;
   line-height: 1.2em;
   padding-left:1em;
+  width: calc(100% - 100px);
+  text-overflow: ellipsis;
+}
+
+#sp-ticker .ticker-item-description:before {
+  content:" : " ;
 }
 
 /*********************** advanced search help *********************/
