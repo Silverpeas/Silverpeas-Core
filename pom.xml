@@ -70,7 +70,7 @@
 
   <groupId>com.silverpeas</groupId>
   <artifactId>core</artifactId>
-  <version>5.15.10</version>
+  <version>5.15.11-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
   <url>http://www.silverpeas.org/docs/core</url>
