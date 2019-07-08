@@ -59,6 +59,9 @@
 <%@ attribute name="linear" required="false" type="java.lang.Boolean"
               description="True if fields must be displayed one per line" %>
 
+<%@ attribute name="displayLabels" required="false" type="java.lang.Boolean"
+              description="True if field labels must be displayed" %>
+
 <c:set var="isCurrentUserAdmin" value="<%=UserDetail.getCurrentRequester().isAccessAdmin() %>"/>
 <c:set var="isCurrentUserDomainManager" value="<%=UserDetail.getCurrentRequester().isAccessDomainManager() %>"/>
 
@@ -72,6 +75,10 @@
   <c:set var="allFieldsUpdatable" value="${false}"/>
 </c:if>
 
+<c:if test="${displayLabels == null}">
+  <c:set var="displayLabels" value="${true}"/>
+</c:if>
+
 <c:set var="listStyleTwoFieldsPerLine" value="fields"/>
 <c:set var="listStyleOneFieldPerLine" value="oneFieldPerLine"/>
 
@@ -83,7 +90,9 @@
 <div class="${listStyle}">
   <c:if test="${silfn:isDefined(user.eMail) and includeEmail}">
     <div class="field" id="email">
-      <label class="txtlibform">${labelEmail}</label>
+      <c:if test="${displayLabels}">
+        <label class="txtlibform">${labelEmail}</label>
+      </c:if>
       <div class="champs">${user.eMail}</div>
     </div>
   </c:if>
@@ -94,9 +103,11 @@
       <c:set var="propertyValue" value="${user.getValue(propertyName)}"/>
       <c:if test="${(readOnly && not empty propertyValue) || not readOnly}">
       <div class="field" id="${propertyName}">
-        <label class="txtlibform">
-          ${user.getSpecificLabel(_language, propertyName)}
-        </label>
+        <c:if test="${displayLabels}">
+          <label class="txtlibform">
+            ${user.getSpecificLabel(_language, propertyName)}
+          </label>
+        </c:if>
         <div class="champs">
           <c:set var="propertyUpdatable" value="${not readOnly and (allFieldsUpdatable or ((isCurrentUserAdmin or isCurrentUserDomainManager) and user.isPropertyUpdatableByAdmin(propertyName)) or user.isPropertyUpdatableByUser(propertyName))}"/>
           <c:choose>
