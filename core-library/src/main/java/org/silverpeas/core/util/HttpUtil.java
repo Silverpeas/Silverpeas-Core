@@ -24,11 +24,15 @@
 
 package org.silverpeas.core.util;
 
+import com.google.api.client.util.SslUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.silverpeas.core.util.lang.SystemWrapper;
+
+import javax.net.ssl.SSLContext;
+import java.security.GeneralSecurityException;
 
 /**
  * @author silveryocha
@@ -44,7 +48,27 @@ public class HttpUtil {
    * @return a {@link CloseableHttpClient} instance.
    */
   public static CloseableHttpClient httpClient() {
+    return httpClient(null);
+  }
+
+  /**
+   * Centralizing the getting of HTTP client configured with proxy host and proxy port if any.
+   * @return a {@link CloseableHttpClient} instance.
+   */
+  public static CloseableHttpClient httpClientTrustingAnySslContext()
+      throws GeneralSecurityException {
+    return httpClient(SslUtils.trustAllSSLContext());
+  }
+
+  /**
+   * Centralizing the getting of HTTP client configured with proxy host and proxy port if any.
+   * @return a {@link CloseableHttpClient} instance.
+   */
+  public static CloseableHttpClient httpClient(final SSLContext sslContext) {
     final HttpClientBuilder builder = HttpClients.custom();
+    if (sslContext != null) {
+      builder.setSSLContext(sslContext);
+    }
     final String proxyHost = SystemWrapper.get().getProperty("http.proxyHost");
     final String proxyPort = SystemWrapper.get().getProperty("http.proxyPort");
     if (StringUtil.isDefined(proxyHost) && StringUtil.isInteger(proxyPort)) {
