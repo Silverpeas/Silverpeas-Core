@@ -1,4 +1,3 @@
-<%@ tag import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%--
   Copyright (C) 2000 - 2019 Silverpeas
 
@@ -23,6 +22,9 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
+<%@ tag import="org.silverpeas.core.admin.user.model.UserDetail" %>
+<%@ tag import="org.silverpeas.core.admin.user.model.UserFull" %>
+<%@ tag import="org.silverpeas.core.util.logging.SilverLogger" %>
 <%@ tag language="java" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -44,7 +46,7 @@
 <fmt:message key="GML.eMail" bundle="${generalBundle}" var="labelEmail"/>
 
 <%-- Creator --%>
-<%@ attribute name="user" required="true" type="org.silverpeas.core.admin.user.model.UserFull"
+<%@ attribute name="user" required="true" type="org.silverpeas.core.admin.user.model.User"
               description="The user to display" %>
 
 <%@ attribute name="allFieldsUpdatable" required="false" type="java.lang.Boolean"
@@ -70,6 +72,10 @@
 <view:setConstant var="propertyTypeBoolean" constant="org.silverpeas.core.admin.domain.model.DomainProperty.PROPERTY_TYPE_BOOLEAN"/>
 
 <c:set var="passwordPrefix" value="password"/>
+
+<c:if test="<%=!(user instanceof UserFull)%>">
+  <c:set var="user" value="<%=UserFull.getById(user.getId())%>"/>
+</c:if>
 
 <c:if test="${allFieldsUpdatable == null}">
   <c:set var="allFieldsUpdatable" value="${false}"/>
