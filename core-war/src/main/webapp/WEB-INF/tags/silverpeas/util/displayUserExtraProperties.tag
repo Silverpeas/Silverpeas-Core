@@ -1,4 +1,3 @@
-<%@ tag import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%--
   Copyright (C) 2000 - 2019 Silverpeas
 
@@ -23,6 +22,9 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
+<%@ tag import="org.silverpeas.core.admin.user.model.UserDetail" %>
+<%@ tag import="org.silverpeas.core.admin.user.model.UserFull" %>
+<%@ tag import="org.silverpeas.core.util.logging.SilverLogger" %>
 <%@ tag language="java" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -44,7 +46,7 @@
 <fmt:message key="GML.eMail" bundle="${generalBundle}" var="labelEmail"/>
 
 <%-- Creator --%>
-<%@ attribute name="user" required="true" type="org.silverpeas.core.admin.user.model.UserFull"
+<%@ attribute name="user" required="true" type="org.silverpeas.core.admin.user.model.User"
               description="The user to display" %>
 
 <%@ attribute name="allFieldsUpdatable" required="false" type="java.lang.Boolean"
@@ -59,6 +61,9 @@
 <%@ attribute name="linear" required="false" type="java.lang.Boolean"
               description="True if fields must be displayed one per line" %>
 
+<%@ attribute name="displayLabels" required="false" type="java.lang.Boolean"
+              description="True if field labels must be displayed" %>
+
 <c:set var="isCurrentUserAdmin" value="<%=UserDetail.getCurrentRequester().isAccessAdmin() %>"/>
 <c:set var="isCurrentUserDomainManager" value="<%=UserDetail.getCurrentRequester().isAccessDomainManager() %>"/>
 
@@ -68,8 +73,16 @@
 
 <c:set var="passwordPrefix" value="password"/>
 
+<c:if test="<%=!(user instanceof UserFull)%>">
+  <c:set var="user" value="<%=UserFull.getById(user.getId())%>"/>
+</c:if>
+
 <c:if test="${allFieldsUpdatable == null}">
   <c:set var="allFieldsUpdatable" value="${false}"/>
+</c:if>
+
+<c:if test="${displayLabels == null}">
+  <c:set var="displayLabels" value="${true}"/>
 </c:if>
 
 <c:set var="listStyleTwoFieldsPerLine" value="fields"/>
@@ -83,7 +96,9 @@
 <div class="${listStyle}">
   <c:if test="${silfn:isDefined(user.eMail) and includeEmail}">
     <div class="field" id="email">
-      <label class="txtlibform">${labelEmail}</label>
+      <c:if test="${displayLabels}">
+        <label class="txtlibform">${labelEmail}</label>
+      </c:if>
       <div class="champs">${user.eMail}</div>
     </div>
   </c:if>
@@ -94,9 +109,11 @@
       <c:set var="propertyValue" value="${user.getValue(propertyName)}"/>
       <c:if test="${(readOnly && not empty propertyValue) || not readOnly}">
       <div class="field" id="${propertyName}">
-        <label class="txtlibform">
-          ${user.getSpecificLabel(_language, propertyName)}
-        </label>
+        <c:if test="${displayLabels}">
+          <label class="txtlibform">
+            ${user.getSpecificLabel(_language, propertyName)}
+          </label>
+        </c:if>
         <div class="champs">
           <c:set var="propertyUpdatable" value="${not readOnly and (allFieldsUpdatable or ((isCurrentUserAdmin or isCurrentUserDomainManager) and user.isPropertyUpdatableByAdmin(propertyName)) or user.isPropertyUpdatableByUser(propertyName))}"/>
           <c:choose>
