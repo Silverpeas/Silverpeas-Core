@@ -6138,6 +6138,10 @@ iframe.embed {
 
 /*********************** Presentation pop up des notifications *********************/
 
+.unread-user-notification-inbox {
+  font-weight: bold;
+}
+
 .silverpeas-user-notifications {
   display: inline-block;
 }
@@ -6408,9 +6412,14 @@ iframe.embed {
   font-size: 2em;
 }
 
-.unread-user-notification-inbox .user-notification-subject {
+.silverpeas-user-notifications .unread-user-notification-inbox {
+  font-weight: normal;
+}
+
+.silverpeas-user-notifications .unread-user-notification-inbox .user-notification-subject {
   font-weight: bold;
 }
+
 .popup-read-notification {
   padding:15px;
 }
