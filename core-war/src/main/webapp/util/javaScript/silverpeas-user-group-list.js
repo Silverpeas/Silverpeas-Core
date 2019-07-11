@@ -230,12 +230,17 @@
       item.name = item.getFullName();
       item.score = score;
     };
+    var __isUserId = function(id) {
+      return id.startsWith("user-")
+    };
     var __normalizeId = function(id) {
       return id.replace(/[^0-9]/g, '');
     };
     var __updateIdContainers = function(id, allValues) {
+      allValues = typeof allValues === 'string' ? [allValues] : allValues;
       var isAdd = Array.isArray(allValues);
-      var idContainer = id.startsWith("user-") ?
+      var isUserId = __isUserId(id);
+      var idContainer = isUserId ?
           userGroupSelectInstance.context.currentUserIds :
           userGroupSelectInstance.context.currentGroupIds;
       if (isAdd) {
@@ -247,7 +252,9 @@
           return;
         }
         idContainer.removeAll();
-        allValues.forEach(function(anId) {
+        allValues.filter(function(anId) {
+          return isUserId ? __isUserId(anId) : !__isUserId(anId);
+        }).forEach(function(anId) {
           idContainer.addElement(__normalizeId(anId));
         });
       } else {
