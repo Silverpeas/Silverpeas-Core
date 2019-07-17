@@ -28,6 +28,7 @@ import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion
 import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.SilverpeasList;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -35,7 +36,8 @@ import java.util.List;
  * This bean is dedicated to be used with search criteria and permits also to handle pagination
  * context into UI pages.
  */
-public class PaginationPage {
+public class PaginationPage implements Serializable {
+  private static final long serialVersionUID = -4691780072884201651L;
 
   private static final int DEFAULT_NB_ITEMS_PER_PAGE = 10;
   public static final PaginationPage DEFAULT = new PaginationPage(1, DEFAULT_NB_ITEMS_PER_PAGE);

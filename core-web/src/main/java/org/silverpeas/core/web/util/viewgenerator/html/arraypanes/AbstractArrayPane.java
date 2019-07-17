@@ -81,18 +81,18 @@ public class AbstractArrayPane implements ArrayPane {
   private String exportDataURL = null;
   private boolean sortableLines = false;
 
-  static <O> O getOrderByFrom(final ArrayPaneStatusBean state, final String column,
+  static <O> O getOrderByFrom(final ArrayPaneStatusBean state, final String columnIndex,
       final Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
     O result = null;
     final int currentSortColumn = state.getSortColumn();
-    final boolean fromRequest = StringUtil.isInteger(column);
-    int columnIndex = fromRequest ? Integer.parseInt(column) : currentSortColumn;
-    if (columnIndex != 0) {
-      Pair<O, O> orderBy = orderBiesByColumnIndex.get(abs(columnIndex));
+    final boolean fromRequest = StringUtil.isInteger(columnIndex);
+    int columnSort = fromRequest ? Integer.parseInt(columnIndex) : currentSortColumn;
+    if (columnSort != 0) {
+      Pair<O, O> orderBy = orderBiesByColumnIndex.get(abs(columnSort));
       if (orderBy != null) {
-        int sortColumn = fromRequest && abs(columnIndex) == abs(currentSortColumn)
+        int sortColumn = fromRequest && abs(columnSort) == abs(currentSortColumn)
             ? currentSortColumn * -1
-            : columnIndex;
+            : columnSort;
         if (sortColumn > 0) {
           result = orderBy.getLeft();
         } else {

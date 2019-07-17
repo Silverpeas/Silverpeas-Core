@@ -31,7 +31,6 @@ import java.util.List;
 
 public class PaginationSP extends AbstractPagination {
 
-  private static final int NUMBERPERPAGE_ALL = 100000;
   private static final String INDEX_PARAM = "?Index=";
 
   public PaginationSP() {
@@ -202,14 +201,14 @@ public class PaginationSP extends AbstractPagination {
           }
         }
       }
-      if (getNbItems() < getPaginationAllThreshold()) {
+      int allThreshold = getPaginationAllThreshold();
+      if (getNbItems() < allThreshold) {
         // add special feature : All
-        int specialValue = NUMBERPERPAGE_ALL;
-        if (getNbItemsPerPage() == specialValue) {
+        if (getNbItemsPerPage() == allThreshold) {
           fragment.append("<a class=\"selected\">").append(getString("GEF.pagination.all"))
               .append("</a>");
         } else {
-          fragment.append("<a href=\"").append(getNbItemsPerPageLink(javascriptFunc, specialValue))
+          fragment.append("<a href=\"").append(getNbItemsPerPageLink(javascriptFunc, allThreshold))
               .append("\" title=\"").append(getString("GEF.pagination.all.title")).append("\">")
               .append(getString("GEF.pagination.all")).append("</a>");
         }
