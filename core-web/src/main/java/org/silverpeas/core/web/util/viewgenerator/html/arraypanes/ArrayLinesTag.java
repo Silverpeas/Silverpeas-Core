@@ -98,11 +98,12 @@ public class ArrayLinesTag extends ForEachTag {
   @SuppressWarnings("unchecked")
   private void sort(final ArrayPaneSilverpeasV5 spArrayPane, final List list) {
     List<ArrayColumn> columns = spArrayPane.getColumns();
-    if ((spArrayPane.getColumnToSort() != 0) && (spArrayPane.getColumnToSort() <= columns.size())) {
-      final int columnIndex = Math.abs(spArrayPane.getColumnToSort()) - 1;
+    final int columnToSort = spArrayPane.getColumnToSort();
+    final int columnIndex = Math.abs(columnToSort) - 1;
+    if (0 <= columnIndex && columnIndex < columns.size()) {
       final BiFunction compareOn = columns.get(columnIndex).getCompareOn();
       if (compareOn != null) {
-        boolean asc = spArrayPane.getColumnToSort() >= 0;
+        boolean asc = columnToSort >= 0;
         list.sort(new OptimizedLineComparator(columnIndex, asc, compareOn));
       }
     }

@@ -38,9 +38,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Math.abs;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
-    .INDEX_PARAMETER_NAME;
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.INDEX_PARAMETER_NAME;
 
 public class AbstractArrayPane implements ArrayPane {
 
@@ -84,14 +84,19 @@ public class AbstractArrayPane implements ArrayPane {
   static <O> O getOrderByFrom(final ArrayPaneStatusBean state, final String column,
       final Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
     O result = null;
-    int columnIndex = StringUtil.isInteger(column) ? Integer.parseInt(column) : 0;
-    if (columnIndex > 0) {
-      Pair<O, O> orderBy = orderBiesByColumnIndex.get(columnIndex);
+    final int currentSortColumn = state.getSortColumn();
+    final boolean fromRequest = StringUtil.isInteger(column);
+    int columnIndex = fromRequest ? Integer.parseInt(column) : currentSortColumn;
+    if (columnIndex != 0) {
+      Pair<O, O> orderBy = orderBiesByColumnIndex.get(abs(columnIndex));
       if (orderBy != null) {
-        if (state.getSortColumn() > 0) {
-          result = orderBy.getRight();
-        } else {
+        int sortColumn = fromRequest && abs(columnIndex) == abs(currentSortColumn)
+            ? currentSortColumn * -1
+            : columnIndex;
+        if (sortColumn > 0) {
           result = orderBy.getLeft();
+        } else {
+          result = orderBy.getRight();
         }
       }
     } else {

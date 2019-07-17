@@ -32,10 +32,13 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import static java.util.Arrays.asList;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.web.portlets.PortletUtil.getHttpServletRequest;
 
 /**
@@ -64,30 +67,40 @@ public interface ArrayPane extends SimpleGraphicElement {
   String COLUMN_PARAMETER_NAME = "ArrayPaneColumn";
 
   /**
-   * Gets order by from given request and possible orderBies.
-   * @param request the request.
+   * Gets order by from given request and possible orderBies. The name of the array can be
+   * specified via the attributes of given request with {@link #TARGET_PARAMETER_NAME} key.
+   * @param renderRequest the request.
    * @param orderBiesByColumnIndex the possible order by indexed by the column index which starts
    * at 1.
    * @return the order by.
    */
-  static <O> O getOrderByFrom(RenderRequest request,
+  static <O> O getOrderByFrom(RenderRequest renderRequest,
       Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
-    final String name = request.getParameter(TARGET_PARAMETER_NAME);
-    final String action = request.getParameter(ACTION_PARAMETER_NAME);
-    final String column = request.getParameter(COLUMN_PARAMETER_NAME);
-    if (name == null || !"Sort".equals(action)) {
-      return null;
-    }
-    ArrayPaneStatusBean state =
-        (ArrayPaneStatusBean) getHttpServletRequest(request).getSession(false).getAttribute(name);
-    if (state == null) {
-      return null;
-    }
-    return AbstractArrayPane.getOrderByFrom(state, column, orderBiesByColumnIndex);
+    return getOrderByFrom(renderRequest, orderBiesByColumnIndex, null);
   }
 
   /**
-   * Gets order by from given request and possible orderBies.
+   * Gets order by from given request and possible orderBies. The name of the array can be
+   * specified via the attributes of given request with {@link #TARGET_PARAMETER_NAME} key.
+   * @param renderRequest the request.
+   * @param orderBiesByColumnIndex the possible order by indexed by the column index which starts
+   * at 1.
+   * @param defaultArrayPaneName the name of the array to search for in session in order to get
+   * state and provide the right order by.
+   * @return the order by.
+   */
+  static <O> O getOrderByFrom(RenderRequest renderRequest,
+      Map<Integer, Pair<O, O>> orderBiesByColumnIndex, final String defaultArrayPaneName) {
+    final Map<String, String> parameters = new HashMap<>();
+    asList(ACTION_PARAMETER_NAME, TARGET_PARAMETER_NAME, COLUMN_PARAMETER_NAME)
+        .forEach(p -> parameters.put(p, renderRequest.getParameter(p)));
+    final HttpServletRequest request = getHttpServletRequest(renderRequest);
+    return getOrderByFrom(request, parameters, orderBiesByColumnIndex, defaultArrayPaneName);
+  }
+
+  /**
+   * Gets order by from given request and possible orderBies. The name of the array can be
+   * specified via the attributes of given request with {@link #TARGET_PARAMETER_NAME} key.
    * @param request the request.
    * @param orderBiesByColumnIndex the possible order by indexed by the column index which starts
    * at 1.
@@ -95,11 +108,51 @@ public interface ArrayPane extends SimpleGraphicElement {
    */
   static <O> O getOrderByFrom(HttpServletRequest request,
       Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
-    final String name = request.getParameter(TARGET_PARAMETER_NAME);
-    final String action = request.getParameter(ACTION_PARAMETER_NAME);
-    final String column = request.getParameter(COLUMN_PARAMETER_NAME);
+    return getOrderByFrom(request, orderBiesByColumnIndex, null);
+  }
+
+  /**
+   * Gets order by from given request and possible orderBies. If no order by is defined into
+   * request, then the order by is retrieved from session if defaultArrayPaneName parameter is
+   * defined.
+   * @param request the request.
+   * @param orderBiesByColumnIndex the possible order by indexed by the column index which starts
+   * at 1.
+   * @param defaultArrayPaneName the name of the array to search for in session in order to get
+   * state and provide the right order by.
+   * @return the order by.
+   */
+  static <O> O getOrderByFrom(final HttpServletRequest request,
+      final Map<Integer, Pair<O, O>> orderBiesByColumnIndex, final String defaultArrayPaneName) {
+    final Map<String, String> parameters = new HashMap<>();
+    asList(ACTION_PARAMETER_NAME, TARGET_PARAMETER_NAME, COLUMN_PARAMETER_NAME)
+        .forEach(p -> parameters.put(p, request.getParameter(p)));
+    return getOrderByFrom(request, parameters, orderBiesByColumnIndex, defaultArrayPaneName);
+  }
+
+  /**
+   * Gets order by from given request and possible orderBies. If no order by is defined into
+   * request, then the order by is retrieved from session if defaultArrayPaneName parameter is
+   * defined.
+   * @param request the request.
+   * @param params the request params.
+   * @param orderBiesByColumnIndex the possible order by indexed by the column index which starts
+   * at 1.
+   * @param defaultArrayPaneName the name of the array to search for in session in order to get
+   * state and provide the right order by.
+   * @return the order by.
+   */
+  static <O> O getOrderByFrom(final HttpServletRequest request, final Map<String, String> params,
+      final Map<Integer, Pair<O, O>> orderBiesByColumnIndex, final String defaultArrayPaneName) {
+    final String action = params.get(ACTION_PARAMETER_NAME);
+    String name = params.get(TARGET_PARAMETER_NAME);
+    String column = params.get(COLUMN_PARAMETER_NAME);
     if (name == null || !"Sort".equals(action)) {
-      return null;
+      if (isDefined(defaultArrayPaneName)) {
+        name = defaultArrayPaneName;
+      } else {
+        return null;
+      }
     }
     ArrayPaneStatusBean state = (ArrayPaneStatusBean) request.getSession(false).getAttribute(name);
     if (state == null) {
