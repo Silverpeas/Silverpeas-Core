@@ -24,8 +24,10 @@
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
+import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
 import javax.portlet.RenderRequest;
 import javax.servlet.ServletRequest;
@@ -36,8 +38,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import static java.util.Arrays.asList;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.web.portlets.PortletUtil.getHttpServletRequest;
 
@@ -74,8 +76,8 @@ public interface ArrayPane extends SimpleGraphicElement {
    * at 1.
    * @return the order by.
    */
-  static <O> O getOrderByFrom(RenderRequest renderRequest,
-      Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
+  static <O> O getOrderByFrom(final RenderRequest renderRequest,
+      final Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
     return getOrderByFrom(renderRequest, orderBiesByColumnIndex, null);
   }
 
@@ -89,11 +91,10 @@ public interface ArrayPane extends SimpleGraphicElement {
    * state and provide the right order by.
    * @return the order by.
    */
-  static <O> O getOrderByFrom(RenderRequest renderRequest,
-      Map<Integer, Pair<O, O>> orderBiesByColumnIndex, final String defaultArrayPaneName) {
+  static <O> O getOrderByFrom(final RenderRequest renderRequest,
+      final Map<Integer, Pair<O, O>> orderBiesByColumnIndex, final String defaultArrayPaneName) {
     final Map<String, String> parameters = new HashMap<>();
-    asList(ACTION_PARAMETER_NAME, TARGET_PARAMETER_NAME, COLUMN_PARAMETER_NAME)
-        .forEach(p -> parameters.put(p, renderRequest.getParameter(p)));
+    renderRequest.getParameterMap().forEach((key, value) -> parameters.put(key, value[0]));
     final HttpServletRequest request = getHttpServletRequest(renderRequest);
     return getOrderByFrom(request, parameters, orderBiesByColumnIndex, defaultArrayPaneName);
   }
@@ -106,8 +107,8 @@ public interface ArrayPane extends SimpleGraphicElement {
    * at 1.
    * @return the order by.
    */
-  static <O> O getOrderByFrom(HttpServletRequest request,
-      Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
+  static <O> O getOrderByFrom(final HttpServletRequest request,
+      final Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
     return getOrderByFrom(request, orderBiesByColumnIndex, null);
   }
 
@@ -125,8 +126,7 @@ public interface ArrayPane extends SimpleGraphicElement {
   static <O> O getOrderByFrom(final HttpServletRequest request,
       final Map<Integer, Pair<O, O>> orderBiesByColumnIndex, final String defaultArrayPaneName) {
     final Map<String, String> parameters = new HashMap<>();
-    asList(ACTION_PARAMETER_NAME, TARGET_PARAMETER_NAME, COLUMN_PARAMETER_NAME)
-        .forEach(p -> parameters.put(p, request.getParameter(p)));
+    request.getParameterMap().forEach((key, value) -> parameters.put(key, value[0]));
     return getOrderByFrom(request, parameters, orderBiesByColumnIndex, defaultArrayPaneName);
   }
 
@@ -145,8 +145,8 @@ public interface ArrayPane extends SimpleGraphicElement {
   static <O> O getOrderByFrom(final HttpServletRequest request, final Map<String, String> params,
       final Map<Integer, Pair<O, O>> orderBiesByColumnIndex, final String defaultArrayPaneName) {
     final String action = params.get(ACTION_PARAMETER_NAME);
+    final String column = params.get(COLUMN_PARAMETER_NAME);
     String name = params.get(TARGET_PARAMETER_NAME);
-    String column = params.get(COLUMN_PARAMETER_NAME);
     if (name == null || !"Sort".equals(action)) {
       if (isDefined(defaultArrayPaneName)) {
         name = defaultArrayPaneName;
@@ -154,11 +154,82 @@ public interface ArrayPane extends SimpleGraphicElement {
         return null;
       }
     }
-    ArrayPaneStatusBean state = (ArrayPaneStatusBean) request.getSession(false).getAttribute(name);
+    final ArrayPaneStatusBean state = (ArrayPaneStatusBean) request.getSession(false).getAttribute(name);
     if (state == null) {
       return null;
     }
     return AbstractArrayPane.getOrderByFrom(state, column, orderBiesByColumnIndex);
+  }
+
+  /**
+   * Gets new pagination page of array from given request.
+   * @param renderRequest the request.
+   * @return a pagination page.
+   */
+  static PaginationPage getPaginationPageFrom(RenderRequest renderRequest) {
+    return getPaginationPageFrom(renderRequest, null);
+  }
+
+  /**
+   * Gets new pagination page of array from given request.
+   * @param renderRequest the request.
+   * @param defaultArrayPaneName the name of the array to search for in session in order to get
+   * current pagination.
+   * @return a pagination page.
+   */
+  static PaginationPage getPaginationPageFrom(RenderRequest renderRequest,
+      final String defaultArrayPaneName) {
+    final Map<String, String> parameters = new HashMap<>();
+    renderRequest.getParameterMap().forEach((key, value) -> parameters.put(key, value[0]));
+    final HttpServletRequest request = getHttpServletRequest(renderRequest);
+    return getPaginationPageFrom(request, parameters, defaultArrayPaneName);
+  }
+
+  /**
+   * Gets new pagination page of array from given request.
+   * @param request the request.
+   * @return a pagination page.
+   */
+  static PaginationPage getPaginationPageFrom(final HttpServletRequest request) {
+    return getPaginationPageFrom(request, null);
+  }
+
+  /**
+   * Gets new pagination page of array from given request.
+   * @param request the request.
+   * @param defaultArrayPaneName the name of the array to search for in session in order to get
+   * current pagination.
+   * @return a pagination page.
+   */
+  static PaginationPage getPaginationPageFrom(final HttpServletRequest request,
+      final String defaultArrayPaneName) {
+    final Map<String, String> parameters = new HashMap<>();
+    request.getParameterMap().forEach((key, value) -> parameters.put(key, value[0]));
+    return getPaginationPageFrom(request, parameters, defaultArrayPaneName);
+  }
+
+  /**
+   * Gets new pagination page of array from given request.
+   * @param request the request.
+   * @param params the request params.
+   * @param defaultArrayPaneName the name of the array to search for in session in order to get
+   * current pagination.
+   * @return a pagination page.
+   */
+  static PaginationPage getPaginationPageFrom(final HttpServletRequest request,
+      final Map<String, String> params, final String defaultArrayPaneName) {
+    final String name = defaultStringIfNotDefined(params.get(TARGET_PARAMETER_NAME),
+        defaultStringIfNotDefined(defaultArrayPaneName, "unknown-arraypane-state"));
+    final ArrayPaneStatusBean state = (ArrayPaneStatusBean) request.getSession(false).getAttribute(name);
+    final PaginationPage currentPagination;
+    if (state == null) {
+      currentPagination = null;
+    } else {
+      final int maximumVisibleLine = state.getMaximumVisibleLine();
+      final int pageNumber = (state.getFirstVisibleLine() / maximumVisibleLine) + 1;
+      currentPagination = new PaginationPage(pageNumber, maximumVisibleLine);
+    }
+    return Pagination.getPaginationPageFrom(params, currentPagination);
   }
 
   /**

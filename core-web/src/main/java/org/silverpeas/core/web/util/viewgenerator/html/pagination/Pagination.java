@@ -32,7 +32,11 @@ import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.Arrays.asList;
 
 /**
  * Pagination is an interface to be implemented by a graphic element to print a pages index or a
@@ -50,11 +54,11 @@ public interface Pagination extends SimpleGraphicElement {
    * @param currentPagination the current pagination.
    * @return the new pagination page.
    */
-  static PaginationPage getPaginationPageFrom(HttpServletRequest request, PaginationPage currentPagination) {
-    final String pageSizeAsString = request.getParameter(ITEMS_PER_PAGE_PARAM);
-    final String itemIndexAsString = request.getParameter(INDEX_PARAMETER_NAME);
-    return AbstractPagination
-        .getPaginationPageFrom(pageSizeAsString, itemIndexAsString, currentPagination);
+  static PaginationPage getPaginationPageFrom(final RenderRequest request,
+      final PaginationPage currentPagination) {
+    final Map<String, String> parameters = new HashMap<>();
+    request.getParameterMap().forEach((key, value) -> parameters.put(key, value[0]));
+    return getPaginationPageFrom(parameters, currentPagination);
   }
 
   /**
@@ -64,10 +68,24 @@ public interface Pagination extends SimpleGraphicElement {
    * @param currentPagination the current pagination.
    * @return the new pagination page.
    */
-  static PaginationPage getPaginationPageFrom(RenderRequest request,
-      PaginationPage currentPagination) {
-    final String pageSizeAsString = request.getParameter(ITEMS_PER_PAGE_PARAM);
-    final String itemIndexAsString = request.getParameter(INDEX_PARAMETER_NAME);
+  static PaginationPage getPaginationPageFrom(final HttpServletRequest request,
+      final PaginationPage currentPagination) {
+    final Map<String, String> parameters = new HashMap<>();
+    request.getParameterMap().forEach((key, value) -> parameters.put(key, value[0]));
+    return getPaginationPageFrom(parameters, currentPagination);
+  }
+
+  /**
+   * Gets a new pagination page instance from given parameters and current pagination.
+   * <p>If current pagination is null, a default one is taken into account</p>
+   * @param params the pagination params.
+   * @param currentPagination the current pagination.
+   * @return the new pagination page.
+   */
+  static PaginationPage getPaginationPageFrom(final Map<String, String> params,
+      final PaginationPage currentPagination) {
+    final String pageSizeAsString = params.get(ITEMS_PER_PAGE_PARAM);
+    final String itemIndexAsString = params.get(INDEX_PARAMETER_NAME);
     return AbstractPagination
         .getPaginationPageFrom(pageSizeAsString, itemIndexAsString, currentPagination);
   }

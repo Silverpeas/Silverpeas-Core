@@ -28,10 +28,9 @@ import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
-    .QUERY_ORDER_BY;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria.QUERY_ORDER_BY;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.portlets.FormNames;
 
 import javax.portlet.ActionRequest;
@@ -40,7 +39,6 @@ import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
@@ -49,10 +47,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
-    .QUERY_ORDER_BY.*;
+import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria.QUERY_ORDER_BY.*;
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.*;
-import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.*;
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.INDEX_PARAMETER_NAME;
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.ITEMS_PER_PAGE_PARAM;
 
 public class MyNotificationsPortlet extends GenericPortlet implements FormNames {
 
@@ -66,12 +64,12 @@ public class MyNotificationsPortlet extends GenericPortlet implements FormNames 
   public void doView(RenderRequest request, RenderResponse response) throws PortletException,
       IOException {
     String userId = UserDetail.getCurrentRequester().getId();
-    Collection<SILVERMAILMessage> messages = new ArrayList<SILVERMAILMessage>();
+    Collection<SILVERMAILMessage> messages = new ArrayList<>();
     try {
       messages = SILVERMAILPersistence
           .getMessageOfFolder(userId, "INBOX", getPaginationPage(request), getOrderBy(request));
     } catch (Exception e) {
-      SilverTrace.error("portlet", "MyNotificationsPortlet", "portlet.ERROR", e);
+      SilverLogger.getLogger(this).error(e);
     }
     request.setAttribute("Messages", messages);
     include(request, response, "portlet.jsp");
@@ -113,26 +111,12 @@ public class MyNotificationsPortlet extends GenericPortlet implements FormNames 
     }
   }
 
-  private PaginationPage getPaginationPage(RenderRequest request)
-      throws PortletException, IOException {
-    PortletSession session = request.getPortletSession();
-    PaginationPage paginationPage =
-        (PaginationPage) session.getAttribute("MyNotificationsPortletPaginationPage");
-    paginationPage = getPaginationPageFrom(request, paginationPage);
-    session.setAttribute("MyNotificationsPortletPaginationPage", paginationPage);
-    return paginationPage;
+  private PaginationPage getPaginationPage(RenderRequest request) {
+    return getPaginationPageFrom(request, "userNotificationPortlet");
   }
 
-  private QUERY_ORDER_BY getOrderBy(RenderRequest request) throws PortletException, IOException {
-    PortletSession session = request.getPortletSession();
-    QUERY_ORDER_BY sessionOrderBy =
-        (QUERY_ORDER_BY) session.getAttribute("MyNotificationsPortletOrderBy");
-    QUERY_ORDER_BY orderBy = getOrderByFrom(request, PORTLET_ORDER_BIES);
-    if (orderBy != null) {
-      sessionOrderBy = orderBy;
-      session.setAttribute("MyNotificationsPortletOrderBy", sessionOrderBy);
-    }
-    return sessionOrderBy;
+  private QUERY_ORDER_BY getOrderBy(RenderRequest request) {
+    return getOrderByFrom(request, PORTLET_ORDER_BIES, "userNotificationPortlet");
   }
 
   static {
