@@ -125,6 +125,35 @@
   });
 
   /**
+   * Keeps last selected value when leaving the selectize input.
+   */
+  Selectize.define('KeepLastSelectedValueIfEmptyWhenLeaving', function() {
+    var _self = this;
+    var _lastValue;
+    var _noValue = function() {
+      return !_self.getValue() || (Array.isArray(_self.getValue()) && !_self.getValue().length);
+    };
+    this.on('item_remove', function(value) {
+      _lastValue = Array.isArray(value) ? value[0] : value;
+      if(!!_self.settings.placeholder) {
+        _self.settings.placeholder = _lastValue;
+        _self.updatePlaceholder();
+      }
+    });
+    this.onBlur = (function() {
+      var _originalOnBlur = _self.onBlur;
+      return function(e) {
+        // performing the original behavior
+        _originalOnBlur.apply(this, arguments);
+        // handling the last removed value
+        if (_noValue() && _lastValue) {
+          _self.setValue(_lastValue);
+        }
+      };
+    })();
+  });
+
+  /**
    * Does not selected automatically the first option into drop down in open.
    */
   Selectize.define('NavigationalBehavior', function() {
