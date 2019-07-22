@@ -1093,6 +1093,13 @@ Style Utilise par le ViewGenerator
   color:#FFF;
 }
 
+.sp_button.linked-to-input {
+  padding: 1px 10px;
+  font-size: 0.9em !important;
+  height: 17px;
+  line-height: 17px;
+}
+
 /* Objet Tabs */
 
 #gef-tabs {

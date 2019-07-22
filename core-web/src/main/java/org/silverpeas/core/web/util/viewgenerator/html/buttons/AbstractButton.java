@@ -40,6 +40,8 @@ import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+
 /**
  * @author neysseri
  * @version
@@ -53,8 +55,7 @@ public abstract class AbstractButton implements Button {
   private String action;
   public boolean disabled;
   private String actionPreProcessing;
-
-  // private String iconsPath = null;
+  private String classes = StringUtil.EMPTY;
 
   /**
    * Creates new ButtonWA
@@ -146,12 +147,21 @@ public abstract class AbstractButton implements Button {
     this.actionPreProcessing = actionPreProcessing;
   }
 
+  @Override
+  public void setClasses(final String classes) {
+    this.classes = defaultStringIfNotDefined(classes);
+  }
+
   /**
    * Gets the action with pre processing if any.
    * @return the action as string.
    */
   protected String getAction() {
     return action;
+  }
+
+  protected String getClasses() {
+    return classes;
   }
 
   private String escapeForMessageFormatting(String jsContent) {

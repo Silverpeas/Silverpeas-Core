@@ -58,6 +58,12 @@ public interface Button extends SimpleGraphicElement {
   void setActionPreProcessing(String actionPreProcessing);
 
   /**
+   * Sets css classes to the HTML TAG representing the button.
+   * @param classes the css classes.
+   */
+  void setClasses(String classes);
+
+  /**
    * Method declaration
    * @return
    *

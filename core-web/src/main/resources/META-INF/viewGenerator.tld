@@ -824,6 +824,13 @@
       <type>java.lang.String</type>
     </attribute>
     <attribute>
+      <description>CSS classes to apply.</description>
+      <name>classes</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
       <description>
         true or false to indicate if the button is disabled or not.
       </description>

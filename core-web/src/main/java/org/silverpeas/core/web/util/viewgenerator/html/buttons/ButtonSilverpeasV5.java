@@ -25,39 +25,22 @@ package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
 import org.silverpeas.core.web.util.viewgenerator.html.TagUtil;
 
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+
 /**
  * @author neysseri
- * @version
  */
 public class ButtonSilverpeasV5 extends AbstractButton {
 
-  /**
-   * Creates new ButtonWA
-   */
   public ButtonSilverpeasV5() {
+    // Nothing to do.
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   @Override
   public String renderButtonHtml() {
-    String theAction = getAction();
-    String iconsPath = getIconsPath();
-
-    if (disabled) {
-      theAction = "#";
-    }
-
-    String href = TagUtil.formatHrefFromAction(theAction);
-
-    StringBuilder str = new StringBuilder();
-    str.append("<a class=\"sp_button\" ").append(href)
-        .append(" >").append(label).append("</a>");
-
-    return str.toString();
+    final String classes = "sp_button" + defaultStringIfNotDefined(" " + getClasses());
+    final String theAction = disabled ? "#" : getAction();
+    final String href = TagUtil.formatHrefFromAction(theAction);
+    return "<a class=\"" + classes + "\" " + href + " >" + label + "</a>";
   }
-
 }

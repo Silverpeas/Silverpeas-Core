@@ -23,19 +23,19 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
-import java.io.IOException;
+import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPaneTag;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
-import org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPaneTag;
+import java.io.IOException;
 
 public class ButtonTag extends TagSupport {
 
   private static final long serialVersionUID = 1L;
   private String label = "";
   private String action = "#";
+  private String classes;
   private boolean disabled = false;
   private String actionPreProcessing = "";
 
@@ -44,6 +44,7 @@ public class ButtonTag extends TagSupport {
     GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
         GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     Button button = gef.getFormButton(label, action, disabled);
+    button.setClasses(classes);
     button.setActionPreProcessing(actionPreProcessing);
     ButtonPaneTag buttonPane = (ButtonPaneTag) findAncestorWithClass(this, ButtonPaneTag.class);
     if (buttonPane != null) {
@@ -90,6 +91,10 @@ public class ButtonTag extends TagSupport {
    */
   public void setAction(String action) {
     this.action = action;
+  }
+
+  public void setClasses(final String classes) {
+    this.classes = classes;
   }
 
   /**

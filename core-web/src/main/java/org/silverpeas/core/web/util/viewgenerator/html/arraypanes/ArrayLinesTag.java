@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 public class ArrayLinesTag extends ForEachTag {
   private static final long serialVersionUID = 1621133978805756811L;
 
-  private static final String AJAX_EXPORT_PARAMETER_NAME = "ArrayPaneAjaxExport";
+  public static final String AJAX_EXPORT_PARAMETER_NAME = "ArrayPaneAjaxExport";
 
   @Override
   public void setItems(final Object items) throws JspTagException {
