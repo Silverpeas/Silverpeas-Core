@@ -478,6 +478,8 @@ public interface OrganizationController extends java.io.Serializable {
    */
   SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role);
 
+  SpaceWithSubSpacesAndComponents getFullTreeview() throws AdminException;
+
   SpaceWithSubSpacesAndComponents getFullTreeview(String userId) throws AdminException;
 
   SpaceWithSubSpacesAndComponents getFullTreeview(String userId, String spaceId)
