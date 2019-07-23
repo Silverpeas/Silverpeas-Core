@@ -44,6 +44,9 @@
 <%@ attribute name="initialQuery" required="false" type="java.lang.String"
               description="The initial query to set into input and to perform by default" %>
 
+<%@ attribute name="selectOnTabulationKeyDown" required="false" type="java.lang.Boolean"
+              description="Must select the active option on tabulation?" %>
+
 <%@ attribute name="navigationalBehavior" required="false" type="java.lang.Boolean"
               description="Must observe a navigational behavior?" %>
 
@@ -126,6 +129,10 @@
   <c:set var="hideDeactivatedState" value="${true}"/>
 </c:if>
 
+<c:if test="${selectOnTabulationKeyDown == null}">
+  <c:set var="selectOnTabulationKeyDown" value="${false}"/>
+</c:if>
+
 <c:if test="${navigationalBehavior == null}">
   <c:set var="navigationalBehavior" value="${false}"/>
 </c:if>
@@ -203,6 +210,7 @@
       roleFilter : roleFilter,
       groupFilter : groupFilter,
       initialQuery : '${silfn:escapeJs(initialQuery)}',
+      selectOnTabulationKeyDown : ${selectOnTabulationKeyDown},
       navigationalBehavior : ${navigationalBehavior},
       doNotSelectAutomaticallyOnDropDownOpen : ${doNotSelectAutomaticallyOnDropDownOpen},
       noUserPanel : ${noUserPanel},

@@ -112,24 +112,23 @@ public abstract class AbstractPagination implements Pagination {
   }
 
   public int getCurrentPage() {
-    int currentPage = (getFirstItemIndex() + 1) / getNbItemsPerPage();
-
-    if (currentPage == 0) {
-      currentPage = 1;
-    } else {
-      currentPage++;
+    final int nbItemsByPage = getNbItemsPerPage();
+    int currentPage = 1;
+    if (nbItemsByPage > 0) {
+      currentPage = (getFirstItemIndex() / nbItemsByPage) + 1;
     }
-
     return currentPage;
   }
 
   public int getNbPage() {
-    int nbPage = getNbItems() / getNbItemsPerPage();
-    if ((getNbItems() % getNbItemsPerPage()) != 0) {
-      nbPage++;
+    final int nbItemsByPage = getNbItemsPerPage();
+    final int nbPage;
+    if (nbItemsByPage > 0) {
+      nbPage = ((getNbItems() - 1) / nbItemsByPage) + 1;
+    } else {
+      nbPage = 1;
     }
-
-    return nbPage;
+    return Math.max(nbPage, 1);
   }
 
   @Override

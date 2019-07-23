@@ -30,8 +30,9 @@ import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 import javax.servlet.jsp.PageContext;
 import java.util.Collections;
 
-import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
-    .INDEX_PARAMETER_NAME;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLinesTag.AJAX_EXPORT_PARAMETER_NAME;
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.INDEX_PARAMETER_NAME;
 
 /**
  * The default implementation of ArrayPane interface.
@@ -127,7 +128,8 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
       }
     }
     result.append("</tr>\n").append("</thead>\n").append("<tbody>\n");
-    if (getLines().isEmpty()) {
+    final boolean ajaxExport = getBooleanValue(getRequest().getParameter(AJAX_EXPORT_PARAMETER_NAME));
+    if (getLines().isEmpty() || ajaxExport) {
       result.append("<tr><td>&nbsp;</td></tr>\n");
     } else {
 

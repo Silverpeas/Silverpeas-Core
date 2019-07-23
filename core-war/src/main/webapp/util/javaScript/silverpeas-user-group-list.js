@@ -321,6 +321,9 @@
     if (userGroupSelectInstance.options.navigationalBehavior) {
       selectizePlugins.push('NavigationalBehavior');
     }
+    if (userGroupSelectInstance.options.selectOnTabulationKeyDown) {
+      selectizePlugins.push('SelectOnTabulationKeyDown');
+    }
     var __selectize = jQuery(userGroupSelectInstance.context.searchInput).selectize({
       plugins: selectizePlugins,
       valueField: 'id',
@@ -423,6 +426,7 @@
       componentIdFilter : '',
       groupFilter : '',
       roleFilter : [],
+      selectOnTabulationKeyDown : true,
       navigationalBehavior : false,
       doNotSelectAutomaticallyOnDropDownOpen : false,
       noUserPanel : false,

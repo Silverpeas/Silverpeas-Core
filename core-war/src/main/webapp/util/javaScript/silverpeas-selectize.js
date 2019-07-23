@@ -129,26 +129,62 @@
    */
   Selectize.define('KeepLastSelectedValueIfEmptyWhenLeaving', function() {
     var _self = this;
+    var _isPlaceholder;
     var _lastValue;
-    var _noValue = function() {
-      return !_self.getValue() || (Array.isArray(_self.getValue()) && !_self.getValue().length);
+    var _getCurrentFirstValue = function() {
+      var _value = _self.getValue();
+      return Array.isArray(_value) ? (_value.length ? _value[0] : '') : _value;
     };
-    this.on('item_remove', function(value) {
-      _lastValue = Array.isArray(value) ? value[0] : value;
-      if(!!_self.settings.placeholder) {
-        _self.settings.placeholder = _lastValue;
-        _self.updatePlaceholder();
+    var _performLastValue = function() {
+      var lastValue = _getCurrentFirstValue();
+      if (lastValue && _lastValue !== lastValue) {
+        _lastValue = lastValue;
+        if (_isPlaceholder) {
+          _self.settings.placeholder = _lastValue;
+          _self.updatePlaceholder();
+        }
       }
+    };
+    this.on('initialize', function() {
+      _isPlaceholder = _self.settings.placeholder === _getCurrentFirstValue();
+      _performLastValue();
     });
+    this.on('change', _performLastValue);
+    this.onKeyDown = (function() {
+      var _originalOnKeyDown = _self.onKeyDown;
+      return function(e) {
+        _performLastValue();
+        _originalOnKeyDown.apply(this, arguments);
+      };
+    })();
     this.onBlur = (function() {
       var _originalOnBlur = _self.onBlur;
       return function(e) {
         // performing the original behavior
         _originalOnBlur.apply(this, arguments);
         // handling the last removed value
-        if (_noValue() && _lastValue) {
-          _self.setValue(_lastValue);
+        if (!_getCurrentFirstValue() && _lastValue) {
+          this.setValue(_lastValue);
         }
+      };
+    })();
+  });
+
+  /**
+   * Selects the active option when tabulation key is pressed.
+   */
+  Selectize.define('SelectOnTabulationKeyDown', function() {
+    var _self = this;
+    this.onKeyDown = (function() {
+      var _originalOnKeyDown = _self.onKeyDown;
+      return function(e) {
+        if (e.keyCode === 9 && this.$activeOption) {
+          var _value = _self.$activeOption[0].getAttribute('data-value');
+          setTimeout(function() {
+            _self.setValue(_value);
+          });
+        }
+        _originalOnKeyDown.apply(this, arguments);
       };
     })();
   });

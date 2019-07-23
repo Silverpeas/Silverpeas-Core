@@ -226,8 +226,12 @@ public interface ArrayPane extends SimpleGraphicElement {
       currentPagination = null;
     } else {
       final int maximumVisibleLine = state.getMaximumVisibleLine();
-      final int pageNumber = (state.getFirstVisibleLine() / maximumVisibleLine) + 1;
-      currentPagination = new PaginationPage(pageNumber, maximumVisibleLine);
+      if (maximumVisibleLine > 0) {
+        final int pageNumber = (state.getFirstVisibleLine() / maximumVisibleLine) + 1;
+        currentPagination = new PaginationPage(pageNumber, maximumVisibleLine);
+      } else {
+        currentPagination = null;
+      }
     }
     return Pagination.getPaginationPageFrom(params, currentPagination);
   }
