@@ -53,7 +53,6 @@ import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.service.RightRecover;
-import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
@@ -512,7 +511,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(AdministrationServiceProvider.class, Administration.class, Parameter.class,
           PasteDetail.class, WAComponent.class, ComponentInst.class, RightProfile.class,
           ComponentInstLight.class, SpaceInst.class, SpaceInstLight.class, CompoSpace.class,
-          QuotaException.class, ProfileInst.class, SpaceAndChildren.class, SpaceProfileInst.class,
+          QuotaException.class, ProfileInst.class, SpaceProfileInst.class,
           Group.class, GroupProfileInst.class, SearchCriteria.class,
           UserDetailsSearchCriteria.class, GroupsSearchCriteria.class, DomainProperty.class);
       addClasses(RightRecover.class, AdminException.class);

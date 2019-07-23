@@ -48,7 +48,6 @@ import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.service.cache.AdminCache;
 import org.silverpeas.core.admin.service.cache.TreeCache;
-import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
@@ -96,6 +95,7 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.text.MessageFormat.format;
 import static java.util.Collections.singletonList;
@@ -1602,7 +1602,7 @@ class Admin implements Administration {
       }
       asProfiles.addAll(profileNames);
     });
-    return asProfiles.toArray(new String[asProfiles.size()]);
+    return asProfiles.toArray(new String[0]);
   }
 
   @Override
@@ -2308,7 +2308,7 @@ class Admin implements Administration {
   @Override
   public String[] getAllUsersIds() throws AdminException {
     List<String> userIds = userManager.getAllUsersIds();
-    return userIds.toArray(new String[userIds.size()]);
+    return userIds.toArray(new String[0]);
   }
 
   @Override
@@ -2344,7 +2344,7 @@ class Admin implements Administration {
         SilverLogger.getLogger(this).error(e);
       }
     }
-    return users.toArray(new UserDetail[users.size()]);
+    return users.toArray(new UserDetail[0]);
   }
 
   @Override
@@ -2961,7 +2961,7 @@ class Admin implements Administration {
       }
     }
 
-    return spaceIds.toArray(new String[spaceIds.size()]);
+    return spaceIds.toArray(new String[0]);
   }
 
   private List<String> getAllGroupsOfUser(String userId) throws AdminException {
@@ -2996,48 +2996,45 @@ class Admin implements Administration {
   public String[] getUserRootSpaceIds(String sUserId) throws AdminException {
     try {
       // getting all components availables
-      List<String> componentIds = getAllowedComponentIds(sUserId);
-      return getUserRootSpaceIds(componentIds);
+      final List<String> componentIds = getAllowedComponentIds(sUserId);
+      return getRootSpaceIds(componentIds);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("root spaces accessible by user", sUserId), e);
     }
   }
 
-  private String[] getUserRootSpaceIds(List<String> componentIds) throws AdminException {
-    List<String> result = new ArrayList<>();
+  private String[] getRootSpaceIds(List<String> componentIds) throws AdminException {
+    final List<String> result = new ArrayList<>();
     // getting all root spaces (sorted)
-    String[] rootSpaceIds = getAllRootSpaceIds();
+    final String[] rootSpaceIds = getAllRootSpaceIds();
     // retain only allowed root spaces
     for (String rootSpaceId : rootSpaceIds) {
       if (isSpaceContainsOneComponent(componentIds, getDriverSpaceId(rootSpaceId), true)) {
         result.add(rootSpaceId);
       }
     }
-    return result.toArray(new String[result.size()]);
+    return result.toArray(new String[0]);
   }
 
   @Override
   public String[] getUserSubSpaceIds(String sUserId, String spaceId) throws AdminException {
     try {
       // getting all components availables
-      List<String> componentIds = getAllowedComponentIds(sUserId);
-      return getUserSubSpaceIds(componentIds, spaceId);
+      final List<String> componentIds = getAllowedComponentIds(sUserId);
+      return getSubSpaceIds(componentIds, spaceId, true);
     } catch (Exception e) {
       throw new AdminException(
           failureOnGetting(SUBSPACES_OF_SPACE + spaceId, ACCESSIBLE_BY_USER + sUserId), e);
     }
   }
 
-  private String[] getUserSubSpaceIds(List<String> componentIds, String spaceId) {
-    List<String> result = new ArrayList<>();
-    // getting all subspaces
-    List<SpaceInstLight> subspaces = treeCache.getSubSpaces(getDriverSpaceId(spaceId));
-    for (SpaceInstLight subspace : subspaces) {
-      if (isSpaceContainsOneComponent(componentIds, subspace.getLocalId(), true)) {
-        result.add(subspace.getId());
-      }
+  private String[] getSubSpaceIds(final List<String> componentIds, final String spaceId,
+      final boolean ignoreEmptySpaces) {
+    Stream<SpaceInstLight> subspaces = treeCache.getSubSpaces(getDriverSpaceId(spaceId)).stream();
+    if (ignoreEmptySpaces) {
+      subspaces = subspaces.filter(s -> isSpaceContainsOneComponent(componentIds, s.getLocalId(), true));
     }
-    return result.toArray(new String[result.size()]);
+    return subspaces.map(SpaceInstLight::getId).toArray(String[]::new);
   }
 
   @Override
@@ -3077,31 +3074,6 @@ class Admin implements Administration {
   }
 
   @Override
-  public List<SpaceInstLight> getSubSpacesOfUser(String userId, String spaceId)
-      throws AdminException {
-
-    try {
-      List<SpaceInstLight> result = new ArrayList<>();
-
-      // getting all components availables
-      List<String> componentIds = getAllowedComponentIds(userId);
-
-      // getting all subspaces
-      List<SpaceInstLight> subspaces = treeCache.getSubSpaces(getDriverSpaceId(spaceId));
-      for (SpaceInstLight subspace : subspaces) {
-        if (isSpaceContainsOneComponent(componentIds, subspace.getLocalId(), true)) {
-          result.add(subspace);
-        }
-      }
-
-      return result;
-    } catch (Exception e) {
-      throw new AdminException(
-          failureOnGetting(SUBSPACES_OF_SPACE + spaceId, ACCESSIBLE_BY_USER + userId), e);
-    }
-  }
-
-  @Override
   public List<SpaceInstLight> getSubSpaces(String spaceId) throws AdminException {
     return spaceManager.getSubSpaces(getDriverSpaceId(spaceId));
   }
@@ -3127,55 +3099,6 @@ class Admin implements Administration {
       throw new AdminException(
           failureOnGetting(COMPONENTS_IN_SPACE + spaceId, ACCESSIBLE_BY_USER + userId), e);
     }
-  }
-
-  @Override
-  public Map<String, SpaceAndChildren> getTreeView(String userId, String spaceId)
-      throws AdminException {
-
-    int driverSpaceId = getDriverSpaceId(spaceId);
-
-    // Step 1 - get all availables spaces and components
-    Collection<SpaceInstLight> spacesLight = getSubSpacesOfUser(userId, spaceId);
-    Collection<ComponentInstLight> componentsLight = getAvailCompoInSpace(userId, spaceId);
-
-
-
-    // Step 2 - build HashTable
-    Map<String, SpaceAndChildren> spaceTrees = new HashMap<>();
-    Iterator<SpaceInstLight> it = spacesLight.iterator();
-    while (it.hasNext()) {
-      SpaceInstLight space = it.next();
-      spaceTrees.put(space.getId(), new SpaceAndChildren(space));
-    }
-
-    // Step 3 - add root space to hashtable
-    SpaceInstLight rootSpace = getSpaceInstLight(driverSpaceId);
-    if (rootSpace == null) {
-      throw new AdminException("No such space " + spaceId);
-    }
-    spaceTrees.put(rootSpace.getId(), new SpaceAndChildren(rootSpace));
-
-    // Step 4 - build dependances
-    it = spacesLight.iterator();
-    while (it.hasNext()) {
-      SpaceInstLight child = it.next();
-      String fatherId = getClientSpaceId(child.getFatherId());
-      SpaceAndChildren father = spaceTrees.get(fatherId);
-      if (father != null) {
-        father.addSubSpace(child);
-      }
-    }
-
-    for (ComponentInstLight child : componentsLight) {
-      String fatherId = getClientSpaceId(child.getDomainFatherId());
-      SpaceAndChildren father = spaceTrees.get(fatherId);
-      if (father != null) {
-        father.addComponent(child);
-      }
-    }
-
-    return spaceTrees;
   }
 
   @Override
@@ -3247,25 +3170,35 @@ class Admin implements Administration {
     }
   }
 
+  @Override
+  public SpaceWithSubSpacesAndComponents getFullTreeview() throws AdminException {
+    return getFullTreeview(componentManager.getAllActiveComponentIds(), false);
+  }
+
+  @Override
   public SpaceWithSubSpacesAndComponents getAllowedFullTreeview(String userId)
       throws AdminException {
-    SpaceWithSubSpacesAndComponents root =
-        new SpaceWithSubSpacesAndComponents(new SpaceInstLight());
-    List<String> componentIds = getAllowedComponentIds(userId);
-    String[] spaceIds = getUserRootSpaceIds(componentIds);
-    List<SpaceWithSubSpacesAndComponents> spaces = new ArrayList<>();
-    for (String spaceId : spaceIds) {
-      SpaceWithSubSpacesAndComponents space = getAllowedTreeview(componentIds, spaceId);
-      spaces.add(space);
+    return getFullTreeview(getAllowedComponentIds(userId), true);
+  }
+
+  private SpaceWithSubSpacesAndComponents getFullTreeview(final List<String> componentIds,
+      final boolean ignoreEmptySpaces)
+      throws AdminException {
+    final String[] spaceIds = getRootSpaceIds(componentIds);
+    final SpaceWithSubSpacesAndComponents root = new SpaceWithSubSpacesAndComponents(new SpaceInstLight());
+    final List<SpaceWithSubSpacesAndComponents> spaces = new ArrayList<>();
+    for (final String spaceId : spaceIds) {
+      spaces.add(geTreeview(componentIds, spaceId, ignoreEmptySpaces));
     }
     root.setSubSpaces(spaces);
     return root;
   }
 
+  @Override
   public SpaceWithSubSpacesAndComponents getAllowedFullTreeview(String userId, String spaceId)
       throws AdminException {
-    List<String> componentIds = getAllowedComponentIds(userId);
-    return getAllowedTreeview(componentIds, spaceId);
+    final List<String> componentIds = getAllowedComponentIds(userId);
+    return geTreeview(componentIds, spaceId, true);
   }
 
   @Override
@@ -3290,29 +3223,24 @@ class Admin implements Administration {
     }
   }
 
-  private SpaceWithSubSpacesAndComponents getAllowedTreeview(List<String> componentIds,
-      String spaceId) throws AdminException {
-    SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
-    SpaceWithSubSpacesAndComponents space = new SpaceWithSubSpacesAndComponents(spaceInst);
-
+  private SpaceWithSubSpacesAndComponents geTreeview(List<String> componentIds, String spaceId,
+      final boolean ignoreEmptySpaces)
+      throws AdminException {
+    final SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
+    final SpaceWithSubSpacesAndComponents space = new SpaceWithSubSpacesAndComponents(spaceInst);
     // process subspaces
-    List<SpaceWithSubSpacesAndComponents> subSpaces =
-        new ArrayList<>();
-    for (String subSpaceId : getUserSubSpaceIds(componentIds, spaceId)) {
-      subSpaces.add(getAllowedTreeview(componentIds, subSpaceId));
+    final String[] subSpaceIds = getSubSpaceIds(componentIds, spaceId, ignoreEmptySpaces);
+    final List<SpaceWithSubSpacesAndComponents> subSpaces = new ArrayList<>(subSpaceIds.length);
+    for (final String subSpaceId : subSpaceIds) {
+      subSpaces.add(geTreeview(componentIds, subSpaceId, ignoreEmptySpaces));
     }
     space.setSubSpaces(subSpaces);
-
     // process components
-    List<ComponentInstLight> allowedComponents = new ArrayList<>();
-    List<ComponentInstLight> allComponents = treeCache.getComponents(getDriverSpaceId(spaceId));
-    for (ComponentInstLight component : allComponents) {
-      if (componentIds.contains(component.getId())) {
-        allowedComponents.add(component);
-      }
-    }
-    space.setComponents(allowedComponents);
-
+    final List<ComponentInstLight> spaceComponents = treeCache.getComponents(getDriverSpaceId(spaceId))
+        .stream()
+        .filter(c -> componentIds.contains(c.getId()))
+        .collect(Collectors.toList());
+    space.setComponents(spaceComponents);
     return space;
   }
 
@@ -3388,7 +3316,7 @@ class Admin implements Administration {
       }
 
       // Put user manageable space ids in cache
-      asManageableSpaceIds = alManageableSpaceIds.toArray(new String[alManageableSpaceIds.size()]);
+      asManageableSpaceIds = alManageableSpaceIds.toArray(new String[0]);
 
       return asManageableSpaceIds;
     } catch (Exception e) {
@@ -3433,8 +3361,7 @@ class Admin implements Administration {
         }
 
         // Put user manageable space ids in cache
-        result = alDriverManageableSpaceIds.toArray(
-            new Integer[alDriverManageableSpaceIds.size()]);
+        result = alDriverManageableSpaceIds.toArray(new Integer[0]);
         cache.putManageableSpaceIds(sUserId, result);
       } else {
         result = optionalSpaceIds.get();
@@ -3624,7 +3551,7 @@ class Admin implements Administration {
       List<String> asAvailCompoIds = componentManager.getAllowedComponentIds(Integer.parseInt(
           sUserId), groupIds, spaceId);
 
-      return asAvailCompoIds.toArray(new String[asAvailCompoIds.size()]);
+      return asAvailCompoIds.toArray(new String[0]);
     } catch (Exception e) {
       throw new AdminException(
           failureOnGetting("root components in space " + sClientSpaceId,
@@ -3664,22 +3591,9 @@ class Admin implements Administration {
     try {
       List<String> componentIds = getAllowedComponentIds(userId);
 
-      return componentIds.toArray(new String[componentIds.size()]);
+      return componentIds.toArray(new String[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("components available to user", userId), e);
-    }
-  }
-
-  @Override
-  public String[] getAvailDriverCompoIds(String sClientSpaceId, String sUserId)
-      throws AdminException {
-    try {
-      // Get available component ids
-      return getAvailableInstanceIds(sClientSpaceId, sUserId);
-    } catch (Exception e) {
-      throw new AdminException(
-          failureOnGetting(COMPONENTS_IN_SPACE + sClientSpaceId,
-              AVAILABLE_TO_USER + sUserId), e);
     }
   }
 
@@ -3688,7 +3602,7 @@ class Admin implements Administration {
       throws AdminException {
 
     List<String> allowedComponentIds = getAllowedComponentIds(sUserId, sComponentName);
-    return allowedComponentIds.toArray(new String[allowedComponentIds.size()]);
+    return allowedComponentIds.toArray(new String[0]);
   }
 
   @Override
@@ -3771,7 +3685,7 @@ class Admin implements Administration {
         alCompoSpace.add(compoSpace);
       }
 
-      return alCompoSpace.toArray(new CompoSpace[alCompoSpace.size()]);
+      return alCompoSpace.toArray(new CompoSpace[0]);
     } catch (Exception e) {
       throw new AdminException(
           failureOnGetting("instances of component " + sComponentName,
@@ -3934,13 +3848,13 @@ class Admin implements Administration {
   @Override
   public GroupDetail[] getAllSubGroups(String parentGroupId) throws AdminException {
     List<GroupDetail> subgroups = groupManager.getSubGroups(parentGroupId);
-    return subgroups.toArray(new GroupDetail[subgroups.size()]);
+    return subgroups.toArray(new GroupDetail[0]);
   }
 
   @Override
   public GroupDetail[] getRecursivelyAllSubGroups(String parentGroupId) throws AdminException {
     List<GroupDetail> subgroups = groupManager.getRecursivelySubGroups(parentGroupId);
-    return subgroups.toArray(new GroupDetail[subgroups.size()]);
+    return subgroups.toArray(new GroupDetail[0]);
   }
 
   @Override
@@ -3966,7 +3880,7 @@ class Admin implements Administration {
         matchedUsers.add(currentUser);
       }
     }
-    return matchedUsers.toArray(new UserDetail[matchedUsers.size()]);
+    return matchedUsers.toArray(new UserDetail[0]);
   }
 
   @Override
@@ -4078,7 +3992,7 @@ class Admin implements Administration {
       }
     }
 
-    return alCompoIds.toArray(new String[alCompoIds.size()]);
+    return alCompoIds.toArray(new String[0]);
   }
 
   @Override
@@ -4097,7 +4011,7 @@ class Admin implements Administration {
           p -> componentIds.add(PersonalComponentInstance.from(space.getCreator(), p).getId()));
     }
 
-    return componentIds.toArray(new String[componentIds.size()]);
+    return componentIds.toArray(new String[0]);
   }
 
   @Override
@@ -5201,7 +5115,7 @@ class Admin implements Administration {
             subGroup.getSpecificId(), fatherId);
       }
     }
-    return cleanSubGroups.toArray(new GroupDetail[cleanSubGroups.size()]);
+    return cleanSubGroups.toArray(new GroupDetail[0]);
   }
 
   @Override
@@ -5285,7 +5199,7 @@ class Admin implements Administration {
         groupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
         groupIds.add(aGroupId);
       }
-      criteria.and().onGroupIds(groupIds.toArray(new String[groupIds.size()]));
+      criteria.and().onGroupIds(groupIds.toArray(new String[0]));
     }
   }
 
@@ -5444,7 +5358,7 @@ class Admin implements Administration {
             .filter(p -> listOfRoleNames.isEmpty() || listOfRoleNames.contains(p.getName()))
             .forEach(p -> roleIds.add(p.getId()));
       }
-      criteria.onRoleNames(roleIds.toArray(new String[roleIds.size()]));
+      criteria.onRoleNames(roleIds.toArray(new String[0]));
     }
   }
 

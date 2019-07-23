@@ -35,7 +35,6 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
@@ -821,16 +820,6 @@ public interface Administration {
    */
   boolean isSpaceAvailable(String userId, String spaceId) throws AdminException;
 
-  /**
-   * Get subspaces of a given space available to a user.
-   * @param userId
-   * @param spaceId
-   * @return a list of SpaceInstLight
-   * @throws AdminException
-   * @author neysseri
-   */
-  List<SpaceInstLight> getSubSpacesOfUser(String userId, String spaceId) throws AdminException;
-
   List<SpaceInstLight> getSubSpaces(String spaceId) throws AdminException;
 
   /**
@@ -843,8 +832,6 @@ public interface Administration {
    */
   List<ComponentInstLight> getAvailCompoInSpace(String userId, String spaceId)
       throws AdminException;
-
-  Map<String, SpaceAndChildren> getTreeView(String userId, String spaceId) throws AdminException;
 
   /**
    * Get all spaces available to a user. N levels compliant. Infos of each space are in
@@ -967,11 +954,6 @@ public interface Administration {
    * @param userId
    */
   String[] getAvailCompoIds(String userId) throws AdminException;
-
-  /**
-   * Get the driver component ids allowed for the given user Id in the given space
-   */
-  String[] getAvailDriverCompoIds(String sClientSpaceId, String sUserId) throws AdminException;
 
   String[] getComponentIdsByNameAndUserId(String sUserId, String sComponentName)
       throws AdminException;
@@ -1269,6 +1251,8 @@ public interface Administration {
    * @return true if user identified by given userId is the manager of given domain identifier.
    */
   boolean isDomainManagerUser(String userId, String domainId);
+
+  SpaceWithSubSpacesAndComponents getFullTreeview() throws AdminException;
 
   SpaceWithSubSpacesAndComponents getAllowedFullTreeview(String userId) throws AdminException;
 

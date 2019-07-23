@@ -539,6 +539,14 @@ public class ComponentInstManager {
     }
   }
 
+  public List<String> getAllActiveComponentIds() throws AdminException {
+    try {
+      return ComponentDAO.getAllActiveComponentIds();
+    } catch (Exception e) {
+      throw new AdminException(failureOnGetting("all components", "of platform!!!"), e);
+    }
+  }
+
   public List<ComponentInstLight> getComponentsInSpace(int spaceId) throws AdminException {
     Connection con = null;
     try {

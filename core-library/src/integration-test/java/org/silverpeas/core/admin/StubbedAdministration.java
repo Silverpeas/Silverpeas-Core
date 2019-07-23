@@ -38,7 +38,6 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.RightAssignationContext;
 import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents;
-import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
@@ -741,22 +740,12 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public List<SpaceInstLight> getSubSpacesOfUser(final String userId, final String spaceId) {
-    return null;
-  }
-
-  @Override
   public List<SpaceInstLight> getSubSpaces(final String spaceId) {
     return null;
   }
 
   @Override
   public List<ComponentInstLight> getAvailCompoInSpace(final String userId, final String spaceId) {
-    return null;
-  }
-
-  @Override
-  public Map<String, SpaceAndChildren> getTreeView(final String userId, final String spaceId) {
     return null;
   }
 
@@ -843,11 +832,6 @@ public class StubbedAdministration implements Administration {
 
   @Override
   public String[] getAvailCompoIds(final String userId) {
-    return new String[0];
-  }
-
-  @Override
-  public String[] getAvailDriverCompoIds(final String sClientSpaceId, final String sUserId) {
     return new String[0];
   }
 
@@ -1126,6 +1110,11 @@ public class StubbedAdministration implements Administration {
   @Override
   public boolean isDomainManagerUser(final String userId, final String domainId) {
     return false;
+  }
+
+  @Override
+  public SpaceWithSubSpacesAndComponents getFullTreeview() throws AdminException {
+    return null;
   }
 
   @Override
