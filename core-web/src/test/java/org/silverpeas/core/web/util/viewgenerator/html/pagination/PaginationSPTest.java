@@ -30,23 +30,20 @@ package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.test.UnitTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- *
  * @author ehugonnet
  */
 @UnitTest
-public class PaginationSPTest {
-
-  public PaginationSPTest() {
-  }
+class PaginationSPTest {
 
   /**
    * Test of init method, of class PaginationSP.
    */
   @Test
-  public void testInit() {
+  void testInit() {
     int nbItems = 14;
     int nbItemsPerPage = 10;
     int firstItemIndex = 0;
@@ -61,7 +58,7 @@ public class PaginationSPTest {
    * Test of printCounter method, of class PaginationSP.
    */
   @Test
-  public void testPrintCounterWithTwoPages() {
+  void testPrintCounterWithTwoPages() {
     int nbItems = 14;
     int nbItemsPerPage = 10;
     int firstItemIndex = 0;
@@ -82,7 +79,7 @@ public class PaginationSPTest {
    * Test of printCounter method, of class PaginationSP.
    */
   @Test
-  public void testPrintCounterWithOnePages() {
+  void testPrintCounterWithOnePages() {
     int nbItems = 9;
     int nbItemsPerPage = 10;
     int firstItemIndex = 0;
@@ -93,38 +90,8 @@ public class PaginationSPTest {
     assertEquals("9 ", result);
   }
 
-  /**
-   * Test of printIndex method, of class PaginationSP.
-   */
-  /*@Test
-  public void testPrintIndex() {
-    int nbItems = 14;
-    int nbItemsPerPage = 10;
-    int firstItemIndex = 0;
-    Pagination instance = new PaginationSP();
-    instance.setActionSuffix("");
-    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
-    String result = instance.printIndex();
-    assertNotNull(result);
-    assertEquals("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" "
-        + "align=\"center\"><tr valign=\"middle\" class=\"intfdcolor\"><td align=\"center\">"
-        + "&#160;&#160;&#160; 1  <a href=\"Pagination?Index=10\">2</a>  <a href=\"Pagination?Index=10\"><img src=\""
-        + "/silverpeas//util/viewGenerator/icons/arrows/arrowRight.gif\" border=\"0\" "
-        + "align=\"absmiddle\" alt=\"\"/></a></td></tr></table>", result);
-
-    instance = new PaginationSP();
-    instance.init(nbItems, nbItemsPerPage, 10);
-    result = instance.printIndex();
-    assertNotNull(result);
-    assertEquals("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" "
-        + "align=\"center\"><tr valign=\"middle\" class=\"intfdcolor\"><td align=\"center\"> "
-        + "<a href=\"Pagination?Index=0\"><img src=\"/silverpeas//util/viewGenerator/icons/arrows/"
-        + "arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\"\"/></a>  <a href="
-        + "\"Pagination?Index=0\">1</a>  2 &#160;&#160;&#160;</td></tr></table>", result);
-  }*/
-
   @Test
-  public void testGetNbPage() {
+  void testGetNbPage() {
     int nbItems = 14;
     int nbItemsPerPage = 10;
     int firstItemIndex = 0;
@@ -138,7 +105,7 @@ public class PaginationSPTest {
   }
 
   @Test
-  public void testGetCurrentPage() {
+  void testGetCurrentPage() {
     int nbItems = 14;
     int nbItemsPerPage = 5;
     int firstItemIndex = 0;
@@ -148,7 +115,7 @@ public class PaginationSPTest {
 
     firstItemIndex = 14;
     instance.init(nbItems, nbItemsPerPage, firstItemIndex);
-    assertEquals(3, instance.getCurrentPage());
+    assertEquals(2, instance.getCurrentPage());
 
     firstItemIndex = 8;
     instance.init(nbItems, nbItemsPerPage, firstItemIndex);
@@ -170,7 +137,7 @@ public class PaginationSPTest {
 
 
   @Test
-  public void testGetIndexForPreviousPage() {
+  void testGetIndexForPreviousPage() {
     int nbItems = 14;
     int nbItemsPerPage = 5;
     int firstItemIndex = 0;
@@ -180,7 +147,7 @@ public class PaginationSPTest {
 
     firstItemIndex = 14;
     instance.init(nbItems, nbItemsPerPage, firstItemIndex);
-    assertEquals(5, instance.getIndexForPreviousPage());
+    assertEquals(0, instance.getIndexForPreviousPage());
 
     firstItemIndex = 8;
     instance.init(nbItems, nbItemsPerPage, firstItemIndex);
@@ -202,7 +169,7 @@ public class PaginationSPTest {
 
 
   @Test
-  public void testGetIndexForNextPage() {
+  void testGetIndexForNextPage() {
     int nbItems = 14;
     int nbItemsPerPage = 5;
     int firstItemIndex = 0;
@@ -234,7 +201,7 @@ public class PaginationSPTest {
 
 
   @Test
-  public void testGetIndexForLastPage() {
+  void testGetIndexForLastPage() {
     int nbItems = 14;
     int nbItemsPerPage = 5;
     int firstItemIndex = 0;
@@ -266,7 +233,7 @@ public class PaginationSPTest {
 
 
   @Test
-  public void testGetIndexForDirectPage() {
+  void testGetIndexForDirectPage() {
     int nbItems = 14;
     int nbItemsPerPage = 5;
     int firstItemIndex = 0;
