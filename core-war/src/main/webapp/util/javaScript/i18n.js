@@ -21,16 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function showFieldTranslation(fieldId, varName)
-{
-	try
-	{
-		document.getElementById(fieldId).value = varName;
-		document.getElementById("delTranslationLink").style.display='inline';
-	}
-	catch (e)
-	{
-		document.getElementById(fieldId).value = "";
-		document.getElementById("delTranslationLink").style.display='none';
-	}
+function showFieldTranslation(fieldId, varName) {
+  var fieldValue = window[varName];
+  if (typeof fieldValue === "string")  {
+    document.getElementById(fieldId).value = fieldValue;
+    document.getElementById("delTranslationLink").style.display = 'inline';
+  } else {
+    document.getElementById(fieldId).value = "";
+    document.getElementById("delTranslationLink").style.display = 'none';
+  }
 }
