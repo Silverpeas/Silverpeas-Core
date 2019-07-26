@@ -84,6 +84,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
   private static final String SCOPE_ATTR = "Scope";
   private static final String NAME_SUB_SPACE_ATTR = "nameSubSpace";
   private static final String PARAMETERS_ATTR = "Parameters";
+  private static final String HAVE_TO_REFRESH_NAV_BAR_ATTR = "haveToRefreshNavBar";
   private static final String START_PAGE_INFO_DEST = "StartPageInfo";
   private static final String START_PAGE_INFO_FULL_DEST = "/jobStartPagePeas/jsp/startPageInfo.jsp";
   private static final String CLOSE_WINDOW_FULL_DEST = "/jobStartPagePeas/jsp/closeWindow.jsp";
@@ -245,7 +246,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
           jobStartPageSC.restoreComponentFromBin(componentIds[i]);
         }
       }
-      request.setAttribute("haveToRefreshNavBar", Boolean.TRUE);
+      request.setAttribute(HAVE_TO_REFRESH_NAV_BAR_ATTR, Boolean.TRUE);
       destination = getDestination(VIEW_BIN_FCT, jobStartPageSC, request);
     } else if ("RemoveDefinitely".equals(function)) {
       String itemId = request.getParameter("ItemId");
@@ -426,7 +427,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     } else if (function.equals("EffectivePlaceComponent")) {
       jobStartPageSC.setComponentPlace(request.getParameter("ComponentBefore"));
       refreshNavBar(jobStartPageSC, request);
-      request.setAttribute(URL_TO_RELOAD_ATTR, GO_TO_CURRENT_COMPONENT_FCT);
+      request.setAttribute(URL_TO_RELOAD_ATTR,
+          GO_TO_CURRENT_COMPONENT_FCT + "?" + HAVE_TO_REFRESH_NAV_BAR_ATTR + "=true");
       destination = CLOSE_WINDOW_FULL_DEST;
     } else if (function.startsWith("copy")) {
       String objectId = request.getParameter("Id");
@@ -724,6 +726,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
   @Override
   public String getDestination(String function, JobStartPagePeasSessionController jobStartPageSC,
       HttpRequest request) {
+    if (request.getParameterAsBoolean(HAVE_TO_REFRESH_NAV_BAR_ATTR)) {
+      request.setAttribute(HAVE_TO_REFRESH_NAV_BAR_ATTR, Boolean.TRUE);
+    }
     String destination;
     try {
       destination = getDestinationStartPage(function, jobStartPageSC, request);
@@ -813,7 +818,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
   protected void refreshNavBar(JobStartPagePeasSessionController jobStartPageSC,
       HttpServletRequest request) {
     jobStartPageSC.refreshCurrentSpaceCache();
-    request.setAttribute("haveToRefreshNavBar", Boolean.TRUE);
+    request.setAttribute(HAVE_TO_REFRESH_NAV_BAR_ATTR, Boolean.TRUE);
   }
 
   private void setSpacesNameInRequest(
