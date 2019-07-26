@@ -171,7 +171,7 @@
           <c:if test="${empty technicalError}">
           var message = '${silfn:escapeJs(successMessage)}'.replace('###', value);
           jQuery.popup.info(message, function() {
-            sp.formRequest('${back}').submit();
+            sp.navRequest('${back}').go();
           });
           </c:if>
         }

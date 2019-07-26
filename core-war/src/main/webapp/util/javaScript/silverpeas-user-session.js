@@ -79,7 +79,7 @@ Silverpeas plugin which handles the behaviour about the connected users informat
       }, options);
       spServerEventSource.close();
       __doLogout(function() {
-        sp.formRequest(params.logoutDestination).submit();
+        sp.navRequest(params.logoutDestination).go();
       });
     };
 

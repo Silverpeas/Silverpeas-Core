@@ -52,7 +52,7 @@
     }
 
     function cancel() {
-      sp.formRequest('domainContent').submit();
+      sp.navRequest('domainContent').go();
     }
   </script>
 </head>

@@ -186,9 +186,9 @@ function jumpToUser(selectionUserAPI) {
   var userIds = selectionUserAPI.getSelectedUserIds();
   var groupIds = selectionUserAPI.getSelectedGroupIds();
   if (userIds.length) {
-    sp.formRequest("userContent").withParam("Iduser", userIds[0]).submit();
+    sp.navRequest("userContent").withParam("Iduser", userIds[0]).go();
   } else if (groupIds.length) {
-    sp.formRequest("groupContent").withParam("Idgroup", groupIds[0]).submit();
+    sp.navRequest("groupContent").withParam("Idgroup", groupIds[0]).go();
   }
 }
 </script>

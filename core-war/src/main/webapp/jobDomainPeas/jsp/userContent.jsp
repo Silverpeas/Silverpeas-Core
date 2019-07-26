@@ -235,7 +235,7 @@
     }
 
     function openGroup(groupId) {
-      sp.formRequest(webContext + '/RjobDomainPeas/jsp/groupOpen').withParam('groupId', groupId).submit();
+      sp.navRequest(webContext + '/RjobDomainPeas/jsp/groupOpen').withParam('groupId', groupId).go();
     }
 
     var componentWindow = window;

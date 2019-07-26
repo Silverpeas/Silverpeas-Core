@@ -669,12 +669,13 @@ if (!window.SilverpeasCache) {
 if (!window.SilverpeasAjaxConfig) {
   window.SilverpeasRequestConfig = SilverpeasClass.extend({
     initialize : function(url) {
-      this.url = url;
+      var explodedUrl = sp.url.explode(url);
+      this.url = explodedUrl.base;
+      this.parameters = explodedUrl.parameters;
       this.method = 'GET';
-      this.parameters = {};
     },
     withParams : function(params) {
-      this.parameters = (params) ? params : {};
+      this.parameters = (params) ? extendsObject(false, this.parameters, params) : {};
       return this;
     },
     withParam : function(name, value) {
@@ -710,10 +711,8 @@ if (!window.SilverpeasAjaxConfig) {
   });
   window.SilverpeasFormConfig = SilverpeasRequestConfig.extend({
     initialize : function(url) {
+      this._super(url);
       this.target = '';
-      var explodedUrl = sp.url.explode(url);
-      this._super(explodedUrl.base);
-      this.withParams(explodedUrl.parameters);
     },
     getUrl : function() {
       return this.url;
@@ -727,6 +726,26 @@ if (!window.SilverpeasAjaxConfig) {
     },
     submit : function() {
       return silverpeasFormSubmit(this);
+    }
+  });
+  window.SilverpeasNavConfig = SilverpeasRequestConfig.extend({
+    initialize : function(url) {
+      this._super(url);
+      this.target = '';
+    },
+    byPostMethod : function() {
+      sp.log.error('SilverpeasNavConfig does not authorize to change the method');
+      return this;
+    },
+    toTarget : function(target) {
+      this.target = (target) ? target : '';
+      return this;
+    },
+    getTarget : function() {
+      return this.target;
+    },
+    go : function() {
+      return silverpeasNavGo(this);
     }
   });
   window.SilverpeasAjaxConfig = SilverpeasRequestConfig.extend({
@@ -900,8 +919,7 @@ if (typeof window.silverpeasAjax === 'undefined') {
 
   window.silverpeasFormSubmit = function(silverpeasFormConfig) {
     if (!(silverpeasFormConfig instanceof SilverpeasFormConfig)) {
-      sp.log.error(
-          "silverpeasFormSubmit function need an instance of SilverpeasFormConfig as first parameter.");
+      sp.log.error("silverpeasFormSubmit function need an instance of SilverpeasFormConfig as first parameter.");
       return;
     }
     if (!silverpeasFormConfig.getTarget()) {
@@ -934,6 +952,24 @@ if (typeof window.silverpeasAjax === 'undefined') {
       form.appendChild(paramInput);
     }
     form.submit();
+  };
+
+  window.silverpeasNavGo = function(silverpeasNavConfig) {
+    if (!(silverpeasNavConfig instanceof SilverpeasNavConfig)) {
+      sp.log.error("silverpeasNavGo function need an instance of SilverpeasNavConfig as first parameter.");
+      return;
+    }
+    if (!silverpeasNavConfig.getTarget()) {
+      if (window.top.jQuery && window.top.jQuery.progressMessage) {
+        window.top.jQuery.progressMessage();
+      } else if (window.jQuery && window.jQuery.progressMessage) {
+        window.jQuery.progressMessage();
+      }
+    }
+    var navLink = document.createElement('a');
+    navLink.setAttribute('href', silverpeasNavConfig.getUrl());
+    navLink.setAttribute('target', silverpeasNavConfig.getTarget());
+    navLink.click();
   };
 }
 
@@ -1429,6 +1465,9 @@ if (typeof window.sp === 'undefined') {
     formRequest : function(url) {
       return new SilverpeasFormConfig(url);
     },
+    navRequest : function(url) {
+      return new SilverpeasNavConfig(url);
+    },
     ajaxRequest : function(url) {
       return new SilverpeasAjaxConfig(url);
     },
@@ -1908,7 +1947,7 @@ if (typeof window.sp === 'undefined') {
               explodedUrl.parameters['ArrayPaneAjaxExport'] = true;
               __ajaxRequest(sp.url.formatFromExploded(explodedUrl), {
                 success : function() {
-                  sp.formRequest(url).submit();
+                  sp.navRequest(url).go();
                   window.top.spProgressMessage.hide();
                 }
               });

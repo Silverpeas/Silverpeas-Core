@@ -85,7 +85,7 @@
     }
 
     function back() {
-      sp.formRequest('domainContent').submit();
+      sp.navRequest('domainContent').go();
     }
   </script>
 </head>

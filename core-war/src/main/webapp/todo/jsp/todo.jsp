@@ -102,16 +102,16 @@
     var checkboxMonitor = sp.selection.newCheckboxMonitor('#dynamic-container input[name=selection]');
 
     function addToDo() {
-      sp.formRequest('todoEdit.jsp')
+      sp.navRequest('todoEdit.jsp')
         .withParam('Action', 'Add')
-        .submit();
+        .go();
     }
 
     function viewToDo(todoId) {
-      sp.formRequest('todoEdit.jsp')
+      sp.navRequest('todoEdit.jsp')
         .withParam('ToDoId', todoId)
         .withParam('Action', 'Update')
-        .submit();
+        .go();
     }
 
     function deleteSelectedToDo() {
@@ -138,15 +138,15 @@
     }
 
     function viewParticipantTodo() {
-      sp.formRequest('todo.jsp').withParam('Action', 'ViewParticipantTodo').submit();
+      sp.navRequest('todo.jsp').withParam('Action', 'ViewParticipantTodo').go();
     }
 
     function viewOrganizedTodo() {
-      sp.formRequest('todo.jsp').withParam('Action', 'ViewOrganizedTodo').submit();
+      sp.navRequest('todo.jsp').withParam('Action', 'ViewOrganizedTodo').go();
     }
 
     function viewClosedTodo() {
-      sp.formRequest('todo.jsp').withParam('Action', 'ViewClosedTodo').submit();
+      sp.navRequest('todo.jsp').withParam('Action', 'ViewClosedTodo').go();
     }
 
     function performByKeepingSelected(params) {

@@ -383,7 +383,7 @@
   </c:if>
   <c:set var="saveLabel"><%=message.getString("SaveAndExit")%></c:set>
   <c:set var="cancelLabel"><%=message.getString("GML.back")%></c:set>
-  <c:set var="cancelAction"><%="javascript:sp.editor.wysiwyg.lastBackupManager.clear();location.href='" + returnUrl + "';"%></c:set>
+  <c:set var="cancelAction"><%="javascript:sp.editor.wysiwyg.lastBackupManager.clear();sp.navRequest('" + returnUrl + "').go();"%></c:set>
   <br/>
   <view:buttonPane>
     <view:button label="${saveLabel}" action="javascript:onclick=saveAndExit();"/>

@@ -105,10 +105,10 @@ int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.min
   }
 
   function openClipboard() {
-    sp.formRequest('${silfn:applicationURL()}<%=URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp')
+    sp.navRequest('${silfn:applicationURL()}<%=URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp')
         .withParam('message','SHOWCLIPBOARD')
         .toTarget('IdleFrame')
-        .submit();
+        .go();
   }
 
   function goToLoginPage() {
