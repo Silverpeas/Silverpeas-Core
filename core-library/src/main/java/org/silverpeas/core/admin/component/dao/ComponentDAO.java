@@ -24,8 +24,10 @@
 package org.silverpeas.core.admin.component.dao;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.StringUtil;
 
 import java.sql.Connection;
@@ -34,11 +36,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ComponentDAO {
 
@@ -93,7 +95,7 @@ public class ComponentDAO {
 
       while (rs.next()) {
         ids.add(
-            rs.getString(COMPONENT_NAME_COLUMN) + Integer.toString(rs.getInt(COMPONENT_ID_COLUMN)));
+            rs.getString(COMPONENT_NAME_COLUMN) + rs.getInt(COMPONENT_ID_COLUMN));
       }
 
       return ids;
@@ -130,12 +132,22 @@ public class ComponentDAO {
     return new ComponentInstLight(row);
   }
 
+  public static List<String> getAllActiveComponentIds() throws SQLException {
+    return JdbcSqlQuery
+        .createSelect("componentName, id")
+        .from("ST_ComponentInstance")
+        .where("componentStatus IS NULL")
+        .and("componentName").in(WAComponent.getAll().stream().map(WAComponent::getName).collect(Collectors.toList()))
+        .orderBy("orderNum")
+        .execute(r -> r.getString(1) + r.getInt(2));
+  }
+
   public static List<ComponentInstLight> getComponentsInSpace(Connection con, int spaceId)
       throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
+      List<ComponentInstLight> components = new ArrayList<>();
 
       stmt = con.prepareStatement(QUERY_ALL_SPACE_INSTANCES);
       stmt.setInt(1, spaceId);
@@ -170,7 +182,7 @@ public class ComponentDAO {
 
   public static List<String> getAllAvailableComponentIds(Connection con, List<String> groupIds,
       int userId, String componentName) throws SQLException {
-    Set<String> componentIds = new HashSet<String>();
+    Set<String> componentIds = new HashSet<>();
     componentIds.addAll(getAllPublicComponentIds(con));
 
     // Public component instance ids must be filtered in case when a component name filter is
@@ -190,7 +202,7 @@ public class ComponentDAO {
     if (userId != -1) {
       componentIds.addAll(getAllAvailableComponentIds(con, userId, componentName));
     }
-    return new ArrayList<String>(componentIds);
+    return new ArrayList<>(componentIds);
   }
 
   private static List<String> getAllAvailableComponentIds(Connection con, List<String> groupIds,
@@ -198,7 +210,7 @@ public class ComponentDAO {
     Statement stmt = null;
     ResultSet rs = null;
     try {
-      List<String> ids = new ArrayList<String>();
+      List<String> ids = new ArrayList<>();
 
       String queryAllAvailableComponentIds = "select distinct(c.id), c.componentName" +
           " from st_componentinstance c, st_userrole r, st_userrole_group_rel gr" +
@@ -213,7 +225,7 @@ public class ComponentDAO {
         String cName = rs.getString(COMPONENT_NAME_COLUMN);
         if (!StringUtil.isDefined(componentName) ||
             (StringUtil.isDefined(componentName) && componentName.equalsIgnoreCase(cName))) {
-          ids.add(cName + Integer.toString(rs.getInt(1)));
+          ids.add(cName + rs.getInt(1));
         }
       }
 
@@ -228,7 +240,7 @@ public class ComponentDAO {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      List<String> ids = new ArrayList<String>();
+      List<String> ids = new ArrayList<>();
 
       stmt = con.prepareStatement(QUERY_ALL_AVAILABLE_COMPONENT_IDS);
       stmt.setInt(1, userId);
@@ -239,7 +251,7 @@ public class ComponentDAO {
         String cName = rs.getString(COMPONENT_NAME_COLUMN);
         if (!StringUtil.isDefined(componentName) ||
             (StringUtil.isDefined(componentName) && componentName.equalsIgnoreCase(cName))) {
-          ids.add(cName + Integer.toString(rs.getInt(1)));
+          ids.add(cName + rs.getInt(1));
         }
       }
 
@@ -254,7 +266,7 @@ public class ComponentDAO {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      List<String> ids = new ArrayList<String>();
+      List<String> ids = new ArrayList<>();
 
       stmt = con.prepareStatement(QUERY_ALL_PUBLIC_COMPONENT_IDS);
 
@@ -262,7 +274,7 @@ public class ComponentDAO {
 
       while (rs.next()) {
         ids.add(
-            rs.getString(COMPONENT_NAME_COLUMN) + Integer.toString(rs.getInt(COMPONENT_ID_COLUMN)));
+            rs.getString(COMPONENT_NAME_COLUMN) + rs.getInt(COMPONENT_ID_COLUMN));
       }
 
       return ids;
@@ -279,7 +291,7 @@ public class ComponentDAO {
   public static List<String> getAvailableComponentIdsInSpace(Connection con, List<String> groupIds,
       int userId, int spaceId, String componentName) throws SQLException {
     // get available components
-    Set<ComponentInstLight> componentsSet = new HashSet<ComponentInstLight>();
+    Set<ComponentInstLight> componentsSet = new HashSet<>();
     componentsSet.addAll(getPublicComponentsInSpace(con, spaceId));
     if (groupIds != null && !groupIds.isEmpty()) {
       componentsSet.addAll(getAvailableComponentsInSpace(con, groupIds, spaceId, componentName));
@@ -287,9 +299,9 @@ public class ComponentDAO {
     componentsSet.addAll(getAvailableComponentsInSpace(con, userId, spaceId, componentName));
 
     // sort components according to ordernum
-    List<ComponentInstLight> components = new ArrayList<ComponentInstLight>(componentsSet);
-    Collections.sort(components, new ComponentInstLightSorter());
-    List<String> componentIds = new ArrayList<String>();
+    List<ComponentInstLight> components = new ArrayList<>(componentsSet);
+    components.sort(new ComponentInstLightSorter());
+    List<String> componentIds = new ArrayList<>();
     for (ComponentInstLight component : components) {
       componentIds.add(component.getId());
     }
@@ -302,7 +314,7 @@ public class ComponentDAO {
     Statement stmt = null;
     ResultSet rs = null;
     try {
-      List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
+      List<ComponentInstLight> components = new ArrayList<>();
 
       String queryAvailableComponentIdsInSpace =
           "select distinct(c.id), c.componentName, c.ordernum" +
@@ -332,7 +344,7 @@ public class ComponentDAO {
     Statement stmt = null;
     ResultSet rs = null;
     try {
-      List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
+      List<ComponentInstLight> components = new ArrayList<>();
 
       String queryAvailableComponentIdsInSpace =
           " select distinct(c.id), c.componentName, c.ordernum"
@@ -374,7 +386,7 @@ public class ComponentDAO {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
+      List<ComponentInstLight> components = new ArrayList<>();
 
       stmt = con.prepareStatement(QUERY_PUBLIC_COMPONENT_IDS_IN_SPACE);
       stmt.setInt(1, spaceId);

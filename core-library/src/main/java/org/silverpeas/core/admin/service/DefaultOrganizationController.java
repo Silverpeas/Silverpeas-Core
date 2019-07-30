@@ -1077,15 +1077,23 @@ public class DefaultOrganizationController implements OrganizationController {
     }
   }
 
+  @Override
+  public SpaceWithSubSpacesAndComponents getFullTreeview() throws AdminException {
+    return getAdminService().getFullTreeview();
+  }
+
+  @Override
   public SpaceWithSubSpacesAndComponents getFullTreeview(String userId) throws AdminException {
     return getAdminService().getAllowedFullTreeview(userId);
   }
 
+  @Override
   public SpaceWithSubSpacesAndComponents getFullTreeview(String userId, String spaceId)
       throws AdminException {
     return getAdminService().getAllowedFullTreeview(userId, spaceId);
   }
 
+  @Override
   public List<SpaceInstLight> getPathToSpace(String spaceId) {
     return getPathToSpace(new ArrayList<SpaceInstLight>(), spaceId);
   }

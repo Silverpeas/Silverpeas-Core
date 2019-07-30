@@ -59,7 +59,6 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
@@ -124,16 +123,6 @@ public class AdminController implements java.io.Serializable {
 
     try {
       return admin.getSpaceInstLightById(sSpaceId);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
-    }
-  }
-
-  public Map<String, SpaceAndChildren> getTreeView(String userId, String spaceId) {
-
-    try {
-      return admin.getTreeView(userId, spaceId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return null;

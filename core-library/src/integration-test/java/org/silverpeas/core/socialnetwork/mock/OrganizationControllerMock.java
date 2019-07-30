@@ -492,6 +492,11 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
+  public SpaceWithSubSpacesAndComponents getFullTreeview() throws AdminException {
+    return null;
+  }
+
+  @Override
   public SpaceWithSubSpacesAndComponents getFullTreeview(final String userId)
       throws AdminException {
     return null;
