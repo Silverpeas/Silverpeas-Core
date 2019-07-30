@@ -969,6 +969,8 @@ if (typeof window.silverpeasAjax === 'undefined') {
     var navLink = document.createElement('a');
     navLink.setAttribute('href', silverpeasNavConfig.getUrl());
     navLink.setAttribute('target', silverpeasNavConfig.getTarget());
+    navLink.style.display = 'none';
+    document.body.appendChild(navLink);
     navLink.click();
   };
 }
