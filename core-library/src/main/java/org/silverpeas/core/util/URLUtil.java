@@ -101,6 +101,7 @@ public class URLUtil {
   static boolean universalLinksUsed = false;
   private static String silverpeasVersion = null; // ie 5.14.1-SNAPSHOT
   private static String silverpeasVersionMin = null;  // ie 5141SNAPSHOT
+  private static String silverpeasFingerprintVersion = null;  // ie .5141snapshot
 
   /**
    * Construit l'URL standard afin d'acceder à un composant
@@ -365,18 +366,29 @@ public class URLUtil {
   public static void setSilverpeasVersion(String version) {
     silverpeasVersion = version;
     silverpeasVersionMin = StringUtil.remove(StringUtil.remove(version, '.'), '-');
+    silverpeasFingerprintVersion = "." + silverpeasVersionMin.toLowerCase();
   }
 
-  public static String getSilverpeasVersionMinify(){
-    return silverpeasVersionMin;
+  public static String getSilverpeasVersionFingerprint(){
+    return silverpeasFingerprintVersion;
   }
 
-  public static String appendVersion(String url) {
-    String param = "v=" + URLUtil.getSilverpeasVersionMinify();
-    if (url.indexOf('?') == -1) {
-      return url + "?" + param;
+  public static String addFingerprintVersionOn(String url) {
+    final String fingerprintedUrl;
+    if (url.startsWith(getApplicationURL())) {
+      // Fingerprint method
+      final int lastIndex = url.lastIndexOf('.');
+      fingerprintedUrl = url.substring(0, lastIndex) + silverpeasFingerprintVersion + url.substring(lastIndex);
+    } else {
+      // Query string method
+      final String param = "v=" + silverpeasVersionMin;
+      if (url.indexOf('?') == -1) {
+        fingerprintedUrl = url + "?" + param;
+      } else {
+        fingerprintedUrl = url + "&" + param;
+      }
     }
-    return url + "&" + param;
+    return fingerprintedUrl;
   }
 
   /**

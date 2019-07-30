@@ -262,7 +262,7 @@ class WebCommonLookAndFeel {
 
   private String getJavaScriptTagWithVersion(String src) {
     String normalizedUrl = getMinifiedWebResourceUrl(src);
-    return getJavaScriptTag(URLUtil.appendVersion(normalizedUrl));
+    return getJavaScriptTag(URLUtil.addFingerprintVersionOn(normalizedUrl));
   }
 
   /**

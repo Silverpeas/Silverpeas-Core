@@ -97,12 +97,12 @@ public class LoadScriptTag extends TagSupport {
     if (getRequestCacheService().getCache().get(key) == null) {
       getRequestCacheService().getCache().put(key, true);
       if (StringUtil.isNotDefined(jsPromiseName)) {
-        return "jQuery.getScript('" + normalizeWebResourceUrl(src) + "');";
+        return "jQuery.ajax({type:'GET',url:'" + normalizeWebResourceUrl(src) + "',dataType:'script',cache:true});";
       }
       final String scope = StringUtil.isDefined(jsPromiseScope) ? (jsPromiseScope + ".") : "var ";
       return scope + jsPromiseName + "=" +
           "new Promise(function(resolve, reject){" +
-          "jQuery.getScript('" + normalizeWebResourceUrl(src) + "',function(){resolve();});" +
+          "jQuery.ajax({type:'GET',url:'" + normalizeWebResourceUrl(src) + "',dataType:'script',cache:true,success:function(){resolve();}});" +
           "});";
     } else {
       return "";

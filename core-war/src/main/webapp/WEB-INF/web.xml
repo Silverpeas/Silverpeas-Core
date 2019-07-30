@@ -89,6 +89,14 @@
   </filter>
   <filter>
     <description>
+      A filter that handle resource caches.
+    </description>
+    <filter-name>ResourceCacheFilter</filter-name>
+    <filter-class>org.silverpeas.web.filter.ResourceCacheFilter</filter-class>
+    <async-supported>true</async-supported>
+  </filter>
+  <filter>
+    <description>
       To handle the logging of all exception throw from Silverpeas application.
     </description>
     <filter-name>SilverpeasExceptionLoggingFilter</filter-name>
@@ -159,6 +167,10 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>HttpServletRequestDecoration</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>ResourceCacheFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
