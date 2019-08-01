@@ -28,18 +28,27 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.junit.Test;
 import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.util.Charsets;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.io.FileUtils.*;
-import static org.apache.commons.io.IOUtils.*;
 import static org.apache.commons.io.IOUtils.write;
+import static org.apache.commons.io.IOUtils.*;
+import static org.awaitility.Awaitility.*;
+import static org.awaitility.Duration.ONE_SECOND;
+import static org.awaitility.Duration.TWO_SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -72,43 +81,33 @@ public class TestHandledFile extends AbstractHandledFileTest {
   @Test
   public void testOpenOutputStream() throws Exception {
     HandledFile file = getHandledFile(realComponentPath, "file");
-    OutputStream test = file.openOutputStream();
-    try {
-      write("toto", test);
-    } finally {
-      closeQuietly(test);
+    try(OutputStream test = file.openOutputStream()) {
+      write("toto", test, Charsets.UTF_8);
     }
-    assertThat(readFileToString(getFile(sessionComponentPath, "file")), is("toto"));
+    assertThat(readFileToString(getFile(sessionComponentPath, "file"), Charsets.UTF_8), is("toto"));
 
     // Not append
-    test = file.openOutputStream();
-    try {
-      write("toto", test);
-    } finally {
-      closeQuietly(test);
+    try(OutputStream test = file.openOutputStream()) {
+      write("toto", test, Charsets.UTF_8);
     }
-    assertThat(readFileToString(getFile(sessionComponentPath, "file")), is("toto"));
+    assertThat(readFileToString(getFile(sessionComponentPath, "file"), Charsets.UTF_8), is("toto"));
 
     // Append
     file = getHandledFile(realComponentPath, "file");
-    test = file.openOutputStream(true);
-    try {
-      write("toto", test);
-    } finally {
-      closeQuietly(test);
+    try(OutputStream test = file.openOutputStream(true)) {
+      write("toto", test, Charsets.UTF_8);
     }
-    assertThat(readFileToString(getFile(sessionComponentPath, "file")), is("totototo"));
+    assertThat(readFileToString(getFile(sessionComponentPath, "file"), Charsets.UTF_8),
+        is("totototo"));
 
     // Append
     file = getHandledFile(realComponentPath, "file2");
-    writeStringToFile(getFile(realComponentPath, "file2"), "file2");
-    test = file.openOutputStream(true);
-    try {
-      write("line 2", test);
-    } finally {
-      closeQuietly(test);
+    writeStringToFile(getFile(realComponentPath, "file2"), "file2", Charsets.UTF_8);
+    try(OutputStream test = file.openOutputStream(true)) {
+      write("line 2", test,Charsets.UTF_8);
     }
-    assertThat(readFileToString(getFile(sessionComponentPath, "file2")), is("file2line 2"));
+    assertThat(readFileToString(getFile(sessionComponentPath, "file2"), Charsets.UTF_8),
+        is("file2line 2"));
   }
 
   @Test
@@ -116,22 +115,18 @@ public class TestHandledFile extends AbstractHandledFileTest {
     // File exists in real path only
     HandledFile file = getHandledFile(realComponentPath, "file");
     touch(getFile(realComponentPath, "file"));
-    InputStream test = file.openInputStream();
-    try {
+    try (InputStream test = file.openInputStream()) {
       assertThat(test, notNullValue());
     } finally {
-      closeQuietly(test);
       deleteQuietly(getFile(realComponentPath, "file"));
     }
 
     // File exists in session path only
     file = getHandledFile(sessionComponentPath, "file");
     touch(getFile(realComponentPath, "file"));
-    test = file.openInputStream();
-    try {
+    try (InputStream test = file.openInputStream()) {
       assertThat(test, notNullValue());
     } finally {
-      closeQuietly(test);
       deleteQuietly(getFile(realComponentPath, "file"));
     }
 
@@ -139,11 +134,9 @@ public class TestHandledFile extends AbstractHandledFileTest {
     file = getHandledFile(sessionComponentPath, "file");
     touch(getFile(sessionComponentPath, "file"));
     touch(getFile(realComponentPath, "file"));
-    test = file.openInputStream();
-    try {
+    try (InputStream test = file.openInputStream()) {
       assertThat(test, notNullValue());
     } finally {
-      closeQuietly(test);
       deleteQuietly(getFile(sessionComponentPath, "file"));
       deleteQuietly(getFile(realComponentPath, "file"));
     }
@@ -164,13 +157,13 @@ public class TestHandledFile extends AbstractHandledFileTest {
     assertThat(sessionFile.exists(), is(true));
     assertThat(realFile.exists(), is(false));
     deleteQuietly(sessionFile);
-    writeStringToFile(realFile, "content");
+    writeStringToFile(realFile, "content", Charsets.UTF_8);
     test.touch();
     test.touch();
     assertThat(sessionFile.exists(), is(true));
     assertThat(realFile.exists(), is(true));
-    assertThat(readFileToString(sessionFile), is("content"));
-    assertThat(readFileToString(realFile), is("content"));
+    assertThat(readFileToString(sessionFile, Charsets.UTF_8), is("content"));
+    assertThat(readFileToString(realFile, Charsets.UTF_8), is("content"));
   }
 
   /*
@@ -285,7 +278,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
   public void testCopyFile() throws Exception {
     File test = getFile(realComponentPath, "a", otherFile.getName());
     File expected = getFile(sessionComponentPath, "a", otherFile.getName());
-    writeStringToFile(getFile(realComponentPath, otherFile.getName()), "other");
+    writeStringToFile(getFile(realComponentPath, otherFile.getName()), "other", Charsets.UTF_8);
     assertThat(expected.exists(), is(false));
     getHandledFile(sessionComponentPath, otherFile.getName()).copyFile(getHandledFile(test));
     assertThat(expected.exists(), is(true));
@@ -293,11 +286,8 @@ public class TestHandledFile extends AbstractHandledFileTest {
     test = getFile(realComponentPath, "b", otherFile.getName());
     expected = getFile(sessionComponentPath, "b", otherFile.getName());
     assertThat(expected.exists(), is(false));
-    final OutputStream os = getHandledFile(test).openOutputStream();
-    try {
+    try (final OutputStream os = getHandledFile(test).openOutputStream()) {
       getHandledFile(sessionComponentPath, otherFile.getName()).copyFile(os);
-    } finally {
-      closeQuietly(os);
     }
     assertThat(expected.exists(), is(true));
 
@@ -449,87 +439,36 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testWaitForWithSuccessFileCreationInTime() throws Exception {
+  public void testWaitForWithSuccessFileCreationInTime() {
     assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
 
-    final Thread create = new Thread(new Runnable() {
-
-      @Override
-      public void run() {
-        try {
-          Thread.sleep(450);
-          touch(getFile(sessionComponentPath, "file"));
-        } catch (final Exception e) {
-        }
-      }
+    given().pollThread(Thread::new).with().pollDelay(400, TimeUnit.MILLISECONDS).await().until(() -> {
+      touch(getFile(sessionComponentPath, "file"));
+      return true;
     });
-    final RunnableTest<Boolean> waitForRun = new RunnableTest<Boolean>() {
-      @Override
-      public void run() {
-        result = false;
-        result = getHandledFile(realComponentPath, "file").waitFor(1);
-      }
-    };
-    final Thread waitFor = new Thread(waitForRun);
 
-    try {
-      create.start();
-      waitFor.start();
-      Thread.sleep(200);
-      assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
-      assertThat(waitForRun.getResult(), is(false));
-      Thread.sleep(400);
-      assertThat(getFile(sessionComponentPath, "file").exists(), is(true));
-      assertThat(waitForRun.getResult(), is(true));
-      Thread.sleep(500);
-    } finally {
-      create.interrupt();
-      waitFor.interrupt();
-    }
-    assertThat(waitForRun.getResult(), is(true));
+    await().atMost(ONE_SECOND).until(() -> getHandledFile(realComponentPath, "file").waitFor(1));
+
     assertThat(getFile(sessionComponentPath, "file").exists(), is(true));
   }
 
   @Test
-  public void testWaitForForWithFailFileCreationInTime() throws Exception {
+  public void testWaitForForWithFailFileCreationInTime() throws InterruptedException {
     assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
 
-    final Thread create = new Thread(new Runnable() {
-
-      @Override
-      public void run() {
-        try {
-          Thread.sleep(1200);
-          touch(getFile(sessionComponentPath, "file"));
-        } catch (final Exception e) {
-        }
-      }
+    final ExecutorService executor = Executors.newSingleThreadExecutor();
+    executor.submit(() -> {
+      boolean isCreated = getHandledFile(realComponentPath, "file").waitFor(1);
+      assertThat(isCreated, is(false));
+      assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
     });
-    final RunnableTest<Boolean> waitForRun = new RunnableTest<Boolean>() {
-      @Override
-      public void run() {
-        result = false;
-        result = getHandledFile(realComponentPath, "file").waitFor(1);
-      }
-    };
-    final Thread waitFor = new Thread(waitForRun);
 
-    try {
-      create.start();
-      waitFor.start();
-      Thread.sleep(200);
-      assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
-      assertThat(waitForRun.getResult(), is(false));
-      Thread.sleep(400);
-      assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
-      assertThat(waitForRun.getResult(), is(false));
-      Thread.sleep(500);
-    } finally {
-      create.interrupt();
-      waitFor.interrupt();
-    }
-    assertThat(waitForRun.getResult(), is(false));
-    assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
+    given().pollThread(Thread::new).with().pollDelay(TWO_SECONDS).await().until(() -> {
+      touch(getFile(sessionComponentPath, "file"));
+      return true;
+    });
+
+    executor.awaitTermination(1, TimeUnit.SECONDS);
   }
 
   /*
@@ -547,7 +486,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     // Verify before move
     assertThat(real.exists(), is(true));
     assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, real), is(false));
-    assertThat(readFileToString(real), is("root_file_1"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("root_file_1"));
     assertThat(session.exists(), is(false));
     assertThat(sessionDest.exists(), is(false));
 
@@ -556,10 +495,10 @@ public class TestHandledFile extends AbstractHandledFileTest {
     // Verify after move
     assertThat(real.exists(), is(true));
     assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, real), is(true));
-    assertThat(readFileToString(real), is("root_file_1"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("root_file_1"));
     assertThat(session.exists(), is(false));
     assertThat(sessionDest.exists(), is(true));
-    assertThat(readFileToString(sessionDest), is("root_file_1"));
+    assertThat(readFileToString(sessionDest, Charsets.UTF_8), is("root_file_1"));
   }
 
   /*
@@ -572,8 +511,8 @@ public class TestHandledFile extends AbstractHandledFileTest {
     // Creating file with different content depending of session or real paths
     final File session = getFile(sessionComponentPath, "readFile");
     final File real = getFile(realComponentPath, "readFile");
-    writeStringToFile(session, "session\nligne 2\n");
-    writeStringToFile(real, "real\nligne 2\n");
+    writeStringToFile(session, "session\nligne 2\n", Charsets.UTF_8);
+    writeStringToFile(real, "real\nligne 2\n", Charsets.UTF_8);
 
     // Content of session file has to be read
     String fileContent = getHandledFile(real).readFileToString();
@@ -611,8 +550,8 @@ public class TestHandledFile extends AbstractHandledFileTest {
     // Creating file with different content depending of session or real paths
     final File session = getFile(sessionComponentPath, "readFile");
     final File real = getFile(realComponentPath, "readFile");
-    writeStringToFile(session, "session\nligne 2\n");
-    writeStringToFile(real, "real\nligne 2\n");
+    writeStringToFile(session, "session\nligne 2\n", Charsets.UTF_8);
+    writeStringToFile(real, "real\nligne 2\n", Charsets.UTF_8);
 
     // Content of session file has to be read
     List<String> fileContent = getHandledFile(real).readLines();
@@ -662,36 +601,36 @@ public class TestHandledFile extends AbstractHandledFileTest {
     // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
     final File real = getFile(realComponentPath, "writeFile");
-    writeStringToFile(session, "notModified");
-    writeStringToFile(real, "notModified");
+    writeStringToFile(session, "notModified", Charsets.UTF_8);
+    writeStringToFile(real, "notModified", Charsets.UTF_8);
 
     // Writing empty content by specifying real file
     getHandledFile(real).writeStringToFile(null);
     // Session file is now empty and real file is not modified
-    String fileContent = readFileToString(session);
+    String fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is(""));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Writing new content by specifying real file
     getHandledFile(real).writeStringToFile("modifiedContent");
     // Session file contains this new content and real file is not modified
-    fileContent = readFileToString(session);
+    fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is("modifiedContent"));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Appending new content by specifying real file
     getHandledFile(real).writeStringToFile("modifiedContent", true);
     // Session file contains the new appended content and real file is not modified
-    fileContent = readFileToString(session);
+    fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is("modifiedContentmodifiedContent"));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Writing new content by specifying real file and a specific file encoding
     getHandledFile(real).writeStringToFile(new String("newContent".getBytes("UTF16")), "UTF16");
     // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session, "UTF16");
     assertThat(fileContent, is(new String("newContent".getBytes("UTF16"))));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
   }
 
   /*
@@ -704,36 +643,36 @@ public class TestHandledFile extends AbstractHandledFileTest {
     // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
     final File real = getFile(realComponentPath, "writeFile");
-    writeStringToFile(session, "notModified");
-    writeStringToFile(real, "notModified");
+    writeStringToFile(session, "notModified", Charsets.UTF_8);
+    writeStringToFile(real, "notModified", Charsets.UTF_8);
 
     // Writing empty content by specifying real file
     getHandledFile(real).write(null);
     // Session file is now empty and real file is not modified
-    String fileContent = readFileToString(session);
+    String fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is(""));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Writing new content by specifying real file
     getHandledFile(real).write("modifiedContent");
     // Session file contains this new content and real file is not modified
-    fileContent = readFileToString(session);
+    fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is("modifiedContent"));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Appending new content by specifying real file
     getHandledFile(real).write("modifiedContent", true);
     // Session file contains the new appended content and real file is not modified
-    fileContent = readFileToString(session);
+    fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is("modifiedContentmodifiedContent"));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Writing new content by specifying real file and a specific file encoding
     getHandledFile(real).write(new String("newContent".getBytes("UTF16")), "UTF16");
     // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session, "UTF16");
     assertThat(fileContent, is(new String("newContent".getBytes("UTF16"))));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
   }
 
   /*
@@ -746,22 +685,22 @@ public class TestHandledFile extends AbstractHandledFileTest {
     // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
     final File real = getFile(realComponentPath, "writeFile");
-    writeStringToFile(session, "notModified");
-    writeStringToFile(real, "notModified");
+    writeStringToFile(session, "notModified", Charsets.UTF_8);
+    writeStringToFile(real, "notModified", Charsets.UTF_8);
 
     // Writing empty content by specifying real file
     getHandledFile(real).writeByteArrayToFile("modifiedContent".getBytes());
     // Session file is now empty and real file is not modified
-    String fileContent = readFileToString(session);
+    String fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is("modifiedContent"));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Appending new content by specifying real file
     getHandledFile(real).writeByteArrayToFile("modifiedContent".getBytes(), true);
     // Session file contains the new appended content and real file is not modified
-    fileContent = readFileToString(session);
+    fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is("modifiedContentmodifiedContent"));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
   }
 
   /*
@@ -774,45 +713,45 @@ public class TestHandledFile extends AbstractHandledFileTest {
     // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
     final File real = getFile(realComponentPath, "writeFile");
-    writeStringToFile(session, "notModified");
-    writeStringToFile(real, "notModified");
+    writeStringToFile(session, "notModified", Charsets.UTF_8);
+    writeStringToFile(real, "notModified", Charsets.UTF_8);
 
     // Writing empty content by specifying real file
     getHandledFile(real).writeLines(null);
     // Session file is now empty and real file is not modified
-    String fileContent = readFileToString(session);
+    String fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is(""));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Writing new content by specifying real file
     getHandledFile(real).writeLines(Arrays.asList("line1", "line2"));
     // Session file contains this new content and real file is not modified
-    fileContent = readFileToString(session);
+    fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is("line1" + LINE_SEPARATOR + "line2" + LINE_SEPARATOR));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Appending new content by specifying real file
     getHandledFile(real).writeLines(Arrays.asList("line3", "line4"), true);
     // Session file contains the new appended content and real file is not modified
-    fileContent = readFileToString(session);
+    fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is("line1" + LINE_SEPARATOR + "line2" + LINE_SEPARATOR + "line3" +
         LINE_SEPARATOR + "line4" + LINE_SEPARATOR));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Writing new content by specifying real file and specific line ending
     getHandledFile(real).writeLines(Arrays.asList("line1", "line2"), LINE_SEPARATOR_UNIX);
     // Session file contains this new content and real file is not modified
-    fileContent = readFileToString(session);
+    fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is("line1" + LINE_SEPARATOR_UNIX + "line2" + LINE_SEPARATOR_UNIX));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Appending new content by specifying real file and specific line ending
     getHandledFile(real).writeLines(Arrays.asList("line3", "line4"), LINE_SEPARATOR_UNIX, true);
     // Session file contains the new appended content and real file is not modified
-    fileContent = readFileToString(session);
+    fileContent = readFileToString(session, Charsets.UTF_8);
     assertThat(fileContent, is("line1" + LINE_SEPARATOR_UNIX + "line2" + LINE_SEPARATOR_UNIX +
         "line3" + LINE_SEPARATOR_UNIX + "line4" + LINE_SEPARATOR_UNIX));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Encoding
 
@@ -821,7 +760,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session, "Latin1");
     assertThat(fileContent, is("éline1" + LINE_SEPARATOR + "line2" + LINE_SEPARATOR));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Appending new content by specifying real file and specific file encoding
     getHandledFile(real).writeLines("Latin1", Arrays.asList("éline3", "line4"), true);
@@ -829,7 +768,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     fileContent = readFileToString(session, "Latin1");
     assertThat(fileContent, is("éline1" + LINE_SEPARATOR + "line2" + LINE_SEPARATOR + "éline3" +
         LINE_SEPARATOR + "line4" + LINE_SEPARATOR));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Writing new content by specifying real file and specific file encoding and specific line
     // ending
@@ -838,7 +777,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session, "Latin1");
     assertThat(fileContent, is("éline1" + LINE_SEPARATOR_UNIX + "line2" + LINE_SEPARATOR_UNIX));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
 
     // Appending new content by specifying real file and specific file encoding and specific line
     // ending
@@ -848,7 +787,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     fileContent = readFileToString(session, "Latin1");
     assertThat(fileContent, is("éline1" + LINE_SEPARATOR_UNIX + "line2" + LINE_SEPARATOR_UNIX +
         "éline3" + LINE_SEPARATOR_UNIX + "line4" + LINE_SEPARATOR_UNIX));
-    assertThat(readFileToString(real), is("notModified"));
+    assertThat(readFileToString(real, Charsets.UTF_8), is("notModified"));
   }
 
   /*
@@ -873,80 +812,138 @@ public class TestHandledFile extends AbstractHandledFileTest {
    */
 
   @Test
-  public void testIsFileNewer() throws Exception {
+  public void aHandledFileCreatedRecentlyIsYoungerThanAnotherFile() throws IOException {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
-    touch(file1);
-    Thread.sleep(1001);
-    touch(file2);
-    boolean test = getHandledFile(real1).isFileNewer(file2);
-    assertThat(test, is(false));
-    test = getHandledFile(real1).isFileNewer(getHandledFile(file2));
-    assertThat(test, is(false));
-    Thread.sleep(1001);
-    writeStringToFile(file1, "toto");
-    test = getHandledFile(real1).isFileNewer(file2);
-    assertThat(test, is(true));
-    test = getHandledFile(real1).isFileNewer(getHandledFile(file2));
-    assertThat(test, is(true));
 
-    Thread.sleep(1001);
+    touch(file1); // to create it
+    with().pollDelay(400, TimeUnit.MILLISECONDS).await().atMost(ONE_SECOND).untilAsserted(() -> {
+      touch(file2);
+      assertThat(getHandledFile(real1).isFileNewer(file2), is(false));
+      assertThat(getHandledFile(real1).isFileNewer(getHandledFile(file2)), is(false));
+    });
+  }
+
+  @Test
+  public void aHandledFileModifiedRecentlyIsYoungerThanAnotherFile()throws IOException {
+    final File real1 = getFile(realComponentPath, "file1");
+    final File file1 = getFile(sessionComponentPath, "file1");
+    final File file2 = getFile(sessionComponentPath, "file2");
+
+    touch(file2); // to create it
+    await().atMost(ONE_SECOND).untilAsserted(() -> {
+      writeStringToFile(file1, "toto", Charsets.UTF_8);
+      assertThat(getHandledFile(real1).isFileNewer(file2), is(true));
+      assertThat(getHandledFile(real1).isFileNewer(getHandledFile(file2)), is(true));
+    });
+  }
+
+  @Test
+  public void AHandledFileModifiedRecentlyCannotBeYoungerThanNow() throws IOException {
+    final File real1 = getFile(realComponentPath, "file1");
+    final File file1 = getFile(sessionComponentPath, "file1");
+    writeStringToFile(file1, "toto", Charsets.UTF_8);
+    await().atMost(ONE_SECOND).untilAsserted(() -> {
+      final Date date = new Date();
+      assertThat(getHandledFile(real1).isFileNewer(date), is(false));
+    });
+  }
+
+  @Test
+  public void AHandledFileModifiedRecentlyCannotBeYoungerThanCurrentTimestamp() throws IOException {
+    final File real1 = getFile(realComponentPath, "file1");
+    final File file1 = getFile(sessionComponentPath, "file1");
+    writeStringToFile(file1, "toto", Charsets.UTF_8);
+    await().atMost(ONE_SECOND).untilAsserted(() -> {
+      final long time = System.currentTimeMillis();
+      assertThat(getHandledFile(real1).isFileNewer(time), is(false));
+    });
+  }
+
+  @Test
+  public void AHandledFileRecentlyModifiedIsYounger() {
+    final File real1 = getFile(realComponentPath, "file1");
+    final File file1 = getFile(sessionComponentPath, "file1");
+
     final Date date = new Date();
-    test = getHandledFile(real1).isFileNewer(date);
-    assertThat(test, is(false));
-
     final long time = System.currentTimeMillis();
-    test = getHandledFile(real1).isFileNewer(time);
-    assertThat(test, is(false));
-
-    Thread.sleep(1001);
-    writeStringToFile(file1, "titi");
-    test = getHandledFile(real1).isFileNewer(date);
-    assertThat(test, is(true));
-    test = getHandledFile(real1).isFileNewer(time);
-    assertThat(test, is(true));
+    with().pollDelay(ONE_SECOND).await().untilAsserted(() -> {
+      writeStringToFile(file1, "titi", Charsets.UTF_8);
+      assertThat(getHandledFile(real1).isFileNewer(date), is(true));
+      assertThat(getHandledFile(real1).isFileNewer(time), is(true));
+    });
   }
 
   /*
    * isFileOlder
    */
-
   @Test
-  public void testIsFileOlder() throws Exception {
+  public void anyExistingFileIsOlderThanAHandledFileCreatedRecently() throws IOException {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
-    touch(file1);
-    Thread.sleep(1001);
-    touch(file2);
-    boolean test = getHandledFile(real1).isFileOlder(file2);
-    assertThat(test, is(true));
-    test = getHandledFile(real1).isFileOlder(getHandledFile(file2));
-    Thread.sleep(1001);
-    assertThat(test, is(true));
-    writeStringToFile(file1, "toto");
-    test = getHandledFile(real1).isFileOlder(file2);
-    assertThat(test, is(false));
-    test = getHandledFile(real1).isFileOlder(getHandledFile(file2));
-    assertThat(test, is(false));
 
-    Thread.sleep(1001);
+    touch(file1); // to create it
+    with().pollDelay(ONE_SECOND).await().until(() -> {
+      System.out.println("TOUCH AT " + LocalDateTime.now());
+      touch(file2);
+      return true;
+    });
+
+    System.out.println("ASSERTS AT " + LocalDateTime.now());
+    assertThat(getHandledFile(real1).isFileOlder(file2), is(true));
+    assertThat(getHandledFile(real1).isFileOlder(getHandledFile(file2)), is(true));
+  }
+
+  @Test
+  public void anyExistingHandledFileIsOlderThanAFileModifiedRecently() throws IOException {
+    final File real1 = getFile(realComponentPath, "file1");
+    final File file1 = getFile(sessionComponentPath, "file1");
+    final File file2 = getFile(sessionComponentPath, "file2");
+
+    touch(file2); // to create it
+    await().atMost(ONE_SECOND).untilAsserted(() -> {
+      writeStringToFile(file1, "toto", Charsets.UTF_8);
+      assertThat(getHandledFile(real1).isFileOlder(file2), is(false));
+      assertThat(getHandledFile(real1).isFileOlder(getHandledFile(file2)), is(false));
+    });
+  }
+
+  @Test
+  public void AHandledFileModifiedInThePastIsOlderThanNow() throws IOException {
+    final File real1 = getFile(realComponentPath, "file1");
+    final File file1 = getFile(sessionComponentPath, "file1");
+    writeStringToFile(file1, "toto", Charsets.UTF_8);
+    await().atMost(ONE_SECOND).untilAsserted(() -> {
+      final Date date = new Date();
+      assertThat(getHandledFile(real1).isFileOlder(date), is(true));
+    });
+  }
+
+  @Test
+  public void AHandledFileModifiedInThePastIsOlderThanCurrentTimestamp() throws IOException {
+    final File real1 = getFile(realComponentPath, "file1");
+    final File file1 = getFile(sessionComponentPath, "file1");
+    writeStringToFile(file1, "toto", Charsets.UTF_8);
+    await().atMost(ONE_SECOND).untilAsserted(() -> {
+      final long time = System.currentTimeMillis();
+      assertThat(getHandledFile(real1).isFileOlder(time), is(true));
+    });
+  }
+
+  @Test
+  public void AHandledFileRecentlyModifiedCannotBeOlder() {
+    final File real1 = getFile(realComponentPath, "file1");
+    final File file1 = getFile(sessionComponentPath, "file1");
+
     final Date date = new Date();
-    test = getHandledFile(real1).isFileOlder(date);
-    assertThat(test, is(true));
-
     final long time = System.currentTimeMillis();
-    test = getHandledFile(real1).isFileOlder(time);
-    assertThat(test, is(true));
-
-    Thread.sleep(1001);
-    writeStringToFile(file1, "titi");
-    Thread.sleep(1011);
-    test = getHandledFile(real1).isFileOlder(date);
-    assertThat(test, is(false));
-    test = getHandledFile(real1).isFileOlder(time);
-    assertThat(test, is(false));
+    with().pollDelay(ONE_SECOND).await().untilAsserted(() -> {
+      writeStringToFile(file1, "titi", Charsets.UTF_8);
+      assertThat(getHandledFile(real1).isFileOlder(date), is(false));
+      assertThat(getHandledFile(real1).isFileOlder(time), is(false));
+    });
   }
 
   private HandledFile getHandledFile(final File file, final String... names) {
