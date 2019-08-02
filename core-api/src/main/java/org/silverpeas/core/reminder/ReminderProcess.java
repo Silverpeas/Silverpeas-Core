@@ -26,7 +26,6 @@ package org.silverpeas.core.reminder;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.reminder.usernotification.ReminderUserNotificationSender;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.util.ServiceProvider;
@@ -34,6 +33,8 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import static org.silverpeas.core.reminder.BackgroundReminderProcess.Constants.PROCESS_NAME_SUFFIX;
 
 /**
  * The process to send a notification to the user aimed by a reminder.
@@ -84,8 +85,8 @@ public class ReminderProcess implements SchedulerEventListener {
   }
 
   /**
-   * Background process request which ensure the reminder scheduler to not be disturbed by user
-   * notification send processing.
+   * Background process request which ensure that the reminder scheduler will not be disturbed
+   * processes as they will be processed one by one.
    */
   private class BackgroundReminderUserNotificationProcess extends AbstractBackgroundProcessRequest {
 
@@ -98,7 +99,9 @@ public class ReminderProcess implements SchedulerEventListener {
 
     @Override
     protected void process() {
-      ReminderUserNotificationSender.get().sendAbout(reminder);
+      final String fullProcessName = "CalendarEventUserNotification" + PROCESS_NAME_SUFFIX;
+      final BackgroundReminderProcess process = ServiceProvider.getService(fullProcessName);
+      process.performWith(reminder);
     }
   }
 }

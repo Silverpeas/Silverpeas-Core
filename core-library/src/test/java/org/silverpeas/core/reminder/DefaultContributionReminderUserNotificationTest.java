@@ -43,10 +43,10 @@ import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.TestManagedMocks;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
@@ -73,7 +73,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @TestManagedMocks({DefaultContributionReminderUserNotification.class,
     CalendarContributionReminderUserNotification.class})
-public class ContributionReminderUserNotificationTest {
+class DefaultContributionReminderUserNotificationTest {
   private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
 
   private static final String INSTANCE_ID = "componentNameTest26";
@@ -91,15 +91,13 @@ public class ContributionReminderUserNotificationTest {
   @Mock
   private User receiver;
 
-  @SuppressWarnings("unchecked")
   @BeforeEach
-  public void setup(@TestManagedMock ContributionManager contributionManager,
+  void setup(@TestManagedMock ContributionManager contributionManager,
       @TestManagedMock ComponentInstanceRoutingMapProviderByInstance routingMap,
       @TestManagedMock ComponentInstanceRoutingMapProvider routingMapProvider,
       @TestManagedMock ComponentInstanceRoutingMap instanceRoutingMap,
       @TestManagedMock SilverpeasComponentInstanceProvider instanceProvider,
-      @Mock SilverpeasComponentInstance componentInstance,
-      @Mock Contribution contribution) {
+      @Mock SilverpeasComponentInstance componentInstance, @Mock Contribution contribution) {
 
     when(componentInstance.getName()).thenReturn(COMPONENT_NAME);
     when(instanceProvider.getById(INSTANCE_ID)).thenReturn(Optional.of(componentInstance));
@@ -122,12 +120,11 @@ public class ContributionReminderUserNotificationTest {
         .thenReturn(Optional.of(contribution));
 
     when(UserProvider.get().getUser(receiver.getId())).thenReturn(receiver);
-    mocker
-        .setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(), "defaultLanguage");
+    mocker.setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(), "defaultLanguage");
   }
 
   @Test
-  public void durationReminderOf0MinuteOnGenericContributionShouldWork() throws Exception {
+  void durationReminderOf0MinuteOnGenericContributionShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder()
         .triggerBefore(0, TimeUnit.MINUTE, "");
     triggerDateTime(durationReminder, OffsetDateTime.parse("2018-02-21T00:00:00Z"));
@@ -142,7 +139,7 @@ public class ContributionReminderUserNotificationTest {
   }
 
   @Test
-  public void durationReminderOf1MinuteOnGenericContributionShouldWork() throws Exception {
+  void durationReminderOf1MinuteOnGenericContributionShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder()
         .triggerBefore(1, TimeUnit.MINUTE, "");
     triggerDateTime(durationReminder, OffsetDateTime.parse("2018-02-20T23:59:00Z"));
@@ -157,7 +154,7 @@ public class ContributionReminderUserNotificationTest {
   }
 
   @Test
-  public void durationReminderOf5MinutesOnGenericContributionShouldWork() throws Exception {
+  void durationReminderOf5MinutesOnGenericContributionShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder()
         .triggerBefore(5, TimeUnit.MINUTE, "");
     triggerDateTime(durationReminder, OffsetDateTime.parse("2018-02-20T23:55:00Z"));
@@ -172,7 +169,7 @@ public class ContributionReminderUserNotificationTest {
   }
 
   @Test
-  public void durationReminderOf0HourAndWithAnotherUserZoneIdOnGenericContributionShouldWork()
+  void durationReminderOf0HourAndWithAnotherUserZoneIdOnGenericContributionShouldWork()
       throws Exception {
     receiver.getUserPreferences().setZoneId(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder()
@@ -199,9 +196,7 @@ public class ContributionReminderUserNotificationTest {
   }
 
   private Map<String, String> computeNotificationContents(Reminder reminder) {
-    final UserNotification userNotification = new DefaultContributionReminderUserNotification
-        .ContributionReminderUserNotification(reminder)
-        .build();
+    final UserNotification userNotification = new DefaultContributionReminderUserNotification(reminder).build();
     final Map<String, String> result = new HashMap<>();
     result.put(FR, getContent(userNotification, FR));
     result.put(EN, getContent(userNotification, EN));
@@ -212,8 +207,7 @@ public class ContributionReminderUserNotificationTest {
   }
 
   private Map<String, String> computeNotificationTitles(Reminder reminder) {
-    final UserNotification userNotification = new DefaultContributionReminderUserNotification
-        .ContributionReminderUserNotification(reminder).build();
+    final UserNotification userNotification = new DefaultContributionReminderUserNotification(reminder).build();
     final Map<String, String> result = new HashMap<>();
     result.put(FR, getTitle(userNotification, FR));
     result.put(EN, getTitle(userNotification, EN));
