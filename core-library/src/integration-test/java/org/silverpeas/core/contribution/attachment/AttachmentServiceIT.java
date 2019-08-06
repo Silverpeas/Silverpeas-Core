@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.attachment;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.jboss.arquillian.container.test.api.Deployment;
