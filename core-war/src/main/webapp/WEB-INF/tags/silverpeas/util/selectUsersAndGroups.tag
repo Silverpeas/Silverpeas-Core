@@ -83,6 +83,9 @@
 <%@ attribute name="componentIdFilter" required="false" type="java.lang.String"
               description="The component instance id to filter on" %>
 
+<%@ attribute name="resourceIdFilter" required="false" type="java.lang.String"
+              description="The resource id to filter on. It is a concat of the resource type and of the resource identifier. The component id has to be set if set to non null value" %>
+
 <%@ attribute name="id" required="false" type="java.lang.String"
               description="CSS id" %>
 
@@ -207,6 +210,7 @@
       hideDeactivatedState : ${hideDeactivatedState},
       domainIdFilter : domainFilter,
       componentIdFilter : '${componentIdFilter}',
+      resourceIdFilter : '${resourceIdFilter}',
       roleFilter : roleFilter,
       groupFilter : groupFilter,
       initialQuery : '${silfn:escapeJs(initialQuery)}',

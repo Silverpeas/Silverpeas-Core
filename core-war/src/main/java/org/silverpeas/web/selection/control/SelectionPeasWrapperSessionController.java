@@ -23,7 +23,10 @@
  */
 package org.silverpeas.web.selection.control;
 
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -31,9 +34,6 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
 
 import java.util.List;
 import java.util.StringTokenizer;
@@ -47,6 +47,7 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
   private static final int USER_GROUP = 2;
 
   private String domainIdFilter = "";
+  private String resourceIdFilter = "";
   private String[] selectedUserIds;
   private String[] selectedGroupIds;
   private int selectable = SelectionUsersGroups.USER;
@@ -200,6 +201,26 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
   }
 
   /**
+   * Gets the identifier of a resource in a given application instance on which the user selection
+   * must be filtered.
+   * @return an identifier of the resource as string, empty if none. It is a concat of the resource
+   * type and of the resource identifier.
+   */
+  public String getResourceIdFilter() {
+    return resourceIdFilter;
+  }
+
+  /**
+   * Sets the identifier of a resource in a given application instance in order to filter user
+   * selection on it.
+   * @param resourceIdFilter the identifier of the resource as string. It should be a concat of the
+   * resource type and of the resource identifier.
+   */
+  public void setResourceIdFilter(final String resourceIdFilter) {
+    this.resourceIdFilter = StringUtil.defaultStringIfNotDefined(resourceIdFilter);
+  }
+
+  /**
    * Init the user panel.
    */
   public String initSelectionPeas(boolean multiple, String instanceId, List<String> roles,
@@ -242,6 +263,11 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     if (StringUtil.isDefined(getDomainIdFilter()) &&
         !Domain.MIXED_DOMAIN_ID.equals(getDomainIdFilter())) {
       sug.setDomainId(getDomainIdFilter());
+      sel.setExtraParams(sug);
+    }
+
+    if (StringUtil.isDefined(getResourceIdFilter())) {
+      sug.setObjectId(getResourceIdFilter());
       sel.setExtraParams(sug);
     }
 

@@ -90,6 +90,7 @@ public class SelectionPeasWrapper extends
 
     controller.setSelectable(request.getParameter("selectable"));
     controller.setDomainIdFilter(request.getParameter("domainIdFilter"));
+    controller.setResourceIdFilter(request.getParameter("resourceIdFilter"));
 
     if (controller.isGroupSelectable()) {
       if (selectionMultiple) {

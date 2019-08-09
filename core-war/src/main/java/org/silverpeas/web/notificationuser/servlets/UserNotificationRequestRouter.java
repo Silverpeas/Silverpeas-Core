@@ -49,6 +49,7 @@ public class UserNotificationRequestRouter
   private static final String MAIN_FUNCTION = "Main";
   private static final String SENDING_FUNCTION = "SendNotif";
   private static final String RELEASE_FUNCTION = "ClearNotif";
+  private static final String RESOURCE_ID = "resourceId";
 
   @Override
   public UserNotificationSessionController createComponentSessionController(
@@ -86,6 +87,8 @@ public class UserNotificationRequestRouter
           request.setAttribute(RECIPIENT_USERS, nuSC.getUsersFrom(recipientUsers));
           request.setAttribute(RECIPIENT_GROUPS, nuSC.getGroupsFrom(recipientGroups));
         }
+        request.setAttribute(NotificationContext.COMPONENT_ID, context.getComponentId());
+        request.setAttribute(NotificationContext.RESOURCE_ID, context.getResourceId());
         final String param = request.getParameter(RECIPIENT_EDITION_PARAM);
         final boolean areRecipientsEditable;
         if (StringUtil.isDefined(param)) {
@@ -93,7 +96,6 @@ public class UserNotificationRequestRouter
         } else {
           areRecipientsEditable = true;
         }
-        request.setAttribute(NotificationContext.COMPONENT_ID, context.getComponentId());
         request.setAttribute(RECIPIENT_EDITION_PARAM, areRecipientsEditable);
         destination = "/userNotification/jsp/notificationSender.jsp";
       } else if (SENDING_FUNCTION.equals(function)) {

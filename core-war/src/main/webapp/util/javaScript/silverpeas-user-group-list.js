@@ -73,6 +73,7 @@
       this.options = extendsObject({
         hideDeactivatedState : false,
         domainIdFilter : '',
+        resourceIdFilter : '',
         componentIdFilter : ''
       }, options);
       if (typeof params === 'undefined') {
@@ -85,16 +86,19 @@
             params.userStatesToExclude = ['DEACTIVATED'];
           }
           if (this.options.domainIdFilter) {
-            params.domain = this.options.domainIdFilter
+            params.domain = this.options.domainIdFilter;
           }
           if (this.options.componentIdFilter) {
-            params.component = this.options.componentIdFilter
+            params.component = this.options.componentIdFilter;
+          }
+          if (this.options.resourceIdFilter) {
+            params.resource = this.options.resourceIdFilter;
           }
           if (this.options.roleFilter) {
-            params.roles = this.options.roleFilter.join(',')
+            params.roles = this.options.roleFilter.join(',');
           }
           if (this.options.groupFilter) {
-            params.group = this.options.groupFilter
+            params.group = this.options.groupFilter;
           }
         }
       }
@@ -424,6 +428,7 @@
       hideDeactivatedState : true,
       domainIdFilter : '',
       componentIdFilter : '',
+      resourceIdFilter : '',
       groupFilter : '',
       roleFilter : [],
       selectOnTabulationKeyDown : true,
@@ -492,6 +497,9 @@
       }
       if (typeof filterOptions.domainIdFilter !== 'undefined') {
         this.options.domainIdFilter = filterOptions.domainIdFilter;
+      }
+      if (typeof filterOptions.resourceIdFilter !== 'undefined') {
+        this.options.resourceIdFilter = filterOptions.resourceIdFilter;
       }
       if (typeof filterOptions.componentIdFilter !== 'undefined') {
         this.options.componentIdFilter = filterOptions.componentIdFilter;
@@ -753,6 +761,7 @@
     this.options = extendsObject({
       hideDeactivatedState : true,
       domainIdFilter : '',
+      resourceIdFilter : '',
       userPanelId : '',
       initUserPanelUserIdParamName : '',
       initUserPanelGroupIdParamName : '',
@@ -979,6 +988,7 @@
     var params = {
       "formName" : instance.context.userPanelFormName,
       "domainIdFilter" : instance.options.domainIdFilter,
+      "resourceIdFilter" : instance.options.resourceIdFilter,
       "instanceId" : instance.options.componentIdFilter,
       "showDeactivated" : !instance.options.hideDeactivatedState
     };

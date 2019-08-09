@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.notification.system.asynchronous;
 
+import org.awaitility.Duration;
+import org.awaitility.core.ThrowingRunnable;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -50,7 +52,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -106,7 +110,7 @@ public class MassiveAsynchronousNotificationIT {
 
   @Test
   public void emptyTest() {
-    // just to test the deployment into wildfly works fine.
+    assertThat(true, is(true));
   }
 
   @Test
@@ -124,8 +128,9 @@ public class MassiveAsynchronousNotificationIT {
       getTopicNotifier().notify(event);
     }
 
-    waitForReception(nbSend);
-    assertThatEventIsWellReceived(3, registeredEventsBeforeSend, additionalParameter);
+    WaitDuration wait = new WaitDuration(nbSend);
+    wait.awaitUntil(() -> assertThatEventIsWellReceived(3, registeredEventsBeforeSend,
+            additionalParameter));
   }
 
   @Test
@@ -154,8 +159,9 @@ public class MassiveAsynchronousNotificationIT {
       thread.join(60000);
     }
 
-    waitForReception(nbSend);
-    assertThatEventIsWellReceived(3, registeredEventsBeforeSend, additionalParameter);
+    WaitDuration wait = new WaitDuration(nbSend);
+    wait.awaitUntil(() ->
+        assertThatEventIsWellReceived(3, registeredEventsBeforeSend, additionalParameter));
   }
 
   public JMSQueueTestResourceEventNotifier getQueueNotifier() {
@@ -185,8 +191,12 @@ public class MassiveAsynchronousNotificationIT {
     return additionalParameter;
   }
 
-  private void waitForReception(int nbSend) throws InterruptedException {
-    Thread.sleep(2000 + (nbSend * 10));
+  private Duration delay(int nbSend) {
+    return new Duration(2000 + (nbSend * 10), TimeUnit.MILLISECONDS);
+  }
+
+  private Duration timeout(int nbSend) {
+    return new Duration(3000 + (nbSend * 10), TimeUnit.MILLISECONDS);
   }
 
   private void assertThatEventIsWellReceived(int nbListeners,
@@ -212,6 +222,27 @@ public class MassiveAsynchronousNotificationIT {
         default:
           assertThat(resourceEvent.getParameters(), empty());
       }
+    }
+  }
+
+  private static class WaitDuration {
+
+    private final long base;
+
+    WaitDuration(int nbSend) {
+      this.base = 1000 + (nbSend * 10);
+    }
+
+    private Duration delay() {
+      return new Duration(this.base, TimeUnit.MILLISECONDS);
+    }
+
+    private Duration timeout() {
+      return new Duration(this.base + 2000, TimeUnit.MILLISECONDS);
+    }
+
+    void awaitUntil(final ThrowingRunnable assertion) {
+      await().pollDelay(delay()).timeout(timeout()).untilAsserted(assertion);
     }
   }
 }
