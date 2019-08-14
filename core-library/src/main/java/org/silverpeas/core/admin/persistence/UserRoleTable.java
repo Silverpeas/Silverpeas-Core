@@ -50,7 +50,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
   }
 
   private static final String USERROLE_COLUMNS =
-      "id,instanceId,name,roleName,description,isInherited,objectId";
+      "id,instanceId,name,roleName,description,isInherited,objectId,objectType";
 
   /**
    * Fetch the current userRole row from a resultSet.
@@ -68,6 +68,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
     ur.description = rs.getString(5);
     ur.isInherited = rs.getInt(6);
     ur.objectId = rs.getInt(7);
+    ur.objectType = rs.getString(8);
 
     return ur;
   }

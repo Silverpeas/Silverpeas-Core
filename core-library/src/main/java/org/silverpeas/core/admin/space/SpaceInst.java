@@ -789,7 +789,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     // clone profiles
     List<SpaceProfileInst> profiles = getProfiles();
     for (SpaceProfileInst profile : profiles) {
-      clone.addSpaceProfileInst(profile.clone());
+      clone.addSpaceProfileInst(profile.copy());
     }
 
     for (String lang : getTranslations().keySet()) {

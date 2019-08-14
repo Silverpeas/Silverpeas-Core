@@ -27,7 +27,7 @@ import org.silverpeas.core.ActionType;
 import org.silverpeas.core.IdentifiableResource;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.RightProfile;
 import org.silverpeas.core.admin.StubbedAdministration;
@@ -634,7 +634,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(Administration.class, PublicationTemplateException.class);
       addClasses(RightRecover.class);
       addClasses(DriverSettings.class);
-      addClasses(ObjectType.class);
+      addClasses(ProfiledObjectType.class);
       addClasses(PaginationPage.class);
       addClasses(RightProfile.class);
       addPackages(true, "org.silverpeas.core.i18n");

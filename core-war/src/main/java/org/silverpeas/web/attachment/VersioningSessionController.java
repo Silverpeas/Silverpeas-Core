@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.attachment;
 
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -273,7 +273,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    */
   public ProfileInst getTopicProfile(String role, String topicId) {
     List<ProfileInst> profiles =
-        getAdmin().getProfilesByObject(topicId, ObjectType.NODE.getCode(), getComponentId());
+        getAdmin().getProfilesByObject(topicId, ProfiledObjectType.NODE.getCode(), getComponentId());
     for (ProfileInst profile : profiles) {
       if (profile.getName().equals(role)) {
         return profile;

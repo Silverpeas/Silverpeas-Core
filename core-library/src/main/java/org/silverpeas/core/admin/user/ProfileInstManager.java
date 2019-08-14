@@ -23,11 +23,17 @@
  */
 package org.silverpeas.core.admin.user;
 
+import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectType;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.ComponentInstManager;
 import org.silverpeas.core.admin.user.dao.RoleDAO;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.notification.ProfileInstEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -52,6 +58,8 @@ public class ProfileInstManager {
   private OrganizationSchema organizationSchema;
   @Inject
   private RoleDAO roleDAO;
+  @Inject
+  private ProfileInstEventNotifier notifier;
 
   /**
    * Constructor
@@ -77,17 +85,13 @@ public class ProfileInstManager {
       String sProfileNodeId = idAsString(newRole.id);
 
       // Update the CSpace with the links TProfile-TGroup
-      for (int nI = 0; nI < profileInst.getNumGroup(); nI++) {
-        organizationSchema.userRole().addGroupInUserRole(idAsInt(profileInst.getGroup(nI)),
-            idAsInt(
-            sProfileNodeId));
+      for(String groupId : profileInst.getAllGroups()) {
+        organizationSchema.userRole().addGroupInUserRole(idAsInt(groupId), idAsInt(sProfileNodeId));
       }
 
       // Update the CSpace with the links TProfile-TUser
-      for (int nI = 0; nI < profileInst.getNumUser(); nI++) {
-        organizationSchema.userRole().addUserInUserRole(idAsInt(profileInst.getUser(nI)),
-            idAsInt(
-            sProfileNodeId));
+      for(String userId : profileInst.getAllUsers()) {
+        organizationSchema.userRole().addUserInUserRole(idAsInt(userId), idAsInt(sProfileNodeId));
       }
 
       return sProfileNodeId;
@@ -112,6 +116,7 @@ public class ProfileInstManager {
       if (userRole != null) {
         profileInst = userRoleRow2ProfileInst(userRole);
         setUsersAndGroups(profileInst);
+        setComponentInstanceId(profileInst);
       } else {
         SilverLogger.getLogger(this).error("User profile {0} not found", sProfileId);
       }
@@ -133,9 +138,10 @@ public class ProfileInstManager {
       profileInst.setInherited(true);
     }
     if (userRole.objectId > 0) {
-      profileInst.setObjectId(userRole.objectId);
+      String oid = String.valueOf(userRole.objectId);
+      ProfiledObjectType otype = ProfiledObjectType.fromCode(userRole.objectType);
+      profileInst.setObjectId(new ProfiledObjectId(otype, oid));
     }
-    profileInst.setObjectType(userRole.objectType);
     return profileInst;
   }
 
@@ -147,6 +153,12 @@ public class ProfileInstManager {
     // Get the Users
     List<String> userIds = UserManager.get().getDirectUserIdsInRole(profileInst.getId());
     userIds.forEach(profileInst::addUser);
+  }
+
+  private void setComponentInstanceId(final ProfileInst profileInst) throws AdminException {
+    int localId = Integer.parseInt(profileInst.getComponentFatherId());
+    ComponentInstLight instLight = ComponentInstManager.get().getComponentInstLight(localId);
+    profileInst.setComponentFatherId(instLight.getId());
   }
 
   public ProfileInst getInheritedProfileInst(int instanceLocalId, String roleName)
@@ -161,6 +173,7 @@ public class ProfileInstManager {
         // Set the attributes of the profile Inst
         profileInst = userRoleRow2ProfileInst(userRole);
         setUsersAndGroups(profileInst);
+        setComponentInstanceId(profileInst);
       }
 
       return profileInst;
@@ -178,6 +191,8 @@ public class ProfileInstManager {
     try {
       // delete the profile node
       organizationSchema.userRole().removeUserRole(idAsInt(profileInst.getId()));
+
+      notifier.notifyEventOn(ResourceEvent.Type.DELETION, profileInst);
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting(PROFILE, profileInst.getId()), e);
     }
@@ -245,6 +260,8 @@ public class ProfileInstManager {
       UserRoleRow changedUserRole = makeUserRoleRow(profileInstNew);
       changedUserRole.id = idAsInt(profileInstNew.getId());
       organizationSchema.userRole().updateUserRole(changedUserRole);
+
+      notifier.notifyEventOn(ResourceEvent.Type.UPDATE, profileInst, profileInstNew);
 
       return idAsString(changedUserRole.id);
     } catch (SQLException e) {
@@ -402,8 +419,8 @@ public class ProfileInstManager {
     if (profileInst.isInherited()) {
       userRole.isInherited = 1;
     }
-    userRole.objectId = profileInst.getObjectId();
-    userRole.objectType = profileInst.getObjectType();
+    userRole.objectId = Integer.parseInt(profileInst.getObjectId().getId());
+    userRole.objectType = profileInst.getObjectId().getType().getCode();
 
     return userRole;
   }

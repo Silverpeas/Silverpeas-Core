@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,19 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.admin;
 
-public enum ObjectType {
-  NODE("O");
+package org.silverpeas.core.admin.user.notification;
 
-  private String code;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
-  ObjectType(String code) {
-    this.code = code;
+/**
+ * Event about a change of a given right profile on a component instance or on a node.
+ *
+ * @author mmoquillon
+ */
+public class ProfileInstEvent extends AbstractResourceEvent<ProfileInst> {
+
+  public ProfileInstEvent() {
+    super();
   }
 
-  public String getCode() {
-    return this.code;
+  public ProfileInstEvent(final Type type, final ProfileInst... resource) {
+    super(type, resource);
   }
-
 }
+  

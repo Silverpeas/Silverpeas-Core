@@ -42,7 +42,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -118,7 +118,7 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
       NodeDetail node =
           NodeService.get().getHeader(new NodePK(resource.getId(), resource.getInstanceId()));
       if (node.haveRights()) {
-        sug.setObjectId(ObjectType.NODE.getCode() + node.getRightsDependsOn());
+        sug.setObjectId(ProfiledObjectType.NODE.getCode() + node.getRightsDependsOn());
       }
     }
     sel.setExtraParams(sug);
