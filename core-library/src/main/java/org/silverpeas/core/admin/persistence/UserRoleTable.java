@@ -25,9 +25,11 @@ package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -447,4 +449,45 @@ public class UserRoleTable extends Table<UserRoleRow> {
   protected UserRoleRow fetchRow(ResultSet rs) throws SQLException {
     return fetchUserRole(rs);
   }
+
+  /**
+   * Removes the specified user from the user role with the specified name and for the specified
+   * component instance. The user will be removed from the role for the specified component instance
+   * and for all of the resources managed by this component instance.
+   * @param userId the unique identifier of the user.
+   * @param name the name of the role.
+   * @param instanceId the local identifier of a component instance.
+   * @throws SQLException if an error occurs while deleting the user in the role.
+   */
+  public void removeUserFromUserRoleByRoleNameAndInstance(final int userId, final String name,
+      final int instanceId) throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement statement = connection.prepareStatement(
+             DELETE_USER_REL_BY_ROLENAME_INSTANCE)) {
+      statement.setInt(1, userId);
+      statement.setInt(2, instanceId);
+      statement.setString(3, name);
+      statement.executeUpdate();
+    }
+  }
+
+  private static final String DELETE_USER_REL_BY_ROLENAME_INSTANCE =
+      "delete from ST_UserRole_User_Rel where userId = ? and userroleid in " +
+          "(select id from ST_UserRole where instanceId = ? and rolename = ?)";
+
+  public void removeGroupFromUserRoleByRoleNameAndInstance(final int groupId, final String name,
+      final int instanceId) throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement statement = connection.prepareStatement(
+             DELETE_GROUP_REL_BY_ROLENAME_INSTANCE)) {
+      statement.setInt(1, groupId);
+      statement.setInt(2, instanceId);
+      statement.setString(3, name);
+      statement.executeUpdate();
+    }
+  }
+
+  private static final String DELETE_GROUP_REL_BY_ROLENAME_INSTANCE =
+      "delete from ST_UserRole_Group_Rel where groupId = ? and userroleid in " +
+          "(select id from ST_UserRole where instanceId = ? and rolename = ?)";
 }

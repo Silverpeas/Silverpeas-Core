@@ -8,7 +8,6 @@
 1	(G) - G2_D1              	* COMPONENT        - admin@almanach-Space-B_Level-1
 [REMOVED]0	(U) - user_a             	* COMPONENT        - writer@kmelia-Space-A_Level-1
 [ADDED RIGHT FOR TEST - BEGIN]
-0	(U) - user_a             	* COMPONENT-OBJECT - writer@kmelia-Space-A_Level-1#Folder-1-1
 [ADDED RIGHT FOR TEST - END]
 0	(U) - user_b             	* COMPONENT        - admin@kmelia-Space-A_Level-1
 0	(U) - user_b             	* COMPONENT-OBJECT - writer@kmelia-Space-A_Level-1#Folder-1-1

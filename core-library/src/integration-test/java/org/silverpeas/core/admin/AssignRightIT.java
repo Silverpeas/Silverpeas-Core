@@ -123,7 +123,7 @@ public class AssignRightIT  {
    */
 
   @Test
-  public void testDirectKmeliaSubNodeRightMustNotBeDeletedIfUserIsInGroupThatHasKmeliaAccess()
+  public void testDirectKmeliaSubNodeRightMustBeDeletedIfUserIsInGroupThatHasKmeliaAccess()
       throws AdminException {
     // Adding writer right on sub node of kmelia to user A
     ProfileInst profileInst =
@@ -147,7 +147,7 @@ public class AssignRightIT  {
   }
 
   @Test
-  public void testDirectKmeliaSubNodeRightMustNotBeDeletedIfUserHasNoMoreAccessOnKmelia()
+  public void testDirectKmeliaSubNodeRightMustBeDeletedIfUserHasNoMoreAccessOnKmelia()
       throws AdminException {
     // Adding writer right on sub node of kmelia to user A
     ProfileInst profileInst =

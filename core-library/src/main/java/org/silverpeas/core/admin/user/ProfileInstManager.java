@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
@@ -226,9 +227,20 @@ public class ProfileInstManager {
       // Remove from the profile the groups that are no more in the new state of the profile
       for (String groupId : alOldProfileGroup) {
         if (!alNewProfileGroup.contains(groupId)) {
-          // delete the link between the profile and the group
-          organizationSchema.userRole().removeGroupFromUserRole(
-              idAsInt(groupId), idAsInt(profileInst.getId()));
+          if (profileInst.getObjectId().isNotDefined()) {
+            // the profile is related to a component instance, then delete the link between the
+            // group and the role for the component instance and for all of its resources that can
+            // be concerned by a profile with the same role name.
+            int instanceId = ComponentInst.getComponentLocalId(profileInst.getComponentFatherId());
+            organizationSchema.userRole()
+                .removeGroupFromUserRoleByRoleNameAndInstance(idAsInt(groupId), profileInst.getName(),
+                    instanceId);
+          } else {
+            // delete the link between the profile and the group. In that case, this is a profile to
+            // a related resource.
+            organizationSchema.userRole()
+                .removeGroupFromUserRole(idAsInt(groupId), idAsInt(profileInst.getId()));
+          }
         }
       }
 
@@ -250,9 +262,20 @@ public class ProfileInstManager {
       // Remove from the profile the users that are no more in the new state of the profile
       for (String userId : alOldProfileUser) {
         if (!alNewProfileUser.contains(userId)) {
-          // delete the link between the profile and the user
-          organizationSchema.userRole().removeUserFromUserRole(
-              idAsInt(userId), idAsInt(profileInst.getId()));
+          if (profileInst.getObjectId().isNotDefined()) {
+            // the profile is related to a component instance, then delete the link between the user
+            // and the role for the component instance and for all of its resources that can be
+            // concerned by a profile with the same role name.
+            int instanceId = ComponentInst.getComponentLocalId(profileInst.getComponentFatherId());
+            organizationSchema.userRole()
+                .removeUserFromUserRoleByRoleNameAndInstance(idAsInt(userId), profileInst.getName(),
+                    instanceId);
+          } else {
+            // delete the link between the profile and the user. In that case, this is a profile to
+            // a related resource.
+            organizationSchema.userRole()
+                .removeUserFromUserRole(idAsInt(userId), idAsInt(profileInst.getId()));
+          }
         }
       }
 
