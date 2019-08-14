@@ -26,7 +26,7 @@ package org.silverpeas.core.security.authorization;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -119,7 +119,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
       }
       userRoles.addAll(SilverpeasRole.from(getOrganisationController()
           .getUserProfiles(userId, nodePK.getInstanceId(), node.getRightsDependsOn(),
-              ObjectType.NODE)));
+              ProfiledObjectType.NODE)));
     }
   }
 

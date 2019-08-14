@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,39 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.subscription;
 
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
-import org.silverpeas.core.WAPrimaryKey;
+package org.silverpeas.core.admin.user.notification;
+
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 /**
- * User: Yohann Chastagnier
- * Date: 20/02/13
+ * A notifier about an event on a change of a right profile.
+ * @author mmoquillon
  */
-public interface SubscriptionResource {
+public class ProfileInstEventNotifier
+    extends CDIResourceEventNotifier<ProfileInst, ProfileInstEvent> {
 
-  /**
-   * Gets the identifier of the resource aimed by subscription
-   * @return
-   */
-  String getId();
+  private ProfileInstEventNotifier() {
+  }
 
-  /**
-   * Gets the type of the resource aimed by the subscription
-   * @return
-   */
-  SubscriptionResourceType getType();
-
-  /**
-   * Gets the instance identifier of component
-   * @return
-   */
-  String getInstanceId();
-
-  /**
-   * Gets the Silverpeas Primary Key of the aimed resource
-   * @param <T>
-   * @return
-   */
-  <T extends WAPrimaryKey> T getPK();
+  @Override
+  protected ProfileInstEvent createResourceEventFrom(final ResourceEvent.Type type,
+      final ProfileInst... profile) {
+    return new ProfileInstEvent(type, profile);
+  }
 }
+  

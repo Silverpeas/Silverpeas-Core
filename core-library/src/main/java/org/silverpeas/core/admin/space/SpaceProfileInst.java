@@ -28,6 +28,12 @@ import org.silverpeas.core.admin.RightProfile;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A right profile on a collaboration space in Silverpeas. Such a profile defines the users and the
+ * user groups that can access a given space in Silverpeas with some well defined privileges. By
+ * default all the right profiles of a space are inherited to the component instances that are
+ * included in those spaces.
+ */
 public class SpaceProfileInst implements RightProfile {
 
   public static final String SPACE_MANAGER = "Manager";
@@ -38,8 +44,8 @@ public class SpaceProfileInst implements RightProfile {
   private String label;
   private String description;
   private String spaceFatherId;
-  private ArrayList<String> groups;
-  private ArrayList<String> users;
+  private List<String> groups;
+  private List<String> users;
 
   private boolean isInherited = false;
 
@@ -114,12 +120,12 @@ public class SpaceProfileInst implements RightProfile {
     groups.remove(sGroupId);
   }
 
-  public ArrayList<String> getAllGroups() {
+  public List<String> getAllGroups() {
     return groups;
   }
 
   public void removeAllGroups() {
-    groups = new ArrayList<String>();
+    groups = new ArrayList<>();
   }
 
   public int getNumUser() {
@@ -143,7 +149,7 @@ public class SpaceProfileInst implements RightProfile {
   }
 
   public void addUsers(List<String> users) {
-    ArrayList<String> a = new ArrayList<String>(users);
+    ArrayList<String> a = new ArrayList<>(users);
     a.removeAll(this.users);
     this.users.addAll(a);
   }
@@ -164,7 +170,7 @@ public class SpaceProfileInst implements RightProfile {
     this.groups.addAll(groups);
   }
 
-  public ArrayList<String> getAllUsers() {
+  public List<String> getAllUsers() {
     return users;
   }
 
@@ -192,17 +198,16 @@ public class SpaceProfileInst implements RightProfile {
     return users.isEmpty() && groups.isEmpty();
   }
 
-  @Override
   @SuppressWarnings("unchecked")
-  protected SpaceProfileInst clone() {
+  protected SpaceProfileInst copy() {
     SpaceProfileInst clone = new SpaceProfileInst();
     clone.setDescription(description);
     clone.setInherited(isInherited);
     clone.setLabel(label);
     clone.setName(name);
     clone.setSpaceFatherId(spaceFatherId);
-    clone.addGroups((List<String>) groups.clone());
-    clone.addUsers((List<String>) users.clone());
+    clone.addGroups((List<String>)((ArrayList<String>) groups).clone());
+    clone.addUsers((List<String>)((ArrayList<String>) users).clone());
     return clone;
   }
 }

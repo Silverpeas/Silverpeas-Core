@@ -40,40 +40,40 @@ public interface SubscriptionService {
    * If subscription already exists, nothing is registered.
    * @param subscription
    */
-  public void subscribe(Subscription subscription);
+  void subscribe(Subscription subscription);
 
   /**
    * Register given subscriptions. The informations of creator identifier and creation date are
    * ignored. If a subscription already exists, nothing is registered for it.
    * @param subscriptions
    */
-  public void subscribe(Collection<? extends Subscription> subscriptions);
+  void subscribe(Collection<? extends Subscription> subscriptions);
 
   /**
    * Unregister a subscription.
    * @param subscription
    */
-  public void unsubscribe(Subscription subscription);
+  void unsubscribe(Subscription subscription);
 
   /**
    * Unregister given subscriptions.
    * @param subscriptions
    */
-  public void unsubscribe(Collection<? extends Subscription> subscriptions);
+  void unsubscribe(Collection<? extends Subscription> subscriptions);
 
   /**
    * Unregister all subscription in relation to the given subscriber. If the given subscriber is a
    * user, no subscription by a group is deleted even if the user is part of the group
    * @param subscriber
    */
-  public void unsubscribeBySubscriber(SubscriptionSubscriber subscriber);
+  void unsubscribeBySubscriber(SubscriptionSubscriber subscriber);
 
   /**
    * Unregister all subscription in relation to given subscribers. If a given subscriber is a
    * user, no subscription by a group is deleted even if the user is part of the group
    * @param subscribers
    */
-  public void unsubscribeBySubscribers(Collection<? extends SubscriptionSubscriber> subscribers);
+  void unsubscribeBySubscribers(Collection<? extends SubscriptionSubscriber> subscribers);
 
   /**
    * Unregister all subscriptions in relation to the given resource.
@@ -82,7 +82,7 @@ public interface SubscriptionService {
    * @param resource the aimed resource
    *
    */
-  public void unsubscribeByResource(SubscriptionResource resource);
+  void unsubscribeByResource(SubscriptionResource resource);
 
   /**
    * Unregister all subscriptions in relation to the given resources.
@@ -91,7 +91,7 @@ public interface SubscriptionService {
    * @param resources the aimed resources
    *
    */
-  public void unsubscribeByResources(Collection<? extends SubscriptionResource> resources);
+  void unsubscribeByResources(Collection<? extends SubscriptionResource> resources);
 
   /**
    * Checks if the given subscription already exists.
@@ -100,14 +100,14 @@ public interface SubscriptionService {
    * @param subscription
    * @return
    */
-  public boolean existsSubscription(Subscription subscription);
+  boolean existsSubscription(Subscription subscription);
 
   /**
    * Gets all subscriptions in relation to the given resource.
    * @param resource
    * @return list of subscriptions
    */
-  public SubscriptionList getByResource(SubscriptionResource resource);
+  SubscriptionList getByResource(SubscriptionResource resource);
 
   /**
    * Gets all subscriptions in relation to the given resource.
@@ -115,7 +115,7 @@ public interface SubscriptionService {
    * @param method
    * @return list of subscriptions
    */
-  public SubscriptionList getByResource(SubscriptionResource resource, SubscriptionMethod method);
+  SubscriptionList getByResource(SubscriptionResource resource, SubscriptionMethod method);
 
   /**
    * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a user.
@@ -124,14 +124,14 @@ public interface SubscriptionService {
    *         of users that are subscribed through a subscribed group and of users that have been
    *         subscribed by an other user
    */
-  public SubscriptionList getByUserSubscriber(String userId);
+  SubscriptionList getByUserSubscriber(String userId);
 
   /**
    * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a subscriber.
    * @param subscriber
    * @return list of subscriptions
    */
-  public SubscriptionList getBySubscriber(SubscriptionSubscriber subscriber);
+  SubscriptionList getBySubscriber(SubscriptionSubscriber subscriber);
 
   /**
    * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a subscriber
@@ -140,7 +140,7 @@ public interface SubscriptionService {
    * @param instanceId
    * @return list of subscriptions
    */
-  public SubscriptionList getBySubscriberAndComponent(SubscriptionSubscriber subscriber,
+  SubscriptionList getBySubscriberAndComponent(SubscriptionSubscriber subscriber,
       String instanceId);
 
   /**
@@ -150,7 +150,7 @@ public interface SubscriptionService {
    * @param resource
    * @return list of subscriptions
    */
-  public SubscriptionList getBySubscriberAndResource(SubscriptionSubscriber subscriber,
+  SubscriptionList getBySubscriberAndResource(SubscriptionSubscriber subscriber,
       SubscriptionResource resource);
 
   /**
@@ -160,7 +160,7 @@ public interface SubscriptionService {
    * @param resource
    * @return list of subscription subscribers
    */
-  public SubscriptionSubscriberList getSubscribers(SubscriptionResource resource);
+  SubscriptionSubscriberList getSubscribers(SubscriptionResource resource);
 
   /**
    * Gets all subscribers (USER and/or GROUP) that are subscribed to a resource.
@@ -170,7 +170,7 @@ public interface SubscriptionService {
    * @param method
    * @return list of subscription subscribers
    */
-  public SubscriptionSubscriberList getSubscribers(SubscriptionResource resource,
+  SubscriptionSubscriberList getSubscribers(SubscriptionResource resource,
       SubscriptionMethod method);
 
   /**
@@ -180,7 +180,7 @@ public interface SubscriptionService {
    * @param resources
    * @return list of subscription subscribers
    */
-  public SubscriptionSubscriberList getSubscribers(
+  SubscriptionSubscriberList getSubscribers(
       Collection<? extends SubscriptionResource> resources);
 
   /**
@@ -191,7 +191,7 @@ public interface SubscriptionService {
    * @param method
    * @return list of subscription subscribers
    */
-  public SubscriptionSubscriberList getSubscribers(
+  SubscriptionSubscriberList getSubscribers(
       Collection<? extends SubscriptionResource> resources, SubscriptionMethod method);
 
   /**
@@ -202,7 +202,7 @@ public interface SubscriptionService {
    * @param resource
    * @return true if the given subscriber is subscribed to given resource
    */
-  public boolean isSubscriberSubscribedToResource(SubscriptionSubscriber subscriber,
+  boolean isSubscriberSubscribedToResource(SubscriptionSubscriber subscriber,
       SubscriptionResource resource);
 
   /**
@@ -212,5 +212,5 @@ public interface SubscriptionService {
    * @return true if user has subscribed himself, or if user is subscribed through a subscribed
    *         group or if user has been subscribed by an other user
    */
-  public boolean isUserSubscribedToResource(String user, SubscriptionResource resource);
+  boolean isUserSubscribedToResource(String user, SubscriptionResource resource);
 }

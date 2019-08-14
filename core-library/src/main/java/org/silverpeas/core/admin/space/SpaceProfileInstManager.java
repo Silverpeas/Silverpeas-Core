@@ -285,7 +285,7 @@ public class SpaceProfileInstManager {
       }
 
       // the users in the previous state of the space profile
-      ArrayList<String> alOldSpaceProfileUser = spaceProfileInst.getAllUsers();
+      List<String> alOldSpaceProfileUser = spaceProfileInst.getAllUsers();
 
       // the users in the new state of the space profile
       List<String> alNewSpaceProfileUser = spaceProfileInstNew.getAllUsers();

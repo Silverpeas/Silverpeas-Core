@@ -73,11 +73,11 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   private UserDetail updater;
   private String removerUserId;
   private UserDetail remover;
-  private boolean isPublic = false;
-  private boolean isHidden = false;
+  private boolean isPublic;
+  private boolean isHidden;
   private boolean isInheritanceBlocked = false;
   private List<ProfileInst> profiles;
-  private List<Parameter> parameters = null;
+  private transient List<Parameter> parameters = null;
 
   /**
    * Creates new ComponentInst
@@ -143,7 +143,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     } else {
       ci.profiles = new ArrayList<>(profiles.size());
       for (ProfileInst profile : profiles) {
-        ci.addProfileInst((ProfileInst) profile.clone());
+        ci.addProfileInst(profile.copy());
       }
     }
     ci.parameters = new ArrayList<>(this.parameters.size());

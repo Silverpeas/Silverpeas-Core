@@ -28,7 +28,7 @@
  */
 package org.silverpeas.core.admin.service;
 
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -420,6 +420,16 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
+  public Group[] getRecursivelyAllSubgroups(final String parentGroupId) {
+    try {
+      return getAdminService().getRecursivelyAllSubGroups(parentGroupId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return new Group[0];
+    }
+  }
+
+  @Override
   public UserDetail[] getAllUsers() {
     try {
       return getAdminService().getAllUsers().toArray(new UserDetail[0]);
@@ -487,7 +497,7 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @Override
   public String[] getUserProfiles(String userId, String componentId, int objectId,
-      ObjectType objectType) {
+      ProfiledObjectType objectType) {
     try {
       return getAdminService().getProfilesByObjectAndUserId(objectId, objectType.getCode(),
           componentId, userId);
@@ -499,7 +509,7 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @Override
   public Map<Integer, List<String>> getUserObjectProfiles(final String userId,
-      final String componentId, final ObjectType objectType) {
+      final String componentId, final ProfiledObjectType objectType) {
     try {
       return getAdminService().getProfilesByObjectTypeAndUserId(objectType.getCode(),
           componentId, userId);
@@ -803,7 +813,7 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public boolean isObjectAvailable(int objectId, ObjectType objectType, String componentId,
+  public boolean isObjectAvailable(int objectId, ProfiledObjectType objectType, String componentId,
       String userId) {
     try {
       return getAdminService().isObjectAvailable(componentId, objectId, objectType.getCode(),
@@ -882,7 +892,7 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public String[] getUsersIdsByRoleNames(String componentId, String objectId, ObjectType objectType,
+  public String[] getUsersIdsByRoleNames(String componentId, String objectId, ProfiledObjectType objectType,
       List<String> profileNames) {
 
     try {

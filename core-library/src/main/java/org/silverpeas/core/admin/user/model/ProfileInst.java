@@ -21,195 +21,335 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- *
- * @author  nchaix
- * @version
- */
-
 package org.silverpeas.core.admin.user.model;
 
+import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.RightProfile;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileInst implements RightProfile, Cloneable {
+/**
+ * A right profile on a component instance or in an object managed by that component instance.
+ * It defines all the users and groups that can access a component instance with some well
+ * defined privileges. The privileges in Silverpeas are defined by a set of predefined roles and
+ * the given role a profile is related to is indicated by the {@link ProfileInst#getName()} method.
+ * When the profile is about a given resource of a component instance,
+ * the right accesses are defined for that resource whose the identifier can be get with the
+ * {@link ProfileInst#getObjectId()} method; by default this method returns
+ * {@link ProfiledObjectId#NOTHING} if the right profile is on the component instance itself.
+ */
+public class ProfileInst implements RightProfile {
 
   private static final long serialVersionUID = 3092416162986110340L;
-  private String m_sId;
-  private String m_sName;
-  private String m_sLabel;
-  private String m_sDescription;
-  private String m_sComponentFatherId;
-  private ArrayList<String> m_alGroups;
-  private ArrayList<String> m_alUsers;
+  private String id;
+  private String name;
+  private String label;
+  private String description;
+  private String componentFatherId;
+  private List<String> groups;
+  private List<String> users;
 
   private boolean isInherited = false;
-  private int objectId = -1;
-  private int objectFatherId = -1;
-  private String objectType = null;
 
-  /** Creates new ProfileInst */
+  private ProfiledObjectId objectId = ProfiledObjectId.NOTHING;
+  private ProfiledObjectId parentObjectId = ProfiledObjectId.NOTHING;
+
+  /**
+   * Constructs an empty right profile instance.
+   */
   public ProfileInst() {
-    m_sId = "";
-    m_sName = "";
-    m_sLabel = "";
-    m_sDescription = "";
-    m_sComponentFatherId = "";
-    m_alGroups = new ArrayList<String>();
-    m_alUsers = new ArrayList<String>();
+    id = "";
+    name = "";
+    label = "";
+    description = "";
+    componentFatherId = "";
+    groups = new ArrayList<>();
+    users = new ArrayList<>();
   }
 
-  @Override
-  @SuppressWarnings(
-      {"unchecked", "CloneDoesntDeclareCloneNotSupportedException", "CloneDoesntCallSuperClone"})
-  public Object clone() {
+  /**
+   * Copy this profile to get another profile with the same value.
+   * @return a copy of this profile.
+   */
+  @SuppressWarnings("unchecked")
+  public ProfileInst copy() {
     ProfileInst pi = new ProfileInst();
-    pi.m_sName = m_sName;
-    pi.m_sLabel = m_sLabel;
-    pi.m_sDescription = m_sDescription;
-    pi.m_sComponentFatherId = m_sComponentFatherId;
+    pi.name = name;
+    pi.label = label;
+    pi.description = description;
+    pi.componentFatherId = componentFatherId;
     pi.isInherited = isInherited;
+    pi.parentObjectId = parentObjectId;
     pi.objectId = objectId;
-    pi.objectType = objectType;
-    pi.m_alGroups = (ArrayList<String>) m_alGroups.clone();
-    pi.m_alUsers = (ArrayList<String>) m_alUsers.clone();
+    pi.groups = (List<String>) ((ArrayList<String>) groups).clone();
+    pi.users = (List<String>) ((ArrayList<String>) users).clone();
     return pi;
   }
 
+  /**
+   * Sets a unique identifier to this profile. Shouldn't be used. Reserved to the persistence
+   * layer.
+   * @param sId the unique identifier of the profile.
+   */
   public void setId(String sId) {
-    m_sId = sId;
+    id = sId;
   }
 
+  /**
+   * Gets a unique identifier of this profile.
+   * @return the profile identifier.
+   */
   public String getId() {
-    return m_sId;
+    return id;
   }
 
+  /**
+   * Sets a name to this profile. The name of the profile defines by convention the privileges
+   * that are granted to the users and groups defined in this profile. In Silverpeas, the privileges
+   * are defined by convention in different predefined roles and it is the name of this role that
+   * should be set here.
+   * @param sName the name of the role referred by this profile.
+   */
   public void setName(String sName) {
-    m_sName = sName;
+    name = sName;
   }
 
+  /**
+   * Gets the name of this profile. The name of the profile defines by convention the privileges
+   * that are granted to the users and groups defined in this profile. In Silverpeas, the privileges
+   * are defined by convention in different predefined roles and it is the name of this role that
+   * is returned here.
+   * @return the name of the role referred by this profile.
+   */
   public String getName() {
-    return m_sName;
+    return name;
   }
 
+  /**
+   * Sets a label to this profile. A label is a user-friendly name given to this profile.
+   * @param sLabel a label to give to this profile.
+   */
   public void setLabel(String sLabel) {
-    m_sLabel = sLabel;
+    label = sLabel;
   }
 
+  /**
+   * Gets a label of this profile. A label is a user-friendly name given to this profile.
+   * @return the profile label.
+   */
   public String getLabel() {
-    return m_sLabel;
+    return label;
   }
 
+  /**
+   * Sets a short description to this profile
+   * @param sDescription a textual description.
+   */
   public void setDescription(String sDescription) {
-    m_sDescription = sDescription;
+    description = sDescription;
   }
 
+  /**
+   * Gets a short description of this profile.
+   * @return a profile description.
+   */
   public String getDescription() {
-    return m_sDescription;
+    return description;
   }
 
+  /**
+   * Sets the component instance that is related by this profile. By default, this profile is
+   * on this component instance until an object identifier is set with the
+   * {@link ProfileInst#setObjectId(ProfiledObjectId)} method with a value other than
+   * {@link ProfiledObjectId#NOTHING}.
+   * @param sComponentFatherId the unique identifier of a component instance
+   */
   public void setComponentFatherId(String sComponentFatherId) {
-    m_sComponentFatherId = sComponentFatherId;
+    componentFatherId = sComponentFatherId;
   }
 
+  /**
+   * Gets the component instance on which is related this profile. The profile is about the
+   * access granted to this component instance with some well defined privileges unless the
+   * {@link ProfileInst#getObjectId()} returns other than {@link ProfiledObjectId#NOTHING}.
+   * @return the unique identifier of a component instance.
+   */
   public String getComponentFatherId() {
-    return m_sComponentFatherId;
+    return componentFatherId;
   }
 
+  /**
+   * Gets the number of groups that are concerned by this profile
+   * @return
+   */
   public int getNumGroup() {
-    return m_alGroups.size();
+    return groups.size();
   }
 
-  public String getGroup(int nIndex) {
-    return m_alGroups.get(nIndex);
-  }
-
+  /**
+   * Adds among the groups covered by this profile the specified group.
+   * @param sGroupId the unique identifier of a group.
+   */
   @Override
   public void addGroup(String sGroupId) {
-    if (!m_alGroups.contains(sGroupId)) {
-      m_alGroups.add(sGroupId);
+    if (!groups.contains(sGroupId)) {
+      groups.add(sGroupId);
     }
   }
 
+  /**
+   * Removes from the groups concerned by this profile the specified group.
+   * @param sGroupId the unique identifier of a group.
+   */
   @Override
   public void removeGroup(String sGroupId) {
-    m_alGroups.remove(sGroupId);
+    groups.remove(sGroupId);
   }
 
-  public ArrayList<String> getAllGroups() {
-    return m_alGroups;
+  /**
+   * Gets all the groups that are concerned by this profile.
+   * @return a list of group identifiers.
+   */
+  public List<String> getAllGroups() {
+    return groups;
   }
 
+  /**
+   * Removes all the groups concerned by this profile.
+   */
   public void removeAllGroups() {
-    m_alGroups = new ArrayList<String>();
+    groups = new ArrayList<>();
   }
 
+  /**
+   * Gets the number of users covered by this profile.
+   * @return the number of users in this profile.
+   */
   public int getNumUser() {
-    return m_alUsers.size();
+    return users.size();
   }
 
-  public String getUser(int nIndex) {
-    return m_alUsers.get(nIndex);
-  }
-
+  /**
+   * Adds a user as being covered by this profile.
+   * @param sUserId a unique identifier of a user.
+   */
   @Override
   public void addUser(String sUserId) {
-    if (!m_alUsers.contains(sUserId)) {
-      m_alUsers.add(sUserId);
+    if (!users.contains(sUserId)) {
+      users.add(sUserId);
     }
   }
 
+  /**
+   * Removes the specified user among those covered by this profile.
+   * @param sUserId a unique identifier of a user.
+   */
   @Override
   public void removeUser(String sUserId) {
-    m_alUsers.remove(sUserId);
+    users.remove(sUserId);
   }
 
-  public ArrayList<String> getAllUsers() {
-    return m_alUsers;
+  /**
+   * Gets all the users concerned by this profile.
+   * @return a list of user identifiers.
+   */
+  public List<String> getAllUsers() {
+    return users;
   }
 
+  /**
+   * Removes all the users concerned by this profile.
+   */
   public void removeAllUsers() {
-    m_alUsers = new ArrayList<String>();
+    users = new ArrayList<>();
   }
 
+  /**
+   * Adds all the specified users in this profile.
+   * @param users a list of user identifiers.
+   */
   public void addUsers(List<String> users) {
-    ArrayList<String> a = new ArrayList<String>(users);
-    a.removeAll(this.m_alUsers);
-    m_alUsers.addAll(a);
+    ArrayList<String> a = new ArrayList<>(users);
+    a.removeAll(this.users);
+    this.users.addAll(a);
   }
 
+  /**
+   * Adds all the specified groups in this profile.
+   * @param groups a list of group identifiers.
+   */
   public void addGroups(List<String> groups) {
-    ArrayList<String> a = new ArrayList<String>(groups);
-    a.removeAll(this.m_alGroups);
-    m_alGroups.addAll(a);
+    ArrayList<String> a = new ArrayList<>(groups);
+    a.removeAll(this.groups);
+    this.groups.addAll(a);
   }
 
+  /**
+   * Is the right accesses defined by this profile are inherited by another right profile, a
+   * parent right profile?
+   * @return true if the right accesses are inherited. False otherwise.
+   */
   public boolean isInherited() {
     return isInherited;
   }
 
+  /**
+   * Sets the inheritance in right accesses to this profile.
+   * @param isInherited a boolean indicating if the right accesses are inherited from another
+   * right profile.
+   */
   public void setInherited(boolean isInherited) {
     this.isInherited = isInherited;
   }
 
-  public int getObjectId() {
+  /**
+   * Gets the identifier of the object covered by this profile. In the case the profile only about
+   * the component instance referred by the {@link ProfileInst#getComponentFatherId()} method, then
+   * {@link ProfiledObjectId#NOTHING} is returned. Such an object can be for example a node.
+   * @return the identifier of the object referred by this profile. {@link ProfiledObjectId#NOTHING}
+   * if none object is covered explicitly by this profile.
+   */
+  public ProfiledObjectId getObjectId() {
     return objectId;
   }
 
-  public void setObjectId(int objectId) {
+  /**
+   * This profile is about the specified object and not on the component instance referred by the
+   * {@link ProfileInst#getComponentFatherId()} method. Such an object can be for example a node.
+   * @param objectId the unique identifier of the object covered by this profile.
+   */
+  public void setObjectId(final ProfiledObjectId objectId) {
     this.objectId = objectId;
   }
 
-  public int getObjectFatherId() {
-    return objectFatherId;
+  /**
+   * This profile isn't on the actual object but on its one of its parent (in the case the objects
+   * are related) whose identifier is returned here.
+   * @return the identifier of the object that is really covered by this profile. The
+   * actual object get by {@link ProfileInst#getObjectId()} method inherits the right access
+   * defines by this profile.
+   */
+  public ProfiledObjectId getParentObjectId() {
+    return this.parentObjectId;
   }
 
-  public void setObjectFatherId(int objectFatherId) {
-    this.objectFatherId = objectFatherId;
+  /**
+   * This profile isn't on the actual object but on its one of its parent (in the case the objects
+   * are related) whose identifier is set here.
+   * @param parentObjectId the identifier of the object that is really covered by this profile. The
+   * actual object get by {@link ProfileInst#getObjectId()} method inherits the right access
+   * defines by this profile.
+   */
+  public void setParentObjectId(final ProfiledObjectId parentObjectId) {
+    this.parentObjectId = parentObjectId;
   }
 
+  /**
+   * Sets the users and the groups that have to be concerned by this profile.
+   * @param groupIds an array with some group identifiers.
+   * @param userIds an array with some user identifiers.
+   */
   public void setGroupsAndUsers(String[] groupIds, String[] userIds) {
     // groups
     for (int i = 0; groupIds != null && i < groupIds.length; i++) {
@@ -226,14 +366,19 @@ public class ProfileInst implements RightProfile, Cloneable {
     }
   }
 
-  public String getObjectType() {
-    return objectType;
+  /**
+   * Is the right profile on a component instance?
+   * @return true if the profile defines right access of a component instance or false if it defines
+   * right access of an object managed by that component instance.
+   */
+  public boolean isOnComponentInstance() {
+    return this.objectId == ProfiledObjectId.NOTHING;
   }
 
-  public void setObjectType(String objectType) {
-    this.objectType = objectType;
-  }
-
+  /**
+   * Is this right profile empty?
+   * @return true if no users or groups are concerned by this right profile. False otherwise.
+   */
   public boolean isEmpty() {
     return getAllGroups().isEmpty() && getAllUsers().isEmpty();
   }

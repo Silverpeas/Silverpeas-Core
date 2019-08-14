@@ -25,17 +25,51 @@
 package org.silverpeas.core.admin;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
+ * It represents a profile of right access for a resource in Silverpeas that can be a space,
+ * a component instance, a node or whatever. A right profile defines the users and the user groups
+ * that can access a resource with some well defined privileges.
  * @author mmoquillon
  */
 public interface RightProfile extends Serializable {
 
+  /**
+   * Adds a user group to the right profile.
+   * @param id the unique identifier of an existing user group.
+   */
   void addGroup(final String id);
 
+  /**
+   * Adds a user to the right profile.
+   * @param id the unique identifier of an existing user.
+   */
   void addUser(final String id);
 
+  /**
+   * Removes from this right profile the specified user group.
+   * @param id the unique identifier of an existing user group.
+   */
   void removeGroup(final String id);
 
+  /**
+   * Removes from this right profile the specified user.
+   * @param id the unique identifier of an existing user.
+   */
   void removeUser(final String id);
+
+  /**
+   * Gets all the users set in this right profile. In others words, the users that have access
+   * the resource to which this right profile refers.
+   * @return a list of user identifiers.
+   */
+  List<String> getAllUsers();
+
+  /**
+   * Gets all the user groups set in this right profile. In others words, the groups that have
+   * access the resource to which this right profile refers.
+   * @return a list of user group identifiers.
+   */
+  List<String> getAllGroups();
 }

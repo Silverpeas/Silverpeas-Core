@@ -21,39 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.subscription;
-
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
-import org.silverpeas.core.WAPrimaryKey;
+package org.silverpeas.core.admin;
 
 /**
- * User: Yohann Chastagnier
- * Date: 20/02/13
+ * The type of the object covered by a right profile.
  */
-public interface SubscriptionResource {
+public enum ProfiledObjectType {
+  NONE(null),
+  NODE("O");
 
-  /**
-   * Gets the identifier of the resource aimed by subscription
-   * @return
-   */
-  String getId();
+  private final String code;
 
-  /**
-   * Gets the type of the resource aimed by the subscription
-   * @return
-   */
-  SubscriptionResourceType getType();
+  public static ProfiledObjectType fromCode(final String code) {
+    final ProfiledObjectType type;
+    if ("O".equals(code)) {
+      type = NODE;
+    } else if (code == null) {
+      type = NONE;
+    } else {
+      throw new IllegalArgumentException("The profiled object type code " + code + " is unknown!");
+    }
+    return type;
+  }
 
-  /**
-   * Gets the instance identifier of component
-   * @return
-   */
-  String getInstanceId();
+  ProfiledObjectType(String code) {
+    this.code = code;
+  }
 
-  /**
-   * Gets the Silverpeas Primary Key of the aimed resource
-   * @param <T>
-   * @return
-   */
-  <T extends WAPrimaryKey> T getPK();
+  public String getCode() {
+    return this.code;
+  }
+
 }
