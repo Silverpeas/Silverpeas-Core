@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.notification.ProfileInstEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -78,11 +79,11 @@ public class ProfileInstManager {
       throws AdminException {
     try {
       // Create the spaceProfile node
-      UserRoleRow newRole = makeUserRoleRow(profileInst);
-      newRole.id = -1; // new profile Id is to be defined
-      newRole.instanceId = fatherCompLocalId;
+      UserRoleRow newRole = UserRoleRow.makeFrom(profileInst);
+      newRole.unsetId(); // new profile Id is to be defined
+      newRole.setInstanceId(fatherCompLocalId);
       organizationSchema.userRole().createUserRole(newRole);
-      String sProfileNodeId = idAsString(newRole.id);
+      String sProfileNodeId = idAsString(newRole.getId());
 
       // Update the CSpace with the links TProfile-TGroup
       for(String groupId : profileInst.getAllGroups()) {
@@ -129,17 +130,17 @@ public class ProfileInstManager {
   private ProfileInst userRoleRow2ProfileInst(UserRoleRow userRole) {
     // Set the attributes of the profile Inst
     ProfileInst profileInst = new ProfileInst();
-    profileInst.setId(Integer.toString(userRole.id));
-    profileInst.setName(userRole.roleName);
-    profileInst.setLabel(userRole.name);
-    profileInst.setDescription(userRole.description);
-    profileInst.setComponentFatherId(Integer.toString(userRole.instanceId));
-    if (userRole.isInherited == 1) {
+    profileInst.setId(Integer.toString(userRole.getId()));
+    profileInst.setName(userRole.getRoleName());
+    profileInst.setLabel(userRole.getName());
+    profileInst.setDescription(userRole.getDescription());
+    profileInst.setComponentFatherId(Integer.toString(userRole.getInstanceId()));
+    if (userRole.getInheritance() == 1) {
       profileInst.setInherited(true);
     }
-    if (userRole.objectId > 0) {
-      String oid = String.valueOf(userRole.objectId);
-      ProfiledObjectType otype = ProfiledObjectType.fromCode(userRole.objectType);
+    if (userRole.getObjectId() > 0) {
+      String oid = String.valueOf(userRole.getObjectId());
+      ProfiledObjectType otype = ProfiledObjectType.fromCode(userRole.getObjectType());
       profileInst.setObjectId(new ProfiledObjectId(otype, oid));
     }
     return profileInst;
@@ -147,12 +148,12 @@ public class ProfileInstManager {
 
   private void setUsersAndGroups(ProfileInst profileInst) throws AdminException {
     // Get the groups
-    List<String> asGroupIds = GroupManager.get().getDirectGroupIdsInRole(profileInst.getId());
-    asGroupIds.forEach(profileInst::addGroup);
+    List<String> groupIds = GroupManager.get().getDirectGroupIdsInRole(profileInst.getId());
+    profileInst.setGroups(groupIds);
 
     // Get the Users
     List<String> userIds = UserManager.get().getDirectUserIdsInRole(profileInst.getId());
-    userIds.forEach(profileInst::addUser);
+    profileInst.setUsers(userIds);
   }
 
   private void setComponentInstanceId(final ProfileInst profileInst) throws AdminException {
@@ -213,15 +214,59 @@ public class ProfileInstManager {
 
       // the groups in the current state of the profile
       List<String> alNewProfileGroup = profileInstNew.getAllGroups();
+      updateProfileGroups(profileInst, alOldProfileGroup, alNewProfileGroup);
 
-      // Add the new Groups
-      for (String groupId : alNewProfileGroup) {
-        if (!alOldProfileGroup.contains(groupId)) {
-          // Create the links between the profile and the group
-          organizationSchema.userRole().addGroupInUserRole(
-              idAsInt(groupId), idAsInt(profileInst.getId()));
-        }
+      // the users in the previous state of the profile
+      List<String> alOldProfileUser = profileInst.getAllUsers();
+
+      // the users in the new state of the profile
+      List<String> alNewProfileUser = profileInstNew.getAllUsers();
+      updateProfileUsers(profileInst, alOldProfileUser, alNewProfileUser);
+
+      // update the profile node
+      UserRoleRow changedUserRole = UserRoleRow.makeFrom(profileInstNew);
+      organizationSchema.userRole().updateUserRole(changedUserRole);
+
+      notifier.notifyEventOn(ResourceEvent.Type.UPDATE, profileInst, profileInstNew);
+
+      return idAsString(changedUserRole.getId());
+    } catch (SQLException e) {
+      throw new AdminException(failureOnUpdate(PROFILE, profileInst.getId()), e);
+    }
+  }
+
+  private void updateProfileUsers(final ProfileInst profileInst,
+      final List<String> alOldProfileUser, final List<String> alNewProfileUser)
+      throws SQLException {
+    // Add the new Users
+    for (String userId : alNewProfileUser) {
+      if (!alOldProfileUser.contains(userId)) {
+        // Create the links between the profile and the user
+        organizationSchema.userRole()
+            .addUserInUserRole(idAsInt(userId), idAsInt(profileInst.getId()));
       }
+    }
+
+    // Remove from the profile the users that are no more in the new state of the profile
+    for (String userId : alOldProfileUser) {
+      if (!alNewProfileUser.contains(userId)) {
+        // delete the link between the profile and the user
+        organizationSchema.userRole().removeUserFromUserRole(idAsInt(userId), idAsInt(profileInst.getId()));
+      }
+    }
+  }
+
+  private void updateProfileGroups(final ProfileInst profileInst,
+      final List<String> alOldProfileGroup, final List<String> alNewProfileGroup)
+      throws SQLException {
+    // Add the new Groups
+    for (String groupId : alNewProfileGroup) {
+      if (!alOldProfileGroup.contains(groupId)) {
+        // Create the links between the profile and the group
+        organizationSchema.userRole().addGroupInUserRole(
+            idAsInt(groupId), idAsInt(profileInst.getId()));
+      }
+    }
 
       // Remove from the profile the groups that are no more in the new state of the profile
       for (String groupId : alOldProfileGroup) {
@@ -231,42 +276,6 @@ public class ProfileInstManager {
               idAsInt(groupId), idAsInt(profileInst.getId()));
         }
       }
-
-      // the users in the previous state of the profile
-      List<String> alOldProfileUser = profileInst.getAllUsers();
-
-      // the users in the new state of the profile
-      List<String> alNewProfileUser = profileInstNew.getAllUsers();
-
-      // Add the new Users
-      for (String userId : alNewProfileUser) {
-        if (!alOldProfileUser.contains(userId)) {
-          // Create the links between the profile and the user
-          organizationSchema.userRole().addUserInUserRole(
-              idAsInt(userId), idAsInt(profileInst.getId()));
-        }
-      }
-
-      // Remove from the profile the users that are no more in the new state of the profile
-      for (String userId : alOldProfileUser) {
-        if (!alNewProfileUser.contains(userId)) {
-          // delete the link between the profile and the user
-          organizationSchema.userRole().removeUserFromUserRole(
-              idAsInt(userId), idAsInt(profileInst.getId()));
-        }
-      }
-
-      // update the profile node
-      UserRoleRow changedUserRole = makeUserRoleRow(profileInstNew);
-      changedUserRole.id = idAsInt(profileInstNew.getId());
-      organizationSchema.userRole().updateUserRole(changedUserRole);
-
-      notifier.notifyEventOn(ResourceEvent.Type.UPDATE, profileInst, profileInstNew);
-
-      return idAsString(changedUserRole.id);
-    } catch (SQLException e) {
-      throw new AdminException(failureOnUpdate(PROFILE, profileInst.getId()), e);
-    }
   }
 
   /**
@@ -285,7 +294,7 @@ public class ProfileInstManager {
       List<String> roleIds = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
-        roleIds.add(Integer.toString(role.id));
+        roleIds.add(Integer.toString(role.getId()));
       }
 
       return roleIds.toArray(new String[roleIds.size()]);
@@ -315,7 +324,7 @@ public class ProfileInstManager {
       List<String> roleIds = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
-        roleIds.add(Integer.toString(role.id));
+        roleIds.add(Integer.toString(role.getId()));
       }
 
       return roleIds.toArray(new String[roleIds.size()]);
@@ -338,8 +347,8 @@ public class ProfileInstManager {
       List<String> roleNames = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
-        if (!roleNames.contains(role.roleName)) {
-          roleNames.add(role.roleName);
+        if (!roleNames.contains(role.getRoleName())) {
+          roleNames.add(role.getRoleName());
         }
       }
 
@@ -369,7 +378,7 @@ public class ProfileInstManager {
       List<String> roleIds = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
-        roleIds.add(Integer.toString(role.id));
+        roleIds.add(Integer.toString(role.getId()));
       }
 
       return roleIds.toArray(new String[roleIds.size()]);
@@ -397,7 +406,7 @@ public class ProfileInstManager {
       List<String> roleIds = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
-        roleIds.add(Integer.toString(role.id));
+        roleIds.add(Integer.toString(role.getId()));
       }
 
       return roleIds.toArray(new String[roleIds.size()]);
@@ -409,34 +418,11 @@ public class ProfileInstManager {
     }
   }
 
-  private UserRoleRow makeUserRoleRow(ProfileInst profileInst) {
-    UserRoleRow userRole = new UserRoleRow();
-
-    userRole.id = idAsInt(profileInst.getId());
-    userRole.roleName = profileInst.getName();
-    userRole.name = profileInst.getLabel();
-    userRole.description = profileInst.getDescription();
-    if (profileInst.isInherited()) {
-      userRole.isInherited = 1;
-    }
-    userRole.objectId = Integer.parseInt(profileInst.getObjectId().getId());
-    userRole.objectType = profileInst.getObjectId().getType().getCode();
-
-    return userRole;
-  }
-
   /**
    * Convert String Id to int Id
    */
   private int idAsInt(String id) {
-    if (id == null || id.length() == 0) {
-      return -1; // the null id.
-    }
-    try {
-      return Integer.parseInt(id);
-    } catch (NumberFormatException e) {
-      return -1; // the null id.
-    }
+    return StringUtil.asInt(id, -1);
   }
 
   /**

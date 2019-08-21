@@ -25,7 +25,6 @@ package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.PreparedStatement;
@@ -51,27 +50,6 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
   private static final String USERROLE_COLUMNS =
       "id,instanceId,name,roleName,description,isInherited,objectId,objectType";
-
-  /**
-   * Fetch the current userRole row from a resultSet.
-   * @param rs
-   * @return the current userRole row from a resultSet.
-   * @throws SQLException
-   */
-  protected UserRoleRow fetchUserRole(ResultSet rs) throws SQLException {
-    UserRoleRow ur = new UserRoleRow();
-
-    ur.id = rs.getInt(1);
-    ur.instanceId = rs.getInt(2);
-    ur.name = rs.getString(3);
-    ur.roleName = rs.getString(4);
-    ur.description = rs.getString(5);
-    ur.isInherited = rs.getInt(6);
-    ur.objectId = rs.getInt(7);
-    ur.objectType = rs.getString(8);
-
-    return ur;
-  }
 
   /**
    * Returns the UserRole whith the given id.
@@ -213,13 +191,14 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @throws SQLException
    */
   public void createUserRole(UserRoleRow userRole) throws SQLException {
-    ComponentInstanceRow instance = OrganizationSchema.get().instance().getComponentInstance(userRole.instanceId);
+    ComponentInstanceRow instance = OrganizationSchema.get().instance()
+        .getComponentInstance(userRole.getInstanceId());
     if (instance == null) {
       throw new SQLException(
-          unknown("component instance", String.valueOf(userRole.instanceId)));
+          unknown("component instance", String.valueOf(userRole.getInstanceId())));
     }
 
-    if (userRole.objectId != -1 && !StringUtil.isDefined(userRole.objectType)) {
+    if (userRole.isObjectIdDefined() && !userRole.isObjectTypeDefined()) {
       throw new SQLException(undefined("user role type"));
     }
     insertRow(INSERT_USERROLE, userRole);
@@ -232,24 +211,24 @@ public class UserRoleTable extends Table<UserRoleRow> {
   @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, UserRoleRow row) throws
       SQLException {
-    if (row.id == -1) {
-      row.id = getNextId();
+    if (!row.isIdDefined()) {
+      row.setId(getNextId());
     }
-    insert.setInt(1, row.id);
-    insert.setInt(2, row.instanceId);
-    insert.setString(3, truncate(row.name, 100));
-    insert.setString(4, truncate(row.roleName, 100));
-    insert.setString(5, truncate(row.description, 500));
-    insert.setInt(6, row.isInherited);
-    if (row.objectId == -1) {
+    insert.setInt(1, row.getId());
+    insert.setInt(2, row.getInstanceId());
+    insert.setString(3, truncate(row.getName(), 100));
+    insert.setString(4, truncate(row.getRoleName(), 100));
+    insert.setString(5, truncate(row.getDescription(), 500));
+    insert.setInt(6, row.getInheritance());
+    if (row.isObjectIdDefined()) {
+      insert.setInt(7, row.getObjectId());
+    } else {
       insert.setNull(7, Types.INTEGER);
-    } else {
-      insert.setInt(7, row.objectId);
     }
-    if (!StringUtil.isDefined(row.objectType)) {
-      insert.setNull(8, Types.VARCHAR);
+    if (row.isObjectTypeDefined()) {
+      insert.setString(8, row.getObjectType());
     } else {
-      insert.setString(8, row.objectType);
+      insert.setNull(8, Types.VARCHAR);
     }
   }
 
@@ -268,9 +247,9 @@ public class UserRoleTable extends Table<UserRoleRow> {
   @Override
   protected void prepareUpdate(String updateQuery, PreparedStatement update, UserRoleRow row) throws
       SQLException {
-    update.setString(1, truncate(row.name, 100));
-    update.setString(2, truncate(row.description, 500));
-    update.setInt(3, row.id);
+    update.setString(1, truncate(row.getName(), 100));
+    update.setString(2, truncate(row.getDescription(), 500));
+    update.setInt(3, row.getId());
   }
 
   /**
@@ -445,6 +424,6 @@ public class UserRoleTable extends Table<UserRoleRow> {
    */
   @Override
   protected UserRoleRow fetchRow(ResultSet rs) throws SQLException {
-    return fetchUserRole(rs);
+    return UserRoleRow.fetch(rs);
   }
 }

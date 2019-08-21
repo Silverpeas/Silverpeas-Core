@@ -732,7 +732,7 @@ public class UserManager {
     final int userIdAsInt = Integer.parseInt(userId);
     UserRoleRow[] roles = organizationSchema.userRole().getDirectUserRolesOfUser(userIdAsInt);
     for (UserRoleRow role : roles) {
-      organizationSchema.userRole().removeUserFromUserRole(userIdAsInt, role.id);
+      organizationSchema.userRole().removeUserFromUserRole(userIdAsInt, role.getId());
     }
 
     SynchroDomainReport.debug(USER_TABLE_REMOVE_USER,

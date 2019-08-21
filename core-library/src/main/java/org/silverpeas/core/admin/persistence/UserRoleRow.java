@@ -23,13 +23,117 @@
  */
 package org.silverpeas.core.admin.persistence;
 
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.util.StringUtil;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import static org.silverpeas.core.util.StringUtil.asInt;
+
 public class UserRoleRow {
-  public int id = -1;
-  public int instanceId = -1;
-  public String name = null;
-  public String roleName = null;
-  public String description = null;
-  public int isInherited = 0;
-  public int objectId = -1;
-  public String objectType = null;
+
+  private static final int NO_VALUE = -1;
+
+  private int id = NO_VALUE;
+  private int instanceId = NO_VALUE;
+  private String name = null;
+  private String roleName = null;
+  private String description = null;
+  private int isInherited = 0;
+  private int objectId = NO_VALUE;
+  private String objectType = null;
+
+  private UserRoleRow() {
+  }
+
+  public static UserRoleRow fetch(final ResultSet rs) throws SQLException {
+    UserRoleRow ur = new UserRoleRow();
+    ur.id = rs.getInt(1);
+    ur.instanceId = rs.getInt(2);
+    ur.name = rs.getString(3);
+    ur.roleName = rs.getString(4);
+    ur.description = rs.getString(5);
+    ur.isInherited = rs.getInt(6);
+    ur.objectId = rs.getInt(7);
+    ur.objectType = rs.getString(8);
+
+    return ur;
+  }
+
+  public static UserRoleRow makeFrom(final ProfileInst profileInst) {
+    UserRoleRow userRole = new UserRoleRow();
+
+    userRole.id = asInt(profileInst.getId(), NO_VALUE);
+    userRole.roleName = profileInst.getName();
+    userRole.name = profileInst.getLabel();
+    userRole.description = profileInst.getDescription();
+    if (profileInst.isInherited()) {
+      userRole.isInherited = 1;
+    }
+    userRole.objectId = asInt(profileInst.getObjectId().getId(), NO_VALUE);
+    userRole.objectType = profileInst.getObjectId().getType().getCode();
+
+    return userRole;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(final int id) {
+    if (id < 0) {
+      throw new IllegalArgumentException("The identifier must not be negative");
+    }
+    this.id = id;
+  }
+
+  public void unsetId() {
+    this.id = NO_VALUE;
+  }
+
+  public boolean isIdDefined() {
+    return id != NO_VALUE;
+  }
+
+  public int getInstanceId() {
+    return instanceId;
+  }
+
+  public void setInstanceId(final int instanceId) {
+    this.instanceId = instanceId;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getRoleName() {
+    return roleName;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public int getInheritance() {
+    return isInherited;
+  }
+
+  public int getObjectId() {
+    return objectId;
+  }
+
+  public boolean isObjectIdDefined() {
+    return objectId != NO_VALUE;
+  }
+
+  public String getObjectType() {
+    return objectType;
+  }
+
+  public boolean isObjectTypeDefined() {
+    return StringUtil.isDefined(objectType);
+  }
+
 }

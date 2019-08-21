@@ -1074,9 +1074,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     ProfileInst profile = getManagedProfile();
 
     // set groupIds and userIds
-    profile.removeAllGroups();
-    profile.removeAllUsers();
-    profile.setGroupsAndUsers(groupIds, userIds);
+    profile.setUsers(Arrays.asList(userIds));
+    profile.setGroups(Arrays.asList(groupIds));
 
     if (!StringUtil.isDefined(profile.getId())) {
       profile.setComponentFatherId(getManagedInstanceId());

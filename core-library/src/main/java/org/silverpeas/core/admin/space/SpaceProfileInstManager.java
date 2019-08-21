@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.UserManager;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -202,10 +203,10 @@ public class SpaceProfileInstManager {
 
   private void setUsersAndGroups(SpaceProfileInst spaceProfileInst) throws AdminException {
     List<String> groupIds = GroupManager.get().getDirectGroupIdsInSpaceRole(spaceProfileInst.getId());
-    groupIds.forEach(spaceProfileInst::addGroup);
+    spaceProfileInst.setGroups(groupIds);
 
     List<String> userIds = UserManager.get().getDirectUserIdsInSpaceRole(spaceProfileInst.getId());
-    userIds.forEach(spaceProfileInst::addUser);
+    spaceProfileInst.setUsers(userIds);
   }
 
   private SpaceProfileInst spaceUserRoleRow2SpaceProfileInst(SpaceUserRoleRow spaceUserRole) {
@@ -340,14 +341,7 @@ public class SpaceProfileInstManager {
    * Convert String Id to int Id
    */
   private int idAsInt(String id) {
-    if (id == null || id.length() == 0) {
-      return -1; // the null id.
-    }
-    try {
-      return Integer.parseInt(id);
-    } catch (NumberFormatException e) {
-      return -1; // the null id.
-    }
+    return StringUtil.asInt(id, -1);
   }
 
   /**

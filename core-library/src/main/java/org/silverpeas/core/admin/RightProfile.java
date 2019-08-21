@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.admin;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -33,7 +32,7 @@ import java.util.List;
  * that can access a resource with some well defined privileges.
  * @author mmoquillon
  */
-public interface RightProfile extends Serializable {
+public interface RightProfile {
 
   /**
    * Adds a user group to the right profile.

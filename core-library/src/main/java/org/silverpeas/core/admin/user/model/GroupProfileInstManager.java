@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.dao.GroupDAO;
 import org.silverpeas.core.admin.user.dao.UserDAO;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -249,15 +250,7 @@ public class GroupProfileInstManager {
    * Convert String Id to int Id
    */
   private int idAsInt(String id) {
-    if (id == null || id.length() == 0) {
-      return -1; // the null id.
-    }
-
-    try {
-      return Integer.parseInt(id);
-    } catch (NumberFormatException e) {
-      return -1; // the null id.
-    }
+    return StringUtil.asInt(id, -1);
   }
 
   /**

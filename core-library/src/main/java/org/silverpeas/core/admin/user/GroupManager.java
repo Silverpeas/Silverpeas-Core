@@ -649,7 +649,7 @@ public class GroupManager {
     SynchroDomainReport.debug(GROUP_MANAGER_DELETE_GROUP,
         REMOVING_MESSAGE + group.getName() + " des rôles dans la base");
     for (UserRoleRow role : roles) {
-      userRoleTable.removeGroupFromUserRole(groupId, role.id);
+      userRoleTable.removeGroupFromUserRole(groupId, role.getId());
     }
 
     // remove the group from each space role where it's used.
@@ -857,14 +857,7 @@ public class GroupManager {
    * Convert String Id to int Id
    */
   private int idAsInt(String id) {
-    if (id == null || id.length() == 0) {
-      return -1;
-    }
-    try {
-      return Integer.parseInt(id);
-    } catch (NumberFormatException e) {
-      return -1;
-    }
+    return StringUtil.asInt(id, -1);
   }
 
   private static class GroupCriteriaFilter {
