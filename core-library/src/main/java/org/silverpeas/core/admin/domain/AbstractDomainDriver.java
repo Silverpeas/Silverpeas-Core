@@ -247,12 +247,12 @@ public abstract class AbstractDomainDriver implements DomainDriver {
    * Called when Admin starts the synchronization
    */
   @Override
-  public void beginSynchronization() throws AdminException {
+  public void beginSynchronization() {
     synchroInProcess = true;
   }
 
   @Override
-  public boolean isSynchroInProcess() throws AdminException {
+  public boolean isSynchroInProcess() {
     return synchroInProcess;
   }
 
@@ -261,20 +261,13 @@ public abstract class AbstractDomainDriver implements DomainDriver {
    * @param cancelSynchro true if the synchronization is cancelled, false if it ends normally
    */
   @Override
-  public String endSynchronization(boolean cancelSynchro) throws AdminException {
+  public String endSynchronization(boolean cancelSynchro) {
     synchroInProcess = false;
     return "";
   }
 
   protected static int idAsInt(String id) {
-    if (!StringUtil.isDefined(id)) {
-      return -1; // the null id.
-    }
-    try {
-      return Integer.parseInt(id);
-    } catch (NumberFormatException e) {
-      return -1; // the null id.
-    }
+    return StringUtil.asInt(id, -1);
   }
 
   /**

@@ -398,7 +398,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     UserRoleTable userRoleTable = schema.userRole();
     UserRoleRow[] roles = userRoleTable.getAllUserRolesOfInstance(id);
     for (UserRoleRow role : roles) {
-      userRoleTable.removeUserRole(role.id);
+      userRoleTable.removeUserRole(role.getId());
     }
     schema.instanceData().removeInstanceData(id);
     updateRelation(DELETE_INSTANCE, id);

@@ -23,10 +23,7 @@
  */
 package org.silverpeas.core.admin.space;
 
-import org.silverpeas.core.admin.RightProfile;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.silverpeas.core.admin.BaseRightProfile;
 
 /**
  * A right profile on a collaboration space in Silverpeas. Such a profile defines the users and the
@@ -34,63 +31,11 @@ import java.util.List;
  * default all the right profiles of a space are inherited to the component instances that are
  * included in those spaces.
  */
-public class SpaceProfileInst implements RightProfile {
+public class SpaceProfileInst extends BaseRightProfile {
 
   public static final String SPACE_MANAGER = "Manager";
 
-  private static final long serialVersionUID = 1L;
-  private String id;
-  private String name;
-  private String label;
-  private String description;
-  private String spaceFatherId;
-  private List<String> groups;
-  private List<String> users;
-
-  private boolean isInherited = false;
-
-  /** Creates new SpaceProfileInst */
-  public SpaceProfileInst() {
-    id = "";
-    name = "";
-    label = "";
-    description = "";
-    spaceFatherId = "";
-    groups = new ArrayList<>();
-    users = new ArrayList<>();
-  }
-
-  public void setId(String sId) {
-    id = sId;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setName(String sName) {
-    name = sName;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setLabel(String sLabel) {
-    label = sLabel;
-  }
-
-  public String getLabel() {
-    return label;
-  }
-
-  public void setDescription(String sDescription) {
-    description = sDescription;
-  }
-
-  public String getDescription() {
-    return description;
-  }
+  private String spaceFatherId = "";
 
   public void setSpaceFatherId(String sSpaceFatherId) {
     spaceFatherId = sSpaceFatherId;
@@ -100,114 +45,28 @@ public class SpaceProfileInst implements RightProfile {
     return spaceFatherId;
   }
 
-  public int getNumGroup() {
-    return groups.size();
-  }
-
   public String getGroup(int nIndex) {
-    return groups.get(nIndex);
-  }
-
-  @Override
-  public void addGroup(String sGroupId) {
-    if (!groups.contains(sGroupId)) {
-      groups.add(sGroupId);
-    }
-  }
-
-  @Override
-  public void removeGroup(String sGroupId) {
-    groups.remove(sGroupId);
-  }
-
-  public List<String> getAllGroups() {
-    return groups;
-  }
-
-  public void removeAllGroups() {
-    groups = new ArrayList<>();
-  }
-
-  public int getNumUser() {
-    return users.size();
+    return getAllGroups().get(nIndex);
   }
 
   public String getUser(int nIndex) {
-    return users.get(nIndex);
-  }
-
-  @Override
-  public void addUser(String sUserId) {
-    if (!users.contains(sUserId)) {
-      users.add(sUserId);
-    }
-  }
-
-  @Override
-  public void removeUser(String sUserId) {
-    users.remove(sUserId);
-  }
-
-  public void addUsers(List<String> users) {
-    ArrayList<String> a = new ArrayList<>(users);
-    a.removeAll(this.users);
-    this.users.addAll(a);
-  }
-
-  public void setUsers(List<String> users) {
-    this.users.clear();
-    this.users.addAll(users);
-  }
-
-  public void addGroups(List<String> groups) {
-    ArrayList<String> a = new ArrayList<>(groups);
-    a.removeAll(this.groups);
-    this.groups.addAll(a);
-  }
-
-  public void setGroups(List<String> groups) {
-    this.groups.clear();
-    this.groups.addAll(groups);
-  }
-
-  public List<String> getAllUsers() {
-    return users;
-  }
-
-  public void removeAllUsers() {
-    users = new ArrayList<>();
-  }
-
-  public boolean isInherited() {
-    return isInherited;
-  }
-
-  public void setInherited(boolean isInherited) {
-    this.isInherited = isInherited;
+    return getAllUsers().get(nIndex);
   }
 
   public boolean isManager() {
-    return SPACE_MANAGER.equalsIgnoreCase(name);
-  }
-
-  /**
-   * Is this profile empty?
-   * @return true if there is no users and no groups in this profile. Otherwise false.
-   */
-  public boolean isEmpty() {
-    return users.isEmpty() && groups.isEmpty();
+    return SPACE_MANAGER.equalsIgnoreCase(getName());
   }
 
   @SuppressWarnings("unchecked")
   protected SpaceProfileInst copy() {
-    SpaceProfileInst clone = new SpaceProfileInst();
-    clone.setDescription(description);
-    clone.setInherited(isInherited);
-    clone.setLabel(label);
-    clone.setName(name);
-    clone.setSpaceFatherId(spaceFatherId);
-    clone.addGroups((List<String>)((ArrayList<String>) groups).clone());
-    clone.addUsers((List<String>)((ArrayList<String>) users).clone());
-    return clone;
+    SpaceProfileInst copy = new SpaceProfileInst();
+    copy.setDescription(getDescription());
+    copy.setInherited(isInherited());
+    copy.setLabel(getLabel());
+    copy.setName(getName());
+    copy.setSpaceFatherId(spaceFatherId);
+    copy.setGroups(getAllGroups());
+    copy.setUsers(getAllUsers());
+    return copy;
   }
 }

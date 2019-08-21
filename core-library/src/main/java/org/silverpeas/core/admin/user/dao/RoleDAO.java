@@ -79,7 +79,7 @@ public class RoleDAO {
       try (final ResultSet rs = stmt.executeQuery()) {
 
         while (rs.next()) {
-          roles.add(fetchUserRole(rs));
+          roles.add(UserRoleRow.fetch(rs));
         }
       }
       return roles;
@@ -134,7 +134,7 @@ public class RoleDAO {
     try (final PreparedStatement stmt = con.prepareStatement(query);
          final ResultSet rs = stmt.executeQuery()) {
       while (rs.next()) {
-        roles.add(fetchUserRole(rs));
+        roles.add(UserRoleRow.fetch(rs));
       }
     }
     return roles;
@@ -228,24 +228,6 @@ public class RoleDAO {
     return getUserRoleRows(con, queryAllAvailableComponentIds);
   }
 
-  /**
-   * Fetch the current userRole row from a resultSet.
-   */
-  private static UserRoleRow fetchUserRole(ResultSet rs) throws SQLException {
-    UserRoleRow ur = new UserRoleRow();
-
-    ur.id = rs.getInt(1);
-    ur.instanceId = rs.getInt(2);
-    ur.name = rs.getString(3);
-    ur.roleName = rs.getString(4);
-    ur.description = rs.getString(5);
-    ur.isInherited = rs.getInt(6);
-    ur.objectId = rs.getInt(7);
-    ur.objectType = rs.getString(8);
-
-    return ur;
-  }
-
   private static final String QUERY_ALL_USER_ROLES_ON_OBJECT =
       SELECT + USERROLE_COLUMNS + FROM_ST_USERROLE_AND_ST_USERROLE_USER_REL +
           WHERE_ID_EQUALS_TO_USERROLEID + " and r.objectId = ? " + " and r.objectType = ? " +
@@ -280,7 +262,7 @@ public class RoleDAO {
 
       try (final ResultSet rs = stmt.executeQuery()) {
         while (rs.next()) {
-          roles.add(fetchUserRole(rs));
+          roles.add(UserRoleRow.fetch(rs));
         }
       }
     }
@@ -300,7 +282,7 @@ public class RoleDAO {
       stmt.setInt(2, userId);
       try (final ResultSet rs = stmt.executeQuery()) {
         while (rs.next()) {
-          roles.add(fetchUserRole(rs));
+          roles.add(UserRoleRow.fetch(rs));
         }
       }
     }

@@ -39,6 +39,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -668,16 +669,7 @@ public class ComponentInstManager {
    * Convert String Id to int Id
    */
   private int idAsInt(String id) {
-    if (id == null || id.length() == 0) {
-      // the null id.
-      return -1;
-    }
-    try {
-      return Integer.parseInt(id);
-    } catch (NumberFormatException e) {
-      // the null id.
-      return -1;
-    }
+    return StringUtil.asInt(id, -1);
   }
 
   /**

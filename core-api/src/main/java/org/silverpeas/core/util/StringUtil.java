@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 
 public class StringUtil extends StringUtils {
 
-  public static String newline = System.getProperty("line.separator");
+  public static final String NEWLINE = System.getProperty("line.separator");
 
   private static final String PATTERN_START = "{";
   private static final String PATTERN_END = "}";
@@ -147,26 +147,36 @@ public class StringUtil extends StringUtils {
   }
 
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public static boolean isInteger(String id) {
+  public static boolean isInteger(String value) {
     try {
-      Integer.parseInt(id);
+      Integer.parseInt(value);
       return true;
     } catch (NumberFormatException e) {
       return false;
     }
+  }
+
+  public static int asInt(String value, int defaultValue) {
+    int integer;
+    try {
+      integer = value == null ? defaultValue : Integer.parseInt(value);
+    } catch (NumberFormatException e) {
+      integer = defaultValue;
+    }
+    return integer;
   }
 
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public static boolean isLong(String id) {
+  public static boolean isLong(String value) {
     try {
-      Long.parseLong(id);
+      Long.parseLong(value);
       return true;
     } catch (NumberFormatException e) {
       return false;
     }
   }
 
-  public static float convertFloat(String value) {
+  public static float asFloat(String value) {
     if (StringUtil.isFloat(value)) {
       return Float.valueOf(value);
     } else if (value != null) {
@@ -179,9 +189,9 @@ public class StringUtil extends StringUtils {
   }
 
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public static boolean isFloat(String id) {
+  public static boolean isFloat(String value) {
     try {
-      Float.parseFloat(id);
+      Float.parseFloat(value);
       return true;
     } catch (NumberFormatException e) {
       return false;

@@ -35,7 +35,6 @@ import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -95,7 +94,7 @@ public class ProfiledObjectManager {
       List<String> roleNames = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
-        roleNames.add(role.roleName);
+        roleNames.add(role.getRoleName());
       }
 
       return roleNames.toArray(new String[roleNames.size()]);
@@ -117,17 +116,17 @@ public class ProfiledObjectManager {
           roleDAO.getRoles(con, -1, objectType, componentId, groupIds, userId);
       Map<Integer, List<String>> objectProfiles = new HashMap<>(roles.size());
 
-      Collections.sort(roles, Comparator.comparingInt(o -> o.objectId));
+      roles.sort(Comparator.comparingInt(UserRoleRow::getObjectId));
 
       int currentObjectId = -1;
       List<String> roleNames = new ArrayList<>();
       for (UserRoleRow role : roles) {
-        if (currentObjectId != role.objectId) {
-          currentObjectId = role.objectId;
+        if (currentObjectId != role.getObjectId()) {
+          currentObjectId = role.getObjectId();
           roleNames = new ArrayList<>();
           objectProfiles.put(currentObjectId, roleNames);
         }
-        roleNames.add(role.roleName);
+        roleNames.add(role.getRoleName());
       }
 
       return objectProfiles;

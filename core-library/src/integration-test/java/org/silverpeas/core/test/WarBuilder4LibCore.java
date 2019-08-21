@@ -27,6 +27,7 @@ import org.silverpeas.core.ActionType;
 import org.silverpeas.core.IdentifiableResource;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.BaseRightProfile;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.PaginationPage;
@@ -513,6 +514,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
           PasteDetail.class, WAComponent.class, ComponentInst.class, RightProfile.class,
           ComponentInstLight.class, SpaceInst.class, SpaceInstLight.class, CompoSpace.class,
           QuotaException.class, ProfileInst.class, SpaceProfileInst.class, ProfiledObjectId.class,
+          BaseRightProfile.class,
           Group.class, GroupProfileInst.class, SearchCriteria.class, ProfiledObjectType.class,
           UserDetailsSearchCriteria.class, GroupsSearchCriteria.class, DomainProperty.class);
       addClasses(RightRecover.class, AdminException.class);
@@ -637,6 +639,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(DriverSettings.class);
       addClasses(ProfiledObjectType.class);
       addClasses(ProfiledObjectId.class);
+      addClasses(BaseRightProfile.class);
       addClasses(PaginationPage.class);
       addClasses(RightProfile.class);
       addPackages(true, "org.silverpeas.core.i18n");
