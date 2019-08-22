@@ -826,14 +826,18 @@ public class TestHandledFile extends AbstractHandledFileTest {
   }
 
   @Test
-  public void aHandledFileModifiedRecentlyIsYoungerThanAnotherFile()throws IOException {
+  public void aHandledFileModifiedRecentlyIsYoungerThanAnotherFile()
+      throws IOException, InterruptedException {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
 
     touch(file2); // to create it
-    await().atMost(ONE_SECOND).untilAsserted(() -> {
+    with().pollDelay(ONE_SECOND).await().until(() -> {
       writeStringToFile(file1, "toto", Charsets.UTF_8);
+      return true;
+    });
+    await().atMost(ONE_SECOND).untilAsserted(() -> {
       assertThat(getHandledFile(real1).isFileNewer(file2), is(true));
       assertThat(getHandledFile(real1).isFileNewer(getHandledFile(file2)), is(true));
     });

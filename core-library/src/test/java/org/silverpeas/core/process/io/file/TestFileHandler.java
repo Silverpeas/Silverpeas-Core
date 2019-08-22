@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.silverpeas.core.process.io.IOAccess;
 import org.silverpeas.core.process.io.file.exception.FileHandlerException;
 import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.util.Charsets;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -43,10 +44,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.io.FileUtils.*;
-import static org.apache.commons.io.IOUtils.*;
 import static org.apache.commons.io.IOUtils.write;
+import static org.apache.commons.io.IOUtils.*;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.with;
+import static org.awaitility.Duration.ONE_SECOND;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -688,8 +693,10 @@ public class TestFileHandler extends AbstractHandledFileTest {
       @Override
       public void run() {
         try {
-          Thread.sleep(450);
-          touch(getFile(sessionComponentPath, "file"));
+          with().pollDelay(450, TimeUnit.MILLISECONDS).await().until(() -> {
+            touch(getFile(sessionComponentPath, "file"));
+            return true;
+          });
         } catch (final Exception e) {
         }
       }
@@ -706,19 +713,24 @@ public class TestFileHandler extends AbstractHandledFileTest {
     try {
       create.start();
       waitFor.start();
-      Thread.sleep(200);
-      assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
-      assertThat(waitForRun.getResult(), is(false));
-      Thread.sleep(400);
-      assertThat(getFile(sessionComponentPath, "file").exists(), is(true));
-      assertThat(waitForRun.getResult(), is(true));
-      Thread.sleep(500);
+      with().pollDelay(200, TimeUnit.MILLISECONDS).await().atMost(ONE_SECOND).untilAsserted(() -> {
+        assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
+        assertThat(waitForRun.getResult(), is(false));
+      });
+
+      with().pollDelay(400, TimeUnit.MILLISECONDS).await().atMost(ONE_SECOND).untilAsserted(() -> {
+        assertThat(getFile(sessionComponentPath, "file").exists(), is(true));
+        assertThat(waitForRun.getResult(), is(true));
+      });
     } finally {
       create.interrupt();
       waitFor.interrupt();
     }
-    assertThat(waitForRun.getResult(), is(true));
-    assertThat(getFile(sessionComponentPath, "file").exists(), is(true));
+
+    with().pollDelay(500, TimeUnit.MILLISECONDS).await().atMost(ONE_SECOND).untilAsserted(() -> {
+      assertThat(waitForRun.getResult(), is(true));
+      assertThat(getFile(sessionComponentPath, "file").exists(), is(true));
+    });
   }
 
   @Test
@@ -730,8 +742,10 @@ public class TestFileHandler extends AbstractHandledFileTest {
       @Override
       public void run() {
         try {
-          Thread.sleep(1200);
-          touch(getFile(sessionComponentPath, "file"));
+          with().pollDelay(1200, TimeUnit.MILLISECONDS).await().until(() -> {
+            touch(getFile(sessionComponentPath, "file"));
+            return true;
+          });
         } catch (final Exception e) {
         }
       }
@@ -748,19 +762,26 @@ public class TestFileHandler extends AbstractHandledFileTest {
     try {
       create.start();
       waitFor.start();
-      Thread.sleep(200);
-      assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
-      assertThat(waitForRun.getResult(), is(false));
-      Thread.sleep(400);
-      assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
-      assertThat(waitForRun.getResult(), is(false));
-      Thread.sleep(500);
+
+      with().pollDelay(200, TimeUnit.MILLISECONDS).await().atMost(ONE_SECOND).untilAsserted(() -> {
+        assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
+        assertThat(waitForRun.getResult(), is(false));
+      });
+
+      with().pollDelay(400, TimeUnit.MILLISECONDS).await().atMost(ONE_SECOND).untilAsserted(() -> {
+        assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
+        assertThat(waitForRun.getResult(), is(false));
+      });
+
     } finally {
       create.interrupt();
       waitFor.interrupt();
     }
-    assertThat(waitForRun.getResult(), is(false));
-    assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
+
+    with().pollDelay(500, TimeUnit.MILLISECONDS).await().atMost(ONE_SECOND).untilAsserted(() -> {
+      assertThat(waitForRun.getResult(), is(false));
+      assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
+    });
   }
 
   /*
@@ -1334,30 +1355,27 @@ public class TestFileHandler extends AbstractHandledFileTest {
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
     touch(file1);
-    Thread.sleep(1001);
-    touch(file2);
-    boolean test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, file2);
-    assertThat(test, is(false));
-    Thread.sleep(1001);
-    writeStringToFile(file1, "toto");
-    test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, file2);
-    assertThat(test, is(true));
 
-    Thread.sleep(1001);
-    final Date date = new Date();
-    test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, date);
-    assertThat(test, is(false));
+    inOneSecondDo(() -> touch(file2));
+    assertThat(fileHandler.isFileNewer(BASE_PATH_TEST, real1, file2), is(false));
 
-    final long time = System.currentTimeMillis();
-    test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, time);
-    assertThat(test, is(false));
+    inOneSecondDo(() -> writeStringToFile(file1, "toto", Charsets.UTF_8));
+    assertThat(fileHandler.isFileNewer(BASE_PATH_TEST, real1, file2), is(true));
 
-    Thread.sleep(1001);
-    writeStringToFile(file1, "titi");
-    test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, date);
-    assertThat(test, is(true));
-    test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, time);
-    assertThat(test, is(true));
+    await().atMost(ONE_SECOND).untilAsserted(() -> {
+      final Date date = new Date();
+      assertThat(fileHandler.isFileNewer(BASE_PATH_TEST, real1, date), is(false));
+
+      final long time = System.currentTimeMillis();
+      assertThat(fileHandler.isFileNewer(BASE_PATH_TEST, real1, time), is(false));
+
+      await().atMost(ONE_SECOND).untilAsserted(() -> {
+        writeStringToFile(file1, "titi", Charsets.UTF_8);
+        assertThat(fileHandler.isFileNewer(BASE_PATH_TEST, real1, date), is(true));
+        assertThat(fileHandler.isFileNewer(BASE_PATH_TEST, real1, time), is(true));
+      });
+    });
+
   }
 
   /*
@@ -1390,37 +1408,32 @@ public class TestFileHandler extends AbstractHandledFileTest {
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
     touch(file1);
-    Thread.sleep(1001);
-    touch(file2);
-    boolean test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, file2);
-    assertThat(test, is(true));
-    Thread.sleep(1001);
-    writeStringToFile(file1, "toto");
-    test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, file2);
-    assertThat(test, is(false));
 
-    Thread.sleep(1001);
-    final Date date = new Date();
-    test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, date);
-    assertThat(test, is(true));
+    inOneSecondDo(() -> touch(file2));
+    assertThat(fileHandler.isFileOlder(BASE_PATH_TEST, real1, file2), is(true));
 
-    final long time = System.currentTimeMillis();
-    test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, time);
-    assertThat(test, is(true));
+    inOneSecondDo(() -> writeStringToFile(file1, "toto", Charsets.UTF_8));
+    assertThat(fileHandler.isFileOlder(BASE_PATH_TEST, real1, file2), is(false));
 
-    Thread.sleep(1001);
-    writeStringToFile(file1, "titi");
-    test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, date);
-    assertThat(test, is(false));
-    test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, time);
-    assertThat(test, is(false));
+    await().atMost(ONE_SECOND).untilAsserted(() -> {
+      final Date date = new Date();
+      assertThat(fileHandler.isFileOlder(BASE_PATH_TEST, real1, date), is(true));
+
+      final long time = System.currentTimeMillis();
+      assertThat(fileHandler.isFileOlder(BASE_PATH_TEST, real1, time), is(true));
+
+      await().atMost(ONE_SECOND).untilAsserted(() -> {
+        writeStringToFile(file1, "titi", Charsets.UTF_8);
+        assertThat(fileHandler.isFileOlder(BASE_PATH_TEST, real1, date), is(false));
+        assertThat(fileHandler.isFileOlder(BASE_PATH_TEST, real1, time), is(false));
+      });
+    });
   }
 
   @Test
   public void testGetSessionHandledRootPathNames() throws Exception {
     buildCommonPathStructure();
-    final Collection<String> test =
-        new TreeSet<String>(fileHandler.getSessionHandledRootPathNames());
+    final Collection<String> test = new TreeSet<>(fileHandler.getSessionHandledRootPathNames());
     assertThat(test.size(), is(1));
     assertThat(test, contains("componentInstanceId"));
   }
@@ -1428,8 +1441,7 @@ public class TestFileHandler extends AbstractHandledFileTest {
   @Test
   public void testListAllSessionHandledRootPathFiles() throws Exception {
     buildCommonPathStructure();
-    final Collection<File> test =
-        new TreeSet<File>(fileHandler.listAllSessionHandledRootPathFiles());
+    final Collection<File> test = new TreeSet<>(fileHandler.listAllSessionHandledRootPathFiles());
     assertThat(test.size(), is(1));
     assertThat(test.iterator().next().getName(), is("componentInstanceId"));
   }
@@ -1441,5 +1453,17 @@ public class TestFileHandler extends AbstractHandledFileTest {
     public R getResult() {
       return result;
     }
+  }
+
+  @FunctionalInterface
+  private interface Operation {
+    void execute() throws Exception;
+  }
+
+  private void inOneSecondDo(final Operation operation) {
+    with().pollDelay(ONE_SECOND).await().until(() -> {
+      operation.execute();
+      return true;
+    });
   }
 }
