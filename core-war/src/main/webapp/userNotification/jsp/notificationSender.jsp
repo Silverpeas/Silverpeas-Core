@@ -44,11 +44,11 @@
 <c:set var="groups" value="${requestScope.recipientGroups}"/>
 <c:set var="recipientsEditable" value="${requestScope.recipientEdition}"/>
 <c:set var="componentId" value="${requestScope.componentId}"/>
-<c:set var="contributionId" value="${requestScope.contributionId}"/>
+<c:set var="resourceId" value="${requestScope.resourceId}"/>
 <c:set var="subject" value="${requestScope.title}"/>
 
-<c:set var="requiredReceiversErrorMessage"><fmt:message key="GML.thefield"/> <b><fmt:message key="addressees"/></b> <fmt:message key="GML.isRequired"/></c:set>
-<c:set var="requiredSubjectErrorMessage"><fmt:message key="GML.thefield"/> <b><fmt:message key="GML.notification.subject"/></b> <fmt:message key="GML.isRequired"/></c:set>
+<c:set var="requiredReceiversErrorMessage"><fmt:message key="GML.thefield"/> <strong><fmt:message key="addressees"/></strong> <fmt:message key="GML.isRequired"/></c:set>
+<c:set var="requiredSubjectErrorMessage"><fmt:message key="GML.thefield"/> <strong><fmt:message key="GML.notification.subject"/></strong> <fmt:message key="GML.isRequired"/></c:set>
 <view:link href="/util/styleSheets/fieldset.css"/>
 <view:includePlugin name="wysiwyg"/>
 <view:loadScript src="/util/javaScript/checkForm.js"/>
@@ -106,6 +106,7 @@
           <viewTags:selectUsersAndGroups id="messager"
                                          selectionType="USER_GROUP"
                                          componentIdFilter="${componentId}"
+                                         resourceIdFilter="${resourceId}"
                                          multiple="true"
                                          mandatory="${recipientsEditable}"
                                          userManualNotificationUserReceiverLimit="${recipientsEditable}"

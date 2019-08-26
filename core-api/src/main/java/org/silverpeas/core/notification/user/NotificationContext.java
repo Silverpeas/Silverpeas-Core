@@ -19,9 +19,21 @@ public class NotificationContext extends HashMap<String, Object> {
 
   /**
    * The predefined key in the context mapped with the unique identifier of a Silverpeas component
-   * instance.
+   * instance. This key is used to identify the component instance for which a user notification
+   * has to be sent. It is used further in the user selection to filter the users that can access
+   * the component instance.
    */
   public static final String COMPONENT_ID = "componentId";
+
+  /**
+   * The predefined key in the context mapped with the unique identifier of a resource in
+   * Silverpeas. The mapped resource identifier should be a concat of the type and of the
+   * true identifier of the resource. Such a resource can be for example a node within which some
+   * contributions are put. If the resource is managed by a given component instance,
+   * then the key {@link NotificationContext#COMPONENT_ID} must be defined. This key is
+   * used in the user selection to filter the users that can access the specified resource.
+   */
+  public static final String RESOURCE_ID = "resourceId";
 
   /**
    * The predefined key in the context mapped with the unique identifier of a contribution in
@@ -57,6 +69,10 @@ public class NotificationContext extends HashMap<String, Object> {
 
   public String getComponentId() {
     return get(COMPONENT_ID);
+  }
+
+  public String getResourceId() {
+    return get(RESOURCE_ID);
   }
 
   public String getNodeId() {

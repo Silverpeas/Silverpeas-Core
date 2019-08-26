@@ -52,6 +52,7 @@ import static org.apache.commons.io.IOUtils.*;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Awaitility.with;
 import static org.awaitility.Duration.ONE_SECOND;
+import static org.awaitility.Duration.TWO_SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -1361,19 +1362,17 @@ public class TestFileHandler extends AbstractHandledFileTest {
 
     inOneSecondDo(() -> writeStringToFile(file1, "toto", Charsets.UTF_8));
     assertThat(fileHandler.isFileNewer(BASE_PATH_TEST, real1, file2), is(true));
-
-    await().atMost(ONE_SECOND).untilAsserted(() -> {
+    
+    await().atMost(TWO_SECONDS).untilAsserted(() -> {
       final Date date = new Date();
       assertThat(fileHandler.isFileNewer(BASE_PATH_TEST, real1, date), is(false));
 
       final long time = System.currentTimeMillis();
       assertThat(fileHandler.isFileNewer(BASE_PATH_TEST, real1, time), is(false));
 
-      await().atMost(ONE_SECOND).untilAsserted(() -> {
-        writeStringToFile(file1, "titi", Charsets.UTF_8);
-        assertThat(fileHandler.isFileNewer(BASE_PATH_TEST, real1, date), is(true));
-        assertThat(fileHandler.isFileNewer(BASE_PATH_TEST, real1, time), is(true));
-      });
+      inOneSecondDo(() -> writeStringToFile(file1, "titi", Charsets.UTF_8));
+      assertThat(fileHandler.isFileNewer(BASE_PATH_TEST, real1, date), is(true));
+      assertThat(fileHandler.isFileNewer(BASE_PATH_TEST, real1, time), is(true));
     });
 
   }
@@ -1415,18 +1414,16 @@ public class TestFileHandler extends AbstractHandledFileTest {
     inOneSecondDo(() -> writeStringToFile(file1, "toto", Charsets.UTF_8));
     assertThat(fileHandler.isFileOlder(BASE_PATH_TEST, real1, file2), is(false));
 
-    await().atMost(ONE_SECOND).untilAsserted(() -> {
+    await().atMost(TWO_SECONDS).untilAsserted(() -> {
       final Date date = new Date();
       assertThat(fileHandler.isFileOlder(BASE_PATH_TEST, real1, date), is(true));
 
       final long time = System.currentTimeMillis();
       assertThat(fileHandler.isFileOlder(BASE_PATH_TEST, real1, time), is(true));
 
-      await().atMost(ONE_SECOND).untilAsserted(() -> {
-        writeStringToFile(file1, "titi", Charsets.UTF_8);
-        assertThat(fileHandler.isFileOlder(BASE_PATH_TEST, real1, date), is(false));
-        assertThat(fileHandler.isFileOlder(BASE_PATH_TEST, real1, time), is(false));
-      });
+      inOneSecondDo(() -> writeStringToFile(file1, "titi", Charsets.UTF_8));
+      assertThat(fileHandler.isFileOlder(BASE_PATH_TEST, real1, date), is(false));
+      assertThat(fileHandler.isFileOlder(BASE_PATH_TEST, real1, time), is(false));
     });
   }
 

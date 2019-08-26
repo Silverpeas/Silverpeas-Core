@@ -37,7 +37,7 @@
    * - a flag indicating if the plugin is initialized.
    *
    * At initialization, the plugin loads the profile of the user in the current WEB session and
-   * enrichs it with additional functions related to its contacts and to its invitations sent to
+   * enriches it with additional functions related to its contacts and to its invitations sent to
    * others users.
    */
   $.userZoom = {
@@ -53,9 +53,9 @@
       this.currentTooltip = null;
       this.target = null;
     },
-    set: function(target, tooltip) {
+    set: function(target, aTooltip) {
       this.clear();
-      this.currentTooltip = tooltip;
+      this.currentTooltip = aTooltip;
       this.target = target;
     },
     initialize: function() {
@@ -66,7 +66,7 @@
           return aUser.relationships().then(function(contacts) {
             for (var i = 0; i < contacts.length; i++) {
               var contact = contacts[i];
-              if (me.id == contact.id) {
+              if (me.id === contact.id) {
                 return true;
               }
             }
@@ -78,7 +78,7 @@
           return self.currentUser.myInvitationsPromise.then(function(invitations) {
             for (var i = 0; i < invitations.length; i++) {
               var invitation = invitations[i];
-              if (invitation.receiverId == aUser.id || invitation.senderId == aUser.id) {
+              if (invitation.receiverId.toString() === aUser.id || invitation.senderId.toString() === aUser.id) {
                 return invitation;
               }
             }
@@ -213,31 +213,31 @@
   /**
    * Adjusts the position of the given tooltip associated to the specified target.
    */
-  function __adjustingPositions(tooltip, target) {
+  function __adjustingPositions(aTooltip, target) {
     var picto = $('.userzoom-infoConnection img', target);
     var tooltipEdgeXOffset = __getCachedArrowCss("right") + picto.width();
     var tooltipEdgeYOffset = __getCachedArrowCss("height");
-    tooltip.position({
+    aTooltip.position({
       of : target,
       at : 'right-' + tooltipEdgeXOffset + ' bottom+' + tooltipEdgeYOffset,
       my : 'left top',
       collision : 'flip'
     });
-    var targetPosition = target.offset(), tooltipPosition = tooltip.offset();
+    var targetPosition = target.offset(), tooltipPosition = aTooltip.offset();
     var position = (targetPosition.top > tooltipPosition.top ? 'above' : 'below');
     var isTooltipArrowOnRight = targetPosition.left > tooltipPosition.left;
     var toolTipClass = position + (isTooltipArrowOnRight ? ' right' : ' left');
     if (isTooltipArrowOnRight) {
       var paddingAndMarginLeftOffset = Number(target.css('padding-left').replace(/[^0-9]/g, '')) +
           Number(target.css('margin-left').replace(/[^0-9]/g, ''));
-      tooltip.position({
+      aTooltip.position({
         of : target,
         at : 'left bottom+' + tooltipEdgeYOffset,
         my : 'right+' + (tooltipEdgeXOffset + paddingAndMarginLeftOffset) + ' top',
         collision : 'flip'
       });
     }
-    tooltip.addClass(toolTipClass);
+    aTooltip.addClass(toolTipClass);
   }
 
   /**

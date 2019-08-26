@@ -39,20 +39,24 @@ public class SelectionUsersGroups {
   static OrganizationController organizationController =  OrganizationControllerProvider
       .getOrganisationController();
 
-  public final static int USER = 0;
-  public final static int GROUP = 1;
+  public static final int USER = 0;
+  public static final int GROUP = 1;
 
-  String domainId = null;
-  String componentId = null;
-  String objectId = null;
-  List<String> profileIds = null;
-  List<String> profileNames = null;
+  private String domainId = null;
+  private String componentId = null;
+  private String objectId = null;
+  private List<String> profileIds = null;
+  private List<String> profileNames = null;
 
   public String getJoinedProfileNames() {
     if (profileNames != null && !profileNames.isEmpty()) {
       return String.join(",", profileNames);
     }
     return null;
+  }
+
+  public List<String> getProfileIds() {
+    return this.profileIds;
   }
 
   public void setProfileNames(List<String> profileNames) {
@@ -100,9 +104,9 @@ public class SelectionUsersGroups {
     this.domainId = domainId;
   }
 
-  static public String[] getDistinctUserIds(String[] selectedUsers,
+  public static String[] getDistinctUserIds(String[] selectedUsers,
       String[] selectedGroups) {
-    HashSet<String> usersSet = new HashSet<String>();
+    HashSet<String> usersSet = new HashSet<>();
     if (selectedUsers != null && selectedUsers.length > 0) {
       Collections.addAll(usersSet, selectedUsers);
     }
@@ -117,11 +121,11 @@ public class SelectionUsersGroups {
     return usersSet.toArray(new String[usersSet.size()]);
   }
 
-  static public UserDetail[] getUserDetails(String[] userIds) {
+  public static UserDetail[] getUserDetails(String[] userIds) {
     return organizationController.getUserDetails(userIds);
   }
 
-  static public Group[] getGroups(String[] groupIds) {
+  public static Group[] getGroups(String[] groupIds) {
     if (groupIds != null && groupIds.length > 0) {
       Group[] result = new Group[groupIds.length];
       for (int g = 0; g < groupIds.length; g++) {
@@ -132,7 +136,7 @@ public class SelectionUsersGroups {
     return new Group[0];
   }
 
-  static public String[] getUserIds(UserDetail[] users) {
+  public static String[] getUserIds(UserDetail[] users) {
     if (users == null) {
       return new String[0];
     }
@@ -143,7 +147,7 @@ public class SelectionUsersGroups {
     return result;
   }
 
-  static public String[] getGroupIds(Group[] groups) {
+  public static String[] getGroupIds(Group[] groups) {
     if (groups == null) {
       return new String[0];
     }

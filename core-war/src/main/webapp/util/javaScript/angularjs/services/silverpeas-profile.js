@@ -50,9 +50,11 @@
 
         var User = function() {
           this.relationships = function() {
+            var params = $.extend({}, defaultParameters);
+            params.instance = context.component;
             return adapter.find({
               url : this.contactsUri,
-              criteria : adapter.criteria(arguments[0], defaultParameters)
+              criteria : adapter.criteria(arguments[0], params)
             });
           };
         };
@@ -191,10 +193,10 @@
  * Provider of the User angularjs service for plain old javascript code.
  * @type {User}
  */
-var User = angular.injector(['ng', 'silverpeas', 'silverpeas.adapters', 'silverpeas.services']).get('User');
+window.User = angular.injector(['ng', 'silverpeas', 'silverpeas.adapters', 'silverpeas.services']).get('User');
 
 /**
  * Fetcher of the UserGroup angularjs service for plain old javascript code.
  * @type {UserGroup}
  */
-var UserGroup = angular.injector(['ng', 'silverpeas', 'silverpeas.adapters', 'silverpeas.services']).get('UserGroup');
+window.UserGroup = angular.injector(['ng', 'silverpeas', 'silverpeas.adapters', 'silverpeas.services']).get('UserGroup');
