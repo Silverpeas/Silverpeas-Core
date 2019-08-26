@@ -326,7 +326,7 @@ public class UserProfileResource extends RESTWebService {
   @Path("{userId}/contacts")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getUserContacts(@PathParam("userId") String userId,
-      @QueryParam("application") String instanceId,
+      @QueryParam("instance") String instanceId,
       @QueryParam("roles") String roles,
       @QueryParam("resource") String resource,
       @QueryParam("name") String name,
@@ -424,7 +424,7 @@ public class UserProfileResource extends RESTWebService {
 
   private String[] getContactIds(String userId) {
     try {
-      int myId = Integer.valueOf(userId);
+      int myId = Integer.parseInt(userId);
       List<RelationShip> relationShips = relationShipService.getAllMyRelationShips(myId);
       String[] userIds = new String[relationShips.size()];
       for (int i = 0; i < relationShips.size(); i++) {
