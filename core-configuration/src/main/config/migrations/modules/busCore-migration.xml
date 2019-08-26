@@ -57,6 +57,9 @@
   </upgrade>
 
   <upgrade fromVersion="038">
+    <script name="kmeliaTopicRighAccessCleanup.groovy" type="groovy"/>
     <script name="orphanSubscriptionCleanup.groovy" type="groovy"/>
+    <script name="update_invalid_kmelia_data.sql" type="sql"/>
   </upgrade>
+
 </migration>

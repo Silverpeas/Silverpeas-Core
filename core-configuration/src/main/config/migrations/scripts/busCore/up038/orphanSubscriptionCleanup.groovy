@@ -36,7 +36,7 @@ Set<Integer> getAllChildrenOfGroup(Sql sql, int groupId) {
 Set<Integer> getAllGroupsAccessingResourcesWithUserSubscriptions(Sql sql) {
   Set<Integer> groups = []
   sql.rows('''
-SELECT r.groupId FROM subscribe s, st_userrole_group_rel r INNER JOIN st_userrole u on r.userroleid = u.id 
+SELECT DISTINCT r.groupId FROM subscribe s, st_userrole_group_rel r INNER JOIN st_userrole u ON r.userroleid = u.id 
 WHERE s.instanceId LIKE CONCAT('%', u.instanceId) 
 AND ((s.resourceId = '0' AND u.objectId IS NULL) OR CAST(u.objectId AS VARCHAR(100)) = s.resourceId) 
 AND s.subscribertype = 'USER' 
@@ -48,21 +48,27 @@ AND s.subscribertype = 'USER'
 }
 
 Set<Integer> groups = getAllGroupsAccessingResourcesWithUserSubscriptions(sql)
-
-// take into account limitation in SQL IN clause with some the database systems.
-// we split the IN clause into smaller chunks of IN clauses/
-String groupInclusionClause = ''
-groups.collate(1000).each {
-  if (!groupInclusionClause.isEmpty()) {
-    groupInclusionClause += ' OR '
+String groupClause = ''
+if (!groups.isEmpty()) {
+  groupClause += '''
+AND (CAST(s.subscriberId AS INT) NOT IN
+      (SELECT g.userId FROM st_group_user_rel g WHERE s.subscribertype = 'USER' AND (
+'''
+  // take into account limitation in SQL IN clause with some the database systems.
+  // we split the IN clause into smaller chunks of IN clauses
+  String groupInclusionClause = ''
+  groups.collate(1000).each {
+    if (!groupInclusionClause.isEmpty()) {
+      groupInclusionClause += ' OR '
+    }
+    groupInclusionClause += "g.groupId IN (${it.join(',')})"
   }
-  groupInclusionClause += "g.groupId IN (${it.join(',')})"
+  groupClause += groupInclusionClause + '))'
 }
+
 String findAllOrphanSubscriptions = """
 SELECT s.subscriberId, s.subscriberType, s.instanceId, s.resourceId from subscribe s
 WHERE (CAST(s.subscriberId AS INT) NOT IN
-      (SELECT g.userId FROM st_group_user_rel g WHERE s.subscribertype = 'USER' AND ${groupInclusionClause}))
-  AND (CAST(s.subscriberId AS INT) NOT IN
       (SELECT r.userid FROM st_userrole u INNER JOIN st_userrole_user_rel r ON u.id = r.userroleid
         WHERE s.subscriberType = 'USER' AND s.instanceId LIKE CONCAT('%', u.instanceId)
         AND ((s.resourceId = '0' AND u.objectId IS NULL) OR CAST(u.objectId AS VARCHAR(100)) = s.resourceId)))
@@ -70,10 +76,13 @@ WHERE (CAST(s.subscriberId AS INT) NOT IN
       (SELECT r.groupId FROM st_userrole u INNER JOIN st_userrole_group_rel r ON u.id = r.userroleid
       WHERE s.subscriberType = 'GROUP' AND s.instanceId LIKE CONCAT('%', u.instanceId)
         AND ((s.resourceId = '0' AND u.objectId IS NULL) OR CAST(u.objectId AS VARCHAR(100)) = s.resourceId))
+  ${groupClause}
 """
 
+log.info 'Search subscriptions for component instances and for resources on which the user has no more right access'
+
 sql.eachRow(findAllOrphanSubscriptions) { row ->
-  log.info "Found orphan subscription of ${row.subscriberType.toLowerCase()} ${row.creatorId} on instance ${row.instanceId} and resource ${row.resourceId}"
-  sql.execute('DELETE FROM subscribe WHERE subscriberId = ? AND subscriberType = ? AND instanceId = ? AND creatorId = ? AND resourceid = ?',
-      [row.subscriberId, row.subscriberType, row.instanceId, row.creatorId, row.resourceId])
+  log.info " -> Found orphan subscription of ${row.subscriberType.toLowerCase()} ${row.subscriberId} on instance ${row.instanceId} and resource ${row.resourceId}"
+  sql.execute('DELETE FROM subscribe WHERE subscriberId = ? AND subscriberType = ? AND instanceId = ? AND resourceid = ?',
+      [row.subscriberId, row.subscriberType, row.instanceId, row.resourceId])
 }
