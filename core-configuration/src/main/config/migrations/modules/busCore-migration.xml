@@ -55,5 +55,9 @@
   <upgrade fromVersion="037">
     <script name="alter_table.sql" type="sql"/>
   </upgrade>
+  
+  <upgrade fromVersion="038">
+    <script name="update_invalid_kmelia_data.sql" type="sql"/>
+  </upgrade>
 
 </migration>
