@@ -713,6 +713,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   }
 
   @Override
+  @Transactional(Transactional.TxType.REQUIRED)
   public void removeToDoAttendee(String todoId, Attendee attendee) {
     Connection con = getConnection();
     try {
@@ -750,6 +751,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   }
 
   @Override
+  @Transactional(Transactional.TxType.REQUIRED)
   public void setToDoAttendees(String todoId, String[] userIds) {
     Collection<Attendee> current = getToDoAttendees(todoId);
     // search for element to remove

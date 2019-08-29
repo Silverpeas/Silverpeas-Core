@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.silverstatistics.volume.dao;
 
+import org.jetbrains.annotations.NotNull;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.volume.model.StatDataType;
+import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticMode;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
 import org.silverpeas.core.silverstatistics.volume.model.StatisticsRuntimeException;
-import org.silverpeas.core.silverstatistics.volume.model.StatType;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -49,6 +49,10 @@ import java.util.List;
  * @author sleroux
  */
 public class SilverStatisticsManagerDAO {
+
+  private SilverStatisticsManagerDAO() {
+
+  }
 
   /**
    * @param con the database connection
@@ -276,8 +280,7 @@ public class SilverStatisticsManagerDAO {
       }
 
     } catch (SQLException e) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.putDataStatsCumul",
-          "silverstatistics.MSG_ALIMENTATION_BD", e);
+      SilverLogger.getLogger(SilverStatisticsManagerDAO.class).error(e);
       throw e;
     } finally {
       DBUtil.close(rs, stmt);
@@ -295,20 +298,12 @@ public class SilverStatisticsManagerDAO {
    * @param conf statistic database configuration
    * @throws SQLException
    */
-  public static void makeStatCumul(Connection con, StatType statsType, StatisticsConfig conf)
-      throws SQLException {
+  public static void makeStatCumul(Connection con, StatType statsType, StatisticsConfig conf) {
     String keyNameCurrent;
-    Statement stmt = null;
-    ResultSet rs = null;
-
     String selectStatement = "SELECT * FROM " + conf.getTableName(statsType);
-
-    try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(selectStatement);
+    try (Statement stmt = con.createStatement();
+         ResultSet rs = stmt.executeQuery(selectStatement)) {
       Collection<String> theKeys = conf.getAllKeys(statsType);
-      String addToValueKeys = "";
-
       while (rs.next()) {
         List<String> valueKeys = new ArrayList<>();
 
@@ -316,41 +311,51 @@ public class SilverStatisticsManagerDAO {
           keyNameCurrent = theKey;
           StatDataType currentType =
               StatDataType.valueOf(conf.getKeyType(statsType, keyNameCurrent));
-          switch (currentType) {
-            case INTEGER:
-              int tmpInt = rs.getInt(keyNameCurrent);
-              if (rs.wasNull()) {
-                addToValueKeys = "";
-              } else {
-                addToValueKeys = String.valueOf(tmpInt);
-              }
-              break;
-            case DECIMAL:
-              long longValue = rs.getLong(keyNameCurrent);
-              if (rs.wasNull()) {
-                addToValueKeys = "";
-              } else {
-                addToValueKeys = String.valueOf(longValue);
-              }
-              break;
-            case VARCHAR:
-              addToValueKeys = rs.getString(keyNameCurrent);
-              if (addToValueKeys == null) {
-                addToValueKeys = "";
-              }
-              break;
-          }
+          final String addToValueKeys = getValueKey(rs, keyNameCurrent, currentType);
           valueKeys.add(addToValueKeys);
         }
         putDataStatsCumul(con, statsType, valueKeys, conf);
       }
     } catch (SQLException e) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatCumul",
-          "silverstatistics.MSG_ALIMENTATION_BD", e);
-      throw e;
-    } finally {
-      DBUtil.close(rs, stmt);
+      SilverLogger.getLogger(SilverStatisticsManagerDAO.class)
+          .error("Error while making stat cummul", e);
     }
+  }
+
+  @NotNull
+  private static String getValueKey(final ResultSet rs, final String keyNameCurrent,
+      final StatDataType currentType) throws SQLException {
+    final String valueKey;
+    switch (currentType) {
+      case INTEGER:
+        int tmpInt = rs.getInt(keyNameCurrent);
+        if (rs.wasNull()) {
+          valueKey = "";
+        } else {
+          valueKey = String.valueOf(tmpInt);
+        }
+        break;
+      case DECIMAL:
+        long longValue = rs.getLong(keyNameCurrent);
+        if (rs.wasNull()) {
+          valueKey = "";
+        } else {
+          valueKey = String.valueOf(longValue);
+        }
+        break;
+      case VARCHAR:
+        String value = rs.getString(keyNameCurrent);
+        if (value == null) {
+          valueKey = "";
+        } else {
+          valueKey = value;
+        }
+        break;
+      default:
+        valueKey = "";
+        break;
+    }
+    return valueKey;
   }
 
   /**
@@ -359,17 +364,13 @@ public class SilverStatisticsManagerDAO {
    * @param conf
    * @throws SQLException
    */
-  static void deleteTablesOfTheDay(Connection con, StatType statsType, StatisticsConfig conf)
-      throws SQLException {
+  static void deleteTablesOfTheDay(Connection con, StatType statsType, StatisticsConfig conf) {
     String deleteStatement = "DELETE FROM " + conf.getTableName(statsType);
-    PreparedStatement prepStmt = null;
-
-    try {
-
-      prepStmt = con.prepareStatement(deleteStatement);
+    try(PreparedStatement prepStmt = con.prepareStatement(deleteStatement)) {
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
+    } catch(SQLException e) {
+      SilverLogger.getLogger(SilverStatisticsManagerDAO.class)
+          .error("Error while deleting tables of the day", e);
     }
   }
 
@@ -379,26 +380,21 @@ public class SilverStatisticsManagerDAO {
    * @param conf
    * @throws SQLException
    */
-  static void purgeTablesCumul(Connection con, StatType statsType, StatisticsConfig conf)
-      throws SQLException {
+  static void purgeTablesCumul(Connection con, StatType statsType, StatisticsConfig conf) {
     StringBuilder deleteStatementBuf =
         new StringBuilder("DELETE FROM " + conf.getTableName(statsType) + "Cumul WHERE dateStat<");
-    PreparedStatement prepStmt = null;
-
     // compute the last date to delete from
     Calendar dateOfTheDay = Calendar.getInstance();
     dateOfTheDay.add(Calendar.MONTH, -(conf.getPurge(statsType)));
     deleteStatementBuf.append(
         getRequestDate(dateOfTheDay.get(Calendar.YEAR), dateOfTheDay.get(Calendar.MONTH) + 1));
-
     String deleteStatement = deleteStatementBuf.toString();
 
-
-    try {
-      prepStmt = con.prepareStatement(deleteStatement);
+    try (final PreparedStatement prepStmt = con.prepareStatement(deleteStatement)) {
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
+    } catch (SQLException e) {
+      SilverLogger.getLogger(SilverStatisticsManagerDAO.class)
+          .error("Error while purging stat cumul", e);
     }
   }
 
@@ -420,45 +416,22 @@ public class SilverStatisticsManagerDAO {
    * @param conf
    */
   public static void makeStatAllCumul(StatisticsConfig conf) {
-    Connection con = getConnection();
-    try {
-      if (conf != null && con != null && conf.isValidConfigFile()) {
+    try (final Connection con = getConnection()) {
+      if (conf != null && conf.isValidConfigFile()) {
         for (StatType currentType : conf.getAllTypes()) {
-          try {
             purgeTablesCumul(con, currentType, conf);
-          } catch (SQLException e) {
-            SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-                "silverstatistics.MSG_PURGE_BD", e);
-          }
-          try {
             makeStatCumul(con, currentType, conf);
-          } catch (SQLException e) {
-            SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-                "silverstatistics.MSG_CUMUL_BD", e);
-          } finally {
-            try {
-              deleteTablesOfTheDay(con, currentType, conf);
-            } catch (SQLException e) {
-              SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-                  "silverstatistics.MSG_PURGE_BD", e);
-            }
-          }
+            deleteTablesOfTheDay(con, currentType, conf);
         }
       } else {
-        if (con == null) {
-          SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-              "silverstatistics.MSG_CONNECTION_BD");
-        }
         if (conf == null) {
-          SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-              "silverstatistics.MSG_NO_CONFIG_FILE");
+          SilverLogger.getLogger(SilverStatisticsManagerDAO.class).error("No config file provided");
         } else if (!conf.isValidConfigFile()) {
-          SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-              "silverstatistics.MSG_CONFIG_FILE");
+          SilverLogger.getLogger(SilverStatisticsManagerDAO.class).error("No valid config file");
         }
       }
-    } finally {
-      DBUtil.close(con);
+    } catch (SQLException e) {
+      SilverLogger.getLogger(SilverStatisticsManagerDAO.class).error(e);
     }
   }
 
@@ -469,8 +442,7 @@ public class SilverStatisticsManagerDAO {
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new StatisticsRuntimeException("SilverStatisticsManagerDAO.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new StatisticsRuntimeException(e);
     }
   }
 }

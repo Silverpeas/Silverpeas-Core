@@ -59,8 +59,10 @@ public class ContentManager implements Serializable {
 
   private static final String INSTANCE_TABLE = "SB_ContentManager_Instance";
   private static final String SILVER_CONTENT_TABLE = "SB_ContentManager_Content";
+  private static final String CONTENT = "content";
+  private static final String DELETE_FROM = "DELETE FROM ";
 
-  private final List<ContentPeas> acContentPeas = new ArrayList<>();
+  private final transient List<ContentPeas> acContentPeas = new ArrayList<>();
   // Container peas
   private final Map<String, String> mapBetweenComponentIdAndInstanceId = new HashMap<>();
   // Association SilverContentId (the key) internalContentId (the value) (cache)
@@ -202,12 +204,12 @@ public class ContentManager implements Serializable {
         bCloseConnection = true;
       }
 
-      final String contentDeletion = "DELETE FROM " + SILVER_CONTENT_TABLE + " WHERE " +
+      final String contentDeletion = DELETE_FROM + SILVER_CONTENT_TABLE + " WHERE " +
           "contentInstanceId IN (SELECT instanceId from " + INSTANCE_TABLE +
           " WHERE componentId = ? AND " +
           "containerType = ? AND contentType = ?)";
 
-      final String instanceDeletion = "DELETE FROM " + INSTANCE_TABLE + " WHERE componentId = ?" +
+      final String instanceDeletion = DELETE_FROM + INSTANCE_TABLE + " WHERE componentId = ?" +
           " AND containerType = ? AND contentType = ?";
 
       try (PreparedStatement deletion = theConnection.prepareStatement(contentDeletion)) {
@@ -314,7 +316,7 @@ public class ContentManager implements Serializable {
       return newSilverContentId;
     } catch (Exception e) {
       throw new ContentManagerException(
-          SilverpeasExceptionMessages.failureOnAdding("content", sInternalContentId), e);
+          SilverpeasExceptionMessages.failureOnAdding(CONTENT, sInternalContentId), e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
@@ -332,14 +334,14 @@ public class ContentManager implements Serializable {
     try {
       // delete the silverContent
       String sSQLStatement =
-          "DELETE FROM " + SILVER_CONTENT_TABLE + " WHERE (silverContentId = " + nSilverContentId +
+          DELETE_FROM + SILVER_CONTENT_TABLE + " WHERE (silverContentId = " + nSilverContentId +
               ")";
 
       // Execute the delete
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
     } catch (Exception e) {
-      throw new ContentManagerException(failureOnDeleting("content", nSilverContentId), e);
+      throw new ContentManagerException(failureOnDeleting(CONTENT, nSilverContentId), e);
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -396,7 +398,7 @@ public class ContentManager implements Serializable {
 
       return silverContentId;
     } catch (Exception e) {
-      throw new ContentManagerException(failureOnGetting("content", sInternalContentId), e);
+      throw new ContentManagerException(failureOnGetting(CONTENT, sInternalContentId), e);
     } finally {
       DBUtil.close(stmt);
       closeConnection(connection);
@@ -409,16 +411,12 @@ public class ContentManager implements Serializable {
    */
   public SortedSet<Integer> getSilverContentId(List<String> documentFeature)
       throws ContentManagerException {
-    Connection connection = null;
-    Statement stmt = null;
     SortedSet<Integer> alSilverContentId = new TreeSet<>();
     String sInternalContentId = "";
     String sComponentId = "";
     int silverContentId;
-    try {
-      // Open connection
-      connection = DBUtil.openConnection();
-      stmt = connection.createStatement();
+    try(final Connection connection = DBUtil.openConnection();
+      final Statement stmt = connection.createStatement()) {
       // main loop to build sql queries
       for (int i = 0; i < documentFeature.size(); i = i + 2) {
         // Get the internamContentId and theinstanceId from the list
@@ -437,16 +435,7 @@ public class ContentManager implements Serializable {
 
       return alSilverContentId;
     } catch (Exception e) {
-      throw new ContentManagerException(failureOnGetting("content", sInternalContentId), e);
-    } finally {
-      try {
-        DBUtil.close(stmt);
-        if (connection != null) {
-          connection.close();
-        }
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
-      }
+      throw new ContentManagerException(failureOnGetting(CONTENT, sInternalContentId), e);
     }
   }
 
@@ -772,8 +761,8 @@ public class ContentManager implements Serializable {
     } finally {
       DBUtil.close(resSet, prepStmt);
       try {
-        if (bCloseConnection && conn != null) {
-          conn.close();
+        if (bCloseConnection) {
+          DBUtil.close(conn);
         }
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);

@@ -50,7 +50,7 @@ public class DefaultUserSettingsService implements UserSettingsService {
       } catch (FormException e) {
         SilverLogger.getLogger(this)
             .error(SilverpeasExceptionMessages.failureOnGetting(FIELD_TEXT,
-                data != null ? data.getId() : "unknown"), e);
+                data.getId()), e);
       }
     }
 

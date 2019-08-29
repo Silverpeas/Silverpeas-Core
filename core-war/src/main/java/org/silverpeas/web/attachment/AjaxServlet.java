@@ -35,6 +35,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,8 +49,10 @@ import java.util.StringTokenizer;
 public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 1L;
+  private static final String FILE_LANGUAGE = "FileLanguage";
 
-  private AttachmentService attachmentService = AttachmentService.get();
+  @Inject
+  private AttachmentService attachmentService;
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -99,7 +102,7 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
   private String checkout(HttpRequest req) {
     String idAttachment = req.getParameter("Id");
     String userId = getUserId();
-    String fileLanguage = req.getParameter("FileLanguage");
+    String fileLanguage = req.getParameter(FILE_LANGUAGE);
     boolean checkOutOK = attachmentService.lock(idAttachment, userId, fileLanguage);
     if (checkOutOK) {
       SimpleDocumentPK docPk = new SimpleDocumentPK(idAttachment);
@@ -111,13 +114,13 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private String checkin(HttpRequest req) {
     UnlockContext context = new UnlockContext(req.getParameter("Id"), getUserId(), req.
-        getParameter("FileLanguage"));
+        getParameter(FILE_LANGUAGE));
     if (StringUtil.getBooleanValue(req.getParameter("update_attachment"))) {
       context.addOption(UnlockOption.WEBDAV);
     }
     SimpleDocument doc =
         attachmentService.searchDocumentById(new SimpleDocumentPK(req.getParameter("Id")),
-            req.getParameter("FileLanguage"));
+            req.getParameter(FILE_LANGUAGE));
     if (!doc.isPublic()) {
       context.addOption(UnlockOption.PRIVATE_VERSION);
     }

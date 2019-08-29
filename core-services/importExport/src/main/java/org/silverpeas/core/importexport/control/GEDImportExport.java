@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -34,6 +33,7 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.TypeManager;
@@ -48,6 +48,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.template.form.service.FormTemplateService;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
@@ -94,6 +95,10 @@ import java.util.Optional;
  */
 public abstract class GEDImportExport extends ComponentImportExport {
 
+  private static final String GEDIMPORT_EXPORT_CREATE_PUBLICATION_CONTENT =
+      "GEDImportExport.createPublicationContent()";
+  private static final String IMPORT_EXPORT_EX_CANT_CREATE_CONTENT =
+      "importExport.EX_CANT_CREATE_CONTENT";
   // Variables
   private PublicationService publicationService = null;
   private FormTemplateService formTemplateService = null;
@@ -258,16 +263,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
               NodePK topicPK = new NodePK(Integer.toString(nodeType.getId()), pubDetailToCreate.
                   getPK());
               PublicationPK pubPK = new PublicationPK(pubId, pubDetailToCreate.getPK());
-              if (pubAlreadyExist) {
-                // check if existing publication is already in this topic
-                try {
-                  getPublicationService().getDetailByNameAndNodeId(pubDetTemp.getPK(), pubDetTemp.
-                      getName(), nodeType.getId());
-                } catch (Exception ex) {
-                  // this publication is not in this topic. Adding it...
-                  addPublicationToTopic(pubPK, topicPK);
-                }
-              } else {
+              if (!pubAlreadyExist || !isPublicationInTopic(pubDetTemp, nodeType)) {
                 addPublicationToTopic(pubPK, topicPK);
               }
             } catch (Exception ex) {
@@ -277,6 +273,15 @@ public abstract class GEDImportExport extends ComponentImportExport {
         }
       }
       return pubDetTemp;
+    }
+  }
+
+  private boolean isPublicationInTopic(final PublicationDetail pubDetail, final NodePositionType nodeType) {
+    try {
+      return pubDetail != null && getPublicationService().getDetailByNameAndNodeId(pubDetail.getPK(), pubDetail.
+          getName(), nodeType.getId()) != null;
+    } catch (Exception ex) {
+      return false;
     }
   }
 
@@ -311,13 +316,13 @@ public abstract class GEDImportExport extends ComponentImportExport {
     } catch (ImportExportException ex) {
       throw ex;
     } catch (Exception ex) {
-      throw new ImportExportException("GEDImportExport.createPublicationContent()",
-          "importExport.EX_CANT_CREATE_CONTENT", "pubId = " + pubId, ex);
+      throw new ImportExportException(GEDIMPORT_EXPORT_CREATE_PUBLICATION_CONTENT,
+          IMPORT_EXPORT_EX_CANT_CREATE_CONTENT, "pubId = " + pubId, ex);
     }
   }
 
   private void createXMLModelContent(XMLModelContentType xmlModel, String pubId, String userId)
-      throws Exception {
+      throws PublicationTemplateException, FormException {
     PublicationPK pubPK = new PublicationPK(pubId, getCurrentComponentId());
     PublicationDetail pubDetail = getPublicationService().getDetail(pubPK);
 
@@ -405,17 +410,17 @@ public abstract class GEDImportExport extends ComponentImportExport {
     } catch (org.silverpeas.core.util.UtilException ex) {
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
       if (wysiwygFile != null) {
-        throw new ImportExportException("GEDImportExport.createPublicationContent()",
-            "importExport.EX_CANT_CREATE_CONTENT", "file = " + wysiwygFile.getPath(), ex);
+        throw new ImportExportException(GEDIMPORT_EXPORT_CREATE_PUBLICATION_CONTENT,
+            IMPORT_EXPORT_EX_CANT_CREATE_CONTENT, "file = " + wysiwygFile.getPath(), ex);
       } else {
-        throw new ImportExportException("GEDImportExport.createPublicationContent()",
-            "importExport.EX_CANT_CREATE_CONTENT", "file = null", ex);
+        throw new ImportExportException(GEDIMPORT_EXPORT_CREATE_PUBLICATION_CONTENT,
+            IMPORT_EXPORT_EX_CANT_CREATE_CONTENT, "file = null", ex);
       }
     }
     if (wysiwygText == null) {
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
-      throw new ImportExportException("GEDImportExport.createPublicationContent()",
-          "importExport.EX_CANT_CREATE_CONTENT", "file = " + wysiwygFile.getPath());
+      throw new ImportExportException(GEDIMPORT_EXPORT_CREATE_PUBLICATION_CONTENT,
+          IMPORT_EXPORT_EX_CANT_CREATE_CONTENT, "file = " + wysiwygFile.getPath());
     }
     // Suppression de tout le contenu wysiwyg s il existe
     if (WysiwygController.haveGotWysiwyg(getCurrentComponentId(), String.valueOf(pubId), lang)) {
@@ -482,7 +487,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             if (attDetail == null || attDetail.getSize() == 0) {
               unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
               throw new ImportExportException("GEDImportExport.replaceWysiwygImagesPathForImport()",
-                  "importExport.EX_CANT_CREATE_CONTENT", "pic = " + imageSrc);
+                  IMPORT_EXPORT_EX_CANT_CREATE_CONTENT, "pic = " + imageSrc);
             }
             // On additionne la taille des fichiers importes au niveau du rapport
             reportManager.addImportedFileSize(attDetail.getSize(), getCurrentComponentId());
@@ -533,9 +538,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         ResourceLocator.getSettingBundle("org.silverpeas.importExport.settings.mapping");
     String dir = resource.getString("mappingDir");
     if (StringUtil.isDefined(dir)) {
-      BufferedReader reader = null;
-      try {
-        reader = new BufferedReader(new FileReader(dir + File.separator + "strings2Remove.txt"));
+      try (final BufferedReader reader = new BufferedReader(
+          new FileReader(dir + File.separator + "strings2Remove.txt"))) {
         String ligne;
         while ((ligne = reader.readLine()) != null) {
           if ("$$removeAnchors$$".equalsIgnoreCase(ligne)) {
@@ -546,8 +550,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
         }
       } catch (IOException e) {
         SilverLogger.getLogger(this).warn(e);
-      } finally {
-        IOUtils.closeQuietly(reader);
       }
     }
     return currentWysiwygText;
@@ -731,7 +733,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @throws ImportExportException
    */
   public PublicationDetail createPublicationForMassiveImport(UnitReport unitReport,
-      PublicationDetail pubDetail, ImportSettings settings) throws ImportExportException {
+      PublicationDetail pubDetail, ImportSettings settings) {
     unitReport.setItemName(pubDetail.getName());
     NodePositionType nodePosType = new NodePositionType();
     nodePosType.setId(Integer.valueOf(settings.getFolderId()));
@@ -769,9 +771,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
    *
    * @param id - id de la publication
    * @return le silverObjectId de l'objet d'id id
-   * @throws Exception
    */
-  public abstract int getSilverObjectId(String id) throws Exception;
+  public abstract int getSilverObjectId(String id);
 
   /**
    * Methode de recuperation de la publication complete utilisee pour l'exportation
@@ -910,5 +911,5 @@ public abstract class GEDImportExport extends ComponentImportExport {
   protected abstract void addPublicationToTopic(PublicationPK pubPK, NodePK topicPK)
       throws Exception;
 
-  protected abstract CompletePublication getCompletePublication(PublicationPK pk) throws Exception;
+  protected abstract CompletePublication getCompletePublication(PublicationPK pk);
 }

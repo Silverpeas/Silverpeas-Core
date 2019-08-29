@@ -72,29 +72,30 @@
                                              .append($('<span/>').text(settings.of))
                                              .append($('<span/>').append($('<b/>').text(settings.totalrecords))));
                 }
-                function buildNavigation(startPage) {
+                function buildNavigation(aStartPage) {
                     list.find('li').remove();
                     if (settings.totalrecords <= settings.recordsperpage) return;
-                    for (var i = startPage; i < startPage + settings.length; i++) {
+                    var clickFunc = function () {
+                        currentPage = aStartPage + $(this).closest('li').prevAll().length;
+                        navigate(currentPage);
+                    };
+                    for (var i = aStartPage; i < aStartPage + settings.length; i++) {
                         if (i == totalpages) break;
                         list.append($('<li/>')
                                     .append($('<a>').attr('id', (i + 1)).addClass(settings.theme).addClass('normal')
                                     .attr('href', 'javascript:void(0)')
                                     .text(i + 1))
-                                    .click(function () {
-                                        currentPage = startPage + $(this).closest('li').prevAll().length;
-                                        navigate(currentPage);
-                                    }));
+                                    .click(clickFunc));
                     }
-                    showLabels(startPage);
-                    inputPage.val((startPage + 1));
+                    showLabels(aStartPage);
+                    inputPage.val((aStartPage + 1));
                     list.find('li a').addClass(settings.theme).removeClass('active');
                     list.find('li:eq(0) a').addClass(settings.theme).addClass('active');
                     //set width of paginator
                     /*var sW = list.find('li:eq(0)').outerWidth(true) + parseInt(list.find('li:eq(0)').css('margin-left'));
                     var width = sW * list.find('li').length;
                     list.css({ width: width });*/
-                    showRequiredButtons(startPage);
+                    showRequiredButtons();
                 }
                 function navigate(topage) {
                     //make sure the page in between min and max page count
@@ -150,7 +151,9 @@
                         if (currentPage == totalpages - 1) { btnNext.css('display', 'none'); }
                         else btnNext.css('display', '');
                         if (totalpages > settings.length && currentPage < (totalpages - (settings.length / 2)) - 1) { btnLast.css('display', ''); }
-                        else { btnLast.css('display', 'none'); };
+                        else {
+                            btnLast.css('display', 'none');
+                        }
                     }
                     else {
                         btnFirst.css('display', 'none');
@@ -163,9 +166,8 @@
                     var startPos = el.get(0).selectionStart;
                     var endPos = el.get(0).selectionEnd;
                     var doc = document.selection;
-                    if (doc && doc.createRange().text.length != 0) {
-                        return true;
-                    } else if (!doc && el.val().substring(startPos, endPos).length != 0) {
+                    if ((doc && doc.createRange().text.length != 0) ||
+                        (!doc && el.val().substring(startPos, endPos).length != 0)) {
                         return true;
                     }
                     return false;

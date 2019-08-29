@@ -27,6 +27,7 @@
  */
 package org.silverpeas.core.pdc.interests.model;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.pdc.classification.Criteria;
 import java.util.List;
 
@@ -177,7 +178,7 @@ public class Interests implements Cloneable, java.io.Serializable {
     try {
       return super.clone();
     } catch (CloneNotSupportedException e) {
-      return null; // this should never happened
+      throw new SilverpeasRuntimeException(e); // this should never happened
     }
   }
 }

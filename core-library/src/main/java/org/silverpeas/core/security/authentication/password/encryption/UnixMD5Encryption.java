@@ -65,6 +65,7 @@ import java.util.Random;
 @Singleton
 public class UnixMD5Encryption implements PasswordEncryption {
 
+  private static final Random random = new Random();
   private static final String MAGIC = "$1$";
   private static final byte[] ITOA64 =
       "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -79,7 +80,6 @@ public class UnixMD5Encryption implements PasswordEncryption {
 
   private static String crypt(String strPassword) {
     // Get random salt
-    Random random = new Random();
     byte[] salt = new byte[] { ITOA64[random.nextInt(64)],
         ITOA64[random.nextInt(64)], ITOA64[random.nextInt(64)],
         ITOA64[random.nextInt(64)], ITOA64[random.nextInt(64)],
@@ -94,11 +94,11 @@ public class UnixMD5Encryption implements PasswordEncryption {
     try {
       byte[] abyPassword = strPassword.getBytes();
 
-      MessageDigest _md = MessageDigest.getInstance("MD5");
+      MessageDigest md = MessageDigest.getInstance("MD5");
 
-      _md.update(abyPassword);
-      _md.update(MAGIC.getBytes());
-      _md.update(abySalt);
+      md.update(abyPassword);
+      md.update(MAGIC.getBytes());
+      md.update(abySalt);
 
       MessageDigest md2 = MessageDigest.getInstance("MD5");
       md2.update(abyPassword);
@@ -107,7 +107,7 @@ public class UnixMD5Encryption implements PasswordEncryption {
       byte[] abyFinal = md2.digest();
 
       for (int n = abyPassword.length; n > 0; n -= 16) {
-        _md.update(abyFinal, 0, n > 16 ? 16 : n);
+        md.update(abyFinal, 0, n > 16 ? 16 : n);
       }
 
       abyFinal = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -117,9 +117,9 @@ public class UnixMD5Encryption implements PasswordEncryption {
       // too
       for (int j = 0, i = abyPassword.length; i != 0; i >>>= 1) {
         if ((i & 1) == 1) {
-          _md.update(abyFinal, j, 1);
+          md.update(abyFinal, j, 1);
         } else {
-          _md.update(abyPassword, j, 1);
+          md.update(abyPassword, j, 1);
         }
       }
 
@@ -129,36 +129,8 @@ public class UnixMD5Encryption implements PasswordEncryption {
       sbPasswd.append(new String(abySalt));
       sbPasswd.append('$');
 
-      abyFinal = _md.digest();
-
-      // And now, just to make sure things don't run too fast
-      // in C . . . "On a 60 Mhz Pentium this takes 34 msec, so you would
-      // need 30 seconds to build a 1000 entry dictionary..."
-      for (int n = 0; n < 1000; n++) {
-        MessageDigest md3 = MessageDigest.getInstance("MD5");
-        // MD5Init(&ctx1);
-        if ((n & 1) != 0) {
-          md3.update(abyPassword);
-        } else {
-          md3.update(abyFinal);
-        }
-
-        if ((n % 3) != 0) {
-          md3.update(abySalt);
-        }
-
-        if ((n % 7) != 0) {
-          md3.update(abyPassword);
-        }
-
-        if ((n & 1) != 0) {
-          md3.update(abyFinal);
-        } else {
-          md3.update(abyPassword);
-        }
-
-        abyFinal = md3.digest();
-      }
+      abyFinal = md.digest();
+      abyFinal = buildDictionaryEntries(abySalt, abyPassword, abyFinal);
 
       // Convert to int's so we can do our bit manipulation
       // it's a bit tricky making the byte act unsigned
@@ -188,11 +160,43 @@ public class UnixMD5Encryption implements PasswordEncryption {
 
       retVal = sbPasswd.toString();
     } catch (NoSuchAlgorithmException e) {
-      // log.warn( e.getMessage(), e );
+      //ignore
     }
 
     return retVal;
 
+  }
+
+  private static byte[] buildDictionaryEntries(final byte[] abySalt, final byte[] abyPassword,
+      byte[] abyFinal) throws NoSuchAlgorithmException {
+    // And now, just to make sure things don't run too fast
+    // in C . . . "On a 60 Mhz Pentium this takes 34 msec, so you would
+    // need 30 seconds to build a 1000 entry dictionary..."
+    for (int n = 0; n < 1000; n++) {
+      MessageDigest md3 = MessageDigest.getInstance("MD5");
+      if ((n & 1) != 0) {
+        md3.update(abyPassword);
+      } else {
+        md3.update(abyFinal);
+      }
+
+      if ((n % 3) != 0) {
+        md3.update(abySalt);
+      }
+
+      if ((n % 7) != 0) {
+        md3.update(abyPassword);
+      }
+
+      if ((n & 1) != 0) {
+        md3.update(abyFinal);
+      } else {
+        md3.update(abyPassword);
+      }
+
+      abyFinal = md3.digest();
+    }
+    return abyFinal;
   }
 
   /**

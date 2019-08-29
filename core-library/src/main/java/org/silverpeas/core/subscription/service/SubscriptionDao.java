@@ -24,6 +24,8 @@
 package org.silverpeas.core.subscription.service;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
@@ -32,11 +34,9 @@ import org.silverpeas.core.subscription.constant.SubscriptionMethod;
 import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.subscription.util.SubscriptionList;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.sql.Connection;
@@ -81,17 +81,18 @@ public class SubscriptionDao {
       "SELECT subscriberId, subscriberType FROM subscribe " +
           "WHERE resourceId = ? AND resourceType = ? AND instanceId = ?";
 
-  private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIPTION = "SELECT " + SUBSCRIBE_COLUMNS +
+  private static final String SELECT = "SELECT ";
+  private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIPTION = SELECT + SUBSCRIBE_COLUMNS +
       " FROM subscribe WHERE subscriberId = ? AND subscriberType = ? AND subscriptionMethod = ? " +
       "AND resourceId = ? AND resourceType = ? AND instanceId = ?";
 
-  private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER = "SELECT " + SUBSCRIBE_COLUMNS +
+  private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER = SELECT + SUBSCRIBE_COLUMNS +
       " FROM subscribe WHERE subscriberId = ? AND subscriberType = ?";
 
   private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_COMPONENT =
       SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER + " AND instanceId = ?";
 
-  private static final String SELECT_SUBSCRIPTIONS_BY_RESOURCE = "SELECT " + SUBSCRIBE_COLUMNS +
+  private static final String SELECT_SUBSCRIPTIONS_BY_RESOURCE = SELECT + SUBSCRIBE_COLUMNS +
       " FROM subscribe WHERE instanceId = ? AND resourceId = ? AND resourceType = ?";
 
   private static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_RESOURCE =
@@ -215,8 +216,6 @@ public class SubscriptionDao {
    *
    */
   public boolean existsSubscription(Connection con, Subscription subscription) throws SQLException {
-    SilverTrace
-        .info("subscribe", "SubscriptionDao.existsSubscription", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -294,7 +293,6 @@ public class SubscriptionDao {
    */
   public SubscriptionList getSubscriptionsByResource(Connection con,
       SubscriptionResource resource, final SubscriptionMethod method) throws SQLException {
-
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     String methodQueryPart = "";
@@ -306,7 +304,7 @@ public class SubscriptionDao {
       prepStmt.setString(1, resource.getInstanceId());
       prepStmt.setString(2, resource.getId());
       prepStmt.setString(3, resource.getType().getName());
-      if (StringUtil.isDefined(methodQueryPart)) {
+      if (method != null && StringUtil.isDefined(methodQueryPart)) {
         prepStmt.setString(4, method.getName());
       }
       rs = prepStmt.executeQuery();
@@ -370,7 +368,7 @@ public class SubscriptionDao {
       Collection<? extends SubscriptionResource> resources, SubscriptionMethod method)
       throws SQLException {
 
-    Set<SubscriptionSubscriber> result = new HashSet<SubscriptionSubscriber>();
+    Set<SubscriptionSubscriber> result = new HashSet<>();
     for (SubscriptionResource resource : resources) {
       findSubscribers(con, resource, result, method);
     }
@@ -398,7 +396,7 @@ public class SubscriptionDao {
       prepStmt.setString(1, resource.getId());
       prepStmt.setString(2, resource.getType().getName());
       prepStmt.setString(3, resource.getInstanceId());
-      if (StringUtil.isDefined(methodQueryPart)) {
+      if (method != null && StringUtil.isDefined(methodQueryPart)) {
         prepStmt.setString(4, method.getName());
       }
       rs = prepStmt.executeQuery();
@@ -454,8 +452,9 @@ public class SubscriptionDao {
     // Checking that data are not corrupted
     if (!subscriptionMethod.isValid() || subscriber == null ||
         resource == null) {
-      SilverTrace.warn("subscribe", "SubscriptionDao.createFrom",
-          "EX_SUBSCRIBE_TABLE_CONTAINS_CORRUPTED_DATA");
+      SilverLogger.getLogger(this)
+          .warn(
+              "The subscription method is'nt valid or either the subscriber or the resource is'nt defined");
       return null;
     }
 

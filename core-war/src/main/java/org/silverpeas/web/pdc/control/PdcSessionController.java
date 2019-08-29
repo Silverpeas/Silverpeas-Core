@@ -349,6 +349,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
       con = DBUtil.openConnection();
       con.setAutoCommit(false);
     } catch (Exception e) {
+      DBUtil.close(con);
       throw new PdcException(e);
     }
     return con;

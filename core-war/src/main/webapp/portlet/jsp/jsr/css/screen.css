@@ -176,7 +176,7 @@
 /* Layout = 1, THICK/THIN */
 
 #portletPages #portal-content-layout #layout-1-thin {
-  align: top;
+  vertical-align: top;
   float: left;
   width: 30%;
   margin-right: 5%;

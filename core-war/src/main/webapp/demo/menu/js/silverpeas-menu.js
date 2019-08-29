@@ -158,8 +158,8 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
   /**
    * Sets data of the menu item
    */
-  this.setData = function(menuData) {
-    _menuData = menuData;
+  this.setData = function(aMenuData) {
+    _menuData = aMenuData;
   };
 
   /**
@@ -176,8 +176,6 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
    * Gets appearance of the menu item
    */
   this.getAppearance = function() {
-    var result = {};
-
     // Data appearance can be retrieved only for a space
     if (_menuData.type.indexOf($.spCore.definitions.SPACE_TYPE) >= 0) {
       return $.spCore.getJSonData(_menuData.appearanceURI);
@@ -253,7 +251,6 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
 
     // Description
     if (_menuData.description && _menuData.description.length > 0) {
-      var $menuDescription = $('<div>');
       $menuLabel.addClass(self.getMenuLabelStyleClass());
     }
 
@@ -438,7 +435,6 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
      * Refreshes the given menu
      */
     refresh : function($target) {
-      var lastMenuItemSelected = $.menu.lastMenuItemSelected;
       $target.empty();
     },
 
@@ -487,11 +483,13 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
           $currentMenu = $('[id$=' + $.menu.buildId(path[i]) + ']');
           $currentMenu.trigger('forceExpand');
         }
-        $currentMenu.trigger('select');
-        if ($oldMenu) {
-          $oldMenu.trigger('callbacks');
+        if ($currentMenu !== undefined) {
+          $currentMenu.trigger('select');
+          if ($oldMenu) {
+            $oldMenu.trigger('callbacks');
+          }
+          $currentMenu.trigger('callbacks');
         }
-        $currentMenu.trigger('callbacks');
       }
     },
 
@@ -581,7 +579,7 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
    */
     expand : function(menuItem, callback) {
 
-      if (!menuItem instanceof MenuItem) {
+      if (!(menuItem instanceof MenuItem)) {
         console.error('expand method error, the parameter is not a MenuItem as required')
         return false;
       }
@@ -697,7 +695,7 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
 
     // Iterate over the current set of matched elements
     return $this.each(function() {
-      var $this = $(this);
+      var $self = $(this);
 
       // Loading data
       $.ajax({
@@ -711,10 +709,10 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
           if (parentMenuItem != null) {
             domMenuRootContainer = parentMenuItem.getDomMenuRootContainer();
           } else {
-            domMenuRootContainer = $this.get(0);
+            domMenuRootContainer = $self.get(0);
           }
           var menuSet = new options.menuSetObjectClass(domMenuRootContainer, parentMenuItem, data, options);
-          $this.append(menuSet.render());
+          $self.append(menuSet.render());
 
           // Callback
           if (options.callback) {
@@ -726,7 +724,7 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
         }
       });
     });
-  };
+  }
 
   /**
    * Private function that centralizes the favorite user action handling

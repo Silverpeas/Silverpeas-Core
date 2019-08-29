@@ -41,7 +41,7 @@ public class VolatileResourceCacheTest {
   public void testNewIntegerIdentifier() {
     Integer newIdentifier = instance.newVolatileIntegerIdentifier();
     String newIdentifierAsString = String.valueOf(newIdentifier);
-    assertThat(newIdentifierAsString.length(), lessThanOrEqualTo(10));
+    assertThat(newIdentifierAsString.length(), lessThanOrEqualTo(11));
     assertThat(newIdentifier, lessThan(0));
     Set<Integer> generatedIds = new HashSet<Integer>();
     for (int i = 0; i < 1000; i++) {

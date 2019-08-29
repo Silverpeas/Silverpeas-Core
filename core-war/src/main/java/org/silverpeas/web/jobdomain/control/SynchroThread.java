@@ -26,7 +26,7 @@
 
 package org.silverpeas.web.jobdomain.control;
 
-public class SynchroThread extends Thread {
+public abstract class SynchroThread extends Thread {
   protected JobDomainPeasSessionController m_toAwake = null;
   protected boolean m_isEncours = false;
   protected Exception m_ErrorOccured = null;

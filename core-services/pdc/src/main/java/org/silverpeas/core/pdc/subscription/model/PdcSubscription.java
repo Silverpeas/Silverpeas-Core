@@ -27,6 +27,7 @@
  */
 package org.silverpeas.core.pdc.subscription.model;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.pdc.classification.Criteria;
 import java.util.List;
 
@@ -98,7 +99,7 @@ public class PdcSubscription implements java.io.Serializable, Cloneable {
     try {
       return super.clone();
     } catch (CloneNotSupportedException e) {
-      return null; // this should never happened
+      throw new SilverpeasRuntimeException(e); // this should never happened
     }
   }
 }

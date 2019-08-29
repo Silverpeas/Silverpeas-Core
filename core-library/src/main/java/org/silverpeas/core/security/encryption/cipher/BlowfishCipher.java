@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.security.encryption.cipher;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.Charsets;
 
 import javax.crypto.KeyGenerator;
@@ -89,8 +88,6 @@ public class BlowfishCipher implements Cipher {
 
   @Override
   public String decrypt(byte[] cipher, CipherKey keyCode) throws CryptoException {
-    SilverTrace
-        .info("util", "BlowfishCipher.decrypt", "root.MSG_GEN_ENTER_METHOD");
     String uncrypted;
     byte[] newPlainText;
     try {
@@ -100,7 +97,7 @@ public class BlowfishCipher implements Cipher {
       } else {
         key = new BlowfishKey(keyCode.getRawKey());
       }
-      synchronized (cipher) {
+      synchronized (this.cipher) {
         this.cipher.init(javax.crypto.Cipher.DECRYPT_MODE, key);
         newPlainText = this.cipher.doFinal(cipher);
       }

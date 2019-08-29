@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.viewer.service;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation;
 import org.silverpeas.core.util.StringUtil;
@@ -174,7 +175,7 @@ public class ViewerContext implements Cloneable {
       clonedViewerContext.processingCache = false;
       return clonedViewerContext;
     } catch (CloneNotSupportedException e) {
-      return null;
+      throw new SilverpeasRuntimeException(e);
     }
   }
 }

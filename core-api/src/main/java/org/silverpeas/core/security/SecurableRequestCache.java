@@ -30,7 +30,7 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * A common tool to handled securable implementation with a request cache.
@@ -45,7 +45,7 @@ public class SecurableRequestCache {
   static final String CAN_BE_ACCESSED_BY_KEY_SUFFIX = CAN_BE + "AccessedBy";
   static final String CAN_BE_MODIFIED_BY_KEY_SUFFIX = CAN_BE + "ModifiedBy";
   static final String CAN_BE_DELETED_BY_KEY_SUFFIX = CAN_BE + "DeletedBy";
-  private static final String ALL_KEYS = "SecurableRequestCache@@@allKeys";
+  private static final Object ALL_KEYS = "SecurableRequestCache@@@allKeys";
   private static final int DEFAULT_NB_HANDLED_KEYS = 100;
 
   /**
@@ -62,13 +62,13 @@ public class SecurableRequestCache {
    * @return the authorization
    */
   private static boolean handle(final User user, final String uniqueIdentifier,
-      Function<User, Boolean> authorization, final String keySuffix) {
+      Predicate<User> authorization, final String keySuffix) {
     SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
     String cacheKey = getCacheKey(user, uniqueIdentifier, keySuffix);
     synchronized (ALL_KEYS) {
       Boolean result = cache.get(cacheKey, Boolean.class);
       if (result == null) {
-        result = authorization.apply(user);
+        result = authorization.test(user);
         cache.put(cacheKey, result);
         getHandledKeys().add(cacheKey);
       }
@@ -97,7 +97,7 @@ public class SecurableRequestCache {
    * @return true if the user can access the data managed by this instance, false otherwise.
    */
   public static boolean canBeAccessedBy(User user, String uniqueIdentifier,
-      Function<User, Boolean> canBeAccessedBy) {
+      Predicate<User> canBeAccessedBy) {
     return handle(user, uniqueIdentifier, canBeAccessedBy, CAN_BE_ACCESSED_BY_KEY_SUFFIX);
   }
 
@@ -109,7 +109,7 @@ public class SecurableRequestCache {
    * @return true if the user can modify the data managed by this instance, false otherwise.
    */
   public static boolean canBeModifiedBy(User user, String uniqueIdentifier,
-      Function<User, Boolean> canBeModifiedBy) {
+      Predicate<User> canBeModifiedBy) {
     return handle(user, uniqueIdentifier, canBeModifiedBy, CAN_BE_MODIFIED_BY_KEY_SUFFIX);
   }
 
@@ -121,7 +121,7 @@ public class SecurableRequestCache {
    * @return true if the user can delete the data managed by this instance, false otherwise.
    */
   public static boolean canBeDeletedBy(User user, String uniqueIdentifier,
-      Function<User, Boolean> canBeDeletedBy) {
+      Predicate<User> canBeDeletedBy) {
     return handle(user, uniqueIdentifier, canBeDeletedBy, CAN_BE_DELETED_BY_KEY_SUFFIX);
   }
 

@@ -23,7 +23,25 @@
  */
 package org.silverpeas.core.security.authentication;
 
+import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPEntry;
+import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPJSSESecureSocketFactory;
+import com.novell.ldap.LDAPModification;
+import com.novell.ldap.LDAPSearchResults;
 import org.silverpeas.core.admin.domain.driver.ldapdriver.LdapConfiguration;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
+import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -32,28 +50,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
-import org.silverpeas.core.util.Charsets;
-
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.exception.SilverpeasException;
-
-import com.novell.ldap.LDAPAttribute;
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPEntry;
-import com.novell.ldap.LDAPException;
-import com.novell.ldap.LDAPJSSESecureSocketFactory;
-import com.novell.ldap.LDAPModification;
-import com.novell.ldap.LDAPSearchResults;
 
 import static org.silverpeas.core.util.Charsets.UTF_8;
 
@@ -293,6 +289,9 @@ public class AuthenticationLDAP extends Authentication {
         SilverTrace.error(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
             "authentication.EX_BAD_DATE_FORMAT", e);
       }
+
+      default:
+        throw new IllegalArgumentException("Unknown time format: expected nano or milliseconds");
     }
     Date now = new Date();
     long delayInMilliseconds = pwdLastSet.getTime() - now.getTime();

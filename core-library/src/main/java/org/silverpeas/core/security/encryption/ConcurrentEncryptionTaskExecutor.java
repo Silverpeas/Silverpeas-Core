@@ -78,6 +78,7 @@ class ConcurrentEncryptionTaskExecutor {
     try {
       semaphore.acquire();
     } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
       throw new IllegalStateException(e);
     }
   }

@@ -257,7 +257,7 @@ public class RepositoriesTypeManager {
   private PublicationDetail fetchPublicationDetail(final PublicationDetail previousSavedPublication,
       final String componentId, final File file, final GEDImportExport gedIE,
       final PdcImportExport pdcIE, final ImportSettings settings, final UnitReport unitReport)
-      throws PdcException, ImportExportException {
+      throws PdcException {
     PublicationDetail pubDetailToSave;
     if (!settings.mustCreateOnePublicationForAllFiles() || previousSavedPublication == null) {
 

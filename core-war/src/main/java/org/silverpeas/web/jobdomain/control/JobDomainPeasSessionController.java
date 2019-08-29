@@ -2214,6 +2214,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
     for (String profileId : profileIds) {
       ProfileInst currentProfile = adminCtrl.getProfileInst(profileId);
+      Objects.requireNonNull(currentProfile);
       ComponentProfiles componentProfiles = allProfiles.get(currentProfile.getComponentFatherId());
       if (componentProfiles == null) {
         ComponentInstLight currentComponent =
@@ -2243,9 +2244,12 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     LocalizedComponent localizedComponent = localizedComponents.get(name);
     if (localizedComponent == null) {
       try {
-        WAComponent component = WAComponent.getByName(name).get();
-        localizedComponent = new LocalizedComponent(component, getLanguage());
-        localizedComponents.put(name, localizedComponent);
+        Optional<WAComponent> optionalComponent = WAComponent.getByName(name);
+        if (optionalComponent.isPresent()) {
+          WAComponent component = WAComponent.getByName(name).get();
+          localizedComponent = new LocalizedComponent(component, getLanguage());
+          localizedComponents.put(name, localizedComponent);
+        }
       } catch (Exception e) {
         SilverLogger.getLogger(this).warn(e);
       }

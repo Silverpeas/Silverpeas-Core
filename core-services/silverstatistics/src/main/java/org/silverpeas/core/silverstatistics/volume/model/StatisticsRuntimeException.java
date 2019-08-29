@@ -23,33 +23,21 @@
  */
 package org.silverpeas.core.silverstatistics.volume.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class StatisticsRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = -5832971760523509866L;
+  private static final long serialVersionUID = -4247249564891266147L;
 
-  public StatisticsRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public StatisticsRuntimeException(final String message) {
+    super(message);
   }
 
-  public StatisticsRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public StatisticsRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public StatisticsRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public StatisticsRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public StatisticsRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "statistics";
-  }
-
 }

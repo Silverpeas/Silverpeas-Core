@@ -23,15 +23,22 @@
  */
 package org.silverpeas.core.util.exec;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 
 public class ExternalExecution {
+
+  protected ExternalExecution() {
+
+  }
 
   /**
    * Execute the given external command into the context defined by a default {@link
@@ -39,7 +46,7 @@ public class ExternalExecution {
    * @param commandLine the external command to execute.
    * @return a {@link List} of console lines written by the external command.
    */
-  public static List<String> exec(final CommandLine commandLine) throws ExternalExecutionException {
+  public static List<String> exec(final CommandLine commandLine) {
     return exec(commandLine, Config.init());
   }
 
@@ -51,19 +58,18 @@ public class ExternalExecution {
    * some flexibility.
    * @return a {@link List} of console lines written by the external command.
    */
-  public static List<String> exec(final CommandLine commandLine, final Config config)
-      throws ExternalExecutionException {
+  public static List<String> exec(final CommandLine commandLine, final Config config) {
 
     final List<String> result = new LinkedList<>();
     final List<String> errors = new LinkedList<>();
-    CollectingLogOutputStream logErrors = new CollectingLogOutputStream(errors);
     final Process process;
-    Thread errEater = null, outEater = null;
-    try {
+    Thread errEater;
+    Thread outEater = null;
+    try (CollectingLogOutputStream logErrors = new CollectingLogOutputStream(errors)) {
       process = Runtime.getRuntime().exec(commandLine.toStrings());
       errEater = new Thread(() -> {
         try {
-          errors.addAll(IOUtils.readLines(process.getErrorStream()));
+          errors.addAll(IOUtils.readLines(process.getErrorStream(), Charset.defaultCharset()));
         } catch (final IOException e) {
           throw new ExternalExecutionException(e);
         }
@@ -71,7 +77,7 @@ public class ExternalExecution {
       errEater.start();
       outEater = new Thread(() -> {
         try {
-          result.addAll(IOUtils.readLines(process.getInputStream()));
+          result.addAll(IOUtils.readLines(process.getInputStream(), Charset.defaultCharset()));
         } catch (final IOException e) {
           throw new ExternalExecutionException(e);
         }
@@ -80,28 +86,36 @@ public class ExternalExecution {
       process.waitFor();
       int exitStatus = process.exitValue();
       if (exitStatus != config.getSuccessfulExitStatusValue()) {
-        try {
-          errEater.join();
-        } catch (InterruptedException e) {
-        }
-        throw new RuntimeException(
-            "Exit error status : " + exitStatus + " " + logErrors.getMessage());
+        return stopAll(logErrors, errEater, exitStatus);
       }
-    } catch (final IOException | InterruptedException | RuntimeException e) {
+    } catch (final IOException | RuntimeException e) {
       performExternalExecutionException(config, e);
-    } finally {
-      IOUtils.closeQuietly(logErrors);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      performExternalExecutionException(config, e);
     }
     try {
       outEater.join();
     } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
     }
     return result;
   }
 
+  private static List<String> stopAll(final CollectingLogOutputStream logErrors,
+      final Thread errEater, final int exitStatus) {
+    try {
+      errEater.join();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+    throw new SilverpeasRuntimeException(
+        "Exit error status : " + exitStatus + " " + logErrors.getMessage());
+  }
+
   private static void performExternalExecutionException(Config config, Exception e) {
     if (config.isDisplayErrorTraceEnabled()) {
-      SilverTrace.error("util", "ExternalExecution.exec", "Command execution error", e);
+      SilverLogger.getLogger(ExternalExecution.class).error("Command execution error: ", e);
     }
     throw new ExternalExecutionException(e);
   }

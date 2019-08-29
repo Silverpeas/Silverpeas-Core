@@ -144,6 +144,11 @@ public class URLUtil {
     return buildStandardURL(sureCompName, sComponentId);
   }
 
+  /**
+   * @deprecated
+   * @param sComponentName the name of a component.
+   * @return the URL to the component.
+   */
   @Deprecated
   public static String getURL(String sComponentName) {
     return getURL(sComponentName, null, null);
@@ -269,10 +274,8 @@ public class URLUtil {
       url = getApplicationURL();
     }
     Permalink permalink = Permalink.fromType(type);
-    switch (permalink) {
-      case FORUM_MESSAGE:
-        url += permalink.getURLPrefix() + id + "?ForumId=" + forumId;
-        break;
+    if (permalink != null && permalink == Permalink.FORUM_MESSAGE) {
+      url += permalink.getURLPrefix() + id + "?ForumId=" + forumId;
     }
     return url;
   }
@@ -288,19 +291,21 @@ public class URLUtil {
       url = url.substring(0, url.length() - 1);
     }
     Permalink permalink = Permalink.fromType(type);
-    switch (permalink) {
-      case SPACE:
-        url += permalink.getURLPrefix() + id;
-        break;
-      case PUBLICATION:
-      case FOLDER:
-        url += permalink.getURLPrefix() + id;
-        if (isDefined(componentId)) {
-          url += "?ComponentId=" + componentId;
-        }
-        break;
-      default:
-        url += permalink.getURLPrefix() + id;
+    if (permalink != null) {
+      switch (permalink) {
+        case SPACE:
+          url += permalink.getURLPrefix() + id;
+          break;
+        case PUBLICATION:
+        case FOLDER:
+          url += permalink.getURLPrefix() + id;
+          if (isDefined(componentId)) {
+            url += "?ComponentId=" + componentId;
+          }
+          break;
+        default:
+          url += permalink.getURLPrefix() + id;
+      }
     }
     return url;
   }

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,41 +21,45 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.socialnetwork.service;
 
-import org.springframework.social.oauth1.OAuthToken;
-import org.springframework.social.oauth2.AccessGrant;
+package org.silverpeas.core.process.io.file;
 
-import java.io.Serializable;
+import org.awaitility.Duration;
 
-public class AccessToken implements Serializable {
-  private AccessGrant accessGrant = null;
-  private OAuthToken oAuthToken = null;
+import java.util.concurrent.TimeUnit;
 
-  public AccessToken(AccessGrant accessGrant) {
-    super();
-    this.accessGrant = accessGrant;
+import static org.awaitility.Awaitility.with;
+
+/**
+ * A delayed operation executor.
+ * @author mmoquillon
+ */
+public class DelayedExecutor {
+
+  private final Duration delay;
+
+  public DelayedExecutor(final Duration delay) {
+    this.delay = delay;
   }
 
-  public AccessToken(OAuthToken oAuthToken) {
-    super();
-    this.oAuthToken = oAuthToken;
+  public static DelayedExecutor in(long time, TimeUnit unit) {
+    return new DelayedExecutor(new Duration(time, unit));
   }
 
-  public AccessGrant getAccessGrant() {
-    return accessGrant;
+  public static DelayedExecutor in(final Duration duration) {
+    return new DelayedExecutor(duration);
   }
 
-  public void setAccessGrant(AccessGrant accessGrant) {
-    this.accessGrant = accessGrant;
+  public void execute(final Operation operation) {
+    with().pollDelay(delay).await().until(() -> {
+      operation.execute();
+      return true;
+    });
   }
 
-  public OAuthToken getoAuthToken() {
-    return oAuthToken;
+  @FunctionalInterface
+  public interface Operation {
+    void execute() throws Exception;
   }
-
-  public void setoAuthToken(OAuthToken oAuthToken) {
-    this.oAuthToken = oAuthToken;
-  }
-
 }
+  

@@ -220,11 +220,12 @@ public class X509Factory {
       
       SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
     }
-    try {
-      fos.close();
-    } catch (IOException e) {
-      
-      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
+    if (fos != null) {
+      try {
+        fos.close();
+      } catch (IOException e) {
+        SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
+      }
     }
   }
 }

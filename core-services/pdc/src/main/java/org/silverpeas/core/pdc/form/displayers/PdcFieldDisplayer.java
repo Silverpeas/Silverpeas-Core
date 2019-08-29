@@ -173,7 +173,9 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
           usedAxis._setAxisType(axisHeader.getAxisType());
           usedAxis._setAxisValues(getAxisValues(Integer.parseInt(axisId)));
           Value baseValue = getAxisValue(baseValueId, axisId);
-          usedAxis._setBaseValueName(baseValue.getName());
+          if (baseValue != null) {
+            usedAxis._setBaseValueName(baseValue.getName());
+          }
 
           usedAxisList.add(usedAxis);
           usedAxisId++;

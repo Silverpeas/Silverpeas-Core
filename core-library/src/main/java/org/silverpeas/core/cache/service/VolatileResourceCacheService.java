@@ -81,8 +81,9 @@ import static org.silverpeas.core.contribution.model.CoreContributionType.VOLATI
  */
 public class VolatileResourceCacheService {
 
-  private static final int SECOND_OFFSET = 9;
   private List<ContributionIdentifier> componentVolatileIds = new ArrayList<>();
+  private Integer currentIntId = Integer.MAX_VALUE;
+  private Long currentLongId = Long.MAX_VALUE;
 
   /**
    * Clears the volatile cache attached to a user session.
@@ -112,14 +113,7 @@ public class VolatileResourceCacheService {
    * @return a new volatile identifier of integer type converted as string value.
    */
   synchronized String newVolatileIntegerIdentifierAsString() {
-    try {
-      Thread.sleep(1);
-    } catch (InterruptedException e) {
-      SilverLogger.getLogger(this).error(e);
-      Thread.currentThread().interrupt();
-    }
-    String currentTime = String.valueOf(System.currentTimeMillis());
-    return "-" + currentTime.substring(currentTime.length() - SECOND_OFFSET);
+    return "-" + --currentIntId;
   }
 
   /**
@@ -137,14 +131,7 @@ public class VolatileResourceCacheService {
    */
   @SuppressWarnings("WeakerAccess")
   synchronized String newVolatileLongIdentifierAsString() {
-    try {
-      Thread.sleep(1);
-    } catch (InterruptedException e) {
-      SilverLogger.getLogger(this).error(e);
-      Thread.currentThread().interrupt();
-    }
-    String currentTime = String.valueOf(System.currentTimeMillis());
-    return "-" + currentTime.substring(1);
+    return "-" + --currentLongId;
   }
 
   /**

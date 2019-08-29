@@ -78,6 +78,7 @@ public class RequestTaskManager {
       } catch (InterruptedException e) {
         error(monitor.taskClass, "the task {0} can not be invoked",
             task.getClass().getSimpleName());
+        Thread.currentThread().interrupt();
         throw new SilverpeasRuntimeException(e);
       }
     }
@@ -205,13 +206,18 @@ public class RequestTaskManager {
         Thread.sleep(RESTART_WAITING_BEFORE_GETTING_RESULT);
       } catch (InterruptedException e) {
         error(TaskWatcher.class, e);
+        Thread.currentThread().interrupt();
       }
       boolean endedOnError = false;
       try {
         this.monitor.task.get();
-      } catch (CancellationException | InterruptedException | ExecutionException e) {
+      } catch (CancellationException | ExecutionException e) {
         endedOnError = true;
         error(this.monitor.taskClass, e);
+      } catch (InterruptedException e) {
+        endedOnError = true;
+        error(this.monitor.taskClass, e);
+        Thread.currentThread().interrupt();
       }
       synchronized (monitor.requestList) {
         debug(this.monitor.taskClass, "task watcher - watched " +
@@ -257,6 +263,7 @@ public class RequestTaskManager {
           queueSemaphore.acquire();
         } catch (InterruptedException e) {
           error(taskClass, "not possible to acquire semaphore");
+          Thread.currentThread().interrupt();
           throw new SilverpeasRuntimeException(e);
         }
       }

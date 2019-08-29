@@ -31,21 +31,15 @@ package org.silverpeas.core.workflow.engine;
 public abstract class AbstractReferrableObject implements ReferrableObjectIntf {
 
   /**
-   * This method has to be implemented by the referable object it has to compute the unique key
-   * @return The unique key.
-   * @see #equals
-   * @see #hashCode
-   */
-  @Override
-  public abstract String getKey();
-
-  /**
    * Tests equality with another referable object
    * @param theOther the other instance to verify
    * @return true if both object's keys are equals
    */
   @Override
   public boolean equals(Object theOther) {
+    if (theOther == null) {
+      return false;
+    }
     if (theOther instanceof String) {
       return getKey().equals(theOther);
     } else {

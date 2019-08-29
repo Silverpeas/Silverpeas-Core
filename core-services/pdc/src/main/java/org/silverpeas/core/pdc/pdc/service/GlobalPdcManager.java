@@ -2128,11 +2128,12 @@ public class GlobalPdcManager implements PdcManager {
   }
 
   private Connection openTransaction() throws PdcException {
-    final Connection con;
+    Connection con = null;
     try {
       con = DBUtil.openConnection();
       con.setAutoCommit(false);
     } catch (Exception e) {
+      DBUtil.close(con);
       throw new PdcException(e);
     }
     return con;
