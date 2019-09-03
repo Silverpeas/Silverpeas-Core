@@ -360,7 +360,7 @@ public class PublicationDAOIT {
       List<String> status = new ArrayList<>();
       status.add("Valid");
       boolean filterOnVisibilityPeriod = true;
-      ArrayList<PublicationDetail> result = PublicationDAO.selectByFatherIds(con, fatherIds, pubPK,
+      List<PublicationDetail> result = PublicationDAO.selectByFatherIds(con, fatherIds, pubPK,
           sorting, status,
           filterOnVisibilityPeriod);
       assertEquals(result.size(), 2);

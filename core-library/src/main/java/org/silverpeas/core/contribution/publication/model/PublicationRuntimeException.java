@@ -23,34 +23,21 @@
  */
 package org.silverpeas.core.contribution.publication.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class PublicationRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = -3952784678674669303L;
+  private static final long serialVersionUID = -655130089715392244L;
 
-  public PublicationRuntimeException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  public PublicationRuntimeException(final String message) {
+    super(message);
   }
 
-  public PublicationRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public PublicationRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public PublicationRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public PublicationRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public PublicationRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "publication";
-  }
-
 }
