@@ -23,13 +23,12 @@
  */
 package org.silverpeas.core.contribution.publication.datereminder;
 
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.persistence.EntityReference;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * An entity, which references a publication in Silverpeas, such publication being represented by a
@@ -62,8 +61,7 @@ public class PublicationNoteReference extends EntityReference<PublicationDetail>
     try {
       return ServiceProvider.getService(PublicationService.class);
     } catch (Exception e) {
-      throw new PublicationRuntimeException("PublicationNoteReference.getEJB()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new PublicationRuntimeException(e);
     }
   }
 

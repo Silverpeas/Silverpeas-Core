@@ -59,7 +59,6 @@ import org.silverpeas.core.contribution.template.form.service.FormTemplateServic
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.IndexManager;
@@ -841,9 +840,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
             .getXMLFieldsForExport(getPK().getInstanceId() + ":" + getInfoId(), getPK().getId(),
                 language);
       } catch (Exception e) {
-        throw new PublicationRuntimeException("PublicationDetail.getDataRecord()",
-            SilverpeasRuntimeException.ERROR,
-            "publication.EX_IMPOSSIBLE_DE_FABRIQUER_FORMTEMPLATEBM_HOME", e);
+        throw new PublicationRuntimeException(e);
       }
     }
     return xmlFields;
@@ -953,19 +950,15 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     try {
       return ServiceProvider.getService(FormTemplateService.class);
     } catch (Exception e) {
-      throw new PublicationRuntimeException("PublicationDetail.getFormTemplateBm()",
-          SilverpeasRuntimeException.ERROR,
-          "publication.EX_IMPOSSIBLE_DE_FABRIQUER_FORMTEMPLATEBM_HOME", e);
+      throw new PublicationRuntimeException(e);
     }
   }
 
-  public PublicationService getPublicationBm() {
+  public PublicationService getPublicationService() {
     try {
       return ServiceProvider.getService(PublicationService.class);
     } catch (Exception e) {
-      throw new PublicationRuntimeException("PublicationDetail.getPublicationBm()",
-          SilverpeasRuntimeException.ERROR,
-          "publication.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME", e);
+      throw new PublicationRuntimeException(e);
     }
   }
 
