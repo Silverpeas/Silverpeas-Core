@@ -400,17 +400,24 @@ public class ImportExport extends AbstractExportProcess {
 
   private void createEmptySummary(String thisExportDir, String tempDir,
       HtmlExportGenerator htmlGenerator) throws ImportExportException {
-    File fileTopicHTML =
-        new File(tempDir + thisExportDir + File.separatorChar + "indexTopicEmpty.html");
-    Writer fileWriter = null;
+    final File fileExportDir = new File(tempDir, thisExportDir);
+    if (!fileExportDir.exists()) {
+      try {
+        FileFolderManager.createFolder(fileExportDir);
+      } catch (org.silverpeas.core.util.UtilException ex) {
+        throw new ImportExportException("ImportExport", "importExport.EX_CANT_CREATE_FOLDER", ex);
+      }
+    }
+    final File fileTopicHTML = new File(fileExportDir, "indexTopicEmpty.html");
     try {
-      fileTopicHTML.createNewFile();
-      fileWriter = new OutputStreamWriter(new FileOutputStream(fileTopicHTML.getPath()), UTF_8);
-      fileWriter.write(htmlGenerator.toHTML(fileTopicHTML.getName()));
+      if (!fileTopicHTML.createNewFile()) {
+        SilverLogger.getLogger(this).warn("{0} already exists!", fileTopicHTML.getAbsolutePath());
+      }
+      try (final Writer fileWriter = new OutputStreamWriter(new FileOutputStream(fileTopicHTML.getPath()), UTF_8)) {
+        fileWriter.write(htmlGenerator.toHTML(fileTopicHTML.getName()));
+      }
     } catch (IOException ex) {
       throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
-    } finally {
-      IOUtils.closeQuietly(fileWriter);
     }
   }
 
