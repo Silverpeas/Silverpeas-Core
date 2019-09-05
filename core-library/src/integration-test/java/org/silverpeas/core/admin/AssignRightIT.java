@@ -113,7 +113,7 @@ public class AssignRightIT  {
   }
 
   /*
-  FUNCTIONAL CASES - VERY HEADACHE CASE:
+  FUNCTIONAL CASES - VERY HEADACHE CASES:
   A user is in a sub group of a group and the group has right on component that handles node
   structure (kmelia for example).
   This user has direct right on a sub node of the component and a direct right on the component.
@@ -144,6 +144,25 @@ public class AssignRightIT  {
     // component
     verifyCurrentDirectRights(
         "test-assign-rights-expected-userAWithKmeliaSubNodeRight-directRightRemovedFromKmelia.txt");
+  }
+
+  @Test
+  public void testDirectKmeliaSubNodeRightMustNotBeDeletedIfUserHasYetDirectKmeliaAccess()
+      throws AdminException {
+    // Adding writer right on sub node of kmelia to user A
+    ProfileInst profileInst =
+        administrationService.getProfileInst(WRITER_PROFILE_ID_OF_KMELIA_SUB_NODE);
+    profileInst.addUser(USER_A);
+    administrationService.updateProfileInst(profileInst);
+
+    // Verifying that the right has been added successfully
+    verifyCurrentDirectRights("test-assign-rights-expected-userAWithKmeliaSubNodeRight.txt");
+
+    // Removing user A from the group that has access to kmelia
+    administrationService.removeUserFromGroup(USER_A, GROUP_THAT_CONTAINS_DIRECTLY_USER_A);
+
+    // Verifying that no right has been removed as USER_A has yet a role at component instance level
+    verifyCurrentDirectRights("test-assign-rights-expected-userAWithKmeliaSubNodeRight.txt");
   }
 
   @Test
