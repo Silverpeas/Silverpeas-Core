@@ -51,7 +51,7 @@ public class GoToSpace extends GoTo {
     boolean fallback = StringUtil.getBooleanValue(req.getParameter("Fallback"));
     if (fallback) {
 
-      // When fallback is requested, if the user has no right access to aimed space (or if the
+      // When fallback is requested, if the user has no access right to aimed space (or if the
       // space is deleted) then the first parent the user can access is searched.
       // It is possible that no space is found when user has no more access on the entire path.
 

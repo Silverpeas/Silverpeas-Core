@@ -27,6 +27,7 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SKDException;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.awt.datatransfer.DataFlavor;
@@ -48,22 +49,20 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
   private static final long serialVersionUID = -1169335280661356348L;
   public static final DataFlavor PublicationDetailFlavor =
       new DataFlavor(PublicationDetail.class, "Publication");
-  private final String instanceId;
+  private final NodePK fatherPK;
   private PublicationDetail pub;
 
   /**
-   * Constructs a new selection of a single publication in a given component instance.  is an alias to another publication, the component instance of the original
-   * publication is provided by the instance identifier of the {@link PublicationDetail#getPK()}
-   * identifying key and that instance identifier differs from the specified one.
+   * Constructs a new selection of a single publication in a given component instance.
    * @param pub the publication that is selected.
-   * @param instanceId the identifier of the component instance in which the selection was done.
-   * It Can be different from the component instance related by the publication in the case the
-   * selection is on an alias of it.
+   * @param fatherPK the identifier of the resource that is the father of the publication. That is
+   * to say the resource to which is linked directly the publication. If the father is the component
+   * instance itself, then the {@link NodePK#getId()} can be null.
    */
-  public PublicationSelection(PublicationDetail pub, String instanceId) {
+  public PublicationSelection(PublicationDetail pub, NodePK fatherPK) {
     super();
     this.pub = pub;
-    this.instanceId = instanceId;
+    this.fatherPK = fatherPK;
     super.addFlavor(PublicationDetailFlavor);
   }
 
@@ -79,7 +78,7 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
       transferedData = super.getTransferData(parFlavor);
     } catch (UnsupportedFlavorException e) {
       if (parFlavor.equals(PublicationDetailFlavor)) {
-        transferedData = new TransferData(pub, instanceId);
+        transferedData = new TransferData(pub, fatherPK);
       } else {
         throw e;
       }
@@ -115,7 +114,10 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
     try {
       keyData.setProperty("BEGINDATE", pub.getBeginDate().toString());
       keyData.setProperty("ENDDATE", pub.getEndDate().toString());
-      keyData.setProperty("INSTANCEID", instanceId);
+      keyData.setProperty("INSTANCEID", fatherPK.getInstanceId());
+      if (fatherPK.getId() != null) {
+        keyData.setProperty("FATHERID", fatherPK.getId());
+      }
     } catch (SKDException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
@@ -128,19 +130,19 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
   public class TransferData {
 
     private final PublicationDetail publication;
-    private final String instanceId;
+    private final NodePK fatherPK;
 
-    private TransferData(final PublicationDetail publication, final String instanceId) {
+    private TransferData(final PublicationDetail publication, final NodePK fatherPK) {
       this.publication = publication;
-      this.instanceId = instanceId;
+      this.fatherPK = fatherPK;
     }
 
     public PublicationDetail getPublicationDetail() {
       return publication;
     }
 
-    public String getInstanceId() {
-      return instanceId;
+    public NodePK getFatherPK() {
+      return fatherPK;
     }
   }
 

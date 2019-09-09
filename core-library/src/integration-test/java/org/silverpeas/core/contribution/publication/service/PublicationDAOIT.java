@@ -355,12 +355,11 @@ public class PublicationDAOIT {
     try (Connection con = getSafeConnection()) {
       List<String> fatherIds = new ArrayList<>();
       fatherIds.add("110");
-      PublicationPK pubPK = new PublicationPK("useless", "kmelia200");
       String sorting = "P.pubName";
       List<String> status = new ArrayList<>();
       status.add("Valid");
       boolean filterOnVisibilityPeriod = true;
-      List<PublicationDetail> result = PublicationDAO.selectByFatherIds(con, fatherIds, pubPK,
+      List<PublicationDetail> result = PublicationDAO.selectByFatherIds(con, fatherIds, "kmelia200",
           sorting, status,
           filterOnVisibilityPeriod);
       assertEquals(result.size(), 2);
@@ -369,7 +368,7 @@ public class PublicationDAOIT {
       fatherIds.clear();
       fatherIds.add("999");
 
-      result = PublicationDAO.selectByFatherIds(con, fatherIds, pubPK, sorting, status,
+      result = PublicationDAO.selectByFatherIds(con, fatherIds, "kmelia200", sorting, status,
           filterOnVisibilityPeriod);
       assertEquals(result.size(), 0);
     }
@@ -381,13 +380,12 @@ public class PublicationDAOIT {
   @Test
   public void testSelectByStatus_3args_1() throws Exception {
     try (Connection con = getSafeConnection()) {
-      PublicationPK pubPK = new PublicationPK("useless", "kmelia200");
       String status = "Valid";
-      Collection<PublicationDetail> result = PublicationDAO.selectByStatus(con, pubPK, status);
+      Collection<PublicationDetail> result = PublicationDAO.selectByStatus(con, "kmelia200", status);
       assertEquals(result.size(), 2);
 
       status = "Draft";
-      result = PublicationDAO.selectByStatus(con, pubPK, status);
+      result = PublicationDAO.selectByStatus(con, "kmelia200", status);
       assertEquals(result.size(), 0);
     }
   }

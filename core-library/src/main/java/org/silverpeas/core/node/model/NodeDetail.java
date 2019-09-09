@@ -165,6 +165,14 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
   }
 
   /**
+   * Is this node the root of a tree of nodes?
+   * @return true if the node is the root of a tree of nodes. False otherwise.
+   */
+  public boolean isRoot() {
+    return getNodePK().isRoot();
+  }
+
+  /**
    * Get the creation date
    * @return the creation date
    * @since 1.0

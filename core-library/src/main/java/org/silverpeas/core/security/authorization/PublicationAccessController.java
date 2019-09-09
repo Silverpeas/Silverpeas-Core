@@ -25,7 +25,7 @@ package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -214,10 +214,10 @@ public class PublicationAccessController extends AbstractAccessController<Public
   private boolean fillTopicTrackerAliasRoles(final Set<SilverpeasRole> userRoles,
       final AccessControlContext context, final String userId, final PublicationDetail pubDetail) {
     try {
-      final Collection<Alias> aliases = getPublicationService().getAlias(pubDetail.getPK());
-      for (Alias alias : aliases) {
+      final Collection<Location> locations = getPublicationService().getAllLocations(pubDetail.getPK());
+      for (Location location : locations) {
         final Set<SilverpeasRole> nodeUserRoles = nodeAccessController
-            .getUserRoles(userId, new NodePK(alias.getId(), alias.getInstanceId()), context);
+            .getUserRoles(userId, location, context);
         if (nodeAccessController.isUserAuthorized(nodeUserRoles)) {
           userRoles.addAll(nodeUserRoles);
           break;

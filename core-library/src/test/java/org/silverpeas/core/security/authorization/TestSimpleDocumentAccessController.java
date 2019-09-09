@@ -1957,7 +1957,7 @@ public class TestSimpleDocumentAccessController {
       verify(publicationService, times(nbCallOfPublicationBmGetAllFatherPK))
           .getAllFatherPK(any(PublicationPK.class));
       verify(publicationService, times(nbCallOfPublicationBmGetAlias))
-          .getAlias(any(PublicationPK.class));
+          .getAllLocations(any(PublicationPK.class));
     }
   }
 }
