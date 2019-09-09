@@ -419,7 +419,7 @@ public class WebComponentManager {
       if (StringUtil.isNotDefined(redirectTo.value())) {
         // No redirection on access error
         throw new WebApplicationException(
-            "User id " + webComponentContext.getUser().getId() + " has not right access to " +
+            "User id " + webComponentContext.getUser().getId() + " has not access right to " +
                 webComponentContext.getRequest().getRequestURI(), Response.Status.FORBIDDEN);
       }
       // A redirection is asked on an error

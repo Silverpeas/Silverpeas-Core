@@ -38,7 +38,7 @@ import org.silverpeas.core.contribution.publication.dao.PublicationFatherDAO;
 import org.silverpeas.core.contribution.publication.dao.PublicationI18NDAO;
 import org.silverpeas.core.contribution.publication.dao.SeeAlsoDAO;
 import org.silverpeas.core.contribution.publication.dao.ValidationStepsDAO;
-import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationI18N;
@@ -187,14 +187,15 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public void movePublication(PublicationPK pk, NodePK fatherPK, boolean indexIt) {
+  @Transactional
+  public void movePublication(PublicationPK pk, NodePK toFatherPK, boolean indexIt) {
     try (Connection con = getConnection()) {
       deleteIndex(pk);
-      PublicationDAO.changeInstanceId(con, pk, fatherPK.getInstanceId());
-      moveRating(pk, fatherPK.getInstanceId());
-      pk.setComponentName(fatherPK.getInstanceId());
-      PublicationFatherDAO.removeAllFather(con, pk);
-      PublicationFatherDAO.addFather(con, pk, fatherPK);
+      PublicationDAO.changeInstanceId(con, pk, toFatherPK.getInstanceId());
+      moveRating(pk, toFatherPK.getInstanceId());
+      pk.setComponentName(toFatherPK.getInstanceId());
+      PublicationFatherDAO.removeAllFathers(con, pk);
+      PublicationFatherDAO.addFather(con, pk, toFatherPK);
       if (indexIt) {
         createIndex(pk);
       }
@@ -204,6 +205,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
+  @Transactional
   public void changePublicationsOrder(List<String> ids, NodePK nodePK) {
     if (ids == null || ids.isEmpty()) {
       return;
@@ -222,10 +224,11 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public void changePublicationOrder(PublicationPK pubPK, NodePK nodePK, int direction) {
+  @Transactional
+  public void changePublicationOrder(PublicationPK pubPK, NodePK fatherPK, int direction) {
     // get all publications in given node
     List<PublicationDetail> publications =
-        (List<PublicationDetail>) getDetailsByFatherPK(nodePK, "P.pubUpdateDate desc");
+        (List<PublicationDetail>) getDetailsByFatherPK(fatherPK, "P.pubUpdateDate desc");
     // find given publication
     int index = getIndexOfPublication(pubPK.getId(), publications);
     // remove publication in list
@@ -243,7 +246,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try (Connection con = getConnection()) {
       for (int p = 0; p < publications.size(); p++) {
         PublicationDetail publiToOrder = publications.get(p);
-        PublicationFatherDAO.updateOrder(con, publiToOrder.getPK(), nodePK, p);
+        PublicationFatherDAO.updateOrder(con, publiToOrder.getPK(), fatherPK, p);
       }
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
@@ -288,6 +291,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
+  @Transactional
   public void setDetail(PublicationDetail detail) {
     setDetail(detail, false);
   }
@@ -508,6 +512,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
+  @Transactional
   public void addFather(PublicationPK pubPK, NodePK fatherPK) {
     try (Connection con = getConnection()) {
       PublicationFatherDAO.addFather(con, pubPK, fatherPK);
@@ -517,6 +522,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
+  @Transactional
   public void removeFather(PublicationPK pubPK, NodePK fatherPK) {
     try (Connection con = getConnection()) {
       PublicationFatherDAO.removeFather(con, pubPK, fatherPK);
@@ -526,6 +532,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
+  @Transactional
   public void removeFathers(PublicationPK pubPK, Collection<String> fatherIds) {
     try (Connection con = getConnection()) {
       PublicationFatherDAO.removeFathersToPublications(con, pubPK, fatherIds);
@@ -535,9 +542,10 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public void removeAllFather(PublicationPK pubPK) {
+  @Transactional
+  public void removeAllFathers(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
-      PublicationFatherDAO.removeAllFather(con, pubPK);
+      PublicationFatherDAO.removeAllFathers(con, pubPK);
       deleteIndex(pubPK);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
@@ -545,24 +553,10 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Collection<PublicationDetail> getOrphanPublications(PublicationPK pubPK) {
-    try (Connection con = getConnection()) {
-      Collection<PublicationDetail> pubDetails = PublicationDAO.getOrphanPublications(con, pubPK);
-      if (I18NHelper.isI18nContentActivated) {
-        setTranslations(con, pubDetails);
-      }
-      return pubDetails;
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException(e);
-    }
-  }
-
-  @Override
-  public Collection<PublicationDetail> getUnavailablePublicationsByPublisherId(PublicationPK pubPK,
-      String publisherId, String nodeId) {
+  public Collection<PublicationDetail> getOrphanPublications(final String componentId) {
     try (Connection con = getConnection()) {
       Collection<PublicationDetail> pubDetails =
-          PublicationDAO.getUnavailablePublicationsByPublisherId(con, pubPK, publisherId, nodeId);
+          PublicationDAO.getOrphanPublications(con, componentId);
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, pubDetails);
       }
@@ -582,57 +576,75 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Collection<Alias> getAlias(PublicationPK pubPK) {
+  public Collection<Location> getAllLocations(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
-      return PublicationFatherDAO.getAlias(con, pubPK);
+      return PublicationFatherDAO.getLocations(con, pubPK);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
   }
 
   @Override
-  public List<Alias> setAlias(PublicationPK pubPK, List<Alias> alias) {
-    List<Alias> oldAliases = (List<Alias>) getAlias(pubPK);
-    List<Alias> newAliases = new ArrayList<>(alias.size());
-    List<Alias> remAliases = new ArrayList<>(oldAliases.size());
-    // Compute the remove list
-    for (Alias a : oldAliases) {
-      if (!alias.contains(a)) {
-        remAliases.add(a);
-      }
+  public Collection<Location> getLocationsInComponentInstance(final PublicationPK pubPK,
+      final String instanceId) {
+    try (Connection con = getConnection()) {
+      return PublicationFatherDAO.getLocations(con, pubPK, instanceId);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException(e);
     }
-    // Compute the add and stay list
-    for (Alias a : alias) {
-      if (!oldAliases.contains(a)) {
-        newAliases.add(a);
-      }
+  }
+
+  @Override
+  public Optional<Location> getMainLocation(final PublicationPK pubPK) {
+    try (Connection con = getConnection()) {
+      return Optional.ofNullable(PublicationFatherDAO.getMainLocation(con, pubPK));
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException(e);
     }
+  }
+
+  @Override
+  public Collection<Location> getAllAliases(PublicationPK pubPK) {
+    try (Connection con = getConnection()) {
+      return PublicationFatherDAO.getAliases(con, pubPK);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException(e);
+    }
+  }
+
+  @Override
+  @Transactional
+  public void setAliases(PublicationPK pubPK, List<Location> aliases) {
+    Collection<Location> previousAliases = getAllAliases(pubPK);
+    Collection<Location> removedAliases = previousAliases.stream().filter(l -> !aliases.contains(l))
+        .collect(Collectors.toList());
+    Collection<Location> newAliases =
+        aliases.stream().filter(l -> !previousAliases.contains(l)).collect(Collectors.toList());
 
     try (final Connection connection = getConnection()) {
       addAlias(connection, pubPK, newAliases);
-      removeAndUnindexAlias(connection, pubPK, remAliases);
+      removeAndUnindexAlias(connection, pubPK, removedAliases);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
 
-    if (!newAliases.isEmpty() || !remAliases.isEmpty()) {
+    if (!newAliases.isEmpty() || !removedAliases.isEmpty()) {
       // aliases have changed... index it
       indexAliases(pubPK, null);
     }
-
-    return newAliases;
   }
 
   private void addAlias(final Connection connection, final PublicationPK pubPK,
-      final List<Alias> aliases) throws SQLException {
-    for (Alias alias : aliases) {
-      PublicationFatherDAO.addAlias(connection, pubPK, alias);
-      PublicationDAO.invalidateLastPublis(alias.getInstanceId());
+      final Collection<Location> aliases) throws SQLException {
+    for (Location location : aliases) {
+      PublicationFatherDAO.addAlias(connection, pubPK, location);
+      PublicationDAO.invalidateLastPublis(location.getInstanceId());
     }
   }
 
   @Override
-  public void addAlias(PublicationPK pubPK, List<Alias> aliases) {
+  @Transactional
+  public void addAliases(PublicationPK pubPK, List<Location> aliases) {
     if (aliases != null && !aliases.isEmpty()) {
       try (Connection con = getConnection()) {
         addAlias(con, pubPK, aliases);
@@ -643,17 +655,18 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     }
   }
 
-  public void removeAndUnindexAlias(final Connection connection, final PublicationPK pubPK,
-      final List<Alias> aliases) throws SQLException {
-    for (Alias alias : aliases) {
-      PublicationFatherDAO.removeAlias(connection, pubPK, alias);
-      PublicationDAO.invalidateLastPublis(alias.getInstanceId());
-      unindexAlias(pubPK, alias);
+  private void removeAndUnindexAlias(final Connection connection, final PublicationPK pubPK,
+      final Collection<Location> aliases) throws SQLException {
+    for (Location location : aliases) {
+      PublicationFatherDAO.removeAlias(connection, pubPK, location);
+      PublicationDAO.invalidateLastPublis(location.getInstanceId());
+      unindexAlias(pubPK, location);
     }
   }
 
   @Override
-  public void removeAlias(PublicationPK pubPK, List<Alias> aliases) {
+  @Transactional
+  public void removeAliases(PublicationPK pubPK, Collection<Location> aliases) {
     try (final Connection con = getConnection()) {
       if (aliases != null && !aliases.isEmpty()) {
         removeAndUnindexAlias(con, pubPK, aliases);
@@ -724,58 +737,15 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Collection<PublicationDetail> getDetailsByBeginDateDescAndStatus(PublicationPK pk,
-      String status, int nbPubs) {
-    try (Connection con = getConnection()) {
-      List<PublicationDetail> result = new ArrayList<>(nbPubs);
-      Collection<PublicationDetail> detailList =
-          PublicationDAO.selectByBeginDateDescAndStatus(con, pk, status);
-      Iterator<PublicationDetail> it = detailList.iterator();
-      int i = 0;
-      while (it.hasNext() && i < nbPubs) {
-        result.add(it.next());
-        i++;
-      }
-      if (I18NHelper.isI18nContentActivated) {
-        setTranslations(con, result);
-      }
-      return result;
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException(e);
-    }
-
-  }
-
-  @Override
   public Collection<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
-      PublicationPK pk, String status, int nbPubs, String fatherId) {
+      NodePK fatherPK, String status, int nbPubs) {
     try (Connection con = getConnection()) {
       Collection<PublicationDetail> detailList = PublicationDAO.
-          selectByBeginDateDescAndStatusAndNotLinkedToFatherId(con, pk, status, fatherId, nbPubs);
+          selectByBeginDateDescAndStatusAndNotLinkedToFatherId(con, fatherPK, status, nbPubs);
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, detailList);
       }
       return detailList;
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException(e);
-    }
-  }
-
-  @Override
-  public Collection<PublicationDetail> getDetailsByBeginDateDesc(PublicationPK pk, int nbPubs) {
-    try (Connection con = getConnection()) {
-      List<PublicationDetail> result = new ArrayList<>(nbPubs);
-      Collection<PublicationDetail> detailList = PublicationDAO.selectByBeginDateDesc(con, pk);
-      Iterator<PublicationDetail> it = detailList.iterator();
-      int i = 0;
-      while (it.hasNext() && i < nbPubs) {
-        result.add(it.next());
-        i++;
-      }
-      if (I18NHelper.isI18nContentActivated) {
-        setTranslations(con, result);
-      }
-      return result;
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -827,10 +797,10 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Collection<PublicationDetail> getPublicationsByStatus(String status, PublicationPK pubPK) {
+  public Collection<PublicationDetail> getPublicationsByStatus(String status, String instanceId) {
     try (Connection con = getConnection()) {
       Collection<PublicationDetail> publications =
-          PublicationDAO.selectByStatus(con, pubPK, status);
+          PublicationDAO.selectByStatus(con, instanceId, status);
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, publications);
       }
@@ -887,40 +857,34 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   @Override
   public Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
-      PublicationPK pubPK, boolean filterOnVisibilityPeriod) {
-    return getDetailsByFatherIdsAndStatusList(fatherIds, pubPK, null, null,
+      String instanceId, boolean filterOnVisibilityPeriod) {
+    return getDetailsByFatherIdsAndStatusList(fatherIds, instanceId, null, null,
         filterOnVisibilityPeriod);
   }
 
   @Override
-  public Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
-      PublicationPK pubPK, String sorting) {
-    return getDetailsByFatherIdsAndStatus(fatherIds, pubPK, sorting, null);
-  }
-
-  @Override
   public Collection<PublicationDetail> getDetailsByFatherIdsAndStatus(List<String> fatherIds,
-      PublicationPK pubPK, String sorting, String status) {
+      String instanceId, String sorting, String status) {
     ArrayList<String> statusList = null;
     if (status != null) {
       statusList = new ArrayList<>(1);
       statusList.add(status);
     }
-    return getDetailsByFatherIdsAndStatusList(fatherIds, pubPK, sorting, statusList);
+    return getDetailsByFatherIdsAndStatusList(fatherIds, instanceId, sorting, statusList);
   }
 
   @Override
   public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(List<String> fatherIds,
-      PublicationPK pubPK, String sorting, List<String> status) {
-    return getDetailsByFatherIdsAndStatusList(fatherIds, pubPK, sorting, status, true);
+      String instanceId, String sorting, List<String> status) {
+    return getDetailsByFatherIdsAndStatusList(fatherIds, instanceId, sorting, status, true);
   }
 
   @Override
   public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(List<String> fatherIds,
-      PublicationPK pubPK, String sorting, List<String> status, boolean filterOnVisibilityPeriod) {
+      String instanceId, String sorting, List<String> status, boolean filterOnVisibilityPeriod) {
     try (Connection con = getConnection()) {
       Collection<PublicationDetail> detailList = PublicationDAO
-          .selectByFatherIds(con, fatherIds, pubPK, sorting, status, filterOnVisibilityPeriod);
+          .selectByFatherIds(con, fatherIds, instanceId, sorting, status, filterOnVisibilityPeriod);
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, detailList);
       }
@@ -937,11 +901,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
-  }
-
-  @Override
-  public void processWysiwyg(PublicationPK pubPK) {
-    createIndex(pubPK);
   }
 
   /**
@@ -1153,54 +1112,47 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     return new IndexEntryKey(instanceId, "Publication", publiId);
   }
 
-  private void unindexAlias(PublicationPK pk, Alias alias) {
-    IndexEngineProxy.removeIndexEntry(getIndexEntryPK(alias.getInstanceId(), pk.getId()));
+  private void unindexAlias(PublicationPK pk, Location location) {
+    IndexEngineProxy.removeIndexEntry(getIndexEntryPK(location.getInstanceId(), pk.getId()));
   }
 
   private void unindexAlias(PublicationPK pk) {
-    // get all apps where alias are
-    Collection<Alias> aliases = getAlias(pk);
-    Set<String> componentIds = new HashSet<>();
-    for (Alias alias : aliases) {
-      if (!alias.getInstanceId().equals(pk.getInstanceId())) {
-        //it's a true alias
-        componentIds.add(alias.getInstanceId());
-      }
-    }
-    // remove publication index in these apps
-    for (String componentId : componentIds) {
-      IndexEngineProxy.removeIndexEntry(getIndexEntryPK(componentId, pk.getId()));
+    // get all apps where alias are and remove publication index in these apps
+    Collection<Location> aliases = getAllAliases(pk);
+    for (Location alias : aliases) {
+      IndexEngineProxy.removeIndexEntry(getIndexEntryPK(alias.getInstanceId(), pk.getId()));
     }
   }
 
   private void indexAliases(PublicationPK pubPK, FullIndexEntry indexEntry) {
     Objects.requireNonNull(pubPK);
+    final FullIndexEntry index;
     if (indexEntry == null) {
       PublicationDetail publi = getDetail(pubPK);
-      indexEntry = getFullIndexEntry(publi, true);
+      index = getFullIndexEntry(publi, true);
+    } else {
+      index = indexEntry;
     }
 
-    Objects.requireNonNull(indexEntry);
-    Collection<Alias> aliases = getAlias(pubPK);
+    Objects.requireNonNull(index);
     Map<IndexEntryKey, List<String>> pathsByIndex = new HashMap<>();
-    for (Alias alias : aliases) {
-      if (!alias.getInstanceId().equals(pubPK.getInstanceId())) {
-        //it's a true alias
-        IndexEntryKey pk = getIndexEntryPK(alias.getInstanceId(), pubPK.getId());
-        pathsByIndex.computeIfAbsent(pk, k -> new ArrayList<>());
-        try {
-          NodeDetail node = nodeService.getDetail(new NodePK(alias.getId(), alias.getInstanceId()));
-          pathsByIndex.get(pk).add(node.getFullPath());
-        } catch (Exception e) {
-          SilverLogger.getLogger(this)
-              .warn("Alias target {0} in component {1} no more exists", alias.getId(),
-                  alias.getInstanceId());
-        }
+    Collection<Location> aliases = getAllAliases(pubPK);
+    for (Location location : aliases) {
+      IndexEntryKey pk = getIndexEntryPK(location.getInstanceId(), pubPK.getId());
+      List<String> paths = pathsByIndex.computeIfAbsent(pk, k -> new ArrayList<>());
+      try {
+        NodeDetail node =
+            nodeService.getDetail(new NodePK(location.getId(), location.getInstanceId()));
+        paths.add(node.getFullPath());
+      } catch (Exception e) {
+        SilverLogger.getLogger(this)
+            .warn("Alias target {0} in component {1} no more exists", location.getId(),
+                location.getInstanceId());
       }
     }
 
     for (Map.Entry<IndexEntryKey, List<String>> entry : pathsByIndex.entrySet()) {
-      FullIndexEntry aliasIndexEntry = indexEntry.clone();
+      FullIndexEntry aliasIndexEntry = index.clone();
       aliasIndexEntry.setPK(entry.getKey());
       aliasIndexEntry.setPaths(entry.getValue());
       aliasIndexEntry.setAlias(true);
@@ -1208,24 +1160,18 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     }
   }
 
-  /**
-   * Method declaration
-   * @param pubPK a publication identifier
-   * @param sorting
-   * @return collection of publication details
-   */
   @Override
-  public Collection<PublicationDetail> getAllPublications(PublicationPK pubPK, String sorting) {
+  public Collection<PublicationDetail> getAllPublications(String instanceId, String sorting) {
     try (Connection con = getConnection()) {
-      return PublicationDAO.selectAllPublications(con, pubPK, sorting);
+      return PublicationDAO.selectAllPublications(con, instanceId, sorting);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
   }
 
   @Override
-  public Collection<PublicationDetail> getAllPublications(PublicationPK pubPK) {
-    return getAllPublications(pubPK, null);
+  public Collection<PublicationDetail> getAllPublications(String instanceId) {
+    return getAllPublications(instanceId, null);
   }
 
   @Override

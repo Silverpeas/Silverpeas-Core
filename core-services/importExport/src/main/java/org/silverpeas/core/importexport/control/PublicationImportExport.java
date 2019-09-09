@@ -181,7 +181,6 @@ public class PublicationImportExport {
    * @return ArrayList of publicationDetail
    */
   public static List<PublicationDetail> getUnbalancedPublications(String componentId) {
-    return new ArrayList<>(getPublicationService().getOrphanPublications(
-        new PublicationPK("useless", componentId)));
+    return new ArrayList<>(getPublicationService().getOrphanPublications(componentId));
   }
 }

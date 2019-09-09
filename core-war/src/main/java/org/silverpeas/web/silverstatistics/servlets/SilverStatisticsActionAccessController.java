@@ -44,10 +44,10 @@ public class SilverStatisticsActionAccessController {
 
 
   /**
-   * Check if user role has right access to the given action
+   * Check if user role has access right to the given action
    * @param action the checked action
    * @param level the current user access level
-   * @return true if given user access level has right access to the action
+   * @return true if given user access level has access right to the action
    */
   public boolean hasRightAccess(String action, UserAccessLevel level) {
     boolean actionExist = actionRole.containsKey(action);

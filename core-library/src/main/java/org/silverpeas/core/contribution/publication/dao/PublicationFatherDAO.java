@@ -23,24 +23,17 @@
  */
 package org.silverpeas.core.contribution.publication.dao;
 
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.publication.model.Location;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.Alias;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -48,12 +41,19 @@ import java.util.List;
  * @author Nicolas Eysseric
  */
 public class PublicationFatherDAO {
-  private static String publicationFatherTableName = "SB_Publication_PubliFather";
 
-  /**
-   * This class must not be instanciated
-   * @since 1.0
-   */
+  private static final String NODE_ID = "nodeId";
+  private static final String ALIAS_USER_ID = "aliasUserId";
+  private static final String ALIAS_DATE = "aliasDate";
+  private static final String PUB_ORDER = "pubOrder";
+  private static final String PUB_ID = "pubId";
+  private static final String INSTANCE_ID = "instanceId";
+  private static final String EQUALITY = " = ?";
+  private static final String INSTANCE_ID_SET = INSTANCE_ID + EQUALITY;
+  private static final String PUB_ID_SET = PUB_ID + EQUALITY;
+  private static final String NODE_ID_SET = NODE_ID + EQUALITY;
+  private static final String PUBLICATION_FATHER_TABLE_NAME = "SB_Publication_PubliFather";
+
   private PublicationFatherDAO() {
   }
 
@@ -62,191 +62,202 @@ public class PublicationFatherDAO {
    * given identifier.
    * @param componentInstanceId the identifier of the component instance for which the resources
    * must be deleted.
-   * @throws SQLException
+   * @throws SQLException if an error occurs while requesting the data source.
    */
   public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor(publicationFatherTableName).where("pubId in (" +
-        JdbcSqlQuery.createSelect("pubId from " + PublicationDAO.PUBLICATION_TABLE_NAME)
-            .where("instanceId = ?").getSqlQuery() + ")", componentInstanceId).execute();
-    JdbcSqlQuery.createDeleteFor(publicationFatherTableName)
-        .where("instanceId = ?", componentInstanceId).execute();
+    JdbcSqlQuery.createDeleteFor(PUBLICATION_FATHER_TABLE_NAME).where("pubId in (" +
+        JdbcSqlQuery.createSelect(PUB_ID).from(PublicationDAO.PUBLICATION_TABLE_NAME)
+            .where(INSTANCE_ID_SET).getSqlQuery() + ")", componentInstanceId).execute();
+    JdbcSqlQuery.createDeleteFor(PUBLICATION_FATHER_TABLE_NAME)
+        .where(INSTANCE_ID_SET, componentInstanceId).execute();
   }
 
   /**
-   * Add a new father to this publication
-   * @param con Connection to database
-   * @param pubPK the publication PublicationPK
-   * @param fatherPK the father NodePK to add
+   * Adds a new father to this publication.
+   * @param con Connection to the database
+   * @param pubPK the persistence identifier of the publication.
+   * @param fatherPK the father the persistence identifier of the new father of the publication.
    * @see NodePK
    * @see org.silverpeas.core.contribution.publication.model.PublicationPK
-   * @exception java.sql.SQLException
-   * @since 1.0
+   * @exception java.sql.SQLException if an error occurs while requesting the data source.
    */
   public static void addFather(Connection con, PublicationPK pubPK,
       NodePK fatherPK) throws SQLException {
-    StringBuilder insertStatement = new StringBuilder(128);
-    insertStatement.append("insert into ").append(publicationFatherTableName)
-        .append(" values (?, ?, ?, ?, ?, ?)");
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(insertStatement.toString());
-      prepStmt.setInt(1, new Integer(pubPK.getId()));
-      prepStmt.setInt(2, new Integer(fatherPK.getId()));
-      prepStmt.setString(3, pubPK.getInstanceId());
-      prepStmt.setNull(4, Types.INTEGER);
-      prepStmt.setNull(5, Types.VARCHAR);
-      prepStmt.setInt(6, 0);
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
-  }
-
-  public static void updateOrder(Connection con, PublicationPK pubPK,
-      NodePK fatherPK, int order) throws SQLException {
-    StringBuilder statement = new StringBuilder(128);
-    statement.append("update ").append(publicationFatherTableName).append(
-        " set pubOrder = ? where pubId = ? and nodeId = ? and instanceId = ? ");
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(statement.toString());
-      prepStmt.setInt(1, order);
-      prepStmt.setInt(2, Integer.parseInt(pubPK.getId()));
-      prepStmt.setInt(3, Integer.parseInt(fatherPK.getId()));
-      prepStmt.setString(4, pubPK.getInstanceId());
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
-  }
-
-  public static void addAlias(Connection con, PublicationPK pubPK, Alias alias)
-      throws SQLException {
-
-    StringBuilder insertStatement = new StringBuilder(128);
-    insertStatement.append("insert into ").append(publicationFatherTableName).
-        append(" values (?, ?, ?, ?, ?, ?)");
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(insertStatement.toString());
-      prepStmt.setInt(1, new Integer(pubPK.getId()));
-      prepStmt.setInt(2, new Integer(alias.getId()));
-      prepStmt.setString(3, alias.getInstanceId());
-      if (alias.getUserId() != null) {
-        prepStmt.setInt(4, Integer.parseInt(alias.getUserId()));
-      } else {
-        prepStmt.setNull(4, Types.INTEGER);
-      }
-      prepStmt.setString(5, Long.toString(new Date().getTime()));
-      prepStmt.setInt(6, alias.getPubOrder());
-      prepStmt.executeUpdate();
-
-    } finally {
-      DBUtil.close(prepStmt);
-    }
-  }
-
-  public static void removeAlias(Connection con, PublicationPK pubPK,
-      Alias alias) throws SQLException {
-    StringBuilder statement = new StringBuilder(128);
-    statement.append("delete from ").append(publicationFatherTableName).append(
-        " where pubId = ? and nodeId = ? and instanceId = ? ");
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(statement.toString());
-
-      prepStmt.setInt(1, Integer.parseInt(pubPK.getId()));
-      prepStmt.setInt(2, Integer.parseInt(alias.getId()));
-      prepStmt.setString(3, alias.getInstanceId());
-
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
-  }
-
-  public static List<Alias> getAlias(Connection con, PublicationPK pubPK)
-      throws SQLException {
-
-    StringBuilder selectQuery = new StringBuilder(128);
-    selectQuery.append(
-        "select nodeId, instanceId, aliasUserId, aliasDate, pubOrder from ").
-        append(publicationFatherTableName).append(" where pubId = ").append(pubPK.
-        getId());
-    Statement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(selectQuery.toString());
-      List<Alias>  list = new ArrayList<>();
-
-      while (rs.next()) {
-        String id = Integer.toString(rs.getInt(1));
-        String instanceId = rs.getString(2);
-        String userId = Integer.toString(rs.getInt(3));
-        String sDate = rs.getString(4);
-        Date date = null;
-        if (StringUtil.isDefined(sDate)) {
-          date = new Date(Long.parseLong(sDate));
-        }
-        int pubOrder = rs.getInt(5);
-
-        Alias alias = new Alias(id, instanceId);
-        alias.setUserId(userId);
-        alias.setDate(date);
-        alias.setPubOrder(pubOrder);
-        list.add(alias);
-      }
-
-      return list;
-
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
+    JdbcSqlQuery.createInsertFor(PUBLICATION_FATHER_TABLE_NAME)
+        .addInsertParam(PUB_ID, Integer.parseInt(pubPK.getId()))
+        .addInsertParam(NODE_ID, Integer.parseInt(fatherPK.getId()))
+        .addInsertParam(INSTANCE_ID, pubPK.getInstanceId())
+        .addInsertParam(ALIAS_USER_ID, null)
+        .addInsertParam(ALIAS_DATE, null)
+        .addInsertParam(PUB_ORDER, 0)
+        .executeWith(con);
   }
 
   /**
-   * Remove a father to this publication
+   * Updates the order of the publication among the children of the specified father with the given
+   * order value.
+   * @param con the connection to the data source
+   * @param pubPK the identifier of the publication in the data source.
+   * @param fatherPK the identifier of the father in the data source.
+   * @param order the new order of the publication.
+   * @throws SQLException if an error occurs while requesting the data source.
+   */
+  public static void updateOrder(Connection con, PublicationPK pubPK, NodePK fatherPK, int order)
+      throws SQLException {
+    JdbcSqlQuery.createUpdateFor(PUBLICATION_FATHER_TABLE_NAME)
+        .addUpdateParam(PUB_ORDER, order)
+        .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
+        .and(NODE_ID_SET, Integer.parseInt(fatherPK.getId()))
+        .and(INSTANCE_ID_SET, pubPK.getInstanceId())
+        .executeWith(con);
+  }
+
+  /**
+   * Adds a new alias to the specified publication. If the given location isn't an alias, then
+   * an {@link IllegalArgumentException} exception is thrown.
+   * @param con the connection to the data source.
+   * @param pubPK the identifier of the publication in the data source.
+   * @param location the new location of the publication as alias.
+   * @throws SQLException if an error occurs while requesting the data source.
+   */
+  public static void addAlias(Connection con, PublicationPK pubPK, Location location)
+      throws SQLException {
+    if (!location.isAlias()) {
+      throw new IllegalArgumentException("Location " + location.getId() + " isn't an alias!");
+    }
+
+    final Location.Alias alias = location.getAlias();
+    final String userId =
+        alias.getUserId() != null ? alias.getUserId() : User.getCurrentRequester().getId();
+    final Date date = alias.getDate() != null ? alias.getDate() : new Date();
+
+     JdbcSqlQuery.createInsertFor(PUBLICATION_FATHER_TABLE_NAME)
+         .addInsertParam(PUB_ID, Integer.parseInt(pubPK.getId()))
+         .addInsertParam(NODE_ID, Integer.parseInt(location.getId()))
+         .addInsertParam(INSTANCE_ID, location.getInstanceId())
+         .addInsertParam(ALIAS_USER_ID, Integer.parseInt(userId))
+         .addInsertParam(ALIAS_DATE, Long.toString(date.getTime()))
+         .addInsertParam(PUB_ORDER, location.getPubOrder())
+         .executeWith(con);
+  }
+
+  /**
+   * Removes the specified alias among the aliases of the given publication. If the given
+   * location isn't an alias, then an {@link IllegalArgumentException} exception is thrown.
+   * @param con the connection to the data source.
+   * @param pubPK the unique identifier of the publication in the data source.
+   * @param location the alias to remove.
+   * @throws SQLException if an error occurs while requesting the data source.
+   */
+  public static void removeAlias(Connection con, PublicationPK pubPK, Location location)
+      throws SQLException {
+
+    if (!location.isAlias()) {
+      throw new IllegalArgumentException("Location " + location.getId() + " isn't an alias!");
+    }
+
+    JdbcSqlQuery.createDeleteFor(PUBLICATION_FATHER_TABLE_NAME)
+        .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
+        .and(NODE_ID_SET, Integer.parseInt(location.getId()))
+        .and(INSTANCE_ID_SET, location.getInstanceId())
+        .andNotNull(ALIAS_DATE)
+        .andNotNull(ALIAS_USER_ID)
+        .executeWith(con);
+  }
+
+  /**
+   * Gets all the locations (the original one and the aliases) of the specified publication.
+   * @param con a connection to the data source.
+   * @param pubPK the unique identifying key of the publication.
+   * @return a collection of the locations of the publication.
+   * @throws SQLException if an error occurs while executing the SQL request.
+   */
+  public static List<Location> getLocations(Connection con, PublicationPK pubPK) throws SQLException {
+    JdbcSqlQuery query =
+        JdbcSqlQuery.createSelect("nodeId, instanceId, aliasUserId, aliasDate, pubOrder")
+            .from(PUBLICATION_FATHER_TABLE_NAME)
+            .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()));
+    return findLocations(con, query);
+  }
+
+  /**
+   * Gets the locations of the specified publication in the given component instance.
+   * @param con a connection to the data source.
+   * @param pubPK the unique identifying key of the publication.
+   * @param compoId the unique identifier of a component instance.
+   * @return a collection of the locations of the publication in the component instance.
+   * @throws SQLException if an error occurs while executing the SQL request.
+   */
+  public static List<Location> getLocations(Connection con, PublicationPK pubPK, String compoId)
+      throws SQLException {
+    JdbcSqlQuery query =
+        JdbcSqlQuery.createSelect("nodeId, instanceId, aliasUserId, aliasDate, pubOrder")
+            .from(PUBLICATION_FATHER_TABLE_NAME)
+            .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
+            .and(INSTANCE_ID_SET, compoId);
+    return findLocations(con, query);
+  }
+
+  private static List<Location> findLocations(final Connection con, final JdbcSqlQuery query)
+      throws SQLException {
+    return query.executeWith(con, rs -> {
+      String id = Integer.toString(rs.getInt(1));
+      String instanceId = rs.getString(2);
+      Location location = new Location(id, instanceId);
+      String sDate = rs.getString(4);
+      if (StringUtil.isDefined(sDate)) {
+        Date date = new Date(Long.parseLong(sDate));
+        String userId = Integer.toString(rs.getInt(3));
+        if (!rs.wasNull()) {
+          location.setAsAlias(userId, date);
+        }
+      }
+      int pubOrder = rs.getInt(5);
+      location.setPubOrder(pubOrder);
+      return location;
+    });
+  }
+
+  /**
+   * Gets the main location of the specified publication.
+   * @param con a connection to the data source.
+   * @param pubPK the unique identifying key of the publication.
+   * @return the main location of the specified publication or null.
+   * @throws SQLException if an error occurs while requesting the data source.
+   */
+  public static Location getMainLocation(Connection con, PublicationPK pubPK) throws SQLException {
+    JdbcSqlQuery query = JdbcSqlQuery.createSelect("nodeId, instanceId, pubOrder")
+        .from(PUBLICATION_FATHER_TABLE_NAME)
+        .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
+        .and(INSTANCE_ID_SET, pubPK.getInstanceId())
+        .andNull(ALIAS_USER_ID)
+        .andNull(ALIAS_DATE);
+    return query.executeUniqueWith(con, rs -> {
+      String id = Integer.toString(rs.getInt(1));
+      String instanceId = rs.getString(2);
+      Location location = new Location(id, instanceId);
+      int pubOrder = rs.getInt(5);
+      location.setPubOrder(pubOrder);
+      return location;
+    });
+  }
+
+  /**
+   * Removes a father of this publication.
    * @param con Connection to database
-   * @param pubPK the publication PublicationPK
-   * @param fatherPK the father NodePK to delete
+   * @param pubPK the unique identifier of the publication in the data source.
+   * @param fatherPK the unique identifier of the father to delete in the data source.
    * @see NodePK
    * @see org.silverpeas.core.contribution.publication.model.PublicationPK
-   * @exception java.sql.SQLException
-   * @since 1.0
+   * @exception java.sql.SQLException if an error occurs while requesting the data source.
    */
   public static void removeFather(Connection con, PublicationPK pubPK,
       NodePK fatherPK) throws SQLException {
-    StringBuilder deleteStatement = new StringBuilder(128);
-    deleteStatement.append("delete from ").append(publicationFatherTableName)
-        .append(" where pubId = ? and nodeId = ? ");
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(deleteStatement.toString());
-      prepStmt.setInt(1, new Integer(pubPK.getId()));
-      prepStmt.setInt(2, new Integer(fatherPK.getId()));
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
+    removeLink(con, pubPK, fatherPK);
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param pubPK
-   * @param fatherPK
-   * @throws SQLException
-   *
-   */
-  private static void removeFatherToPublications(Connection con,
-      PublicationPK pubPK, NodePK fatherPK) throws SQLException {
+  private static void removeFatherToPublications(Connection con, NodePK fatherPK)
+      throws SQLException {
     // get all publications linked to fatherPK
     List<PublicationPK> pubPKs = (List<PublicationPK>) getPubPKsInFatherPK(con, fatherPK);
 
@@ -258,204 +269,100 @@ public class PublicationFatherDAO {
 
   private static void removeLink(Connection con, PublicationPK pubPK,
       NodePK fatherPK) throws SQLException {
-    StringBuilder deleteStatement = new StringBuilder(128);
-    deleteStatement.append("delete from ").append(publicationFatherTableName)
-        .append(" where nodeId = ? and pubId = ? ");
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(deleteStatement.toString());
-      prepStmt.setInt(1, new Integer(fatherPK.getId()));
-      prepStmt.setInt(2, new Integer(pubPK.getId()));
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
+    JdbcSqlQuery.createDeleteFor(PUBLICATION_FATHER_TABLE_NAME)
+        .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
+        .and(NODE_ID_SET, Integer.parseInt(fatherPK.getId()))
+        .executeWith(con);
   }
 
-  /**
-   * Method declaration
-   * @param con
-   * @param pubPK
-   * @param fatherIds
-   * @throws SQLException
-   *
-   */
   public static void removeFathersToPublications(Connection con,
       PublicationPK pubPK, Collection<String> fatherIds) throws SQLException {
     for (final String fatherId : fatherIds) {
       NodePK fatherPK = new NodePK(fatherId, pubPK);
-      removeFatherToPublications(con, pubPK, fatherPK);
+      removeFatherToPublications(con, fatherPK);
     }
   }
 
   /**
-   * Delete all fathers to this publication
-   * @param con Connection to database
-   * @param pubPK the publication PublicationPK
+   * Deletes all the fathers of this publication. The publication will be then orphaned.
+   * @param con connection to the  database
+   * @param pubPK the unique identifier of the publication.
    * @see org.silverpeas.core.contribution.publication.model.PublicationPK
-   * @exception java.sql.SQLException
-   * @since 1.0
+   * @exception java.sql.SQLException if an error occurs while requesting the database.
    */
-  public static void removeAllFather(Connection con, PublicationPK pubPK)
+  public static void removeAllFathers(Connection con, PublicationPK pubPK)
       throws SQLException {
-    StringBuilder deleteStatement = new StringBuilder(128);
-    deleteStatement.append("delete from ").append(publicationFatherTableName)
-        .append(" where pubId = ? ");
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(deleteStatement.toString());
-      prepStmt.setInt(1, new Integer(pubPK.getId()));
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
+    JdbcSqlQuery.createDeleteFor(PUBLICATION_FATHER_TABLE_NAME)
+        .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
+        .executeWith(con);
   }
 
   /**
-   * Delete links between publication and father when publications are linked to a father which is a
-   * descendant of a node
-   * @param con Connection to database
-   * @param pubPK the publication PublicationPK
+   * Gets the identifiers of all the fathers of the specified publication and that are in the same
+   * component instance the publication is.
+   * @param con the connection to the database
+   * @param pubPK the unique identifier of the publication.
+   * @return a collection of all of the persistence identifiers of the publication's fathers.
    * @see NodePK
    * @see org.silverpeas.core.contribution.publication.model.PublicationPK
    * @exception java.sql.SQLException
-   * @since 1.0
    */
   public static Collection<NodePK> getAllFatherPK(Connection con, PublicationPK pubPK)
       throws SQLException {
-    return getAllFatherPK(con, pubPK, null);
-  }
-
-  public static Collection<NodePK> getAllFatherPK(Connection con, PublicationPK pubPK,
-      String order) throws SQLException {
-
-    StringBuilder selectQuery = new StringBuilder(128);
-    selectQuery.append("select nodeId from ").append(publicationFatherTableName)
-        .append(" where pubId = ").append(pubPK.getId())
-        .append(" and instanceId = '" + pubPK.getInstanceId() + "'");
-    if (order != null) {
-      selectQuery.append(" order by ").append(order);
-    }
-    Statement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(selectQuery.toString());
-      List<NodePK> list = new ArrayList<>();
-      while (rs.next()) {
-        String id = Integer.toString(rs.getInt(1));
-        NodePK nodePK = new NodePK(id, pubPK);
-        list.add(nodePK);
-      }
-      return list;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
+    return JdbcSqlQuery.createSelect(NODE_ID).from(PUBLICATION_FATHER_TABLE_NAME)
+        .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
+        .and(INSTANCE_ID_SET, pubPK.getInstanceId())
+        .executeWith(con, row -> {
+          String id = Integer.toString(row.getInt(1));
+          return new NodePK(id, pubPK);
+        });
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param fatherPKs
-   * @return
-   * @throws SQLException
-   *
-   */
-  public static Collection<PublicationPK> getPubPKsInFatherPKs(Connection con,
-      Collection<WAPrimaryKey> fatherPKs) throws SQLException {
-    WAPrimaryKey fatherPK;
-    PublicationPK pubPK;
-    String fatherId;
-    ArrayList<PublicationPK> list = new ArrayList<>();
-
-    if (fatherPKs.isEmpty()) {
-      return list;
-    } else {
-      Iterator<WAPrimaryKey> iterator = fatherPKs.iterator();
-
-      if (iterator.hasNext()) {
-        fatherPK = iterator.next();
-        pubPK = new PublicationPK("unknown", fatherPK);
-        fatherId = fatherPK.getId();
-
-        StringBuilder selectStatement = new StringBuilder(128);
-        selectStatement.append("select F.pubId from ").append(
-            publicationFatherTableName).append(" F, ").append(
-            pubPK.getTableName()).append(" P ");
-        selectStatement.append(" where F.pubId = P.pubId ");
-        selectStatement.append(" and ( F.nodeId = ").append(fatherId);
-
-        while (iterator.hasNext()) {
-          fatherPK = iterator.next();
-          fatherId = fatherPK.getId();
-          selectStatement.append(" or F.nodeId = ").append(fatherId);
-        }
-        selectStatement.append(" )");
-
-        Statement stmt = null;
-        ResultSet rs = null;
-
-        try {
-          stmt = con.createStatement();
-          rs = stmt.executeQuery(selectStatement.toString());
-          String id;
-
-          while (rs.next()) {
-            id = Integer.toString(rs.getInt(1));
-            pubPK = new PublicationPK(id, fatherPK);
-            list.add(pubPK);
-          }
-        } finally {
-          DBUtil.close(rs, stmt);
-        }
-      }
-      return list;
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param con
-   * @param fatherPK
-   * @return
-   * @throws SQLException
-   *
+   * Gets the identifiers of all of the publications that have as father at least one of the
+   * specified ones.
+   * @param con the connection to the data source.
+   * @param fatherPK the unique identifier of the fathers in the data source.
+   * @return a collection of the publication's identifiers in the data source.
+   * @throws SQLException if an error occurs while requesting the data source.
    */
   public static Collection<PublicationPK> getPubPKsInFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
     PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
-    StringBuilder selectStatement = new StringBuilder(128);
-    selectStatement.append("select P.pubId, P.instanceId from ").append(
-        publicationFatherTableName).append(" F, ").append(pubPK.getTableName())
-        .append(" P ");
-    selectStatement.append(" where F.instanceId = ? ");
-    selectStatement.append(" and F.pubId = P.pubId ");
-    selectStatement.append(" and F.nodeId = ? ");
 
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    try {
-      ArrayList<PublicationPK> list = new ArrayList<>();
-      stmt = con.prepareStatement(selectStatement.toString());
+    return JdbcSqlQuery.createSelect("P.pubId, P.instanceId")
+        .from(PUBLICATION_FATHER_TABLE_NAME + " F", pubPK.getTableName() + " P")
+        .where("F.instanceId = ?", fatherPK.getInstanceId())
+        .and("F.nodeId = ?", Integer.parseInt(fatherPK.getId()))
+        .and("F.pubId = P.pubId")
+        .executeWith(con, row -> {
+          String id = Integer.toString(row.getInt(1));
+          String instanceId = row.getString(2);
+          return new PublicationPK(id, instanceId);
+        });
+  }
 
-      stmt.setString(1, fatherPK.getInstanceId());
-      stmt.setInt(2, Integer.parseInt(fatherPK.getId()));
-
-      rs = stmt.executeQuery();
-      String id = "";
-      String instanceId = "";
-      while (rs.next()) {
-        id = Integer.toString(rs.getInt(1));
-        instanceId = rs.getString(2);
-        pubPK = new PublicationPK(id, instanceId);
-        list.add(pubPK);
-      }
-      return list;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
+  /**
+   * Gets all the aliases of the specified publication.
+   * @param con a connection to the data source.
+   * @param pubPK the unique identifying key of the publication.
+   * @return a collection of the aliases of the publication, each of them being a location.
+   * @throws SQLException if an error occurs while executing the SQL request.
+   */
+  public static Collection<Location> getAliases(final Connection con, final PublicationPK pubPK)
+      throws SQLException {
+    JdbcSqlQuery query = JdbcSqlQuery.createSelect("nodeId, instanceId, pubOrder")
+        .from(PUBLICATION_FATHER_TABLE_NAME)
+        .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
+        .andNotNull(ALIAS_DATE)
+        .andNotNull(ALIAS_USER_ID);
+    return query.executeWith(con, rs -> {
+      String id = String.valueOf(rs.getInt(1));
+      String instanceId = rs.getString(2);
+      int order = rs.getInt(3);
+      Location alias = new Location(id, instanceId);
+      alias.setPubOrder(order);
+      return alias;
+    });
   }
 }

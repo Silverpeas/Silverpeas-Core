@@ -133,7 +133,7 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
 
       if (!myId.equals(socialComment.getAuthor()) && instanceId.startsWith("kmelia")) {
 
-        // On Kmelia application, if the user has not right access to the publication, then the
+        // On Kmelia application, if the user has not access right to the publication, then the
         // associated comments are removed from the result
 
         AccessController<PublicationPK> publicationAccessController =

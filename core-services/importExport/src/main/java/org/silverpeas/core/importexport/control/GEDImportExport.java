@@ -41,7 +41,7 @@ import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -839,11 +839,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   public List<NodePK> getAliases(PublicationPK pubPK) {
     List<NodePK> pks = new ArrayList<>();
-    Collection<Alias> aliases = getPublicationService().getAlias(pubPK);
-    for (Alias alias : aliases) {
-      if (!alias.getInstanceId().equals(pubPK.getInstanceId())) {
-        pks.add(new NodePK(alias.getId(), alias.getInstanceId()));
-      }
+    Collection<Location> aliases = getPublicationService().getAllAliases(pubPK);
+    for (Location location : aliases) {
+      pks.add(new NodePK(location.getId(), location.getInstanceId()));
     }
     return pks;
   }

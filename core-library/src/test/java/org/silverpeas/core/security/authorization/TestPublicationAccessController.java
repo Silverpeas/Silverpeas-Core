@@ -34,7 +34,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
-import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.Visibility;
@@ -3126,13 +3126,13 @@ public class TestPublicationAccessController {
         }
         return nodes;
       });
-      when(publicationService.getAlias(any(PublicationPK.class))).then(invocation -> {
-        Collection<Alias> alias = new ArrayList<>();
+      when(publicationService.getAllLocations(any(PublicationPK.class))).then(invocation -> {
+        Collection<Location> locations = new ArrayList<>();
         if (testContext.aliasUserRoles != null) {
-          alias.add(
-              new Alias("nodeId", ((PublicationPK) invocation.getArguments()[0]).getInstanceId()));
+          locations.add(
+              new Location("nodeId", ((PublicationPK) invocation.getArguments()[0]).getInstanceId()));
         }
-        return alias;
+        return locations;
       });
       ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
     }
@@ -3210,7 +3210,7 @@ public class TestPublicationAccessController {
       verify(publicationService, times(nbCallOfPublicationBmGetAllFatherPK))
           .getAllFatherPK(any(PublicationPK.class));
       verify(publicationService, times(nbCallOfPublicationBmGetAlias))
-          .getAlias(any(PublicationPK.class));
+          .getAllLocations(any(PublicationPK.class));
     }
   }
 
