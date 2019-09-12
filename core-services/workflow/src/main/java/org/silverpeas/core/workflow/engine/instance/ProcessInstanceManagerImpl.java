@@ -174,7 +174,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
               historyStep.setUserId(r.getString(i++));
               historyStep.setUserRoleName(r.getString(i++));
               historyStep.setAction(r.getString(i++));
-              historyStep.setActionDate(r.getDate(i++));
+              historyStep.setActionDate(new Date(r.getTimestamp(i++).getTime()));
               historyStep.setResolvedState(r.getString(i++));
               historyStep.setResultingState(r.getString(i++));
               historyStep.setActionStatus(ActionStatus.from(r.getInt(i)));
