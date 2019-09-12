@@ -24,6 +24,8 @@
 package org.silverpeas.core.notification.sse;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.awaitility.Duration;
+import org.awaitility.core.ThrowingRunnable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
@@ -43,7 +45,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.with;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -138,7 +142,10 @@ abstract class AbstractServerEventDispatcherTaskTest {
     verify(mockedAsyncContext.getResponse(), never()).getWriter();
   }
 
-  void pause() throws Exception {
-    Thread.sleep(800);
+  void afterSomeTimesCheck(final ThrowingRunnable assertions) {
+    with().pollInterval(400, TimeUnit.MILLISECONDS)
+        .await()
+        .atMost(Duration.TWO_SECONDS)
+        .untilAsserted(assertions);
   }
 }
