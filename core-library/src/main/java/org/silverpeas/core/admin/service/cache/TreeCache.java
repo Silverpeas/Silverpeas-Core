@@ -345,4 +345,8 @@ public class TreeCache {
     return Integer
         .parseInt(component.getSpaceId().replaceFirst("^" + SpaceInst.SPACE_KEY_PREFIX, ""));
   }
+
+  public boolean isSpacePresent(int spaceId) {
+    return getSpace(spaceId) != null;
+  }
 }
