@@ -23,17 +23,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.apache.commons.lang3.tuple.Pair" %>
+<%@ page import="org.silverpeas.core.admin.user.constant.UserState" %>
 <%@ page import="org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController" %>
+<%@ page import="java.util.Arrays" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ include file="check.jsp" %>
 
-<fmt:setLocale value="${requestScope.resources.language}"/>
+<c:set var="userLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${userLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
@@ -48,6 +53,8 @@
 <%
 	  Domain  domObject 				= (Domain)request.getAttribute("domainObject");
     Group 	grObject 				= (Group)request.getAttribute("groupObject");
+    Group[] subGroups = (Group[])request.getAttribute("subGroups");
+    List<UserDetail> subUsers = (List<UserDetail>) request.getAttribute("subUsers");
     String 	groupsPath 				= (String)request.getAttribute("groupsPath");
     boolean isDomainRW 				= (Boolean)request.getAttribute("isDomainRW");
     boolean isDomainSync 			= (Boolean)request.getAttribute("isDomainSync");
@@ -127,6 +134,9 @@
     operationPane.addOperation("useless", resource.getString("JDP.rights.assign"), "javascript:assignSameRights()");
   }
 %>
+
+<c:set var="grObject" value="<%=grObject%>"/>
+<c:set var="subGroupList" value="<%=Arrays.asList(subGroups)%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -227,6 +237,12 @@ $(document).ready(function() {
     }
   });
 });
+
+var arrayBeforeAjaxRequest = function () {
+  if (${grObject.synchronized ? 0 : fn:length(subGroupList)} > 25) {
+    spProgressMessage.show();
+  }
+}
 </script>
 </head>
 <body class="page_content_admin admin-group">
@@ -274,74 +290,98 @@ if (showTabs) {
 </table>
 </view:board>
 <view:areaOfOperationOfCreation/>
+  <c:if test="${not grObject.synchronized}">
+    <c:set var="groupCommonLinkPart" value="${requestScope.myComponentURL}groupContent?Idgroup="/>
+    <fmt:message var="groupArrayTitle" key="JDP.groups"/>
+    <fmt:message var="groupLabel" key="GML.groupe"/>
+    <fmt:message var="nameLabel" key="GML.name"/>
+    <fmt:message var="usersLabel" key="GML.users"/>
+    <fmt:message var="descriptionLabel" key="GML.description"/>
+    <c:set var="iconPanelSynchronized"><view:icon iconName='<%=resource.getIcon("JDP.groupSynchronized")%>' altText="${groupLabel}"/></c:set>
+    <c:set var="iconPanel"><view:icon iconName='<%=resource.getIcon("JDP.group")%>' altText="${groupLabel}"/></c:set>
+    <div id="dynamic-group-container">
+      <view:arrayPane var="_gc_groupe"
+                      routingAddress="groupContent.jsp"
+                      numberLinesPerPage="<%=JobDomainSettings.m_GroupsByPage%>"
+                      title="${groupArrayTitle} (${fn:length(subGroupList)})"
+                      export="true">
+        <view:arrayColumn title="" sortable="false"/>
+        <view:arrayColumn title="${nameLabel}" sortable="false"/>
+        <view:arrayColumn title="${usersLabel}" sortable="false"/>
+        <view:arrayColumn title="${descriptionLabel}" sortable="false"/>
+        <view:arrayLines var="group" items="${subGroupList}">
+          <view:arrayLine>
+            <view:arrayCellText>
+              <c:choose>
+                <c:when test="${group.synchronized}">${iconPanelSynchronized}</c:when>
+                <c:otherwise>${iconPanel}</c:otherwise>
+              </c:choose>
+            </view:arrayCellText>
+            <view:arrayCellText><view:a href="${groupCommonLinkPart}${group.id}">${silfn:escapeHtml(group.name)}</view:a></view:arrayCellText>
+            <view:arrayCellText>${group.totalNbUsers}</view:arrayCellText>
+            <view:arrayCellText text="${silfn:escapeHtml(group.description)}"/>
+          </view:arrayLine>
+        </view:arrayLines>
+      </view:arrayPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          sp.arrayPane.ajaxControls('#dynamic-group-container', {
+            before : arrayBeforeAjaxRequest
+          });
+        });
+      </script>
+    </div>
+  </c:if>
+  <br/>
 <%
-	if (!grObject.isSynchronized()) {
-		ArrayPane arrayPane = gef.getArrayPane("_gc_groupe", "groupContent.jsp", request, session);
-		Group[] subGroups = (Group[])request.getAttribute("subGroups");
-
-		arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);
-		arrayPane.setTitle(resource.getString("JDP.groups") + " (" +  subGroups.length + ")");
-
-		arrayPane.addArrayColumn("&nbsp;");
-		arrayPane.addArrayColumn(resource.getString("GML.nom"));
-		arrayPane.addArrayColumn(resource.getString("GML.users"));
-		arrayPane.addArrayColumn(resource.getString("GML.description"));
-		arrayPane.setSortable(false);
-
-		if (subGroups != null) {
-			Group group = null;
-			for(int i=0; i<subGroups.length; i++){
-				//creation des ligne de l'arrayPane
-				group = subGroups[i];
-			if (group != null) {
-					ArrayLine arrayLine = arrayPane.addArrayLine();
-					IconPane iconPane1 = gef.getIconPane();
-					Icon groupIcon = iconPane1.addIcon();
-					if (group.isSynchronized())
-						groupIcon.setProperties(resource.getIcon("JDP.groupSynchronized"), resource.getString("GML.groupe"), "");
-			        else
-					groupIcon.setProperties(resource.getIcon("JDP.group"), resource.getString("GML.groupe"), "");
-					arrayLine.addArrayCellIconPane(iconPane1);
-					arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(group.getName()), (String)request.getAttribute("myComponentURL")+"groupContent?Idgroup="+group.getId());
-			        arrayLine.addArrayCellText(group.getTotalNbUsers());
-			        arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(group.getDescription()));
-			}
-			}
-		}
-		out.println(arrayPane.print());
-	}
-
-	out.println("<br/>");
-
-  ArrayPane arrayPaneUser = gef.getArrayPane("_gc_users", "groupContent.jsp", request, session);
-  List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
-
-  arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
-  arrayPaneUser.setTitle(resource.getString("GML.users") + " (" +  subUsers.size() + ")");
-  arrayPaneUser.setExportData(true);
-
-  arrayPaneUser.addArrayColumn(resource.getString("JDP.userState"));
-  arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
-  arrayPaneUser.addArrayColumn(resource.getString("GML.surname"));
-  arrayPaneUser.addArrayColumn(resource.getString("GML.user.lastConnection"));
-
-  if (subUsers != null) {
-    for(UserDetail user : subUsers){
-        ArrayLine arrayLineUser = arrayPaneUser.addArrayLine();
-        String userIcon = resource.getIcon("JDP.user.state." + user.getState().getName());
-        String iconAltText = resource.getString("GML.user.account.state."+user.getState().getName());
-        ArrayCellText cellIcon = arrayLineUser.addArrayCellText("<img src=\"" + userIcon
-              + "\" alt=\"" + iconAltText + "\" title=\"" + iconAltText + "\"/>");
-        cellIcon.setCompareOn(user.getState().name());
-        arrayLineUser.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(user.getLastName()), (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + user.getId());
-        arrayLineUser.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(user.getFirstName()));
-        Date lastConnection = user.getLastLoginDate();
-        ArrayCellText cell = arrayLineUser.addArrayCellText(resource.getOutputDateAndHour(lastConnection));
-        cell.setCompareOn(lastConnection);
-      }
+  Map<UserState, Pair<String, String>> bundleCache = new HashMap<>(UserState.values().length);
+  for (UserState userState : UserState.values()) {
+    bundleCache.put(userState,
+        Pair.of(resource.getIcon("JDP.user.state." + userState.getName()),
+            resource.getString("GML.user.account.state." + userState.getName())));
   }
-  out.println(arrayPaneUser.print());
 %>
+  <c:set var="bundleCache" value="<%=bundleCache%>"/>
+  <c:set var="subUserList" value="<%=subUsers%>"/>
+  <c:set var="lastConnectionColumnEnabled" value="<%=JobDomainSettings.lastConnectionColumnEnabled%>"/>
+  <c:set var="userCommonLinkPart" value="${requestScope.myComponentURL}userContent?Iduser="/>
+  <fmt:message var="userArrayTitle" key="GML.users"/>
+  <fmt:message var="userStateLabel" key="JDP.userState"/>
+  <fmt:message var="lastNameLabel" key="GML.lastName"/>
+  <fmt:message var="surnameLabel" key="GML.surname"/>
+  <fmt:message var="lastConnectionLabel" key="GML.user.lastConnection"/>
+  <div id="dynamic-user-container">
+    <view:arrayPane var="_gc_users"
+                    routingAddress="groupContent.jsp"
+                    numberLinesPerPage="<%=JobDomainSettings.m_UsersByPage%>"
+                    title="${userArrayTitle} (${fn:length(subUserList)})"
+                    export="true">
+      <view:arrayColumn title="${userStateLabel}" compareOn="${u -> u.state.name}"/>
+      <view:arrayColumn title="${lastNameLabel}" compareOn="${u ->u.lastName}"/>
+      <view:arrayColumn title="${surnameLabel}" compareOn="${u ->u.firstName}"/>
+      <c:if test="${lastConnectionColumnEnabled}">
+        <view:arrayColumn title="${lastConnectionLabel}" compareOn="${u -> u.lastLoginDate}"/>
+      </c:if>
+      <view:arrayLines var="user" items="${subUserList}">
+        <view:arrayLine>
+          <c:set var="iconAndLabel" value="${bundleCache[user.state]}"/>
+          <view:arrayCellText><view:icon iconName="${iconAndLabel.left}" altText="${iconAndLabel.right}"/></view:arrayCellText>
+          <view:arrayCellText><view:a href="${userCommonLinkPart}${user.id}">${silfn:escapeHtml(user.lastName)}</view:a></view:arrayCellText>
+          <view:arrayCellText text="${silfn:escapeHtml(user.firstName)}"/>
+          <c:if test="${lastConnectionColumnEnabled}">
+            <view:arrayCellText text="${silfn:formatDateAndHour(user.lastLoginDate, userLanguage)}"/>
+          </c:if>
+        </view:arrayLine>
+      </view:arrayLines>
+    </view:arrayPane>
+    <script type="text/javascript">
+      whenSilverpeasReady(function() {
+        sp.arrayPane.ajaxControls('#dynamic-user-container', {
+          before : arrayBeforeAjaxRequest
+        });
+      });
+    </script>
+  </div>
 
   <c:if test="${not empty manageableSpaces}">
     <br/><br/>

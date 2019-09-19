@@ -57,6 +57,8 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.model.Domain.MIXED_DOMAIN_ID;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -835,25 +837,20 @@ public class GroupManager {
 
   private List<GroupDetail> setDirectUsersOfGroups(final List<GroupDetail> groups)
       throws SQLException {
+    final Map<String, List<String>> usersByGroup;
     try (Connection connection = DBUtil.openConnection()) {
-      for (GroupDetail group : groups) {
-        setDirectUsersOfGroup(connection, group);
-      }
-      return groups;
+      usersByGroup = userDao.getDirectUserIdsByGroup(connection,
+          groups.stream().map(GroupDetail::getId).collect(Collectors.toList()), false);
     }
+    for (GroupDetail group : groups) {
+      final List<String> userIds = usersByGroup.getOrDefault(group.getId(), emptyList());
+      group.setUserIds(userIds.toArray(new String[0]));
+    }
+    return groups;
   }
 
-  private GroupDetail setDirectUsersOfGroup(final GroupDetail group) throws SQLException {
-    try (Connection connection = DBUtil.openConnection()) {
-      return setDirectUsersOfGroup(connection, group);
-    }
-  }
-
-  private GroupDetail setDirectUsersOfGroup(final Connection connection, final GroupDetail group)
-      throws SQLException {
-    final List<String> userIds = userDao.getDirectUserIdsInGroup(connection, group.getId(), false);
-    group.setUserIds(userIds.toArray(new String[0]));
-    return group;
+  private void setDirectUsersOfGroup(final GroupDetail group) throws SQLException {
+    setDirectUsersOfGroups(singletonList(group));
   }
 
   /**

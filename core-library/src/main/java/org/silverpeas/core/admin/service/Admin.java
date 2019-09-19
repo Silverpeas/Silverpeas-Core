@@ -572,12 +572,8 @@ class Admin implements Administration {
     try {
       int spaceId = getDriverSpaceId(domainFatherId);
       if (treeCache.isSpacePresent(spaceId)) {
-        List<String> subspaceIds = new ArrayList<>();
-        List<SpaceInstLight> subspaces = treeCache.getSubSpaces(getDriverSpaceId(domainFatherId));
-        for (SpaceInstLight subspace : subspaces) {
-          subspaceIds.add(subspace.getId());
-        }
-        return subspaceIds.toArray(new String[0]);
+        return treeCache.getSubSpaces(getDriverSpaceId(domainFatherId)).stream()
+            .map(SpaceInstLight::getId).toArray(String[]::new);
       } else {
         return getAllSubSpaceIdsWithoutCache(domainFatherId);
       }
