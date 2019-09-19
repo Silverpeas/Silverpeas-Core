@@ -103,6 +103,7 @@
   };
 
   var __loadMainAdminPage = function(params) {
+    __showProgressMessage();
     if (__spAdminWindowContext.queue.exists()) {
       return new Promise(function(resolve, reject) {
         __spAdminWindowContext.queue.push(function() {
@@ -122,6 +123,7 @@
   };
 
   var __loadSpaceAndComponentBody = function(params) {
+    __showProgressMessage();
     var _params = sp.param.singleToObject('jsonPromise', params);
     var _jsonPromise = _params.jsonPromise;
     delete _params.jsonPromise;
@@ -153,6 +155,7 @@
   };
 
   var __loadUserAndGroupBody = function(params) {
+    __showProgressMessage();
     var _params = sp.param.singleToObject('jsonPromise', params);
     var _jsonPromise = _params.jsonPromise;
     delete _params.jsonPromise;

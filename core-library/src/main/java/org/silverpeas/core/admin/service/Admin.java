@@ -427,7 +427,7 @@ class Admin implements Administration {
   private void deleteEffectivelySpaceInst(final SpaceInst spaceInst, final String spaceId,
       final int driverSpaceId, final String userId) throws AdminException {
     // Get all the sub-spaces
-    String[] subSpaceIds = getAllSubSpaceIds(spaceId);
+    String[] subSpaceIds = getAllSubSpaceIdsWithoutCache(spaceId);
 
     // Delete subspaces
     for (String subSpaceid : subSpaceIds) {
@@ -570,12 +570,24 @@ class Admin implements Administration {
   @Override
   public String[] getAllSubSpaceIds(String domainFatherId) throws AdminException {
     try {
+      int spaceId = getDriverSpaceId(domainFatherId);
+      if (treeCache.isSpacePresent(spaceId)) {
+        return treeCache.getSubSpaces(getDriverSpaceId(domainFatherId)).stream()
+            .map(SpaceInstLight::getId).toArray(String[]::new);
+      } else {
+        return getAllSubSpaceIdsWithoutCache(domainFatherId);
+      }
+    } catch (Exception e) {
+      throw new AdminException(failureOnGetting(SUBSPACES_OF_SPACE, domainFatherId), e);
+    }
+  }
+
+  private String[] getAllSubSpaceIdsWithoutCache(String domainFatherId) throws AdminException {
+    try {
       // get all sub space ids
       String[] asDriverSpaceIds = spaceManager.getAllSubSpaceIds(getDriverSpaceId(domainFatherId));
       // Convert all the driver space ids in client space ids
-      asDriverSpaceIds = getClientSpaceIds(asDriverSpaceIds);
-
-      return asDriverSpaceIds;
+      return getClientSpaceIds(asDriverSpaceIds);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting(SUBSPACES_OF_SPACE, domainFatherId), e);
     }
@@ -1431,7 +1443,7 @@ class Admin implements Administration {
     spaceManager.moveSpace(shortSpaceId, shortFatherId);
 
     // set space in last rank
-    spaceManager.updateSpaceOrder(shortSpaceId, getAllSubSpaceIds(fatherId).length);
+    spaceManager.updateSpaceOrder(shortSpaceId, getAllSubSpaceIdsWithoutCache(fatherId).length);
 
     if (useProfileInheritance) {
       processProfileInstsOnSpaceMove(shortSpaceId, shortFatherId, moveOnTop);
@@ -3255,7 +3267,8 @@ class Admin implements Administration {
 
   private SpaceInstLight getSpaceInstLight(int spaceId, int level) throws AdminException {
     Optional<SpaceInstLight> optionalSpace = treeCache.getSpaceInstLight(spaceId);
-    final SpaceInstLight sil = optionalSpace.orElse(spaceManager.getSpaceInstLightById(spaceId));
+    final SpaceInstLight sil = optionalSpace.isPresent() ? optionalSpace.get() :
+        spaceManager.getSpaceInstLightById(spaceId);
     if (sil != null) {
       if (level != -1) {
         sil.setLevel(level);

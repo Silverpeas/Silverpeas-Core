@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
@@ -37,11 +38,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.silverpeas.core.admin.user.model.UserDetail.BLANK_NAME;
 
 @Singleton
@@ -379,16 +384,27 @@ public class UserDAO {
   public List<String> getDirectUserIdsInGroup(Connection connection, final String groupId,
       final boolean includeRemoved)
       throws SQLException {
+    return getDirectUserIdsByGroup(connection, singletonList(groupId), includeRemoved)
+        .getOrDefault(groupId, emptyList());
+  }
+
+  public Map<String, List<String>> getDirectUserIdsByGroup(Connection connection, final List<String> groupIds,
+      final boolean includeRemoved)
+      throws SQLException {
     final Object[] userStatesToExclude = includeRemoved
         ? new UserState[]{UserState.DELETED}
         : new UserState[]{UserState.REMOVED, UserState.DELETED};
-    return JdbcSqlQuery.createSelect("id")
-        .from(USER_TABLE, GROUP_USER_REL_TABLE)
-        .where(USER_ID_JOINTURE)
-        .and("groupId = ?", Integer.parseInt(groupId))
-        .and(STATE).notIn(userStatesToExclude)
-        .orderBy(LAST_NAME)
-        .executeWith(connection, row -> Integer.toString(row.getInt(1)));
+    final Map<String, List<String>> result = new HashMap<>(groupIds.size());
+    if (!groupIds.isEmpty()) {
+      JdbcSqlQuery.createSelect("groupid, userid")
+          .from(USER_TABLE, GROUP_USER_REL_TABLE)
+          .where(USER_ID_JOINTURE)
+          .and("groupId").in(groupIds.stream().map(Integer::parseInt).collect(Collectors.toList()))
+          .and(STATE).notIn(userStatesToExclude)
+          .orderBy(LAST_NAME)
+          .executeWith(connection, row -> MapUtil.putAddList(result, Integer.toString(row.getInt(1)), Integer.toString(row.getInt(2))));
+    }
+    return result;
   }
 
   public List<String> getUserIdsInGroups(Connection con, List<String> groupIds)
