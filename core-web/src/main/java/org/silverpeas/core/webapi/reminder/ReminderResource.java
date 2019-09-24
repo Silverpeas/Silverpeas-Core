@@ -36,6 +36,7 @@ import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.reminder.DateTimeReminder;
 import org.silverpeas.core.reminder.DurationReminder;
 import org.silverpeas.core.reminder.Reminder;
+import org.silverpeas.core.reminder.ReminderProcessName;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ResourceLocator;
@@ -68,8 +69,7 @@ import java.util.stream.Collectors;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
-import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
-    .getSessionVolatileResourceCacheService;
+import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider.getSessionVolatileResourceCacheService;
 import static org.silverpeas.core.reminder.Reminder.getByContributionAndUser;
 import static org.silverpeas.core.reminder.ReminderSettings.getMessagesIn;
 import static org.silverpeas.core.reminder.ReminderSettings.getPossibleReminders;
@@ -169,12 +169,13 @@ public class ReminderResource extends RESTWebService {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public ReminderEntity createReminder(ReminderEntity reminderEntity) {
-    Contribution contribution = getContribution();
+    final Contribution contribution = getContribution();
+    final ReminderProcessName processName = ReminderProcessName.getByName(reminderEntity.getProcessName());
     final Reminder reminder;
     if (isDefined(reminderEntity.getDateTime())) {
-      reminder = new DateTimeReminder(getContributionIdentifier(), getUser());
+      reminder = new DateTimeReminder(getContributionIdentifier(), getUser(), processName);
     } else {
-      reminder = new DurationReminder(getContributionIdentifier(), getUser());
+      reminder = new DurationReminder(getContributionIdentifier(), getUser(), processName);
     }
     reminderEntity.mergeInto(reminder);
     try {
@@ -184,12 +185,10 @@ public class ReminderResource extends RESTWebService {
           getUiMessageContributionLabel(reminderEntity, contribution));
       throw new WebApplicationException(e, Response.Status.PRECONDITION_FAILED);
     }
-
     if (reminder instanceof DurationReminder) {
       successMessage("reminder.add.duration.success", getReminderLabel(reminderEntity),
           getUiMessageContributionLabel(reminderEntity, contribution));
     }
-
     return asWebEntity(reminder);
   }
 

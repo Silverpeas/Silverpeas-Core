@@ -53,12 +53,19 @@ public class ReminderProcess implements SchedulerEventListener {
   @Override
   public void triggerFired(final SchedulerEvent anEvent) {
     final String reminderId = anEvent.getJobExecutionContext().getJobName();
-    Reminder reminder = repository.getById(reminderId);
+    final Reminder reminder = repository.getById(reminderId);
     reminder.triggered();
     notifyUserAbout(reminder);
-    Transaction.performInOne(() -> repository.save(reminder));
     if (reminder.isSchedulable()) {
+      Transaction.performInOne(() -> repository.save(reminder));
       reminder.schedule();
+    } else if (reminder.isSystemUser()) {
+      Transaction.performInOne(() -> {
+        repository.delete(reminder);
+        return null;
+      });
+    } else {
+      Transaction.performInOne(() -> repository.save(reminder));
     }
   }
 
@@ -88,7 +95,7 @@ public class ReminderProcess implements SchedulerEventListener {
    * Background process request which ensure that the reminder scheduler will not be disturbed
    * processes as they will be processed one by one.
    */
-  private class BackgroundReminderUserNotificationProcess extends AbstractBackgroundProcessRequest {
+  private static class BackgroundReminderUserNotificationProcess extends AbstractBackgroundProcessRequest {
 
     private final Reminder reminder;
 
@@ -99,7 +106,7 @@ public class ReminderProcess implements SchedulerEventListener {
 
     @Override
     protected void process() {
-      final String fullProcessName = "CalendarEventUserNotification" + PROCESS_NAME_SUFFIX;
+      final String fullProcessName = reminder.getProcessName() + PROCESS_NAME_SUFFIX;
       final BackgroundReminderProcess process = ServiceProvider.getService(fullProcessName);
       process.performWith(reminder);
     }

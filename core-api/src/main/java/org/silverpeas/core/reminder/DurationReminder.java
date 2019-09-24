@@ -29,20 +29,15 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.ContributionModel;
 import org.silverpeas.core.contribution.model.NoSuchPropertyException;
 import org.silverpeas.core.date.TimeUnit;
-import org.silverpeas.core.util.filter.Filter;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Transient;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
 
 import static java.util.Objects.requireNonNull;
 
@@ -78,24 +73,33 @@ import static java.util.Objects.requireNonNull;
 @Entity
 @DiscriminatorValue("duration")
 public class DurationReminder extends Reminder {
+  private static final long serialVersionUID = -4347609060577633972L;
 
   @Column(name = "trigger_durationTime")
   private Integer duration;
   @Column(name = "trigger_durationUnit")
   @Enumerated(EnumType.STRING)
   private TimeUnit timeUnit;
-  @Column(name = "trigger_durationProp")
-  private String contributionProperty;
-  @Transient
-  private transient OffsetDateTime nextTriggeringDate;
+
+  /**
+   * Constructs a new reminder about the given contribution for the system.
+   * @param contributionId the unique identifier of a contribution.
+   * @param processName the name of the process the reminder MUST perform when triggered.
+   */
+  public DurationReminder(final ContributionIdentifier contributionId,
+      final ReminderProcessName processName) {
+    super(contributionId, processName);
+  }
 
   /**
    * Constructs a new reminder about the specified contribution and for the given user.
    * @param contributionId the unique identifier of the contribution.
    * @param user the user aimed by this reminder.
+   * @param processName the name of the process the reminder MUST perform when triggered.
    */
-  public DurationReminder(final ContributionIdentifier contributionId, final User user) {
-    super(contributionId, user);
+  public DurationReminder(final ContributionIdentifier contributionId, final User user,
+      final ReminderProcessName processName) {
+    super(contributionId, user, processName);
   }
 
   /**
@@ -105,6 +109,7 @@ public class DurationReminder extends Reminder {
     super();
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public final DurationReminder withText(final String text) {
     return super.withText(text);
@@ -125,14 +130,6 @@ public class DurationReminder extends Reminder {
    */
   public TimeUnit getTimeUnit() {
     return timeUnit;
-  }
-
-  /**
-   * Gets the temporal property of the contribution to which this reminder is related.
-   * @return the name of a temporal business property of the contribution.
-   */
-  public String getContributionProperty() {
-    return contributionProperty;
   }
 
   /**
@@ -157,24 +154,8 @@ public class DurationReminder extends Reminder {
       String temporalProperty) {
     this.duration = duration;
     this.timeUnit = timeUnit;
-    this.contributionProperty = temporalProperty;
+    withContributionProperty(temporalProperty);
     return this;
-  }
-
-  /**
-   * This reminder is schedulable or reschedulable if the temporal property of the related
-   * contribution from which the triggering date is computed is non null and after now.
-   * @return true if this reminder can be scheduled or rescheduled according to the property value
-   * of the related contribution. False otherwise.
-   */
-  @Override
-  public boolean isSchedulable() {
-    try {
-      nextTriggeringDate = computeTriggeringDate();
-      return nextTriggeringDate != null;
-    } catch (IllegalArgumentException | NoSuchPropertyException e) {
-      return false;
-    }
   }
 
   @Override
@@ -189,45 +170,23 @@ public class DurationReminder extends Reminder {
 
   @Override
   protected OffsetDateTime computeTriggeringDate() {
-    if (nextTriggeringDate != null && !nextTriggeringDate.isBefore(OffsetDateTime.now())) {
-      return nextTriggeringDate;
+    OffsetDateTime computedDate = super.computeTriggeringDate();
+    if (computedDate == null) {
+      final ContributionModel model = getContribution().getModel();
+      final ZoneId userZoneId = getUserZoneId();
+      final ZonedDateTime sinceDateTime = ZonedDateTime.now(userZoneId).plus(this.duration, requireNonNull(this.timeUnit.toChronoUnit()));
+      OffsetDateTime propertyDateTime;
+      try {
+        propertyDateTime = applyFilterOnTemporalType(
+            model.filterByType(getContributionProperty(), sinceDateTime), userZoneId);
+      } catch (NoSuchPropertyException e) {
+        propertyDateTime = applyFilterOnTemporalType(model.filterByType(getContributionProperty()),
+            userZoneId);
+      }
+      computedDate = !propertyDateTime.isBefore(sinceDateTime.toOffsetDateTime())
+          ? propertyDateTime.minus(this.duration, requireNonNull(this.timeUnit.toChronoUnit()))
+          : null;
     }
-    final ContributionModel model = getContribution().getModel();
-    final ZoneId userZoneId = User.getById(getUserId()).getUserPreferences().getZoneId();
-    ZonedDateTime sinceDateTime = ZonedDateTime.now(userZoneId)
-        .plus(this.duration, requireNonNull(this.timeUnit.toChronoUnit()));
-    OffsetDateTime propertyDateTime;
-    try {
-      propertyDateTime =
-          applyFilterOnTemporalType(model.filterByType(getContributionProperty(), sinceDateTime),
-              userZoneId);
-    } catch (NoSuchPropertyException e) {
-      propertyDateTime =
-          applyFilterOnTemporalType(model.filterByType(getContributionProperty()), userZoneId);
-    }
-    return
-        !propertyDateTime.isBefore(sinceDateTime.toOffsetDateTime()) ?
-            propertyDateTime.minus(this.duration, requireNonNull(this.timeUnit.toChronoUnit())) :
-            null;
-  }
-
-  private OffsetDateTime applyFilterOnTemporalType(final Filter<Class<?>, Object> filter,
-      ZoneId withZoneId) {
-    final ZoneId platformZoneId = ZoneId.systemDefault();
-    final ZonedDateTime platformZonedTriggeringDate =
-        filter.matchFirst(Date.class::isAssignableFrom,
-            d -> ZonedDateTime.ofInstant(((Date) d).toInstant(), platformZoneId))
-            .matchFirst(OffsetDateTime.class::equals,
-                d -> ((OffsetDateTime) d).atZoneSameInstant(platformZoneId))
-            .matchFirst(LocalDate.class::equals,
-                d -> ((LocalDate) d).atStartOfDay(withZoneId).withZoneSameInstant(platformZoneId))
-            .matchFirst(LocalDateTime.class::equals,
-                d -> ((LocalDateTime) d).atZone(platformZoneId))
-            .matchFirst(ZonedDateTime.class::equals,
-                d -> ((ZonedDateTime) d).withZoneSameInstant(platformZoneId))
-            .result()
-            .orElseThrow(() -> new IllegalArgumentException(
-                "The property " + getContributionProperty() + " isn't a date or a date time"));
-    return platformZonedTriggeringDate.toOffsetDateTime();
+    return computedDate;
   }
 }

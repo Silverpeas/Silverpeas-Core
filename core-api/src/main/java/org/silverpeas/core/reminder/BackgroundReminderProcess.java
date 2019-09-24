@@ -61,6 +61,13 @@ public interface BackgroundReminderProcess {
   }
 
   /**
+   * Gets the {@link ReminderProcessName} instance representing the name of the
+   * {@link BackgroundReminderProcess}.
+   * @return the {@link ReminderProcessName} instance.
+   */
+  ReminderProcessName getName();
+
+  /**
    * Performs the treatment of the process.
    * @param reminder a reminder.
    */

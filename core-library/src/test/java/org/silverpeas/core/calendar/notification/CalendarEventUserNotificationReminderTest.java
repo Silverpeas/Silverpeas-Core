@@ -50,6 +50,7 @@ import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.reminder.DurationReminder;
 import org.silverpeas.core.reminder.Reminder;
+import org.silverpeas.core.reminder.ReminderProcessName;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.test.extention.TestManagedBeans;
@@ -80,10 +81,11 @@ import static org.mockito.Mockito.when;
  */
 @EnableSilverTestEnv
 @TestManagedBeans({JpaUpdateOperation.class, JpaPersistOperation.class,
-    CalendarContributionReminderUserNotification.class})
-public class CalendarContributionReminderUserNotificationTest {
+    CalendarEventUserNotificationReminder.class})
+public class CalendarEventUserNotificationReminderTest {
   private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
 
+  private static final ReminderProcessName PROCESS_NAME = () -> "TestReminderProcess";
   private static final String INSTANCE_ID = "instance26";
   private static final String LOCAL_ID = "localId";
   private static final String FR = "fr";
@@ -141,7 +143,7 @@ public class CalendarContributionReminderUserNotificationTest {
   @Test
   public void durationReminderOf0MinuteOnCalendarContributionShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder(setupSimpleEventOnAllDay())
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     assertContentsOnSimpleEventOnAllDay(durationReminder);
   }
@@ -149,7 +151,7 @@ public class CalendarContributionReminderUserNotificationTest {
   @Test
   public void durationReminderOf1MinuteOnCalendarContributionShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder(setupSimpleEventOnAllDay())
-        .triggerBefore(1, TimeUnit.MINUTE, "");
+        .triggerBefore(1, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     assertContentsOnSimpleEventOnAllDay(durationReminder);
   }
@@ -157,7 +159,7 @@ public class CalendarContributionReminderUserNotificationTest {
   @Test
   public void durationReminderOf5MinutesOnCalendarContributionShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder(setupSimpleEventOnAllDay())
-        .triggerBefore(5, TimeUnit.MINUTE, "");
+        .triggerBefore(5, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     assertContentsOnSimpleEventOnAllDay(durationReminder);
   }
@@ -167,7 +169,7 @@ public class CalendarContributionReminderUserNotificationTest {
       throws Exception {
     receiver.getUserPreferences().setZoneId(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(setupSimpleEventOnAllDay())
-        .triggerBefore(0, TimeUnit.HOUR, "");
+        .triggerBefore(0, TimeUnit.HOUR, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 (UTC)"));
@@ -193,7 +195,7 @@ public class CalendarContributionReminderUserNotificationTest {
   @Test
   public void durationReminderOnSeveralDaysEventOnAllDayShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder(setupSeveralDaysEventOnAllDay())
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 - 22.02.2018"));
@@ -209,7 +211,7 @@ public class CalendarContributionReminderUserNotificationTest {
   public void durationReminderWithAnotherUserZoneIdOnSeveralDaysEventOnAllDayShouldWork() throws Exception {
     receiver.getUserPreferences().setZoneId(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(setupSeveralDaysEventOnAllDay())
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 - 22.02.2018 (UTC)"));
@@ -226,7 +228,7 @@ public class CalendarContributionReminderUserNotificationTest {
     final CalendarEvent calendarEvent = setupSeveralDaysEventOnAllDay();
     when(calendarEvent.getCalendar().getZoneId()).thenReturn(ZoneId.of("America/Cancun"));
     final DurationReminder durationReminder = initReminderBuilder(calendarEvent)
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 - 22.02.2018 (America/Cancun)"));
@@ -243,7 +245,7 @@ public class CalendarContributionReminderUserNotificationTest {
     final CalendarEvent calendarEvent = setupSeveralDaysEventOnAllDay();
     when(calendarEvent.getCalendar().getZoneId()).thenReturn(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(calendarEvent)
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 - 22.02.2018 (Asia/Muscat)"));
@@ -258,7 +260,7 @@ public class CalendarContributionReminderUserNotificationTest {
   @Test
   public void durationReminderOnSimpleEventOf2HoursShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder(setupSimpleEventOn2Hours(ZoneId.systemDefault()))
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 21:00 - 23:00"));
@@ -274,7 +276,7 @@ public class CalendarContributionReminderUserNotificationTest {
   public void durationReminderWithAnotherUserZoneIdOnSimpleEventOf2HoursShouldWork() throws Exception {
     receiver.getUserPreferences().setZoneId(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(setupSimpleEventOn2Hours(ZoneId.systemDefault()))
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 21:00 - 23:00 (UTC)"));
@@ -290,7 +292,7 @@ public class CalendarContributionReminderUserNotificationTest {
   public void durationReminderWithAnotherBeforeCalendarZoneIdOnSimpleEventOf2HoursShouldWork() throws Exception {
     final CalendarEvent calendarEvent = setupSimpleEventOn2Hours(ZoneId.of("America/Cancun"));
     final DurationReminder durationReminder = initReminderBuilder(calendarEvent)
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 21:00 - 23:00 (America/Cancun)"));
@@ -306,7 +308,7 @@ public class CalendarContributionReminderUserNotificationTest {
   public void durationReminderWithAnotherAfterCalendarZoneIdOnSimpleEventOf2HoursShouldWork() throws Exception {
     final CalendarEvent calendarEvent = setupSimpleEventOn2Hours(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(calendarEvent)
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 21:00 - 23:00 (Asia/Muscat)"));
@@ -321,7 +323,7 @@ public class CalendarContributionReminderUserNotificationTest {
   @Test
   public void durationReminderOnSeveralDaysEventOf2HoursShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder(setupSeveralDaysEventOn2Hours(ZoneId.systemDefault()))
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 23:00 - 22.02.2018 01:00"));
@@ -338,7 +340,7 @@ public class CalendarContributionReminderUserNotificationTest {
       throws Exception {
     receiver.getUserPreferences().setZoneId(ZoneId.of("America/Cancun"));
     final DurationReminder durationReminder = initReminderBuilder(setupSeveralDaysEventOn2Hours(ZoneId.systemDefault()))
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 23:00 - 22.02.2018 01:00 (UTC)"));
@@ -355,7 +357,7 @@ public class CalendarContributionReminderUserNotificationTest {
       throws Exception {
     receiver.getUserPreferences().setZoneId(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(setupSeveralDaysEventOn2Hours(ZoneId.systemDefault()))
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 23:00 - 22.02.2018 01:00 (UTC)"));
@@ -371,7 +373,7 @@ public class CalendarContributionReminderUserNotificationTest {
   public void durationReminderWithAnotherBeforeCalendarZoneIdOnSeveralDaysEventOf2HoursShouldWork() throws Exception {
     final CalendarEvent calendarEvent = setupSeveralDaysEventOn2Hours(ZoneId.of("America/Cancun"));
     final DurationReminder durationReminder = initReminderBuilder(calendarEvent)
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 23:00 - 22.02.2018 01:00 (America/Cancun)"));
@@ -387,7 +389,7 @@ public class CalendarContributionReminderUserNotificationTest {
   public void durationReminderWithAnotherAfterCalendarZoneIdOnSeveralDaysEventOf2HoursShouldWork() throws Exception {
     final CalendarEvent calendarEvent = setupSeveralDaysEventOn2Hours(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder(calendarEvent)
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder);
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the event super test - 21.02.2018 23:00 - 22.02.2018 01:00 (Asia/Muscat)"));
@@ -472,7 +474,7 @@ public class CalendarContributionReminderUserNotificationTest {
   }
 
   private Map<String, String> computeNotificationContents(Reminder reminder) {
-    final UserNotification userNotification = new CalendarContributionReminderUserNotification
+    final UserNotification userNotification = new CalendarEventUserNotificationReminder
         .UserNotification(reminder).build();
     final Map<String, String> result = new HashMap<>();
     result.put(FR, getContent(userNotification, FR));
@@ -484,7 +486,7 @@ public class CalendarContributionReminderUserNotificationTest {
   }
 
   private Map<String, String> computeNotificationTitles(Reminder reminder) {
-    final UserNotification userNotification = new CalendarContributionReminderUserNotification
+    final UserNotification userNotification = new CalendarEventUserNotificationReminder
         .UserNotification(reminder).build();
     final Map<String, String> result = new HashMap<>();
     result.put(FR, getTitle(userNotification, FR));

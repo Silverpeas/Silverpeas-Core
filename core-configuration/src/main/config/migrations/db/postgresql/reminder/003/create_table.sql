@@ -6,11 +6,12 @@ CREATE TABLE sb_reminder (
   contrib_type          VARCHAR(40) NOT NULL,
   userId                VARCHAR(40) NOT NULL,
   text                  VARCHAR(255),
-  triggered             NUMBER(1) DEFAULT 0,
+  triggered             BOOLEAN NOT NULL DEFAULT FALSE,
   trigger_datetime      TIMESTAMP,
   trigger_durationTime  INTEGER,
   trigger_durationUnit  VARCHAR(12),
-  trigger_durationProp  VARCHAR(30),
+  trigger_prop          VARCHAR(30),
+  process_name          VARCHAR(200) NOT NULL,
   CONSTRAINT PK_REMINDER PRIMARY KEY (id)
 );
 

@@ -33,6 +33,7 @@ import java.util.Date;
  * @author mmoquillon
  */
 public class MyContribution implements Contribution {
+  private static final long serialVersionUID = -4092684840259461529L;
 
   private final ContributionIdentifier id;
   private Date publicationDate = new Date();

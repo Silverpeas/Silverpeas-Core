@@ -28,6 +28,7 @@
     return {
       template : '<silverpeas-contribution-reminder api="$ctrl.reminderApi" mode="DURATION" reminder="$ctrl.reminder" ' +
                                                    'contribution-id="$ctrl.cId" contribution-property="\'NEXT_START_DATE_TIME\'" ' +
+                                                   'process-name="\'CalendarEventUserNotification\'" ' +
                                                    'on-created="$ctrl.onCreated({reminder:reminder})" ' +
                                                    'on-updated="$ctrl.onUpdated({reminder:reminder})" ' +
                                                    'on-deleted="$ctrl.onDeleted()"></silverpeas-contribution-reminder>',

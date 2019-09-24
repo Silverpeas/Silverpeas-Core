@@ -58,7 +58,9 @@ import static org.mockito.Mockito.when;
  * Test context for the unit tests on the reminder.
  * @author mmoquillon
  */
-public class ReminderTextContext {
+public class ReminderTestContext {
+
+  static final ReminderProcessName PROCESS_NAME = () -> "TestReminderProcess";
 
   private final CommonAPI4Test commonAPI4Test;
   private final ContributionIdentifier plannable =
@@ -67,7 +69,7 @@ public class ReminderTextContext {
       ContributionIdentifier.from("kmelia12", "12", Contribution.class.getSimpleName());
   private final User user = mock(User.class);
 
-  public ReminderTextContext(final CommonAPI4Test commonAPI4Test) {
+  public ReminderTestContext(final CommonAPI4Test commonAPI4Test) {
     this.commonAPI4Test = commonAPI4Test;
   }
 
@@ -132,10 +134,10 @@ public class ReminderTextContext {
     EntityManagerProvider entityManagerProvider = mock(EntityManagerProvider.class);
     when(entityManagerProvider.getEntityManager()).thenReturn(entityManager);
 
-    DurationReminder durationReminder = new DurationReminder(plannable, user);
+    DurationReminder durationReminder = new DurationReminder(plannable, user, PROCESS_NAME);
     when(entityManager.find(eq(DurationReminder.class), any(ReminderIdentifier.class))).thenReturn(
         durationReminder);
-    DateTimeReminder dateTimeReminder = new DateTimeReminder(contribution, user);
+    DateTimeReminder dateTimeReminder = new DateTimeReminder(contribution, user, PROCESS_NAME);
     when(entityManager.find(eq(DateTimeReminder.class), any(ReminderIdentifier.class))).thenReturn(
         dateTimeReminder);
     commonAPI4Test.injectIntoMockedBeanContainer(entityManagerProvider);

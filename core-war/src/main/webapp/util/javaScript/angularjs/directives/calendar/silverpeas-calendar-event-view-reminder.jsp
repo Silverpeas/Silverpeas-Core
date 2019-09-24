@@ -43,6 +43,7 @@
                                       reminder="$ctrl.reminder"
                                       contribution-id="$ctrl.cId"
                                       contribution-property="'NEXT_START_DATE_TIME'"
+                                      process-name="'CalendarEventUserNotification'"
                                       shown="$ctrl.__reminderShown"
                                       main-label="">
     </silverpeas-contribution-reminder>

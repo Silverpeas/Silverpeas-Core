@@ -47,12 +47,14 @@ import java.time.OffsetDateTime;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReminderEntity implements WebEntity {
+  private static final long serialVersionUID = -6481988671227188535L;
 
   private URI uri;
   private String id;
   private String cId;
   private String cProperty;
   private String userId;
+  private String processName;
   private String dateTime;
   private Integer duration;
   private TimeUnit timeUnit;
@@ -118,6 +120,14 @@ public class ReminderEntity implements WebEntity {
     this.userId = userId;
   }
 
+  public String getProcessName() {
+    return processName;
+  }
+
+  public void setProcessName(final String processName) {
+    this.processName = processName;
+  }
+
   public String getDateTime() {
     return dateTime;
   }
@@ -165,6 +175,7 @@ public class ReminderEntity implements WebEntity {
     this.id = reminder.getId();
     this.cId = reminder.getContributionId().asString();
     this.userId = reminder.getUserId();
+    this.processName = reminder.getProcessName();
     if (reminder instanceof DateTimeReminder) {
       final DateTimeReminder dateTimeReminder = (DateTimeReminder) reminder;
       this.dateTime = dateTimeReminder.getDateTime().toString();
@@ -188,6 +199,7 @@ public class ReminderEntity implements WebEntity {
     builder.append("contributionId", getcId());
     builder.append("contributionProperty", getcProperty());
     builder.append("userId", getUserId());
+    builder.append("processName", getProcessName());
     builder.append("dateTime", getDateTime());
     builder.append("duration", getDuration());
     builder.append("timeUnit", getTimeUnit());

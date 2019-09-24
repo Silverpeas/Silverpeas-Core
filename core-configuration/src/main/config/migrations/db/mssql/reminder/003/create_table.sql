@@ -10,7 +10,8 @@ CREATE TABLE sb_reminder (
   trigger_datetime      DATETIME,
   trigger_durationTime  INTEGER,
   trigger_durationUnit  VARCHAR(12),
-  trigger_durationProp  VARCHAR(30),
+  trigger_prop          VARCHAR(30),
+  process_name          VARCHAR(200) NOT NULL,
   CONSTRAINT PK_REMINDER PRIMARY KEY (id)
 );
 

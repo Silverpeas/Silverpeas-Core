@@ -31,9 +31,11 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.reminder.BackgroundReminderProcess;
 import org.silverpeas.core.reminder.DefaultContributionReminderUserNotification;
 import org.silverpeas.core.reminder.Reminder;
+import org.silverpeas.core.reminder.ReminderProcessName;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -47,8 +49,17 @@ import static org.silverpeas.core.reminder.BackgroundReminderProcess.Constants.P
  * entities.
  * @author silveryocha
  */
-@Named("CalendarEventUserNotification" + PROCESS_NAME_SUFFIX)
-public class CalendarContributionReminderUserNotification implements BackgroundReminderProcess {
+@Named(CalendarEventUserNotificationReminder.PROCESS_NAME + PROCESS_NAME_SUFFIX)
+@Singleton
+public class CalendarEventUserNotificationReminder implements BackgroundReminderProcess {
+
+  static final String PROCESS_NAME = "CalendarEventUserNotification";
+  public static final ReminderProcessName CALENDAR_EVENT_USER_NOTIFICATION = () -> PROCESS_NAME;
+
+  @Override
+  public ReminderProcessName getName() {
+    return CALENDAR_EVENT_USER_NOTIFICATION;
+  }
 
   /**
    * Sends the user notification about a specified reminder.

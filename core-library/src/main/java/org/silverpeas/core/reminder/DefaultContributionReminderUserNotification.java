@@ -124,7 +124,10 @@ public class DefaultContributionReminderUserNotification
           return durationReminder.getScheduledDateTime()
               .plus(durationReminder.getDuration(), durationReminder.getTimeUnit().toChronoUnit());
         })
-        .matchFirst(DateTimeReminder.class::equals, r -> null)
+        .matchFirst(DateTimeReminder.class::equals, r ->  {
+          DateTimeReminder dateTimeReminder = (DateTimeReminder) r;
+          return dateTimeReminder.getScheduledDateTime();
+        })
         .result()
         .orElseThrow(notHandledReminderType);
   }

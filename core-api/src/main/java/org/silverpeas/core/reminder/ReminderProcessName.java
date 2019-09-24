@@ -22,16 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.web.usercalendar;
+package org.silverpeas.core.reminder;
 
-import org.silverpeas.core.calendar.AbstractCalendarComponentInstanceContributionManager;
-import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
-
-import javax.inject.Named;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
+ * Each {@link BackgroundReminderProcess} is ref
  * @author silveryocha
  */
-@Named("userCalendar" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
-public class UserCalendarInstanceContributionManager
-    extends AbstractCalendarComponentInstanceContributionManager {}
+@FunctionalInterface
+public interface ReminderProcessName {
+
+  static ReminderProcessName getByName(final String processName) {
+    return ServiceProvider.getAllServices(BackgroundReminderProcess.class)
+        .stream()
+        .filter(p -> p.getName().asString().equals(processName))
+        .map(BackgroundReminderProcess::getName)
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException(
+            "given process name '" + processName + "'does not exist"));
+  }
+
+  String asString();
+}

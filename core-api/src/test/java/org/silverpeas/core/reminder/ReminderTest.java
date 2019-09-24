@@ -36,6 +36,7 @@ import java.time.OffsetDateTime;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.silverpeas.core.reminder.ReminderTestContext.PROCESS_NAME;
 
 /**
  * Unit tests on the reminder engine. Its goal is to help to design it.
@@ -45,7 +46,7 @@ public class ReminderTest {
 
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-  private ReminderTextContext context = new ReminderTextContext(commonAPI4Test);
+  private ReminderTestContext context = new ReminderTestContext(commonAPI4Test);
 
   @Before
   public void prepareInjection() {
@@ -58,7 +59,7 @@ public class ReminderTest {
     User user = context.getUser();
     Reminder reminder = Reminder.make(contribution, user)
         .withText("Don't forget the meeting in two days!")
-        .triggerBefore(2, TimeUnit.DAY, "startDate")
+        .triggerBefore(2, TimeUnit.DAY, "startDate", PROCESS_NAME)
         .schedule();
     assertThat(reminder.isPersisted(), is(true));
     assertThat(reminder.isScheduled(), is(true));
@@ -68,19 +69,53 @@ public class ReminderTest {
   public void useTriggerBeforeWithANonPlannable() {
     ContributionIdentifier contribution = context.getNonPlannableContribution();
     User user = context.getUser();
-    Reminder reminder = new DurationReminder(contribution, user)
+    Reminder reminder = new DurationReminder(contribution, user, PROCESS_NAME)
         .withText("Don't forget the meeting in two days!")
         .triggerBefore(2, TimeUnit.DAY, "publicationDate")
         .schedule();
+    assertThat(reminder.isSystemUser(), is(false));
     assertThat(reminder.isPersisted(), is(true));
     assertThat(reminder.isScheduled(), is(true));
+  }
+
+  @Test
+  public void useSystemTriggerBeforeWithANonPlannable() {
+    ContributionIdentifier contribution = context.getNonPlannableContribution();
+    Reminder reminder = new DurationReminder(contribution, PROCESS_NAME)
+        .withText("Don't forget the meeting in two days!")
+        .triggerBefore(2, TimeUnit.DAY, "publicationDate")
+        .schedule();
+    assertThat(reminder.getUserId(), is("-1"));
+    assertThat(reminder.isSystemUser(), is(true));
+    assertThat(reminder.isPersisted(), is(true));
+    assertThat(reminder.isScheduled(), is(true));
+  }
+
+  @Test(expected = NoSuchPropertyException.class)
+  public void useTriggerFromANonValidProperty() {
+    ContributionIdentifier contribution = context.getNonPlannableContribution();
+    User user = context.getUser();
+    Reminder reminder = new DateTimeReminder(contribution, user, PROCESS_NAME)
+        .withText("Don't forget the meeting in two days!")
+        .triggerFrom("startDate")
+        .schedule();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void useTriggerFromANonValidPropertyType() {
+    ContributionIdentifier contribution = context.getNonPlannableContribution();
+    User user = context.getUser();
+    Reminder reminder = new DateTimeReminder(contribution, user, PROCESS_NAME)
+        .withText("Don't forget the meeting in two days!")
+        .triggerFrom("title")
+        .schedule();
   }
 
   @Test(expected = NoSuchPropertyException.class)
   public void useTriggerBeforeANonValidProperty() {
     ContributionIdentifier contribution = context.getNonPlannableContribution();
     User user = context.getUser();
-    Reminder reminder = new DurationReminder(contribution, user)
+    Reminder reminder = new DurationReminder(contribution, user, PROCESS_NAME)
         .withText("Don't forget the meeting in two days!")
         .triggerBefore(2, TimeUnit.DAY, "startDate")
         .schedule();
@@ -90,7 +125,7 @@ public class ReminderTest {
   public void useTriggerBeforeANonValidPropertyType() {
     ContributionIdentifier contribution = context.getNonPlannableContribution();
     User user = context.getUser();
-    Reminder reminder = new DurationReminder(contribution, user)
+    Reminder reminder = new DurationReminder(contribution, user, PROCESS_NAME)
         .withText("Don't forget the meeting in two days!")
         .triggerBefore(2, TimeUnit.DAY, "title")
         .schedule();
@@ -102,7 +137,19 @@ public class ReminderTest {
     User user = context.getUser();
     Reminder reminder = Reminder.make(contribution, user)
         .withText("Don't forget the meeting in two days!")
-        .triggerAt(OffsetDateTime.now().plusMonths(1))
+        .triggerAt(OffsetDateTime.now().plusMonths(1), PROCESS_NAME)
+        .schedule();
+    assertThat(reminder.isPersisted(), is(true));
+    assertThat(reminder.isScheduled(), is(true));
+  }
+
+  @Test
+  public void createNewReminderToTriggerFromContributionModelProperty() {
+    ContributionIdentifier contribution = context.getNonPlannableContribution();
+    User user = context.getUser();
+    Reminder reminder = Reminder.make(contribution, user)
+        .withText("Don't forget the meeting in two days!")
+        .triggerFrom("publicationDate", PROCESS_NAME)
         .schedule();
     assertThat(reminder.isPersisted(), is(true));
     assertThat(reminder.isScheduled(), is(true));
@@ -112,10 +159,36 @@ public class ReminderTest {
   public void createNewReminderAboutPlannableToTriggerAtDateTime() {
     ContributionIdentifier contribution = context.getPlannableContribution();
     User user = context.getUser();
-    Reminder reminder = new DateTimeReminder(contribution, user)
+    Reminder reminder = new DateTimeReminder(contribution, user, PROCESS_NAME)
         .withText("Don't forget the meeting in two days!")
         .triggerAt(OffsetDateTime.now().plusMonths(1))
         .schedule();
+    assertThat(reminder.isPersisted(), is(true));
+    assertThat(reminder.isScheduled(), is(true));
+  }
+
+  @Test
+  public void createNewSystemReminderAboutPlannableToTriggerAtDateTime() {
+    ContributionIdentifier contribution = context.getPlannableContribution();
+    Reminder reminder = new DateTimeReminder(contribution, PROCESS_NAME)
+        .withText("Don't forget the meeting in two days!")
+        .triggerAt(OffsetDateTime.now().plusMonths(1))
+        .schedule();
+    assertThat(reminder.getUserId(), is("-1"));
+    assertThat(reminder.isSystemUser(), is(true));
+    assertThat(reminder.isPersisted(), is(true));
+    assertThat(reminder.isScheduled(), is(true));
+  }
+
+  @Test
+  public void createNewReminderAboutPlannableToTriggerFromContributionModelProperty() {
+    ContributionIdentifier contribution = context.getPlannableContribution();
+    User user = context.getUser();
+    Reminder reminder = new DateTimeReminder(contribution, user, PROCESS_NAME)
+        .withText("Don't forget the meeting in two days!")
+        .triggerFrom("startDate")
+        .schedule();
+    assertThat(reminder.isSystemUser(), is(false));
     assertThat(reminder.isPersisted(), is(true));
     assertThat(reminder.isScheduled(), is(true));
   }
