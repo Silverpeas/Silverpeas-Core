@@ -45,6 +45,17 @@ public interface SimpleCache {
   Object get(Object key);
 
   /**
+   * Is this cache contains an object mapped with the specified key? It uses the
+   * {@link SimpleCache#get(Object)} method for doing.
+   * @param key the key with which the object to get is mapped in the cache.
+   * @return true if there is an mapped with the key. False otherwise.
+   * @see SimpleCache#get(Object)
+   */
+  default boolean has(Object key) {
+    return get(key) == null;
+  }
+
+  /**
    * Gets a typed element from the cache.
    * Null is returned if an element exists for the given key but the object doesn't satisfy the
    * expected type.

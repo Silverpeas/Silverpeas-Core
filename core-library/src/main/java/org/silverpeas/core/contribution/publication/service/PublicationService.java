@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.publication.social.SocialInformationPubl
 import org.silverpeas.core.node.coordinates.model.Coordinate;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 
@@ -204,9 +205,11 @@ public interface PublicationService {
    * alias.
    * @param pubPK the identifying key of the publication.
    * @param aliases the new aliases.
+   * @return a pair made up of firstly the added aliases and of secondly the removed aliases.
    * @see org.silverpeas.core.contribution.publication.model.Location
    */
-  void setAliases(PublicationPK pubPK, List<Location> aliases);
+  Pair<Collection<Location>, Collection<Location>> setAliases(PublicationPK pubPK,
+      List<Location> aliases);
 
   /**
    * Adds the specified aliases of the specified publication. The {@link IllegalArgumentException}

@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * This is the Node BM interface.
+ * Service working on a nodes in a graph.
  *
  * @author Nicolas Eysseric
  */
@@ -43,142 +43,181 @@ public interface NodeService {
   }
 
   /**
-   * Get the attributes of THIS node
+   * Gets synthetic details about the specified node without any translations.
    *
    * @param pk the node primary key.
-   * @return a NodeDetail
+   * @return a {@link NodeDetail} instance.
    */
   NodeDetail getHeader(NodePK pk);
 
+  /**
+   * Gets synthetic details about the specified node.
+   *
+   * @param pk the node primary key.
+   * @param getTranslations a flag indicating if the translation has to be retrieved.
+   * @return a {@link NodeDetail} instance.
+   */
   NodeDetail getHeader(NodePK pk, boolean getTranslations);
 
   /**
-   * Get the attributes of a node and of its children
+   * Gets complete details about the specified node.
    *
    * @param pk the node primary key.
-   * @return a NodeDetail
+   * @return a {@link NodeDetail} instance.
    */
   NodeDetail getDetail(NodePK pk);
 
+  /**
+   * Gets complete details about the specified node with the given name and with as father the
+   * specified one.
+   *
+   * @param pk the node primary key.
+   * @param name the name of the node.
+   * @param nodeFatherId the local unique identifier of the father of the asked node.
+   * @return a {@link NodeDetail} instance.
+   */
   NodeDetail getDetailByNameAndFatherId(NodePK pk, String name, int nodeFatherId);
 
+  /**
+   * Gets all the nodes that are part of the tree rooted from the specified node.
+   * @param pk the unique identifier of the root node of the tree.
+   * @return a list of nodes.
+   */
   List<NodeDetail> getTree(NodePK pk);
 
+  /**
+   * Gets all the nodes that are part of the subtree from the specified node.
+   * @param pk the unique identifier of the node from which the subtree should be returned.
+   * @return a list of nodes.
+   */
   List<NodeDetail> getSubTree(NodePK pk);
 
+  /**
+   * Gets all the nodes that are part of the subtree from the specified node and sorted according
+   * to the sorting argument.
+   * @param pk the unique identifier of the node from which the subtree should be returned.
+   * @param sorting a coma-separated list of node's attributes from which the returned list should
+   * be sorted.
+   * @return a list of nodes.
+   */
   List<NodeDetail> getSubTree(NodePK pk, String sorting);
 
+  /**
+   * Gets all the nodes that are part of the subtree from the specified node and having the given
+   * status.
+   * @param pk the unique identifier of the node from which the subtree should be returned.
+   * @param status the status of the nodes to return.
+   * @return a list of nodes.
+   */
   List<NodeDetail> getSubTreeByStatus(NodePK pk, String status);
 
+  /**
+   * Gets all the nodes that are part of the subtree from the specified node and having the given
+   * status.
+   * @param pk the unique identifier of the node from which the subtree should be returned.
+   * @param status the status of the nodes to return.
+   * @param sorting a coma-separated list of node's attributes from which the returned list should
+   * be sorted.
+   * @return a list of nodes.
+   */
   List<NodeDetail> getSubTreeByStatus(NodePK pk, String status, String sorting);
 
+  /**
+   * Gets all the nodes that are part of the subtree from the specified node down to the given deep
+   * level of the subtree.
+   * @param pk the unique identifier of the node from which the subtree should be returned.
+   * @param level the level of the subtree to get.
+   * @return a list of nodes from the specified node down to the given level of the subtree.
+   */
   List<NodeDetail> getSubTreeByLevel(NodePK pk, int level);
 
+  /**
+   * Gets all the nodes that are part of the subtree from the specified node down to the given deep
+   * level of the subtree.
+   * @param pk the unique identifier of the node from which the subtree should be returned.
+   * @param level the level of the subtree to get.
+   * @param sorting a coma-separated list of node's attributes from which the returned list should
+   * be sorted.
+   * @return a list of nodes from the specified node down to the given level of the subtree.
+   */
   List<NodeDetail> getSubTreeByLevel(NodePK pk, int level, String sorting);
 
+  /**
+   * Gets all the nodes that are part of the subtree from the specified node down to the given deep
+   * level of the subtree and having the given status.
+   * @param pk the unique identifier of the node from which the subtree should be returned.
+   * @param status the status of the nodes to return.
+   * @param level the level of the subtree to get.
+   * @param sorting a coma-separated list of node's attributes from which the returned list should
+   * be sorted.
+   * @return a list of nodes.
+   */
   List<NodeDetail> getSubTree(NodePK pk, String status, int level, String sorting);
 
   /**
-   * Method declaration
-   *
-   * @param pk the node primary key.
-   * @return
-   */
-  NodeDetail getTwoLevelDetails(NodePK pk);
-
-  /**
-   * Method declaration
-   *
-   * @param pk the node primary key.
-   * @return
-   */
-  NodeDetail getFrequentlyAskedDetail(NodePK pk);
-
-  /**
-   * Method declaration
-   *
-   * @param pk the node primary key.
-   * @param level
-   * @return
+   * Gets the synthetic details of all the nodes that are managed by the same component instance
+   * that the specified node down to the deep level of the tree of nodes to return.
+   * @param pk the unique identifier of a node.
+   * @param level the level of the subtree to get.
+   * @return a list of all nodes of a given component instance.
    */
   List<NodeDetail> getHeadersByLevel(NodePK pk, int level);
 
   /**
-   * Method declaration
-   *
-   * @param nodePK
-   * @return
+   * Gets all the nodes that are part of the tree of nodes managed by the same component instance
+   * that the specified node.
+   * @param nodePK the unique identifier of a node.
+   * @return all the nodes of the component instance referred by the specified node.
    */
   Collection<NodeDetail> getAllNodes(NodePK nodePK);
 
   /**
-   * Get the path of this node from this node to root
-   *
-   * @param pk the node primary key.
-   * @return a NodeDetail Collection (only header).
+   * Gets the path of the specified node from the root one.
+   * @param pk the unique identifier of the node in the data source.
+   * @return the path of the node as a {@link NodePath} instance.
    */
   NodePath getPath(NodePK pk);
 
   /**
-   * Get the header of each child of the node.
-   *
+   * Gets the details of all of the children of the specified node.
    * @param pk the node primary key.
-   * @return a NodeDetail collection
+   * @return a collection of nodes.
    */
   Collection<NodeDetail> getChildrenDetails(NodePK pk);
 
   /**
-   * Get the header of each child of the node this function is to be used with frequently used nodes
-   * because for each child, an ejb will be instanciated (nodes next to the root will be frequently
-   * used) For less used nodes, choose the getChildrenDetails() method
-   *
-   * @param pk the node primary key.
-   * @return a NodeDetail collection
-   */
-  Collection<NodeDetail> getFrequentlyAskedChildrenDetails(NodePK pk);
-
-  /**
-   * Get the children number of this node
-   *
-   * @param pk the node primary key.
-   * @return a int
-   */
-  int getChildrenNumber(NodePK pk);
-
-  /**
-   * Update the attributes of the node
-   *
-   * @param nodeDetail the NodeDetail which contains updated data
-   * @
-   * @since 1.0
+   * Updates the specified node.
+   * @param nodeDetail the details of the node with which it will be updated.
    */
   void setDetail(NodeDetail nodeDetail);
 
   /**
-   * Create a new Node object
-   *
-   * @param nodeDetail the NodeDetail which contains data
-   * @param fatherDetail the parent of node to be added
-   * @return the NodePK of the new Node
+   * Creates a new node in Silverpeas.
+   * @param nodeDetail the details of the node to save.
+   * @param fatherDetail the parent of the node to save.
+   * @return the unique identifier of the new node.
    */
   NodePK createNode(NodeDetail nodeDetail, NodeDetail fatherDetail);
 
   /**
-   * Create a new Node object
-   *
-   * @param nodeDetail the NodeDetail which contains data
-   * @return the NodePK of the new Node
+   * Creates a new node in Silverpeas.
+   * @param nodeDetail the details of the node to save.
+   * @return the unique identifier of the new node.
    */
   NodePK createNode(NodeDetail nodeDetail);
 
   /**
-   * Remove a node and its descendants
-   *
-   * @param pk the node PK to delete
+   * Removes a node and its descendants
+   * @param pk the unique identifier of the node to remove.
    * @see NodePK
    */
   void removeNode(NodePK pk);
 
+  /**
+   * Moves the specified node to the given another one that then will become its new father.
+   * @param nodePK the unique identifier of the node to move.
+   * @param toNode the unique identifier of the new father of the node.
+   */
   void moveNode(NodePK nodePK, NodePK toNode);
 
   /**
@@ -198,39 +237,37 @@ public interface NodeService {
   boolean isSameNameSameLevelOnUpdate(NodeDetail nd);
 
   /**
-   * Get children node PKs of a node
-   *
-   * @return A collection of NodePK
-   * @param nodePK A NodePK
+   * Gets all the identifier of the children of the specified node.
+   * @param nodePK the unique identifier of the father node.
+   * @return A collection of {@link NodePK} instances.
    * @see NodePK
    */
   Collection<NodePK> getChildrenPKs(NodePK nodePK);
 
   /**
-   * Get descendant node PKs of a node
-   *
+   * Gets the identifiers of all of the descendants of the specified node.
+   * @param nodePK the unique identifier of a node.
+   * @return A collection of {@link NodePK} instances.
    * @return A collection of NodePK
-   * @param nodePK A NodePK
    * @see NodePK
-   * @since 1.0
    */
   Collection<NodePK> getDescendantPKs(NodePK nodePK);
 
   /**
-   * Get descendant nodeDetails of a node
-   *
-   * @return A List of NodeDetail
-   * @param nodePK A NodePK
-   * @see NodePK
-   * @since 1.0
+   * Gets all the descendants of the specified node.
+   * @param nodePK the unique identifier of a node.
+   * @return A collection of {@link NodePK} instances.
+   * @return A collection of NodePK
+   * @see NodeDetail
    */
   List<NodeDetail> getDescendantDetails(NodePK nodePK);
 
   /**
-   * Get descendant nodeDetails of a node
-   *
-   * @return A List of NodeDetail
-   * @param node A NodeDetail
+   * Gets all the descendants of the specified node.
+   * @param node a node.
+   * @return A collection of {@link NodePK} instances.
+   * @return A collection of NodePK
+   * @see NodeDetail
    */
   List<NodeDetail> getDescendantDetails(NodeDetail node);
 
@@ -242,21 +279,27 @@ public interface NodeService {
    */
   void processWysiwyg(NodePK nodePK);
 
+  /**
+   * Updates the dependency on the access rights of the specified node.
+   * @param nodeDetail a node.
+   */
   void updateRightsDependency(NodeDetail nodeDetail);
 
   /**
-   * Method declaration
-   *
-   * @param nodeDetail
+   * Indexes the specified node.
+   * @param nodeDetail a node.
    */
   void createIndex(NodeDetail nodeDetail);
 
   /**
-   * Method declaration
-   *
-   * @param pk
+   * Unindexes the specified node.
+   * @param pk the unique identifier of the node.
    */
   void deleteIndex(NodePK pk);
 
+  /**
+   * Sorts the specified nodes in Silverpeas.
+   * @param nodePKs a list of the unique identifiers of the nodes to sort.
+   */
   void sortNodes(List<NodePK> nodePKs);
 }

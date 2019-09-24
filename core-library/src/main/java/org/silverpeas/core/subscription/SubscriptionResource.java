@@ -27,33 +27,34 @@ import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.WAPrimaryKey;
 
 /**
- * User: Yohann Chastagnier
- * Date: 20/02/13
+ * A resource implied in a user subscription.
+ * @author Yohann Chastagnier
+ * @since 20/02/13
  */
 public interface SubscriptionResource {
 
   /**
    * Gets the identifier of the resource aimed by subscription
-   * @return
+   * @return the resource identifier
    */
-  public String getId();
+  String getId();
 
   /**
    * Gets the type of the resource aimed by the subscription
-   * @return
+   * @return the resource type.
    */
-  public SubscriptionResourceType getType();
+  SubscriptionResourceType getType();
 
   /**
-   * Gets the instance identifier of component
-   * @return
+   * Gets the instance identifier of a component instance in Silverpeas that manages the resource.
+   * @return the unique identifier of a component instance.
    */
-  public String getInstanceId();
+  String getInstanceId();
 
   /**
-   * Gets the Silverpeas Primary Key of the aimed resource
-   * @param <T>
-   * @return
+   * Gets the unique data source identifier of the resource.
+   * @param <T> the concrete type of the identifier.
+   * @return the unique identifier of the resource in the data source.
    */
-  public <T extends WAPrimaryKey> T getPK();
+  <T extends WAPrimaryKey> T getPK();
 }

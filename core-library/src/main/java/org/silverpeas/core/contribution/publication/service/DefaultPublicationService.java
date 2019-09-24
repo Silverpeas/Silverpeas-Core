@@ -38,8 +38,8 @@ import org.silverpeas.core.contribution.publication.dao.PublicationFatherDAO;
 import org.silverpeas.core.contribution.publication.dao.PublicationI18NDAO;
 import org.silverpeas.core.contribution.publication.dao.SeeAlsoDAO;
 import org.silverpeas.core.contribution.publication.dao.ValidationStepsDAO;
-import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationI18N;
 import org.silverpeas.core.contribution.publication.model.PublicationLink;
@@ -71,6 +71,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
@@ -83,7 +84,15 @@ import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
@@ -612,7 +621,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   @Override
   @Transactional
-  public void setAliases(PublicationPK pubPK, List<Location> aliases) {
+  public Pair<Collection<Location>, Collection<Location>> setAliases(PublicationPK pubPK,
+      List<Location> aliases) {
     Collection<Location> previousAliases = getAllAliases(pubPK);
     Collection<Location> removedAliases = previousAliases.stream().filter(l -> !aliases.contains(l))
         .collect(Collectors.toList());
@@ -630,6 +640,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       // aliases have changed... index it
       indexAliases(pubPK, null);
     }
+
+    return Pair.of(newAliases, removedAliases);
   }
 
   private void addAlias(final Connection connection, final PublicationPK pubPK,
