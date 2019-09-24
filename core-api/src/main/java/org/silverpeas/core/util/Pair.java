@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -31,11 +31,11 @@ package org.silverpeas.core.util;
  */
 public class Pair<T, U> implements Cloneable {
 
-  private T first = null;
-  private U second = null;
+  private T first;
+  private U second;
 
   public static <T, U> Pair<T, U> of(T first, U second) {
-    return new Pair<T, U>(first, second);
+    return new Pair<>(first, second);
   }
 
   /**

@@ -153,7 +153,8 @@ public class PublicationFatherDAO {
       throws SQLException {
 
     if (!location.isAlias()) {
-      throw new IllegalArgumentException("Location " + location.getId() + " isn't an alias!");
+      throw new IllegalArgumentException(
+          "Location " + location.getId() + " isn't an alias for publication " + pubPK.getId());
     }
 
     JdbcSqlQuery.createDeleteFor(PUBLICATION_FATHER_TABLE_NAME)
@@ -351,18 +352,12 @@ public class PublicationFatherDAO {
    */
   public static Collection<Location> getAliases(final Connection con, final PublicationPK pubPK)
       throws SQLException {
-    JdbcSqlQuery query = JdbcSqlQuery.createSelect("nodeId, instanceId, pubOrder")
+    JdbcSqlQuery query =
+        JdbcSqlQuery.createSelect("nodeId, instanceId, aliasUserId, aliasDate, pubOrder")
         .from(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
         .andNotNull(ALIAS_DATE)
         .andNotNull(ALIAS_USER_ID);
-    return query.executeWith(con, rs -> {
-      String id = String.valueOf(rs.getInt(1));
-      String instanceId = rs.getString(2);
-      int order = rs.getInt(3);
-      Location alias = new Location(id, instanceId);
-      alias.setPubOrder(order);
-      return alias;
-    });
+    return findLocations(con, query);
   }
 }

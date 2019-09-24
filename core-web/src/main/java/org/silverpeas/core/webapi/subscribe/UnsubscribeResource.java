@@ -21,40 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
-* Copyright (C) 2000 - 2019 Silverpeas
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* As a special exception to the terms and conditions of version 3.0 of
-* the GPL, you may redistribute this Program in connection with Free/Libre
-* Open Source Software ("FLOSS") applications as described in Silverpeas's
-* FLOSS exception. You should have recieved a copy of the text describing
-* the FLOSS exception, and it is also available here:
-* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*
-*/
 package org.silverpeas.core.webapi.subscribe;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.CommentRuntimeException;
-import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
@@ -163,14 +140,16 @@ public class UnsubscribeResource extends RESTWebService {
    * @param subscriber a subscription subscriber
    * @return the response
    */
-  private Response unsubscribeSubscriberFromTopic(@PathParam("topicId") String topicId,
+  private Response unsubscribeSubscriberFromTopic(String topicId,
       SubscriptionSubscriber subscriber) {
     try {
       final Subscription subscription = new NodeSubscription(subscriber,
           new NodePK(topicId, componentId), getUser().getId());
       SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscription);
       final ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
-      final NodePath path = NodeService.get().getPath(subscription.getResource().getPK());
+      final SubscriptionResource resource = subscription.getResource();
+      final NodePK nodePK = new NodePK(resource.getId(), resource.getInstanceId());
+      final NodePath path = NodeService.get().getPath(nodePK);
       final String userLanguage = getUserPreferences().getLanguage();
       final NodeSubscriptionBean nodeSubscriptionBean = new NodeSubscriptionBean(subscription, path,
           component, userLanguage);
