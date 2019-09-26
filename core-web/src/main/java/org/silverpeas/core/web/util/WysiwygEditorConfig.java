@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.util;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.JSONCodec;
@@ -35,6 +36,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.silverpeas.core.util.StringUtil.isLong;
 
@@ -43,7 +45,7 @@ import static org.silverpeas.core.util.StringUtil.isLong;
  * Currently it depends on the CKEditor.
  * @author mmoquillon
  */
-public class WysiwygEditorConfig implements Cloneable {
+public class WysiwygEditorConfig {
 
   private static final SettingBundle DEFAULT_WYSIWYG_SETTINGS =
       ResourceLocator.getSettingBundle("org.silverpeas.wysiwyg.settings.wysiwygSettings");
@@ -68,14 +70,10 @@ public class WysiwygEditorConfig implements Cloneable {
    * to be initialized.
    */
   public WysiwygEditorConfig(final String componentName) {
-    this.wysiwygSettings = DEFAULT_WYSIWYG_SETTINGS;
-    if (StringUtil.isDefined(componentName)) {
-      this.wysiwygSettings = ResourceLocator.getSettingBundle(
-          "org.silverpeas.wysiwyg.settings." + componentName + "Settings");
-      if (!this.wysiwygSettings.exists()) {
-        this.wysiwygSettings = DEFAULT_WYSIWYG_SETTINGS;
-      }
-    }
+    final Optional<SettingBundle> settings = StringUtil.isDefined(componentName) ?
+        ResourceLocator.getOptionalSettingBundle(
+            "org.silverpeas.wysiwyg.settings." + componentName + "Settings") : Optional.empty();
+    this.wysiwygSettings = settings.orElse(DEFAULT_WYSIWYG_SETTINGS);
   }
 
   /**
@@ -304,15 +302,14 @@ public class WysiwygEditorConfig implements Cloneable {
     this.objectId = objectId;
   }
 
-  @Override
-  public WysiwygEditorConfig clone() {
+  public WysiwygEditorConfig copy() {
     try {
       WysiwygEditorConfig clone = (WysiwygEditorConfig) super.clone();
       clone.wysiwygSettings = this.wysiwygSettings;
       return clone;
     } catch (CloneNotSupportedException e) {
       SilverLogger.getLogger(this).error(e);
-      return null;
+      throw new SilverpeasRuntimeException(e);
     }
   }
 }

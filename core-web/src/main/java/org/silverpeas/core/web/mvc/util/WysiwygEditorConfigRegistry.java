@@ -70,7 +70,7 @@ public class WysiwygEditorConfigRegistry {
   public WysiwygEditorConfig get(final String componentName) {
     final WysiwygEditorConfig config =
         configsPerComponents.computeIfAbsent(componentName, WysiwygEditorConfig::new);
-    return config.clone();
+    return config.copy();
   }
 }
   

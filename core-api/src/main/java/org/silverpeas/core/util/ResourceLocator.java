@@ -84,7 +84,8 @@ public class ResourceLocator {
   /**
    * Gets the localized resource defined under the specified full qualified name and for the
    * specified locale. This resource can be a set of icons or of messages that are defined for
-   * the given locale.
+   * the given locale. If the specified bundle doesn't exist, then any get of one of a localized
+   * property from the bundle will throw a {@link MissingResourceException} exception.
    * @param name the full qualified name of the localized resource to return. It maps the path
    * of the file in which the resource is stored (the path is relative to the Silverpeas
    * resources home directory).
@@ -146,6 +147,8 @@ public class ResourceLocator {
   /**
    * Gets setting resource that is defined under the specified full qualified name. This
    * resource is a set of settings used to configure the behaviour of a Silverpeas functionality.
+   * If the specified bundle doesn't exist, then any get of one of a settings property from the
+   * bundle will throw a {@link MissingResourceException} exception.
    * @param name the full qualified name of the resource to return. It maps the path
    * of the file in which the resource is stored (the path is relative to the Silverpeas
    * resources home directory).
@@ -154,6 +157,22 @@ public class ResourceLocator {
   public static SettingBundle getSettingBundle(String name) {
     return (SettingBundle) bundles.computeIfAbsent(name,
         n -> new SettingBundle(name, ResourceLocator::loadResourceBundle));
+  }
+
+  /**
+   * Gets optionally the setting resource that is defined under the specified full qualified name.
+   * This resource is a set of settings used to configure the behaviour of a Silverpeas
+   * functionality.
+   * @param name the full qualified name of the resource to return. It maps the path
+   * of the file in which the resource is stored (the path is relative to the Silverpeas
+   * resources home directory).
+   * @return an optional bundle with the asked settings.
+   */
+  public static Optional<SettingBundle> getOptionalSettingBundle(String name) {
+    SettingBundle bundle = (SettingBundle) bundles.computeIfAbsent(name,
+        n -> new SettingBundle(name,
+            b -> ResourceLocator.loadResourceBundle(b, Locale.ROOT, false)));
+    return Optional.ofNullable(bundle);
   }
 
   /**
@@ -263,7 +282,6 @@ public class ResourceLocator {
       return ResourceBundle.getBundle(bundleName, locale, loader, configurationControl);
     } catch (MissingResourceException mex) {
       if (mandatory) {
-        SilverLogger.getLogger(ResourceLocator.class).error(mex.getMessage());
         throw mex;
       }
     }
