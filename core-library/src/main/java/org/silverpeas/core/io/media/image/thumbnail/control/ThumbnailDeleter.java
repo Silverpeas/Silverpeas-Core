@@ -30,6 +30,8 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.WithThumbnail;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 
+import static org.silverpeas.core.util.StringUtil.isInteger;
+
 /**
  * Deleter of the thumbnail associated with the contribution that has been deleted.
  * @author mmoquillon
@@ -41,9 +43,12 @@ public class ThumbnailDeleter implements ContributionDeletion {
     try {
       if (contribution instanceof WithThumbnail) {
         final String instanceId = contribution.getContributionId().getComponentInstanceId();
-        final int contribId = Integer.parseInt(contribution.getContributionId().getLocalId());
-        ThumbnailDetail thumbToDelete = new ThumbnailDetail(instanceId, contribId, ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-        ThumbnailController.deleteThumbnail(thumbToDelete);
+        final String localId = contribution.getContributionId().getLocalId();
+        if (isInteger(localId)) {
+          final int contribId = Integer.parseInt(localId);
+          ThumbnailDetail thumbToDelete = new ThumbnailDetail(instanceId, contribId, ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+          ThumbnailController.deleteThumbnail(thumbToDelete);
+        }
       }
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e);

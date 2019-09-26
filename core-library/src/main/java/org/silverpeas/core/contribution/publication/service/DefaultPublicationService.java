@@ -41,9 +41,9 @@ import org.silverpeas.core.contribution.publication.dao.SeeAlsoDAO;
 import org.silverpeas.core.contribution.publication.dao.ValidationStepsDAO;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationI18N;
+import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
@@ -376,6 +376,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     Connection con = getConnection();
     try {
       PublicationDetail publi = PublicationDAO.loadRow(con, pubDetail.getPK());
+      PublicationDetail before = (PublicationDetail) publi.clone();
       String oldName = publi.getName();
       String oldDesc = publi.getDescription();
       String oldKeywords = publi.getKeywords();
@@ -503,7 +504,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       }
       loadTranslations(publi);
       PublicationDAO.storeRow(con, publi);
-    } catch (SQLException e) {
+      notifier.notifyEventOn(ResourceEvent.Type.UPDATE, before, publi);
+    } catch (SQLException | CloneNotSupportedException e) {
       throw new PublicationRuntimeException("PublicationEJB.ejbStore()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_STORE_ENTITY_ATTRIBUTES",
           "PubId = " + pubDetail.getPK().getId(), e);

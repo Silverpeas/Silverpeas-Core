@@ -44,6 +44,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerP
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.ContributionModel;
 import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WithAttachment;
@@ -64,6 +65,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.reminder.WithReminder;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
@@ -102,9 +104,11 @@ import static org.silverpeas.core.util.StringUtil.split;
 @XmlAccessorType(XmlAccessType.NONE)
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     implements I18nContribution, SilverContentInterface, Rateable, Serializable,
-    Cloneable, WithAttachment, WithThumbnail {
-
+    Cloneable, WithAttachment, WithThumbnail, WithReminder {
   private static final long serialVersionUID = 9199848912262605680L;
+
+  public static final String DELAYED_VISIBILITY_AT_MODEL_PROPERTY = "DELAYED_VISIBILITY_AT";
+
   private PublicationPK pk;
   private String infoId;
   @XmlElement(name = "creationDate", namespace = "http://www.silverpeas.org/exchange")
@@ -1301,5 +1305,10 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
         .getAccessController(PublicationAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), getPK(),
         AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
+  }
+
+  @Override
+  public ContributionModel getModel() {
+    return new PublicationDetailModel(this);
   }
 }
