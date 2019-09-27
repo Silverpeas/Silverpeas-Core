@@ -80,6 +80,8 @@ public final class QueryDescription implements Serializable {
    */
   private Set<ExternalComponent> extComponents = new HashSet<>();
 
+  private boolean adminScope = false;
+
   /**
    * The no parameters constructor builds an empty query. The setQuery and addComponent()
    * methods should be called to initialize the query. Other criterion (language, creation date
@@ -365,5 +367,13 @@ public final class QueryDescription implements Serializable {
 
   public boolean isTaxonomyUsed() {
     return StringUtil.isDefined(taxonomyPosition);
+  }
+
+  public boolean isAdminScope() {
+    return adminScope;
+  }
+
+  public void setAdminScope(final boolean adminScope) {
+    this.adminScope = adminScope;
   }
 }

@@ -180,9 +180,11 @@ public class IndexSearcher {
         TopDocs topDocs;
         if (booleanQuery.clauses().isEmpty()) {
           topDocs = searcher.search(rangeClauses, maxNumberResult);
+          SilverLogger.getLogger(this).info(rangeClauses.toString());
         } else {
           booleanQueryBuilder.add(rangeClauses, BooleanClause.Occur.FILTER);
           booleanQuery = booleanQueryBuilder.build();
+          SilverLogger.getLogger(this).info(booleanQuery.toString());
           topDocs = searcher.search(booleanQuery, maxNumberResult);
         }
 
@@ -267,6 +269,7 @@ public class IndexSearcher {
       // search over all languages
       languages = I18NHelper.getAllSupportedLanguages();
     }
+
     Query queryOnContent = getQuery(IndexManager.CONTENT, query.getQuery(), languages, analyzer);
     Query queryOnHeader = getQuery(IndexManager.HEADER, query.getQuery(), languages, analyzer);
 

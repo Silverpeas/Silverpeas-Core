@@ -48,6 +48,7 @@ import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.service.cache.AdminCache;
 import org.silverpeas.core.admin.service.cache.TreeCache;
+import org.silverpeas.core.admin.space.SpaceI18N;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
@@ -324,8 +325,12 @@ class Admin implements Administration {
     // Index the space
     String spaceId = spaceInst.getId();
     FullIndexEntry indexEntry = new FullIndexEntry(INDEX_SPACE_SCOPE, "Space", spaceId);
-    indexEntry.setTitle(spaceInst.getName());
-    indexEntry.setPreview(spaceInst.getDescription());
+    // index all translations
+    Map<String, SpaceI18N> translations = spaceInst.getTranslations();
+    for (Map.Entry<String, SpaceI18N> translation : translations.entrySet()) {
+      indexEntry.setTitle(translation.getValue().getName(), translation.getKey());
+      indexEntry.setPreview(translation.getValue().getDescription(), translation.getKey());
+    }
     indexEntry.setCreationUser(String.valueOf(spaceInst.getCreatedBy()));
     indexEntry.setCreationDate(spaceInst.getCreateDate());
     indexEntry.setLastModificationUser(String.valueOf(spaceInst.getUpdatedBy()));
@@ -953,22 +958,38 @@ class Admin implements Administration {
       // Index the component
       String componentId = instance.getId();
       FullIndexEntry indexEntry = new FullIndexEntry(INDEX_COMPONENT_SCOPE, "Component", componentId);
-      indexEntry.setTitle(instance.getLabel());
-      indexEntry.setPreview(instance.getDescription());
+
       if (instance instanceof ComponentInst) {
-        final ComponentInst componentInst = (ComponentInst) instance;
-        indexEntry.setCreationUser(componentInst.getCreatorUserId());
-        indexEntry.setCreationDate(componentInst.getCreateDate());
-        indexEntry.setLastModificationUser(componentInst.getUpdaterUserId());
-        indexEntry.setLastModificationDate(componentInst.getUpdateDate());
+        setIndexEntry((ComponentInst) instance, indexEntry);
       } else if (instance instanceof ComponentInstLight) {
-        final ComponentInstLight componentInstLight = (ComponentInstLight) instance;
-        indexEntry.setCreationUser(Integer.toString(componentInstLight.getCreatedBy()));
-        indexEntry.setCreationDate(componentInstLight.getCreateDate());
-        indexEntry.setLastModificationUser(String.valueOf(componentInstLight.getUpdatedBy()));
-        indexEntry.setLastModificationDate(componentInstLight.getUpdateDate());
+        setIndexEntry((ComponentInstLight) instance, indexEntry);
       }
+
       IndexEngineProxy.addIndexEntry(indexEntry);
+    }
+  }
+
+  private void setIndexEntry(ComponentInst componentInst, FullIndexEntry indexEntry) {
+    setIndexEntryTranslations(componentInst.getTranslations(), indexEntry);
+    indexEntry.setCreationUser(componentInst.getCreatorUserId());
+    indexEntry.setCreationDate(componentInst.getCreateDate());
+    indexEntry.setLastModificationUser(componentInst.getUpdaterUserId());
+    indexEntry.setLastModificationDate(componentInst.getUpdateDate());
+  }
+
+  private void setIndexEntry(ComponentInstLight componentInstLight, FullIndexEntry indexEntry) {
+    setIndexEntryTranslations(componentInstLight.getTranslations(), indexEntry);
+    indexEntry.setCreationUser(Integer.toString(componentInstLight.getCreatedBy()));
+    indexEntry.setCreationDate(componentInstLight.getCreateDate());
+    indexEntry.setLastModificationUser(String.valueOf(componentInstLight.getUpdatedBy()));
+    indexEntry.setLastModificationDate(componentInstLight.getUpdateDate());
+  }
+
+  private void setIndexEntryTranslations(Map<String, ComponentI18N> translations,
+      FullIndexEntry indexEntry) {
+    for (Map.Entry<String, ComponentI18N> translation : translations.entrySet()) {
+      indexEntry.setTitle(translation.getValue().getName(), translation.getKey());
+      indexEntry.setPreview(translation.getValue().getDescription(), translation.getKey());
     }
   }
 
