@@ -172,7 +172,7 @@ public class ResourceLocator {
     SettingBundle bundle = (SettingBundle) bundles.computeIfAbsent(name,
         n -> new SettingBundle(name,
             b -> ResourceLocator.loadResourceBundle(b, Locale.ROOT, false)));
-    return Optional.ofNullable(bundle);
+    return Optional.ofNullable(bundle).filter(SettingBundle::exists);
   }
 
   /**
