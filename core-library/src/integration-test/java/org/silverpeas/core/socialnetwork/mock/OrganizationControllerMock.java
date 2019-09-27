@@ -24,6 +24,7 @@
 package org.silverpeas.core.socialnetwork.mock;
 
 
+import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -259,8 +260,8 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public String[] getUserProfiles(final String userId, final String componentId, final int objectId,
-      final ProfiledObjectType objectType) {
+  public String[] getUserProfiles(final String userId, final String componentId,
+      final ProfiledObjectId objectId) {
     return new String[0];
   }
 
@@ -271,8 +272,8 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public List<ProfileInst> getUserProfiles(final String componentId, final String objectId,
-      final String objectType) {
+  public List<ProfileInst> getUserProfiles(final String componentId,
+      final ProfiledObjectId objectId) {
     return null;
   }
 
@@ -395,8 +396,7 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public boolean isObjectAvailable(final int objectId, final ProfiledObjectType objectType,
-      final String componentId, final String userId) {
+  public boolean isObjectAvailable(final ProfiledObjectId objectId, final String componentId, final String userId) {
     return false;
   }
 
@@ -427,8 +427,8 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public String[] getUsersIdsByRoleNames(final String componentId, final String objectId,
-      final ProfiledObjectType objectType, final List<String> profileNames) {
+  public String[] getUsersIdsByRoleNames(final String componentId, final ProfiledObjectId objectId,
+      final List<String> profileNames) {
     return new String[0];
   }
 

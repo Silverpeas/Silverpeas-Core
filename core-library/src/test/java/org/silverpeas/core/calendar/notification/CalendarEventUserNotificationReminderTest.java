@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.calendar.Calendar;
@@ -41,6 +42,7 @@ import org.silverpeas.core.calendar.CalendarMockBuilder;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.user.UserNotification;
@@ -51,6 +53,7 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.reminder.DurationReminder;
 import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.reminder.ReminderProcessName;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.test.extention.TestManagedBeans;
@@ -102,6 +105,12 @@ public class CalendarEventUserNotificationReminderTest {
   @RegisterExtension
   public FieldMocker reflectionRule = new FieldMocker();
 
+  @TestManagedMock
+  private PublicationService publicationService;
+  @TestManagedMock
+  private ComponentAccessControl componentAccessControl;
+  @TestManagedMock
+  private Administration administration;
   @TestManagedMock
   private ContributionManager contributionManager;
   @TestManagedMock

@@ -27,6 +27,8 @@ package org.silverpeas.core.admin;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.node.model.NodePK;
 
+import java.util.Objects;
+
 /**
  * The unique identifier of an object that is covered by a right profile.
  * @author mmoquillon
@@ -53,6 +55,26 @@ public class ProfiledObjectId implements ResourceIdentifier {
   public ProfiledObjectId(final ProfiledObjectType type, final String id) {
     this.id = id;
     this.type = type;
+  }
+
+  /**
+   * Constructs from the specified node identifier a {@link ProfiledObjectId} instance that
+   * refers the node as an access right profiled object.
+   * @param nodeId the unique identifier of a node.
+   * @return the {@link ProfiledObjectId} instance representation of the node identifier.
+   */
+  public static ProfiledObjectId fromNode(final String nodeId) {
+    return new ProfiledObjectId(ProfiledObjectType.NODE, nodeId);
+  }
+
+  /**
+   * Constructs from the specified node identifier a {@link ProfiledObjectId} instance that
+   * refers the node as an access right profiled object.
+   * @param nodeId the unique identifier of a node.
+   * @return the {@link ProfiledObjectId} instance representation of the node identifier.
+   */
+  public static ProfiledObjectId fromNode(final int nodeId) {
+    return fromNode(String.valueOf(nodeId));
   }
 
   /**
@@ -117,6 +139,23 @@ public class ProfiledObjectId implements ResourceIdentifier {
   @Override
   public String asString() {
     return type.getCode() + id;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof ProfiledObjectId)) {
+      return false;
+    }
+    final ProfiledObjectId objectId = (ProfiledObjectId) o;
+    return id.equals(objectId.id) && type == objectId.type;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, type);
   }
 }
   

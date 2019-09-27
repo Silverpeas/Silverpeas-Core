@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -131,12 +131,12 @@ public class TestNodeAccessController {
     node.setNodePK(nodPk);
     node.setRightsDependsOn(5);
     when(nodeService.getHeader(nodPk, false)).thenReturn(node);
-    when(organizationController.getUserProfiles(userId, componentId, 5, ProfiledObjectType.NODE))
+    when(organizationController.getUserProfiles(userId, componentId, ProfiledObjectId.fromNode(5)))
         .thenReturn(new String[]{SilverpeasRole.user.name()});
     boolean result = instance.isUserAuthorized(userId, nodPk);
     assertThat(result, Matchers.is(true));
     verify(organizationController, times(1))
-        .getUserProfiles(userId, componentId, 5, ProfiledObjectType.NODE);
+        .getUserProfiles(userId, componentId, ProfiledObjectId.fromNode(5));
   }
 
   /**
@@ -155,7 +155,7 @@ public class TestNodeAccessController {
     boolean result = instance.isUserAuthorized(userId, nodPk);
     assertThat(result, Matchers.is(false));
     verify(organizationController, times(1))
-        .getUserProfiles(userId, componentId, 5, ProfiledObjectType.NODE);
+        .getUserProfiles(userId, componentId, ProfiledObjectId.fromNode(5));
   }
 
   @SuppressWarnings("unchecked")

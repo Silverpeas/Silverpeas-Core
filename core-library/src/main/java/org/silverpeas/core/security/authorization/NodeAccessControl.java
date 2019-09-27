@@ -24,10 +24,15 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * This interface extends access controller for a Node resource.
  * @author Yohann Chastagnier
  */
 public interface NodeAccessControl extends AccessController<NodePK>{
+
+  static NodeAccessControl get() {
+    return ServiceProvider.getService(NodeAccessControl.class);
+  }
 }

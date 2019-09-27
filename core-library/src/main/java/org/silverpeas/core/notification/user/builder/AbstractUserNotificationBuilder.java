@@ -122,6 +122,24 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   protected abstract String getSender();
 
   /**
+   * Is the specified user can be notified? The reason depends on the nature of the notification
+   * and as such it is delegated to the implementor. For example, for notifications about a
+   * resource, only users that can access the resource can be notified, not the others even if they
+   * are part of the recipients.
+   * @return true of the specified user satisfies all the requirements to be notified.
+   */
+  protected abstract boolean isUserCanBeNotified(final String userId);
+
+  /**
+   * Is the specified group of users can be notified? The reason depends on the nature of the
+   * notification and as such it is delegated to the implementor. For example, for notifications
+   * about a resource, only groups of users that can access the resource can be notified, not the
+   * others even if they are part of the recipients.
+   * @return true of the specified group satisfies all the requirements to be notified.
+   */
+  protected abstract boolean isGroupCanBeNotified(final String groupId);
+
+  /**
    * Gets the notification metadata.
    * @return the metadata about the notification to build.
    */
@@ -245,7 +263,9 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
     if (CollectionUtil.isNotEmpty(groupIdsToNotify)) {
       // There is at least one group to notify
       for (final String groupId : groupIdsToNotify) {
-        getNotificationMetaData().addGroupRecipient(new GroupRecipient(groupId));
+        if (isGroupCanBeNotified(groupId)) {
+          getNotificationMetaData().addGroupRecipient(new GroupRecipient(groupId));
+        }
       }
     }
   }
@@ -255,7 +275,9 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
     if (CollectionUtil.isNotEmpty(userIdsToNotify)) {
       // There is at least one user to notify
       for (final String userId : userIdsToNotify) {
-        getNotificationMetaData().addUserRecipient(new UserRecipient(userId));
+        if (isUserCanBeNotified(userId)) {
+          getNotificationMetaData().addUserRecipient(new UserRecipient(userId));
+        }
       }
     }
 

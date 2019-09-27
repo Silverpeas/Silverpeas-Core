@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.user;
 
+import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
@@ -57,15 +58,17 @@ public class ProfiledObjectManager {
   protected ProfiledObjectManager() {
   }
 
-  public List<ProfileInst> getProfiles(int objectId, String objectType, int componentId)
+  public List<ProfileInst> getProfiles(ProfiledObjectId objectRef, int componentId)
       throws AdminException {
     List<ProfileInst> profiles = new ArrayList<>();
 
     String[] asProfileIds = null;
     try {
       // Get the profiles
-      asProfileIds = organizationSchema.userRole().getAllUserRoleIdsOfObject(
-          objectId, objectType, componentId);
+      int objectId = Integer.parseInt(objectRef.getId());
+      String objectType = objectRef.getType().getCode();
+      asProfileIds = organizationSchema.userRole()
+          .getAllUserRoleIdsOfObject(objectId, objectType, componentId);
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
     }
@@ -79,16 +82,17 @@ public class ProfiledObjectManager {
     return profiles;
   }
 
-  public String[] getUserProfileNames(int objectId, String objectType, int componentId, int userId,
+  public String[] getUserProfileNames(ProfiledObjectId objectRef, int componentId, int userId,
       List<String> groupIds) throws AdminException {
-    if (objectId == -1) {
+    if (objectRef.isNotDefined()) {
       return new String[0];
     }
 
     Connection con = null;
     try {
       con = DBUtil.openConnection();
-
+      int objectId = Integer.parseInt(objectRef.getId());
+      String objectType = objectRef.getType().getCode();
       List<UserRoleRow> roles =
           roleDAO.getRoles(con, objectId, objectType, componentId, groupIds, userId);
       List<String> roleNames = new ArrayList<>();
@@ -97,7 +101,7 @@ public class ProfiledObjectManager {
         roleNames.add(role.getRoleName());
       }
 
-      return roleNames.toArray(new String[roleNames.size()]);
+      return roleNames.toArray(new String[0]);
 
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);

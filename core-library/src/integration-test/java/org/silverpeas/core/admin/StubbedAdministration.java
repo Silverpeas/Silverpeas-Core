@@ -308,15 +308,24 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public List<ProfileInst> getProfilesByObject(final String objectId, final String objectType,
-      final String componentId) {
+  public List<ProfileInst> getProfilesByObject(final ProfiledObjectId objectRef, final String componentId) {
     return null;
   }
 
   @Override
-  public String[] getProfilesByObjectAndUserId(final int objectId, final String objectType,
-      final String componentId, final String userId) {
+  public String[] getProfilesByObjectAndUserId(final ProfiledObjectId objectRef, final String componentId, final String userId) {
     return new String[0];
+  }
+
+  @Override
+  public String[] getProfilesByObjectAndGroupId(final ProfiledObjectId objectRef, final String componentId, final String groupId) throws AdminException {
+    return new String[0];
+  }
+
+  @Override
+  public boolean isComponentAvailableToGroup(final String componentId, final String groupId)
+      throws AdminException {
+    return false;
   }
 
   @Override
@@ -326,8 +335,14 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public boolean isObjectAvailable(final String componentId, final int objectId,
-      final String objectType, final String userId) {
+  public boolean isObjectAvailableToUser(final String componentId, final ProfiledObjectId objectRef,
+      final String userId) {
+    return false;
+  }
+
+  @Override
+  public boolean isObjectAvailableToGroup(final String componentId,
+      final ProfiledObjectId objectRef, final String groupId) throws AdminException {
     return false;
   }
 
@@ -805,7 +820,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public boolean isComponentAvailable(final String componentId, final String userId) {
+  public boolean isComponentAvailableToUser(final String componentId, final String userId) {
     return false;
   }
 

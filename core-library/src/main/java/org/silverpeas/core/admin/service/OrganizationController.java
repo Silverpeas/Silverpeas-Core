@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.service;
 
+import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -263,8 +264,8 @@ public interface OrganizationController extends java.io.Serializable {
    * Gets the collection of silverpeas roles the given user has on the component instance
    * represented by the given identifier.<br>
    * In contrary to {@link #getUserProfiles(String, String)},
-   * {@link #getUserProfiles(String, String, String)} or
-   * {@link #getUserProfiles(String, String, int, ProfiledObjectType)}
+   * {@link #getUserProfiles(String, ProfiledObjectId)} or
+   * {@link #getUserProfiles(String, String, ProfiledObjectId)}
    * signatures, this one is able to return user roles of different kinds of implementation of
    * {@link SilverpeasComponentInstance}.<br>
    * So, this signature is useful into contexts of transversal treatments.<br>
@@ -277,12 +278,12 @@ public interface OrganizationController extends java.io.Serializable {
 
   String[] getUserProfiles(String userId, String componentId);
 
-  String[] getUserProfiles(String userId, String componentId, int objectId, ProfiledObjectType objectType);
+  String[] getUserProfiles(String userId, String componentId, ProfiledObjectId objectId);
 
   Map<Integer, List<String>> getUserObjectProfiles(String userId, String componentId,
       ProfiledObjectType objectType);
 
-  List<ProfileInst> getUserProfiles(String componentId, String objectId, String objectType);
+  List<ProfileInst> getUserProfiles(String componentId, ProfiledObjectId objectId);
 
   ProfileInst getUserProfile(String profileId);
 
@@ -393,7 +394,7 @@ public interface OrganizationController extends java.io.Serializable {
 
   boolean isSpaceAvailable(String spaceId, String userId);
 
-  boolean isObjectAvailable(int objectId, ProfiledObjectType objectType, String componentId, String userId);
+  boolean isObjectAvailable(ProfiledObjectId objectId, String componentId, String userId);
 
   List<SpaceInstLight> getSpaceTreeview(String userId);
 
@@ -415,8 +416,7 @@ public interface OrganizationController extends java.io.Serializable {
    */
   String[] getUsersIdsByRoleNames(String componentId, List<String> profileNames);
 
-  String[] getUsersIdsByRoleNames(String componentId, String objectId, ProfiledObjectType objectType,
-      List<String> profileNames);
+  String[] getUsersIdsByRoleNames(String componentId, ProfiledObjectId objectId, List<String> profileNames);
 
   /**
    * Get a domain with given id

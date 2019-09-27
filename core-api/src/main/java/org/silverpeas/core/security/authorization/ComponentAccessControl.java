@@ -24,12 +24,17 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * This interface extends access controller interface for a Component resource.
  * @author Yohann Chastagnier
  */
 public interface ComponentAccessControl extends AccessController<String> {
+
+  static ComponentAccessControl get() {
+    return ServiceProvider.getService(ComponentAccessControl.class);
+  }
 
   /**
    * Indicates is the rights are set on node as well as the component.

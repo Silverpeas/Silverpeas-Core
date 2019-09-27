@@ -33,20 +33,23 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.calendar.notification.CalendarEventUserNotificationReminder;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.TestManagedMocks;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
@@ -89,6 +92,14 @@ class DefaultContributionReminderUserNotificationTest {
 
   @RegisterExtension
   FieldMocker mocker = new FieldMocker();
+
+  @TestManagedMock
+  private PublicationService publicationService;
+  @TestManagedMock
+  private ComponentAccessControl componentAccessControl;
+  @TestManagedMock
+  private Administration administration;
+
   @Mock
   private User receiver;
 

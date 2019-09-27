@@ -28,6 +28,7 @@
  */
 package org.silverpeas.core.admin.service;
 
+import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -496,11 +497,9 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public String[] getUserProfiles(String userId, String componentId, int objectId,
-      ProfiledObjectType objectType) {
+  public String[] getUserProfiles(String userId, String componentId, ProfiledObjectId objectId) {
     try {
-      return getAdminService().getProfilesByObjectAndUserId(objectId, objectType.getCode(),
-          componentId, userId);
+      return getAdminService().getProfilesByObjectAndUserId(objectId, componentId, userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new String[0];
@@ -520,9 +519,9 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public List<ProfileInst> getUserProfiles(String componentId, String objectId, String objectType) {
+  public List<ProfileInst> getUserProfiles(String componentId, ProfiledObjectId objectId) {
     try {
-      return getAdminService().getProfilesByObject(objectId, objectType, componentId);
+      return getAdminService().getProfilesByObject(objectId, componentId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return Collections.emptyList();
@@ -760,7 +759,7 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   /**
-   * Is the specified component instance available among the components instances accessibles by the
+   * Is the specified component instance available among the components instances accessible by the
    * specified user?
    * </p>
    * A component is an application in Silverpeas to perform some tasks and to manage some resources.
@@ -775,7 +774,7 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public boolean isComponentAvailable(String componentId, String userId) {
     try {
-      return getAdminService().isComponentAvailable(componentId, userId);
+      return getAdminService().isComponentAvailableToUser(componentId, userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return false;
@@ -813,11 +812,9 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public boolean isObjectAvailable(int objectId, ProfiledObjectType objectType, String componentId,
-      String userId) {
+  public boolean isObjectAvailable(ProfiledObjectId objectId, String componentId, String userId) {
     try {
-      return getAdminService().isObjectAvailable(componentId, objectId, objectType.getCode(),
-          userId);
+      return getAdminService().isObjectAvailableToUser(componentId, objectId, userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return false;
@@ -892,13 +889,10 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public String[] getUsersIdsByRoleNames(String componentId, String objectId, ProfiledObjectType objectType,
-      List<String> profileNames) {
+  public String[] getUsersIdsByRoleNames(String componentId, ProfiledObjectId objectId, List<String> profileNames) {
 
     try {
-      List<ProfileInst> profiles = getAdminService().getProfilesByObject(objectId, objectType.
-          getCode(),
-          componentId);
+      List<ProfileInst> profiles = getAdminService().getProfilesByObject(objectId, componentId);
       List<String> profileIds = new ArrayList<>();
       for (ProfileInst profile : profiles) {
         if (profile != null && profileNames.contains(profile.getName())) {
