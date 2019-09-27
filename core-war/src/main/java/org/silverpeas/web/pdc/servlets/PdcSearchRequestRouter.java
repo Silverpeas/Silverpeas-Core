@@ -24,10 +24,6 @@
 package org.silverpeas.web.pdc.servlets;
 
 import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
@@ -45,11 +41,9 @@ import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WAAttributeValuePair;
-import org.silverpeas.core.exception.UtilException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -259,48 +253,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         destination = "/pdcPeas/jsp/globalResult.jsp";
       } else if ("XMLSearch".equals(function)) {
-        pdcSC.getQueryParameters().clearXmlQuery();
-        pdcSC.getQueryParameters().clear();
-
-        List<FileItem> items = getRequestItems(request);
-
-        String title = request.getParameter("TitleNotInXMLForm");
-        pdcSC.getQueryParameters().setXmlTitle(title);
-
-        PublicationTemplateImpl template;
-        String templateFileName = request.getParameter("xmlSearchSelectedForm");
-        if (StringUtil.isDefined(templateFileName)) {
-          template = pdcSC.setXmlTemplate(templateFileName);
-        } else {
-          template = pdcSC.getXmlTemplate();
-          templateFileName = template.getFileName();
-        }
-
-        // build a dataRecord object storing user's entries
-        RecordTemplate searchTemplate = template.getSearchTemplate();
-        DataRecord data = searchTemplate.getEmptyRecord();
-
-        PagesContext context =
-            new PagesContext("XMLSearchForm", "2", pdcSC.getLanguage(), pdcSC.getUserId());
-
-        XmlSearchForm searchForm = (XmlSearchForm) template.getSearchForm();
-        searchForm.update(items, data, context);
-
-        // xmlQuery is in the data object, store it into session
-        pdcSC.setXmlData(data);
-
-        // build the xmlSubQuery according to the dataRecord object
-        String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
-        String[] fieldNames = searchTemplate.getFieldNames();
-        for (int f = 0; f < fieldNames.length; f++) {
-          String fieldName = fieldNames[f];
-          Field field = data.getField(fieldName);
-          String fieldValue = field.getStringValue();
-          if (fieldValue != null && fieldValue.trim().length() > 0) {
-            String fieldQuery = fieldValue.trim().replaceAll("##", " AND ");
-            pdcSC.getQueryParameters().addXmlSubQuery(templateName + "$$" + fieldName, fieldQuery);
-          }
-        }
+        pdcSC.initXMLSearch(request);
 
         // launch the search
         pdcSC.search(null, isOnlyInPdcSearch(request));
@@ -488,10 +441,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     return filter;
   }
 
-  private List<FileItem> getRequestItems(HttpServletRequest request) throws UtilException {
-    return HttpRequest.decorate(request).getFileItems();
-  }
-
   private List<WAAttributeValuePair> getItemPks(List<GlobalSilverResult> listGR) {
     List<WAAttributeValuePair> itemPKs = new ArrayList<>();
     Iterator<GlobalSilverResult> itListGR = listGR.iterator();
@@ -552,10 +501,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       List<PublicationTemplate> templates =
           PublicationTemplateManager.getInstance().getSearchablePublicationTemplates();
       request.setAttribute("XMLForms", templates);
-      PagesContext context = new PagesContext("XMLSearchForm", "2", pdcSC.getLanguage(), false,
-          "useless", pdcSC.getUserId());
-      context.setBorderPrinted(false);
-      request.setAttribute("context", context);
+      request.setAttribute("context", pdcSC.getXMLContext());
     }
 
     // put search type

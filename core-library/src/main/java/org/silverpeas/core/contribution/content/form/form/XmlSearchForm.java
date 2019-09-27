@@ -48,6 +48,8 @@ import java.util.List;
  */
 public class XmlSearchForm extends AbstractForm {
 
+  private static final String DIV_TAG_END = "</div>";
+
   public XmlSearchForm(RecordTemplate template) throws FormException {
     super(template);
   }
@@ -127,41 +129,46 @@ public class XmlSearchForm extends AbstractForm {
       pc.setUseMandatory(false);
       pc.setIgnoreDefaultValues(true);
 
-      for (FieldTemplate fieldTemplate : listFields) {
-        String fieldName = fieldTemplate.getFieldName();
-        String fieldLabel = fieldTemplate.getLabel(language);
-
-        FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
-
-        if (fieldDisplayer != null) {
-
-          boolean checkbox = "checkbox".equalsIgnoreCase(fieldTemplate.getDisplayerName());
-
-          out.println("<li class=\"field field_" + fieldName + "\" id=\"form-row-" + fieldName
-              + "\">");
-          out.println("<div>");
-          out.println("<label for=\"" + fieldName + "\">" + fieldLabel + "</label>");
-          if(checkbox) {
-            out.println(getOperatorsSnippet(fieldName, pc));
-          }
-          out.println("</div>");
-          out.println("<div class=\"fieldInput\">");
-
-          try {
-            fieldDisplayer.display(out, record.getField(fieldName), fieldTemplate, pc);
-          } catch (FormException fe) {
-            SilverLogger.getLogger(this).error(fe.getMessage(), fe);
-          }
-          out.println("</div>");
-          out.println("</li>");
-          out.flush();
-        }
-      }
+      displayFields(out, record, listFields, language, pc);
 
       out.println("</ul>");
-      out.println("</div>");
+      out.println(DIV_TAG_END);
 
       out.flush();
+    }
+  }
+
+  private void displayFields(final PrintWriter out, final DataRecord record,
+      final List<FieldTemplate> listFields, final String language, final PagesContext pc) {
+    for (FieldTemplate fieldTemplate : listFields) {
+      String fieldName = fieldTemplate.getFieldName();
+      String fieldLabel = fieldTemplate.getLabel(language);
+
+      FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
+
+      if (fieldDisplayer != null) {
+
+        boolean checkbox = "checkbox".equalsIgnoreCase(fieldTemplate.getDisplayerName());
+
+        out.println("<li class=\"field field_" + fieldName + "\" id=\"form-row-" + fieldName
+            + "\">");
+        out.println("<div>");
+        out.println("<label for=\"" + fieldName + "\">" + fieldLabel + "</label>");
+        if(checkbox) {
+          out.println(getOperatorsSnippet(fieldName, pc));
+        }
+        out.println(DIV_TAG_END);
+        out.println("<div class=\"fieldInput\">");
+
+        try {
+          fieldDisplayer.display(out, record.getField(fieldName), fieldTemplate, pc);
+        } catch (FormException fe) {
+          SilverLogger.getLogger(this).error(fe.getMessage(), fe);
+        }
+        out.println(DIV_TAG_END);
+        out.println("</li>");
+        out.flush();
+      }
     }
   }
 
@@ -182,17 +189,17 @@ public class XmlSearchForm extends AbstractForm {
     if (Util.isOperatorsChoiceEnabled()) {
       sb.append("<a href=\"#\" id=\"").append(fieldName).append("OperatorAND\" onclick=\"javascript:$('#").append(fieldName)
           .append("Operator').val('").append(PagesContext.OPERATOR_AND).append("');$(this).attr('class','active');$('#").append(fieldName)
-          .append("OperatorOR').attr('class','');\" class=\"").append(classAND)
+          .append("OperatorOR').attr('class','');return false;\" class=\"").append(classAND)
           .append("\"/>").append(Util.getString("Operator.AND", pc.getLanguage())).append("</a>");
       sb.append(" / ");
       sb.append("<a href=\"#\" id=\"").append(fieldName).append("OperatorOR\" onclick=\"javascript:$('#").append(fieldName)
           .append("Operator').val('").append(PagesContext.OPERATOR_OR).append("');$(this).attr('class','active');$('#").append(fieldName)
-          .append("OperatorAND').attr('class','');\" class=\"").append(classOR)
+          .append("OperatorAND').attr('class','');return false;\" class=\"").append(classOR)
           .append("\"/>").append(Util.getString("Operator.OR", pc.getLanguage())).append("</a>");
     }
     sb.append("<input type=\"hidden\" name=\"").append(fieldName).append("Operator\" id=\"")
         .append(fieldName).append("Operator\" value=\"").append(currentOperator).append("\"/>");
-    sb.append("</div>");
+    sb.append(DIV_TAG_END);
     return sb.toString();
   }
 }
