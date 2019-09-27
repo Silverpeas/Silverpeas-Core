@@ -660,6 +660,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addOrganisationFeatures();
       addSchedulerFeatures();
       addSilverpeasContentFeatures();
+      addIndexEngineFeatures();
     }
     return this;
   }
