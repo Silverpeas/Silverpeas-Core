@@ -318,7 +318,7 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery andNotNull(final String parameter) {
-    return addSqlPart("AND " + parameter + " NOTNULL");
+    return addSqlPart("AND " + parameter + " IS NOT NULL");
   }
 
   /**
@@ -358,7 +358,7 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery orNotNull(final String parameter) {
-    return addSqlPart("OR " + parameter + " NOTNULL");
+    return addSqlPart("OR " + parameter + " IS NOT NULL");
   }
 
   /**

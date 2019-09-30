@@ -157,8 +157,20 @@ public interface PublicationService {
    * same component instance.
    * @param pubPK the identifying key of the publication.
    * @return a collection of {@link NodePK} instances, each of them identifying a node.
+   * @deprecated use instead the renamed
+   * {@link #getAllFatherPKInSamePublicationComponentInstance(PublicationPK)}. This signature has
+   * been kept in case of external uses.
    */
+  @Deprecated
   Collection<NodePK> getAllFatherPK(PublicationPK pubPK);
+
+  /**
+   * Gets the unique identifying key of all of the fathers of the specified publication and in the
+   * same component instance.
+   * @param pubPK the identifying key of the publication.
+   * @return a collection of {@link NodePK} instances, each of them identifying a node.
+   */
+  List<NodePK> getAllFatherPKInSamePublicationComponentInstance(PublicationPK pubPK);
 
   /**
    * Gets all the locations of the specified publication whatever the component instance in which
@@ -178,7 +190,7 @@ public interface PublicationService {
    * in the given component instance.
    * @see org.silverpeas.core.contribution.publication.model.Location
    */
-  Collection<Location> getLocationsInComponentInstance(PublicationPK pubPK, String instanceId);
+  List<Location> getLocationsInComponentInstance(PublicationPK pubPK, String instanceId);
 
   /**
    * Gets the main location of the specified publication. A publication has always one original
@@ -197,7 +209,7 @@ public interface PublicationService {
    * @param pubPK the identifying key of the publication.
    * @see org.silverpeas.core.contribution.publication.model.Location
    */
-  Collection<Location> getAllAliases(PublicationPK pubPK);
+  List<Location> getAllAliases(PublicationPK pubPK);
 
   /**
    * Sets the aliases of the specified publication. They replace the existing aliases of the

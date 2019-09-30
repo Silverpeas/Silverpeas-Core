@@ -227,20 +227,20 @@ public class PublicationFatherDAO {
    * @throws SQLException if an error occurs while requesting the data source.
    */
   public static Location getMainLocation(Connection con, PublicationPK pubPK) throws SQLException {
-    JdbcSqlQuery query = JdbcSqlQuery.createSelect("nodeId, instanceId, pubOrder")
+    return JdbcSqlQuery.createSelect("nodeId, instanceId, pubOrder")
         .from(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
         .and(INSTANCE_ID_SET, pubPK.getInstanceId())
         .andNull(ALIAS_USER_ID)
-        .andNull(ALIAS_DATE);
-    return query.executeUniqueWith(con, rs -> {
-      String id = Integer.toString(rs.getInt(1));
-      String instanceId = rs.getString(2);
-      Location location = new Location(id, instanceId);
-      int pubOrder = rs.getInt(5);
-      location.setPubOrder(pubOrder);
-      return location;
-    });
+        .andNull(ALIAS_DATE)
+        .executeUniqueWith(con, rs -> {
+          String id = Integer.toString(rs.getInt(1));
+          String instanceId = rs.getString(2);
+          Location location = new Location(id, instanceId);
+          int pubOrder = rs.getInt(3);
+          location.setPubOrder(pubOrder);
+          return location;
+        });
   }
 
   /**
@@ -306,10 +306,10 @@ public class PublicationFatherDAO {
    * @return a collection of all of the persistence identifiers of the publication's fathers.
    * @see NodePK
    * @see org.silverpeas.core.contribution.publication.model.PublicationPK
-   * @exception java.sql.SQLException
+   * @throws SQLException if an error occurs while requesting the data source.
    */
-  public static Collection<NodePK> getAllFatherPK(Connection con, PublicationPK pubPK)
-      throws SQLException {
+  public static List<NodePK> getAllFatherPKInSamePublicationComponentInstance(Connection con,
+      PublicationPK pubPK) throws SQLException {
     return JdbcSqlQuery.createSelect(NODE_ID).from(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
         .and(INSTANCE_ID_SET, pubPK.getInstanceId())
@@ -330,7 +330,6 @@ public class PublicationFatherDAO {
   public static Collection<PublicationPK> getPubPKsInFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
     PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
-
     return JdbcSqlQuery.createSelect("P.pubId, P.instanceId")
         .from(PUBLICATION_FATHER_TABLE_NAME + " F", pubPK.getTableName() + " P")
         .where("F.instanceId = ?", fatherPK.getInstanceId())
@@ -350,7 +349,7 @@ public class PublicationFatherDAO {
    * @return a collection of the aliases of the publication, each of them being a location.
    * @throws SQLException if an error occurs while executing the SQL request.
    */
-  public static Collection<Location> getAliases(final Connection con, final PublicationPK pubPK)
+  public static List<Location> getAliases(final Connection con, final PublicationPK pubPK)
       throws SQLException {
     JdbcSqlQuery query =
         JdbcSqlQuery.createSelect("nodeId, instanceId, aliasUserId, aliasDate, pubOrder")

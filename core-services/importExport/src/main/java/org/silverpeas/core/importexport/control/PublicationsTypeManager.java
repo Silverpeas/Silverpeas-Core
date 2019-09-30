@@ -36,6 +36,7 @@ import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
 import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
@@ -452,7 +453,7 @@ public class PublicationsTypeManager {
         exportAttachments(attachmentIE, null, pk, "", exportPath);
       } else {
         // exporting attachments in directories according to place of publications
-        List<NodePK> folderPKs = gedIE.getAllTopicsOfPublication(pk);
+        List<Location> folderPKs = gedIE.getAllTopicsOfPublicationInSameComponentInstance(pk);
         // add place of aliases
         folderPKs.addAll(gedIE.getAliases(pk));
         NodePK rightFolderPK = null;
@@ -854,7 +855,7 @@ public class PublicationsTypeManager {
     PublicationPK pk = new PublicationPK(String.valueOf(publicationType.getId()), publicationType.
         getComponentId());
     List<NodePositionType> listNodePos = new ArrayList<>();
-    List<NodePK> listNodePK = gedIE.getAllTopicsOfPublication(pk);
+    List<Location> listNodePK = gedIE.getAllTopicsOfPublicationInSameComponentInstance(pk);
     if (rootPK != null && !rootPK.getInstanceId().equals(pk.getInstanceId())) {
       // it's an alias, process only aliases
       listNodePK = gedIE.getAliases(pk);

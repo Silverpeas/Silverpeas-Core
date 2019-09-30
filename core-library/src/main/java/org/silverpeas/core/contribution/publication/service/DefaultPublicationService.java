@@ -554,8 +554,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Transactional
   public void removeAllFathers(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
-      PublicationFatherDAO.removeAllFathers(con, pubPK);
       deleteIndex(pubPK);
+      PublicationFatherDAO.removeAllFathers(con, pubPK);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -576,9 +576,14 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Collection<NodePK> getAllFatherPK(PublicationPK pubPK) {
+  public Collection<NodePK> getAllFatherPK(final PublicationPK pubPK) {
+    return getAllFatherPKInSamePublicationComponentInstance(pubPK);
+  }
+
+  @Override
+  public List<NodePK> getAllFatherPKInSamePublicationComponentInstance(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
-      return PublicationFatherDAO.getAllFatherPK(con, pubPK);
+      return PublicationFatherDAO.getAllFatherPKInSamePublicationComponentInstance(con, pubPK);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
@@ -594,7 +599,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Collection<Location> getLocationsInComponentInstance(final PublicationPK pubPK,
+  public List<Location> getLocationsInComponentInstance(final PublicationPK pubPK,
       final String instanceId) {
     try (Connection con = getConnection()) {
       return PublicationFatherDAO.getLocations(con, pubPK, instanceId);
@@ -613,7 +618,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Collection<Location> getAllAliases(PublicationPK pubPK) {
+  public List<Location> getAllAliases(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
       return PublicationFatherDAO.getAliases(con, pubPK);
     } catch (SQLException e) {
@@ -1059,12 +1064,11 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       final PublicationDetail pubDetail) {
     // set path(s) to publication into the index
     if (!pubDetail.getPK().getInstanceId().startsWith("kmax")) {
-      Collection<NodePK> fathers = getAllFatherPK(pubDetail.getPK());
-      List<String> paths = new ArrayList<>();
-      for (NodePK father : fathers) {
-        paths.add(nodeService.getDetail(father).getFullPath());
-      }
-      indexEntry.setPaths(paths);
+      final List<String> mainLocation = new ArrayList<>();
+      getMainLocation(pubDetail.getPK())
+          .map(l -> nodeService.getDetail(l).getFullPath())
+          .ifPresent(mainLocation::add);
+      indexEntry.setPaths(mainLocation.isEmpty() ? null : mainLocation);
     }
   }
 
@@ -1114,7 +1118,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
    */
   @Override
   public void deleteIndex(PublicationPK pubPK) {
-
     IndexEntryKey indexEntry = getIndexEntryPK(pubPK.getComponentName(), pubPK.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
     unindexAlias(pubPK);
@@ -1136,38 +1139,65 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     }
   }
 
-  private void indexAliases(PublicationPK pubPK, FullIndexEntry indexEntry) {
+  /**
+   * Indexes the alias of publication represented by the given {@link PublicationPK}.
+   * <p>
+   * If given {@link FullIndexEntry} is null, the index of aimed publication is fully processed and
+   * indexes of aliases on other component instances are also processed.
+   * </p>
+   * <p>
+   * If given {@link FullIndexEntry} is already initialized (which MUST concern the main one of
+   * the publication), only indexes of aliases on other component instances are processed.
+   * </p>
+   * <p>
+   * Into context of indexation, an index concerning the component instance host MUST NEVER be
+   * checked as an alias one.
+   * </p>
+   * @param pubPK the identifier of the publication.
+   * @param addedMainIndexEntry the optionally initialized and registered index of publication.
+   */
+  private void indexAliases(PublicationPK pubPK, FullIndexEntry addedMainIndexEntry) {
     Objects.requireNonNull(pubPK);
     final FullIndexEntry index;
-    if (indexEntry == null) {
-      PublicationDetail publi = getDetail(pubPK);
+    final boolean indexMainAndAliases = addedMainIndexEntry == null;
+    if (indexMainAndAliases) {
+      final PublicationDetail publi = getDetail(pubPK);
       index = getFullIndexEntry(publi, true);
     } else {
-      index = indexEntry;
+      index = addedMainIndexEntry;
     }
 
     Objects.requireNonNull(index);
-    Map<IndexEntryKey, List<String>> pathsByIndex = new HashMap<>();
-    Collection<Location> aliases = getAllAliases(pubPK);
-    for (Location location : aliases) {
-      IndexEntryKey pk = getIndexEntryPK(location.getInstanceId(), pubPK.getId());
-      List<String> paths = pathsByIndex.computeIfAbsent(pk, k -> new ArrayList<>());
+    final Map<IndexEntryKey, List<String>> pathsByIndex = new HashMap<>();
+    if (indexMainAndAliases) {
+      // case where index of main location has not been yet updated, it MUST be
+      pathsByIndex.put(index.getPK(), index.getPaths() != null
+          ? new ArrayList<>(index.getPaths())
+          : new ArrayList<>());
+    }
+    getAllAliases(pubPK).forEach(l -> {
+      final IndexEntryKey pk = getIndexEntryPK(l.getInstanceId(), pubPK.getId());
+      final List<String> paths = pathsByIndex.computeIfAbsent(pk, k ->
+          // case where index of main location has been already indexed, on same index key
+          // main path MUST be kept
+          k.equals(index.getPK()) && index.getPaths() != null
+              ? new ArrayList<>(index.getPaths())
+              : new ArrayList<>());
       try {
-        NodeDetail node =
-            nodeService.getDetail(new NodePK(location.getId(), location.getInstanceId()));
+        final NodeDetail node = nodeService.getDetail(new NodePK(l.getId(), l.getInstanceId()));
         paths.add(node.getFullPath());
       } catch (Exception e) {
         SilverLogger.getLogger(this)
-            .warn("Alias target {0} in component {1} no more exists", location.getId(),
-                location.getInstanceId());
+            .warn("Alias target {0} in component {1} no more exists", l.getId(), l.getInstanceId());
       }
-    }
+    });
 
     for (Map.Entry<IndexEntryKey, List<String>> entry : pathsByIndex.entrySet()) {
-      FullIndexEntry aliasIndexEntry = index.clone();
-      aliasIndexEntry.setPK(entry.getKey());
+      final FullIndexEntry aliasIndexEntry = index.clone();
+      final IndexEntryKey indexEntryKey = entry.getKey();
+      aliasIndexEntry.setPK(indexEntryKey);
       aliasIndexEntry.setPaths(entry.getValue());
-      aliasIndexEntry.setAlias(true);
+      aliasIndexEntry.setAlias(!indexEntryKey.getComponent().equals(pubPK.getInstanceId()));
       IndexEngineProxy.addIndexEntry(aliasIndexEntry);
     }
   }
@@ -1283,7 +1313,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   public Collection<Coordinate> getCoordinates(String pubId, String componentId) {
     PublicationPK pubPK = new PublicationPK(pubId, componentId);
-    Collection<NodePK> fatherPKs = getAllFatherPK(pubPK);
+    Collection<NodePK> fatherPKs = getAllFatherPKInSamePublicationComponentInstance(pubPK);
     Iterator<NodePK> it = fatherPKs.iterator();
     List<String> coordinateIds = new ArrayList<>();
     CoordinatePK coordinatePK = new CoordinatePK("unknown", pubPK);

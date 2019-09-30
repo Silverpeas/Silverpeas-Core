@@ -61,8 +61,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.silverpeas.core.index.indexing.model.IndexProcessor.doRemoveAll;
 import static org.silverpeas.core.index.indexing.model.IndexProcessor.doFlush;
+import static org.silverpeas.core.index.indexing.model.IndexProcessor.doRemoveAll;
 
 /**
  * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
@@ -195,13 +195,13 @@ public class IndexManager {
     });
   }
 
-  private void removeIndexEntry(IndexWriter writer, IndexEntryKey indexEntry) {
-    Term term = new Term(KEY, indexEntry.toString());
+  private void removeIndexEntry(IndexWriter writer, IndexEntryKey indexEntryKey) {
+    Term term = new Term(KEY, indexEntryKey.toString());
     try {
       // removing document according to indexEntryPK
       writer.deleteDocuments(term);
     } catch (IOException e) {
-      SilverLogger.getLogger(this).error("Index deletion failure: " + indexEntry.toString(), e);
+      SilverLogger.getLogger(this).error("Index deletion failure: " + indexEntryKey.toString(), e);
     }
   }
 
@@ -372,6 +372,7 @@ public class IndexManager {
     setHeaderFields(indexEntry, doc);
     setContentFields(indexEntry, doc);
     setContentTextField(indexEntry, doc);
+    setAlias(indexEntry, doc);
 
     if (StringUtil.isDefined(indexEntry.getObjectId())) {
       ServiceProvider.getAllServices(DocumentIndexing.class)
@@ -385,14 +386,16 @@ public class IndexManager {
     // Add server name inside Lucene doc
     doc.add(new StringField(SERVER_NAME, indexEntry.getServerName(), Field.Store.YES));
 
+    return doc;
+  }
+
+  private void setAlias(final FullIndexEntry indexEntry, final Document doc) {
     if (indexEntry.getPaths() != null) {
       for (String path : indexEntry.getPaths()) {
         doc.add(new StringField(PATH, path, Field.Store.YES));
       }
     }
     doc.add(new Field(ALIAS, Boolean.toString(indexEntry.isAlias()), TextField.TYPE_STORED));
-
-    return doc;
   }
 
   private void setAdditionalFields(final FullIndexEntry indexEntry, final Document doc) {

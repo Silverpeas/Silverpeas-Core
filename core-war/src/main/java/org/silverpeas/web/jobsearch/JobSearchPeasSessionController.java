@@ -38,8 +38,7 @@ import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.util.DateUtil;
@@ -53,10 +52,10 @@ import org.silverpeas.web.pdc.QueryParameters;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class declaration
@@ -420,50 +419,29 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     }
 
     if (null != publication) {
-      String nom = publication.getName(getLanguage());
-      String desc = publication.getDescription(getLanguage());
-      Date dateCrea = publication.getCreationDate();
-      String creaId = publication.getCreatorId();
-      String nomCrea = getUserName(Integer.parseInt(creaId));
-      PublicationPK pubPK = publication.getPK();
-      String instanceId = pubPK.getInstanceId();
-      List<String> listEmplacement = new ArrayList<>();
-      StringBuilder emplacementEspaceComposant = new StringBuilder("");
-      //Espace > Sous-espace
-      List<SpaceInstLight> spaceList = getAdminController().getPathToComponent(instanceId);
-      for (SpaceInstLight space : spaceList) {
-        emplacementEspaceComposant.append(space.getName(getLanguage())).append(" > ");
-      }
-
-      //Composant
-      ComponentInstLight component = getAdminController().getComponentInstLight(instanceId);
-      if (null != component) {
-        emplacementEspaceComposant.append(component.getLabel(getLanguage())).append(" > ");
-      }
-
-      //Theme / Sous-theme
-      Collection<NodePK> fatherPKs = getPublicationService().getAllFatherPK(pubPK);
-      if (null != fatherPKs) {
-        for (NodePK pk : fatherPKs) {
-          StringBuilder emplacement = new StringBuilder(emplacementEspaceComposant);
-          Collection<NodeDetail> path = getNodeService().getPath(pk);
-          List<NodeDetail> pathTab = new ArrayList<>(path);
-          Collections.reverse(pathTab);
-          for (NodeDetail nodeDetail : pathTab) {
-            emplacement.append(nodeDetail.getName(getLanguage())).append(" > ");
-          }
-          listEmplacement.add(emplacement.toString().substring(0, emplacement.length() - 3));
-        }
-      }
+      final String nom = publication.getName(getLanguage());
+      final String desc = publication.getDescription(getLanguage());
+      final Date dateCrea = publication.getCreationDate();
+      final String creaId = publication.getCreatorId();
+      final String nomCrea = getUserName(Integer.parseInt(creaId));
+      final PublicationPK pubPK = publication.getPK();
+      final List<String> paths = getPublicationService().getAllLocations(pubPK).stream()
+          .map(l -> {
+            final NodePath path = getNodeService().getPath(l);
+            String formattedPath = path.format(getLanguage());
+            if (l.isAlias()) {
+              formattedPath += " (" + getString("GML.alias") + ")";
+            }
+            return formattedPath;
+          })
+          .collect(Collectors.toList());
       SearchResult searchResult = new SearchResult();
       searchResult.setName(nom);
       searchResult.setDesc(desc);
       searchResult.setCreaDate(dateCrea);
       searchResult.setCreaName(nomCrea);
-      searchResult.setPath(listEmplacement);
-      searchResult.setUrl(
-          "openPublication('" + URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubPK.getId())
-          + "')");
+      searchResult.setPath(paths);
+      searchResult.setUrl("openPublication('" + URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubPK.getId()) + "')");
       result.add(searchResult);
     }
     return result;

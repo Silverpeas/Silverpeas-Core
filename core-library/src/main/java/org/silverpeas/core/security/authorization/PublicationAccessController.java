@@ -29,7 +29,6 @@ import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.MemoizedBooleanSupplier;
 import org.silverpeas.core.util.Mutable;
@@ -39,6 +38,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
@@ -191,15 +191,12 @@ public class PublicationAccessController extends AbstractAccessController<Public
   private boolean fillTopicTrackerNodeRoles(final Set<SilverpeasRole> userRoles,
       final AccessControlContext context, final String userId, final PublicationDetail pubDetail) {
     try {
-      final Collection<NodePK> nodes = getPublicationService().getAllFatherPK(pubDetail.getPK());
-      if (!nodes.isEmpty()) {
-        for (NodePK nodePk : nodes) {
-          final Set<SilverpeasRole> nodeUserRoles = nodeAccessController
-              .getUserRoles(userId, nodePk, context);
-          if (nodeAccessController.isUserAuthorized(nodeUserRoles)) {
-            userRoles.addAll(nodeUserRoles);
-            break;
-          }
+      final Optional<Location> mainLocation = getPublicationService().getMainLocation(pubDetail.getPK());
+      if (mainLocation.isPresent()) {
+        final Set<SilverpeasRole> nodeUserRoles = nodeAccessController
+            .getUserRoles(userId, mainLocation.get(), context);
+        if (nodeAccessController.isUserAuthorized(nodeUserRoles)) {
+          userRoles.addAll(nodeUserRoles);
         }
       } else {
         // case of publications on root node (so component rights will be checked)
@@ -214,10 +211,9 @@ public class PublicationAccessController extends AbstractAccessController<Public
   private boolean fillTopicTrackerAliasRoles(final Set<SilverpeasRole> userRoles,
       final AccessControlContext context, final String userId, final PublicationDetail pubDetail) {
     try {
-      final Collection<Location> locations = getPublicationService().getAllLocations(pubDetail.getPK());
-      for (Location location : locations) {
-        final Set<SilverpeasRole> nodeUserRoles = nodeAccessController
-            .getUserRoles(userId, location, context);
+      final Collection<Location> locations = getPublicationService().getAllAliases(pubDetail.getPK());
+      for (final Location location : locations) {
+        final Set<SilverpeasRole> nodeUserRoles = nodeAccessController.getUserRoles(userId, location, context);
         if (nodeAccessController.isUserAuthorized(nodeUserRoles)) {
           userRoles.addAll(nodeUserRoles);
           break;

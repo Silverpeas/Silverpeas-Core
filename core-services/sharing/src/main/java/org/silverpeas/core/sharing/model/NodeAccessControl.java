@@ -63,7 +63,7 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
   }
 
   protected Collection<NodePK> getPublicationFathers(ResourceReference pk) {
-    return getPublicationService().getAllFatherPK(new PublicationPK(pk.getId(), pk.getInstanceId()));
+    return getPublicationService().getAllFatherPKInSamePublicationComponentInstance(new PublicationPK(pk.getId(), pk.getInstanceId()));
   }
 
   protected Collection<Location> getPublicationAliases(ResourceReference pk) {
@@ -78,8 +78,7 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
       Collection<NodePK> authorizedNodes) {
     if (pk.getInstanceId().equals(instanceId)) {
       Collection<NodePK> fathers = getPublicationFathers(pk);
-      return authorizedNodes.stream()
-          .anyMatch(fathers::contains);
+      return authorizedNodes.stream().anyMatch(fathers::contains);
     } else {
       // special case of an alias between two ECM applications
       // check if publication which contains attachment is an alias into this node
