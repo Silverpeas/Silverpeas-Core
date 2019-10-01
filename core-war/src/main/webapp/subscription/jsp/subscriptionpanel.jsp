@@ -400,8 +400,11 @@
         $subscription.append($avatar);
 
         // Name
-        $subscription.append($('<span>').addClass('name_' +
-            subscription.ui.classSuffix).text(subscription.ui.name));
+        var $name =  $('<span>').addClass('name_' + subscription.ui.classSuffix).text(subscription.ui.name);
+        if (!subscription.enabled) {
+           $name.css('text-decoration', 'line-through').css('font-style', 'oblique');
+        }
+        $subscription.append($name);
 
         // Details
         if (subscription.creationDate) {

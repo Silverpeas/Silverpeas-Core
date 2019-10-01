@@ -758,6 +758,11 @@ public class DefaultOrganizationController implements OrganizationController {
     return isToolAvailable;
   }
 
+  @Override
+  public boolean isComponentAvailable(final String componentId, final String userId) {
+    return isComponentAvailableToUser(componentId, userId);
+  }
+
   /**
    * Is the specified component instance available among the components instances accessible by the
    * specified user?
@@ -772,9 +777,19 @@ public class DefaultOrganizationController implements OrganizationController {
    * @return true if the component instance is available, false otherwise.
    */
   @Override
-  public boolean isComponentAvailable(String componentId, String userId) {
+  public boolean isComponentAvailableToUser(String componentId, String userId) {
     try {
       return getAdminService().isComponentAvailableToUser(componentId, userId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return false;
+    }
+  }
+
+  @Override
+  public boolean isComponentAvailableToGroup(String componentId, String groupId) {
+    try {
+      return getAdminService().isComponentAvailableToGroup(componentId, groupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return false;
@@ -812,9 +827,25 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public boolean isObjectAvailable(ProfiledObjectId objectId, String componentId, String userId) {
+  public boolean isObjectAvailable(final ProfiledObjectId objectId, final String componentId,
+      final String userId) {
+    return isObjectAvailableToUser(objectId, componentId, userId);
+  }
+
+  @Override
+  public boolean isObjectAvailableToUser(ProfiledObjectId objectId, String componentId, String userId) {
     try {
       return getAdminService().isObjectAvailableToUser(componentId, objectId, userId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return false;
+    }
+  }
+
+  @Override
+  public boolean isObjectAvailableToGroup(ProfiledObjectId objectId, String componentId, String groupId) {
+    try {
+      return getAdminService().isObjectAvailableToGroup(componentId, objectId, groupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return false;

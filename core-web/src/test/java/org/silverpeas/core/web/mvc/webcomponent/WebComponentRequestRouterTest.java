@@ -141,7 +141,7 @@ public abstract class WebComponentRequestRouterTest {
     when(request.getPathInfo()).thenReturn(uriPart);
     when(request.getRequestURI()).thenReturn(
         UriBuilder.fromPath(URLUtil.getApplicationURL()).path(uriPart).build().toString());
-    when(organisationController.isComponentAvailable(anyString(), anyString()))
+    when(organisationController.isComponentAvailableToUser(anyString(), anyString()))
         .then(new Returns(true));
     when(organisationController.getComponentInstLight(anyString()))
         .then(new Returns(new ComponentInstLight()));

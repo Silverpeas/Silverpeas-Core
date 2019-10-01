@@ -386,7 +386,19 @@ public interface OrganizationController extends java.io.Serializable {
 
   boolean isToolAvailable(String toolId);
 
+  /**
+   * Is the specified component instance available to the given user?
+   * @param componentId the unique identifier of a component instance.
+   * @param userId the unique identifier of a user.
+   * @return true if the user can access the given component instance. False otherwise.
+   * @deprecated Replaced by {@link OrganizationController#isComponentAvailableToUser(String, String)}
+   */
+  @Deprecated
   boolean isComponentAvailable(String componentId, String userId);
+
+  boolean isComponentAvailableToUser(String componentId, String userId);
+
+  boolean isComponentAvailableToGroup(String componentId, String groupId);
 
   boolean isComponentExist(String componentId);
 
@@ -394,7 +406,23 @@ public interface OrganizationController extends java.io.Serializable {
 
   boolean isSpaceAvailable(String spaceId, String userId);
 
+  /**
+   * Is the specified profiled object in the given component instance available to the specified
+   * user?
+   * @param objectId A reference to the access right profiled object.
+   * @param componentId the unique identifier of the component instance in which is defined the
+   * above object.
+   * @param userId the unique identifier of the user.
+   * @return true if the user can access the object defined in the given component instance. False
+   * otherwise.
+   * @deprecated Use instead {@link OrganizationController#isObjectAvailableToUser(ProfiledObjectId, String, String)}
+   */
+  @Deprecated
   boolean isObjectAvailable(ProfiledObjectId objectId, String componentId, String userId);
+
+  boolean isObjectAvailableToUser(ProfiledObjectId objectId, String componentId, String userId);
+
+  boolean isObjectAvailableToGroup(ProfiledObjectId objectId, String componentId, String groupId);
 
   List<SpaceInstLight> getSpaceTreeview(String userId);
 

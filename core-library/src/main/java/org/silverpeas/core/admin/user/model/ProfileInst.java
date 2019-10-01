@@ -38,6 +38,8 @@ import org.silverpeas.core.admin.ProfiledObjectId;
  */
 public class ProfileInst extends BaseRightProfile {
 
+  private static final long serialVersionUID = 3576802842674205633L;
+
   private String componentFatherId = "";
   private ProfiledObjectId objectId = ProfiledObjectId.NOTHING;
   private ProfiledObjectId parentObjectId = ProfiledObjectId.NOTHING;

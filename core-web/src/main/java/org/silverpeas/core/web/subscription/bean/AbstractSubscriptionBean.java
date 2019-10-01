@@ -23,23 +23,30 @@
  */
 package org.silverpeas.core.web.subscription.bean;
 
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
+import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Date;
 
 /**
- * User: Yohann Chastagnier
+ * Abstract class that defines all the common properties of the different concrete type of
+ * a subscription.
+ * @author Yohann Chastagnier
  * Date: 25/02/13
  */
 public abstract class AbstractSubscriptionBean implements Subscription {
@@ -49,7 +56,7 @@ public abstract class AbstractSubscriptionBean implements Subscription {
   private UserDetail user = null;
   private Group group = null;
   private SpaceInstLight space = null;
-  private ComponentInstLight component = null;
+  private ComponentInstLight component;
 
   protected AbstractSubscriptionBean(final Subscription subscription,
       final ComponentInstLight component, final String language) {
@@ -89,10 +96,57 @@ public abstract class AbstractSubscriptionBean implements Subscription {
 
   /**
    * Indicates if the subscription is read only.
-   * @return
+   * @return true if the subscriber is a group of users. In such a case, a user of the group has no
+   * modification rights on the subscription.
    */
   public boolean isReadOnly() {
     return SubscriberType.GROUP.equals(getSubscriber().getType());
+  }
+
+
+  /**
+   * Is this subscription valid? A subscription is valid if and only if the user or the group
+   * of users can access the subscribed resource.
+   * @return true if the subscriber can access the resource. False otherwise.
+   */
+  public boolean isValid() {
+    SubscriptionSubscriber subscriber = getSubscriber();
+    SubscriptionResource resource = getResource();
+    if (subscriber.getType() == SubscriberType.USER) {
+      return isUserCanAccess(subscriber.getId(), resource);
+    } else if (subscriber.getType() == SubscriberType.GROUP) {
+      return isGroupCanAccess(subscriber.getId(), resource);
+    }
+
+    return true;
+  }
+
+  private boolean isUserCanAccess(final String userId, SubscriptionResource resource) {
+    final boolean accessOK;
+    if (resource.getType() == SubscriptionResourceType.NODE) {
+      NodePK nodePK = new NodePK(resource.getId(), resource.getInstanceId());
+      accessOK = NodeAccessControl.get().isUserAuthorized(userId, nodePK);
+    } else {
+      accessOK = ComponentAccessControl.get().isUserAuthorized(userId, resource.getInstanceId());
+    }
+    return accessOK;
+  }
+
+  private boolean isGroupCanAccess(final String groupId, SubscriptionResource resource) {
+    try {
+      boolean accessOK;
+      if (resource.getType() == SubscriptionResourceType.NODE) {
+        NodePK nodePK = new NodePK(resource.getId(), resource.getInstanceId());
+        accessOK = NodeAccessControl.get().isGroupAuthorized(groupId, nodePK);
+      } else {
+        String instanceId = resource.getInstanceId();
+        accessOK = ComponentAccessControl.get().isGroupAuthorized(instanceId, groupId);
+      }
+      return accessOK;
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).silent(e);
+      return true;
+    }
   }
 
   /**

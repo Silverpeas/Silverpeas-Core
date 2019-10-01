@@ -376,7 +376,12 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public boolean isComponentAvailable(final String componentId, final String userId) {
+  public boolean isComponentAvailableToUser(final String componentId, final String userId) {
+    return false;
+  }
+
+  @Override
+  public boolean isComponentAvailableToGroup(final String componentId, final String groupId) {
     return false;
   }
 
@@ -396,7 +401,23 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public boolean isObjectAvailable(final ProfiledObjectId objectId, final String componentId, final String userId) {
+  public boolean isComponentAvailable(final String componentId, final String userId) {
+    return isComponentAvailableToUser(componentId, userId);
+  }
+
+  @Override
+  public boolean isObjectAvailable(final ProfiledObjectId objectId, final String componentId,
+      final String userId) {
+    return isObjectAvailableToUser(objectId, componentId, userId);
+  }
+
+  @Override
+  public boolean isObjectAvailableToUser(final ProfiledObjectId objectId, final String componentId, final String userId) {
+    return false;
+  }
+
+  @Override
+  public boolean isObjectAvailableToGroup(final ProfiledObjectId objectId, final String componentId, final String groupId) {
     return false;
   }
 

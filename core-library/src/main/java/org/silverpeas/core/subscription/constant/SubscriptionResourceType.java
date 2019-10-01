@@ -31,27 +31,45 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * User: Yohann Chastagnier
+ * The type of a resource that can be targeted by a subscription.
+ * @author Yohann Chastagnier
  * Date: 19/02/13
  */
 public enum SubscriptionResourceType {
+  /**
+   * The type of the resource is unknown. Assimilable to nothing.
+   */
   UNKNOWN,
+  /**
+   * The resource is a component instance. And thus the subscription is about all of the resources
+   * handled by this component instance. If is the more high level subscription.
+   */
   COMPONENT,
+  /**
+   * The resource is a node in a given component instance. Nodes are generic objects used to
+   * categorize the resources in some component instances.
+   */
   NODE,
+  /**
+   * The resource is a forum. Used by component instances handling forums.
+   */
   FORUM,
+  /**
+   * The resource is a message in a given forum. Used by component instances handling forums.
+   */
   FORUM_MESSAGE;
 
   private static final Collection<SubscriptionResourceType> VALID_VALUES;
 
   static {
     VALID_VALUES =
-        new ArrayList<SubscriptionResourceType>(Arrays.asList(SubscriptionResourceType.values()));
+        new ArrayList<>(Arrays.asList(SubscriptionResourceType.values()));
     VALID_VALUES.remove(SubscriptionResourceType.UNKNOWN);
   }
 
   /**
-   * Valid if current instance is not the one of UNKNOWN.
-   * @return
+   * Is this type is valid? It is valid if the type of the resource isn't unknown.
+   * @return true if the type of the resource targeted by a subscription is known, false otherwise.
    */
   public boolean isValid() {
     return !this.equals(UNKNOWN);
@@ -75,8 +93,8 @@ public enum SubscriptionResourceType {
   }
 
   /**
-   * All SubscriptionResourceType are returned into a Collection excepted UNKNOWN type.
-   * @return
+   * All resource types are returned into a collection excepted the UNKNOWN one.
+   * @return a collection of all of the valid resource types.
    */
   public static Collection<SubscriptionResourceType> getValidValues() {
     return VALID_VALUES;

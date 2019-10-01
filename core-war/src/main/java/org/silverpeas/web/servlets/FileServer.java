@@ -145,7 +145,7 @@ public class FileServer extends AbstractFileSender {
         isAllowed = true;
       } else {
         isAllowed =
-            organizationController.isComponentAvailable(componentId, controller.getUserId());
+            organizationController.isComponentAvailableToUser(componentId, controller.getUserId());
       }
     }
     return isAllowed;

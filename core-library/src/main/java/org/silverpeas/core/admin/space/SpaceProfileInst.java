@@ -33,6 +33,8 @@ import org.silverpeas.core.admin.BaseRightProfile;
  */
 public class SpaceProfileInst extends BaseRightProfile {
 
+  private static final long serialVersionUID = -1776888916109816898L;
+
   public static final String SPACE_MANAGER = "Manager";
 
   private String spaceFatherId = "";

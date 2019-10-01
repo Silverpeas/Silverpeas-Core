@@ -27,13 +27,16 @@ package org.silverpeas.core.admin;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.node.model.NodePK;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * The unique identifier of an object that is covered by a right profile.
  * @author mmoquillon
  */
-public class ProfiledObjectId implements ResourceIdentifier {
+public class ProfiledObjectId implements ResourceIdentifier, Serializable {
+
+  private static final long serialVersionUID = -6252481085153576106L;
 
   private final String id;
   private final ProfiledObjectType type;

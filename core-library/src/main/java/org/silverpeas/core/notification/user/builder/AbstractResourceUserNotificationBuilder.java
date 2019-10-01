@@ -24,17 +24,14 @@
 package org.silverpeas.core.notification.user.builder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.core.admin.ProfiledObjectId;
-import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
@@ -42,9 +39,9 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 
@@ -82,22 +79,15 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
    * is verified. If the resource is a contribution, then the access controllers are used to verify
    * such an access. Otherwise, by default the user can be notified (no access control required).
    * @param userId the unique identifier of the user.
-   * @return true of the user can access the resource. False otherwise.
+   * @return true if the user can access the resource. False otherwise.
    */
   @Override
   protected boolean isUserCanBeNotified(final String userId) {
-    boolean isAccessible = true;
+    final boolean isAccessible;
     if (resource instanceof Contribution) {
-      Contribution contribution = (Contribution) resource;
-      final String id = contribution.getContributionId().getLocalId();
-      final String instanceId = contribution.getContributionId().getComponentInstanceId();
-      Collection<NodePK> fatherPKs =
-          PublicationService.get().getAllFatherPK(new PublicationPK(id, instanceId));
-      isAccessible = ComponentAccessControl.get().isUserAuthorized(userId, instanceId);
-      if (isAccessible && fatherPKs != null && !fatherPKs.isEmpty()) {
-        NodePK fatherPK = fatherPKs.iterator().next();
-        isAccessible = NodeAccessControl.get().isUserAuthorized(userId, fatherPK);
-      }
+      isAccessible = isUserAuthorized(userId, (Contribution) resource);
+    } else {
+      isAccessible = true;
     }
     return isAccessible;
   }
@@ -107,62 +97,62 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
    * is verified. If the resource is a contribution, then the access controllers are used to verify
    * such an access. Otherwise, by default the users in the group can be notified (no access
    * control required).
-   * @param groupId the unique identifier of the group of users..
-   * @return true of the group can access the resource. False otherwise.
+   * @param groupId the unique identifier of the group of users.
+   * @return true if the group can access the resource. False otherwise.
    */
   @Override
   protected boolean isGroupCanBeNotified(final String groupId) {
-    boolean isAccessible = true;
+    final boolean isAccessible;
     if (resource instanceof Contribution) {
-      Contribution contribution = (Contribution) resource;
-      final String id = contribution.getContributionId().getLocalId();
-      final String instanceId = contribution.getContributionId().getComponentInstanceId();
-      Collection<NodePK> fatherPKs =
-          PublicationService.get().getAllFatherPK(new PublicationPK(id, instanceId));
-      isAccessible = isComponentInstanceAccessibleByGroup(instanceId, groupId);
+      isAccessible = isGroupAuthorized(groupId, (Contribution) resource);
+    } else {
+      isAccessible = true;
+    }
+    return isAccessible;
+  }
+
+  private boolean isUserAuthorized(final String userId, final Contribution contribution) {
+    final String id = contribution.getContributionId().getLocalId();
+    final String instanceId = contribution.getContributionId().getComponentInstanceId();
+    Collection<NodePK> fatherPKs =
+        PublicationService.get().getAllFatherPK(new PublicationPK(id, instanceId));
+    boolean isAccessible;
+    if (PublicationDetail.TYPE.equals(contribution.getContributionType())) {
+      PublicationPK pubPK = new PublicationPK(id, instanceId);
+      isAccessible = PublicationAccessControl.get().isUserAuthorized(userId, pubPK);
+    } else {
+      isAccessible = ComponentAccessControl.get().isUserAuthorized(userId, instanceId);
       if (isAccessible && fatherPKs != null && !fatherPKs.isEmpty()) {
-        isAccessible = isNodeAccessibleByGroup(fatherPKs.iterator().next(), groupId);
+        NodeAccessControl nodeAccessControl = NodeAccessControl.get();
+        isAccessible = false;
+        for (NodePK fatherPK: fatherPKs) {
+          if ((nodeAccessControl.isUserAuthorized(userId, fatherPK))) {
+            isAccessible = true;
+            break;
+          }
+        }
       }
     }
     return isAccessible;
   }
 
-  private boolean isComponentInstanceAccessibleByGroup(final String instanceId,
-      final String groupId) {
-    try {
-      return Administration.get().isComponentAvailableToGroup(instanceId, groupId);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).warn(e);
-      return true;
-    }
-  }
-
-  private boolean isNodeAccessibleByGroup(final NodePK nodePK, final String groupId) {
-    ComponentAccessControl componentAccessControl = ComponentAccessControl.get();
-    if (!componentAccessControl.isRightOnTopicsEnabled(nodePK.getInstanceId())) {
-      return true;
-    } else {
-      try {
-        NodeService nodeService = NodeService.get();
-        Administration admin = Administration.get();
-        final boolean isAccessible;
-        NodeDetail node = nodeService.getDetail(nodePK);
-        while (node.haveInheritedRights() && node.hasFather()) {
-          node = nodeService.getDetail(node.getFatherPK());
+  private boolean isGroupAuthorized(final String groupId, final Contribution contribution) {
+    final String id = contribution.getContributionId().getLocalId();
+    final String instanceId = contribution.getContributionId().getComponentInstanceId();
+    Collection<NodePK> fatherPKs =
+        PublicationService.get().getAllFatherPK(new PublicationPK(id, instanceId));
+    boolean isAccessible = ComponentAccessControl.get().isGroupAuthorized(groupId, instanceId);
+    if (isAccessible && fatherPKs != null && !fatherPKs.isEmpty()) {
+      NodeAccessControl nodeAccessControl = NodeAccessControl.get();
+      isAccessible = false;
+      for (NodePK fatherPK: fatherPKs) {
+        if ((nodeAccessControl.isGroupAuthorized(groupId, fatherPK))) {
+          isAccessible = true;
+          break;
         }
-        if (node.haveLocalRights()) {
-          NodePK objectPK = node.getNodePK();
-          isAccessible = admin.isObjectAvailableToGroup(objectPK.getInstanceId(),
-              ProfiledObjectId.fromNode(objectPK.getId()), groupId);
-        } else {
-          isAccessible = admin.isComponentAvailableToGroup(nodePK.getInstanceId(), groupId);
-        }
-        return isAccessible;
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
-        return true;
       }
     }
+    return isAccessible;
   }
 
   /**

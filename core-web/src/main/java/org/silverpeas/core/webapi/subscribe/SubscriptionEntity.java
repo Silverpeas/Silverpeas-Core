@@ -25,6 +25,11 @@ package org.silverpeas.core.webapi.subscribe;
 
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
+import org.silverpeas.core.subscription.service.ComponentSubscription;
+import org.silverpeas.core.subscription.service.NodeSubscription;
+import org.silverpeas.core.web.subscription.bean.AbstractSubscriptionBean;
+import org.silverpeas.core.web.subscription.bean.ComponentSubscriptionBean;
+import org.silverpeas.core.web.subscription.bean.NodeSubscriptionBean;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -46,8 +51,11 @@ public class SubscriptionEntity {
   private boolean selfCreation = true;
   @XmlElement(defaultValue = "true")
   private Date creationDate;
+  @XmlElement
+  private boolean enabled = true;
 
   static SubscriptionEntity from(Subscription subscription) {
+    AbstractSubscriptionBean bean = decorate(subscription);
     SubscriptionEntity entity = new SubscriptionEntity();
     entity.resource = SubscriptionResourceEntity.from(subscription.getResource());
     entity.subscriber = SubscriberEntity.from(subscription.getSubscriber());
@@ -55,6 +63,7 @@ public class SubscriptionEntity {
     entity.selfCreation =
         SubscriptionMethod.SELF_CREATION.equals(subscription.getSubscriptionMethod());
     entity.creationDate = subscription.getCreationDate();
+    entity.enabled = bean.isValid();
     return entity;
   }
 
@@ -76,5 +85,24 @@ public class SubscriptionEntity {
 
   public Date getCreationDate() {
     return creationDate;
+  }
+
+  public boolean isEnabled() {
+    return this.enabled;
+  }
+
+  private static AbstractSubscriptionBean decorate(final Subscription subscription) {
+    final AbstractSubscriptionBean bean;
+    if (subscription instanceof AbstractSubscriptionBean) {
+      bean = (AbstractSubscriptionBean) subscription;
+    } else if (subscription instanceof ComponentSubscription) {
+      bean = new ComponentSubscriptionBean(subscription, null, null);
+    } else if (subscription instanceof NodeSubscription) {
+      bean = new NodeSubscriptionBean(subscription, null, null, null);
+    } else {
+      throw new IllegalArgumentException(
+          "Type of subscription not supported: " + subscription.getResource().getType());
+    }
+    return bean;
   }
 }

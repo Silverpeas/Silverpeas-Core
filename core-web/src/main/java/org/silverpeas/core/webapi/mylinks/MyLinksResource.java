@@ -234,7 +234,7 @@ public class MyLinksResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public MyLinkEntity addAppLink(@PathParam("id") String applicationId) {
     if (StringUtil.isDefined(applicationId) &&
-        getOrganisationController().isComponentAvailable(applicationId, getUser().getId())) {
+        getOrganisationController().isComponentAvailableToUser(applicationId, getUser().getId())) {
       ComponentInstLight newFavoriteApp =
           getOrganisationController().getComponentInstLight(applicationId);
       String userLanguage = getUserPreferences().getLanguage();

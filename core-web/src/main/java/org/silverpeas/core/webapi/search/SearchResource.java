@@ -107,7 +107,7 @@ public class SearchResource extends RESTWebService {
           .forEach(addComponent);
     } else if (!appIds.isEmpty()) {
       appIds.stream()
-          .filter(i -> getOrganisationController().isComponentAvailable(i, userId))
+          .filter(i -> getOrganisationController().isComponentAvailableToUser(i, userId))
           .forEach(addComponent);
     } else {
       Arrays.stream(getOrganisationController().getAvailCompoIds(spaceId, userId))

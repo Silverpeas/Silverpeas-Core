@@ -87,6 +87,32 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     return authorized;
   }
 
+  public boolean isGroupAuthorized(final String groupId, final NodePK nodePK) {
+    if (!componentAccessController.isRightOnTopicsEnabled(nodePK.getInstanceId())) {
+      return true;
+    } else {
+      try {
+        NodeDetail node = nodeService.getDetail(nodePK);
+        while (node.haveInheritedRights() && node.hasFather()) {
+          node = nodeService.getDetail(node.getFatherPK());
+        }
+        final boolean isAccessible;
+        if (node.haveLocalRights()) {
+          NodePK objectPK = node.getNodePK();
+          isAccessible =
+              controller.isObjectAvailableToGroup(ProfiledObjectId.fromNode(objectPK.getId()),
+                  objectPK.getInstanceId(), groupId);
+        } else {
+          isAccessible = controller.isComponentAvailableToGroup(nodePK.getInstanceId(), groupId);
+        }
+        return isAccessible;
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).warn(e);
+        return true;
+      }
+    }
+  }
+
   @Override
   protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
       String userId, NodePK nodePK) {

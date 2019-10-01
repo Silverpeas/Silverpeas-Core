@@ -154,7 +154,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   private boolean isComponentAvailable(String userId) {
-    return getOrganisationController().isComponentAvailable(getComponentId(), userId);
+    return getOrganisationController().isComponentAvailableToUser(getComponentId(), userId);
   }
 
   /**

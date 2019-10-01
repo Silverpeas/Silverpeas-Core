@@ -32,14 +32,14 @@ import org.silverpeas.core.subscription.constant.SubscriberType;
 public interface SubscriptionSubscriber {
 
   /**
-   * Gets the identifier of the subscriber that aimed a subscription
-   * @return
+   * Gets the identifier of the subscriber of a subscription
+   * @return the unique identifier of either a user or a group of users.
    */
-  public String getId();
+  String getId();
 
   /**
-   * Gets the type of the subscriber that aimed a subscription
-   * @return
+   * Gets the type of the subscriber of a subscription. It can be either a user or a group of users.
+   * @return the subscriber type.
    */
-  public SubscriberType getType();
+  SubscriberType getType();
 }
