@@ -43,17 +43,17 @@ import static java.io.File.separatorChar;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
+ * Provides useful methods to handle files and directories in the Silverpeas specific filesystem.
  * @author Norbert CHAIX
- * @version
  */
 public class FileRepositoryManager {
 
   static String tempPath = "";
   static String domainPropertiesFolderPath;
   static String domainAuthenticationPropertiesFolderPath;
-  final static SettingBundle uploadSettings =
+  static final SettingBundle uploadSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.util.uploads.uploadSettings");
-  public static final String CONTEXT_TOKEN = ",";
+  private static final String CONTEXT_TOKEN = ",";
 
   static {
     tempPath = ResourceLocator.getGeneralSettingBundle().getString("tempPath");
@@ -79,15 +79,13 @@ public class FileRepositoryManager {
   }
 
   /**
-   * @deprecated
-   * @param sSpaceId
-   * @param sComponentId
-   * @return
-   * @deprecated
+   * Gets the path of the directory of initialization data with which some
+   * {@link org.silverpeas.core.initialization.Initialization} services can use to persist their
+   * data required for their work.
+   * @return the path of the directory of initialization data.
    */
-  @Deprecated
-  public static String getAbsolutePath(String sSpaceId, String sComponentId) {
-    return getUploadPath() + sComponentId + separatorChar;
+  public static String getInitDataDirPath() {
+    return getUploadPath() + File.separator + "init";
   }
 
   public static String getAbsolutePath(String sComponentId) {
@@ -108,20 +106,6 @@ public class FileRepositoryManager {
   public static String getUploadPath() {
     return ResourceLocator.getGeneralSettingBundle().getString(
         "uploadsPath") + separatorChar;
-  }
-
-  /**
-   * Add by Jean-Claude Groccia
-   *
-   * @param: spaceId: type String: the name of the space
-   * @param: componentId: type String: the name of the componentId
-   * @param: directoryName: type Array of String: the name of sub directory. this parameter
-   * represents the context of component
-   * @deprecated
-   */
-  @Deprecated
-  public static String getAbsolutePath(String spaceId, String componentId, String[] directoryName) {
-    return getAbsolutePath(componentId, directoryName);
   }
 
   /**
@@ -160,23 +144,8 @@ public class FileRepositoryManager {
     return domainAuthenticationPropertiesFolderPath + "autDomain" + domainName + ".properties";
   }
 
-  public static String getTemporaryPath(String sSpaceId, String sComponentId) {
-    return tempPath + separatorChar;
-  }
-
   public static String getComponentTemporaryPath(String sComponentId) {
     return getAbsolutePath(sComponentId) + "Temp" + separatorChar;
-  }
-
-  /**
-   * @param spaceId
-   * @param componentId
-   * @param directoryName
-   * @deprecated
-   */
-  @Deprecated
-  public static void createAbsolutePath(String spaceId, String componentId, String directoryName) {
-    FileFolderManager.createFolder(getAbsolutePath(componentId) + directoryName);
   }
 
   public static void createAbsolutePath(String componentId, String directoryName) {
@@ -187,7 +156,7 @@ public class FileRepositoryManager {
     FileFolderManager.createFolder(getTemporaryPath() + sDirectoryName);
   }
 
-  public static void deleteAbsolutePath(String sSpaceId, String sComponentId, String sDirectoryName) {
+  public static void deleteAbsolutePath(String sComponentId, String sDirectoryName) {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId) + sDirectoryName);
   }
 
@@ -281,11 +250,11 @@ public class FileRepositoryManager {
     String sec = " s";
     String ms = " ms";
     if (size < 1000) {
-      return Long.toString(size) + ms;
+      return size + ms;
     } else if (size < 120000) {
-      return Long.toString(size / 1000) + sec;
+      return size / 1000 + sec;
     } else {
-      return Long.toString(size / 60000) + min;
+      return size / 60000 + min;
     }
   }
 

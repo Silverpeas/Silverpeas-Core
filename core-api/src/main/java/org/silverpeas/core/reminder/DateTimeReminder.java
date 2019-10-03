@@ -25,12 +25,15 @@ package org.silverpeas.core.reminder;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.ContributionModel;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A reminder about any contribution that is triggered at a specified date time.
@@ -39,17 +42,30 @@ import java.time.ZoneId;
 @Entity
 @DiscriminatorValue("datetime")
 public class DateTimeReminder extends Reminder {
+  private static final long serialVersionUID = 472505709526636072L;
 
   @Transient
   private transient OffsetDateTime dateTime;
 
   /**
+   * Constructs a new reminder about the given contribution for the system.
+   * @param contributionId the unique identifier of a contribution.
+   * @param processName the name of the process the reminder MUST perform when triggered.
+   */
+  public DateTimeReminder(final ContributionIdentifier contributionId,
+      final ReminderProcessName processName) {
+    super(contributionId, processName);
+  }
+
+  /**
    * Constructs a new reminder about the specified contribution and for the given user.
    * @param contributionId the unique identifier of the contribution.
    * @param user the user aimed by this reminder.
+   * @param processName the name of the process the reminder MUST perform when triggered.
    */
-  public DateTimeReminder(final ContributionIdentifier contributionId, final User user) {
-    super(contributionId, user);
+  public DateTimeReminder(final ContributionIdentifier contributionId, final User user,
+      final ReminderProcessName processName) {
+    super(contributionId, user, processName);
   }
 
   /**
@@ -59,6 +75,7 @@ public class DateTimeReminder extends Reminder {
     super();
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public final DateTimeReminder withText(final String text) {
     return super.withText(text);
@@ -72,8 +89,20 @@ public class DateTimeReminder extends Reminder {
    * @return itself.
    */
   public DateTimeReminder triggerAt(final OffsetDateTime dateTime) {
-    final ZoneId userZoneId = User.getById(getUserId()).getUserPreferences().getZoneId();
+    final ZoneId userZoneId = getUserZoneId();
     this.dateTime = dateTime.atZoneSameInstant(userZoneId).toOffsetDateTime();
+    return this;
+  }
+
+
+  /**
+   * Triggers this reminder from the temporal property of the contribution. The timezone of the
+   * computed date time will be set in the timezone of the user behind this reminder.
+   * @param temporalProperty the temporal property of the contribution.
+   * @return itself.
+   */
+  public DateTimeReminder triggerFrom(final String temporalProperty) {
+    withContributionProperty(temporalProperty);
     return this;
   }
 
@@ -84,16 +113,6 @@ public class DateTimeReminder extends Reminder {
    */
   public OffsetDateTime getDateTime() {
     return isScheduled() ? getScheduledDateTime() : dateTime;
-  }
-
-  /**
-   * This reminder is schedulable if the triggering date is defined and is after now.
-   * @return true if the triggering date is after now, false otherwise.
-   */
-  @Override
-  public boolean isSchedulable() {
-    final OffsetDateTime triggeringDate = getDateTime();
-    return triggeringDate != null && !triggeringDate.isBefore(OffsetDateTime.now());
   }
 
   @Override
@@ -108,7 +127,16 @@ public class DateTimeReminder extends Reminder {
 
   @Override
   protected OffsetDateTime computeTriggeringDate() {
-    return dateTime;
+    OffsetDateTime computedDate = super.computeTriggeringDate();
+    if (computedDate == null && isDefined(getContributionProperty())) {
+      final ContributionModel model = getContribution().getModel();
+      final ZoneId userZoneId = getUserZoneId();
+      final OffsetDateTime propertyDateTime = applyFilterOnTemporalType(model.filterByType(getContributionProperty()), userZoneId);
+      computedDate = !propertyDateTime.isBefore(OffsetDateTime.now()) ? propertyDateTime : null;
+    } else {
+      computedDate = dateTime;
+    }
+    return computedDate;
   }
 }
   

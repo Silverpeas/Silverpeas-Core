@@ -86,6 +86,7 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.user;
 import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.CALENDAR;
+import static org.silverpeas.core.calendar.notification.CalendarEventUserNotificationReminder.CALENDAR_EVENT_USER_NOTIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity.decodeId;
 import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.CALENDAR_BASE_URI;
@@ -453,7 +454,7 @@ public class CalendarResource extends AbstractCalendarResource {
       }
       final ReminderEntity reminderEntity = eventEntity.getReminder();
       if (reminderEntity != null) {
-        final Reminder reminder = new DurationReminder(event.getContributionId(), getUser());
+        final Reminder reminder = new DurationReminder(event.getContributionId(), getUser(), CALENDAR_EVENT_USER_NOTIFICATION);
         try {
           reminderEntity.mergeInto(reminder).schedule();
         } catch (Exception e) {
@@ -526,8 +527,9 @@ public class CalendarResource extends AbstractCalendarResource {
       final CalendarEvent created = updatedEvents.get(1);
       final Mutable<Boolean> reminderError = Mutable.of(false);
       Reminder.getByContribution(original.getContributionId()).stream()
+          .filter(r -> CALENDAR_EVENT_USER_NOTIFICATION.asString().equals(r.getProcessName()))
           .map(DurationReminder.class::cast)
-          .map(r -> new DurationReminder(created.getContributionId(), User.getById(r.getUserId()))
+          .map(r -> new DurationReminder(created.getContributionId(), User.getById(r.getUserId()), CALENDAR_EVENT_USER_NOTIFICATION)
               .withText(r.getText()).triggerBefore(r.getDuration(), r.getTimeUnit(), r.getContributionProperty()))
           .forEach(r -> {
             try {

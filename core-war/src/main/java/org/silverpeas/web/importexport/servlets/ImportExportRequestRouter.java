@@ -90,7 +90,7 @@ public class ImportExportRequestRouter extends
         for (FileItem item : items) {
           if (!item.isFormField()) {
             String fileName = FileUploadUtil.getFileName(item);
-            file = new File(FileRepositoryManager.getTemporaryPath(null, null) + fileName);
+            file = new File(FileRepositoryManager.getTemporaryPath() + fileName);
             FileUploadUtil.saveToFile(file, item);
           }
         }

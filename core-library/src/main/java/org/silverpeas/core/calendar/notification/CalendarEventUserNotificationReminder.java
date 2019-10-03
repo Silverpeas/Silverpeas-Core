@@ -28,41 +28,45 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.reminder.DefaultContributionReminderUserNotification
-    .ContributionReminderUserNotification;
+import org.silverpeas.core.reminder.BackgroundReminderProcess;
+import org.silverpeas.core.reminder.DefaultContributionReminderUserNotification;
 import org.silverpeas.core.reminder.Reminder;
-import org.silverpeas.core.reminder.usernotification
-    .ReminderUserNotificationSenderByContributionType;
+import org.silverpeas.core.reminder.ReminderProcessName;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.temporal.Temporal;
-import java.util.Collections;
-import java.util.List;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
+import static org.silverpeas.core.reminder.BackgroundReminderProcess.Constants.PROCESS_NAME_SUFFIX;
 
 /**
  * Implementation in charge of handling data about {@link org.silverpeas.core.calendar.Calendar}
  * entities.
  * @author silveryocha
  */
-@Named
-public class CalendarContributionReminderUserNotification
-    implements ReminderUserNotificationSenderByContributionType {
+@Named(CalendarEventUserNotificationReminder.PROCESS_NAME + PROCESS_NAME_SUFFIX)
+@Singleton
+public class CalendarEventUserNotificationReminder implements BackgroundReminderProcess {
 
-  private static final List<String> HANDLED_TYPES = Collections.singletonList(CalendarEvent.TYPE);
+  static final String PROCESS_NAME = "CalendarEventUserNotification";
+  public static final ReminderProcessName CALENDAR_EVENT_USER_NOTIFICATION = () -> PROCESS_NAME;
 
   @Override
-  public boolean isReminderNotificationSenderOfContributionType(final String type) {
-    return HANDLED_TYPES.contains(type);
+  public ReminderProcessName getName() {
+    return CALENDAR_EVENT_USER_NOTIFICATION;
   }
 
+  /**
+   * Sends the user notification about a specified reminder.
+   * @param reminder a reminder.
+   */
   @Override
-  public void sendAbout(final Reminder reminder, final String contributionType) {
+  public void performWith(final Reminder reminder) {
     new UserNotification(reminder).build().send();
   }
 
@@ -70,7 +74,7 @@ public class CalendarContributionReminderUserNotification
    * Extension of the default reminder builder which is able to load the right data according the
    * scheduled date time.
    */
-  static class UserNotification extends ContributionReminderUserNotification {
+  static class UserNotification extends DefaultContributionReminderUserNotification {
 
     private CalendarEventOccurrence occurrence;
     private ZoneId calendarZoneId;

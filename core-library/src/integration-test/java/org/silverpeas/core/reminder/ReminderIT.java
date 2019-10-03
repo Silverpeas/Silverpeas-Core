@@ -35,11 +35,11 @@ import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessLogger;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.calendar.notification.CalendarContributionReminderUserNotification;
-import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
+import org.silverpeas.core.calendar.notification.CalendarEventUserNotificationReminder;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.notification.user.builder.AbstractContributionTemplateUserNotificationBuilder;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.DefaultPersonalizationService;
@@ -80,18 +80,18 @@ import static org.mockito.Mockito.when;
 @RunWith(Arquillian.class)
 public class ReminderIT {
 
+  private static final ReminderProcessName PROCESS_NAME = () -> "TestReminderProcess";
+
   private static final ContributionIdentifier CONTRIBUTION_FOR_NOW =
       ContributionIdentifier.from("kmelia42", "42", EventContrib.class.getSimpleName());
 
   private static final ContributionIdentifier CONTRIBUTION_FOR_LATER =
       ContributionIdentifier.from("kmelia42", "43", EventContrib.class.getSimpleName());
 
+  private static final String SYSTEM_USER_ID = "-1";
   private static final String USER_ID = "2";
 
   private static final String REMINDER_ID = "Reminder#1ed074deee814b6a8035b9ced02ff56d";
-
-  private static final String CACHE_KEY =
-      ComponentInstanceContributionManager.class.getName() + "###kmelia42";
 
   @Rule
   public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
@@ -110,17 +110,18 @@ public class ReminderIT {
         .addStringTemplateFeatures()
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core-api")
         .addMavenDependencies("org.awaitility:awaitility", "org.antlr:stringtemplate")
-        .addClasses(CalendarContributionReminderUserNotification.class,
+        .addPackages(true, AbstractContributionTemplateUserNotificationBuilder.class.getPackage().getName())
+        .addClasses(CalendarEventUserNotificationReminder.class,
             DefaultContributionReminderUserNotification.class, PublicationTemplateManager.class)
-        .testFocusedOn((warBuilder) -> {
+        .testFocusedOn((warBuilder) ->
           warBuilder.addAsResource("org/silverpeas/core/scheduler/create_quartz_tables.sql")
               .addAsResource("org/silverpeas/core/admin/create_space_components_database.sql")
               .addAsResource("org/silverpeas/core/reminder/create_table.sql")
               .addAsResource("org/silverpeas/core/reminder/reminder-dataset.sql")
               .addPackages(true, "org.silverpeas.core.initialization")
               .addPackages(false, "org.silverpeas.core.contribution")
-              .addPackages(true, "org.silverpeas.core.personalization");
-        })
+              .addPackages(true, "org.silverpeas.core.personalization")
+        )
         .build();
   }
 
@@ -228,7 +229,7 @@ public class ReminderIT {
     final String reminderText = "Remind me!";
     final OffsetDateTime triggerDate = OffsetDateTime.now().plusDays(1);
     Reminder expectedReminder =
-        new DateTimeReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID)).withText(reminderText)
+        new DateTimeReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID), PROCESS_NAME).withText(reminderText)
             .triggerAt(triggerDate)
             .schedule();
 
@@ -248,10 +249,60 @@ public class ReminderIT {
   }
 
   @Test
+  public void scheduleASystemReminderInDateTimeWillPersistIt() {
+    final String reminderText = "Remind me!";
+    final OffsetDateTime triggerDate = OffsetDateTime.now().plusDays(1);
+    Reminder expectedReminder =
+        new DateTimeReminder(CONTRIBUTION_FOR_NOW, PROCESS_NAME).withText(reminderText)
+            .triggerAt(triggerDate)
+            .schedule();
+
+    assertThat(expectedReminder.isPersisted(), is(true));
+    assertThat(expectedReminder.isScheduled(), is(true));
+
+    Reminder reminder = Reminder.getById(expectedReminder.getId());
+    assertThat(reminder, notNullValue());
+    assertThat(reminder, instanceOf(DateTimeReminder.class));
+
+    DateTimeReminder actualReminder = (DateTimeReminder) reminder;
+    assertThat(actualReminder, notNullValue());
+    assertThat(actualReminder.getContributionId(), is(CONTRIBUTION_FOR_NOW));
+    assertThat(actualReminder.getUserId(), is(SYSTEM_USER_ID));
+    assertThat(actualReminder.getText(), is(reminderText));
+    assertThat(actualReminder.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
+  }
+
+  @Test
+  public void scheduleASystemReminderInDateTimeFromModelPropertyWillPersistIt() {
+    final String reminderText = "Remind me!";
+    Reminder expectedReminder =
+        new DateTimeReminder(CONTRIBUTION_FOR_LATER, PROCESS_NAME).withText(reminderText)
+            .triggerFrom("publicationDate")
+            .schedule();
+
+    assertThat(expectedReminder.isPersisted(), is(true));
+    assertThat(expectedReminder.isScheduled(), is(true));
+
+    Reminder reminder = Reminder.getById(expectedReminder.getId());
+    assertThat(reminder, notNullValue());
+    assertThat(reminder, instanceOf(DateTimeReminder.class));
+
+    EventContrib forLater = (EventContrib) KmeliaInstanceContributionManager.get()
+        .getById(CONTRIBUTION_FOR_LATER).orElseThrow(IllegalArgumentException::new);
+
+    DateTimeReminder actualReminder = (DateTimeReminder) reminder;
+    assertThat(actualReminder, notNullValue());
+    assertThat(actualReminder.getContributionId(), is(CONTRIBUTION_FOR_LATER));
+    assertThat(actualReminder.getUserId(), is(SYSTEM_USER_ID));
+    assertThat(actualReminder.getText(), is(reminderText));
+    assertThat(actualReminder.getDateTime(), is(forLater.getPublicationDate().withOffsetSameInstant(ZoneOffset.UTC)));
+  }
+
+  @Test
   public void scheduleAReminderAtADurationBeforeAGivenAttributeWillPersistIt() {
     final String reminderText = "Remind me!";
     Reminder expectedReminder =
-        new DurationReminder(CONTRIBUTION_FOR_LATER, User.getById(USER_ID)).withText(reminderText)
+        new DurationReminder(CONTRIBUTION_FOR_LATER, User.getById(USER_ID), PROCESS_NAME).withText(reminderText)
             .triggerBefore(30, TimeUnit.SECOND, "publicationDate")
             .schedule();
 
@@ -275,7 +326,7 @@ public class ReminderIT {
   public void scheduleAReminderAtADurationBeforeAGivenPropertyWillPersistIt() {
     final String reminderText = "Remind me!";
     Reminder expectedReminder =
-        new DurationReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID)).withText(reminderText)
+        new DurationReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID), PROCESS_NAME).withText(reminderText)
             .triggerBefore(30, TimeUnit.SECOND, "nextOccurrenceSince")
             .schedule();
 
@@ -303,14 +354,40 @@ public class ReminderIT {
     assertThat(reminder.isScheduled(), is(true));
     reminder.withText(reminderText).triggerAt(triggerDate).schedule();
 
-    DateTimeReminder actualReminder = (DateTimeReminder) Reminder.getById(reminder.getId());
-    assertThat(actualReminder, notNullValue());
-    assertThat(actualReminder.getContributionId(), is(reminder.getContributionId()));
-    assertThat(actualReminder.getUserId(), is(reminder.getUserId()));
-    assertThat(actualReminder.getText(), is(reminderText));
-    assertThat(actualReminder.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
+    DateTimeReminder beforeTriggered = (DateTimeReminder) Reminder.getById(reminder.getId());
+    assertThat(beforeTriggered, notNullValue());
+    assertThat(beforeTriggered.isTriggered(), is(false));
+    assertThat(beforeTriggered.getContributionId(), is(reminder.getContributionId()));
+    assertThat(beforeTriggered.getUserId(), is(reminder.getUserId()));
+    assertThat(beforeTriggered.isSystemUser(), is(false));
+    assertThat(beforeTriggered.getText(), is(reminderText));
+    assertThat(beforeTriggered.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
 
     await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
+    assertThat(reminder.isScheduled(), is(false));
+    final DateTimeReminder afterTriggered = (DateTimeReminder) Reminder.getById(reminder.getId());
+    assertThat(afterTriggered, notNullValue());
+    assertThat(afterTriggered.isScheduled(), is(false));
+    assertThat(afterTriggered.isTriggered(), is(true));
+  }
+
+  @Test
+  public void rescheduleAScheduledSystemReminderShouldRemoveItAfterTriggered() {
+    final String reminderText = "Remind me!";
+    final OffsetDateTime triggerDate = OffsetDateTime.now().plusSeconds(30);
+    DateTimeReminder reminder = getASystemReminderScheduledInOneDay();
+    assertThat(reminder.isScheduled(), is(true));
+    reminder.withText(reminderText).triggerAt(triggerDate).schedule();
+
+    final DateTimeReminder beforeTriggered = (DateTimeReminder) Reminder.getById(reminder.getId());
+    assertThat(beforeTriggered, notNullValue());
+    assertThat(beforeTriggered.getContributionId(), is(reminder.getContributionId()));
+    assertThat(beforeTriggered.getUserId(), is(reminder.getUserId()));
+    assertThat(beforeTriggered.isSystemUser(), is(true));
+    assertThat(beforeTriggered.getText(), is(reminderText));
+    assertThat(beforeTriggered.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
+
+    await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isDeleted(reminder));
     assertThat(reminder.isScheduled(), is(false));
   }
 
@@ -318,7 +395,7 @@ public class ReminderIT {
   public void basicDateTimeReminderTriggeringShouldFireItOneShot() {
     final String reminderText = "Remind me!";
     Reminder reminder =
-        new DateTimeReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID)).withText(reminderText)
+        new DateTimeReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID), PROCESS_NAME).withText(reminderText)
             .triggerAt(OffsetDateTime.now().plusSeconds(30))
             .schedule();
     assertThat(reminder.isSchedulable(), is(true));
@@ -336,7 +413,7 @@ public class ReminderIT {
   public void basicDurationReminderTriggeringShouldFireItOneShot() {
     final String reminderText = "Remind me!";
     Reminder reminder =
-        new DurationReminder(CONTRIBUTION_FOR_LATER, User.getById(USER_ID)).withText(reminderText)
+        new DurationReminder(CONTRIBUTION_FOR_LATER, User.getById(USER_ID), PROCESS_NAME).withText(reminderText)
             .triggerBefore(30, TimeUnit.SECOND, "publicationDate")
             .schedule();
     assertThat(reminder.isSchedulable(), is(true));
@@ -353,7 +430,7 @@ public class ReminderIT {
   public void repeatableDurationReminderTriggeringShouldFireItSeveralTimes() {
     final String reminderText = "Remind me!";
     Reminder reminder =
-        new DurationReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID)).withText(reminderText)
+        new DurationReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID), PROCESS_NAME).withText(reminderText)
             .triggerBefore(30, TimeUnit.SECOND, "nextOccurrenceSince")
             .schedule();
     assertThat(reminder.isSchedulable(), is(true));
@@ -362,6 +439,10 @@ public class ReminderIT {
     await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
     assertThat(reminder.isSchedulable(), is(true));
     assertThat(reminder.isScheduled(), is(true));
+    final DurationReminder afterFirstTrigger = (DurationReminder) Reminder.getById(reminder.getId());
+    assertThat(afterFirstTrigger, notNullValue());
+    assertThat(afterFirstTrigger.isScheduled(), is(true));
+    assertThat(afterFirstTrigger.isTriggered(), is(true));
 
     await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
     assertThat(reminder.isSchedulable(), is(true));
@@ -396,12 +477,21 @@ public class ReminderIT {
   }
 
   private DateTimeReminder getAReminderScheduledInOneDay() {
-    return new DateTimeReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID)).triggerAt(
+    return new DateTimeReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID), PROCESS_NAME).triggerAt(
+        OffsetDateTime.now().plusDays(1)).schedule();
+  }
+
+  private DateTimeReminder getASystemReminderScheduledInOneDay() {
+    return new DateTimeReminder(CONTRIBUTION_FOR_NOW, PROCESS_NAME).triggerAt(
         OffsetDateTime.now().plusDays(1)).schedule();
   }
 
   private Reminder getATriggeredReminder() {
     return Reminder.getById(REMINDER_ID);
+  }
+
+  private Callable<Boolean> isDeleted(final Reminder reminder) {
+    return () -> Reminder.getById(reminder.getId()) == null;
   }
 
   private Callable<Boolean> isTriggered(final Reminder reminder) {

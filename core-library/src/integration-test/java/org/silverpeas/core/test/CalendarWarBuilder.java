@@ -25,7 +25,7 @@ package org.silverpeas.core.test;
 
 import org.silverpeas.core.calendar.CalendarEventOccurrenceBuilder;
 import org.silverpeas.core.calendar.ical4j.HtmlProperty;
-import org.silverpeas.core.calendar.notification.CalendarContributionReminderUserNotification;
+import org.silverpeas.core.calendar.notification.CalendarEventUserNotificationReminder;
 import org.silverpeas.core.test.stub.StubbedWysiwygContentRepository;
 
 /**
@@ -49,7 +49,7 @@ public class CalendarWarBuilder extends WarBuilder4LibCore {
     addPackages(true, "org.silverpeas.core.notification.user.delayed.model");
     addClasses(CalendarEventOccurrenceBuilder.class, StubbedWysiwygContentRepository.class,
         HtmlProperty.class);
-    addClasses(CalendarContributionReminderUserNotification.class);
+    addClasses(CalendarEventUserNotificationReminder.class);
   }
 
   /**

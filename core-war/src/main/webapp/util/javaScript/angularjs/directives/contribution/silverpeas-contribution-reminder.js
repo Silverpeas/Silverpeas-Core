@@ -66,6 +66,7 @@
                 return {
                   cId : sp.contribution.id.from(data.contributionId).asString(),
                   cProperty : data.contributionProperty,
+                  processName : data.processName,
                   duration : data.duration,
                   timeUnit : data.timeUnit,
                   canBeModified : true,
@@ -138,6 +139,7 @@
             api : '=?',
             contributionId : '=',
             contributionProperty : '=',
+            processName : '=',
             reminder : '=?',
             shown : '=?',
             mode : '@',
@@ -204,6 +206,9 @@
                 contributionProperty : this.contributionProperty
                     ? this.contributionProperty
                     : "DEFAULT_REMINDER",
+                processName : this.processName
+                    ? this.processName
+                    : "DEFAULT_PROCESS_NAME",
                 duration : durationAndUnit.duration,
                 timeUnit : durationAndUnit.timeUnit
               }

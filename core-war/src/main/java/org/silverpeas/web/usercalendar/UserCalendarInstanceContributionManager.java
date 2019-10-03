@@ -25,12 +25,13 @@
 package org.silverpeas.web.usercalendar;
 
 import org.silverpeas.core.calendar.AbstractCalendarComponentInstanceContributionManager;
+import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
 
 import javax.inject.Named;
 
 /**
  * @author silveryocha
  */
-@Named
+@Named("userCalendar" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
 public class UserCalendarInstanceContributionManager
     extends AbstractCalendarComponentInstanceContributionManager {}

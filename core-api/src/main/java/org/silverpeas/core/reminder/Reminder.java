@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.NoSuchPropertyException;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.TransactionRuntimeException;
@@ -36,17 +37,15 @@ import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.util.filter.Filter;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -72,17 +71,24 @@ import java.util.List;
             query = "select r from Reminder r where r.userId = :userId and r.contributionId = " +
                 ":contributionId")})
 public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifier> {
+  private static final long serialVersionUID = -7921844697973849535L;
 
   @Embedded
   private ContributionIdentifier contributionId;
   @Column(name = "userId", nullable = false, length = 40)
   private String userId;
+  @Column(name = "process_name", nullable = false, length = 200)
+  private String processName;
   @Column(name = "text")
   private String text;
   @Column(name = "triggered")
   private boolean triggered;
   @Column(name = "trigger_datetime", nullable = false)
   private OffsetDateTime triggerDateTime;
+  @Column(name = "trigger_prop")
+  private String contributionProperty;
+  @Transient
+  private transient OffsetDateTime nextTriggeringDate;
 
   /**
    * Gets the reminders linked to a contribution represented by the given identifier.
@@ -124,14 +130,30 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
   }
 
   /**
+   * Constructs a new reminder about the given contribution for the system.
+   * @param contributionId the unique identifier of a contribution.
+   * @param processName the name of the process the reminder MUST perform when triggered.
+   */
+  protected Reminder(final ContributionIdentifier contributionId,
+      final ReminderProcessName processName) {
+    super();
+    this.contributionId = contributionId;
+    this.userId = "-1";
+    this.processName = processName.asString();
+  }
+
+  /**
    * Constructs a new reminder about the given contribution for the specified user.
    * @param contributionId the unique identifier of a contribution.
    * @param user the user for which the reminder is aimed to.
+   * @param processName the name of the process the reminder MUST perform when triggered.
    */
-  protected Reminder(final ContributionIdentifier contributionId, final User user) {
+  protected Reminder(final ContributionIdentifier contributionId, final User user,
+      final ReminderProcessName processName) {
     super();
     this.contributionId = contributionId;
     this.userId = user.getId();
+    this.processName = processName.asString();
   }
 
   protected Reminder() {
@@ -174,6 +196,22 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
   }
 
   /**
+   * Indicates if the user id represents the system.
+   * @return the identifier of a user as a String
+   */
+  public boolean isSystemUser() {
+    return "-1".equals(userId);
+  }
+
+  /**
+   * Gets the name of the process the reminder MUST perform when triggered.
+   * @return the name of the process as string.
+   */
+  public String getProcessName() {
+    return processName;
+  }
+
+  /**
    * Gets the reminder text.
    * @return the text associated with this reminder.
    */
@@ -189,6 +227,20 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
    */
   public OffsetDateTime getScheduledDateTime() {
     return this.triggerDateTime;
+  }
+
+  /**
+   * Gets the temporal property of the contribution to which this reminder is related.
+   * @return the name of a temporal business property of the contribution.
+   */
+  public String getContributionProperty() {
+    return contributionProperty;
+  }
+
+  @SuppressWarnings("unchecked")
+  <T extends Reminder> T withContributionProperty(final String temporalProperty) {
+    this.contributionProperty = temporalProperty;
+    return (T) this;
   }
 
   /**
@@ -225,6 +277,7 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
    * @throws IllegalStateException if no trigger was set or the triggering date is null.
    * @return itself.
    */
+  @SuppressWarnings("unchecked")
   public <T extends Reminder> T schedule() {
     this.triggerDateTime = computeTriggeringDate();
     checkTriggeringDate(this.triggerDateTime);
@@ -270,9 +323,18 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
   /**
    * Is this reminder schedulable? A reminder is schedulable if its trigger is correctly set and it
    * matches the expectation of the concrete reminder.
+   * By default a reminder is schedulable or reschedulable if the temporal property of the related
+   * contribution from which the triggering date is computed is non null and after now.
    * @return true if this reminder can be scheduled, false otherwise.
    */
-  public abstract boolean isSchedulable();
+  public boolean isSchedulable() {
+    try {
+      nextTriggeringDate = computeTriggeringDate();
+      return nextTriggeringDate != null;
+    } catch (IllegalArgumentException | NoSuchPropertyException e) {
+      return false;
+    }
+  }
 
   @Override
   public boolean equals(final Object o) {
@@ -304,7 +366,38 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
    * with the timezone of the user behind the reminder.
    * @return an {@link OffsetDateTime} value.
    */
-  protected abstract OffsetDateTime computeTriggeringDate();
+  protected OffsetDateTime computeTriggeringDate() {
+    if (nextTriggeringDate != null && !nextTriggeringDate.isBefore(OffsetDateTime.now())) {
+      return nextTriggeringDate;
+    }
+    return null;
+  }
+
+  ZoneId getUserZoneId() {
+    return isSystemUser()
+        ? ZoneId.systemDefault()
+        : User.getById(getUserId()).getUserPreferences().getZoneId();
+  }
+
+  OffsetDateTime applyFilterOnTemporalType(final Filter<Class<?>, Object> filter,
+      ZoneId withZoneId) {
+    final ZoneId platformZoneId = ZoneId.systemDefault();
+    final ZonedDateTime platformZonedTriggeringDate =
+        filter.matchFirst(Date.class::isAssignableFrom,
+            d -> ZonedDateTime.ofInstant(((Date) d).toInstant(), platformZoneId))
+            .matchFirst(OffsetDateTime.class::equals,
+                d -> ((OffsetDateTime) d).atZoneSameInstant(platformZoneId))
+            .matchFirst(LocalDate.class::equals,
+                d -> ((LocalDate) d).atStartOfDay(withZoneId).withZoneSameInstant(platformZoneId))
+            .matchFirst(LocalDateTime.class::equals,
+                d -> ((LocalDateTime) d).atZone(platformZoneId))
+            .matchFirst(ZonedDateTime.class::equals,
+                d -> ((ZonedDateTime) d).withZoneSameInstant(platformZoneId))
+            .result()
+            .orElseThrow(() -> new IllegalArgumentException(
+                "The property " + getContributionProperty() + " isn't a date or a date time"));
+    return platformZonedTriggeringDate.toOffsetDateTime();
+  }
 
   private String getJobName() {
     return this.getId();
@@ -372,21 +465,35 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
      * @param duration the duration value prior to the temporal property of the contribution.
      * @param timeUnit the time unit in which is expressed the duration.
      * @param temporalProperty the temporal property of the contribution.
+     * @param processName the name of the process the reminder MUST perform when triggered.
      * @return a {@link DurationReminder} instance.
      */
     public DurationReminder triggerBefore(final int duration, final TimeUnit timeUnit,
-        final String temporalProperty) {
-      return new DurationReminder(contribution, user).withText(text)
+        final String temporalProperty, final ReminderProcessName processName) {
+      return new DurationReminder(contribution, user, processName).withText(text)
           .triggerBefore(duration, timeUnit, temporalProperty);
     }
 
     /**
      * Triggers the reminder at the specified date time.
      * @param dateTime the {@link OffsetDateTime} at which the reminder will be triggered.
+     * @param processName the name of the process the reminder MUST perform when triggered.
      * @return a {@link DateTimeReminder} instance.
      */
-    public DateTimeReminder triggerAt(final OffsetDateTime dateTime) {
-      return new DateTimeReminder(contribution, user).withText(text).triggerAt(dateTime);
+    public DateTimeReminder triggerAt(final OffsetDateTime dateTime,
+        final ReminderProcessName processName) {
+      return new DateTimeReminder(contribution, user, processName).withText(text).triggerAt(dateTime);
+    }
+
+    /**
+     * Triggers the reminder from the temporal property of the contribution.
+     * @param temporalProperty the temporal property of the contribution.
+     * @param processName the name of the process the reminder MUST perform when triggered.
+     * @return a {@link DateTimeReminder} instance.
+     */
+    public DateTimeReminder triggerFrom(final String temporalProperty,
+        final ReminderProcessName processName) {
+      return new DateTimeReminder(contribution, user, processName).withText(text).triggerFrom(temporalProperty);
     }
   }
 }

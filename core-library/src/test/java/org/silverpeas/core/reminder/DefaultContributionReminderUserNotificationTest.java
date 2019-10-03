@@ -35,7 +35,7 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.calendar.notification.CalendarContributionReminderUserNotification;
+import org.silverpeas.core.calendar.notification.CalendarEventUserNotificationReminder;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -43,10 +43,10 @@ import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.FieldMocker;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.TestManagedMocks;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
@@ -72,10 +72,11 @@ import static org.mockito.Mockito.when;
 @EnableSilverTestEnv
 @ExtendWith(MockitoExtension.class)
 @TestManagedMocks({DefaultContributionReminderUserNotification.class,
-    CalendarContributionReminderUserNotification.class})
-public class ContributionReminderUserNotificationTest {
+    CalendarEventUserNotificationReminder.class})
+class DefaultContributionReminderUserNotificationTest {
   private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
 
+  private static final ReminderProcessName PROCESS_NAME = () -> "TestReminderProcess";
   private static final String INSTANCE_ID = "componentNameTest26";
   private static final String LOCAL_ID = "localId";
   private static final String CONTRIBUTION_TYPE = "contributionType";
@@ -91,15 +92,13 @@ public class ContributionReminderUserNotificationTest {
   @Mock
   private User receiver;
 
-  @SuppressWarnings("unchecked")
   @BeforeEach
-  public void setup(@TestManagedMock ContributionManager contributionManager,
+  void setup(@TestManagedMock ContributionManager contributionManager,
       @TestManagedMock ComponentInstanceRoutingMapProviderByInstance routingMap,
       @TestManagedMock ComponentInstanceRoutingMapProvider routingMapProvider,
       @TestManagedMock ComponentInstanceRoutingMap instanceRoutingMap,
       @TestManagedMock SilverpeasComponentInstanceProvider instanceProvider,
-      @Mock SilverpeasComponentInstance componentInstance,
-      @Mock Contribution contribution) {
+      @Mock SilverpeasComponentInstance componentInstance, @Mock Contribution contribution) {
 
     when(componentInstance.getName()).thenReturn(COMPONENT_NAME);
     when(instanceProvider.getById(INSTANCE_ID)).thenReturn(Optional.of(componentInstance));
@@ -122,14 +121,13 @@ public class ContributionReminderUserNotificationTest {
         .thenReturn(Optional.of(contribution));
 
     when(UserProvider.get().getUser(receiver.getId())).thenReturn(receiver);
-    mocker
-        .setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(), "defaultLanguage");
+    mocker.setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(), "defaultLanguage");
   }
 
   @Test
-  public void durationReminderOf0MinuteOnGenericContributionShouldWork() throws Exception {
+  void durationReminderOf0MinuteOnGenericContributionShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder()
-        .triggerBefore(0, TimeUnit.MINUTE, "");
+        .triggerBefore(0, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder, OffsetDateTime.parse("2018-02-21T00:00:00Z"));
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the contribution super test - 21.02.2018 00:00"));
@@ -142,9 +140,9 @@ public class ContributionReminderUserNotificationTest {
   }
 
   @Test
-  public void durationReminderOf1MinuteOnGenericContributionShouldWork() throws Exception {
+  void durationReminderOf1MinuteOnGenericContributionShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder()
-        .triggerBefore(1, TimeUnit.MINUTE, "");
+        .triggerBefore(1, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder, OffsetDateTime.parse("2018-02-20T23:59:00Z"));
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the contribution super test - 21.02.2018 00:00"));
@@ -157,9 +155,9 @@ public class ContributionReminderUserNotificationTest {
   }
 
   @Test
-  public void durationReminderOf5MinutesOnGenericContributionShouldWork() throws Exception {
+  void durationReminderOf5MinutesOnGenericContributionShouldWork() throws Exception {
     final DurationReminder durationReminder = initReminderBuilder()
-        .triggerBefore(5, TimeUnit.MINUTE, "");
+        .triggerBefore(5, TimeUnit.MINUTE, "", PROCESS_NAME);
     triggerDateTime(durationReminder, OffsetDateTime.parse("2018-02-20T23:55:00Z"));
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the contribution super test - 21.02.2018 00:00"));
@@ -172,11 +170,11 @@ public class ContributionReminderUserNotificationTest {
   }
 
   @Test
-  public void durationReminderOf0HourAndWithAnotherUserZoneIdOnGenericContributionShouldWork()
+  void durationReminderOf0HourAndWithAnotherUserZoneIdOnGenericContributionShouldWork()
       throws Exception {
     receiver.getUserPreferences().setZoneId(ZoneId.of("Asia/Muscat"));
     final DurationReminder durationReminder = initReminderBuilder()
-        .triggerBefore(0, TimeUnit.HOUR, "");
+        .triggerBefore(0, TimeUnit.HOUR, "", PROCESS_NAME);
     triggerDateTime(durationReminder, OffsetDateTime.parse("2018-02-21T00:00:00Z"));
     final Map<String, String> titles = computeNotificationTitles(durationReminder);
     assertThat(titles.get(DE), is("Reminder about the contribution super test - 21.02.2018 00:00 (UTC)"));
@@ -199,9 +197,7 @@ public class ContributionReminderUserNotificationTest {
   }
 
   private Map<String, String> computeNotificationContents(Reminder reminder) {
-    final UserNotification userNotification = new DefaultContributionReminderUserNotification
-        .ContributionReminderUserNotification(reminder)
-        .build();
+    final UserNotification userNotification = new DefaultContributionReminderUserNotification(reminder).build();
     final Map<String, String> result = new HashMap<>();
     result.put(FR, getContent(userNotification, FR));
     result.put(EN, getContent(userNotification, EN));
@@ -212,8 +208,7 @@ public class ContributionReminderUserNotificationTest {
   }
 
   private Map<String, String> computeNotificationTitles(Reminder reminder) {
-    final UserNotification userNotification = new DefaultContributionReminderUserNotification
-        .ContributionReminderUserNotification(reminder).build();
+    final UserNotification userNotification = new DefaultContributionReminderUserNotification(reminder).build();
     final Map<String, String> result = new HashMap<>();
     result.put(FR, getTitle(userNotification, FR));
     result.put(EN, getTitle(userNotification, EN));

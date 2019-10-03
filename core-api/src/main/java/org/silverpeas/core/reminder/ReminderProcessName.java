@@ -22,25 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.reminder.usernotification;
+package org.silverpeas.core.reminder;
 
-import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
- * In charge of sending user notifications about reminders.
+ * Each {@link BackgroundReminderProcess} is ref
  * @author silveryocha
  */
-public interface ReminderUserNotificationSender {
+@FunctionalInterface
+public interface ReminderProcessName {
 
-  static ReminderUserNotificationSender get() {
-    return ServiceProvider.getService(ReminderUserNotificationSender.class);
+  static ReminderProcessName getByName(final String processName) {
+    return ServiceProvider.getAllServices(BackgroundReminderProcess.class)
+        .stream()
+        .filter(p -> p.getName().asString().equals(processName))
+        .map(BackgroundReminderProcess::getName)
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException(
+            "given process name '" + processName + "'does not exist"));
   }
 
-  /**
-   * Sends the user notification about a specified reminder.
-   * @param reminder a reminder.
-   *
-   */
-  void sendAbout(final Reminder reminder);
+  String asString();
 }

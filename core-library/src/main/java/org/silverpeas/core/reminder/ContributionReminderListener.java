@@ -54,7 +54,7 @@ public class ContributionReminderListener
       });
       toUnschedule.stream()
           .filter(Reminder::isScheduled)
-          .forEach(r -> r.unschedule(false));
+          .forEach(r -> r.unschedule(r.isSystemUser()));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }

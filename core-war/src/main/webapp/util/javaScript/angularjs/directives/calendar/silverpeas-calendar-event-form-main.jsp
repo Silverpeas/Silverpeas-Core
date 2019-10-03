@@ -198,6 +198,7 @@
                                           reminder="$ctrl.data.reminder"
                                           contribution-id="$ctrl.eventContributionId"
                                           contribution-property="'NEXT_START_DATE_TIME'"
+                                          process-name="'CalendarEventUserNotification'"
                                           main-label=""
                                           shown="$ctrl.__reminderShown"
                                           autonomous="false">
