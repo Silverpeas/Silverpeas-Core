@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.util;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.JSONCodec;
@@ -31,7 +30,6 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import java.util.ArrayList;
@@ -74,6 +72,20 @@ public class WysiwygEditorConfig {
         ResourceLocator.getOptionalSettingBundle(
             "org.silverpeas.wysiwyg.settings." + componentName + "Settings") : Optional.empty();
     this.wysiwygSettings = settings.orElse(DEFAULT_WYSIWYG_SETTINGS);
+  }
+
+  private WysiwygEditorConfig(final WysiwygEditorConfig config) {
+    this.wysiwygSettings = config.wysiwygSettings;
+    this.height = config.height;
+    this.width = config.width;
+    this.language = config.language;
+    this.toolbar = config.toolbar;
+    this.toolbarStartExpanded = config.toolbarStartExpanded;
+    this.fileBrowserDisplayed = config.fileBrowserDisplayed;
+    this.skin = config.skin;
+    this.stylesheet = config.stylesheet;
+    this.componentId = config.componentId;
+    this.objectId = config.objectId;
   }
 
   /**
@@ -303,14 +315,8 @@ public class WysiwygEditorConfig {
   }
 
   public WysiwygEditorConfig copy() {
-    try {
-      WysiwygEditorConfig clone = (WysiwygEditorConfig) super.clone();
-      clone.wysiwygSettings = this.wysiwygSettings;
-      return clone;
-    } catch (CloneNotSupportedException e) {
-      SilverLogger.getLogger(this).error(e);
-      throw new SilverpeasRuntimeException(e);
-    }
+    WysiwygEditorConfig clone = new WysiwygEditorConfig(this);
+    clone.wysiwygSettings = this.wysiwygSettings;
+    return clone;
   }
 }
-  

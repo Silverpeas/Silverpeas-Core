@@ -984,7 +984,7 @@ class Admin implements Administration {
 
   private void deleteComponentData(String componentId) {
     // deleting all files associated to this component
-    FileRepositoryManager.deleteAbsolutePath(null, componentId, "");
+    FileRepositoryManager.deleteAbsolutePath(componentId, "");
 
     // deleting index files
     IndexEngineProxy.removeScopedIndexEntries(componentId);

@@ -161,7 +161,7 @@ public class SilverpeasFileProvider {
    * {@see SilverpeasFileProcessor}
    * @param processor a SilverpeasFile processor to add.
    */
-  public synchronized static void addProcessor(final SilverpeasFileProcessor processor) {
+  public static synchronized void addProcessor(final SilverpeasFileProcessor processor) {
     if (!processors.contains(processor)) {
       processors.add(processor);
       // Apply the priority for chained execution.
@@ -202,8 +202,7 @@ public class SilverpeasFileProvider {
     String filePath;
     if (descriptor.isTemporaryFile()) {
       filePath =
-          FileRepositoryManager.getTemporaryPath("useless", descriptor.getComponentInstanceId()) +
-              descriptor.getFilePath();
+          FileRepositoryManager.getTemporaryPath() + descriptor.getFilePath();
     } else {
       if (descriptor.isAbsolutePath()) {
         filePath = descriptor.getFilePath();
