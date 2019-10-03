@@ -389,7 +389,9 @@ function _spWindow_getSilverpeasMainWindow() {
         }
       }
       spWindow.reloadLastComponentOrSpaceAccessed(true).then(function() {
-        spLayout.getSplash().close();
+        spLayout.getHeader().load().then(function() {
+          spLayout.getSplash().close();
+        });
       });
     };
 

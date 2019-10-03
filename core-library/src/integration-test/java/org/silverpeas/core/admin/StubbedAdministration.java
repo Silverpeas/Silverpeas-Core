@@ -248,11 +248,6 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public void updateComponentOrderNum(final String componentId, final int orderNum) {
-
-  }
-
-  @Override
   public String updateComponentInst(final ComponentInst component) {
     return null;
   }
