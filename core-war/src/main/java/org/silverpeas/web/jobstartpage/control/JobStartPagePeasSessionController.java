@@ -382,9 +382,12 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     if (orderNum == i) {
       theSpace.setOrderNum(orderNum);
       adminController.updateSpaceOrderNum(theSpace.getId(), orderNum);
-      orderNum++;
     }
-    m_NavBarMgr.resetAllCache();
+    if (!theSpace.isRoot()) {
+      m_NavBarMgr.resetSpaceCache(theSpace.getDomainFatherId());
+    } else {
+      m_NavBarMgr.resetAllCache();
+    }
   }
 
   public SpaceInst getSpaceInstById(String idSpace) {
@@ -784,80 +787,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return m_BrothersComponents;
   }
 
-  // get all components in the space
-  public ComponentInst[] getComponentsOfSpace(String spaceId) {
-    ArrayList<ComponentInst> arc = getSpaceInstById(spaceId).getAllComponentsInst();
-    if (arc == null || arc.isEmpty()) {
-      return new ComponentInst[0];
-    }
-    ComponentInst[] m_Components = new ComponentInst[arc.size()];
-    int j = 0;
-    for (ComponentInst theComponent : arc) {
-      m_Components[j++] = theComponent;
-    }
-    Arrays.sort(m_BrothersComponents, Comparator.comparing(ComponentInst::getOrderNum));
-    return m_Components;
-  }
-
   public void setComponentPlace(String idComponentBefore) {
-    int orderNum = 0;
-    int i;
-    ComponentInst theComponent = getComponentInst(getManagedInstanceId());
-
-    for (i = 0; i < m_BrothersComponents.length; i++) {
-      if (idComponentBefore.equals(m_BrothersComponents[i].getId())) {
-        theComponent.setOrderNum(orderNum);
-        adminController.updateComponentOrderNum(theComponent.getId(), orderNum);
-        orderNum++;
-      }
-      if (m_BrothersComponents[i].getOrderNum() != orderNum) {
-        m_BrothersComponents[i].setOrderNum(orderNum);
-        adminController.updateComponentOrderNum(m_BrothersComponents[i].getId(),
-            orderNum);
-      }
-      orderNum++;
-    }
-    if (orderNum == i) {
-      theComponent.setOrderNum(orderNum);
-      adminController.updateComponentOrderNum(theComponent.getId(), orderNum);
-      orderNum++;
-    }
+    adminController
+        .setComponentPlace(getManagedInstanceId(), idComponentBefore, m_BrothersComponents);
     m_NavBarMgr.resetSpaceCache(getManagedSpaceId());
-  }
-
-  public void setMoveComponentToSpace(ComponentInst component,
-      String destinationSpaceId, String idComponentBefore) throws AdminException {
-    String originSpace = component.getDomainFatherId();
-    ComponentInst[] m_destBrothersComponents = getDestBrotherComponents(
-        destinationSpaceId, true, component.getId());
-    adminController.moveComponentInst(destinationSpaceId, component.getId(),
-        idComponentBefore, m_destBrothersComponents);
-    // The destination Space becomes the managed space
-    setManagedSpaceId(originSpace, false);
-    m_NavBarMgr.resetAllCache();
-  }
-
-  public ComponentInst[] getDestBrotherComponents(String spaceId, boolean isNew, String componentId) {
-    ComponentInst[] m_DestBrothersComponents;
-
-    ArrayList<ComponentInst> arc = getSpaceInstById(spaceId).getAllComponentsInst();
-
-    if (arc == null || arc.isEmpty()) {
-      return new ComponentInst[0];
-    }
-    if (isNew) {
-      m_DestBrothersComponents = new ComponentInst[arc.size()];
-    } else {
-      m_DestBrothersComponents = new ComponentInst[arc.size() - 1];
-    }
-    int j = 0;
-    for (ComponentInst theComponent : arc) {
-      if (isNew || !theComponent.getId().equals(componentId)) {
-        m_DestBrothersComponents[j++] = theComponent;
-      }
-    }
-    Arrays.sort(m_BrothersComponents, Comparator.comparing(ComponentInst::getOrderNum));
-    return m_DestBrothersComponents;
   }
 
   public WAComponent[] getAllComponents() {
@@ -918,11 +851,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         parameters.setValues(componentInst.getParameters());
       }
     }
-  }
-
-  public AllComponentParameters getParameters(String componentName) {
-    WAComponent component = getComponentByName(componentName);
-    return getParameters(component, true);
   }
 
   public AllComponentParameters getParameters(WAComponent component, boolean creation) {

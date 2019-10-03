@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.space.model;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentOrderComparator;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import java.util.Map;
 
 public class Space {
 
+  private static ComponentOrderComparator comparator = new ComponentOrderComparator();
   private SpaceInstLight spaceInstLight;
   private Map<String, ComponentInstLight> components = new LinkedHashMap<>();
   private List<SpaceInstLight> subspaces = new ArrayList<>();
@@ -47,7 +49,9 @@ public class Space {
   }
 
   public List<ComponentInstLight> getComponents() {
-    return new ArrayList<>(components.values());
+    List list = new ArrayList<>(components.values());
+    list.sort(comparator);
+    return list;
   }
 
   public void clearComponents() {
