@@ -545,7 +545,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
     } else if (function.equals("EffectivePlaceSpaceAfter")) {
       jobStartPageSC.setSpacePlace(request.getParameter("SpaceBefore"));
       refreshNavBar(jobStartPageSC, request);
-      request.setAttribute(URL_TO_RELOAD_ATTR, START_PAGE_INFO_DEST);
+      request.setAttribute(URL_TO_RELOAD_ATTR,
+          START_PAGE_INFO_DEST + "?" + HAVE_TO_REFRESH_NAV_BAR_ATTR + "=true");
       destination = CLOSE_WINDOW_FULL_DEST;
     } else if (function.equals("CreateSpace")) {
       setSpacesNameInRequest(jobStartPageSC, request);

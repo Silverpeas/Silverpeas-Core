@@ -1144,13 +1144,15 @@ class Admin implements Administration {
     }
   }
 
-  @Override
-  public void updateComponentOrderNum(String componentId, int orderNum) throws AdminException {
+  private void updateComponentOrderNum(String componentId, int orderNum) throws AdminException {
     try {
       int driverComponentId = getDriverComponentId(componentId);
       // Update the Component in tables
       componentManager.updateComponentOrder(driverComponentId, orderNum);
-      cache.opUpdateComponent(componentManager.getComponentInst(driverComponentId, null));
+      Optional<ComponentInst> optional = cache.getComponentInst(driverComponentId);
+      if (optional.isPresent()) {
+        optional.get().setOrderNum(orderNum);
+      }
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate(COMPONENT, componentId), e);
     }
@@ -1590,6 +1592,11 @@ class Admin implements Administration {
       theComponent.setOrderNum(orderNum);
       updateComponentOrderNum(theComponent.getId(), orderNum);
     }
+
+    // update caches
+    int spaceId = getDriverSpaceId(theComponent.getSpaceId());
+    treeCache.setComponents(spaceId, componentManager.getComponentsInSpace(spaceId));
+    cache.removeSpaceInst(spaceId);
   }
 
   @Override

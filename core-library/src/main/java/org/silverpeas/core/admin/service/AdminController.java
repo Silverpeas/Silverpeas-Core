@@ -451,10 +451,10 @@ public class AdminController implements java.io.Serializable {
     }
   }
 
-  public void updateComponentOrderNum(String sComponentId, int orderNum) {
-
+  public void setComponentPlace(String componentId, String idComponentBefore,
+      ComponentInst[] brothersComponents) {
     try {
-      admin.updateComponentOrderNum(sComponentId, orderNum);
+      admin.setComponentPlace(componentId, idComponentBefore, brothersComponents);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }

@@ -297,13 +297,6 @@ public interface Administration {
       throws AdminException;
 
   /**
-   * @param componentId
-   * @param orderNum
-   * @throws AdminException
-   */
-  void updateComponentOrderNum(String componentId, int orderNum) throws AdminException;
-
-  /**
    * Update the given component in Silverpeas.
    * @param component
    * @return
