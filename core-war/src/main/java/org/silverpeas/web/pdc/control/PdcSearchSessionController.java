@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.pdc.control;
 
+import org.apache.commons.fileupload.FileItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.ResourceReference;
@@ -40,9 +41,11 @@ import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
+import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
@@ -79,8 +82,10 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.viewer.service.ViewerProvider;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -179,6 +184,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private PublicationTemplateImpl xmlTemplate = null;
   private DataRecord xmlData = null;
   private int searchScope = SEARCH_FULLTEXT;
+  private PagesContext pageContext = null;
   // Field value of XML form used to sort results
   private String xmlFormSortValue = null;
   // Keyword used to retrieve the implementation to realize sorting or filtering
@@ -1755,6 +1761,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private void clearXmlTemplateAndData() {
     xmlTemplate = null;
     xmlData = null;
+    pageContext = null;
   }
 
   public DataRecord getXmlData() {
@@ -2178,5 +2185,64 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     url += "searchResult?Type=" + result.getType() + "&Id=" + result.getId();
     url += "&From=Search";
     return url;
+  }
+
+  public void initXMLSearch(HttpRequest request)
+      throws PublicationTemplateException, FormException {
+    getQueryParameters().clearXmlQuery();
+    getQueryParameters().clear();
+
+    List<FileItem> items = HttpRequest.decorate(request).getFileItems();
+
+    String title = request.getParameter("TitleNotInXMLForm");
+    getQueryParameters().setXmlTitle(title);
+
+    PublicationTemplateImpl template;
+    String templateFileName = request.getParameter("xmlSearchSelectedForm");
+    if (StringUtil.isDefined(templateFileName)) {
+      template = setXmlTemplate(templateFileName);
+    } else {
+      template = getXmlTemplate();
+      templateFileName = template.getFileName();
+    }
+
+    // build a dataRecord object storing user's entries
+    RecordTemplate searchTemplate = template.getSearchTemplate();
+    DataRecord data = searchTemplate.getEmptyRecord();
+
+    pageContext = getXMLContext();
+
+    XmlSearchForm searchForm = (XmlSearchForm) template.getSearchForm();
+    searchForm.update(items, data, pageContext);
+
+    // xmlQuery is in the data object, store it into session
+    setXmlData(data);
+
+    // build the xmlSubQuery according to the dataRecord object
+    String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
+    String[] fieldNames = searchTemplate.getFieldNames();
+    for (String fieldName : fieldNames) {
+      Field field = data.getField(fieldName);
+      String fieldValue = field.getStringValue();
+      if (fieldValue != null && fieldValue.trim().length() > 0) {
+        String fieldQuery = fieldValue.trim();
+        if (fieldValue.contains("##")) {
+          String operator = FileUploadUtil.getParameter(items, fieldName + "Operator");
+          pageContext.setSearchOperator(fieldName, operator);
+          fieldQuery = fieldQuery.replaceAll("##", " "+operator+" ");
+        }
+        getQueryParameters().addXmlSubQuery(templateName + "$$" + fieldName, fieldQuery);
+      }
+    }
+
+    setSearchScope(PdcSearchSessionController.SEARCH_XML);
+  }
+
+  public PagesContext getXMLContext() {
+    if (pageContext == null) {
+      pageContext = new PagesContext("XMLSearchForm", "2", getLanguage(), getUserId());
+      pageContext.setBorderPrinted(false);
+    }
+    return pageContext;
   }
 }
