@@ -45,19 +45,17 @@ import java.util.StringTokenizer;
 public final class IndexEntryKey implements Serializable {
 
   private static final long serialVersionUID = 339617003068469338L;
+  /**
+   * The separator used to write all key parts in a single lucene field.
+   */
+  private static final String SEP = "|";
 
   /**
-   * The constructor set in a row all the parts of the key.
-   *
-   * @deprecated - parameter space is no more used
+   * The three parts of an IndexEntryKey are private and fixed at construction time.
    */
-  public IndexEntryKey(String space, String component, String objectType,
-      String objectId) {
-    // this.space = space;
-    this.component = component;
-    this.objectType = objectType;
-    this.objectId = objectId;
-  }
+  private final String component;
+  private final String objectType;
+  private final String objectId;
 
   public IndexEntryKey(String componentId, String objectType, String objectId) {
     this.component = componentId;
@@ -66,12 +64,40 @@ public final class IndexEntryKey implements Serializable {
   }
 
   /**
-   * Return the space of the indexed document or the userId if the space is a private working space.
-   *
-   * @deprecated - to use this method is forbidden
+   * Create a new IndexEntry from s. We must have :
+   * <PRE>
+   * create(s).toString().equals(s)
+   * </PRE>
    */
-  public String getSpace() {
-    return null;
+  public static IndexEntryKey create(String s) {
+    /*
+     * The Tokenizer must return the separators SEP as a missing field must be parsed correctly :
+     * COMPO|TYPE|ID must give (COMP,TYPE,ID).
+     */
+    final StringTokenizer stk = new StringTokenizer(s, SEP, true);
+    String comp = "";
+    String objType = "";
+    String objId = "";
+    if (stk.hasMoreTokens()) {
+      comp = stk.nextToken();
+    }
+    if (comp.equals(SEP)) {
+      comp = "";
+    } else if (stk.hasMoreTokens()) {
+      stk.nextToken(); // skip one SEP
+    }
+    if (stk.hasMoreTokens()) {
+      objType = stk.nextToken();
+    }
+    if (objType.equals(SEP)) {
+      objType = "";
+    } else if (stk.hasMoreTokens()) {
+      stk.nextToken(); // skip one SEP
+    }
+    if (stk.hasMoreTokens()) {
+      objId = stk.nextToken();
+    }
+    return new IndexEntryKey(comp, objType, objId);
   }
 
   /**
@@ -125,62 +151,4 @@ public final class IndexEntryKey implements Serializable {
   public int hashCode() {
     return toString().hashCode();
   }
-
-  /**
-   * Create a new IndexEntry from s. We must have :
-   *
-   * <PRE>
-   * create(s).toString().equals(s)
-   * </PRE>
-   */
-  static public IndexEntryKey create(String s) {
-    /*
-     * The Tokenizer must return the separators SEP as a missing field must be parsed correctly :
-     * SPACE|COMPO||ID must give (SPACE, COMP, "" , ID).
-     */
-    StringTokenizer Stk = new StringTokenizer(s, SEP, true);
-    // String spa = "";
-    String comp = "";
-    String objType = "";
-    String objId = "";
-
-    /*
-     * if (Stk.hasMoreTokens()) spa = Stk.nextToken(); if (spa.equals(SEP)) spa=""; else if
-     * (Stk.hasMoreTokens()) Stk.nextToken(); // skip one SEP
-     */
-
-    if (Stk.hasMoreTokens()) {
-      comp = Stk.nextToken();
-    }
-    if (comp.equals(SEP)) {
-      comp = "";
-    } else if (Stk.hasMoreTokens()) {
-      Stk.nextToken(); // skip one SEP
-    }
-    if (Stk.hasMoreTokens()) {
-      objType = Stk.nextToken();
-    }
-    if (objType.equals(SEP)) {
-      objType = "";
-    } else if (Stk.hasMoreTokens()) {
-      Stk.nextToken(); // skip one SEP
-    }
-    if (Stk.hasMoreTokens()) {
-      objId = Stk.nextToken();
-    }
-
-    // return new IndexEntryKey(spa, comp, objType, objId);
-    return new IndexEntryKey(comp, objType, objId);
-  }
-  /**
-   * The four parts of an IndexEntryKey are private and fixed at construction time.
-   */
-  // private final String space;
-  private final String component;
-  private final String objectType;
-  private final String objectId;
-  /**
-   * The separator used to write all key parts in a single lucene field.
-   */
-  private static final String SEP = "|";
 }

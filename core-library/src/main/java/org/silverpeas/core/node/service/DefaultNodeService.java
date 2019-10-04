@@ -311,53 +311,6 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @param pk
-   * @return
-   * @
-   *
-   */
-  @Override
-  public NodeDetail getFrequentlyAskedDetail(NodePK pk) {
-    return getDetail(pk);
-  }
-
-  /**
-   * Method declaration
-   *
-   * @param pk
-   * @return
-   * @
-   *
-   */
-  @Override
-  public NodeDetail getTwoLevelDetails(NodePK pk) {
-    NodeDetail nd = getDetail(pk);
-    Connection con = getConnection();
-    try {
-      Collection<NodeDetail> children = nodeDAO.getChildrenDetails(con, pk);
-      List<NodeDetail> childrenDetail = new ArrayList<>();
-      for (NodeDetail childDetail : children) {
-        Collection<NodeDetail> subChildren =
-            nodeDAO.getChildrenDetails(con, childDetail.getNodePK());
-        List<NodeDetail> subChildrenDetail = new ArrayList<>();
-        for (NodeDetail subChild : subChildren) {
-          subChildrenDetail.add(subChild);
-        }
-        childDetail.setChildrenDetails(subChildrenDetail);
-        childrenDetail.add(childDetail);
-      }
-      nd.setChildrenDetails(childrenDetail);
-      return nd;
-    } catch (SQLException re) {
-      throw new NodeRuntimeException(re);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
   @Override
   public NodeDetail getHeader(NodePK pk, boolean getTranslations) {
     Connection con = getConnection();
@@ -533,19 +486,6 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   }
 
   /**
-   * Get the header of each child of the node this method is to be used on frequently asked nodes
-   * (next to the root), because all ejb will be instanciated
-   *
-   * @return a NodeDetail collection
-   * @see NodeDetail
-   * @since 1.0
-   */
-  @Override
-  public Collection<NodeDetail> getFrequentlyAskedChildrenDetails(NodePK pk) {
-    return getChildrenDetails(pk);
-  }
-
-  /**
    * Method declaration
    *
    * @param pk
@@ -579,24 +519,6 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     Connection con = getConnection();
     try {
       return nodeDAO.getAllHeaders(con, nodePK);
-    } catch (SQLException re) {
-      throw new NodeRuntimeException(re);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  /**
-   * Get the children number of this node
-   *
-   * @return a int
-   * @since 1.0
-   */
-  @Override
-  public int getChildrenNumber(NodePK pk) {
-    Connection con = getConnection();
-    try {
-      return nodeDAO.getChildrenNumber(con, pk);
     } catch (SQLException re) {
       throw new NodeRuntimeException(re);
     } finally {

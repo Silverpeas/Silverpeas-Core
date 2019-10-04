@@ -312,6 +312,26 @@ public class JdbcSqlQuery {
   }
 
   /**
+   * The specified parameter, in a conjunction filter, must not be null when requesting the
+   * data source.
+   * @param parameter the parameter that has to be not null.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery andNotNull(final String parameter) {
+    return addSqlPart("AND " + parameter + " IS NOT NULL");
+  }
+
+  /**
+   * The specified parameter, in a conjunction filter, must be null when requesting the
+   * data source.
+   * @param parameter the parameter that has to be not null.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery andNull(final String parameter) {
+    return addSqlPart("AND " + parameter + " IS NULL");
+  }
+
+  /**
    * Centralization in order to populate the prepare statement parameters.
    * @param sqlPart the SQL part that contains the parameter.
    * @param paramValue the value of parameters included into the given sqlPart.
@@ -329,6 +349,26 @@ public class JdbcSqlQuery {
    */
   public JdbcSqlQuery or(String sqlPart, Collection<?> paramValues) {
     return addSqlPart("OR " + sqlPart, paramValues);
+  }
+
+  /**
+   * The specified parameter, in a disjunction filter, must not be null when requesting the
+   * data source.
+   * @param parameter the parameter that has to be not null.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery orNotNull(final String parameter) {
+    return addSqlPart("OR " + parameter + " IS NOT NULL");
+  }
+
+  /**
+   * The specified parameter, in a conjunction filter, must null when requesting the
+   * data source.
+   * @param parameter the parameter that has to be not null.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery orNull(final String parameter) {
+    return addSqlPart("OR " + parameter + " IS NULL");
   }
 
   /**

@@ -26,10 +26,8 @@ package org.silverpeas.core.contribution.publication.dao;
 import org.silverpeas.core.contribution.publication.model.PublicationI18N;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.persistence.jdbc.sql.ResultSetWrapper;
 import org.silverpeas.core.util.MapUtil;
 
 import java.sql.Connection;
@@ -112,10 +110,8 @@ public class PublicationI18NDAO {
     StringBuilder insertStatement = new StringBuilder(128);
     insertStatement.append("insert into ").append(TABLENAME).append(
         " values (?, ?, ?, ?, ?, ?)");
-    PreparedStatement prepStmt = null;
 
-    try {
-      prepStmt = con.prepareStatement(insertStatement.toString());
+    try (PreparedStatement prepStmt = con.prepareStatement(insertStatement.toString())) {
       prepStmt.setInt(1, DBUtil.getNextId(TABLENAME, "id"));
       prepStmt.setInt(2, Integer.parseInt(translation.getObjectId()));
       prepStmt.setString(3, translation.getLanguage());
@@ -123,8 +119,6 @@ public class PublicationI18NDAO {
       prepStmt.setString(5, translation.getDescription());
       prepStmt.setString(6, translation.getKeywords());
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
@@ -136,26 +130,19 @@ public class PublicationI18NDAO {
     updateQuery.append("update ").append(TABLENAME);
     updateQuery.append(" set name = ? , description = ? , keywords = ? ");
     updateQuery.append(" where id = ? ");
-    PreparedStatement prepStmt = null;
 
-    try {
-      prepStmt = con.prepareStatement(updateQuery.toString());
+    try (PreparedStatement prepStmt = con.prepareStatement(updateQuery.toString())) {
       prepStmt.setString(1, translation.getName());
       prepStmt.setString(2, translation.getDescription());
       prepStmt.setString(3, translation.getKeywords());
       prepStmt.setInt(4, translation.getId());
 
       rowCount = prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
 
     if (rowCount == 0) {
-      throw new PublicationRuntimeException(
-          "PublicationI18NDAO.updateTranslation()",
-          SilverpeasRuntimeException.ERROR,
-          "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "translationId = "
-          + translation.getId());
+      throw new PublicationRuntimeException("The update of the translation with id = "
+          + translation.getId() + " failed!");
     }
   }
 
@@ -169,14 +156,9 @@ public class PublicationI18NDAO {
     StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(TABLENAME).append(
         " where id = ? ");
-    PreparedStatement stmt = null;
-
-    try {
-      stmt = con.prepareStatement(deleteStatement.toString());
+    try (PreparedStatement stmt = con.prepareStatement(deleteStatement.toString())) {
       stmt.setInt(1, translationId);
       stmt.executeUpdate();
-    } finally {
-      DBUtil.close(stmt);
     }
   }
 
@@ -185,14 +167,9 @@ public class PublicationI18NDAO {
     StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(TABLENAME).append(
         " where pubId = ? ");
-    PreparedStatement stmt = null;
-
-    try {
-      stmt = con.prepareStatement(deleteStatement.toString());
+    try (PreparedStatement stmt = con.prepareStatement(deleteStatement.toString())) {
       stmt.setInt(1, Integer.parseInt(pubPK.getId()));
       stmt.executeUpdate();
-    } finally {
-      DBUtil.close(stmt);
     }
   }
 }

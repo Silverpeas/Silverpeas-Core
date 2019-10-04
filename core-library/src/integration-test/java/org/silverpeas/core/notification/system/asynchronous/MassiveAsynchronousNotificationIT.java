@@ -238,7 +238,7 @@ public class MassiveAsynchronousNotificationIT {
     }
 
     private Duration timeout() {
-      return new Duration(this.base + 2000, TimeUnit.MILLISECONDS);
+      return new Duration(this.base + 4000, TimeUnit.MILLISECONDS);
     }
 
     void awaitUntil(final ThrowingRunnable assertion) {

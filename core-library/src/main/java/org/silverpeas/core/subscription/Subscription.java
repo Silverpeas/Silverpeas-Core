@@ -32,13 +32,13 @@ import java.util.Date;
  */
 public interface Subscription {
 
-  public SubscriptionResource getResource();
+  SubscriptionResource getResource();
 
-  public SubscriptionSubscriber getSubscriber();
+  SubscriptionSubscriber getSubscriber();
 
-  public SubscriptionMethod getSubscriptionMethod();
+  SubscriptionMethod getSubscriptionMethod();
 
-  public String getCreatorId();
+  String getCreatorId();
 
-  public Date getCreationDate();
+  Date getCreationDate();
 }

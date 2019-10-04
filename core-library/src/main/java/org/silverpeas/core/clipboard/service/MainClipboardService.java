@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.clipboard.ClipboardSelection.IndexFlavor;
 
@@ -49,7 +50,7 @@ public class MainClipboardService implements Clipboard, Serializable {
 
   private static final long serialVersionUID = -824732581358882058L;
   private ClipboardSelection lastObject = null;
-  private ArrayList<ClipboardSelection> objectsInClipboard = null;
+  private List<ClipboardSelection> objectsInClipboard = null;
   private boolean multipleClipboardSupported = true;
   private boolean addingToSelection = true;
   private int count = 0;
@@ -67,21 +68,16 @@ public class MainClipboardService implements Clipboard, Serializable {
         if (!addingToSelection) {
           unselectAllItems();
         }
-
-        boolean selected = false;
-        if (objectToCopy.isDataFlavorSupported(IndexFlavor)) {
-          selected = isObjectShouldBeSelected(objectToCopy);
-        }
-        if (selected) {
+        int index = indexOfObjectThatShouldBeSelected(objectToCopy);
+        lastObject = objectToCopy;
+        if (index >= 0) {
           // We don't add an other copy of this object
-          // but we need to select it
-          objectToCopy.setSelected(true);
-        } else {
-          lastObject = objectToCopy;
-          if (multipleClipboardSupported) {
-            objectsInClipboard.add(lastObject);
-            lastObject.setSelected(true);
-          }
+          // but we need to merge and to select it
+          objectsInClipboard.set(index, lastObject);
+          lastObject.setSelected(true);
+        } else if (multipleClipboardSupported) {
+          objectsInClipboard.add(lastObject);
+          lastObject.setSelected(true);
         }
       }
 
@@ -90,29 +86,28 @@ public class MainClipboardService implements Clipboard, Serializable {
     }
   }
 
-  private boolean isObjectShouldBeSelected(final ClipboardSelection objectToCopy)
+  private int indexOfObjectThatShouldBeSelected(final ClipboardSelection objectToCopy)
       throws UnsupportedFlavorException {
-    boolean selectionFound = false;
-    IndexEntry mainIndexEntry = (IndexEntry) objectToCopy.getTransferData(IndexFlavor);
-    for (ClipboardSelection clipObject : objectsInClipboard) {
-      if (clipObject.isDataFlavorSupported(IndexFlavor)) {
-        IndexEntry indexEntry = (IndexEntry) clipObject.getTransferData(IndexFlavor);
-        if (indexEntry.equals(mainIndexEntry)) {
-          clipObject.setSelected(true);
-          clipObject.setCutted(objectToCopy.isCutted());
-          selectionFound = true;
-          break;
+    int index = -1;
+    if (objectToCopy.isDataFlavorSupported(IndexFlavor)) {
+      final IndexEntry mainIndexEntry = (IndexEntry) objectToCopy.getTransferData(IndexFlavor);
+      for (int i = 0; i < objectsInClipboard.size(); i++) {
+        final ClipboardSelection clipObject = objectsInClipboard.get(i);
+        if (clipObject.isDataFlavorSupported(IndexFlavor)) {
+          final IndexEntry indexEntry = (IndexEntry) clipObject.getTransferData(IndexFlavor);
+          if (indexEntry.equals(mainIndexEntry)) {
+            index = i;
+            break;
+          }
         }
       }
     }
-    return selectionFound;
+    return index;
   }
 
   private void unselectAllItems() {
     // we have to deselect the object still in clipboard
-    for (ClipboardSelection clipObject : objectsInClipboard) {
-      clipObject.setSelected(false);
-    }
+    objectsInClipboard.forEach(c -> c.setSelected(false));
     // now we add...
     addingToSelection = true;
   }
@@ -133,13 +128,7 @@ public class MainClipboardService implements Clipboard, Serializable {
   public Collection<ClipboardSelection> getSelectedObjects() throws ClipboardException {
     try {
       count += 1;
-      List<ClipboardSelection> result = new ArrayList<>(objectsInClipboard.size());
-      for (ClipboardSelection clipObject : objectsInClipboard) {
-        if (clipObject.isSelected()) {
-          result.add(clipObject);
-        }
-      }
-      return result;
+      return objectsInClipboard.stream().filter(ClipboardSelection::isSelected).collect(Collectors.toList());
     } catch (Exception e) {
       throw new ClipboardException("Error while getting the selected object from the clipboard", e);
     }
@@ -170,11 +159,7 @@ public class MainClipboardService implements Clipboard, Serializable {
     // we know that the next copy should not keep the old selection
     addingToSelection = false;
     // Deselect cutted objects still in clipboard
-    for (ClipboardSelection clipObject : objectsInClipboard) {
-      if (clipObject.isCutted()) {
-        clipObject.setSelected(false);
-      }
-    }
+    objectsInClipboard.stream().filter(ClipboardSelection::isCutted).forEach(c -> c.setSelected(false));
   }
 
   @Override

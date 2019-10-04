@@ -59,6 +59,7 @@ import java.util.stream.Stream;
 
 import static org.silverpeas.core.index.indexing.model.IndexProcessor.doSearch;
 import static org.silverpeas.core.index.indexing.model.IndexReadersCache.getIndexReader;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 
 /**
  * The IndexSearcher class implements search over all the indexes. A IndexSearcher
@@ -425,8 +426,12 @@ public class IndexSearcher {
     indexEntry.setEndDate(parseDate(doc.get(IndexManager.ENDDATE)));
     indexEntry.setEmbeddedFileIds(doc.getValues(IndexManager.EMBEDDED_FILE_IDS));
     indexEntry.setFilename(doc.get(IndexManager.FILENAME));
-    indexEntry.setAlias(StringUtil.getBooleanValue(doc.get(IndexManager.ALIAS)));
+    indexEntry.setAlias(getBooleanValue(doc.get(IndexManager.ALIAS)));
     indexEntry.setScore(scoreDoc.score);
+    final String[] paths = doc.getValues(IndexManager.PATH);
+    if (paths != null && paths.length > 0) {
+      indexEntry.setPaths(Stream.of(paths).collect(Collectors.toList()));
+    }
   }
 
   private void setIndexEntryLanguageData(final MatchingIndexEntry indexEntry, final Document doc) {

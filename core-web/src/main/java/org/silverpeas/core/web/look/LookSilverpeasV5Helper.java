@@ -34,7 +34,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.personalization.UserMenuDisplay;
@@ -865,7 +864,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
   }
 
   public List<PublicationDetail> getNews(String spaceId) {
-    List<String> appIds = new ArrayList<String>();
+    List<String> appIds = new ArrayList<>();
     String[] cIds = getOrganisationController().getAvailCompoIds(spaceId, getUserId());
     for (String id : cIds) {
       if (StringUtil.startsWithIgnoreCase(id, "quickinfo")) {
@@ -873,10 +872,10 @@ public class LookSilverpeasV5Helper extends LookHelper {
       }
     }
 
-    List<PublicationDetail> news = new ArrayList<PublicationDetail>();
+    List<PublicationDetail> news = new ArrayList<>();
     for (String appId : appIds) {
       Collection<PublicationDetail> someNews =
-          getPublicationService().getOrphanPublications(new PublicationPK("", appId));
+          getPublicationService().getOrphanPublications(appId);
       for (PublicationDetail aNews : someNews) {
         if (isVisibleNews(aNews)) {
           news.add(aNews);

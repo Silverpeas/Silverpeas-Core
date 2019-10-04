@@ -35,6 +35,7 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -44,10 +45,9 @@ import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.util.CollectionUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -556,7 +556,7 @@ public class TestSimpleDocumentAccessController {
     testContext.onGEDComponent().documentAttachedToPublication();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
-        .verifyCallOfPublicationBmGetDetailAndGetAlias();
+        .verifyCallOfPublicationBmGetDetailAndGetAllAliases();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -753,7 +753,7 @@ public class TestSimpleDocumentAccessController {
     testContext.onGEDComponent().documentAttachedToPublication().userIsThePublicationAuthor();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
-        .verifyCallOfPublicationBmGetDetailAndGetAlias();
+        .verifyCallOfPublicationBmGetDetailAndGetAllAliases();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -932,7 +932,7 @@ public class TestSimpleDocumentAccessController {
         .withRightsActivatedOnDirectory().userIsThePublicationAuthor();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
-        .verifyCallOfPublicationBmGetDetailAndGetAlias();
+        .verifyCallOfPublicationBmGetDetailAndGetAllAliases();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -944,7 +944,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(true);
 
     // User has USER role on component
@@ -959,7 +959,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(true);
 
     // User has USER role on component but it is anonymous
@@ -975,7 +975,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(false);
 
     // User has PUBLISHER role on component
@@ -989,7 +989,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(false);
 
     // User has ADMIN role on component
@@ -1003,7 +1003,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(false);
 
     // User has PUBLISHER role on component
@@ -1017,7 +1017,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(false);
 
     // User has PUBLISHER role on component
@@ -1031,7 +1031,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(true);
 
     // User has ADMIN role on component
@@ -1045,7 +1045,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(true);
 
     // User has USER role on component
@@ -1059,7 +1059,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(true);
 
     // User has PUBLISHER role on component
@@ -1073,7 +1073,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(true);
 
     // User has WRITER role on component
@@ -1087,7 +1087,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(true);
 
     // User has USER role on component
@@ -1101,7 +1101,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(false);
 
     // User has PUBLISHER role on component
@@ -1115,7 +1115,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(true);
 
     // User has WRITER role on component
@@ -1129,7 +1129,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(true);
 
     // User has USER role on component
@@ -1143,7 +1143,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(false);
 
     // User has PUBLISHER role on component
@@ -1157,7 +1157,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(true);
 
     // User has WRITER role on component
@@ -1171,7 +1171,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK();
+        .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(true);
   }
 
@@ -1182,7 +1182,7 @@ public class TestSimpleDocumentAccessController {
     testContext.onGEDComponent().documentAttachedToPublication().withRightsActivatedOnDirectory();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
-        .verifyCallOfPublicationBmGetDetailAndGetAlias();
+        .verifyCallOfPublicationBmGetDetailAndGetAllAliases();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -1194,10 +1194,10 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK()
+        .verifyCallOfPublicationBmGetMainLocation()
         .verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized()
-        .verifyCallOfPublicationBmGetDetailAndGetAlias();
+        .verifyCallOfPublicationBmGetDetailAndGetAllAliases();
     assertIsUserAuthorized(false);
 
     // User has ADMIN role on component
@@ -1211,10 +1211,10 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK()
+        .verifyCallOfPublicationBmGetMainLocation()
         .verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized()
-        .verifyCallOfPublicationBmGetDetailAndGetAlias();
+        .verifyCallOfPublicationBmGetDetailAndGetAllAliases();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -1228,7 +1228,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -1243,7 +1243,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -1259,7 +1259,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -1275,7 +1275,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1290,7 +1290,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1306,7 +1306,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1321,7 +1321,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1337,7 +1337,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -1353,7 +1353,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1369,7 +1369,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -1385,7 +1385,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1401,7 +1401,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -1417,7 +1417,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1433,7 +1433,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -1449,7 +1449,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
   }
@@ -1463,7 +1463,7 @@ public class TestSimpleDocumentAccessController {
         .userIsThePublicationAuthor();
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
-        .verifyCallOfPublicationBmGetDetailAndGetAlias();
+        .verifyCallOfPublicationBmGetDetailAndGetAllAliases();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -1476,9 +1476,9 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized()
-        .verifyCallOfPublicationBmGetDetailAndGetAlias();
+        .verifyCallOfPublicationBmGetDetailAndGetAllAliases();
     assertIsUserAuthorized(false);
 
     // User has ADMIN role on component
@@ -1493,9 +1493,9 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized()
-        .verifyCallOfPublicationBmGetDetailAndGetAlias();
+        .verifyCallOfPublicationBmGetDetailAndGetAllAliases();
     assertIsUserAuthorized(false);
 
     // User has USER role on component
@@ -1510,7 +1510,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -1526,7 +1526,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -1542,7 +1542,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -1558,7 +1558,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1574,7 +1574,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1590,7 +1590,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1606,7 +1606,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1622,7 +1622,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -1638,7 +1638,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1654,7 +1654,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1670,7 +1670,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(false);
 
@@ -1686,7 +1686,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
 
@@ -1702,7 +1702,7 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
-        .verifyCallOfPublicationBmGetAllFatherPK().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
   }
@@ -1870,12 +1870,11 @@ public class TestSimpleDocumentAccessController {
         publi.setCreatorId(testContext.isUserThePublicationAuthor ? userId : "otherUserId");
         return publi;
       });
-      when(publicationService.getAllFatherPK(any(PublicationPK.class))).then(invocation -> {
-        Collection<NodePK> nodes = new ArrayList<>();
+      when(publicationService.getMainLocation(any(PublicationPK.class))).then(invocation -> {
         if (!testContext.isPublicationOnRootDirectory) {
-          nodes.add(new NodePK("nodeId"));
+          return Optional.of(new Location("nodeId", "instanceId"));
         }
-        return nodes;
+        return Optional.empty();
       });
     }
   }
@@ -1887,8 +1886,8 @@ public class TestSimpleDocumentAccessController {
     private int nbCallOfNodeAccessControllerGetUserRoles = 0;
     private int nbCallOfNodeAccessControllerIsUserAuthorized = 0;
     private int nbCallOfPublicationBmGetDetail = 0;
-    private int nbCallOfPublicationBmGetAlias = 0;
-    private int nbCallOfPublicationBmGetAllFatherPK = 0;
+    private int nbCallOfPublicationBmGetAllAliases = 0;
+    private int nbCallOfPublicationBmGetMainLocation = 0;
 
 
     public TestVerifyResults verifyCallOfComponentAccessControllerGetUserRoles() {
@@ -1926,14 +1925,14 @@ public class TestSimpleDocumentAccessController {
       return this;
     }
 
-    public TestVerifyResults verifyCallOfPublicationBmGetAllFatherPK() {
-      nbCallOfPublicationBmGetAllFatherPK = 1;
+    public TestVerifyResults verifyCallOfPublicationBmGetMainLocation() {
+      nbCallOfPublicationBmGetMainLocation = 1;
       return this;
     }
 
-    public TestVerifyResults verifyCallOfPublicationBmGetDetailAndGetAlias() {
+    public TestVerifyResults verifyCallOfPublicationBmGetDetailAndGetAllAliases() {
       verifyCallOfPublicationBmGetDetail();
-      nbCallOfPublicationBmGetAlias = 1;
+      nbCallOfPublicationBmGetAllAliases = 1;
       return this;
     }
 
@@ -1954,10 +1953,10 @@ public class TestSimpleDocumentAccessController {
           .isUserAuthorized(any(EnumSet.class));
       verify(publicationService, times(nbCallOfPublicationBmGetDetail))
           .getDetail(any(PublicationPK.class));
-      verify(publicationService, times(nbCallOfPublicationBmGetAllFatherPK))
-          .getAllFatherPK(any(PublicationPK.class));
-      verify(publicationService, times(nbCallOfPublicationBmGetAlias))
-          .getAlias(any(PublicationPK.class));
+      verify(publicationService, times(nbCallOfPublicationBmGetMainLocation))
+          .getMainLocation(any(PublicationPK.class));
+      verify(publicationService, times(nbCallOfPublicationBmGetAllAliases))
+          .getAllAliases(any(PublicationPK.class));
     }
   }
 }

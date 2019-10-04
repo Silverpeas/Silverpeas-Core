@@ -105,7 +105,7 @@ public class SocialPublications implements SocialPublicationsInterface {
 
       if (!myId.equals(socialPublication.getAuthor()) && instanceId.startsWith("kmelia")) {
 
-        // On Kmelia application, if the user has not right access to the publication, then it is
+        // On Kmelia application, if the user has not access right to the publication, then it is
         // removed from the result
 
         AccessController<PublicationPK> publicationAccessController = AccessControllerProvider

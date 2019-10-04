@@ -26,6 +26,7 @@ package org.silverpeas.core.node.coordinates.persistence;
 import org.silverpeas.core.node.coordinates.model.Coordinate;
 import org.silverpeas.core.node.coordinates.model.CoordinatePK;
 import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import java.sql.Connection;
@@ -92,7 +93,7 @@ public class CoordinatesDAO {
    */
   private static List<CoordinatePoint> selectCoordinatePointsByNodeIds(Connection con,
       List<Integer> fatherIds, CoordinatePK pk) throws SQLException {
-    List<CoordinatePoint> list = new ArrayList<CoordinatePoint>();
+    List<CoordinatePoint> list = new ArrayList<>();
     StringBuilder whereClause = new StringBuilder(20 * fatherIds.size() + 200);
     if (fatherIds != null) {
       Iterator<Integer> it = fatherIds.iterator();
@@ -172,9 +173,9 @@ public class CoordinatesDAO {
       CoordinatePK pk) throws SQLException {
     // get all points corresponding to fatherIds
     List<CoordinatePoint> points = selectCoordinatePointsByNodeIds(con, fatherIds, pk);
-    List<CoordinatePoint> toCheck = new ArrayList<CoordinatePoint>(points); // toCheck always
+    List<CoordinatePoint> toCheck = new ArrayList<>(points); // toCheck always
     // contains points
-    List<String> coordinatePKs = new ArrayList<String>();
+    List<String> coordinatePKs = new ArrayList<>();
     int nbAxis = fatherIds.size(); // number of axis
     int currentCoordinateId;
     int nbMatchingPoints = 0;
@@ -248,7 +249,7 @@ public class CoordinatesDAO {
     try {
       prepStmt = con.prepareStatement(selectStatement);
       rs = prepStmt.executeQuery();
-      List<String> list = new ArrayList<String>();
+      List<String> list = new ArrayList<>();
       int coordinateId = 0;
       int nbMatches = 0;
       while (rs.next()) {
@@ -412,7 +413,7 @@ public class CoordinatesDAO {
     } finally {
       DBUtil.close(rs, pstmt);
     }
-    return maxFromTable;
+    return Integer.parseInt(NodePK.UNCLASSED_NODE_ID) + maxFromTable;
   }
 
   /**
@@ -451,7 +452,7 @@ public class CoordinatesDAO {
    */
   private static Coordinate selectCoordinateByCoordinatePK(Connection con,
       CoordinatePK pk) throws SQLException {
-    List<CoordinatePoint> list = new ArrayList<CoordinatePoint>();
+    List<CoordinatePoint> list = new ArrayList<>();
     int id = Integer.parseInt(pk.getId());
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -481,7 +482,7 @@ public class CoordinatesDAO {
    */
   public static ArrayList<Coordinate> selectCoordinatesByCoordinateIds(Connection con,
       List<String> coordinateIds, CoordinatePK pk) throws SQLException {
-    ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+    ArrayList<Coordinate> coordinates = new ArrayList<>();
     for (String coordinateId : coordinateIds) {
       coordinates.add(selectCoordinateByCoordinatePK(con, new CoordinatePK(coordinateId, pk)));
     }
@@ -498,7 +499,7 @@ public class CoordinatesDAO {
    */
   static Collection<String> getCoordinateIds(Connection con, CoordinatePK pk)
       throws SQLException {
-    List<String> coordinateIds = new ArrayList<String>();
+    List<String> coordinateIds = new ArrayList<>();
     PreparedStatement pstmt = null;
     ResultSet rs = null;
     try {
@@ -545,7 +546,7 @@ public class CoordinatesDAO {
   public static Collection<String> getCoordinateIdsByNodeId(Connection con, CoordinatePK pk,
       String nodeId)
       throws SQLException {
-    List<String> coordinateIds = new ArrayList<String>();
+    List<String> coordinateIds = new ArrayList<>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {

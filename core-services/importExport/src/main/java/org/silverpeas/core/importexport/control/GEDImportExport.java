@@ -41,8 +41,8 @@ import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -832,20 +832,14 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @param pubPK - pk de la publication dont on veut les topics
    * @return - liste des nodesPk de la publication
    */
-  public List<NodePK> getAllTopicsOfPublication(PublicationPK pubPK) {
-    Collection<NodePK> listNodePk = getPublicationService().getAllFatherPK(pubPK);
-    return new ArrayList<>(listNodePk);
+  public List<Location> getAllTopicsOfPublicationInSameComponentInstance(PublicationPK pubPK) {
+    final List<Location> result = new ArrayList<>();
+    getPublicationService().getMainLocation(pubPK).ifPresent(result::add);
+    return result;
   }
 
-  public List<NodePK> getAliases(PublicationPK pubPK) {
-    List<NodePK> pks = new ArrayList<>();
-    Collection<Alias> aliases = getPublicationService().getAlias(pubPK);
-    for (Alias alias : aliases) {
-      if (!alias.getInstanceId().equals(pubPK.getInstanceId())) {
-        pks.add(new NodePK(alias.getId(), alias.getInstanceId()));
-      }
-    }
-    return pks;
+  public List<Location> getAliases(PublicationPK pubPK) {
+    return getPublicationService().getAllAliases(pubPK);
   }
 
   public List<NodePK> getTopicTree(NodePK pk) {
