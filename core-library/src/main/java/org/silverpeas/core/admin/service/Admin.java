@@ -709,7 +709,7 @@ class Admin implements Administration {
   @Override
   public List<SpaceInstLight> getPathToComponent(String componentId) throws AdminException {
     List<SpaceInstLight> path = new ArrayList<>();
-    ComponentInstLight component = getComponentInstLight(componentId);
+    ComponentInst component = getComponentInst(componentId);
     if (component != null) {
       String spaceId = component.getDomainFatherId();
       return getPathToSpace(spaceId, true);

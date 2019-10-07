@@ -169,8 +169,8 @@ public class CoordinatesDAOIT {
       expectedTable.addRow(new Object[]{3, 1058, "1", 2, "kmax888"});
       expectedTable.addRow(new Object[]{3, 1061, "1", 1, "kmax888"});
 
-      expectedTable.addRow(new Object[]{4, 1000, "0", 1, "kmax888"});
-      expectedTable.addRow(new Object[]{4, 2000, "1", 2, "kmax888"});
+      expectedTable.addRow(new Object[]{6, 1000, "0", 1, "kmax888"});
+      expectedTable.addRow(new Object[]{6, 2000, "1", 2, "kmax888"});
 
       Assertion.assertEquals(expectedTable, actualTable);
     }

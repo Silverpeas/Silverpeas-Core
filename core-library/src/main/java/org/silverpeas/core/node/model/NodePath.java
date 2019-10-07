@@ -24,7 +24,8 @@
 
 package org.silverpeas.core.node.model;
 
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.SilverpeasExceptionMessages;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.util.Pair;
@@ -32,8 +33,11 @@ import org.silverpeas.core.util.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.Collections.singletonList;
 
 /**
  * List of {@link NodeDetail} which represents a path.
@@ -41,7 +45,8 @@ import java.util.stream.Collectors;
  */
 public class NodePath extends ArrayList<NodeDetail> {
   private static final long serialVersionUID = -2389557818767894656L;
-  private Map<String, Pair<String, String>> lastPathByLanguage = new HashMap<>();
+  private static final String SEP = " > ";
+  private transient Map<String, Pair<String, String>> lastPathByLanguage = new HashMap<>();
 
   public NodePath() {
     super();
@@ -57,9 +62,21 @@ public class NodePath extends ArrayList<NodeDetail> {
 
   /**
    * Formats a path from the node that the list contains.
+   * @param language the aimed translation.
    * @return a string.
    */
   public String format(final String language) {
+    return format(language, false);
+  }
+
+  /**
+   * Formats a path from the node that the list contains.
+   * @param language the aimed translation.
+   * @param fullSpacePath if false, the space host is taken into account, if true the space host
+   * and all parents are taken into account.
+   * @return a string.
+   */
+  public String format(final String language, final boolean fullSpacePath) {
     final String currentNodeIdPath = stream().map(NodeDetail::getId).map(String::valueOf)
         .collect(Collectors.joining(","));
     Pair<String, String> lastPath = lastPathByLanguage
@@ -68,10 +85,10 @@ public class NodePath extends ArrayList<NodeDetail> {
       StringBuilder result = new StringBuilder();
       for (NodeDetail node : this) {
         if (result.length() > 0) {
-          result.insert(0, " > ");
+          result.insert(0, SEP);
         }
         if (NodePK.ROOT_NODE_ID.equals(node.getNodePK().getId())) {
-          result.insert(0, getPath(node, language));
+          result.insert(0, getPath(node, language, fullSpacePath));
         } else {
           result.insert(0, node.getName(language));
         }
@@ -82,12 +99,26 @@ public class NodePath extends ArrayList<NodeDetail> {
     return lastPath.getSecond();
   }
 
-  private String getPath(final NodeDetail node, final String language) {
-    final ComponentInstLight instance = OrganizationController.get()
-        .getComponentInstLight(node.getNodePK().getInstanceId());
-    final SpaceInstLight space = OrganizationController.get()
-        .getSpaceInstLightById(instance.getDomainFatherId());
-    return space.getName(language) + " > " + instance.getLabel(language);
+  private String getPath(final NodeDetail node, final String language,
+      final boolean fullSpacePath) {
+    final String instanceId = node.getNodePK().getInstanceId();
+    final SilverpeasComponentInstance componentInstance = OrganizationController.get()
+        .getComponentInstance(instanceId).orElseThrow(() -> new IllegalArgumentException(
+            SilverpeasExceptionMessages.failureOnGetting("component instance", instanceId)));
+    return getPath(componentInstance, language, fullSpacePath) + SEP +
+        componentInstance.getLabel(language);
+  }
+
+  private String getPath(SilverpeasComponentInstance instance, final String language,
+      final boolean fullSpacePath) {
+    final List<SpaceInstLight> spaceList;
+    final OrganizationController controller = OrganizationController.get();
+    if (fullSpacePath) {
+      spaceList = controller.getPathToComponent(instance.getId());
+    } else {
+      spaceList = singletonList(controller.getSpaceInstLightById(instance.getSpaceId()));
+    }
+    return spaceList.stream().map(s -> s.getName(language)).collect(Collectors.joining(SEP));
   }
 
   @Override

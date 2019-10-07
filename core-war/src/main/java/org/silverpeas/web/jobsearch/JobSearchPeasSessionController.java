@@ -428,7 +428,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       final List<String> paths = getPublicationService().getAllLocations(pubPK).stream()
           .map(l -> {
             final NodePath path = getNodeService().getPath(l);
-            String formattedPath = path.format(getLanguage());
+            String formattedPath = path.format(getLanguage(), true);
             if (l.isAlias()) {
               formattedPath += " (" + getString("GML.alias") + ")";
             }
