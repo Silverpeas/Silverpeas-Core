@@ -675,7 +675,13 @@ if (!window.SilverpeasAjaxConfig) {
       this.method = 'GET';
     },
     withParams : function(params) {
-      this.parameters = (params) ? extendsObject(false, this.parameters, params) : {};
+      if (typeof params === 'string') {
+        // case when ajaxRequest.send(...) is called with a JSON object parameter
+        // (on which JSON.stringify is performed before calling this method)
+        this.parameters = params;
+      } else {
+        this.parameters = (params) ? extendsObject(false, this.parameters, params) : {};
+      }
       return this;
     },
     withParam : function(name, value) {
