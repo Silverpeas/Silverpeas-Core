@@ -65,11 +65,11 @@ public class ListSlice<T> extends ArrayList<T> implements SilverpeasList<T> {
    * If the index of the last item in the original list is lesser than the specified index, then
    * this slice ends up at the index of this last item.
    * @param originalListSize the size of the original list this slice comes from. It must be greater
-   * than 0.
+   * or equal to 0.
    */
   public ListSlice(int sliceBeginIndex, int sliceEndIndex, long originalListSize) {
     this(sliceBeginIndex, sliceEndIndex);
-    if (originalListSize <= 0) {
+    if (originalListSize < 0) {
       throw new AssertionError();
     }
     this.maxsize = originalListSize;
