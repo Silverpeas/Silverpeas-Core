@@ -87,30 +87,33 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     return authorized;
   }
 
+  @Override
   public boolean isGroupAuthorized(final String groupId, final NodePK nodePK) {
-    if (!componentAccessController.isRightOnTopicsEnabled(nodePK.getInstanceId())) {
-      return true;
-    } else {
-      try {
-        NodeDetail node = nodeService.getDetail(nodePK);
-        while (node.haveInheritedRights() && node.hasFather()) {
-          node = nodeService.getDetail(node.getFatherPK());
+    boolean authorized = false;
+    if (componentAccessController.isGroupAuthorized(groupId, nodePK.getInstanceId())) {
+      if (!componentAccessController.isRightOnTopicsEnabled(nodePK.getInstanceId())) {
+        authorized = true;
+      } else {
+        try {
+          NodeDetail node = nodeService.getDetail(nodePK);
+          while (node.haveInheritedRights() && node.hasFather()) {
+            node = nodeService.getDetail(node.getFatherPK());
+          }
+          if (node.haveLocalRights()) {
+            NodePK objectPK = node.getNodePK();
+            authorized =
+                controller.isObjectAvailableToGroup(ProfiledObjectId.fromNode(objectPK.getId()),
+                    objectPK.getInstanceId(), groupId);
+          } else {
+            authorized = controller.isComponentAvailableToGroup(nodePK.getInstanceId(), groupId);
+          }
+        } catch (Exception e) {
+          SilverLogger.getLogger(this).warn(e);
+          authorized = true;
         }
-        final boolean isAccessible;
-        if (node.haveLocalRights()) {
-          NodePK objectPK = node.getNodePK();
-          isAccessible =
-              controller.isObjectAvailableToGroup(ProfiledObjectId.fromNode(objectPK.getId()),
-                  objectPK.getInstanceId(), groupId);
-        } else {
-          isAccessible = controller.isComponentAvailableToGroup(nodePK.getInstanceId(), groupId);
-        }
-        return isAccessible;
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
-        return true;
       }
     }
+    return authorized;
   }
 
   @Override

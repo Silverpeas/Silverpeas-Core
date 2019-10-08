@@ -76,7 +76,7 @@
 </fmt:message>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="${requestScope.resources.language}">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel/>
@@ -402,7 +402,7 @@
         // Name
         var $name =  $('<span>').addClass('name_' + subscription.ui.classSuffix).text(subscription.ui.name);
         if (!subscription.enabled) {
-           $name.css('text-decoration', 'line-through').css('font-style', 'oblique');
+           $name.addClass('removed');
         }
         $subscription.append($name);
 

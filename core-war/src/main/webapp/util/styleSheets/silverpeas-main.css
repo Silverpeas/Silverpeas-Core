@@ -3660,6 +3660,11 @@ table.pdcPositionsField {
   background-color: #EAEAEA;
 }
 
+.removed {
+  text-decoration: line-through;
+  font-style: oblique;
+}
+
 .classification legend {
   background:transparent url('../../util/icons/component/pdcPeasSmall.gif') 11px 0px no-repeat;
 }

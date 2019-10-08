@@ -827,12 +827,6 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public boolean isObjectAvailable(final ProfiledObjectId objectId, final String componentId,
-      final String userId) {
-    return isObjectAvailableToUser(objectId, componentId, userId);
-  }
-
-  @Override
   public boolean isObjectAvailableToUser(ProfiledObjectId objectId, String componentId, String userId) {
     try {
       return getAdminService().isObjectAvailableToUser(componentId, objectId, userId);

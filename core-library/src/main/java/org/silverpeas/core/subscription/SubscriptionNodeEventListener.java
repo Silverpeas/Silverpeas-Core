@@ -22,24 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.admin.user.notification;
+package org.silverpeas.core.subscription;
 
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.notification.system.AbstractResourceEvent;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.notification.NodeEvent;
+import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
+
+import javax.inject.Singleton;
 
 /**
- * Event about a change of a given right profile on a component instance or on a node.
- *
+ * Listener of events on the deletion of a node in a component instance to delete all subscriptions
+ * on that node.
  * @author mmoquillon
  */
-public class ProfileInstEvent extends AbstractResourceEvent<ProfileInst> {
+@Singleton
+public class SubscriptionNodeEventListener
+    extends AbstractProfiledResourceSubscriptionListener<NodeDetail, NodeEvent> {
 
-  public ProfileInstEvent() {
-    super();
-  }
-
-  public ProfileInstEvent(final Type type, final ProfileInst... resource) {
-    super(type, resource);
+  @Override
+  protected SubscriptionResource getSubscriptionResource(final NodeDetail resource) {
+    return NodeSubscriptionResource.from(resource.getNodePK());
   }
 }
   

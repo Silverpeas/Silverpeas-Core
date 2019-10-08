@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
+import static org.silverpeas.core.notification.system.ResourceEvent.Type.DELETION;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.UPDATE;
 
 @Singleton
@@ -377,6 +378,9 @@ public class ComponentInstManager {
 
       // delete the component node
       organizationSchema.instance().removeComponentInstance(componentInst.getLocalId());
+
+      // notify about the deletion
+      notifier.notifyEventOn(DELETION, componentInst);
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting(COMPONENT, componentInst.getLocalId()), e);
     }

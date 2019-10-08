@@ -32,8 +32,6 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.ComponentInstManager;
 import org.silverpeas.core.admin.user.dao.RoleDAO;
 import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.user.notification.ProfileInstEventNotifier;
-import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -59,8 +57,6 @@ public class ProfileInstManager {
   private OrganizationSchema organizationSchema;
   @Inject
   private RoleDAO roleDAO;
-  @Inject
-  private ProfileInstEventNotifier notifier;
 
   /**
    * Constructor
@@ -192,8 +188,6 @@ public class ProfileInstManager {
     try {
       // delete the profile node
       organizationSchema.userRole().removeUserRole(idAsInt(profileInst.getId()));
-
-      notifier.notifyEventOn(ResourceEvent.Type.DELETION, profileInst);
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting(PROFILE, profileInst.getId()), e);
     }
@@ -226,8 +220,6 @@ public class ProfileInstManager {
       // update the profile node
       UserRoleRow changedUserRole = UserRoleRow.makeFrom(profileInstNew);
       organizationSchema.userRole().updateUserRole(changedUserRole);
-
-      notifier.notifyEventOn(ResourceEvent.Type.UPDATE, profileInst, profileInstNew);
 
       return idAsString(changedUserRole.getId());
     } catch (SQLException e) {

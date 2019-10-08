@@ -28,9 +28,9 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;
@@ -39,7 +39,6 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
-import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
@@ -71,7 +70,8 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   @Override
   protected void initialize() {
     super.initialize();
-    getNotificationMetaData().setLink(getResourceURL(resource));
+    final String link = getResourceURL(resource);
+    getNotificationMetaData().setLink(link);
   }
 
   /**
@@ -86,6 +86,9 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
     final boolean isAccessible;
     if (resource instanceof Contribution) {
       isAccessible = isUserAuthorized(userId, (Contribution) resource);
+    } else if (resource instanceof NodeDetail) {
+      final NodeDetail node = (NodeDetail) resource;
+      isAccessible = NodeAccessControl.get().isUserAuthorized(userId, node.getNodePK());
     } else {
       isAccessible = true;
     }
@@ -105,6 +108,9 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
     final boolean isAccessible;
     if (resource instanceof Contribution) {
       isAccessible = isGroupAuthorized(groupId, (Contribution) resource);
+    } else if (resource instanceof NodeDetail) {
+      final NodeDetail node = (NodeDetail) resource;
+      isAccessible = NodeAccessControl.get().isGroupAuthorized(groupId, node.getNodePK());
     } else {
       isAccessible = true;
     }
@@ -114,24 +120,21 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   private boolean isUserAuthorized(final String userId, final Contribution contribution) {
     final String id = contribution.getContributionId().getLocalId();
     final String instanceId = contribution.getContributionId().getComponentInstanceId();
-    Collection<NodePK> fatherPKs =
-        PublicationService.get().getAllFatherPK(new PublicationPK(id, instanceId));
+    Collection<NodePK> fatherPKs = PublicationService.get()
+        .getAllFatherPKInSamePublicationComponentInstance(new PublicationPK(id, instanceId));
     boolean isAccessible;
-    if (PublicationDetail.TYPE.equals(contribution.getContributionType())) {
-      PublicationPK pubPK = new PublicationPK(id, instanceId);
-      isAccessible = PublicationAccessControl.get().isUserAuthorized(userId, pubPK);
-    } else {
-      isAccessible = ComponentAccessControl.get().isUserAuthorized(userId, instanceId);
-      if (isAccessible && fatherPKs != null && !fatherPKs.isEmpty()) {
-        NodeAccessControl nodeAccessControl = NodeAccessControl.get();
-        isAccessible = false;
-        for (NodePK fatherPK: fatherPKs) {
-          if ((nodeAccessControl.isUserAuthorized(userId, fatherPK))) {
-            isAccessible = true;
-            break;
-          }
+    if (fatherPKs != null && !fatherPKs.isEmpty()) {
+      NodeAccessControl nodeAccessControl = NodeAccessControl.get();
+      isAccessible = false;
+      for (NodePK fatherPK : fatherPKs) {
+        if ((nodeAccessControl.isUserAuthorized(userId, fatherPK))) {
+          isAccessible = true;
+          break;
         }
       }
+    } else {
+      ComponentAccessControl componentAccessControl = ComponentAccessControl.get();
+      isAccessible = componentAccessControl.isUserAuthorized(userId, instanceId);
     }
     return isAccessible;
   }
@@ -139,10 +142,10 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   private boolean isGroupAuthorized(final String groupId, final Contribution contribution) {
     final String id = contribution.getContributionId().getLocalId();
     final String instanceId = contribution.getContributionId().getComponentInstanceId();
-    Collection<NodePK> fatherPKs =
-        PublicationService.get().getAllFatherPK(new PublicationPK(id, instanceId));
-    boolean isAccessible = ComponentAccessControl.get().isGroupAuthorized(groupId, instanceId);
-    if (isAccessible && fatherPKs != null && !fatherPKs.isEmpty()) {
+    Collection<NodePK> fatherPKs = PublicationService.get()
+        .getAllFatherPKInSamePublicationComponentInstance(new PublicationPK(id, instanceId));
+    boolean isAccessible;
+    if (fatherPKs != null && !fatherPKs.isEmpty()) {
       NodeAccessControl nodeAccessControl = NodeAccessControl.get();
       isAccessible = false;
       for (NodePK fatherPK: fatherPKs) {
@@ -151,6 +154,8 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
           break;
         }
       }
+    } else {
+      isAccessible = ComponentAccessControl.get().isGroupAuthorized(groupId, instanceId);
     }
     return isAccessible;
   }

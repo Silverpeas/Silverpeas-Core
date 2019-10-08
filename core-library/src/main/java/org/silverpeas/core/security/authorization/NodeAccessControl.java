@@ -36,14 +36,4 @@ public interface NodeAccessControl extends AccessController<NodePK>{
     return ServiceProvider.getService(NodeAccessControl.class);
   }
 
-  /**
-   * Is the specified group authorized to access the given node with at least read
-   * privileges? The roles of the group on the node aren't taken into account. The group
-   * should have at least the user role to access the node unless the node is
-   * public.
-   * @param groupId the unique identifier of a group.
-   * @param nodePK the unique identifier of a node in the data source.
-   * @return true if the group can access the given node, false otherwise.
-   */
-  boolean isGroupAuthorized(final String groupId, final NodePK nodePK);
 }

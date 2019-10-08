@@ -37,16 +37,6 @@ public interface ComponentAccessControl extends AccessController<String> {
   }
 
   /**
-   * Is the specified group authorized to access the given component instance with at least read
-   * privileges? The group should have at least the user role to access the component instance
-   * unless the component instance is public.
-   * @param groupId the unique identifier of a group.
-   * @param instanceId the unique identifier of a component instance in Silverpeas
-   * @return true if the group can access the given component instance, false otherwise.
-   */
-  boolean isGroupAuthorized(final String groupId, final String instanceId);
-
-  /**
    * Indicates is the rights are set on node as well as the component.
    * @param instanceId the identifier of the component instance.
    * @return true if rights are enabled at node level, false otherwise.

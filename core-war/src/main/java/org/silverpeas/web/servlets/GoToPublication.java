@@ -53,7 +53,7 @@ public class GoToPublication extends GoTo {
     // Set GEF and look helper space identifier
     setGefSpaceId(req, componentId);
 
-    String gotoURL = URLUtil.getURL(null, componentId) + pub.getURL();
+    String gotoURL = URLUtil.getComponentInstanceURL(componentId) + pub.getURL();
     return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8.name());
   }
 }

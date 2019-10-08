@@ -1402,7 +1402,7 @@ class Admin implements Administration {
     List<String> groupIdsToRemove = new ArrayList<>();
     List<String> groupIds = objectProfile.getAllGroups();
     for (String groupId : groupIds) {
-      if (!isComponentAvailableByGroup(componentId, groupId)) {
+      if (!isComponentAvailableToGroup(componentId, groupId)) {
         groupIdsToRemove.add(groupId);
       }
     }
@@ -1420,13 +1420,6 @@ class Admin implements Administration {
           .warn("Error when getting all component objects profiles " + componentId, e);
     }
     return objectsProfiles;
-  }
-
-  private boolean isComponentAvailableByGroup(String componentId, String groupId)
-      throws AdminException {
-      List<String> groupIds = groupManager.getPathToGroup(groupId);
-      groupIds.add(groupId);
-      return componentManager.getAllowedComponentIds(-1, groupIds).contains(componentId);
   }
 
   @Override
@@ -3556,8 +3549,9 @@ class Admin implements Administration {
   @Override
   public boolean isComponentAvailableToGroup(final String componentId, final String groupId)
       throws AdminException {
-    return componentManager.getAllowedComponentIds(-1, Collections.singletonList(groupId), null,
-        null).contains(componentId);
+    List<String> groupIds = groupManager.getPathToGroup(groupId);
+    groupIds.add(groupId);
+    return componentManager.getAllowedComponentIds(-1, groupIds).contains(componentId);
   }
 
   @Override

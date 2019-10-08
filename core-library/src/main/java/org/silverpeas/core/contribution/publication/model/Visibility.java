@@ -23,12 +23,15 @@
  */
 package org.silverpeas.core.contribution.publication.model;
 
+import org.silverpeas.core.util.DateUtil;
+
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.silverpeas.core.util.DateUtil;
+public class Visibility implements Serializable {
 
-public class Visibility {
+  private static final long serialVersionUID = -503979000276518366L;
 
   private boolean notYetVisible = false;
   private boolean noMoreVisible = false;

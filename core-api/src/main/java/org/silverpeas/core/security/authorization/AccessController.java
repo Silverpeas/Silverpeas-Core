@@ -71,4 +71,18 @@ public interface AccessController<T> {
    * @return the role the user has about a resource and according to a context.
    */
   Set<SilverpeasRole> getUserRoles(String userId, T object, AccessControlContext context);
+
+  /**
+   * Is the specified group authorized to access the given object with at least read
+   * privileges? The roles of the group on the object aren't taken into account. The group
+   * should have at least the user role to access the object unless the object is
+   * public.
+   * @param groupId the unique identifier of a group.
+   * @param object the unique identifier of the object to be accessed.
+   * @return true if the group can access the given object, false otherwise.
+   */
+  default boolean isGroupAuthorized(final String groupId, final T object) {
+    // This method must be overridden if needed
+    throw new UnsupportedOperationException();
+  }
 }
