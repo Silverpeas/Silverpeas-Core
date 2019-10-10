@@ -122,6 +122,17 @@
     }
   };
 
+  function __queueBodyLoading(_jsonPromise, _bodyParams, resolve, reject) {
+    _jsonPromise.then(function() {
+      __loadBody(_bodyParams).then(function() {
+        resolve();
+      })['catch'](function(request) {
+        __loadErrorListener(request);
+        reject();
+      });
+    }, __loadErrorListener);
+  }
+
   var __loadSpaceAndComponentBody = function(params) {
     __showProgressMessage();
     var _params = sp.param.singleToObject('jsonPromise', params);
@@ -136,14 +147,7 @@
       return new Promise(function(resolve, reject) {
         __spAdminWindowContext.queue.push(function() {
           __logDebug("__loadSpaceAndComponentBody");
-          _jsonPromise.then(function() {
-            __loadBody(_bodyParams).then(function() {
-              resolve();
-            })['catch'](function(request) {
-              __loadErrorListener(request);
-              reject();
-            });
-          },__loadErrorListener);
+          __queueBodyLoading(_jsonPromise, _bodyParams, resolve, reject);
         });
       });
     } else {
@@ -168,14 +172,7 @@
       return new Promise(function(resolve, reject) {
         __spAdminWindowContext.queue.push(function() {
           __logDebug("__loadUserAndGroupBody");
-          _jsonPromise.then(function() {
-            __loadBody(_bodyParams).then(function() {
-              resolve();
-            })['catch'](function(request) {
-              __loadErrorListener(request);
-              reject();
-            });
-          },__loadErrorListener);
+          __queueBodyLoading(_jsonPromise, _bodyParams, resolve, reject);
         });
       });
     } else {

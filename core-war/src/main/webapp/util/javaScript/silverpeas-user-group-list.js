@@ -76,36 +76,37 @@
         resourceIdFilter : '',
         componentIdFilter : ''
       }, options);
-      if (typeof params === 'undefined') {
-        params = {};
+      var _params = params;
+      if (typeof _params === 'undefined') {
+        _params = {};
       }
-      if (typeof params === 'object') {
-        if (!params.id && !params.ids) {
-          params.withChildren = true;
+      if (typeof _params === 'object') {
+        if (!_params.id && !_params.ids) {
+          _params.withChildren = true;
           if (this.options.hideDeactivatedState) {
-            params.userStatesToExclude = ['DEACTIVATED'];
+            _params.userStatesToExclude = ['DEACTIVATED'];
           }
           if (this.options.domainIdFilter) {
-            params.domain = this.options.domainIdFilter;
+            _params.domain = this.options.domainIdFilter;
           }
           if (this.options.componentIdFilter) {
-            params.component = this.options.componentIdFilter;
+            _params.component = this.options.componentIdFilter;
           }
           if (this.options.resourceIdFilter) {
-            params.resource = this.options.resourceIdFilter;
+            _params.resource = this.options.resourceIdFilter;
           }
           if (this.options.roleFilter) {
-            params.roles = this.options.roleFilter.join(',');
+            _params.roles = this.options.roleFilter.join(',');
           }
           if (this.options.groupFilter) {
-            params.group = this.options.groupFilter;
+            _params.group = this.options.groupFilter;
           }
         }
       }
-      if (params.limit) {
-        params.page = {number : 1, size : params.limit};
+      if (_params.limit) {
+        _params.page = {number : 1, size : _params.limit};
       }
-      return params;
+      return _params;
     }.bind(this);
 
     this.getUsers = function(params) {
@@ -241,8 +242,8 @@
       return id.replace(/[^0-9]/g, '');
     };
     var __updateIdContainers = function(id, allValues) {
-      allValues = typeof allValues === 'string' ? [allValues] : allValues;
-      var isAdd = Array.isArray(allValues);
+      var _allValues = typeof allValues === 'string' ? [allValues] : allValues;
+      var isAdd = Array.isArray(_allValues);
       var isUserId = __isUserId(id);
       var idContainer = isUserId ?
           userGroupSelectInstance.context.currentUserIds :
@@ -256,7 +257,7 @@
           return;
         }
         idContainer.removeAll();
-        allValues.filter(function(anId) {
+        _allValues.filter(function(anId) {
           return isUserId ? __isUserId(anId) : !__isUserId(anId);
         }).forEach(function(anId) {
           idContainer.addElement(__normalizeId(anId));

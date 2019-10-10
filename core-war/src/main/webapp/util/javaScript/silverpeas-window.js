@@ -376,15 +376,15 @@ function _spWindow_getSilverpeasMainWindow() {
     };
 
     this.leaveAdmin = function(options) {
-      options = extendsObject({
+      var _options = extendsObject({
         'fromSpaceId' : undefined,
         'fromComponentId' : undefined
       }, options);
-      __logDebug("Leaving admin " + JSON.stringify(options));
-      if (options.fromSpaceId || options.fromComponentId) {
+      __logDebug("Leaving admin " + JSON.stringify(_options));
+      if (_options.fromSpaceId || _options.fromComponentId) {
         __spWindowContext.lastNavigationEventData = {
-          currentSpaceId : options.fromSpaceId,
-          currentComponentId : options.fromComponentId,
+          currentSpaceId : _options.fromSpaceId,
+          currentComponentId : _options.fromComponentId,
           isPersonalSpace : false
         }
       }
@@ -460,7 +460,7 @@ function _spWindow_getSilverpeasMainWindow() {
      * @returns {*}
      */
     this.loadPermalink = function(permalink, options) {
-      options = extendsObject({
+      var _options = extendsObject({
         hideNavigation : undefined
       }, options);
       spLayout.getSplash().close();
@@ -512,24 +512,24 @@ function _spWindow_getSilverpeasMainWindow() {
           __spWindowContext.manualContentLoad = true;
           __spWindowContext.queue.init();
           try {
-            __loadContent(contentUrl, options);
+            __loadContent(contentUrl, _options);
             if (loadId) {
               var $link = __getNavigationLink(loadId);
               if ($link) {
-                return __dispatchClickOn($link, options);
+                return __dispatchClickOn($link, _options);
               }
               if (personalSpace) {
                 spWindow.loadPersonalSpace({
                   loadOnlyNavigation : true,
                   componentId : loadId,
-                  hideNavigation : options.hideNavigation
+                  hideNavigation : _options.hideNavigation
                 });
               } else {
                 __showProgressMessage();
                 __loadNavigation({
                   "component_id" : context.RedirectToComponentId,
                   "privateDomain" : context.RedirectToSpaceId,
-                  "hideNavigation" : options.hideNavigation
+                  "hideNavigation" : _options.hideNavigation
                 }).then(function() {
                   spLayout.getBody().getNavigation().show();
                 });
@@ -538,7 +538,7 @@ function _spWindow_getSilverpeasMainWindow() {
               spWindow.loadPersonalSpace({
                 loadOnlyNavigation : true,
                 componentId : personalSpace.id,
-                hideNavigation : options.hideNavigation
+                hideNavigation : _options.hideNavigation
               });
             } else {
               __dispatchNavigationEvent('start-load', {
@@ -561,10 +561,10 @@ function _spWindow_getSilverpeasMainWindow() {
           SilverpeasError.add(context.errorMessage).show();
         } else if (context.RedirectToComponentId) {
           __logDebug("loading navigation and then body for componentId=" + context.RedirectToComponentId);
-          spWindow.loadComponent(context.RedirectToComponentId, options);
+          spWindow.loadComponent(context.RedirectToComponentId, _options);
         } else if (context.RedirectToSpaceId) {
           __logDebug("loading navigation and then body for spaceId=" + context.RedirectToSpaceId);
-          spWindow.loadSpace(context.RedirectToSpaceId, options);
+          spWindow.loadSpace(context.RedirectToSpaceId, _options);
         } else {
           __logDebug("reloading all the layout");
           top.location = webContext;
