@@ -57,19 +57,19 @@
    */
   var __transversePartContexts = {};
   var __updateCommonTransverseContext = function(transverseContext, options) {
-    options = extendsObject({
+    var _options = extendsObject({
       hideSurely : false,
       hideSurelyTimeout : 500,
       showSurely : false,
       showSurelyTimeout : 500
     }, options);
-    if (options.hideSurely) {
+    if (_options.hideSurely) {
       transverseContext.hideSurely = true;
-      transverseContext.hideSurelyTimeout = options.hideSurelyTimeout;
+      transverseContext.hideSurelyTimeout = _options.hideSurelyTimeout;
     }
-    if (options.showSurely) {
+    if (_options.showSurely) {
       transverseContext.showSurely = true;
-      transverseContext.showSurelyTimeout = options.showSurelyTimeout;
+      transverseContext.showSurelyTimeout = _options.showSurelyTimeout;
     }
   };
   var Part = SilverpeasClass.extend({
@@ -376,24 +376,22 @@
           }.bind(this));
     },
     addEventListener : function(eventName, listener, listenerId) {
-      switch (eventName) {
-        case 'changeselected':
-          var normalizedEventName = this.normalizeEventName(eventName);
-          __eventManager.addEventListener(normalizedEventName, listener, listenerId);
-          break;
-        default:
-          this._super(eventName, listener);
+      if (eventName === 'changeselected') {
+        var normalizedEventName = this.normalizeEventName(eventName);
+        __eventManager.addEventListener(normalizedEventName, listener, listenerId);
+      } else {
+        this._super(eventName, listener);
       }
     },
     hide : function(options) {
-      options = typeof options === 'boolean' ? {withToggle : options} : options;
-      options = extendsObject({
+      var _options = typeof options === 'boolean' ? {withToggle : options} : options;
+      _options = extendsObject({
         withToggle : false
-      }, options);
-      if (options.withToggle) {
+      }, _options);
+      if (_options.withToggle) {
         spLayout.getBody().getToggles().hideNavigationToggle();
       }
-      this._super(options);
+      this._super(_options);
     },
     show : function(options) {
       this._super(options);
@@ -427,7 +425,7 @@
         if (_fullscreen) {
           var $iframe = this.getContainer().querySelector('iframe');
           spFscreen.requestFullscreen($iframe);
-        } else if (!_fullscreen) {
+        } else {
           spFscreen.exitFullscreen();
         }
         this._lastFullscreen = _fullscreen;
@@ -621,13 +619,11 @@
       }.bind(this));
     },
     addEventListener : function(eventName, listener, listenerId) {
-      switch (eventName) {
-        case 'close':
-          var normalizedEventName = this.normalizeEventName(eventName);
-          __eventManager.addEventListener(normalizedEventName, listener, listenerId);
-          break;
-        default:
-          this._super(eventName, listener);
+      if (eventName === 'close') {
+        var normalizedEventName = this.normalizeEventName(eventName);
+        __eventManager.addEventListener(normalizedEventName, listener, listenerId);
+      } else {
+        this._super(eventName, listener);
       }
     },
     muteMouseEvents : function() {
