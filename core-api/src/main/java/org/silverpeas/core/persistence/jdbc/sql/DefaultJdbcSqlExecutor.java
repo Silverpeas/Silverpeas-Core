@@ -23,34 +23,22 @@
  */
 package org.silverpeas.core.persistence.jdbc.sql;
 
-import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.persistence.jdbc.ConnectionPool;
+import org.silverpeas.core.persistence.jdbc.sql.setters.SqlStatementParameterSetter;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Blob;
-import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -61,6 +49,9 @@ import java.util.List;
 class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
 
   private static final String SQL_REQUEST = ". SQL request: ";
+
+  @Inject
+  private SqlStatementParameterSetter sqlParamSetter;
 
   protected DefaultJdbcSqlExecutor() {
     // Hidden constructor
@@ -257,7 +248,7 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
    * @param statementParameters the parameters to set.
    * @throws java.sql.SQLException on SQL error.
    */
-  private static void setParameters(PreparedStatement preparedStatement, Object statementParameters)
+  private void setParameters(PreparedStatement preparedStatement, Object statementParameters)
       throws SQLException {
     final Collection<Object> parameters = getParameters(statementParameters);
     int paramIndex = 1;
@@ -267,85 +258,12 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
     }
   }
 
-  private static void setParameter(final PreparedStatement preparedStatement, final int paramIndex,
+  private void setParameter(final PreparedStatement preparedStatement, final int paramIndex,
       final Object parameter) throws SQLException {
     if (parameter == null) {
       preparedStatement.setObject(paramIndex, null);
-    } else if (parameter instanceof String) {
-      preparedStatement.setString(paramIndex, (String) parameter);
-    } else if (parameter instanceof Enum) {
-      preparedStatement.setString(paramIndex, ((Enum) parameter).name());
-    } else if (parameter instanceof Integer) {
-      preparedStatement.setInt(paramIndex, (Integer) parameter);
-    } else if (parameter instanceof Long) {
-      preparedStatement.setLong(paramIndex, (Long) parameter);
-    } else if (parameter instanceof BigInteger) {
-      preparedStatement.setBigDecimal(paramIndex, new BigDecimal((BigInteger) parameter));
-    } else if (parameter instanceof BigDecimal) {
-      preparedStatement.setBigDecimal(paramIndex, (BigDecimal) parameter);
-    } else if (parameter instanceof Boolean) {
-      preparedStatement.setBoolean(paramIndex, (Boolean) parameter);
-    } else if (parameter instanceof Timestamp) {
-      preparedStatement.setTimestamp(paramIndex, (Timestamp) parameter);
-    } else if (parameter instanceof Byte) {
-      preparedStatement.setByte(paramIndex, (Byte) parameter);
-    } else if (isADateTime(parameter)) {
-      preparedStatement.setTimestamp(paramIndex,
-          new Timestamp(toInstant(parameter).toEpochMilli()));
-    } else if (isADate(parameter)) {
-      preparedStatement.setDate(paramIndex,
-          new java.sql.Date(toInstant(parameter).toEpochMilli()));
-    } else if (parameter instanceof Blob) {
-      preparedStatement.setBlob(paramIndex, (Blob) parameter);
-    } else if (parameter instanceof Clob) {
-      preparedStatement.setClob(paramIndex, (Clob) parameter);
     } else {
-      setObjectIdentifier(preparedStatement, paramIndex, parameter);
-    }
-  }
-
-  private static void setObjectIdentifier(final PreparedStatement preparedStatement,
-      final int paramIndex, final Object parameter) throws SQLException {
-    try {
-      Method idGetter = parameter.getClass().getDeclaredMethod("getId");
-      String id = (String) idGetter.invoke(parameter);
-      preparedStatement.setString(paramIndex, id);
-    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-      throw new IllegalArgumentException(
-          "SQL parameter type not handled: " + parameter.getClass(), e);
-    }
-  }
-
-  private static boolean isADate(final Object parameter) {
-    return parameter instanceof Date || parameter instanceof LocalDate;
-  }
-
-  private static boolean isADateTime(final Object parameter) {
-    if (parameter instanceof DateTime) {
-      return true;
-    }
-    if (parameter instanceof Instant) {
-      return true;
-    }
-    if (parameter instanceof LocalDateTime) {
-      return true;
-    }
-    if (parameter instanceof OffsetDateTime) {
-      return true;
-    }
-    return parameter instanceof ZonedDateTime;
-  }
-
-  private static Instant toInstant(final Object parameter) {
-    try {
-      if (parameter instanceof Instant) {
-        return (Instant) parameter;
-      }
-      Method toInstant = parameter.getClass().getMethod("toInstant");
-      return (Instant) toInstant.invoke(parameter);
-    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-      throw new IllegalArgumentException(
-          "Date or date time parameter expected. But is " + parameter.getClass(), e);
+      sqlParamSetter.setParameter(preparedStatement, paramIndex, parameter);
     }
   }
 
