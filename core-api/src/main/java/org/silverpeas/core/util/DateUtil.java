@@ -26,6 +26,7 @@ package org.silverpeas.core.util;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.initialization.RootSingletonInitialization;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
@@ -49,7 +50,7 @@ import static java.util.Calendar.*;
  * @author squere
  */
 @Singleton
-public class DateUtil {
+public class DateUtil implements RootSingletonInitialization {
   public static final Date MINIMUM_DATE = java.sql.Date.valueOf("1900-01-01");
   public static final Date MAXIMUM_DATE = java.sql.Date.valueOf("2999-12-31");
 
@@ -86,11 +87,28 @@ public class DateUtil {
   public final SimpleDateFormat timeParser;
   public static final FastDateFormat TIME_FORMATTER = FastDateFormat.getInstance("HH:mm");
 
+  /**
+   * Some HUGE performance losses have been detected by using getDateUtil() method which deals
+   * with ServiceProvider.
+   * As {@link DateUtil} is a Singleton, this static reference avoid to check again and again and
+   * again... into CDI container.
+   */
+  private static DateUtil me;
+
   private DateUtil() {
     dateParser = new SimpleDateFormat(DEFAULT_DAY_PATTERN);
     dateParser.setLenient(false);
     timeParser = new SimpleDateFormat("HH:mm");
     timeParser.setLenient(false);
+  }
+
+  @Override
+  public void init() throws Exception {
+    initializeSingleton();
+  }
+
+  private static void initializeSingleton() {
+    me = ServiceProvider.getService(DateUtil.class);
   }
 
   /**
@@ -369,7 +387,10 @@ public class DateUtil {
   }
 
   private static DateUtil getDateUtil() {
-    return ServiceProvider.getService(DateUtil.class);
+    if (me == null) {
+      initializeSingleton();
+    }
+    return me;
   }
 
   public static LocalDate toLocalDate(String date) {
