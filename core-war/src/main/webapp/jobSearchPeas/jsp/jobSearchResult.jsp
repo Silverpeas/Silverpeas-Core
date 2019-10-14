@@ -79,7 +79,8 @@ function ifCorrectFormExecute(callback) {
 }
 function validateSearch() {
 	ifCorrectFormExecute(function() {
-		  document.forms["SearchResultForm"].submit();
+	  $.progressMessage();
+    document.forms["SearchResultForm"].submit();
   });
 }
 
@@ -228,6 +229,6 @@ if(listResult != null) {
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-
+<view:progressMessage/>
 </body>
 </html>

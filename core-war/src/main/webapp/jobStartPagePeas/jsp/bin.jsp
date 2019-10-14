@@ -25,31 +25,7 @@
 --%>
 <%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight" %>
 <%@ page import="org.silverpeas.core.admin.space.SpaceInstLight" %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
-
-    Copyright (C) 2000 - 2019 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
---%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -69,7 +45,8 @@ boolean emptyBin = true;
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<HEAD>
+<head>
+<title><%=resource.getString("JSPP.Bin")%></title>
 <view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="popup"/>
@@ -77,12 +54,14 @@ boolean emptyBin = true;
 <!--
 function removeItem(id) {
   jQuery.popup.confirm("<%=resource.getString("JSPP.BinDeleteConfirm")%>", function() {
+    $.progressMessage();
     location.href = "RemoveDefinitely?ItemId=" + id;
   });
 }
 
 function remove() {
   jQuery.popup.confirm("<%=resource.getString("JSPP.BinDeleteConfirmSelected")%>", function() {
+    $.progressMessage();
     window.document.binForm.action = "RemoveDefinitely";
     window.document.binForm.submit();
   });
@@ -90,9 +69,15 @@ function remove() {
 
 function restore() {
   jQuery.popup.confirm("<%=resource.getString("JSPP.BinRestoreSelected")%>", function() {
+    $.progressMessage();
     window.document.binForm.action = "RestoreFromBin";
     window.document.binForm.submit();
   });
+}
+
+function restoreItem(id) {
+  $.progressMessage();
+  location.href = "RestoreFromBin?ItemId=" + id;
 }
 
 function jqCheckAll2(id, name)
@@ -125,14 +110,13 @@ $(document).ready(function() {
 });
 -->
 </script>
-</HEAD>
-<BODY>
+</head>
+<body class="page_content_admin">
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());
 %>
-<center>
-<form name="binForm" action="" method="POST">
+<form name="binForm" action="" method="post">
 <%
 	ArrayPane arrayPane = gef.getArrayPane("binContentSpaces", "ViewBin", request, session);
 	arrayPane.addArrayColumn(resource.getString("GML.space"));
@@ -161,7 +145,7 @@ out.println(frame.printBefore());
 
 			IconPane iconPane = gef.getIconPane();
 			Icon restoreIcon = iconPane.addIcon();
-			restoreIcon.setProperties(resource.getIcon("JSPP.restore"), resource.getString("JSPP.BinRestore"), "RestoreFromBin?ItemId="+space.getId());
+			restoreIcon.setProperties(resource.getIcon("JSPP.restore"), resource.getString("JSPP.BinRestore"), "javaScript:onclick=restoreItem('"+space.getId()+"')");
 			Icon deleteIcon = iconPane.addIcon();
 			deleteIcon.setProperties(resource.getIcon("JSPP.delete"), resource.getString("JSPP.BinDelete"), "javaScript:onClick=removeItem('"+space.getId()+"')");
 			line.addArrayCellText(restoreIcon.print()+"&nbsp;&nbsp;&nbsp;"+deleteIcon.print()+"&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"SpaceIds\" value=\""+space.getId()+"\">");
@@ -179,7 +163,7 @@ out.println(frame.printBefore());
 	if (removedComponents != null && removedComponents.size() != 0)
 	{
 		if (!emptyBin)
-			out.println("<BR/>");
+			out.println("<br/>");
 
 		emptyBin = false;
 		Iterator it = (Iterator) removedComponents.iterator();
@@ -194,7 +178,7 @@ out.println(frame.printBefore());
 
 			IconPane iconPane = gef.getIconPane();
 			Icon restoreIcon = iconPane.addIcon();
-			restoreIcon.setProperties(resource.getIcon("JSPP.restore"), resource.getString("JSPP.BinRestore"), "RestoreFromBin?ItemId="+component.getId());
+			restoreIcon.setProperties(resource.getIcon("JSPP.restore"), resource.getString("JSPP.BinRestore"), "javaScript:onclick=restoreItem('"+component.getId()+"')");
 			Icon deleteIcon = iconPane.addIcon();
 			deleteIcon.setProperties(resource.getIcon("JSPP.delete"), resource.getString("JSPP.BinDelete"), "javaScript:onClick=removeItem('"+component.getId()+"')");
 			line.addArrayCellText(restoreIcon.print()+"&nbsp;&nbsp;&nbsp;"+deleteIcon.print()+"&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"ComponentIds\" value=\""+component.getId()+"\">");
@@ -210,10 +194,10 @@ out.println(frame.printBefore());
 	}
 %>
 </form>
-</center>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+<view:progressMessage/>
+</body>
+</html>
