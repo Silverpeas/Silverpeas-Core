@@ -21,45 +21,52 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
- * This interface extends access controller for a Publication resource.
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
-public interface PublicationAccessControl extends AccessController<PublicationPK> {
+class PublicationDetail4Test extends PublicationDetail {
+  private static final long serialVersionUID = 4151460677735398441L;
 
-  static PublicationAccessControl get() {
-    return ServiceProvider.getSingleton(PublicationAccessControl.class);
+  private List<Location> locations = new ArrayList<>();
+
+  PublicationDetail4Test(final String id, final NodeDetail node) {
+    final NodePK nodePK = node.getNodePK();
+    setPk(new PublicationPK(id, nodePK.getInstanceId()));
+    setStatus(PublicationDetail.VALID_STATUS);
+    locations.add(new Location(nodePK.getId(), nodePK.getInstanceId()));
   }
 
-  /**
-   * Using this method avoid to use perform database request in order to retrieve publication data.
-   */
-  Stream<PublicationPK> filterAuthorizedByUser(final String userId,
-      final List<PublicationDetail> pubs);
+  PublicationDetail4Test(final String id, final NodeDetail node, final String cloneId) {
+    this(id, node);
+    setCloneId(cloneId);
+  }
 
-  /**
-   * Using this method avoid to use perform database request in order to retrieve publication data.
-   */
-  Stream<PublicationPK> filterAuthorizedByUser(final String userId,
-      final List<PublicationDetail> pubs, final AccessControlContext context);
+  PublicationDetail4Test(final String id, final NodeDetail node, final String cloneId, final boolean isTheClone) {
+    this(id, node, cloneId);
+    setStatus(CLONE_STATUS);
+  }
 
-  /**
-   * Using this method avoid to use perform database request in order to retrieve publication data.
-   */
-  boolean isUserAuthorized(final String userId, final PublicationDetail pubDetail);
+  PublicationDetail4Test addAliasLocation(final NodeDetail node) {
+    final NodePK nodePK = node.getNodePK();
+    final Location location = new Location(nodePK.getId(), nodePK.getInstanceId());
+    location.setAsAlias("userId");
+    locations.add(location);
+    return this;
+  }
 
-  /**
-   * Using this method avoid to use perform database request in order to retrieve publication data.
-   */
-  boolean isUserAuthorized(final String userId, final PublicationDetail pubDetail,
-      final AccessControlContext context);
+  List<Location> getLocations() {
+    return locations;
+  }
 }

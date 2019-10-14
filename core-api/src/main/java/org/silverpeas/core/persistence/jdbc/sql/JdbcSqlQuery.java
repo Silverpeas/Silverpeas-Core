@@ -479,7 +479,7 @@ public class JdbcSqlQuery {
           "cannot apply in clause because no value to set ! query=" + sqlQuery);
     }
     if (parameters.size() == 1) {
-      addSqlPart("= ?", parameters);
+      addSqlPart(" = ?", parameters);
     } else {
       sqlQuery.append(IN_OPERATOR);
       addListOfParameters(parameters, true);
@@ -688,7 +688,7 @@ public class JdbcSqlQuery {
    * @param <I> the type of list of discriminant data.
    * @param <T> the type of the entity into result.
    * @param discriminantData a discriminant list of data.
-   * @return a mapping between gicen discriminant identifiers and the corresponding data.
+   * @return a mapping between given discriminant identifiers and the corresponding data.
    * @throws java.sql.SQLException on SQL error.
    */
   public static <I, T> Map<I, List<T>> executeBySplittingOn(final Collection<I> discriminantData,

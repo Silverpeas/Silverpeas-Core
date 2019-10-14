@@ -117,7 +117,7 @@ public class SilverStatisticsManager implements Initialization {
    * @return the instance of silver statistics manager
    */
   public static SilverStatisticsManager getInstance() {
-    return ServiceProvider.getService(SilverStatisticsManager.class);
+    return ServiceProvider.getSingleton(SilverStatisticsManager.class);
   }
 
   /**

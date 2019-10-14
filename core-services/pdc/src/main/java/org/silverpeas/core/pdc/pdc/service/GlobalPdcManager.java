@@ -30,6 +30,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerE
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.classification.ObjectValuePair;
@@ -44,7 +45,8 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
-import org.silverpeas.core.security.authorization.ComponentAuthorization;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -57,10 +59,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.silverpeas.core.security.authorization.AccessControlOperation.search;
 
 @Singleton
 public class GlobalPdcManager implements PdcManager {
@@ -769,8 +775,8 @@ public class GlobalPdcManager implements PdcManager {
     String path = value.getPath();
     String[] explosedPath = path.split("/");
     List<List<String>> usersAndgroups = new ArrayList<>();
-    List<String> usersInherited = new ArrayList<>();
-    List<String> groupsInherited = new ArrayList<>();
+    final Set<String> usersInherited = new HashSet<>();
+    final Set<String> groupsInherited = new HashSet<>();
     for (int i = 1; i < explosedPath.length; i++) {
       List<List<String>> managers = getManagers(axisId, explosedPath[i]);
       List<String> usersId = managers.get(0);
@@ -788,8 +794,8 @@ public class GlobalPdcManager implements PdcManager {
         }
       }
     }
-    usersAndgroups.add(usersInherited);
-    usersAndgroups.add(groupsInherited);
+    usersAndgroups.add(new ArrayList<>(usersInherited));
+    usersAndgroups.add(new ArrayList<>(groupsInherited));
     return usersAndgroups;
   }
 
@@ -1774,7 +1780,7 @@ public class GlobalPdcManager implements PdcManager {
       boolean alertSubscribers) throws PdcException {
 
     List<UsedAxis> usedAxisList = getUsedAxisToClassify(instanceId, silverObjectId);
-    List<Integer> invariantUsedAxis = new ArrayList<>();
+    Set<Integer> invariantUsedAxis = new HashSet<>(usedAxisList.size());
     for (UsedAxis ua : usedAxisList) {
       // on cherche les axes invariants
       if (ua.getVariant() == 0) {
@@ -1784,7 +1790,7 @@ public class GlobalPdcManager implements PdcManager {
 
     // maintenant, on cherche les valeurs qui sont sur un axe invariant
     List<ClassifyValue> classifyValueList = position.getValues();
-    List classifyValues = new ArrayList();
+    List<org.silverpeas.core.pdc.classification.Value> classifyValues = new ArrayList<>();
     for (ClassifyValue cv : classifyValueList) {
       if (invariantUsedAxis.contains(cv.getAxisId())) {
         classifyValues.add(cv);
@@ -2029,40 +2035,24 @@ public class GlobalPdcManager implements PdcManager {
 
   }
 
-  private List<ObjectValuePair> filterAvailableContents(List<ObjectValuePair> ovps, String userId)
-      throws PdcException {
-    List<ObjectValuePair> availableContents = new ArrayList<>();
-    ComponentAuthorization componentAuthorization = null;
-    try {
-      for (ObjectValuePair ovp : ovps) {
-        if (ovp.getInstanceId().startsWith("kmelia")) {
-          if (componentAuthorization == null) {
-            componentAuthorization = (ComponentAuthorization) Class
-                .forName("org.silverpeas.components.kmelia.KmeliaAuthorization").newInstance();
-            componentAuthorization.enableCache();
-          }
-
-          if (componentAuthorization
-              .isObjectAvailable(ovp.getInstanceId(), userId, ovp.getObjectId(), "Publication")) {
-            availableContents.add(ovp);
-          }
-        } else {
-          availableContents.add(ovp);
-        }
-      }
-    } catch (Exception e) {
-      throw new PdcException(e);
-    } finally {
-      if (componentAuthorization != null) {
-        componentAuthorization.disableCache();
-      }
-    }
-    return availableContents;
+  private List<ObjectValuePair> filterAvailableContents(List<ObjectValuePair> ovps, String userId) {
+    final List<PublicationPK> pks = ovps.stream()
+        .filter(o -> o.getInstanceId().startsWith("kmelia") )
+        .map(o -> new PublicationPK(o.getObjectId(), o.getInstanceId()))
+        .collect(Collectors.toList());
+    final AccessControlContext context = AccessControlContext.init().onOperationsOf(search);
+    final Set<String> accessiblePks = PublicationAccessControl.get()
+        .filterAuthorizedByUser(pks, userId, context)
+        .map(p -> p.getInstanceId() + "@" + p.getId())
+        .collect(Collectors.toSet());
+    return ovps.stream()
+        .filter(o -> !o.getInstanceId().startsWith("kmelia") || accessiblePks.contains(o.getInstanceId() + "@" + o.getObjectId()))
+        .collect(Collectors.toList());
   }
 
   private int getNumberOfContents(List<ObjectValuePair> ovps, String valuePath, boolean deeply) {
     int nb = 0;
-    List<String> countedObjects = new ArrayList<>();
+    final Set<String> countedObjects = new HashSet<>(ovps.size());
     for (ObjectValuePair ovp : ovps) {
       String key = ovp.getInstanceId()+"-"+ovp.getObjectId();
       if ((deeply ? ovp.getValuePath().startsWith(valuePath) :

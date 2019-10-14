@@ -39,7 +39,7 @@ import java.util.List;
 public interface NodeService {
 
   static NodeService get() {
-    return ServiceProvider.getService(NodeService.class);
+    return ServiceProvider.getSingleton(NodeService.class);
   }
 
   /**
@@ -170,6 +170,22 @@ public interface NodeService {
    * @return all the nodes of the component instance referred by the specified node.
    */
   Collection<NodeDetail> getAllNodes(NodePK nodePK);
+
+  /**
+   * Selects massively simple data about nodes.
+   * <p>
+   * For now, only the following data are retrieved:
+   *   <ul>
+   *     <li>nodeId</li>
+   *     <li>instanceId</li>
+   *     <li>rightsDependsOn</li>
+   *   </ul>
+   *   This method is designed for process performance needs.
+   * </p>
+   * @param instanceIds the instance ids aimed.
+   * @return a list of {@link NodeDetail} instances.
+   */
+  List<NodeDetail> getMinimalDataByInstances(final Collection<String> instanceIds);
 
   /**
    * Gets the path of the specified node from the root one.

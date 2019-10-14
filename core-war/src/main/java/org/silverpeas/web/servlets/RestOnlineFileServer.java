@@ -32,8 +32,6 @@ import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessController;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.util.ResourceLocator;
@@ -195,9 +193,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
   }
 
   private boolean isSimpleDocumentAuthorized(String userId, SimpleDocument attachment) {
-    AccessController<SimpleDocument> accessController = AccessControllerProvider
-        .getAccessController(SimpleDocumentAccessControl.class);
-    return accessController.isUserAuthorized(userId, attachment,
+    return SimpleDocumentAccessControl.get().isUserAuthorized(userId, attachment,
         AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
   }
 

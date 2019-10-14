@@ -58,7 +58,7 @@ public class LogsAccessor {
   }
 
   public static LogsAccessor get() {
-    return ServiceProvider.getService(LogsAccessor.class);
+    return ServiceProvider.getSingleton(LogsAccessor.class);
   }
 
   /**

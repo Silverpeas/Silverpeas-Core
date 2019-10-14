@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.dao;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
@@ -447,22 +448,8 @@ public class PublicationDAO {
       String name = rs.getString("pubname");
       String description = defaultStringIfNotDefined(rs.getString("pubDescription"));
       Date creationDate = DateUtil.parseDate(rs.getString("pubCreationDate"));
-      Date beginDate;
-      String d = rs.getString("pubBeginDate");
-
-      if (d.equals(NULL_BEGIN_DATE)) {
-        beginDate = null;
-      } else {
-        beginDate = DateUtil.parseDate(d);
-      }
-      Date endDate;
-
-      d = rs.getString("pubEndDate");
-      if (d.equals(NULL_END_DATE)) {
-        endDate = null;
-      } else {
-        endDate = DateUtil.parseDate(d);
-      }
+      final Date beginDate = asDate(rs.getString("pubBeginDate"), NULL_BEGIN_DATE);
+      final Date endDate = asDate(rs.getString("pubEndDate"), NULL_END_DATE);
       String creatorId = rs.getString("pubCreatorId");
       int importance = rs.getInt("pubImportance");
       String version = rs.getString("pubVersion");
@@ -518,6 +505,17 @@ public class PublicationDAO {
     }
 
     return pub;
+  }
+
+  private static Date asDate(final String dateAsSqlString, final String nullValue)
+      throws ParseException {
+    final Date date;
+    if (nullValue.equals(dateAsSqlString)) {
+      date = null;
+    } else {
+      date = DateUtil.parseDate(dateAsSqlString);
+    }
+    return date;
   }
 
   /**
@@ -762,6 +760,60 @@ public class PublicationDAO {
     return new ArrayList<>();
   }
 
+  /**
+   * Selects massively simple data about publications.
+   * <p>
+   * For now, only the following data are retrieved:
+   *   <ul>
+   *     <li>pubId</li>
+   *     <li>pubStatus</li>
+   *     <li>pubCloneId</li>
+   *     <li>pubCloneStatus</li>
+   *     <li>instanceId</li>
+   *     <li>pubBeginDate</li>
+   *     <li>pubEndDate</li>
+   *     <li>pubBeginHour</li>
+   *     <li>pubEndHour</li>
+   *   </ul>
+   *   This method is designed for process performance needs.<br/>
+   *   The result is not necessarily into same ordering as the one of given parameter.
+   * </p>
+   * @param con the database connection.
+   * @param ids the instance ids aimed.
+   * @return a list of {@link PublicationDetail} instances.
+   * @throws SQLException on database error.
+   */
+  public static List<PublicationDetail> getMinimalDataByIds(Connection con,
+      Collection<PublicationPK> ids) throws SQLException {
+    final List<Integer> pubIds = ids.stream()
+        .map(i -> Integer.parseInt(i.getId()))
+        .collect(Collectors.toList());
+    final List<PublicationDetail> result = new ArrayList<>(ids.size());
+    JdbcSqlQuery.executeBySplittingOn(pubIds, (pubIdBatch, ignore) ->
+        JdbcSqlQuery.createSelect("pubId, instanceId, pubStatus, pubCloneId, pubCloneStatus,")
+        .addSqlPart("pubBeginDate, pubEndDate, pubBeginHour, pubEndHour")
+        .from(SB_PUBLICATION_PUBLI_TABLE)
+        .where(PUB_ID).in(pubIdBatch)
+        .executeWith(con, r -> {
+          final PublicationDetail pubDetail = new PublicationDetail();
+          pubDetail.setPk(new PublicationPK(Integer.toString(r.getInt(1)), r.getString(2)));
+          pubDetail.setStatus(r.getString(3));
+          pubDetail.setCloneId(Integer.toString(r.getInt(4)));
+          pubDetail.setCloneStatus(r.getString(5));
+          try {
+            pubDetail.setBeginDate(asDate(r.getString(6), NULL_BEGIN_DATE));
+            pubDetail.setEndDate(asDate(r.getString(7), NULL_END_DATE));
+          } catch (ParseException e) {
+            throw new SQLException(e);
+          }
+          pubDetail.setBeginHour(r.getString(8));
+          pubDetail.setEndHour(r.getString(9));
+          result.add(pubDetail);
+          return null;
+        }));
+    return result;
+  }
+
   public static Collection<PublicationDetail> selectByStatus(Connection con, String instanceId,
       String status) throws SQLException {
     StringBuilder selectStatement = new StringBuilder(128);
@@ -871,17 +923,20 @@ public class PublicationDAO {
       List<String> componentIds, String status, Date since, PaginationCriterion pagination) throws
       SQLException {
     if (componentIds != null && !componentIds.isEmpty()) {
+      final List<Integer> componentIdsAsInt = componentIds.stream()
+          .map(ComponentInst::getComponentLocalId).collect(Collectors.toList());
       final JdbcSqlQuery sqlQuery = JdbcSqlQuery
           .createSelect("DISTINCT(P.pubId), P.instanceId, P.pubUpdateDate")
           .from("SB_Publication_Publi P")
           .join("SB_Publication_PubliFather F").on("F.pubId = P.pubId")
+          .join("ST_ComponentInstance I").on("P.instanceid = CONCAT(I.componentname , CAST(I.id AS VARCHAR(20)))")
           .where("F.nodeId <> 1")
           .and("P.pubStatus = ?", status);
       if (since != null) {
         sqlQuery.and("P.pubupdatedate > ?", DateUtil.date2SQLDate(since));
       }
       return dateFilters(sqlQuery)
-          .and("P.instanceId").in(componentIds)
+          .and("I.id").in(componentIdsAsInt)
           .orderBy("P.pubUpdateDate desc, P.pubId desc")
           .withPagination(pagination)
           .executeWith(con, r -> new PublicationPK(r.getString(1), r.getString(2)));
@@ -898,11 +953,6 @@ public class PublicationDAO {
       .or("(? = P.pubBeginDate", dateNow).and("? < P.pubEndDate", dateNow).and("? > P.pubBeginHour)", hourNow)
       .or("(? > P.pubBeginDate", dateNow).and("? = P.pubEndDate", dateNow).and("? < P.pubEndHour)", hourNow)
       .or("(? = P.pubBeginDate", dateNow).and("? = P.pubEndDate", dateNow).and("? > P.pubBeginHour", hourNow).and("? < P.pubEndHour))", hourNow);
-  }
-
-  public static Collection<PublicationDetail> selectAllPublications(Connection con,
-      String instanceId) throws SQLException {
-    return selectAllPublications(con, instanceId, null);
   }
 
   public static Collection<PublicationDetail> selectAllPublications(Connection con,

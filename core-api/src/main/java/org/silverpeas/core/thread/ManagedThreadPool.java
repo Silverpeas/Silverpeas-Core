@@ -70,7 +70,7 @@ public class ManagedThreadPool {
    * in different the threads of the pool.
    */
   public static ManagedThreadPool getPool() {
-    return ServiceProvider.getService(ManagedThreadPool.class);
+    return ServiceProvider.getSingleton(ManagedThreadPool.class);
   }
 
   /**

@@ -30,6 +30,7 @@ import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
 import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria.QUERY_ORDER_BY;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.Collection;
@@ -40,6 +41,10 @@ import java.util.List;
  * contract interface to manage silverpeas statistics
  */
 public interface StatisticService {
+
+  static StatisticService get() {
+    return ServiceProvider.getSingleton(StatisticService.class);
+  }
 
   void addStat(String userId, ResourceReference resourceReference, int action, String objectType);
 

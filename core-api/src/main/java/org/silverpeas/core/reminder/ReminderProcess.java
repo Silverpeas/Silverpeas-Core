@@ -47,7 +47,7 @@ public class ReminderProcess implements SchedulerEventListener {
   private ReminderRepository repository;
 
   public static ReminderProcess get() {
-    return ServiceProvider.getService(ReminderProcess.class);
+    return ServiceProvider.getSingleton(ReminderProcess.class);
   }
 
   @Override

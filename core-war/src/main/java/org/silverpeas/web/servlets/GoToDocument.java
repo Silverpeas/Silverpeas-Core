@@ -23,18 +23,16 @@
  */
 package org.silverpeas.web.servlets;
 
-import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.web.util.servlet.GoTo;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.permalinks.PermalinkServiceProvider;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.util.servlet.GoTo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,8 +67,7 @@ public class GoToDocument extends GoTo {
       setGefSpaceId(req, componentId);
     }
     if (isLoggedIn) {
-      AccessController<SimpleDocument> accessController = AccessControllerProvider
-          .getAccessController(SimpleDocumentAccessControl.class);
+      SimpleDocumentAccessControl accessController = SimpleDocumentAccessControl.get();
       boolean isAccessAuthorized = accessController.isUserAuthorized(getUserId(req), version,
           AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
       if (!isAccessAuthorized) {

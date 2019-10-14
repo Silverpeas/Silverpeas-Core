@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 public interface CalendarEventRepository extends EntityRepository<CalendarEvent> {
 
   static CalendarEventRepository get() {
-    return ServiceProvider.getService(CalendarEventRepository.class);
+    return ServiceProvider.getSingleton(CalendarEventRepository.class);
   }
 
   /**

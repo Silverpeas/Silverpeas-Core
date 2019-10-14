@@ -84,11 +84,8 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.silverpeas.core.calendar.CalendarEventOccurrence.COMPARATOR_BY_DATE_ASC;
 import static org.silverpeas.core.calendar.CalendarEventUtil.getDateWithOffset;
-import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider
-    .getAttachmentService;
-import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController
-    .wysiwygPlaceHaveChanged;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
+import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController.wysiwygPlaceHaveChanged;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.ALL;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.UNIQUE;
@@ -134,7 +131,7 @@ public class CalendarWebManager {
    */
   public static CalendarWebManager get(final String componentInstanceIdOrComponentName) {
     if (isNotDefined(componentInstanceIdOrComponentName)) {
-      return ServiceProvider.getService(CalendarWebManager.class, new AnnotationLiteral<Base>() {});
+      return ServiceProvider.getSingleton(CalendarWebManager.class, new AnnotationLiteral<Base>() {});
     }
     return ServiceProvider
         .getServiceByComponentInstanceAndNameSuffix(componentInstanceIdOrComponentName,
@@ -274,6 +271,18 @@ public class CalendarWebManager {
    */
   public List<Calendar> getCalendarsHandledBy(final String componentInstanceId) {
     return Calendar.getByComponentInstanceId(componentInstanceId);
+  }
+
+  /**
+   * Gets all calendars handled by component instances.
+   * <p>This centralization is useful for components which handles other agendas than those linked
+   * to the instance.</p>
+   * <p>This is a signature design for performances.</p>
+   * @param componentInstanceIds identifier of the component instances.
+   * @return the list of calendars.
+   */
+  public List<Calendar> getCalendarsHandledBy(final Collection<String> componentInstanceIds) {
+    return Calendar.getByComponentInstanceIds(componentInstanceIds);
   }
 
   /**
@@ -698,9 +707,7 @@ public class CalendarWebManager {
       final Set<String> calendarIdsToInclude, final ZoneId zoneId, final Integer limit) {
     final User currentRequester = User.getCurrentRequester();
     // load calendars
-    final List<Calendar> calendars =
-        componentIds.stream().flatMap(i -> getCalendarsHandledBy(i).stream()).distinct()
-            .collect(Collectors.toList());
+    final List<Calendar> calendars = getCalendarsHandledBy(componentIds);
     // includes/excludes
     calendarIdsToInclude.removeAll(calendarIdsToExclude);
     calendars.removeIf(c -> calendarIdsToExclude.contains(c.getId()));

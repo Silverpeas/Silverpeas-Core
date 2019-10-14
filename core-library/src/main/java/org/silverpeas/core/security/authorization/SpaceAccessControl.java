@@ -23,9 +23,15 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.util.ServiceProvider;
+
 /**
  * This interface extends access controller for a Space resource.
  * @author Yohann Chastagnier
  */
 public interface SpaceAccessControl extends AccessController<String> {
+
+  static SpaceAccessControl get() {
+    return ServiceProvider.getSingleton(SpaceAccessControl.class);
+  }
 }

@@ -28,6 +28,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
@@ -42,13 +44,14 @@ import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.util.CollectionUtil;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Optional;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
@@ -62,6 +65,7 @@ public class TestSimpleDocumentAccessController {
   private static final String userId = "bart";
 
   private PublicationService publicationService;
+  private OrganizationController organizationController;
   private ComponentAccessControl componentAccessController;
   private NodeAccessControl nodeAccessController;
   private SimpleDocumentAccessControl testInstance;
@@ -70,33 +74,19 @@ public class TestSimpleDocumentAccessController {
 
   @Rule
   public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
-
   @Before
   public void setup() {
-    testInstance = new SimpleDocumentAccessController();
-    testContext = new TestContext();
-
     user = mock(User.class);
     when(UserProvider.get().getUser(userId)).thenReturn(user);
-
-    componentAccessController = reflectionRule
-        .mockField(testInstance, ComponentAccessControl.class, "componentAccessController");
-    nodeAccessController =
-        reflectionRule.mockField(testInstance, NodeAccessControl.class, "nodeAccessController");
-
-    final PublicationAccessControl publicationAccessController = reflectionRule
-        .setField(testInstance, new PublicationAccessController(), "publicationAccessController");
-    reflectionRule.setField(publicationAccessController, componentAccessController,
-        "componentAccessController");
-    reflectionRule
-        .setField(publicationAccessController, nodeAccessController, "nodeAccessController");
-    publicationService = reflectionRule
-        .mockField(publicationAccessController, PublicationService.class, "publicationService");
-
+    organizationController = mock(OrganizationController.class);
+    commonAPI4Test.injectIntoMockedBeanContainer(organizationController);
+    publicationService = mock(PublicationService.class);
+    commonAPI4Test.injectIntoMockedBeanContainer(publicationService);
+    nodeAccessController = mock(NodeAccessControl.class);
+    componentAccessController = mock(ComponentAccessControl.class);
     ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
+    testContext = new TestContext();
+    testContext.clear();
   }
 
   @Test
@@ -148,7 +138,7 @@ public class TestSimpleDocumentAccessController {
         .onOperationsOf(AccessControlOperation.sharing).enableFileSharingRole(SilverpeasRole.admin);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
-    assertIsUserAuthorized(true);
+    assertIsUserAuthorized(false);
 
     // User has USER role on component
     // User is going to download the document (but no download restriction on the document)
@@ -1744,7 +1734,10 @@ public class TestSimpleDocumentAccessController {
     private boolean isUserThePublicationAuthor;
 
     public void clear() {
-      reset(user, componentAccessController, nodeAccessController, publicationService);
+      CacheServiceProvider.clearAllThreadCaches();
+      reset(user, componentAccessController, organizationController, nodeAccessController, publicationService);
+      final PublicationAccessControl publicationAccessController = new PublicationAccessController(componentAccessController, nodeAccessController);
+      testInstance = new SimpleDocumentAccessController(componentAccessController, nodeAccessController, publicationAccessController);
       userIsAnonymous = false;
       isGED = false;
       isCoWriting = false;
@@ -1837,24 +1830,34 @@ public class TestSimpleDocumentAccessController {
     public void setup() {
       when(user.getId()).thenReturn(userId);
       when(user.isAnonymous()).thenReturn(userIsAnonymous);
-      when(componentAccessController.isTopicTrackerSupported(anyString())).thenAnswer(invocation -> {
-        String instanceId = (String) invocation.getArguments()[0];
-        return instanceId.startsWith("kmelia") || instanceId.startsWith("kmax") ||
-            instanceId.startsWith("toolbox");
-      });
       when(componentAccessController
           .getUserRoles(anyString(), anyString(), any(AccessControlContext.class)))
           .then(new Returns(componentUserRoles));
       when(componentAccessController.isUserAuthorized(any(EnumSet.class)))
           .then(new Returns(!componentUserRoles.isEmpty()));
-      when(componentAccessController.isRightOnTopicsEnabled(anyString()))
-          .then(new Returns(isRightsOnDirectories));
-      when(componentAccessController.isCoWritingEnabled(anyString()))
-          .then(new Returns(isCoWriting));
-      when(componentAccessController.isFileSharingEnabledForRole(anyString(), anyObject()))
-          .thenAnswer((Answer<Boolean>) invocationOnMock -> {
-            SilverpeasRole role = (SilverpeasRole) invocationOnMock.getArguments()[1];
-            return fileSharingRole != null && role.isGreaterThanOrEquals(fileSharingRole);
+      when(organizationController.getComponentInstance(anyString()))
+          .thenAnswer(a -> {
+            final String i = a.getArgument(0);
+            final SilverpeasComponentInstance instance = mock(SilverpeasComponentInstance.class);
+            when(instance.isTopicTracker()).then(new Returns(i.startsWith("kmelia") || i.startsWith("kmax") || i.startsWith("toolbox")));
+            return Optional.of(instance);
+          });
+      when(organizationController.getComponentParameterValue(anyString(), eq("rightsOnTopics")))
+          .then(new Returns(Boolean.toString(isRightsOnDirectories)));
+      when(organizationController.getComponentParameterValue(anyString(), eq("coWriting")))
+          .then(new Returns(Boolean.toString(isCoWriting)));
+      when(organizationController.getComponentParameterValue(anyString(), eq("useFileSharing")))
+          .thenAnswer((Answer<String>) invocationOnMock -> {
+            if (fileSharingRole != null) {
+              if (fileSharingRole.equals(SilverpeasRole.admin)) {
+                return "1";
+              } else if (fileSharingRole.equals(SilverpeasRole.writer)) {
+                return "2";
+              } else {
+                return "3";
+              }
+            }
+            return null;
           });
       when(nodeAccessController
           .getUserRoles(anyString(), any(NodePK.class), any(AccessControlContext.class))).then(
@@ -1863,12 +1866,12 @@ public class TestSimpleDocumentAccessController {
               componentUserRoles));
       when(nodeAccessController.isUserAuthorized(any(EnumSet.class)))
           .then(invocation -> CollectionUtil.isNotEmpty((EnumSet) invocation.getArguments()[0]));
-      when(publicationService.getDetail(any(PublicationPK.class))).then(invocation -> {
+      when(publicationService.getMinimalDataByIds(any(Collection.class))).then(invocation -> {
         PublicationDetail publi = new PublicationDetail();
-        publi.setPk((PublicationPK) invocation.getArguments()[0]);
+        publi.setPk(((Collection<PublicationPK>) invocation.getArguments()[0]).iterator().next());
         publi.setStatus(PublicationDetail.VALID_STATUS);
         publi.setCreatorId(testContext.isUserThePublicationAuthor ? userId : "otherUserId");
-        return publi;
+        return singletonList(publi);
       });
       when(publicationService.getMainLocation(any(PublicationPK.class))).then(invocation -> {
         if (!testContext.isPublicationOnRootDirectory) {
@@ -1876,6 +1879,7 @@ public class TestSimpleDocumentAccessController {
         }
         return Optional.empty();
       });
+      ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
     }
   }
 
@@ -1944,15 +1948,14 @@ public class TestSimpleDocumentAccessController {
           .isUserAuthorized(anyString(), anyString(), any(AccessControlContext.class));
       verify(componentAccessController, times(nbCallOfComponentAccessControllerIsUserAuthorized))
           .isUserAuthorized(any(EnumSet.class));
-      verify(componentAccessController,
-          times(nbCallOfComponentAccessControllerIsRightOnTopicsEnabled))
-          .isRightOnTopicsEnabled(anyString());
+      final ComponentAccessController.DataManager dataManager = ComponentAccessController.getDataManager(testContext.accessControlContext);
+      assertThat(dataManager.isRightOnTopicsEnabledCache.size(), is(nbCallOfComponentAccessControllerIsRightOnTopicsEnabled));
       verify(nodeAccessController, times(nbCallOfNodeAccessControllerGetUserRoles))
           .getUserRoles(anyString(), any(NodePK.class), any(AccessControlContext.class));
       verify(nodeAccessController, times(nbCallOfNodeAccessControllerIsUserAuthorized))
           .isUserAuthorized(any(EnumSet.class));
       verify(publicationService, times(nbCallOfPublicationBmGetDetail))
-          .getDetail(any(PublicationPK.class));
+          .getMinimalDataByIds(any(Collection.class));
       verify(publicationService, times(nbCallOfPublicationBmGetMainLocation))
           .getMainLocation(any(PublicationPK.class));
       verify(publicationService, times(nbCallOfPublicationBmGetAllAliases))

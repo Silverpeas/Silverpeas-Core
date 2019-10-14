@@ -46,7 +46,7 @@ public class SysLogger implements SilverLogger {
                                         // with logging level and handlers
 
   private static SilverLogger getLoggerByNamespace(String namespace) {
-    return ServiceProvider.getService(SilverLoggerProvider.class).getLogger(namespace);
+    return ServiceProvider.getSingleton(SilverLoggerProvider.class).getLogger(namespace);
   }
 
   protected SysLogger(String namespace) {

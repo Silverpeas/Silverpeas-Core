@@ -221,7 +221,7 @@ public class SilverTrace {
 
   @Deprecated
   private static SilverpeasTrace getSilverpeasTrace() {
-    return ServiceProvider.getService(SilverpeasTrace.class);
+    return ServiceProvider.getSingleton(SilverpeasTrace.class);
   }
 
   @Deprecated

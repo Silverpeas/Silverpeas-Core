@@ -46,7 +46,7 @@ import static org.mockito.Mockito.*;
 import static org.silverpeas.core.io.file.ImageResizingProcessor.IMAGE_CACHE_PATH;
 
 @EnableSilverTestEnv
-public class AttachmentUrlLinkProcessorTest {
+class AttachmentUrlLinkProcessorTest {
 
   private static final String IMAGE_NAME = "image-test.jpg";
 
@@ -60,7 +60,7 @@ public class AttachmentUrlLinkProcessorTest {
   private String originalImageAttachmentUrlLinkWithResizeDirective;
 
   @BeforeEach
-  public void variableInit() throws Exception {
+  void variableInit() throws Exception {
     originalImageNotAnAttachmentUrlLink = "dummy_begin" + URLUtil.getApplicationURL() +
         "uriPart/notAnAttachmentId/09-ab-89/lang/en/whaou";
     originalImageAttachmentUrlLink = "dummy_begin" + URLUtil.getApplicationURL() +
@@ -73,7 +73,7 @@ public class AttachmentUrlLinkProcessorTest {
   }
 
   @BeforeEach
-  public void setUp() throws Exception {
+  void setUp() {
     // get the original path
     originalImage = new File(getClass().getResource("/" + IMAGE_NAME).getPath());
     assertThat(originalImage.exists(), is(true));
@@ -85,7 +85,7 @@ public class AttachmentUrlLinkProcessorTest {
   }
 
   @AfterEach
-  public void tearDown() throws Exception {
+  void tearDown() throws Exception {
     File cache = new File(IMAGE_CACHE_PATH);
     if (cache.exists()) {
       FileUtil.forceDeletion(new File(IMAGE_CACHE_PATH));
@@ -93,7 +93,7 @@ public class AttachmentUrlLinkProcessorTest {
   }
 
   @BeforeEach
-  public void setupAttachmentService(@TestManagedMock AttachmentService mockAttachmentService) {
+  void setupAttachmentService(@TestManagedMock AttachmentService mockAttachmentService) {
     /*
     Mocking methods of attachment service instance
      */
@@ -111,31 +111,31 @@ public class AttachmentUrlLinkProcessorTest {
   }
 
   @Test
-  public void notALink() throws Exception {
+  void notALink() throws Exception {
     String actualPath = processor.processBefore(originalImage.getCanonicalPath(), SilverpeasFileProcessor.ProcessingContext.GETTING);
     assertThat(actualPath, is(originalImage.getCanonicalPath()));
   }
 
   @Test
-  public void notAnAttachmentUrlLink() throws Exception {
+  void notAnAttachmentUrlLink() throws Exception {
     String actualPath = processor.processBefore(originalImageNotAnAttachmentUrlLink, SilverpeasFileProcessor.ProcessingContext.GETTING);
     assertThat(actualPath, is(originalImageNotAnAttachmentUrlLink));
   }
 
   @Test
-  public void anAttachmentUrlLinkWithoutResizeDirective() throws Exception {
+  void anAttachmentUrlLinkWithoutResizeDirective() throws Exception {
     String actualPath = processor.processBefore(originalImageAttachmentUrlLink, SilverpeasFileProcessor.ProcessingContext.GETTING);
     assertThat(actualPath, is(originalImage.getCanonicalPath()));
   }
 
   @Test
-  public void anAttachmentUrlLinkOnWritingOperation() throws Exception {
+  void anAttachmentUrlLinkOnWritingOperation() throws Exception {
     String actualPath = processor.processBefore(originalImageAttachmentUrlLink, SilverpeasFileProcessor.ProcessingContext.WRITING);
     assertThat(actualPath, is(originalImageAttachmentUrlLink));
   }
 
   @Test
-  public void anAttachmentUrlLinkOnAttachmentThatDoesNotExist() throws Exception {
+  void anAttachmentUrlLinkOnAttachmentThatDoesNotExist() throws Exception {
     reset(AttachmentServiceProvider.getAttachmentService());
     String actualPath = processor.processBefore(originalImageAttachmentUrlLink, SilverpeasFileProcessor.ProcessingContext.GETTING);
     assertThat(actualPath, isEmptyString());
@@ -143,13 +143,13 @@ public class AttachmentUrlLinkProcessorTest {
 
 
   @Test
-  public void anAttachmentUrlLinkWithoutResizeDirectiveNoLanguage() throws Exception {
+  void anAttachmentUrlLinkWithoutResizeDirectiveNoLanguage() throws Exception {
     String actualPath = processor.processBefore(originalImageAttachmentUrlLinkWithoutLang, SilverpeasFileProcessor.ProcessingContext.GETTING);
     assertThat(actualPath, is(originalImage.getCanonicalPath()));
   }
 
   @Test
-  public void anAttachmentUrlLinkWithResizeDirective() throws Exception {
+  void anAttachmentUrlLinkWithResizeDirective() throws Exception {
     String actualPath =
         processor.processBefore(originalImageAttachmentUrlLinkWithResizeDirective, SilverpeasFileProcessor.ProcessingContext.GETTING);
     assertThat(actualPath, is(originalImageWithResizeDirective.getCanonicalPath()));

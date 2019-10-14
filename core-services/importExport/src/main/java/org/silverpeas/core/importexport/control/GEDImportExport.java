@@ -121,14 +121,14 @@ public abstract class GEDImportExport extends ComponentImportExport {
    */
   private PublicationService getPublicationService() {
     if (publicationService == null) {
-      publicationService = ServiceProvider.getService(PublicationService.class);
+      publicationService = PublicationService.get();
     }
     return publicationService;
   }
 
   private FormTemplateService getFormTemplateService() {
     if (formTemplateService == null) {
-      formTemplateService = ServiceProvider.getService(FormTemplateService.class);
+      formTemplateService = ServiceProvider.getSingleton(FormTemplateService.class);
     }
     return formTemplateService;
   }

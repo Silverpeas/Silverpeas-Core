@@ -26,8 +26,6 @@ package org.silverpeas.core.notification.user;
 
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
@@ -47,16 +45,12 @@ public abstract class AbstractComponentInstanceManualUserNotification
     if (isDefined(componentId)) {
       final String publicationId = context.getPublicationId();
       if (isDefined(publicationId)) {
-        final AccessController<PublicationPK> accessController = AccessControllerProvider
-            .getAccessController(PublicationAccessControl.class);
-        return accessController.isUserAuthorized(context.getSender().getId(),
+        return PublicationAccessControl.get().isUserAuthorized(context.getSender().getId(),
             new PublicationPK(publicationId, componentId));
       } else {
         final String nodeId = context.getNodeId();
         if (isDefined(nodeId)) {
-          final AccessController<NodePK> accessController = AccessControllerProvider
-              .getAccessController(NodeAccessControl.class);
-          return accessController
+          return NodeAccessControl.get()
               .isUserAuthorized(context.getSender().getId(), new NodePK(nodeId, componentId));
         }
       }

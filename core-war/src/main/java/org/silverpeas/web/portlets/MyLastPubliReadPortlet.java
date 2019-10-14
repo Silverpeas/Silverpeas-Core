@@ -23,15 +23,14 @@
  */
 package org.silverpeas.web.portlets;
 
-import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.silverstatistics.access.service.StatisticService;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.portlets.FormNames;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
@@ -92,11 +91,11 @@ public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames 
   }
 
   private StatisticService getStatisticBm() {
-    return ServiceProvider.getService(StatisticService.class);
+    return StatisticService.get();
   }
 
   private PublicationService getPublicationBm() {
-    return ServiceProvider.getService(PublicationService.class);
+    return PublicationService.get();
   }
 
   @Override

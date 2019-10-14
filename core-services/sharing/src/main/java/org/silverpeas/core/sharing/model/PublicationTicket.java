@@ -23,14 +23,13 @@
  */
 package org.silverpeas.core.sharing.model;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.sharing.security.ShareableAccessControl;
 import org.silverpeas.core.sharing.security.ShareablePublication;
 import org.silverpeas.core.sharing.security.ShareableResource;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.util.ServiceProvider;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -71,7 +70,7 @@ public class PublicationTicket extends Ticket {
 
   @Override
   public ShareableResource<PublicationDetail> getResource() {
-    PublicationService publicationService = ServiceProvider.getService(PublicationService.class);
+    PublicationService publicationService = PublicationService.get();
     PublicationDetail publication = publicationService.getDetail(new PublicationPK(String.valueOf(getSharedObjectId()),
         getComponentId()));
     if (publication != null) {

@@ -26,7 +26,6 @@ package org.silverpeas.web;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.JSONCodec;
@@ -51,13 +50,10 @@ import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import static org.silverpeas.core.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
 import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
 import static org.silverpeas.core.util.StringUtil.*;
-import static org.silverpeas.core.web.mvc.controller.MainSessionController
-    .MAIN_SESSION_CONTROLLER_ATT;
+import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 import static org.silverpeas.core.web.mvc.controller.MainSessionController.isAppInMaintenance;
-import static org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory
-    .GE_FACTORY_SESSION_ATT;
-import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion
-    .scriptContent;
+import static org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory.GE_FACTORY_SESSION_ATT;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.scriptContent;
 
 /**
  * @author ehugonnet
@@ -188,8 +184,7 @@ public class AutoRedirectServlet extends HttpServlet {
   private boolean isAccessComponentForbidden(String componentId,
       MainSessionController mainController) {
     return isDefined(componentId) && !StringUtil.isAlpha(componentId) &&
-        !AccessControllerProvider.getAccessController(ComponentAccessControl.class)
-            .isUserAuthorized(mainController.getUserId(), componentId);
+        !ComponentAccessControl.get().isUserAuthorized(mainController.getUserId(), componentId);
   }
 
   /**

@@ -44,17 +44,20 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
 public class SimpleDocumentAccessController extends AbstractAccessController<SimpleDocument>
     implements SimpleDocumentAccessControl {
 
-  @Inject
   private ComponentAccessControl componentAccessController;
 
-  @Inject
   private NodeAccessControl nodeAccessController;
 
-  @Inject
   private PublicationAccessControl publicationAccessController;
 
-  SimpleDocumentAccessController () {
+  @Inject
+  SimpleDocumentAccessController(final ComponentAccessControl componentAccessController,
+      final NodeAccessControl nodeAccessController,
+      final PublicationAccessControl publicationAccessController) {
     // Instance by IoC only.
+    this.componentAccessController = componentAccessController;
+    this.nodeAccessController = nodeAccessController;
+    this.publicationAccessController = publicationAccessController;
   }
 
   @Override
@@ -64,20 +67,23 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     boolean componentAccessAuthorized = false;
 
     // Node access control
-    if (componentAccessController.isTopicTrackerSupported(object.getInstanceId())) {
-      String foreignId = object.getForeignId();
-      Set<SilverpeasRole> publicationUserRoles = getPublicationAccessController()
-          .getUserRoles(userId, new PublicationPK(foreignId, object.getInstanceId()), context);
-      PublicationDetail publicationDetail =
-          context.get(PublicationAccessController.PUBLICATION_DETAIL_KEY, PublicationDetail.class);
+    final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+    if (componentDataManager.isTopicTrackerSupported(object.getInstanceId())) {
+      final String foreignId = object.getForeignId();
+      final PublicationPK pubPk = new PublicationPK(foreignId, object.getInstanceId());
+      final Set<SilverpeasRole> publicationUserRoles = getPublicationAccessController()
+          .getUserRoles(userId, pubPk, context);
+      final PublicationDetail publicationDetail = PublicationAccessController
+          .getDataManager(context).getCurrentPublication();
       if (publicationDetail != null) {
-        // As publicationDetail exists, publicationUserRoles are the one of the publication
+        // PublicationDetail has been loaded by PublicationAccessController processing,
+        // publicationUserRoles are the one of the publication
         return isUserAuthorizedByContext(false, userId, object, context, publicationUserRoles,
             publicationDetail.getCreatorId());
 
       } else {
-        // As publicationDetail does not exist, publicationUserRoles are the one of the component
-        // instance
+        // PublicationDetail has been loaded by PublicationAccessController processing,
+        // publicationUserRoles are the one of the component instance
         componentUserRoles = publicationUserRoles;
         componentAccessAuthorized =
             getComponentAccessController().isUserAuthorized(componentUserRoles);
@@ -139,9 +145,9 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
 
     // Verifying sharing is possible
     if (authorized && sharingOperation) {
-      User user = User.getById(userId);
-      authorized = !user.isAnonymous() && getComponentAccessController()
-          .isFileSharingEnabledForRole(object.getInstanceId(), highestUserRole);
+      final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+      final User user = User.getById(userId);
+      authorized = !user.isAnonymous() && componentDataManager.isFileSharingEnabledForRole(object.getInstanceId(), highestUserRole);
       isRoleVerificationRequired = false;
     }
 
@@ -152,19 +158,29 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
 
     // Verifying roles if necessary
     if (isRoleVerificationRequired) {
-      if (isNodeAttachmentCase) {
-        if (downloadOperation) {
-          authorized = highestUserRole.isGreaterThan(SilverpeasRole.writer);
-        } else {
-          authorized = highestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
-        }
+      authorized = verifyAuthorizationAgainstRole(highestUserRole, isNodeAttachmentCase, userId,
+          object, foreignUserAuthor, downloadOperation, context);
+    }
+    return authorized;
+  }
+
+  private boolean verifyAuthorizationAgainstRole(final SilverpeasRole highestUserRole,
+      final boolean isNodeAttachmentCase, final String userId, final SimpleDocument object,
+      final String foreignUserAuthor, final boolean downloadOperation,
+      final AccessControlContext context) {
+    final boolean authorized;
+    if (isNodeAttachmentCase) {
+      if (downloadOperation) {
+        authorized = highestUserRole.isGreaterThan(SilverpeasRole.writer);
       } else {
-        if (SilverpeasRole.writer.equals(highestUserRole)) {
-          authorized = userId.equals(foreignUserAuthor) ||
-              getComponentAccessController().isCoWritingEnabled(object.getInstanceId());
-        } else {
-          authorized = highestUserRole.isGreaterThan(SilverpeasRole.writer);
-        }
+        authorized = highestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
+      }
+    } else {
+      if (SilverpeasRole.writer.equals(highestUserRole)) {
+        final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+        authorized = userId.equals(foreignUserAuthor) || componentDataManager.isCoWritingEnabled(object.getInstanceId());
+      } else {
+        authorized = highestUserRole.isGreaterThan(SilverpeasRole.writer);
       }
     }
     return authorized;

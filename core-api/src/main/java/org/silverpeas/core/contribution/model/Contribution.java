@@ -26,8 +26,6 @@ package org.silverpeas.core.contribution.model;
 import org.silverpeas.core.Instance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.Securable;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import java.io.Serializable;
@@ -130,9 +128,7 @@ public interface Contribution extends Serializable, Securable, Instance<Contribu
    */
   @Override
   default boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
-    return accessController
+    return ComponentAccessControl.get()
         .isUserAuthorized(user.getId(), getContributionId().getComponentInstanceId());
   }
 

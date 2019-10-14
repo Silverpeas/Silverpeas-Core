@@ -23,13 +23,15 @@
  */
 package org.silverpeas.core.util;
 
+import java.util.Objects;
+
 /**
  * This is a pair of objects.
  *
  * @author J-C Groccia
  * @version 1.0
  */
-public class Pair<T, U> implements Cloneable {
+public class Pair<T, U> {
 
   private T first;
   private U second;
@@ -52,5 +54,22 @@ public class Pair<T, U> implements Cloneable {
 
   public U getSecond() {
     return second;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final Pair<?, ?> pair = (Pair<?, ?>) o;
+    return Objects.equals(first, pair.first) && Objects.equals(second, pair.second);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(first, second);
   }
 }

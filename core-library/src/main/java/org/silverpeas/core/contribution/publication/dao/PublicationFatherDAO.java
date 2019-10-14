@@ -28,13 +28,17 @@ import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This is the Publication Father Data Access Object.
@@ -53,6 +57,7 @@ public class PublicationFatherDAO {
   private static final String PUB_ID_SET = PUB_ID + EQUALITY;
   private static final String NODE_ID_SET = NODE_ID + EQUALITY;
   private static final String PUBLICATION_FATHER_TABLE_NAME = "SB_Publication_PubliFather";
+  private static final String LOCATION_FIELDS = "nodeId, instanceId, aliasUserId, aliasDate, pubOrder";
 
   private PublicationFatherDAO() {
   }
@@ -167,6 +172,55 @@ public class PublicationFatherDAO {
   }
 
   /**
+   * Selects massively simple data about main locations.
+   * <p>
+   *   This method is designed for process performance needs.
+   * </p>
+   * @param con the database connection.
+   * @param ids the instance ids aimed.
+   * @return a list of {@link Location} instances.
+   * @throws SQLException on database error.
+   */
+  public static Map<String, List<Location>> getAllMainLocationsByPublicationIds(Connection con,
+      Collection<PublicationPK> ids) throws SQLException {
+    return getAllLocationsByPublicationIds(con, ids, true);
+  }
+
+  /**
+   * Selects massively simple data about all locations (main or aliases).
+   * <p>
+   *   This method is designed for process performance needs.
+   * </p>
+   * @param con the database connection.
+   * @param ids the instance ids aimed.
+   * @return a list of {@link Location} instances.
+   * @throws SQLException on database error.
+   */
+  public static Map<String, List<Location>> getAllLocationsByPublicationIds(Connection con,
+      Collection<PublicationPK> ids) throws SQLException {
+    return getAllLocationsByPublicationIds(con, ids, false);
+  }
+
+  private static Map<String, List<Location>> getAllLocationsByPublicationIds(Connection con,
+      Collection<PublicationPK> ids, boolean onlyMainLocations) throws SQLException {
+    final List<String> pubIds = ids.stream().map(PublicationPK::getId).collect(Collectors.toList());
+    return JdbcSqlQuery.executeBySplittingOn(pubIds, (pubIdBatch, result) -> {
+      final JdbcSqlQuery query = JdbcSqlQuery.createSelect(LOCATION_FIELDS + ", " + PUB_ID)
+          .from(PUBLICATION_FATHER_TABLE_NAME)
+          .where(PUB_ID).in(pubIdBatch.stream().map(Integer::parseInt).collect(Collectors.toList()));
+      if (onlyMainLocations) {
+        query.andNull(ALIAS_USER_ID);
+        query.andNull(ALIAS_DATE);
+      }
+      query.executeWith(con, r -> {
+        final Location location = fetchLocation(r);
+        MapUtil.putAddList(result, Integer.toString(r.getInt(6)), location);
+        return null;
+      });
+    });
+  }
+
+  /**
    * Gets all the locations (the original one and the aliases) of the specified publication.
    * @param con a connection to the data source.
    * @param pubPK the unique identifying key of the publication.
@@ -174,10 +228,9 @@ public class PublicationFatherDAO {
    * @throws SQLException if an error occurs while executing the SQL request.
    */
   public static List<Location> getLocations(Connection con, PublicationPK pubPK) throws SQLException {
-    JdbcSqlQuery query =
-        JdbcSqlQuery.createSelect("nodeId, instanceId, aliasUserId, aliasDate, pubOrder")
-            .from(PUBLICATION_FATHER_TABLE_NAME)
-            .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()));
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(LOCATION_FIELDS)
+        .from(PUBLICATION_FATHER_TABLE_NAME)
+        .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()));
     return findLocations(con, query);
   }
 
@@ -191,32 +244,33 @@ public class PublicationFatherDAO {
    */
   public static List<Location> getLocations(Connection con, PublicationPK pubPK, String compoId)
       throws SQLException {
-    JdbcSqlQuery query =
-        JdbcSqlQuery.createSelect("nodeId, instanceId, aliasUserId, aliasDate, pubOrder")
-            .from(PUBLICATION_FATHER_TABLE_NAME)
-            .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
-            .and(INSTANCE_ID_SET, compoId);
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(LOCATION_FIELDS)
+        .from(PUBLICATION_FATHER_TABLE_NAME)
+        .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
+        .and(INSTANCE_ID_SET, compoId);
     return findLocations(con, query);
   }
 
   private static List<Location> findLocations(final Connection con, final JdbcSqlQuery query)
       throws SQLException {
-    return query.executeWith(con, rs -> {
-      String id = Integer.toString(rs.getInt(1));
-      String instanceId = rs.getString(2);
-      Location location = new Location(id, instanceId);
-      String sDate = rs.getString(4);
-      if (StringUtil.isDefined(sDate)) {
-        Date date = new Date(Long.parseLong(sDate));
-        String userId = Integer.toString(rs.getInt(3));
-        if (!rs.wasNull()) {
-          location.setAsAlias(userId, date);
-        }
+    return query.executeWith(con, PublicationFatherDAO::fetchLocation);
+  }
+
+  private static Location fetchLocation(final ResultSet rs) throws SQLException {
+    String id = Integer.toString(rs.getInt(1));
+    String instanceId = rs.getString(2);
+    Location location = new Location(id, instanceId);
+    String sDate = rs.getString(4);
+    if (StringUtil.isDefined(sDate)) {
+      Date date = new Date(Long.parseLong(sDate));
+      String userId = Integer.toString(rs.getInt(3));
+      if (!rs.wasNull()) {
+        location.setAsAlias(userId, date);
       }
-      int pubOrder = rs.getInt(5);
-      location.setPubOrder(pubOrder);
-      return location;
-    });
+    }
+    int pubOrder = rs.getInt(5);
+    location.setPubOrder(pubOrder);
+    return location;
   }
 
   /**
@@ -351,8 +405,7 @@ public class PublicationFatherDAO {
    */
   public static List<Location> getAliases(final Connection con, final PublicationPK pubPK)
       throws SQLException {
-    JdbcSqlQuery query =
-        JdbcSqlQuery.createSelect("nodeId, instanceId, aliasUserId, aliasDate, pubOrder")
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(LOCATION_FIELDS)
         .from(PUBLICATION_FATHER_TABLE_NAME)
         .where(PUB_ID_SET, Integer.parseInt(pubPK.getId()))
         .andNotNull(ALIAS_DATE)

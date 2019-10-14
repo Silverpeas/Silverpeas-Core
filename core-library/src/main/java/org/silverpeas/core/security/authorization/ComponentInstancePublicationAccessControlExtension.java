@@ -107,5 +107,6 @@ public interface ComponentInstancePublicationAccessControlExtension {
   }
 
   boolean canPublicationBePersistedOrDeletedBy(final PublicationDetail publication,
-      final String instanceId, final String userId, final SilverpeasRole userRole);
+      final String instanceId, final String userId, final SilverpeasRole userRole,
+      final AccessControlContext context);
 }

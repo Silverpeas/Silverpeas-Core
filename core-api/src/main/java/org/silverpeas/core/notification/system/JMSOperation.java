@@ -91,7 +91,7 @@ public class JMSOperation {
   private ConnectionFactory jmsConnectionFactory;
 
   private static JMSOperation get() {
-    return ServiceProvider.getService(JMSOperation.class);
+    return ServiceProvider.getSingleton(JMSOperation.class);
   }
 
   private JMSOperation() {

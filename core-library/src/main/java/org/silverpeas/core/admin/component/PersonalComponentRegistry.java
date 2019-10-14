@@ -97,7 +97,7 @@ public class PersonalComponentRegistry implements Initialization {
    * @return a PersonalComponentRegistry instance.
    */
   public static PersonalComponentRegistry get() {
-    return ServiceProvider.getService(PersonalComponentRegistry.class);
+    return ServiceProvider.getSingleton(PersonalComponentRegistry.class);
   }
 
   /**

@@ -590,6 +590,26 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
+  public Map<String, List<Location>> getAllMainLocationsByPublicationIds(
+      final Collection<PublicationPK> ids) {
+    try (Connection con = getConnection()) {
+      return PublicationFatherDAO.getAllMainLocationsByPublicationIds(con, ids);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException(e);
+    }
+  }
+
+  @Override
+  public Map<String, List<Location>> getAllLocationsByPublicationIds(
+      final Collection<PublicationPK> ids) {
+    try (Connection con = getConnection()) {
+      return PublicationFatherDAO.getAllLocationsByPublicationIds(con, ids);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException(e);
+    }
+  }
+
+  @Override
   public Collection<Location> getAllLocations(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
       return PublicationFatherDAO.getLocations(con, pubPK);
@@ -1214,6 +1234,15 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Override
   public Collection<PublicationDetail> getAllPublications(String instanceId) {
     return getAllPublications(instanceId, null);
+  }
+
+  @Override
+  public List<PublicationDetail> getMinimalDataByIds(final Collection<PublicationPK> ids) {
+    try (final Connection con = getConnection()) {
+      return PublicationDAO.getMinimalDataByIds(con, ids);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException(e);
+    }
   }
 
   @Override

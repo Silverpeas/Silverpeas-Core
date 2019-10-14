@@ -29,6 +29,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.Returns;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
@@ -51,6 +53,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
@@ -61,11 +65,10 @@ import static org.mockito.Mockito.*;
 @UnitTest
 public class TestPublicationAccessController {
 
-
   private static final String userId = "bart";
 
   private PublicationService publicationService;
-
+  private OrganizationController organizationController;
   private ComponentAccessControl componentAccessController;
   private NodeAccessControl nodeAccessController;
   private PublicationAccessControl testInstance;
@@ -80,17 +83,16 @@ public class TestPublicationAccessController {
 
   @Before
   public void setup() {
-    testContext = new TestContext();
-    testInstance = new PublicationAccessController4Test();
-
     user = mock(User.class);
     when(UserProvider.get().getUser(userId)).thenReturn(user);
-    componentAccessController = reflectionRule
-        .mockField(testInstance, ComponentAccessControl.class, "componentAccessController");
-    nodeAccessController =
-        reflectionRule.mockField(testInstance, NodeAccessControl.class, "nodeAccessController");
-    publicationService =
-        reflectionRule.mockField(testInstance, PublicationService.class, "publicationService");
+    publicationService = mock(PublicationService.class);
+    commonAPI4Test.injectIntoMockedBeanContainer(publicationService);
+    organizationController = mock(OrganizationController.class);
+    commonAPI4Test.injectIntoMockedBeanContainer(organizationController);
+    componentAccessController = mock(ComponentAccessControl.class);
+    nodeAccessController = mock(NodeAccessControl.class);
+    testContext = new TestContext();
+    testContext.clear();
   }
 
   @Test
@@ -216,7 +218,7 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
-    assertIsUserAuthorized(true);
+    assertIsUserAuthorized(false);
 
     // User has USER role on component
     // User rights are verified for sharing action on the document, sharing is enabled
@@ -320,7 +322,7 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
-    assertIsUserAuthorized(true);
+    assertIsUserAuthorized(false);
 
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, sharing is enabled
@@ -333,7 +335,7 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
-    assertIsUserAuthorized(true);
+    assertIsUserAuthorized(false);
 
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, sharing is enabled
@@ -346,7 +348,7 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
-    assertIsUserAuthorized(true);
+    assertIsUserAuthorized(false);
 
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, sharing is enabled
@@ -359,7 +361,7 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
-    assertIsUserAuthorized(true);
+    assertIsUserAuthorized(false);
 
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, sharing is enabled
@@ -372,7 +374,7 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
-    assertIsUserAuthorized(true);
+    assertIsUserAuthorized(false);
 
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, sharing is enabled
@@ -382,7 +384,7 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
-    assertIsUserAuthorized(true);
+    assertIsUserAuthorized(false);
 
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, sharing is enabled
@@ -395,7 +397,7 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
-    assertIsUserAuthorized(true);
+    assertIsUserAuthorized(false);
 
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, sharing is enabled
@@ -408,7 +410,7 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
-    assertIsUserAuthorized(true);
+    assertIsUserAuthorized(false);
 
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, sharing is enabled
@@ -421,7 +423,7 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
-    assertIsUserAuthorized(true);
+    assertIsUserAuthorized(false);
 
     // User has ADMIN role on component
     // User rights are verified for sharing action on the document, sharing is enabled
@@ -434,7 +436,7 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
-    assertIsUserAuthorized(true);
+    assertIsUserAuthorized(false);
 
     // User has USER role on component
     // User is going to modify the publication
@@ -465,6 +467,33 @@ public class TestPublicationAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
     assertIsUserAuthorized(false);
+
+    // User has USER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user)
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has PUBLISHER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.publisher)
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has WRITER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.writer)
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
   }
 
   @Test
@@ -579,6 +608,43 @@ public class TestPublicationAccessController {
     testContext.clear();
     testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent().publicationIdIsNull()
         .onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has USER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent().publicationIdIsNull()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has PUBLISHER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+        .publicationIdIsNull()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has WRITER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent().publicationIdIsNull()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has ADMIN role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent().publicationIdIsNull()
+        .onOperationsOf(AccessControlOperation.search);
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
@@ -704,6 +770,46 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
+
+    // User has USER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .publicationIdHasWrongFormat()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has PUBLISHER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+        .publicationIdHasWrongFormat()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has WRITER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+        .publicationIdHasWrongFormat()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has ADMIN role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+        .publicationIdHasWrongFormat()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
   }
 
   @Test
@@ -819,6 +925,50 @@ public class TestPublicationAccessController {
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail();
     assertIsUserAuthorized(false);
+
+    // User has USER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .publicationIsNotExisting()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
+    assertIsUserAuthorized(true);
+
+    // User has PUBLISHER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+        .publicationIsNotExisting()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
+    assertIsUserAuthorized(true);
+
+    // User has WRITER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+        .publicationIsNotExisting()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
+    assertIsUserAuthorized(true);
+
+    // User has ADMIN role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.admin).onGEDComponent()
+        .publicationIsNotExisting()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
+    assertIsUserAuthorized(true);
   }
 
   @Test
@@ -1170,6 +1320,36 @@ public class TestPublicationAccessController {
         .verifyCallOfPublicationBmGetDetail()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
     assertIsUserAuthorized(true);
+
+    // User has USER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
+    assertIsUserAuthorized(true);
+
+    // User has PUBLISHER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
+    assertIsUserAuthorized(true);
+
+    // User has WRITER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
+    assertIsUserAuthorized(true);
   }
 
   @Test
@@ -1493,6 +1673,39 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
+    assertIsUserAuthorized(true);
+
+    // User has USER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
+    assertIsUserAuthorized(true);
+
+    // User has PUBLISHER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+        .userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
+    assertIsUserAuthorized(true);
+
+    // User has WRITER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+        .userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled();
     assertIsUserAuthorized(true);
   }
@@ -1850,6 +2063,42 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetMainLocation();
+    assertIsUserAuthorized(true);
+
+    // User has USER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .publicationOnRootDirectory().withRightsActivatedOnDirectory().userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetMainLocation();
+    assertIsUserAuthorized(true);
+
+    // User has PUBLISHER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.publisher).onGEDComponent()
+        .publicationOnRootDirectory().withRightsActivatedOnDirectory().userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetMainLocation();
+    assertIsUserAuthorized(true);
+
+    // User has WRITER role on component
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.writer).onGEDComponent()
+        .publicationOnRootDirectory().withRightsActivatedOnDirectory().userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
         .verifyCallOfPublicationBmGetMainLocation();
     assertIsUserAuthorized(true);
@@ -2449,6 +2698,78 @@ public class TestPublicationAccessController {
         .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
+
+    // User has USER role on component
+    // User has USER role on directory
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.user)
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has USER role on component
+    // User has PUBLISHER role on directory
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.publisher)
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has USER role on component
+    // User has WRITER role on directory
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.writer)
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has USER role on component, co-writing enabled, draft visible with co-writing
+    // User has WRITER role on directory
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .enableCoWriting()
+        .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.writer)
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has USER role on component, co-writing enabled, draft visible with co-writing
+    // User has WRITER role on directory
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .enableCoWriting().draftVisibleWithCoWriting()
+        .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.writer)
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
   }
 
   @Test
@@ -2559,6 +2880,22 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfPublicationBmGetDetail()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has USER role on component
+    // User has WRITER on directory
+    // PublicationDetail is given (no database request is performed to retrieve publication data)
+    // This is the same test as the one above but with .userIsThePublicationAuthor() is added.
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .publicationDetailIsGiven()
+        .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.writer)
+        .userIsThePublicationAuthor();
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
         .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
         .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
@@ -2903,6 +3240,51 @@ public class TestPublicationAccessController {
         .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfNodeAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
+
+    // User has USER role on component
+    // User has USER role on directory
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.user)
+        .userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has USER role on component
+    // User has PUBLISHER role on directory
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.publisher)
+        .userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has USER role on component
+    // User has WRITER role on directory
+    // User is performing a search (in that context, publication exists, is valid and is visible, so node and component rights are verified)
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .withRightsActivatedOnDirectory().withNodeUserRoles(SilverpeasRole.writer)
+        .userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.search);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetMainLocation().verifyCallOfNodeAccessControllerGetUserRoles()
+        .verifyCallOfNodeAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
   }
 
   /**
@@ -2915,8 +3297,13 @@ public class TestPublicationAccessController {
         new PublicationPK("124", testContext.isGED ? "kmelia26" : "yellowpages38");
     publicationPK.setId(
         testContext.isPubIdNull ? null : (testContext.isWrongIdentifierFormat ? "dummyId" : "124"));
-    boolean result =
-        testInstance.isUserAuthorized(userId, publicationPK, testContext.accessControlContext);
+    final boolean result;
+    if (testContext.publicationIsGiven) {
+      final PublicationDetail publicationDetail = testContext.newPublicationWith(publicationPK);
+      result = testInstance.isUserAuthorized(userId, publicationDetail, testContext.accessControlContext);
+    } else {
+      result = testInstance.isUserAuthorized(userId, publicationPK, testContext.accessControlContext);
+    }
     assertThat(result, is(expectedUserAuthorization));
     testContext.results().verifyMethodCalls();
   }
@@ -2928,6 +3315,7 @@ public class TestPublicationAccessController {
     private boolean isDraftVisibleWithCoWriting;
     private SilverpeasRole publicationSharingRole;
     private boolean isPubIdNull;
+    private boolean publicationIsGiven;
     private boolean isPublicationNotExisting;
     private String pubStatus;
     private boolean isPubVisible;
@@ -2942,18 +3330,15 @@ public class TestPublicationAccessController {
     private boolean isUserThePublicationAuthor;
 
     public void clear() {
-      Mockito.reset(user, componentAccessController, nodeAccessController, publicationService);
-      when(componentAccessController.isTopicTrackerSupported(anyString())).thenAnswer(
-          invocation -> {
-            String instanceId = (String) invocation.getArguments()[0];
-            return instanceId.startsWith("kmelia") || instanceId.startsWith("kmax") ||
-                instanceId.startsWith("toolbox");
-          });
+      CacheServiceProvider.clearAllThreadCaches();
+      Mockito.reset(user, componentAccessController, organizationController, nodeAccessController, publicationService);
+      testInstance = new PublicationAccessController4Test(componentAccessController, nodeAccessController);
       userIsAnonymous = false;
       isGED = false;
       isCoWriting = false;
       isDraftVisibleWithCoWriting = false;
       publicationSharingRole = null;
+      publicationIsGiven = false;
       isPubIdNull = false;
       pubStatus = PublicationDetail.VALID_STATUS;
       isPubVisible = true;
@@ -3001,6 +3386,11 @@ public class TestPublicationAccessController {
 
     public TestContext withComponentUserRoles(SilverpeasRole... roles) {
       Collections.addAll(componentUserRoles, roles);
+      return this;
+    }
+
+    TestContext publicationDetailIsGiven() {
+      publicationIsGiven = true;
       return this;
     }
 
@@ -3078,25 +3468,34 @@ public class TestPublicationAccessController {
     public void setup() {
       when(user.getId()).thenReturn(userId);
       when(user.isAnonymous()).thenReturn(userIsAnonymous);
-      when(componentAccessController.isTopicTrackerSupported(anyString())).thenAnswer(
-          invocation -> {
-            String instanceId = (String) invocation.getArguments()[0];
-            return instanceId.startsWith("kmelia") || instanceId.startsWith("kmax") ||
-                instanceId.startsWith("toolbox");
-          });
       when(componentAccessController
           .getUserRoles(anyString(), anyString(), any(AccessControlContext.class)))
           .then(new Returns(componentUserRoles));
       when(componentAccessController.isUserAuthorized(any(EnumSet.class)))
           .then(new Returns(!componentUserRoles.isEmpty()));
-      when(componentAccessController.isRightOnTopicsEnabled(anyString()))
-          .then(new Returns(isRightsOnDirectories));
-      when(componentAccessController.isCoWritingEnabled(anyString()))
-          .then(new Returns(isCoWriting));
-      when(componentAccessController.isPublicationSharingEnabledForRole(anyString(), anyObject()))
-          .thenAnswer((Answer<Boolean>) i -> {
-            SilverpeasRole role = (SilverpeasRole) i.getArguments()[1];
-            return publicationSharingRole != null && role.isGreaterThanOrEquals(publicationSharingRole);
+      when(organizationController.getComponentInstance(anyString()))
+          .thenAnswer(a -> {
+            final String i = a.getArgument(0);
+            final SilverpeasComponentInstance instance = mock(SilverpeasComponentInstance.class);
+            when(instance.isTopicTracker()).then(new Returns(i.startsWith("kmelia") || i.startsWith("kmax") || i.startsWith("toolbox")));
+            return Optional.of(instance);
+          });
+      when(organizationController.getComponentParameterValue(anyString(), eq("rightsOnTopics")))
+          .then(new Returns(Boolean.toString(isRightsOnDirectories)));
+      when(organizationController.getComponentParameterValue(anyString(), eq("coWriting")))
+          .then(new Returns(Boolean.toString(isCoWriting)));
+      when(organizationController.getComponentParameterValue(anyString(), eq("usePublicationSharing")))
+          .thenAnswer((Answer<String>) invocationOnMock -> {
+            if (publicationSharingRole != null) {
+              if (publicationSharingRole.equals(SilverpeasRole.admin)) {
+                return "1";
+              } else if (publicationSharingRole.equals(SilverpeasRole.writer)) {
+                return "2";
+              } else {
+                return "3";
+              }
+            }
+            return null;
           });
       when(nodeAccessController
           .getUserRoles(anyString(), any(NodePK.class), any(AccessControlContext.class))).then(
@@ -3105,20 +3504,14 @@ public class TestPublicationAccessController {
               (aliasUserRoles == null ? componentUserRoles : aliasUserRoles)));
       when(nodeAccessController.isUserAuthorized(any(EnumSet.class)))
           .then(invocation -> CollectionUtil.isNotEmpty((EnumSet) invocation.getArguments()[0]));
-      when(publicationService.getDetail(any(PublicationPK.class))).then(invocation -> {
+      when(publicationService.getMinimalDataByIds(any(Collection.class))).then(invocation -> {
         if (isPublicationNotExisting) {
-          return null;
+          return emptyList();
         }
-        PublicationDetail publi = new PublicationDetail();
-        publi.setPk((PublicationPK) invocation.getArguments()[0]);
-        publi.setStatus(testContext.pubStatus);
-        publi.setCreatorId(testContext.isUserThePublicationAuthor ? userId : "otherUserId");
-        if (!testContext.isPubVisible) {
-          final Visibility visibility = mock(Visibility.class);
-          when(visibility.isVisible()).thenReturn(false);
-          reflectionRule.setField(publi, visibility, "visibility");
-        }
-        return publi;
+        final PublicationPK pubPk = ((Collection<PublicationPK>) invocation.getArguments()[0])
+            .iterator().next();
+        final PublicationDetail publi = newPublicationWith(pubPk);
+        return singletonList(publi);
       });
       when(publicationService.getMainLocation(any(PublicationPK.class))).then(invocation -> {
         if (!testContext.isPublicationOnRootDirectory) {
@@ -3135,6 +3528,19 @@ public class TestPublicationAccessController {
         return aliases;
       });
       ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
+    }
+
+    private PublicationDetail newPublicationWith(final PublicationPK pubPk) {
+      PublicationDetail publi = new PublicationDetail();
+      publi.setPk(pubPk);
+      publi.setStatus(testContext.pubStatus);
+      publi.setCreatorId(testContext.isUserThePublicationAuthor ? userId : "otherUserId");
+      if (!testContext.isPubVisible) {
+        final Visibility visibility = mock(Visibility.class);
+        when(visibility.isVisible()).thenReturn(false);
+        reflectionRule.setField(publi, visibility, "visibility");
+      }
+      return publi;
     }
   }
 
@@ -3198,15 +3604,14 @@ public class TestPublicationAccessController {
           .isUserAuthorized(anyString(), anyString(), any(AccessControlContext.class));
       verify(componentAccessController, times(nbCallOfComponentAccessControllerIsUserAuthorized))
           .isUserAuthorized(any(EnumSet.class));
-      verify(componentAccessController,
-          times(nbCallOfComponentAccessControllerIsRightOnTopicsEnabled))
-          .isRightOnTopicsEnabled(anyString());
+      final ComponentAccessController.DataManager dataManager = ComponentAccessController.getDataManager(testContext.accessControlContext);
+      assertThat(dataManager.isRightOnTopicsEnabledCache.size(), is(nbCallOfComponentAccessControllerIsRightOnTopicsEnabled));
       verify(nodeAccessController, times(nbCallOfNodeAccessControllerGetUserRoles))
           .getUserRoles(anyString(), any(NodePK.class), any(AccessControlContext.class));
       verify(nodeAccessController, times(nbCallOfNodeAccessControllerIsUserAuthorized))
           .isUserAuthorized(any(EnumSet.class));
       verify(publicationService, times(nbCallOfPublicationBmGetDetail))
-          .getDetail(any(PublicationPK.class));
+          .getMinimalDataByIds(any(Collection.class));
       verify(publicationService, times(nbCallOfPublicationMainLocation))
           .getMainLocation(any(PublicationPK.class));
       verify(publicationService, times(nbCallOfPublicationBmGetAliases))
@@ -3216,13 +3621,15 @@ public class TestPublicationAccessController {
 
   private class PublicationAccessController4Test extends PublicationAccessController {
 
+    PublicationAccessController4Test(final ComponentAccessControl componentAccessController,
+        final NodeAccessControl nodeAccessController) {
+      super(componentAccessController, nodeAccessController);
+    }
+
     @Override
     ComponentInstancePublicationAccessControlExtension getComponentExtension(
         final String instanceId) {
-      final DefaultInstancePublicationAccessControlExtension4Test extension =
-          new DefaultInstancePublicationAccessControlExtension4Test(testContext);
-      reflectionRule.setField(extension, componentAccessController, "componentAccessController");
-      return extension;
+      return new DefaultInstancePublicationAccessControlExtension4Test(testContext);
     }
   }
 

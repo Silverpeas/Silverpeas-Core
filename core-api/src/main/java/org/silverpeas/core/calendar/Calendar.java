@@ -38,8 +38,6 @@ import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.SecurableRequestCache;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.exception.TokenRuntimeException;
@@ -59,6 +57,7 @@ import java.time.OffsetDateTime;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneId;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,8 +77,8 @@ import static java.time.Month.DECEMBER;
 @Entity
 @NamedQueries({
 @NamedQuery(
-    name = "calendarsByComponentInstanceId",
-    query = "from Calendar c where c.componentInstanceId = :componentInstanceId " +
+    name = "calendarsByComponentInstanceIds",
+    query = "from Calendar c where c.componentInstanceId in :componentInstanceIds " +
             "order by c.componentInstanceId, c.title, c.id"),
 @NamedQuery(
     name = "synchronizedCalendars",
@@ -176,6 +175,18 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
    */
   public static ComponentInstanceCalendars getByComponentInstanceId(String instanceId) {
     return ComponentInstanceCalendars.getByComponentInstanceId(instanceId);
+  }
+
+  /**
+   * Gets the calendars represented by the specified component instances.  For instance, a
+   * component can be a collaborative application or a personal one.
+   * @param instanceIds the unique identifiers identifying instances of a Silverpeas
+   * component.
+   * @return a list containing the calendar instances which matched if any, empty list otherwise.
+   */
+  public static List<Calendar> getByComponentInstanceIds(final Collection<String> instanceIds) {
+    final CalendarRepository calendarRepository = CalendarRepository.get();
+    return calendarRepository.getByComponentInstanceIds(instanceIds);
   }
 
   /**
@@ -522,11 +533,8 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
 
   @Override
   public boolean canBeAccessedBy(final User user) {
-    return SecurableRequestCache.canBeAccessedBy(user, getId(), u -> {
-      AccessController<String> accessController =
-          AccessControllerProvider.getAccessController(ComponentAccessControl.class);
-      return accessController.isUserAuthorized(u.getId(), getComponentInstanceId());
-    });
+    return SecurableRequestCache.canBeAccessedBy(user, getId(),
+        u -> ComponentAccessControl.get().isUserAuthorized(u.getId(), getComponentInstanceId()));
   }
 
   @Override
@@ -535,9 +543,7 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
       if (isMain()) {
         return false;
       }
-      AccessController<String> accessController =
-          AccessControllerProvider.getAccessController(ComponentAccessControl.class);
-      return accessController.isUserAuthorized(u.getId(), getComponentInstanceId(),
+      return ComponentAccessControl.get().isUserAuthorized(u.getId(), getComponentInstanceId(),
           AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
     });
   }

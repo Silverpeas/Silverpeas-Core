@@ -24,10 +24,15 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * This interface extends access controller interface for SimpleDocument resource.
  * @author Yohann Chastagnier
  */
 public interface SimpleDocumentAccessControl extends AccessController<SimpleDocument> {
+
+  static SimpleDocumentAccessControl get() {
+    return ServiceProvider.getSingleton(SimpleDocumentAccessControl.class);
+  }
 }

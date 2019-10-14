@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.node.dao;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodeI18NDetail;
@@ -48,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * This is the Node Data Access Object.
@@ -56,6 +58,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public class NodeDAO {
 
+  private static final String NODE_TABLE = "SB_Node_Node";
   private static final String SELECT_NODE_BY_ID = "SELECT nodeid, nodename, nodedescription, " +
       "nodecreationdate, nodecreatorid, nodepath, nodelevelnumber, nodefatherid, modelid, " +
       "nodestatus, instanceid, type, ordernumber, lang, rightsdependson FROM sb_node_node WHERE " +
@@ -382,6 +385,44 @@ public class NodeDAO {
         node.addTranslation(anotherNodeI18NDetail);
       }
     }
+  }
+
+  /**
+   * Selects massively simple data about nodes.
+   * <p>
+   * For now, only the following data are retrieved:
+   *   <ul>
+   *     <li>nodeId</li>
+   *     <li>instanceId</li>
+   *     <li>rightsDependsOn</li>
+   *   </ul>
+   *   This method is designed for process performance needs.
+   * </p>
+   * @param con the database connection.
+   * @param instanceIds the instance ids aimed.
+   * @return a list of {@link NodeDetail} instances.
+   * @throws SQLException on database error.
+   */
+  public List<NodeDetail> getMinimalDataByInstances(final Connection con,
+      final Collection<String> instanceIds) throws SQLException {
+    final List<NodeDetail> entities = new ArrayList<>();
+    final List<Integer> instanceIdsAsInt = instanceIds.stream()
+        .map(ComponentInst::getComponentLocalId).collect(Collectors.toList());
+    JdbcSqlQuery.executeBySplittingOn(instanceIdsAsInt, (idBatch, ignore) -> {
+      JdbcSqlQuery.createSelect("nodeid, instanceid, rightsdependson")
+          .from(NODE_TABLE + " N")
+          .join("ST_ComponentInstance I").on("N.instanceid = CONCAT(I.componentname , CAST(I.id AS VARCHAR(20)))")
+          .where("I.id").in(idBatch)
+          .executeWith(con, r -> {
+        final NodePK nodePK = new NodePK(Integer.toString(r.getInt(1)), r.getString(2));
+        final NodeDetail nodeDetail = new NodeDetail();
+        nodeDetail.setNodePK(nodePK);
+        nodeDetail.setRightsDependsOn(r.getInt(3));
+        entities.add(nodeDetail);
+        return null;
+      });
+    });
+    return entities;
   }
 
   /**

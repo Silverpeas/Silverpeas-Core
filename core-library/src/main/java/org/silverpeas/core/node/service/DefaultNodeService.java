@@ -527,6 +527,15 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   }
 
   @Override
+  public List<NodeDetail> getMinimalDataByInstances(final Collection<String> instanceIds) {
+    try (final Connection con = getConnection()) {
+      return nodeDAO.getMinimalDataByInstances(con, instanceIds);
+    } catch (SQLException e) {
+      throw new NodeRuntimeException(e);
+    }
+  }
+
+  @Override
   @Transactional
   public NodePK createNode(NodeDetail node) {
     NodePK parentPK = node.getFatherPK();

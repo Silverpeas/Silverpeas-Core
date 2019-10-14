@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
@@ -33,7 +32,7 @@ import org.silverpeas.core.util.ServiceProvider;
 public interface ComponentAccessControl extends AccessController<String> {
 
   static ComponentAccessControl get() {
-    return ServiceProvider.getService(ComponentAccessControl.class);
+    return ServiceProvider.getSingleton(ComponentAccessControl.class);
   }
 
   /**
@@ -42,46 +41,4 @@ public interface ComponentAccessControl extends AccessController<String> {
    * @return true if rights are enabled at node level, false otherwise.
    */
   boolean isRightOnTopicsEnabled(String instanceId);
-
-  /**
-   * Indicates if publication sharing is enabled on the component instance represented by the given
-   * identifier.
-   * @param componentId the identifier of the component instance.
-   * @param greatestUserRole the greatest role of user
-   * @return true if publication sharing is enabled, false otherwise.
-   */
-  boolean isPublicationSharingEnabledForRole(String componentId,
-      SilverpeasRole greatestUserRole);
-
-  /**
-   * Indicates that the rights are set on node as well as the component.
-   * @param instanceId the identifier of the component instance.
-   * @return true if co-writing is enabled, false otherwise.
-   */
-  boolean isCoWritingEnabled(String instanceId);
-
-  /**
-   * Indicates if file sharing is enabled on the component instance represented by the given
-   * identifier.
-   * @param instanceId the identifier of the component instance.
-   * @param greatestUserRole the greatest role of user
-   * @return true if file sharing is enabled, false otherwise.
-   */
-  boolean isFileSharingEnabledForRole(String instanceId, SilverpeasRole greatestUserRole);
-
-  /**
-   * Indicates if folder sharing is enabled on the component instance represented by the given
-   * identifier.
-   * @param instanceId the identifier of the component instance.
-   * @param greatestUserRole the greatest role of user
-   * @return true if folder sharing is enabled, false otherwise.
-   */
-  boolean isFolderSharingEnabledForRole(String instanceId, SilverpeasRole greatestUserRole);
-
-  /**
-   *  Indicates if the specified component instance satisfy the topic tracking behavior.
-   * @param instanceId the identifier of the component instance.
-   * @return true if the topic tracking is supported, false otherwise.
-   */
-  boolean isTopicTrackerSupported(String instanceId);
 }

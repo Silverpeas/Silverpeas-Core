@@ -72,7 +72,7 @@ public class WAComponentRegistry implements Initialization {
    * @return a WAComponentRegistry instance.
    */
   public static WAComponentRegistry get() {
-    return ServiceProvider.getService(WAComponentRegistry.class);
+    return ServiceProvider.getSingleton(WAComponentRegistry.class);
   }
 
   WAComponentRegistry() {

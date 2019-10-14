@@ -52,7 +52,7 @@ public interface PdcManager {
   String SECONDARY_AXIS = "S";
 
   static PdcManager get() {
-    return ServiceProvider.getService(PdcManager.class);
+    return ServiceProvider.getSingleton(PdcManager.class);
   }
 
   List<GlobalSilverContent> findGlobalSilverContents(

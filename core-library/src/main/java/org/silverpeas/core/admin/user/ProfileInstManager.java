@@ -33,6 +33,7 @@ import org.silverpeas.core.admin.service.ComponentInstManager;
 import org.silverpeas.core.admin.user.dao.RoleDAO;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -42,9 +43,14 @@ import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import static java.util.Collections.singleton;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 @Singleton
@@ -328,28 +334,28 @@ public class ProfileInstManager {
     }
   }
 
-  public String[] getProfileNamesOfUser(String sUserId, List<String> groupIds, int componentLocalId)
-      throws AdminException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-
-      List<UserRoleRow> roles =
-          roleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId), componentLocalId);
-      List<String> roleNames = new ArrayList<>();
-
-      for (UserRoleRow role : roles) {
-        if (!roleNames.contains(role.getRoleName())) {
-          roleNames.add(role.getRoleName());
-        }
-      }
-
-      return roleNames.toArray(new String[roleNames.size()]);
-
+  public String[] getProfileNamesOfUser(final String userId, final List<String> groupIds,
+      final int componentLocalId) throws AdminException {
+    try (final Connection con = DBUtil.openConnection()) {
+      return roleDAO.getRoles(con, groupIds, Integer.parseInt(userId), singleton(componentLocalId)).stream()
+          .map(UserRoleRow::getRoleName)
+          .distinct()
+          .toArray(String[]::new);
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting(PROFILES_OF_USER, sUserId), e);
-    } finally {
-      DBUtil.close(con);
+      throw new AdminException(failureOnGetting(PROFILES_OF_USER, userId), e);
+    }
+  }
+
+  public Map<Integer, Set<String>> getProfileNamesOfUser(final String userId,
+      final List<String> groupIds, final Collection<Integer> componentLocalIds)
+      throws AdminException {
+    try (final Connection con = DBUtil.openConnection()) {
+      final Map<Integer, Set<String>> result = new HashMap<>(componentLocalIds.size());
+      roleDAO.getRoles(con, groupIds, Integer.parseInt(userId), componentLocalIds)
+          .forEach(r -> MapUtil.putAddSet(result, r.getInstanceId(), r.getRoleName()));
+      return result;
+    } catch (Exception e) {
+      throw new AdminException(failureOnGetting(PROFILES_OF_USER, userId), e);
     }
   }
 

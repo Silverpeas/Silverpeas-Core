@@ -72,7 +72,7 @@ public final class IndexEngineProxy {
   }
 
   public static IndexEngineProxy get() {
-    return ServiceProvider.getService(IndexEngineProxy.class);
+    return ServiceProvider.getSingleton(IndexEngineProxy.class);
   }
 
   /**

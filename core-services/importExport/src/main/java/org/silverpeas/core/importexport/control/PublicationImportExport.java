@@ -23,23 +23,22 @@
  */
 package org.silverpeas.core.importexport.control;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.antlr.stringtemplate.StringTemplate;
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.mail.extractor.Extractor;
 import org.silverpeas.core.mail.extractor.Mail;
 import org.silverpeas.core.mail.extractor.MailExtractor;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.mail.internet.InternetAddress;
 import java.io.File;
@@ -172,7 +171,7 @@ public class PublicationImportExport {
    * @return the service working on the publications
    */
   private static PublicationService getPublicationService() {
-    return ServiceProvider.getService(PublicationService.class);
+    return PublicationService.get();
   }
 
   /**

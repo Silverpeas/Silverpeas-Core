@@ -23,13 +23,12 @@
  */
 package org.silverpeas.core.contribution.publication.model;
 
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.security.authorization.PublicationAccessController;
-import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * This object contains the description of a complete publication (publication parameter, info)
@@ -121,8 +120,7 @@ public class CompletePublication implements Serializable {
 
   private List<PublicationLink> getAuthorizedLinks(String userId, List<PublicationLink> links) {
     PublicationService publicationService = PublicationService.get();
-    PublicationAccessController accessController =
-        ServiceProvider.getService(PublicationAccessController.class);
+    PublicationAccessControl accessController = PublicationAccessControl.get();
     List<PublicationLink> authorizedLinks = new ArrayList<>();
     for (PublicationLink link : links) {
       PublicationPK pk = new PublicationPK(link.getTarget().getLocalId(),
