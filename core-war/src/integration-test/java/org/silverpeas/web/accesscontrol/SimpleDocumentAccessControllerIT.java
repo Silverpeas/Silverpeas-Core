@@ -23,17 +23,16 @@
  */
 package org.silverpeas.web.accesscontrol;
 
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.web.test.WarBuilder4WarCore;
-import org.silverpeas.core.util.ServiceProvider;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -62,8 +61,7 @@ public class SimpleDocumentAccessControllerIT {
 
   @Test
   public void fetchAManagedAndQualifiedBeanTypeByTheServiceProviderShouldSucceed() {
-    AccessController<SimpleDocument> simpleAccessController =
-        ServiceProvider.getService(SimpleDocumentAccessControl.class);
+    AccessController<SimpleDocument> simpleAccessController = SimpleDocumentAccessControl.get();
     assertThat(simpleAccessController, instanceOf(AccessController.class));
 
     AccessController<SimpleDocument> accessController = AccessControllerProvider

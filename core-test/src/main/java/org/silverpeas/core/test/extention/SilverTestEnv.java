@@ -35,6 +35,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.silvertrace.SilverpeasTrace;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.util.MavenTestEnv;
@@ -201,6 +202,7 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
    */
   @Override
   public void beforeEach(final ExtensionContext context) throws Exception {
+    CacheServiceProvider.clearAllThreadCaches();
     Method[] methods = context.getRequiredTestClass().getDeclaredMethods();
     for(Method method: methods) {
       RequesterProvider requesterProvider = method.getAnnotation(RequesterProvider.class);

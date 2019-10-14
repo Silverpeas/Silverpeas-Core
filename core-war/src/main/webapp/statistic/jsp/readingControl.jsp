@@ -58,7 +58,7 @@
   final String resourceType = objectType;
   final List<HistoryByUser> readingState = ArrayPane
     .computeDataUserSessionIfAbsent(request, "statistic_readingControl_list", () -> {
-      final StatisticService statisticService = ServiceProvider.getService(StatisticService.class);
+      final StatisticService statisticService = StatisticService.get();
       final List<String> userIds = (List) request.getAttribute("UserIds");
       return statisticService.getHistoryByObject(resourceReference, 1, resourceType, userIds);
     });

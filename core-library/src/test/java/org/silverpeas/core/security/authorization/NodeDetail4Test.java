@@ -21,28 +21,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.initialization;
+
+package org.silverpeas.core.security.authorization;
+
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 
 /**
- * Extension of {@link Initialization} interface dedicated to Service Providers which are
- * providing a singleton from CDI.<br/>
- * The aim is to initialize a static reference at server startup in order to avoid to use
- * {@link org.silverpeas.core.util.ServiceProvider} mechanism at each supply request.<br/>
- * By this way, there is no memory overload as the references of the services exist into CDI
- * containers, and performances are super amazing!!!
  * @author silveryocha
  */
-public interface ServiceProviderSingletonInitialization extends Initialization {
+class NodeDetail4Test extends NodeDetail {
 
-  /**
-   * Gets the priority level of the execution of {@link #init()} method.
-   * <p>
-   * The less is the value of the priority the more the priority is high.
-   * </p>
-   * @return an integer priority.
-   */
-  @Override
-  default int getPriority() {
-    return -1000;
+  NodeDetail4Test(final String nodeId, final String instanceId) {
+    super();
+    setNodePK(new NodePK(nodeId, instanceId));
+  }
+
+  NodeDetail4Test(final String nodeId, final String instanceId, final boolean rightsOnTopic) {
+    this(nodeId, instanceId);
+    if (rightsOnTopic) {
+      setRightsDependsOn(getId());
+    }
   }
 }

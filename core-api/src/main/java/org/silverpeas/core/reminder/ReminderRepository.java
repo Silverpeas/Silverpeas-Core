@@ -41,7 +41,7 @@ public interface ReminderRepository extends EntityRepository<Reminder> {
    * @return a {@link ReminderRepository} instance.
    */
   static ReminderRepository get() {
-    return ServiceProvider.getService(ReminderRepository.class);
+    return ServiceProvider.getSingleton(ReminderRepository.class);
   }
 
   /**

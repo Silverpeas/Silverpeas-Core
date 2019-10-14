@@ -23,11 +23,10 @@
  */
 package org.silverpeas.web.portlets;
 
-import org.silverpeas.core.web.portlets.FormNames;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.portlets.FormNames;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
@@ -66,7 +65,7 @@ public class MyDrafts extends GenericPortlet implements FormNames {
   }
 
   private PublicationService getPublicationBm() {
-    return ServiceProvider.getService(PublicationService.class);
+    return PublicationService.get();
   }
 
 }

@@ -36,9 +36,13 @@ import org.silverpeas.core.test.UnitTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     TestComponentAccessController.class,
+    TestComponentAccessControllerFilter.class,
     TestNodeAccessController.class,
+    TestNodeAccessControllerFilter.class,
     TestPublicationAccessController.class,
+    TestPublicationAccessControllerFilter.class,
     TestSimpleDocumentAccessController.class
 })
+
 public class AccessControlTestSuite {
 }

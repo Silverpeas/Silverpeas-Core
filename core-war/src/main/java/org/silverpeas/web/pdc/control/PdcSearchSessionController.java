@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.model.User;
@@ -71,12 +72,12 @@ import org.silverpeas.core.search.SearchService;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
@@ -107,10 +108,17 @@ import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Set;
 
+import static java.util.Collections.singletonList;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString;
 
@@ -144,8 +152,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private static final String KMELIA_COMPONENT = "kmelia";
   private static final String KMAX_COMPONENT = "kmax";
   private static final String TOOLBOX_COMPONENT = "toolbox";
-  private static final String GALLERY_COMPONENT = "gallery";
-  private static final String SILVER_CRAWLER_COMPONENT = "silverCrawler";
   private static final String DIRECTORY_SERVICE = "users";
   private static final String PDC_SERVICE = "pdc";
   private static final String SPACES_INDEX = "Spaces";
@@ -761,7 +767,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   private StatisticService getStatisticBm() {
     try {
-      return ServiceProvider.getService(StatisticService.class);
+      return StatisticService.get();
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
     }
@@ -1500,112 +1506,30 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return Selection.getSelectionURL();
   }
 
+  /**
+   * This method allows the user to search over optional space and/or component
+   * @param space an optional space identifier.
+   * @param component an optional component identifier.
+   */
   public void buildComponentListWhereToSearch(String space, String component) {
-    if (space == null) {
-      // Il n'y a pas de restriction sur un espace particulier
-      String[] allowedComponentIds = getUserAvailComponentIds();
-      List<String> excludedComponentIds = getComponentsExcludedFromGlobalSearch();
-      componentList = Stream.of(allowedComponentIds)
-          .filter(c -> isSearchable(c, excludedComponentIds))
-          .collect(Collectors.toList());
-    } else {
-      componentList = new ArrayList<>();
-      if (component == null) {
-        // Restriction sur un espace. La recherche doit avoir lieu
-        addComponentsOfSpace(space, componentList);
-      } else {
-        componentList.add(component);
-      }
-    }
-  }
-
-  private void addComponentsOfSpace(final String space, final List<String> components) {
-    final String[] asAvailCompoForCurUser = getOrganisationController().getAvailCompoIds(space,
-        getUserId());
-    for (final String component: asAvailCompoForCurUser) {
-      if (isSearchable(component)) {
-        components.add(component);
-      }
-    }
-  }
-
-  private List<String> getComponentsExcludedFromGlobalSearch() {
-    List<String> excluded = new ArrayList<>();
-
-    // exclude all components of all excluded spaces
-    List<String> spaces = getItemsExcludedFromGlobalSearch("SpacesExcludedFromGlobalSearch");
-    for (String space : spaces) {
-      String[] availableComponentIds =
-          getOrganisationController().getAvailCompoIds(space, getUserId());
-      excluded.addAll(Arrays.asList(availableComponentIds));
-    }
-
-    // exclude components explicitly excluded
-    List<String> components =
-        getItemsExcludedFromGlobalSearch("ComponentsExcludedFromGlobalSearch");
-    excluded.addAll(components);
-
-    return excluded;
-  }
-
-  private List<String> getItemsExcludedFromGlobalSearch(String parameterName) {
-    List<String> items = new ArrayList<>();
-    String param = getSettings().getString(parameterName);
-    if (StringUtil.isDefined(param)) {
-      StringTokenizer tokenizer = new StringTokenizer(param, ",");
-      while (tokenizer.hasMoreTokens()) {
-        items.add(tokenizer.nextToken());
-      }
-    }
-    return items;
+    buildCustomComponentListWhereToSearch(space, singletonList(component));
   }
 
   /**
-   * This method allow user to search over multiple component selection
-   *
-   * @param space
-   * @param components a list of selected components
+   * This method allows the user to search over optional space and/or components
+   * @param space an optional space identifier.
+   * @param components an optional component list of identifier.
    */
   public void buildCustomComponentListWhereToSearch(String space, List<String> components) {
-    componentList = new ArrayList<>();
-
-    if (space == null) {
-      String[] allowedComponentIds = getUserAvailComponentIds();
-      // Il n'y a pas de restriction sur un espace particulier
-      for (int i = 0; i < allowedComponentIds.length; i++) {
-        if (isSearchable(allowedComponentIds[i])) {
-          componentList.add(allowedComponentIds[i]);
-        }
-      }
-    } else {
-      if (components == null) {
-        // Restriction sur un espace. La recherche doit avoir lieu
-        addComponentsOfSpace(space, componentList);
-      } else {
-        for (String component : components) {
-          componentList.add(component);
-        }
-      }
+    final ComponentSearchCriteria searchCriteria = new ComponentSearchCriteria().onUser(getUserDetail());
+    if (space != null) {
+      searchCriteria.onWorkspace(space);
     }
-  }
-
-  private boolean isSearchable(String componentId) {
-    return isSearchable(componentId, null);
-  }
-
-  private boolean isSearchable(String componentId, List<String> exclusionList) {
-    if (exclusionList != null && !exclusionList.isEmpty() && exclusionList.contains(componentId)) {
-      return false;
+    if (CollectionUtil.isNotEmpty(components)) {
+      searchCriteria.onComponentInstances(components);
     }
-    if (componentId.startsWith(SILVER_CRAWLER_COMPONENT)
-        || componentId.startsWith(GALLERY_COMPONENT)
-        || componentId.startsWith(KMELIA_COMPONENT)) {
-      boolean isPrivateSearch = "yes".equalsIgnoreCase(getOrganisationController().
-          getComponentParameterValue(componentId, "privateSearch"));
-      return !isPrivateSearch;
-    } else {
-      return true;
-    }
+    componentList = getOrganisationController().
+        getSearchableComponentsByCriteria(searchCriteria);
   }
 
   /**
@@ -2098,7 +2022,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     QueryDescription query = getQueryParameters().getQueryDescription(getUserId(), "*");
 
     if (componentList == null) {
-      buildComponentListWhereToSearch(null, null);
+      buildComponentListWhereToSearch(null, (String) null);
     }
 
     for (String curComp : componentList) {

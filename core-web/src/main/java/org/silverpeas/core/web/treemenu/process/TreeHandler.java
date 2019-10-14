@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.web.treemenu.process;
 
-import org.silverpeas.core.web.treemenu.model.MenuItem;
-import org.silverpeas.core.web.treemenu.model.NodeType;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
+import org.silverpeas.core.web.treemenu.model.MenuItem;
+import org.silverpeas.core.web.treemenu.model.NodeType;
 
 import javax.servlet.http.HttpServletRequest;
 import java.rmi.RemoteException;
@@ -55,7 +55,7 @@ public class TreeHandler {
    * @throws RemoteException
    */
   public static String ProcessMenu(HttpServletRequest request, String menuType) {
-    SilverpeasWebUtil webUtil = ServiceProvider.getService(SilverpeasWebUtil.class);
+    SilverpeasWebUtil webUtil = ServiceProvider.getSingleton(SilverpeasWebUtil.class);
     MainSessionController mainSessionCtrl = webUtil.getMainSessionController(request);
     String userId = mainSessionCtrl.getUserId();
     String language = mainSessionCtrl.getFavoriteLanguage();

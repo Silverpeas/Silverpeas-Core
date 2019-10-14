@@ -23,17 +23,15 @@
  */
 package org.silverpeas.core.contribution.publication.social;
 
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.date.Date;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.socialnetwork.provider.SocialPublicationsInterface;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.date.Date;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.provider.SocialPublicationsInterface;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -108,9 +106,7 @@ public class SocialPublications implements SocialPublicationsInterface {
         // On Kmelia application, if the user has not access right to the publication, then it is
         // removed from the result
 
-        AccessController<PublicationPK> publicationAccessController = AccessControllerProvider
-            .getAccessController(PublicationAccessControl.class);
-        if (!publicationAccessController.isUserAuthorized(myId,
+        if (!PublicationAccessControl.get().isUserAuthorized(myId,
             new PublicationPK(socialPublication.getPublication().getId(), instanceId))) {
           socialPublicationIt.remove();
         }

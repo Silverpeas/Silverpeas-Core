@@ -325,11 +325,12 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
   }
 
   public String getIcon(boolean bigOne) {
-    String app = getName();
-    if (isWorkflow()) {
-      app = "processManager";
-    }
-    String size = bigOne ? "Big.png" : "Small.gif";
+    return getIcon(this, bigOne);
+  }
+
+  public static String getIcon(final SilverpeasComponentInstance instance, final boolean bigOne) {
+    final String app = instance.isWorkflow() ? "processManager" : instance.getName();
+    final String size = bigOne ? "Big.png" : "Small.gif";
     return URLUtil.getApplicationURL() + "/util/icons/component/" + app + size;
   }
 

@@ -35,10 +35,9 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.security.authorization.ComponentAccessController;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -449,8 +448,8 @@ public abstract class AbstractComponentSessionController implements ComponentSes
     }
   }
 
-  protected ComponentAccessController getComponentAccessController() {
-    return ServiceProvider.getService(ComponentAccessController.class);
+  protected ComponentAccessControl getComponentAccessController() {
+    return ComponentAccessControl.get();
   }
 
   private void setLocalizationBundle(String bundleName) {

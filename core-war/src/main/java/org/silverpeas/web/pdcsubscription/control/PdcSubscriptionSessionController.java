@@ -24,8 +24,8 @@
 package org.silverpeas.web.pdcsubscription.control;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
@@ -78,7 +78,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   private PdcManager getPdcBm() {
-    return ServiceProvider.getService(PdcManager.class);
+    return PdcManager.get();
   }
 
   private SubscriptionService getSubscribeService() {
@@ -86,7 +86,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   public NodeService getNodeBm() {
-    return ServiceProvider.getService(NodeService.class);
+    return NodeService.get();
   }
 
   public Collection<NodeSubscriptionBean> getNodeUserSubscriptions(String userId) {

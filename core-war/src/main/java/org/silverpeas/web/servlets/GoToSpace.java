@@ -25,8 +25,6 @@ package org.silverpeas.web.servlets;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -55,10 +53,8 @@ public class GoToSpace extends GoTo {
       // space is deleted) then the first parent the user can access is searched.
       // It is possible that no space is found when user has no more access on the entire path.
 
-      AccessController<String> spaceAccessController =
-          AccessControllerProvider.getAccessController(SpaceAccessControl.class);
       while (space != null &&
-          !spaceAccessController.isUserAuthorized(getUserId(req), space.getId())) {
+          !SpaceAccessControl.get().isUserAuthorized(getUserId(req), space.getId())) {
         space = OrganizationControllerProvider.getOrganisationController()
             .getSpaceInstLightById(space.getFatherId());
       }

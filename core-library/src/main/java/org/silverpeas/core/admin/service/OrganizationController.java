@@ -43,6 +43,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 
@@ -50,11 +51,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface OrganizationController extends java.io.Serializable {
 
   static OrganizationController get() {
-    return ServiceProvider.getService(OrganizationController.class);
+    return ServiceProvider.getSingleton(OrganizationController.class);
   }
 
   /**
@@ -139,6 +141,16 @@ public interface OrganizationController extends java.io.Serializable {
   String getComponentParameterValue(String sComponentId, String parameterName);
 
   List<ComponentInstLight> getComponentsWithParameterValue(String param, String value);
+
+  /**
+   * Gets all parameters values by component and by parameter name.
+   * @param componentIds list of component identifier.
+   * @param paramNames optional list of parameter name. All parameters are retrieved if it is not
+   * filled or null
+   * @return a map filled with couples of parameter name / value per component instance identifier.
+   */
+  Map<String, Map<String, String>> getParameterValuesByComponentAndByParamName(
+      final Collection<String> componentIds, final Collection<String> paramNames);
 
   /**
    * Gets the component instance related to the given identifier.<br>
@@ -278,7 +290,29 @@ public interface OrganizationController extends java.io.Serializable {
 
   String[] getUserProfiles(String userId, String componentId);
 
+  /**
+   * Gets the profile names of given user indexed by the given component instances.
+   * @param userId a user identifier as string.
+   * @param componentIds list of component instance identifier as string.
+   * @return a map filled with list of profile name as string by component instance identifier as
+   * string.
+   */
+  Map<String, Set<String>> getUserProfilesByComponent(String userId, Collection<String> componentIds);
+
   String[] getUserProfiles(String userId, String componentId, ProfiledObjectId objectId);
+
+  /**
+   * Gets the profile names of given user indexed by couple of given component instances and
+   * object instances.
+   * @param userId a user identifier as string.
+   * @param componentIds list of component instance identifier as string.
+   * @param objectIds list of Silverpeas's object identifier as string.
+   * @param objectType the type of the aimed object.
+   * @return a map filled with list of profile name as string by couple component instance
+   * identifier as string - object identifier as integer.
+   */
+  Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentAndObject(String userId,
+      Collection<String> componentIds, Collection<Integer> objectIds, ObjectType objectType);
 
   Map<Integer, List<String>> getUserObjectProfiles(String userId, String componentId,
       ProfiledObjectType objectType);
@@ -387,6 +421,19 @@ public interface OrganizationController extends java.io.Serializable {
   boolean isToolAvailable(String toolId);
 
   /**
+   * Gets the component instance identifiers available for the specified user?
+   * </p>
+   * A component is an application in Silverpeas to perform some tasks and to manage some
+   * resources.
+   * Each component in Silverpeas can be instantiated several times, each of them corresponding
+   * then to a running application in Silverpeas and it is uniquely identified from others
+   * instances by a given identifier.
+   * @param userId the unique identifier of a user.
+   * @return a list of component instance identifier as string.
+   */
+  List<String> getAvailableComponentsByUser(String userId);
+
+  /**
    * Is the specified component instance available to the given user?
    * @param componentId the unique identifier of a component instance.
    * @param userId the unique identifier of a user.
@@ -396,6 +443,19 @@ public interface OrganizationController extends java.io.Serializable {
   @Deprecated
   boolean isComponentAvailable(String componentId, String userId);
 
+  /**
+   * Is the specified component instance available among the components instances accessible by the
+   * specified user?
+   * </p>
+   * A component is an application in Silverpeas to perform some tasks and to manage some resources.
+   * Each component in Silverpeas can be instantiated several times, each of them corresponding then
+   * to a running application in Silverpeas and it is uniquely identified from others instances by a
+   * given identifier.
+   *
+   * @param componentId the unique identifier of a component instance.
+   * @param userId the unique identifier of a user.
+   * @return true if the component instance is available, false otherwise.
+   */
   boolean isComponentAvailableToUser(String componentId, String userId);
 
   boolean isComponentAvailableToGroup(String componentId, String groupId);
@@ -503,6 +563,8 @@ public interface OrganizationController extends java.io.Serializable {
   SpaceWithSubSpacesAndComponents getFullTreeview() throws AdminException;
 
   SpaceWithSubSpacesAndComponents getFullTreeview(String userId) throws AdminException;
+
+  SpaceWithSubSpacesAndComponents getFullTreeviewOnComponentName(String userId, String componentName) throws AdminException;
 
   SpaceWithSubSpacesAndComponents getFullTreeview(String userId, String spaceId)
       throws AdminException;

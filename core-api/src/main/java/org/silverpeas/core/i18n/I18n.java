@@ -39,7 +39,7 @@ public interface I18n {
    * @return an instance of {@link I18n}
    */
   static I18n get() {
-    return ServiceProvider.getService(I18n.class);
+    return ServiceProvider.getSingleton(I18n.class);
   }
 
   /**

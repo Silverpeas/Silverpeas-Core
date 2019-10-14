@@ -97,7 +97,7 @@ public class IndexSearcher {
   }
 
   public static IndexSearcher get() {
-    return ServiceProvider.getService(IndexSearcher.class);
+    return ServiceProvider.getSingleton(IndexSearcher.class);
   }
 
   public QueryParser.Operator getDefaultOperator() {

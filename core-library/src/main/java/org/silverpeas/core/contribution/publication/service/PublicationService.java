@@ -54,7 +54,7 @@ public interface PublicationService {
    * @return a {@link PublicationService} object.
    */
   static PublicationService get() {
-    return ServiceProvider.getService(PublicationService.class);
+    return ServiceProvider.getSingleton(PublicationService.class);
   }
 
   /**
@@ -171,6 +171,26 @@ public interface PublicationService {
    * @return a collection of {@link NodePK} instances, each of them identifying a node.
    */
   List<NodePK> getAllFatherPKInSamePublicationComponentInstance(PublicationPK pubPK);
+
+  /**
+   * Selects massively simple data about main locations.
+   * <p>
+   *   This method is designed for process performance needs.
+   * </p>
+   * @param ids the instance ids aimed.
+   * @return a list of {@link Location} instances.
+   */
+  Map<String, List<Location>> getAllMainLocationsByPublicationIds(Collection<PublicationPK> ids);
+
+  /**
+   * Selects massively simple data about all locations (main or aliases).
+   * <p>
+   *   This method is designed for process performance needs.
+   * </p>
+   * @param ids the instance ids aimed.
+   * @return a list of {@link Location} instances.
+   */
+  Map<String, List<Location>> getAllLocationsByPublicationIds(Collection<PublicationPK> ids);
 
   /**
    * Gets all the locations of the specified publication whatever the component instance in which
@@ -416,6 +436,30 @@ public interface PublicationService {
   void createIndex(PublicationDetail pubDetail);
 
   void deleteIndex(PublicationPK pubPK);
+
+
+  /**
+   * Selects massively simple data about publications.
+   * <p>
+   * For now, only the following data are retrieved:
+   *   <ul>
+   *     <li>pubId</li>
+   *     <li>pubStatus</li>
+   *     <li>pubCloneId</li>
+   *     <li>pubCloneStatus</li>
+   *     <li>instanceId</li>
+   *     <li>pubBeginDate</li>
+   *     <li>pubEndDate</li>
+   *     <li>pubBeginHour</li>
+   *     <li>pubEndHour</li>
+   *   </ul>
+   *   This method is designed for process performance needs.<br/>
+   *   The result is not necessarily into same ordering as the one of given parameter.
+   * </p>
+   * @param ids the instance ids aimed.
+   * @return a list of {@link PublicationDetail} instances.
+   */
+  List<PublicationDetail> getMinimalDataByIds(Collection<PublicationPK> ids);
 
   Collection<PublicationDetail> getAllPublications(String instanceId);
 

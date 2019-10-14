@@ -31,11 +31,20 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.Collections.emptySet;
+import static org.silverpeas.core.node.model.NodePK.ROOT_NODE_ID;
 
 /**
  * Check the access to a node for a user.
@@ -45,17 +54,31 @@ import java.util.Set;
 public class NodeAccessController extends AbstractAccessController<NodePK>
     implements NodeAccessControl {
 
-  @Inject
+  private static final String DATA_MANAGER_CONTEXT_KEY = "NodeAccessControllerDataManager";
+
   private ComponentAccessControl componentAccessController;
 
   @Inject
-  private OrganizationController controller;
-
-  @Inject
-  private NodeService nodeService;
-
-  NodeAccessController() {
+  NodeAccessController(final ComponentAccessControl componentAccessController) {
     // Instance by IoC only.
+    this.componentAccessController = componentAccessController;
+  }
+
+  static DataManager getDataManager(final AccessControlContext context) {
+    DataManager manager = context.get(DATA_MANAGER_CONTEXT_KEY, DataManager.class);
+    if (manager == null) {
+      manager = new DataManager(context);
+      context.put(DATA_MANAGER_CONTEXT_KEY, manager);
+    }
+    return manager;
+  }
+
+  @Override
+  public Stream<NodePK> filterAuthorizedByUser(final List<NodePK> nodePks, final String userId,
+      final AccessControlContext context) {
+    final List<String> instancesIds = nodePks.stream().map(NodePK::getInstanceId).distinct().collect(Collectors.toList());
+    getDataManager(context).loadCaches(userId, instancesIds);
+    return nodePks.stream().filter(n -> isUserAuthorized(userId, n, context));
   }
 
   @Override
@@ -74,9 +97,9 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
       if (highestUserRole == null) {
         highestUserRole = SilverpeasRole.reader;
       }
-      User user = User.getById(userId);
-      authorized = !user.isAnonymous() && componentAccessController
-          .isFolderSharingEnabledForRole(nodePK.getInstanceId(), highestUserRole);
+      final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+      final User user = User.getById(userId);
+      authorized = !user.isAnonymous() && componentDataManager.isFolderSharingEnabledForRole(nodePK.getInstanceId(), highestUserRole);
       isRoleVerificationRequired = false;
     }
 
@@ -121,52 +144,99 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
 
     // Component access control
     final Set<SilverpeasRole> componentUserRoles =
-        getComponentAccessController().getUserRoles(userId, nodePK.getInstanceId(), context);
-    if (!getComponentAccessController().isUserAuthorized(componentUserRoles)) {
+        componentAccessController.getUserRoles(userId, nodePK.getInstanceId(), context);
+    if (!componentAccessController.isUserAuthorized(componentUserRoles)) {
       return;
     }
 
     // If rights are not handled from the node, then filling the user role containers with these
     // of component
-    if (!getComponentAccessController().isRightOnTopicsEnabled(nodePK.getInstanceId())) {
+    final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+    if (!componentDataManager.isRightOnTopicsEnabled(nodePK.getInstanceId()) || ROOT_NODE_ID.equals(nodePK.getId())) {
       userRoles.addAll(componentUserRoles);
       return;
     }
 
-    NodeDetail node;
-    try {
-      node = getNodeService().getHeader(nodePK, false);
-    } catch (NodeRuntimeException ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      return;
-    }
+    final DataManager dataManager = getDataManager(context);
+    final NodeDetail node = dataManager.getNodeHeader(nodePK);
     if (node != null) {
       if (!node.haveRights()) {
         userRoles.addAll(componentUserRoles);
         return;
       }
-      userRoles.addAll(SilverpeasRole.from(getOrganisationController().getUserProfiles(userId,
-          nodePK.getInstanceId(), ProfiledObjectId.fromNode(node.getRightsDependsOn()))));
+      userRoles.addAll(SilverpeasRole.from(dataManager.getUserProfiles(userId, node)));
     }
   }
 
-  private NodeService getNodeService() {
-    return nodeService;
-  }
-
   /**
-   * Gets the organization controller used for performing its task.
-   * @return an organization controller instance.
+   * Data manager.
    */
-  private OrganizationController getOrganisationController() {
-    return controller;
-  }
+  static class DataManager {
 
-  /**
-   * Gets a controller of access on the components of a publication.
-   * @return a ComponentAccessController instance.
-   */
-  private ComponentAccessControl getComponentAccessController() {
-    return componentAccessController;
+    private final AccessControlContext context;
+    private OrganizationController controller;
+    private NodeService nodeService;
+    Map<String, NodeDetail> nodeDetailCache = null;
+    Set<String> instanceIdsWithRightsOnTopic = null;
+    Map<Pair<String, Integer>, Set<String>> userProfiles = null;
+
+    DataManager(final AccessControlContext context) {
+      this.context = context;
+      controller = OrganizationController.get();
+      nodeService = NodeService.get();
+    }
+
+    void loadCaches(final String userId, final List<String> instanceIds) {
+      if (userProfiles != null || instanceIds.isEmpty()) {
+        return;
+      }
+      final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+      componentDataManager.loadCaches(userId, instanceIds);
+      instanceIdsWithRightsOnTopic = instanceIds.stream()
+          .filter(componentDataManager::isRightOnTopicsEnabled)
+          .collect(Collectors.toSet());
+      if (instanceIdsWithRightsOnTopic.isEmpty()) {
+        nodeDetailCache = new HashMap<>(0);
+        userProfiles = new HashMap<>(0);
+      } else {
+        final List<NodeDetail> nodeDetails = nodeService.getMinimalDataByInstances(instanceIdsWithRightsOnTopic);
+        nodeDetailCache = new HashMap<>(nodeDetails.size());
+        nodeDetails.forEach(n -> nodeDetailCache.put(n.getNodePK().getInstanceId() + "@" + n.getNodePK().getId(), n));
+        final Set<Integer> nodeIds = nodeDetails.stream()
+            .map(NodeDetail::getRightsDependsOn)
+            .filter(i -> i != -1)
+            .collect(Collectors.toSet());
+        if (nodeIds.isEmpty()) {
+          userProfiles = new HashMap<>(0);
+        } else {
+          userProfiles = controller.getUserProfilesByComponentAndObject(userId, instanceIdsWithRightsOnTopic, nodeIds, ObjectType.NODE);
+        }
+      }
+    }
+
+    Set<String> getInstanceIdsWithRightsOnTopic() {
+      return instanceIdsWithRightsOnTopic;
+    }
+
+    String[] getUserProfiles(final String userId, final NodeDetail node) {
+      final NodePK nodePK = node.getNodePK();
+      if (userProfiles != null) {
+        final Pair<String, Integer> key = Pair.of(nodePK.getInstanceId(), node.getRightsDependsOn());
+        return userProfiles.getOrDefault(key, emptySet()).toArray(new String[0]);
+      }
+      return controller.getUserProfiles(userId, nodePK.getInstanceId(), ProfiledObjectId.fromNode(node.getRightsDependsOn()));
+    }
+
+    public NodeDetail getNodeHeader(final NodePK nodePK) {
+      if (nodeDetailCache != null) {
+        return nodeDetailCache.get(nodePK.getInstanceId() + "@" + nodePK.getId());
+      }
+      try {
+        return nodeService.getHeader(nodePK, false);
+      } catch (NodeRuntimeException ex) {
+        SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+        return null;
+      }
+    }
   }
 }

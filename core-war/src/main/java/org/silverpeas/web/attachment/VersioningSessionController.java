@@ -218,7 +218,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return
    */
   public NodeService getNodeBm() {
-    return ServiceProvider.getService(NodeService.class);
+    return NodeService.get();
   }
 
   /**

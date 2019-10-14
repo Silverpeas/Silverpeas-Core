@@ -44,7 +44,7 @@ public class EntityManagerProvider {
   private EntityManager em;
 
   public static EntityManagerProvider get() {
-    return ServiceProvider.getService(EntityManagerProvider.class);
+    return ServiceProvider.getSingleton(EntityManagerProvider.class);
   }
 
   public EntityManager getEntityManager() {

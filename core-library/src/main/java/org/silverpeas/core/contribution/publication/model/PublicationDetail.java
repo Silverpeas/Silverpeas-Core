@@ -66,8 +66,6 @@ import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.reminder.WithReminder;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
@@ -949,7 +947,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   private FormTemplateService getFormTemplateBm() {
     try {
-      return ServiceProvider.getService(FormTemplateService.class);
+      return ServiceProvider.getSingleton(FormTemplateService.class);
     } catch (Exception e) {
       throw new PublicationRuntimeException(e);
     }
@@ -957,7 +955,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   public PublicationService getPublicationService() {
     try {
-      return ServiceProvider.getService(PublicationService.class);
+      return PublicationService.get();
     } catch (Exception e) {
       throw new PublicationRuntimeException(e);
     }
@@ -1215,9 +1213,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    */
   @Override
   public boolean canBeAccessedBy(final User user) {
-    AccessController<PublicationPK> accessController =
-        AccessControllerProvider.getAccessController(PublicationAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getPK());
+    return PublicationAccessControl.get().isUserAuthorized(user.getId(), this);
   }
 
   /**
@@ -1231,9 +1227,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    */
   @Override
   public boolean canBeModifiedBy(final User user) {
-    AccessController<PublicationPK> accessController =
-        AccessControllerProvider.getAccessController(PublicationAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getPK(),
+    return PublicationAccessControl.get().isUserAuthorized(user.getId(), this,
         AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
   }
 
@@ -1295,9 +1289,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     }
 
     // Access is verified for sharing context
-    AccessController<PublicationPK> accessController = AccessControllerProvider
-        .getAccessController(PublicationAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getPK(),
+    return PublicationAccessControl.get().isUserAuthorized(user.getId(), this,
         AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
   }
 

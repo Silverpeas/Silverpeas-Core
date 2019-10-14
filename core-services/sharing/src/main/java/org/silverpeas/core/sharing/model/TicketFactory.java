@@ -23,18 +23,16 @@
  */
 package org.silverpeas.core.sharing.model;
 
-import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.security.authorization.NodeAccessControl;
-import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
 
 import java.util.Date;
 
@@ -81,15 +79,11 @@ public class TicketFactory {
           AttachmentServiceProvider.getAttachmentService().searchDocumentById(pk, null);
       return doc.isSharingAllowedForRolesFrom(UserDetail.getById(creatorId));
     } else if (Ticket.NODE_TYPE.equalsIgnoreCase(type)) {
-      AccessController<NodePK> nodeAccessController = AccessControllerProvider
-          .getAccessController(NodeAccessControl.class);
-      return nodeAccessController.isUserAuthorized(creatorId,
+      return NodeAccessControl.get().isUserAuthorized(creatorId,
           new NodePK(String.valueOf(sharedObjectId), componentId),
               AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
     } else if (Ticket.PUBLICATION_TYPE.equalsIgnoreCase(type)) {
-      AccessController<PublicationPK> publicationAccessController = AccessControllerProvider
-          .getAccessController(PublicationAccessControl.class);
-      return publicationAccessController.isUserAuthorized(creatorId,
+      return PublicationAccessControl.get().isUserAuthorized(creatorId,
           new PublicationPK(String.valueOf(sharedObjectId), componentId),
             AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
     }

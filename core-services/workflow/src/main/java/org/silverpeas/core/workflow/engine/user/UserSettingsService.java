@@ -11,7 +11,7 @@ import org.silverpeas.core.workflow.api.user.UserSettings;
 public interface UserSettingsService {
 
   static UserSettingsService get() {
-    return ServiceProvider.getService(UserSettingsService.class);
+    return ServiceProvider.getSingleton(UserSettingsService.class);
   }
 
   UserSettings get(String userId, String componentId);

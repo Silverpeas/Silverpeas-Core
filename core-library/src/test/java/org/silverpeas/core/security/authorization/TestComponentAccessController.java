@@ -43,7 +43,6 @@ import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
 
 import java.util.Optional;
 import java.util.Set;
@@ -85,18 +84,12 @@ public class TestComponentAccessController {
   private ComponentAccessControl instance;
   private AccessControlContext accessControlContext;
 
-  @Rule
-  public MockByReflectionRule mockByReflectionRule = new MockByReflectionRule();
-
   private String currentUserId;
 
   @Before
   public void setup() {
-    instance = new ComponentAccessController();
-    controller =
-        mockByReflectionRule.mockField(instance, OrganizationController.class, "controller");
+    controller = mock(OrganizationController.class);
     commonAPI4Test.injectIntoMockedBeanContainer(controller);
-    accessControlContext = AccessControlContext.init();
     final UserDetail user = new UserDetail();
     user.setId(USER_ID);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
@@ -161,6 +154,7 @@ public class TestComponentAccessController {
     when(controller.isComponentAvailableToUser(publicFilesComponentIdWithUserRole, USER_ID))
         .thenReturn(Boolean.TRUE);
     when(controller.isComponentAvailableToUser(forbiddenComponent, USER_ID)).thenReturn(Boolean.FALSE);
+    initTest();
   }
 
   /**
@@ -168,12 +162,15 @@ public class TestComponentAccessController {
    */
   @Test
   public void testIsRightOnTopicsEnabled() {
+    initTest();
     boolean result = instance.isRightOnTopicsEnabled(componentId);
     assertFalse(result);
 
+    initTest();
     result = instance.isRightOnTopicsEnabled(componentIdWithoutTopicRigths);
     assertFalse(result);
 
+    initTest();
     result = instance.isRightOnTopicsEnabled(componentIdWithTopicRigths);
     assertTrue(result);
   }
@@ -192,18 +189,23 @@ public class TestComponentAccessController {
     when(UserProvider.get().getUser(ANONYMOUS_ID)).thenReturn(null);
     when(controller.getUserDetail(ANONYMOUS_ID)).thenReturn(null);
 
+    initTest();
     boolean result = instance.isUserAuthorized(USER_ID, null);
     assertFalse(result);
 
+    initTest();
     result = instance.isUserAuthorized(USER_ID, publicComponentId);
     assertFalse(result);
 
+    initTest();
     result = instance.isUserAuthorized(USER_ID, publicFilesComponentId);
     assertFalse(result);
 
+    initTest();
     result = instance.isUserAuthorized(USER_ID, componentId);
     assertFalse(result);
 
+    initTest();
     result = instance.isUserAuthorized(USER_ID, forbiddenComponent);
     assertFalse(result);
 
@@ -214,18 +216,23 @@ public class TestComponentAccessController {
     when(controller.getUserDetail(ANONYMOUS_ID)).thenReturn(anonymous);
     setupUser(null);
 
+    initTest();
     result = instance.isUserAuthorized(USER_ID, null);
     assertTrue(result);
 
+    initTest();
     result = instance.isUserAuthorized(USER_ID, publicComponentId);
     assertTrue(result);
 
+    initTest();
     result = instance.isUserAuthorized(USER_ID, publicFilesComponentId);
     assertTrue(result);
 
+    initTest();
     result = instance.isUserAuthorized(USER_ID, componentId);
     assertFalse(result);
 
+    initTest();
     result = instance.isUserAuthorized(USER_ID, forbiddenComponent);
     assertFalse(result);
   }
@@ -744,8 +751,8 @@ public class TestComponentAccessController {
    */
   private void assertGetUserRolesAndIsUserAuthorized(String instanceId,
       boolean expectedUserAuthorization, SilverpeasRole... expectedUserRoles) {
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    Set<SilverpeasRole> componentUserRole =
+    initTest();
+    final Set<SilverpeasRole> componentUserRole =
         instance.getUserRoles(currentUserId, instanceId, accessControlContext);
     if (expectedUserRoles.length > 0) {
       assertThat("User roles on " + instanceId, componentUserRole, contains(expectedUserRoles));
@@ -792,5 +799,11 @@ public class TestComponentAccessController {
       user.setAccessLevel(UserAccessLevel.USER);
     }
     user.setState(userState);
+  }
+
+  private void initTest() {
+    instance = new ComponentAccessController(controller);
+    accessControlContext = AccessControlContext.init();
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
   }
 }

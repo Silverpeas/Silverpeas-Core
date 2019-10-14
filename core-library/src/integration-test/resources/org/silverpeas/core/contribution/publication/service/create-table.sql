@@ -2,6 +2,28 @@ CREATE TABLE IF NOT EXISTS UniqueId (
   maxId     INT          NOT NULL,
   tableName VARCHAR(100) NOT NULL
 );
+
+CREATE TABLE ST_ComponentInstance
+(
+    id                   int             NOT NULL,
+    spaceId              int             NOT NULL,
+    name                 varchar(100)    NOT NULL,
+    componentName        varchar(100)    NOT NULL,
+    description          varchar(400),
+    createdBy            int,
+    orderNum             int DEFAULT (0) NOT NULL,
+    createTime           varchar(20),
+    updateTime           varchar(20),
+    removeTime           varchar(20),
+    componentStatus      char(1),
+    updatedBy            int,
+    removedBy            int,
+    isPublic             int DEFAULT (0) NOT NULL,
+    isHidden             int DEFAULT (0) NOT NULL,
+    lang                 char(2),
+    isInheritanceBlocked int default (0) NOT NULL
+);
+
 CREATE TABLE SB_Publication_Publi
 (
   pubId                INT           NOT NULL,

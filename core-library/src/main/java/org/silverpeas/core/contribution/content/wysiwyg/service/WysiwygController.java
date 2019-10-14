@@ -69,7 +69,7 @@ public class WysiwygController {
    * @return
    */
   protected static WysiwygManager getManager() {
-    return ServiceProvider.getService(WysiwygManager.class);
+    return ServiceProvider.getSingleton(WysiwygManager.class);
   }
 
   /**

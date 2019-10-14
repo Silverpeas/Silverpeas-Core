@@ -24,19 +24,18 @@
 package org.silverpeas.web.servlets;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.mvc.AbstractFileSender;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
+import org.silverpeas.core.silverstatistics.access.service.StatisticService;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.AbstractFileSender;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -123,7 +122,7 @@ public class FileServer extends AbstractFileSender {
       String pubId = req.getParameter(PUBLICATION_ID_PARAMETER);
       ResourceReference pubPK = new ResourceReference(pubId, componentId);
       try {
-        StatisticService statisticService = ServiceProvider.getService(StatisticService.class);
+        StatisticService statisticService = StatisticService.get();
         statisticService.addStat(userId, pubPK, 1, "Publication");
       } catch (Exception ex) {
         SilverTrace.warn("util", "FileServer.doPost", "peasUtil.CANNOT_WRITE_STATISTICS",

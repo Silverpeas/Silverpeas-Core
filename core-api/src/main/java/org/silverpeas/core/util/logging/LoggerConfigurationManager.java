@@ -110,7 +110,7 @@ public class LoggerConfigurationManager {
   }
 
   public static LoggerConfigurationManager get() {
-    return ServiceProvider.getService(LoggerConfigurationManager.class);
+    return ServiceProvider.getSingleton(LoggerConfigurationManager.class);
   }
 
   /**

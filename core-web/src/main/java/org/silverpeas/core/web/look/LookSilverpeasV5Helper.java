@@ -42,7 +42,6 @@ import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -221,7 +220,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
 
   private final void init(SettingBundle resources) {
     this.organizationController = OrganizationControllerProvider.getOrganisationController();
-    this.publicationService = ServiceProvider.getService(PublicationService.class);
+    this.publicationService = PublicationService.get();
     this.resources = resources;
     this.defaultMessages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.lookSilverpeasV5.multilang.lookBundle",

@@ -49,7 +49,7 @@ public interface AttachmentService extends DocumentIndexing {
   String VERSION_MODE = "versionControl";
 
   static AttachmentService get() {
-    return ServiceProvider.getService(AttachmentService.class);
+    return ServiceProvider.getSingleton(AttachmentService.class);
   }
 
   /**

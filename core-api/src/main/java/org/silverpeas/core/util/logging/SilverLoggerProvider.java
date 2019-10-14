@@ -59,7 +59,7 @@ public class SilverLoggerProvider {
    * @return a {@link SilverLoggerProvider} instance.
    */
   protected static SilverLoggerProvider getLoggerProvider() {
-    return ServiceProvider.getService(SilverLoggerProvider.class);
+    return ServiceProvider.getSingleton(SilverLoggerProvider.class);
   }
 
   /**

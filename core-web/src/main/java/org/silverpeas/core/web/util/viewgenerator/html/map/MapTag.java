@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.map;
 
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -35,6 +35,8 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
+
+import static org.silverpeas.core.admin.component.model.ComponentInstLight.getIcon;
 
 public class MapTag extends TagSupport {
 
@@ -222,7 +224,7 @@ public class MapTag extends TagSupport {
     MainSessionController sessionController = getMainSessionController();
     String language = sessionController.getFavoriteLanguage();
     int nbApp = 0;
-    for (ComponentInstLight componentInst : space.getComponents()) {
+    for (final SilverpeasComponentInstance componentInst : space.getComponents()) {
       nbApp++;
       if (!componentInst.isHidden() || showHiddenComponents) {
         String label = componentInst.getLabel(language);
@@ -232,7 +234,7 @@ public class MapTag extends TagSupport {
 
         if (displayAppIcon) {
           // display component icon
-          result.append("<img src=\"").append(componentInst.getIcon(false)).append("\"");
+          result.append("<img src=\"").append(getIcon(componentInst, false)).append("\"");
           result.append(" border=\"0\" alt=\"\"/>");
         }
 

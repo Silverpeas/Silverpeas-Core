@@ -47,7 +47,7 @@ public class PermalinkRegistry {
   private final List<String> urlPartRegistry = synchronizedList(new ArrayList<>());
 
   public static PermalinkRegistry get() {
-    return ServiceProvider.getService(PermalinkRegistry.class);
+    return ServiceProvider.getSingleton(PermalinkRegistry.class);
   }
 
   @PostConstruct

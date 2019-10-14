@@ -40,7 +40,7 @@ import java.util.List;
 public interface CommentService {
 
   static CommentService get() {
-    return ServiceProvider.getService(CommentService.class);
+    return ServiceProvider.getSingleton(CommentService.class);
   }
 
   void createComment(Comment cmt);
