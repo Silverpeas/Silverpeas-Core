@@ -1,4 +1,4 @@
-exec sp_rename 'sb_reminder.trigger_durationProp', trigger_prop, 'COLUMN';
+sp_rename 'sb_reminder.trigger_durationProp', trigger_prop, 'COLUMN';
 
 ALTER TABLE sb_reminder
     ADD process_name VARCHAR(200);
