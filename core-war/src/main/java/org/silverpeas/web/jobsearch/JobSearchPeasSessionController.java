@@ -222,10 +222,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private List<SearchResult> searchEngineResultSpace(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<>();
     try {
-      QueryParameters queryParameters = new QueryParameters();
-      queryParameters.setKeywords(searchField);
-
-      QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
+      QueryDescription query = initQuery(searchField);
       query.addComponent("Spaces");
       List<MatchingIndexEntry> plainSearchResults =
           SearchEngineProvider.getSearchEngine().search(query).getEntries();
@@ -352,10 +349,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     List<SearchResult> listSearchResult = new ArrayList<>();
 
     try {
-      QueryParameters queryParameters = new QueryParameters();
-      queryParameters.setKeywords(searchField);
-
-      QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
+      QueryDescription query = initQuery(searchField);
       query.addComponent("Components");
       List<MatchingIndexEntry> plainSearchResults =
           SearchEngineProvider.getSearchEngine().search(query).getEntries();
@@ -510,10 +504,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private List<SearchResult> searchEngineResultGroup(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<>();
     try {
-      QueryParameters queryParameters = new QueryParameters();
-      queryParameters.setKeywords(searchField);
-
-      QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
+      QueryDescription query = initQuery(searchField);
       query.addComponent("groups");
 
       List<MatchingIndexEntry> plainSearchResults =
@@ -628,10 +619,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private List<SearchResult> searchEngineResultUser(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<>();
     try {
-      QueryParameters queryParameters = new QueryParameters();
-      queryParameters.setKeywords(searchField);
-
-      QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
+      QueryDescription query = initQuery(searchField);
       query.addComponent("users");
 
       List<MatchingIndexEntry> plainSearchResults =
@@ -695,5 +683,14 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       return searchResultUser(searchField);
     }
     return Collections.emptyList();
+  }
+
+  private QueryDescription initQuery(String userQuery) {
+    QueryParameters queryParameters = new QueryParameters();
+    queryParameters.setKeywords(userQuery);
+
+    QueryDescription query = queryParameters.getQueryDescription(getUserId(), "*");
+    query.setAdminScope(true);
+    return query;
   }
 }

@@ -64,7 +64,7 @@ public class SimpleSearchEngine implements SearchEngine {
   @Inject
   private IndexSearcher indexSearcher;
 
-  SettingBundle pdcSettings =
+  private SettingBundle pdcSettings =
       ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");
   private final float minScore = pdcSettings.getFloat("wordSpellingMinScore", 0.5f);
   private final boolean enableWordSpelling = pdcSettings.getBoolean("enableWordSpelling", false);
@@ -90,8 +90,12 @@ public class SimpleSearchEngine implements SearchEngine {
   public PlainSearchResult search(QueryDescription query) throws ParseException {
     try {
       List<MatchingIndexEntry> results = Arrays.asList(indexSearcher.search(query));
-      // filter results to checkout specific rights
-      results = filterMatchingIndexEntries(results, query.getSearchingUser());
+
+      if (!query.isAdminScope()) {
+        // filter results to checkout specific rights
+        results = filterMatchingIndexEntries(results, query.getSearchingUser());
+      }
+
       @SuppressWarnings("unchecked") Set<String> spellingWords = Collections.emptySet();
       if (enableWordSpelling && isSpellingNeeded(results)) {
         String[] suggestions = didYouMeanSearcher.suggest(query);
@@ -155,10 +159,9 @@ public class SimpleSearchEngine implements SearchEngine {
     }
 
     for (MatchingIndexEntry result : matchingIndexEntries) {
-      if (!isMatchingIndexEntryAvailable(result, userId, authorizations, allowedComponentIds)) {
-        continue;
+      if (isMatchingIndexEntryAvailable(result, userId, authorizations, allowedComponentIds)) {
+        results.add(result);
       }
-      results.add(result);
     }
 
     disableCaches(authorizations);
