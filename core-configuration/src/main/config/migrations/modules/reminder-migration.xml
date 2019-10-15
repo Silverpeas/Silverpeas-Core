@@ -38,7 +38,7 @@
   </upgrade>
 
   <upgrade fromVersion="002">
-    <script name="update_table.sql" type="sql"/>
+    <script name="updateReminderTable.groovy" type="groovy"/>
   </upgrade>
 
 </migration>
