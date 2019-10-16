@@ -28,6 +28,7 @@
 <%@ include file="importFrameSet.jsp" %>
 <%@ page import="org.silverpeas.core.web.look.LookHelper"%>
 <%@ page import="org.silverpeas.core.web.look.TopItem"%>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -58,6 +59,8 @@ if (wallPaper == null) {
 if (wallPaper == null) {
   wallPaper = m_sContext+"/admin/jsp/icons/silverpeasV5/bandeauTop.jpg";
 }
+
+String helpURL = helper.getSettings("helpURL", "");
 
 boolean outilDisplayed = false;
 %>
@@ -184,13 +187,13 @@ window.USERSESSION_PROMISE.then(function() {
 		    %>
 				<a href="<%=m_sContext + "/admin/jsp/Map.jsp"%>" target="MyMain"><%=helper.getString("lookSilverpeasV5.Map")%></a>
 		<% } %>
-		<% if (helper.getSettings("helpVisible", true)) {
+		<% if (helper.getSettings("helpVisible", true) && StringUtil.isDefined(helpURL)) {
 			if (outilDisplayed) {
 			out.print(" | ");
 			}
 		    outilDisplayed = true;
 		%>
-			<a href="<%=helper.getSettings("helpURL", "/help_fr/Silverpeas.htm")%>" target="_blank"><%=helper.getString("lookSilverpeasV5.Help")%></a>
+			<a href="<%=helpURL%>" target="_blank"><%=helper.getString("lookSilverpeasV5.Help")%></a>
 		<% } %>
 		<% if (!isAnonymousAccess && helper.getSettings("logVisible", true)) {
 			if (outilDisplayed) {
