@@ -45,7 +45,7 @@
 <fmt:message var="clipboardIconUrl" key="JMP.clipboardIcon" bundle="${icons}"/>
 <c:url var="clipboardIconUrl" value="${clipboardIconUrl}"/>
 <c:url var="clipboardUrl" value='<%=URLUtil.getURL(URLUtil.CMP_CLIPBOARD) + "Idle.jsp?message=SHOWCLIPBOARD"%>'/>
-<c:set var="helpUrl" value='<%=helper.getSettings("helpURL", "/help_fr/Silverpeas.htm")%>'/>
+<c:set var="helpUrl" value='<%=helper.getSettings("helpURL", "")%>'/>
 <fmt:message var="helpLabel" key="JMP.help"/>
 <fmt:message var="helpIconUrl" key="JMP.help" bundle="${icons}"/>
 <c:url var="helpIconUrl" value="${helpIconUrl}"/>
@@ -61,7 +61,9 @@
 <div id="outilsAdmin">
   <a class="sp_back_front" href="javascript:void(0);" onclick="window.top.spWindow.leaveAdmin()">${backToSilverpeasLabel}</a>
   <a href="${clipboardUrl}" target="IdleFrame"><img src="${clipboardIconUrl}" border="0" alt="${clipboardLabel}" onfocus="self.blur()" title="${clipboardLabel}"/><span>${clipboardLabel}</span></a>
-  <a href="${helpUrl}" target="_blank"><img border="0" src="${helpIconUrl}" alt="${helpLabel}" title="${helpLabel}"/><span>${helpLabel}</span></a>
+  <c:if test="${not empty helpUrl}">
+    <a href="${helpUrl}" target="_blank"><img border="0" src="${helpIconUrl}" alt="${helpLabel}" title="${helpLabel}"/><span>${helpLabel}</span></a>
+  </c:if>
   <a class="sp_logout" href="javascript:onclick=window.top.spUserSession.logout();"><img border="0" src="${logoutIconUrl}" alt="${logoutLabel}" title="${logoutLabel}"/><span>${logoutLabel}</span></a>
 </div>
 <ul class="sp_menuAdmin">
