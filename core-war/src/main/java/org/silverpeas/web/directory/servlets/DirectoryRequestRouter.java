@@ -134,7 +134,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         users = directorySC.getCommonContacts(userId);
         destination = doPagination(request, users, directorySC);
       } else if ("searchByKey".equalsIgnoreCase(function)) {
-        QueryDescription query = null;
+        QueryDescription query;
         if (request.isContentInMultipart()) {
           query = directorySC.buildQuery(request.getFileItems());
         } else {
@@ -143,6 +143,11 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         boolean globalSearch = request.getParameterAsBoolean("Global");
 
         if (query != null && !query.isEmpty()) {
+          if (!lDomainIds.isEmpty()) {
+            // case of direct search limited to domain(s) - used in some specific looks
+            directorySC.initSources(true);
+          }
+
           users = directorySC.getUsersByQuery(query, globalSearch);
           destination = doPagination(request, users, directorySC);
         } else {
