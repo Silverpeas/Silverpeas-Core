@@ -50,6 +50,9 @@ public class WorkflowJDOManager {
    */
   private static JDOManager jdo = null;
 
+  // used to simulate exception during creation
+  //public static int cpt = 0;
+
   /**
    * Get a connection to database
    * @return Database object
@@ -112,6 +115,23 @@ public class WorkflowJDOManager {
       } catch (PersistenceException pe) {
         SilverTrace.warn("workflowEngine", "JDOManager.closeDatabase",
             "root.EX_CONNECTION_CLOSE_FAILED", pe);
+      }
+    }
+  }
+
+  public static void reset(Database db) {
+    SilverTrace.error("workflowEngine", "WorkflowJDOManager.reset", "WorkflowJDOManager.reset");
+    if (db != null && !db.isClosed()) {
+      closeDatabase(db);
+    }
+    if (jdo != null) {
+      try {
+        jdo.close();
+      } catch (Exception e) {
+        SilverTrace.error("workflowEngine", "WorkflowJDOManager.reset", "WorkflowJDOManager.reset", e);
+      } finally {
+        jdo = null;
+        //cpt = 0;
       }
     }
   }

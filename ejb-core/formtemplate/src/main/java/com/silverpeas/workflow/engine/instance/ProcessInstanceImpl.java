@@ -670,15 +670,24 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           "instance id is not yet retrieve " + this.getInstanceId() + " for " +
               this.getModelId());
       db.begin();
+
+      /*if (WorkflowJDOManager.cpt == 2) {
+        throw new PersistenceException("Simulation exception");
+      }*/
+
       db.create(this);
+
       SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.create", "synchronized code",
           "instance id has been created " + this.getInstanceId() + " for " + this.getModelId());
       db.commit();
       SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.create", "synchronized code",
           "instance id after commit " + this.getInstanceId() + " for " + this.getModelId());
 
+      //WorkflowJDOManager.cpt++;
+
       return this.getInstanceId();
     } catch (PersistenceException pe) {
+      WorkflowJDOManager.reset(db);
       throw new WorkflowException("ProcessInstanceImpl.create",
           "workflowEngine.EX_ERR_CASTOR_CREATE_INSTANCE", "instanceid=" + getInstanceId(), pe);
     } finally {
