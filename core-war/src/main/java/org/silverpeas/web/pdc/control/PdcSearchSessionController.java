@@ -208,7 +208,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private ThesaurusManager thesaurus = PdcServiceProvider.getThesaurusManager();
   // Vocabulary used by the user
   private Jargon jargon = null;
-  private Map<String, Collection<String>> synonyms = new HashMap<>();
 
   private boolean isThesaurusEnableByUser = false;
 
@@ -1314,8 +1313,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public void initializeJargon() throws PdcException {
     try {
-      Jargon theJargon = thesaurus.getJargon(getUserId());
-      this.jargon = theJargon;
+      this.jargon = thesaurus.getJargon(getUserId());
     } catch (ThesaurusException e) {
       throw new PdcException(e);
     }
@@ -1390,25 +1388,19 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private Collection<String> getSynonym(String mot) {
-    if (synonyms.containsKey(mot)) {
-      return synonyms.get(mot);
-    } else {
-      try {
-        Collection<String> synos = thesaurus.getSynonyms(mot, getUserId());
-        synonyms.put(mot, synos);
-        return synos;
-      } catch (ThesaurusException e) {
-        throw new PdcPeasRuntimeException(
-            "PdcSearchSessionController.getSynonym", SilverpeasException.ERROR,
-            "pdcPeas.EX_GET_SYNONYMS", e);
-      }
+    try {
+      return thesaurus.getSynonyms(mot, getUserId());
+    } catch (ThesaurusException e) {
+      throw new PdcPeasRuntimeException(
+          "PdcSearchSessionController.getSynonym", SilverpeasException.ERROR,
+          "pdcPeas.EX_GET_SYNONYMS", e);
     }
   }
 
   private boolean isKeyword(String mot) {
     String[] keyWords = getStopWords();
-    for (int i = 0; i < keyWords.length; i++) {
-      if (mot.equalsIgnoreCase(keyWords[i])) {
+    for (String keyword : keyWords) {
+      if (mot.equalsIgnoreCase(keyword)) {
         return true;
       }
     }
