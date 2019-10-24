@@ -41,7 +41,7 @@
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</developerConnection>
     <url>http://github.com/Silverpeas/Silverpeas-Core</url>
-    <tag>core-5.15.11</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
@@ -70,7 +70,7 @@
 
   <groupId>com.silverpeas</groupId>
   <artifactId>core</artifactId>
-  <version>5.15.11</version>
+  <version>5.15.12-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
   <url>http://www.silverpeas.org/docs/core</url>
