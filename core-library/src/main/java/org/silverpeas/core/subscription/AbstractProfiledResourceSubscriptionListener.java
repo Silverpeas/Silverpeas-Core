@@ -31,7 +31,8 @@ import javax.inject.Inject;
 import java.io.Serializable;
 
 /**
- * Abstract listener of deletion events to remove all subscriptions on the deleted resource.
+ * Abstract listener of events to remove all the subscriptions on a deleted resource or on a
+ * resource for which the subscription feature is disabled.
  * It does really the unsubscription and delegates the getting of the subscription resource to the
  * concrete implementors.
  * @author mmoquillon
@@ -49,7 +50,18 @@ public abstract class AbstractProfiledResourceSubscriptionListener<R extends Ser
     subscriptionService.unsubscribeByResource(resource);
   }
 
+  @Override
+  public void onUpdate(final T event) throws Exception {
+    final R object = event.getTransition().getAfter();
+    final boolean isEnabled = isSubscriptionEnabled(object);
+    if (!isEnabled) {
+      final SubscriptionResource resource = getSubscriptionResource(object);
+      subscriptionService.unsubscribeByResource(resource);
+    }
+  }
+
   protected abstract SubscriptionResource getSubscriptionResource(final R resource);
 
+  protected abstract boolean isSubscriptionEnabled(final R resource);
 }
   
