@@ -26,7 +26,7 @@ package org.silverpeas.core.security.authorization;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.util.CollectionUtil;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -46,7 +46,7 @@ public interface AccessController<T> {
    * @param userId the unique identifier of the user.
    * @return true if access is granted - false otherwise.
    */
-  Stream<T> filterAuthorizedByUser(final List<T> objects, final String userId);
+  Stream<T> filterAuthorizedByUser(final Collection<T> objects, final String userId);
 
   /**
    * Filters the given object list in order to keep those the specified user is authorized on.
@@ -58,7 +58,7 @@ public interface AccessController<T> {
    * @param context the context in which the object is accessed.
    * @return true if access is granted - false otherwise.
    */
-  Stream<T> filterAuthorizedByUser(final List<T> objects, final String userId, final AccessControlContext context);
+  Stream<T> filterAuthorizedByUser(final Collection<T> objects, final String userId, final AccessControlContext context);
 
   /**
    * Checks user authorization from the given role collection.

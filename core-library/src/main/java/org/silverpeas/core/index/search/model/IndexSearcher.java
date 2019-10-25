@@ -57,6 +57,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.core.index.indexing.model.IndexProcessor.doSearch;
 import static org.silverpeas.core.index.indexing.model.IndexReadersCache.getIndexReader;
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
@@ -158,11 +159,9 @@ public class IndexSearcher {
   public MatchingIndexEntry[] search(QueryDescription query)
       throws org.silverpeas.core.index.search.model.ParseException {
     return doSearch(() -> {
-      long startTime = System.nanoTime();
+      final long startTime = System.currentTimeMillis();
       List<MatchingIndexEntry> results;
-
       org.apache.lucene.search.IndexSearcher searcher = getSearcher(query);
-
       try {
         BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
         BooleanQuery.Builder rangeClausesBuilder = new BooleanQuery.Builder();
@@ -170,9 +169,7 @@ public class IndexSearcher {
         rangeClausesBuilder.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
         // filtering on searched scopes
         booleanQueryBuilder.add(getScopeQuery(query), BooleanClause.Occur.FILTER);
-
         parseQuery(query, booleanQueryBuilder, rangeClausesBuilder);
-
         // date range clauses are passed in the filter to optimize search performances
         // but the query cannot be empty : if so, then pass date range in the query
         BooleanQuery booleanQuery = booleanQueryBuilder.build();
@@ -187,16 +184,16 @@ public class IndexSearcher {
           SilverLogger.getLogger(this).info(booleanQuery.toString());
           topDocs = searcher.search(booleanQuery, maxNumberResult);
         }
-
         results = makeList(topDocs, query, searcher);
       } catch (IOException ioe) {
         SilverLogger.getLogger(this).error("Index file corrupted", ioe);
         results = new ArrayList<>();
       }
-      long endTime = System.nanoTime();
-
-      SilverLogger.getLogger(this).debug(
-          () -> MessageFormat.format(" search duration in {0}ms", (endTime - startTime) / 1000000));
+      final long endTime = System.currentTimeMillis();
+      final int nbResults = results.size();
+      SilverLogger.getLogger(this).debug(() -> MessageFormat
+          .format(" search index duration in {0} with {1} matching entries",
+              formatDurationHMS(endTime - startTime), nbResults));
       return results.toArray(new MatchingIndexEntry[0]);
     }, () -> new MatchingIndexEntry[0]);
   }

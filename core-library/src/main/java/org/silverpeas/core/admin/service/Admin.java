@@ -4099,57 +4099,6 @@ class Admin implements Administration {
   }
 
   @Override
-  public String[] getAllComponentIdsRecur(String sSpaceId, String sUserId, String componentNameRoot,
-      boolean inCurrentSpace, boolean inAllSpaces) throws AdminException {
-    ArrayList<String> alCompoIds = new ArrayList<>();
-    // In All silverpeas
-    if (inAllSpaces) {
-      CompoSpace[] cs = getCompoForUser(sUserId, componentNameRoot);
-      for (CompoSpace c : cs) {
-        alCompoIds.add(c.getComponentId());
-      }
-    } else {
-      alCompoIds = getAllComponentIdsRecur(sSpaceId, sUserId,
-          componentNameRoot, inCurrentSpace);
-    }
-    return arrayListToString(alCompoIds);
-  }
-
-  private ArrayList<String> getAllComponentIdsRecur(String sSpaceId, String sUserId,
-      String componentNameRoot, boolean inCurrentSpace) throws AdminException {
-    ArrayList<String> alCompoIds = new ArrayList<>();
-    getComponentIdsByNameAndUserId(sUserId, componentNameRoot);
-    // Get components in the root of the space
-    if (inCurrentSpace) {
-      String[] componentIds = getAvailCompoIdsAtRoot(sSpaceId, sUserId);
-      addComponentIdsMatchingName(componentNameRoot, componentIds, alCompoIds);
-    }
-
-    // Get components in sub spaces
-    String[] asSubSpaceIds = getAllSubSpaceIds(sSpaceId);
-    for (int nI = 0; asSubSpaceIds != null && nI < asSubSpaceIds.length; nI++) {
-
-      SpaceInst spaceInst = getSpaceInstById(asSubSpaceIds[nI]);
-      String[] componentIds = getAvailCompoIds(spaceInst.getId(), sUserId);
-
-      addComponentIdsMatchingName(componentNameRoot, componentIds, alCompoIds);
-    }
-    return alCompoIds;
-  }
-
-  private void addComponentIdsMatchingName(final String componentNameRoot, final String[] componentIds,
-      final ArrayList<String> alCompoIds) throws AdminException {
-    if (componentIds != null) {
-      for (String componentId : componentIds) {
-        ComponentInstLight compo = getComponentInstLight(componentId);
-        if (compo.getName().equals(componentNameRoot)) {
-          alCompoIds.add(compo.getId());
-        }
-      }
-    }
-  }
-
-  @Override
   public void synchronizeGroupByRule(String groupId, boolean scheduledMode) throws AdminException {
     GroupDetail group = getGroup(groupId);
     String rule = group.getRule();

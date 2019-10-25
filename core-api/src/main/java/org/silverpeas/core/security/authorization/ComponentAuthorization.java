@@ -23,6 +23,14 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.util.ServiceProvider;
+
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
 /**
  * Component security provides a way to check a user have enough rights to access a given object in
  * a Silverpeas component instance. Each Silverpeas component should implements this interface
@@ -30,42 +38,78 @@ package org.silverpeas.core.security.authorization;
  */
 public interface ComponentAuthorization {
 
-  /**
-   * Check if a user is authorized to access to a given object in a defined component.
-   * @param componentId - id of the component
-   * @param userId - id of the user
-   * @param objectId - id of the object
-   * @return true if user is authorized to access to component's object, false otherwise.
-   */
-  boolean isAccessAuthorized(String componentId, String userId,
-      String objectId);
+  static Set<ComponentAuthorization> getAll() {
+    return ServiceProvider.getAllServices(ComponentAuthorization.class);
+  }
 
   /**
-   * Check if a user is authorized to access to a given object in a defined component. Usefull if
-   * component uses several objects.
-   * @param componentId - id of the component
-   * @param userId - id of the user
-   * @param objectId - id of the object
-   * @param objectType - type of the object (ex : PublicationDetail, NodeDetail...)
-   * @return true if user is authorized to access to component's object, false otherwise.
+   * Is this service related to the specified component instance. The service is related to the
+   * specified instance if it is a service defined by the application from which the instance
+   * was spawned.
+   * @param instanceId the unique instance identifier of the component.
+   * @return true if the instance is spawn from the application to which the service is related.
+   * False otherwise.
    */
-  boolean isAccessAuthorized(String componentId, String userId,
-      String objectId, String objectType);
+  boolean isRelatedTo(String instanceId);
 
   /**
-   * Check if a user is authorized to access to a given object in a defined component. Usefull if
-   * component uses several objects.
-   * @param componentId - id of the component
-   * @param userId - id of the user
-   * @param objectId - id of the object
-   * @param objectType - type of the object (ex : PublicationDetail, NodeDetail...)
-   * @return true if user is authorized to access to component's object, false otherwise.
+   * Filtering the given resources from user rights.
+   * <p>
+   * The order into which the given resources are provided is kept.
+   * </p>
+   * @param <T> the type of a resource contained into resource list.
+   * @param resources the resources to filter.
+   * @param converter the converter which permits to get the {@link ComponentResourceReference} instance
+   * from a {@code T} resource.
+   * @param userId the identifier of the user.
+   * @param context the context of filtering.
+   * @return a filtered stream of {@code T} resource, ordered as the given resources are.
    */
-  boolean isObjectAvailable(String componentId, String userId,
-      String objectId, String objectType);
+  <T> Stream<T> filter(Collection<T> resources, Function<T, ComponentResourceReference> converter,
+      String userId, final AccessControlContext context);
 
-  void enableCache();
+  /**
+   * Representation of a resource in order to filtered by the API implementations.
+   */
+  class ComponentResourceReference {
+    final String localId;
+    final String type;
+    final String instanceId;
 
-  void disableCache();
+    public ComponentResourceReference(final String localId, final String type, final String instanceId) {
+      this.localId = localId;
+      this.type = type;
+      this.instanceId = instanceId;
+    }
 
+    public String getLocalId() {
+      return localId;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public String getInstanceId() {
+      return instanceId;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      final ComponentResourceReference that = (ComponentResourceReference) o;
+      return localId.equals(that.localId) &&
+          Objects.equals(type, that.type) && instanceId.equals(that.instanceId);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(localId, type, instanceId);
+    }
+  }
 }

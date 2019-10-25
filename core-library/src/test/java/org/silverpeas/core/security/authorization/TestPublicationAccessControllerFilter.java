@@ -188,6 +188,8 @@ public class TestPublicationAccessControllerFilter {
     assertFilterAuthorizedByUserShouldLoadCaches(false);
     executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE));
     assertFilterAuthorizedByUserShouldLoadCaches(true);
+    executeFilterAuthorizedByUserAndGetPublicationsWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE));
+    assertFilterAuthorizedByUserShouldLoadCaches(true);
   }
 
   @SuppressWarnings("unchecked")
@@ -237,6 +239,8 @@ public class TestPublicationAccessControllerFilter {
     assertFilterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches(false);
     executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_ON_INHERITED_RIGHTS_WITH_ONE_CLONE));
     assertFilterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches(true);
+    executeFilterAuthorizedByUserAndGetPublicationsWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_ON_INHERITED_RIGHTS_WITH_ONE_CLONE));
+    assertFilterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches(true);
   }
 
   private void assertFilterAuthorizedByUserOnInheritedRightComponentShouldLoadCaches(final boolean fromPks) {
@@ -281,6 +285,8 @@ public class TestPublicationAccessControllerFilter {
     executeFilterAuthorizedByUserWithPubs(ALL_PUBLICATIONS_FOR_TEST_ON_SPECIFIC_RIGHTS);
     assertFilterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches(false);
     executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_ON_SPECIFIC_RIGHTS));
+    assertFilterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches(true);
+    executeFilterAuthorizedByUserAndGetPublicationsWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_ON_SPECIFIC_RIGHTS));
     assertFilterAuthorizedByUserOnSpecificRightOnTopicComponentShouldLoadCaches(true);
   }
 
@@ -331,6 +337,8 @@ public class TestPublicationAccessControllerFilter {
     assertFilterAuthorizedByUserWithSearchContextShouldLoadCaches();
     executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE), search);
     assertFilterAuthorizedByUserWithSearchContextShouldLoadCaches();
+    executeFilterAuthorizedByUserAndGetPublicationsWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE), search);
+    assertFilterAuthorizedByUserWithSearchContextShouldLoadCaches();
   }
 
   @SuppressWarnings("unchecked")
@@ -372,6 +380,8 @@ public class TestPublicationAccessControllerFilter {
     executeFilterAuthorizedByUserWithPubs(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE, modification);
     assertFilterAuthorizedByUserWithModifyContextShouldLoadCaches(false);
     executeFilterAuthorizedByUserWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE), modification);
+    assertFilterAuthorizedByUserWithModifyContextShouldLoadCaches(true);
+    executeFilterAuthorizedByUserAndGetPublicationsWithPks(toPubPks(ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE), modification);
     assertFilterAuthorizedByUserWithModifyContextShouldLoadCaches(true);
   }
 
@@ -442,6 +452,16 @@ public class TestPublicationAccessControllerFilter {
    * Centralization.
    */
   private void executeFilterAuthorizedByUserWithPks(final List<PublicationPK> listToFilter,
+      final AccessControlOperation... operations) {
+    testContext.setup();
+    Stream.of(operations).forEach(o -> testContext.accessControlContext.onOperationsOf(o));
+    testInstance.filterAuthorizedByUser(listToFilter, USER_ID, testContext.accessControlContext);
+  }
+
+  /**
+   * Centralization.
+   */
+  private void executeFilterAuthorizedByUserAndGetPublicationsWithPks(final List<PublicationPK> listToFilter,
       final AccessControlOperation... operations) {
     testContext.setup();
     Stream.of(operations).forEach(o -> testContext.accessControlContext.onOperationsOf(o));

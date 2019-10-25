@@ -27,8 +27,8 @@
  */
 package org.silverpeas.core.web.look;
 
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import java.util.List;
 
@@ -37,10 +37,9 @@ import java.util.List;
  */
 public interface PublicationHelper {
 
-  public List<PublicationDetail> getPublications(String spaceId, int nbPublis);
+  List<PublicationDetail> getPublications(String spaceId, int nbPublis);
 
-  public List<PublicationDetail> getPublications(String spaceId, List<String> excluded,
-      int nbPublis);
+  List<PublicationDetail> getPublications(String spaceId, List<String> excluded, int nbPublis);
 
   /**
    * Get the last publications of a space updated since a specified date.
@@ -49,7 +48,7 @@ public interface PublicationHelper {
    * @param nbPublis the max number of publications returned.
    * @return the last publications of a space updated since a specified date.
    */
-  public List<PublicationDetail> getUpdatedPublications(String spaceId, int since, int nbPublis);
+  List<PublicationDetail> getUpdatedPublications(String spaceId, int since, int nbPublis);
 
-  public void setMainSessionController(MainSessionController mainSC);
+  void setMainSessionController(MainSessionController mainSC);
 }

@@ -154,7 +154,7 @@ public class PdcSearchProcessor implements SearchQueryProcessor {
       contentProcessorPrefixId = "kmelia";
     }
     IGlobalSilverContentProcessor processor =
-        ServiceProvider.getService(contentProcessorPrefixId + PROCESSOR_NAME_SUFFIX);
+        ServiceProvider.getSingleton(contentProcessorPrefixId + PROCESSOR_NAME_SUFFIX);
 
     for (SilverContentInterface sci : silverContentTempo) {
       GlobalSilverContent gsc = processor.getGlobalSilverContent(sci);

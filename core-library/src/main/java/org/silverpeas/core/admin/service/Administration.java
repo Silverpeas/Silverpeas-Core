@@ -1177,23 +1177,6 @@ public interface Administration {
    */
   String[] getAllComponentIdsRecur(String sSpaceId) throws AdminException;
 
-  /**
-   * Return all the components Id recursively in (Space+subspaces, or only subspaces or in
-   * Silverpeas) available in silverpeas given a userId and a componentNameRoot
-   * @param sSpaceId
-   * @param sUserId
-   * @param componentNameRoot
-   * @param inCurrentSpace
-   * @param inAllSpaces
-   * @return Array of componentsIds
-   * @author dlesimple
-   * @deprecated please use {@link #getAllComponentIds(String)} or
-   * {@link #getAllComponentIdsRecur(String)}
-   */
-  @Deprecated
-  String[] getAllComponentIdsRecur(String sSpaceId, String sUserId, String componentNameRoot,
-      boolean inCurrentSpace, boolean inAllSpaces) throws AdminException;
-
   void synchronizeGroupByRule(String groupId, boolean scheduledMode) throws AdminException;
 
   /**

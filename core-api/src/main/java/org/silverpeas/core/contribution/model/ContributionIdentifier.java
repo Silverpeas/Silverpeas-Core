@@ -58,6 +58,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Embeddable
 public class ContributionIdentifier implements ComponentResourceIdentifier, Serializable {
+  private static final long serialVersionUID = 2071352191096872217L;
 
   public static final String MISSING_PART = "?";
 
