@@ -27,13 +27,8 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.DataRecordUtil;
-import org.silverpeas.core.notification.NotificationException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.builder.AbstractUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
@@ -46,6 +41,7 @@ import org.silverpeas.core.workflow.api.instance.Actor;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
+import org.silverpeas.core.workflow.engine.notification.UserNotificationBuilder;
 import org.silverpeas.core.workflow.engine.user.UserImpl;
 
 import javax.inject.Inject;
@@ -64,7 +60,6 @@ import java.util.stream.Collectors;
 @Singleton
 public class TaskManagerImpl extends AbstractTaskManager {
 
-  private static Map<String, NotificationSender> notificationSenders = new ConcurrentHashMap<>();
   private static final String MULTILANG_BUNDLE =
       "org.silverpeas.workflow.multilang.usernotification";
 
@@ -212,35 +207,9 @@ public class TaskManagerImpl extends AbstractTaskManager {
 
   private void sendNotification(List<String> userIds, Task task, User sender, String text,
       boolean linkDisabled, String incumbentId) {
-    String componentId = task.getProcessInstance().getModelId();
-    NotificationSender notifSender =
-        notificationSenders.computeIfAbsent(componentId, NotificationSender::new);
-    List<UserRecipient> userRecipients =
-        userIds.stream().map(UserRecipient::new).collect(Collectors.toList());
-    try {
-      String title = task.getProcessInstance().getTitle(task.getUserRoleName(), "");
 
-      DataRecord data = task.getProcessInstance().getAllDataRecord(task.getUserRoleName(), "");
-      text = DataRecordUtil.applySubstitution(text, data, "");
-
-      NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, title, text);
-      if (sender != null) {
-        notifMetaData.setSender(sender.getUserId());
-      }
-      notifMetaData.addUserRecipients(userRecipients);
-      if (!linkDisabled) {
-        String link = "/RprocessManager/" + componentId + "/searchResult?Type=ProcessInstance&Id=" +
-            task.getProcessInstance().getInstanceId() + "&role=" + task.getUserRoleName();
-        if (StringUtil.isDefined(incumbentId)) {
-          link += "&IncumbentId="+incumbentId;
-        }
-        notifMetaData.setLink(link);
-      }
-      notifSender.notifyUser(notifMetaData);
-    } catch (WorkflowException | NotificationException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
+    new UserNotificationBuilder(userIds, task, sender, text, linkDisabled, incumbentId).build()
+        .send();
   }
 
   /**
