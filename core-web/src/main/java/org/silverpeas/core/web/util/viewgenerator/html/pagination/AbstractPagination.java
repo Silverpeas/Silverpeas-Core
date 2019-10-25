@@ -50,7 +50,7 @@ public abstract class AbstractPagination implements Pagination {
   private int nbPagesAround = -1;
   private LocalizationBundle multilang;
 
-  public AbstractPagination() {
+  protected AbstractPagination() {
   }
 
   static PaginationPage getPaginationPageFrom(final String pageSizeAsString,
@@ -60,10 +60,10 @@ public abstract class AbstractPagination implements Pagination {
     int pageNumber = pagination.getPageNumber();
     int pageSize = pagination.getPageSize();
     if (StringUtil.isInteger(pageSizeAsString)) {
-      pageSize = Integer.valueOf(pageSizeAsString);
+      pageSize = Integer.parseInt(pageSizeAsString);
     }
     if (StringUtil.isInteger(itemIndexAsString)) {
-      pageNumber = (Integer.valueOf(itemIndexAsString) / pageSize) + 1;
+      pageNumber = (Integer.parseInt(itemIndexAsString) / pageSize) + 1;
     }
     return new PaginationPage(pageNumber, pageSize);
   }
@@ -279,16 +279,4 @@ public abstract class AbstractPagination implements Pagination {
     }
     return translation;
   }
-
-  @Override
-  public abstract String print();
-
-  @Override
-  public abstract String printIndex();
-
-  @Override
-  public abstract String printIndex(String text);
-
-  @Override
-  public abstract String printCounter();
 }
