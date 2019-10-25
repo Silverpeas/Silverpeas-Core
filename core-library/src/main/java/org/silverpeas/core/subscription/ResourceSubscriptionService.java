@@ -34,6 +34,23 @@ import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 public interface ResourceSubscriptionService {
 
   /**
+   * Some predefined constants to use by Silverpeas components to support identical behaviours.
+   */
+  class Constants {
+
+    private Constants() {
+    }
+
+    /**
+     * Configuration parameter to enable or not the subscription on the resource on which the
+     * parameter is applied. Usually it is used in some component instances' configuration. Any
+     * change in the value of this parameter is listened by the subscription transverse service to
+     * update all the actual subscriptions on the concerned resource.
+     */
+    public static final String SUBSCRIPTION_PARAMETER = "useSubscription";
+  }
+
+  /**
    * Gets all subscribers registered on a component.<br>
    * This service does not look at resources handled by the component but just explicit component
    * subscriptions.

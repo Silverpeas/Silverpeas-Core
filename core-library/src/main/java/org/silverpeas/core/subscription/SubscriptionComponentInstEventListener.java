@@ -25,14 +25,17 @@
 package org.silverpeas.core.subscription;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.notification.ComponentInstanceEvent;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
 
 /**
- * Listener of the events on the deletion of a component instance to delete all the subscriptions
- * on that component instance (and hence on its resources).
+ * Listener of the events on the deletion or on an update of a component instance. If the component
+ * instance is deleted or if the subscription on the component instance is disabled, then remove all
+ * the subscriptions on that component instance (and hence on its resources).
  * @author mmoquillon
  */
 @Singleton
@@ -42,6 +45,13 @@ public class SubscriptionComponentInstEventListener
   @Override
   protected SubscriptionResource getSubscriptionResource(final ComponentInst resource) {
     return ComponentSubscriptionResource.from(resource.getId());
+  }
+
+  @Override
+  protected boolean isSubscriptionEnabled(final ComponentInst resource) {
+    final Parameter parameter =
+        resource.getParameter(ResourceSubscriptionService.Constants.SUBSCRIPTION_PARAMETER);
+    return parameter == null || StringUtil.getBooleanValue(parameter.getValue());
   }
 }
   
