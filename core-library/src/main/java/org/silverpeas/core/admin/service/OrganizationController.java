@@ -395,24 +395,6 @@ public interface OrganizationController extends java.io.Serializable {
    */
   String[] getAllComponentIdsRecur(String sSpaceId);
 
-  /**
-   * Return all the components Id recursively in (Space+subspaces, or only subspaces or all
-   * silverpeas) available in silverpeas given a userId and a componentNameRoot
-   *
-   * @author dlesimple
-   * @deprecated please use {@link #getAllComponentIds(String)} or
-   * {@link #getAllComponentIdsRecur(String)}
-   * @param sSpaceId
-   * @param sUserId
-   * @param sComponentRootName
-   * @param inCurrentSpace
-   * @param inAllSpaces
-   * @return Array of componentsIds
-   */
-  @Deprecated
-  String[] getAllComponentIdsRecur(String sSpaceId, String sUserId, String sComponentRootName,
-      boolean inCurrentSpace, boolean inAllSpaces);
-
   List<SpaceInstLight> getRootSpacesContainingComponent(String userId, String componentName);
 
   List<SpaceInstLight> getSubSpacesContainingComponent(String spaceId, String userId,

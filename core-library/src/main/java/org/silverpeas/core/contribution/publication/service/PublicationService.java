@@ -326,9 +326,9 @@ public interface PublicationService {
    * @param fatherPK the identifying key of the father.
    * @param status the status of the publications to get.
    * @param nbPubs the number of publication to return.
-   * @return a collection of {@link PublicationDetail} instances.
+   * @return a list of {@link PublicationDetail} instances.
    */
-  Collection<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
+  List<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
       NodePK fatherPK, String status, int nbPubs);
 
   /**
@@ -399,8 +399,7 @@ public interface PublicationService {
    * @param componentIds a list of component instance identifiers.
    * @return a collection of {@link PublicationDetail} instances.
    */
-  Collection<PublicationDetail> getPublicationsByStatus(String status,
-      List<String> componentIds);
+  List<PublicationDetail> getPublicationsByStatus(String status, List<String> componentIds);
 
 
   int getNbPubByFatherPath(NodePK fatherPK, String fatherPath);
@@ -452,6 +451,8 @@ public interface PublicationService {
    *     <li>pubEndDate</li>
    *     <li>pubBeginHour</li>
    *     <li>pubEndHour</li>
+   *     <li>pubcreatorid</li>
+   *     <li>pubupdaterid</li>
    *   </ul>
    *   This method is designed for process performance needs.<br/>
    *   The result is not necessarily into same ordering as the one of given parameter.

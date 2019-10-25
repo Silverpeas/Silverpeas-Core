@@ -14,7 +14,7 @@ import static org.silverpeas.core.util.ServiceProvider.getServiceByComponentInst
  * {@link NotificationContext}.
  * </p>
  * <p>
- *   Each component dealing with manual {@link UserNotification} has to implement this
+ * Each component dealing with manual {@link UserNotification} has to implement this
  * interface and the implementation has to be qualified with the @{@link javax.inject.Named}
  * annotation by a name satisfying the following convention <code>[COMPONENT
  * NAME]InstanceManualUserNotification</code>. For example, for an application Kmelia, the

@@ -774,10 +774,10 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Collection<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
+  public List<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
       NodePK fatherPK, String status, int nbPubs) {
     try (Connection con = getConnection()) {
-      Collection<PublicationDetail> detailList = PublicationDAO.
+      final List<PublicationDetail> detailList = PublicationDAO.
           selectByBeginDateDescAndStatusAndNotLinkedToFatherId(con, fatherPK, status, nbPubs);
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, detailList);
@@ -859,11 +859,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Collection<PublicationDetail> getPublicationsByStatus(String status,
-      List<String> componentIds) {
+  public List<PublicationDetail> getPublicationsByStatus(String status, List<String> componentIds) {
     try (Connection con = getConnection()) {
-      Collection<PublicationDetail> publications =
-          PublicationDAO.selectByStatus(con, componentIds, status);
+      final List<PublicationDetail> publications = PublicationDAO.selectByStatus(con, componentIds, status);
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, publications);
       }

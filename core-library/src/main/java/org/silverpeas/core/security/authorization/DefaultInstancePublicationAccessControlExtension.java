@@ -46,7 +46,10 @@ public class DefaultInstancePublicationAccessControlExtension
       final AccessControlContext context) {
     final boolean authorized;
     if (userRole.isGreaterThan(SilverpeasRole.writer)) {
-      authorized = true;
+      authorized = publication == null
+                   || !publication.isDraft()
+                   || publication.isPublicationEditor(userId)
+                   || isCoWritingEnabled(instanceId, context) && isDraftVisibleWithCoWriting();
     } else if (writer == userRole) {
       if (publication != null) {
         if (publication.isPublicationEditor(userId)) {

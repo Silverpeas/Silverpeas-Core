@@ -717,17 +717,6 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public String[] getAllComponentIdsRecur(String sSpaceId, String sUserId,
-      String sComponentRootName, boolean inCurrentSpace, boolean inAllSpaces) {
-    try {
-      return getAdminService().getAllComponentIdsRecur(sSpaceId,
-          sUserId, sComponentRootName, inCurrentSpace, inAllSpaces);
-    } catch (Exception e) {
-      return EMPTY_STRING_ARRAY;
-    }
-  }
-
-  @Override
   public List<SpaceInstLight> getRootSpacesContainingComponent(String userId, String componentName) {
     try {
       return getAdminService().getRootSpacesContainingComponent(userId, componentName);

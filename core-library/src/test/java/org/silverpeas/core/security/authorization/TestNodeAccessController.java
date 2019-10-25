@@ -96,9 +96,63 @@ public class TestNodeAccessController {
   @Test
   public void userIsAuthorizedWhenNodeHaveNoSpecificRightsOnNode() {
     setComponentInstanceUserRole(SilverpeasRole.user);
-    when(organizationController.getUserProfiles(userId, componentId))
-        .thenReturn(new String[]{SilverpeasRole.user.name()});
     NodePK nodPk = new NodePK("10", componentId);
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodPk);
+    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
+    boolean result = instance.isUserAuthorized(userId, nodPk);
+    assertThat(result, Matchers.is(true));
+  }
+
+  /**
+   * Test of isUserAuthorized method, of class NodeAccessController.
+   */
+  @Test
+  public void userIsNotAuthorizedOnRootNodeWithUserRoleWhenNodeHaveNoSpecificRightsOnNode() {
+    setComponentInstanceUserRole(SilverpeasRole.user);
+    NodePK nodPk = new NodePK(NodePK.ROOT_NODE_ID, componentId);
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodPk);
+    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
+    boolean result = instance.isUserAuthorized(userId, nodPk);
+    assertThat(result, Matchers.is(true));
+  }
+
+  /**
+   * Test of isUserAuthorized method, of class NodeAccessController.
+   */
+  @Test
+  public void userIsAuthorizedOnRootNodeWithWriterRoleWhenNodeHaveNoSpecificRightsOnNode() {
+    setComponentInstanceUserRole(SilverpeasRole.writer);
+    NodePK nodPk = new NodePK(NodePK.ROOT_NODE_ID, componentId);
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodPk);
+    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
+    boolean result = instance.isUserAuthorized(userId, nodPk);
+    assertThat(result, Matchers.is(true));
+  }
+
+  /**
+   * Test of isUserAuthorized method, of class NodeAccessController.
+   */
+  @Test
+  public void userIsNotAuthorizedOnTrashWithUserRoleWhenNodeHaveNoSpecificRightsOnNode() {
+    setComponentInstanceUserRole(SilverpeasRole.user);
+    NodePK nodPk = new NodePK(NodePK.BIN_NODE_ID, componentId);
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodPk);
+    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
+    boolean result = instance.isUserAuthorized(userId, nodPk);
+    assertThat(result, Matchers.is(false));
+  }
+
+  /**
+   * Test of isUserAuthorized method, of class NodeAccessController.
+   */
+  @Test
+  public void userIsAuthorizedOnTrashWithWriterRoleWhenNodeHaveNoSpecificRightsOnNode() {
+    setComponentInstanceUserRole(SilverpeasRole.writer);
+    NodePK nodPk = new NodePK(NodePK.BIN_NODE_ID, componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     when(nodeService.getHeader(nodPk, false)).thenReturn(node);
@@ -112,8 +166,6 @@ public class TestNodeAccessController {
   @Test
   public void userIsNotAuthorizedOnSharingContextIfNotEnabled() {
     setComponentInstanceUserRole(SilverpeasRole.user);
-    when(organizationController.getUserProfiles(userId, componentId))
-        .thenReturn(new String[]{SilverpeasRole.user.name()});
     NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
@@ -130,8 +182,6 @@ public class TestNodeAccessController {
   @Test
   public void userIsNotAuthorizedOnSharingContextIfEnabledForAdmin() {
     setComponentInstanceUserRole(SilverpeasRole.user);
-    when(organizationController.getUserProfiles(userId, componentId))
-        .thenReturn(new String[]{SilverpeasRole.user.name()});
     when(organizationController.getComponentParameterValue(anyString(), eq("useFolderSharing")))
         .thenAnswer(i -> "1");
     NodePK nodPk = new NodePK("10", componentId);
@@ -150,8 +200,6 @@ public class TestNodeAccessController {
   @Test
   public void userIsNotAuthorizedOnSharingContextIfEnabledForContributors() {
     setComponentInstanceUserRole(SilverpeasRole.user);
-    when(organizationController.getUserProfiles(userId, componentId))
-        .thenReturn(new String[]{SilverpeasRole.user.name()});
     when(organizationController.getComponentParameterValue(anyString(), eq("useFolderSharing")))
         .thenAnswer(i -> "2");
     NodePK nodPk = new NodePK("10", componentId);
@@ -170,8 +218,6 @@ public class TestNodeAccessController {
   @Test
   public void userIsAuthorizedOnSharingContextIfEnabledForAll() {
     setComponentInstanceUserRole(SilverpeasRole.user);
-    when(organizationController.getUserProfiles(userId, componentId))
-        .thenReturn(new String[]{SilverpeasRole.user.name()});
     when(organizationController.getComponentParameterValue(anyString(), eq("useFolderSharing")))
         .thenAnswer(i -> "3");
     NodePK nodPk = new NodePK("10", componentId);
@@ -252,6 +298,86 @@ public class TestNodeAccessController {
     assertThat(result, Matchers.is(false));
     verify(organizationController, times(1))
         .getUserProfiles(userId, componentId, ProfiledObjectId.fromNode(5));
+  }
+
+  /**
+   * Test of isUserAuthorized method, of class NodeAccessController.
+   */
+  @Test
+  public void userIsAuthorizedOnRootNodeWithUserRoleOnComponentAndAdminOnNode() {
+    setComponentInstanceUserRole(SilverpeasRole.user);
+    setComponentRightOnTopicEnabled();
+    NodePK nodPk = new NodePK(NodePK.ROOT_NODE_ID, componentId);
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodPk);
+    node.setRightsDependsOn(5);
+    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
+    when(organizationController.getUserProfiles(userId, componentId, 5, ObjectType.NODE))
+        .thenReturn(new String[]{SilverpeasRole.admin.name()});
+    boolean result = instance.isUserAuthorized(userId, nodPk);
+    assertThat(result, Matchers.is(true));
+    verify(organizationController, times(0))
+        .getUserProfiles(anyString(), anyString(), anyInt(), any(ObjectType.class));
+  }
+
+  /**
+   * Test of isUserAuthorized method, of class NodeAccessController.
+   */
+  @Test
+  public void userIsAuthorizedOnRootNodeWithWriterRoleOnComponentAndAdminOnNode() {
+    setComponentInstanceUserRole(SilverpeasRole.writer);
+    setComponentRightOnTopicEnabled();
+    NodePK nodPk = new NodePK(NodePK.ROOT_NODE_ID, componentId);
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodPk);
+    node.setRightsDependsOn(5);
+    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
+    when(organizationController.getUserProfiles(userId, componentId, 5, ObjectType.NODE))
+        .thenReturn(new String[]{SilverpeasRole.admin.name()});
+    boolean result = instance.isUserAuthorized(userId, nodPk);
+    assertThat(result, Matchers.is(true));
+    verify(organizationController, times(0))
+        .getUserProfiles(anyString(), anyString(), anyInt(), any(ObjectType.class));
+  }
+
+  /**
+   * Test of isUserAuthorized method, of class NodeAccessController.
+   */
+  @Test
+  public void userIsNotAuthorizedOnTrashWithUserRoleOnComponentAndAdminOnNode() {
+    setComponentInstanceUserRole(SilverpeasRole.user);
+    setComponentRightOnTopicEnabled();
+    NodePK nodPk = new NodePK(NodePK.BIN_NODE_ID, componentId);
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodPk);
+    node.setRightsDependsOn(5);
+    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
+    when(organizationController.getUserProfiles(userId, componentId, 5, ObjectType.NODE))
+        .thenReturn(new String[]{SilverpeasRole.admin.name()});
+    boolean result = instance.isUserAuthorized(userId, nodPk);
+    assertThat(result, Matchers.is(false));
+    verify(organizationController, times(0))
+        .getUserProfiles(anyString(), anyString(), anyInt(), any(ObjectType.class));
+  }
+
+  /**
+   * Test of isUserAuthorized method, of class NodeAccessController.
+   */
+  @Test
+  public void userIsAuthorizedOnTrashWithWriterRoleOnComponentAndAdminOnNode() {
+    setComponentInstanceUserRole(SilverpeasRole.writer);
+    setComponentRightOnTopicEnabled();
+    NodePK nodPk = new NodePK(NodePK.BIN_NODE_ID, componentId);
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodPk);
+    node.setRightsDependsOn(5);
+    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
+    when(organizationController.getUserProfiles(userId, componentId, 5, ObjectType.NODE))
+        .thenReturn(new String[]{SilverpeasRole.admin.name()});
+    boolean result = instance.isUserAuthorized(userId, nodPk);
+    assertThat(result, Matchers.is(true));
+    verify(organizationController, times(0))
+        .getUserProfiles(anyString(), anyString(), anyInt(), any(ObjectType.class));
   }
 
   private void setComponentInstanceUserRole(SilverpeasRole... roles) {

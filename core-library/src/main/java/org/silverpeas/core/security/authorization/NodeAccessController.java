@@ -31,11 +31,13 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +46,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptySet;
-import static org.silverpeas.core.node.model.NodePK.ROOT_NODE_ID;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.writer;
+import static org.silverpeas.core.security.authorization.AccessControlOperation.isSharingActionFrom;
 
 /**
  * Check the access to a node for a user.
@@ -74,7 +77,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
   }
 
   @Override
-  public Stream<NodePK> filterAuthorizedByUser(final List<NodePK> nodePks, final String userId,
+  public Stream<NodePK> filterAuthorizedByUser(final Collection<NodePK> nodePks, final String userId,
       final AccessControlContext context) {
     final List<String> instancesIds = nodePks.stream().map(NodePK::getInstanceId).distinct().collect(Collectors.toList());
     getDataManager(context).loadCaches(userId, instancesIds);
@@ -84,29 +87,27 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
   @Override
   public boolean isUserAuthorized(String userId, NodePK nodePK,
       final AccessControlContext context) {
-
+    final Set<SilverpeasRole> userRoles = getUserRoles(userId, nodePK, context);
+    final MemoizedSupplier<SilverpeasRole> highestRole = new MemoizedSupplier<>(() -> {
+      final SilverpeasRole highestUserRole = SilverpeasRole.getHighestFrom(userRoles);
+      return highestUserRole != null ? highestUserRole : SilverpeasRole.reader;
+    });
+    final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
     boolean authorized = true;
     boolean isRoleVerificationRequired = true;
-
-    boolean sharingOperation = context.getOperations().contains(AccessControlOperation.sharing);
-
-    Set<SilverpeasRole> userRoles = getUserRoles(userId, nodePK, context);
-
-    if (sharingOperation) {
-      SilverpeasRole highestUserRole = SilverpeasRole.getHighestFrom(userRoles);
-      if (highestUserRole == null) {
-        highestUserRole = SilverpeasRole.reader;
-      }
-      final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+    if (componentDataManager.isTopicTrackerSupported(nodePK.getInstanceId()) && nodePK.isTrash()) {
+      authorized = highestRole.get().isGreaterThanOrEquals(writer);
+      isRoleVerificationRequired = false;
+    }
+    if (authorized && isSharingActionFrom(context.getOperations())) {
+      final SilverpeasRole highestUserRole = highestRole.get();
       final User user = User.getById(userId);
       authorized = !user.isAnonymous() && componentDataManager.isFolderSharingEnabledForRole(nodePK.getInstanceId(), highestUserRole);
       isRoleVerificationRequired = false;
     }
-
     if (isRoleVerificationRequired) {
       return isUserAuthorized(userRoles);
     }
-
     return authorized;
   }
 
@@ -152,7 +153,8 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     // If rights are not handled from the node, then filling the user role containers with these
     // of component
     final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
-    if (!componentDataManager.isRightOnTopicsEnabled(nodePK.getInstanceId()) || ROOT_NODE_ID.equals(nodePK.getId())) {
+    if (!componentDataManager.isRightOnTopicsEnabled(nodePK.getInstanceId())
+        || nodePK.isRoot() || nodePK.isTrash()) {
       userRoles.addAll(componentUserRoles);
       return;
     }
@@ -186,7 +188,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
       nodeService = NodeService.get();
     }
 
-    void loadCaches(final String userId, final List<String> instanceIds) {
+    void loadCaches(final String userId, final Collection<String> instanceIds) {
       if (userProfiles != null || instanceIds.isEmpty()) {
         return;
       }

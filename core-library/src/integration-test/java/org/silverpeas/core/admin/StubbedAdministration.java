@@ -1004,12 +1004,6 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String[] getAllComponentIdsRecur(final String sSpaceId, final String sUserId,
-      final String componentNameRoot, final boolean inCurrentSpace, final boolean inAllSpaces) {
-    return new String[0];
-  }
-
-  @Override
   public void synchronizeGroupByRule(final String groupId, final boolean scheduledMode) {
 
   }

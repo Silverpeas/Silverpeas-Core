@@ -102,7 +102,7 @@ public class PublicationDAO {
   // used only for kmelia
   // keys : componentId
   // values : Collection of PublicationDetail
-  private static Map<String, Collection<PublicationDetail>> lastPublis = new HashMap<>();
+  private static Map<String, List<PublicationDetail>> lastPublis = new HashMap<>();
   static final String PUBLICATION_TABLE_NAME = "SB_Publication_Publi";
   private static final String UPDATE_PUBLICATION =
       "UPDATE SB_Publication_Publi SET infoId = ?, "
@@ -139,8 +139,7 @@ public class PublicationDAO {
     lastPublis.remove(instanceId);
   }
 
-  private static void cacheLastPublis(String instanceId,
-      Collection<PublicationDetail> lastPublications) {
+  private static void cacheLastPublis(String instanceId, List<PublicationDetail> lastPublications) {
     lastPublis.put(instanceId, lastPublications);
   }
 
@@ -158,8 +157,8 @@ public class PublicationDAO {
     return dateTime;
   }
 
-  private static Collection<PublicationDetail> getLastPublis(String instanceId) {
-    Collection<PublicationDetail> listLastPublisCache = lastPublis.get(instanceId);
+  private static List<PublicationDetail> getLastPublis(String instanceId) {
+    List<PublicationDetail> listLastPublisCache = lastPublis.get(instanceId);
     if (listLastPublisCache != null && !listLastPublisCache.isEmpty()) {
       // removing not visible publications from the cache
       List<PublicationDetail> listLastPublisCacheMAJ = new ArrayList<>();
@@ -774,6 +773,8 @@ public class PublicationDAO {
    *     <li>pubEndDate</li>
    *     <li>pubBeginHour</li>
    *     <li>pubEndHour</li>
+   *     <li>pubcreatorid</li>
+   *     <li>pubupdaterid</li>
    *   </ul>
    *   This method is designed for process performance needs.<br/>
    *   The result is not necessarily into same ordering as the one of given parameter.
@@ -791,7 +792,8 @@ public class PublicationDAO {
     final List<PublicationDetail> result = new ArrayList<>(ids.size());
     JdbcSqlQuery.executeBySplittingOn(pubIds, (pubIdBatch, ignore) ->
         JdbcSqlQuery.createSelect("pubId, instanceId, pubStatus, pubCloneId, pubCloneStatus,")
-        .addSqlPart("pubBeginDate, pubEndDate, pubBeginHour, pubEndHour")
+        .addSqlPart("pubBeginDate, pubEndDate, pubBeginHour, pubEndHour,")
+        .addSqlPart("pubcreatorid, pubupdaterid")
         .from(SB_PUBLICATION_PUBLI_TABLE)
         .where(PUB_ID).in(pubIdBatch)
         .executeWith(con, r -> {
@@ -808,6 +810,8 @@ public class PublicationDAO {
           }
           pubDetail.setBeginHour(r.getString(8));
           pubDetail.setEndHour(r.getString(9));
+          pubDetail.setCreatorId(r.getString(10));
+          pubDetail.setUpdaterId(r.getString(11));
           result.add(pubDetail);
           return null;
         }));
@@ -834,7 +838,7 @@ public class PublicationDAO {
     }
   }
 
-  public static Collection<PublicationDetail> selectByStatus(Connection con,
+  public static List<PublicationDetail> selectByStatus(Connection con,
       List<String> componentIds,
       String status) throws SQLException {
     List<PublicationDetail> list = new ArrayList<>();
@@ -1032,10 +1036,9 @@ public class PublicationDAO {
     }
   }
 
-  public static Collection<PublicationDetail> selectByBeginDateDescAndStatusAndNotLinkedToFatherId(
+  public static List<PublicationDetail> selectByBeginDateDescAndStatusAndNotLinkedToFatherId(
       Connection con, NodePK fatherPK, String status, int fetchSize) throws SQLException {
-
-    Collection<PublicationDetail> thisLastPublis = getLastPublis(fatherPK.getInstanceId());
+    final List<PublicationDetail> thisLastPublis = getLastPublis(fatherPK.getInstanceId());
     if (thisLastPublis != null) {
       return thisLastPublis;
     } else {
@@ -1063,7 +1066,7 @@ public class PublicationDAO {
         prepStmt.setString(14, hourNow);
         prepStmt.setString(15, hourNow);
 
-        List<PublicationDetail> list = new ArrayList<>();
+        final List<PublicationDetail> list = new ArrayList<>();
         try (ResultSet rs = prepStmt.executeQuery()) {
           int nbFetch = 0;
           PublicationDetail pub;
@@ -1078,59 +1081,6 @@ public class PublicationDAO {
       }
     }
   }
-
-  /**
-   * Method declaration
-   * @param con
-   * @param pubPK
-   * @return
-   * @throws SQLException
-   *
-   */
-  public static Collection<PublicationDetail> selectByBeginDateDesc(Connection con,
-      PublicationPK pubPK) throws SQLException {
-    StringBuilder selectStatement = new StringBuilder(128);
-    selectStatement.append("select * from SB_Publication_Publi where instanceId = ? ");
-    selectStatement.append(AND);
-    selectStatement.append("( ? > pubBeginDate AND ? < pubEndDate ) OR ");
-    selectStatement.append("( ? = pubBeginDate AND ? < pubEndDate AND ? > pubBeginHour ) OR ");
-    selectStatement.append("( ? > pubBeginDate AND ? = pubEndDate AND ? < pubEndHour ) OR ");
-    selectStatement.append(
-        "( ? = pubBeginDate AND ? = pubEndDate AND ? > pubBeginHour AND ? < pubEndHour )");
-    selectStatement.append(" ) ");
-    selectStatement.append(" order by pubCreationDate DESC, pubBeginDate DESC");
-
-    try (PreparedStatement prepStmt = con.prepareStatement(selectStatement.toString())) {
-      java.util.Date now = new java.util.Date();
-      String dateNow = DateUtil.formatDate(now);
-      String hourNow = DateUtil.formatTime(now);
-
-      prepStmt.setString(1, pubPK.getComponentName());
-      prepStmt.setString(2, dateNow);
-      prepStmt.setString(3, dateNow);
-      prepStmt.setString(4, dateNow);
-      prepStmt.setString(5, dateNow);
-      prepStmt.setString(6, hourNow);
-      prepStmt.setString(7, dateNow);
-      prepStmt.setString(8, dateNow);
-      prepStmt.setString(9, hourNow);
-      prepStmt.setString(10, dateNow);
-      prepStmt.setString(11, dateNow);
-      prepStmt.setString(12, hourNow);
-      prepStmt.setString(13, hourNow);
-
-      List<PublicationDetail> list = new ArrayList<>();
-      try (ResultSet rs = prepStmt.executeQuery()) {
-        PublicationDetail pub;
-        while (rs.next()) {
-          pub = resultSet2PublicationDetail(rs);
-          list.add(pub);
-        }
-      }
-      return list;
-    }
-  }
-
 
   public static Collection<PublicationDetail> getOrphanPublications(Connection con,
       final String componentId) throws SQLException {

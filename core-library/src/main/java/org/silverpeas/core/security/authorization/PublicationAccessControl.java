@@ -27,7 +27,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Stream;
 
 /**
@@ -43,14 +43,16 @@ public interface PublicationAccessControl extends AccessController<PublicationPK
   /**
    * Using this method avoid to use perform database request in order to retrieve publication data.
    */
-  Stream<PublicationPK> filterAuthorizedByUser(final String userId,
-      final List<PublicationDetail> pubs);
+  default Stream<PublicationDetail> filterAuthorizedByUser(final String userId,
+      final Collection<PublicationDetail> pubs) {
+    return filterAuthorizedByUser(userId, pubs, AccessControlContext.init());
+  }
 
   /**
    * Using this method avoid to use perform database request in order to retrieve publication data.
    */
-  Stream<PublicationPK> filterAuthorizedByUser(final String userId,
-      final List<PublicationDetail> pubs, final AccessControlContext context);
+  Stream<PublicationDetail> filterAuthorizedByUser(final String userId,
+      final Collection<PublicationDetail> pubs, final AccessControlContext context);
 
   /**
    * Using this method avoid to use perform database request in order to retrieve publication data.

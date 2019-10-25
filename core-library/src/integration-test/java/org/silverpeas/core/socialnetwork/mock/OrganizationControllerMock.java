@@ -374,12 +374,6 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public String[] getAllComponentIdsRecur(final String sSpaceId, final String sUserId,
-      final String sComponentRootName, final boolean inCurrentSpace, final boolean inAllSpaces) {
-    return new String[0];
-  }
-
-  @Override
   public List<SpaceInstLight> getRootSpacesContainingComponent(final String userId,
       final String componentName) {
     return null;

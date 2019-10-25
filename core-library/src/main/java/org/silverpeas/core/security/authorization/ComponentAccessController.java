@@ -33,9 +33,9 @@ import org.silverpeas.core.admin.user.model.User;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -49,7 +49,7 @@ import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 
 /**
  * It controls the access of a user to a given Silverpeas component. A Silverpeas component can be
- * either a Silverpeas application instance (like a KMelia instance for example) or a user
+ * either a Silverpeas application instance (like a Kmelia instance for example) or a user
  * personal tool or an administrative tool.
  * @author ehugonnet
  */
@@ -98,7 +98,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
   }
 
   @Override
-  public Stream<String> filterAuthorizedByUser(final List<String> instanceIds, final String userId,
+  public Stream<String> filterAuthorizedByUser(final Collection<String> instanceIds, final String userId,
       final AccessControlContext context) {
     getDataManager(context).loadCaches(userId, instanceIds);
     return instanceIds.stream().filter(p -> isUserAuthorized(userId, p, context));
@@ -199,7 +199,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
       controller = OrganizationController.get();
     }
 
-    void loadCaches(final String userId, final List<String> instanceIds) {
+    void loadCaches(final String userId, final Collection<String> instanceIds) {
       if (availableComponentCache != null || instanceIds.isEmpty()) {
         return;
       }

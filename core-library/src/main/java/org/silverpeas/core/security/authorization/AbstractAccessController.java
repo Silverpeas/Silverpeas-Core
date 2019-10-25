@@ -27,8 +27,8 @@ import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.util.StringUtil;
 
+import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -42,12 +42,12 @@ import java.util.stream.Stream;
 public abstract class AbstractAccessController<T> implements AccessController<T> {
 
   @Override
-  public Stream<T> filterAuthorizedByUser(final List<T> objects, final String userId) {
+  public Stream<T> filterAuthorizedByUser(final Collection<T> objects, final String userId) {
     return filterAuthorizedByUser(objects, userId, AccessControlContext.init());
   }
 
   @Override
-  public Stream<T> filterAuthorizedByUser(final List<T> objects, final String userId,
+  public Stream<T> filterAuthorizedByUser(final Collection<T> objects, final String userId,
       final AccessControlContext context) {
     throw new UnsupportedOperationException();
   }
