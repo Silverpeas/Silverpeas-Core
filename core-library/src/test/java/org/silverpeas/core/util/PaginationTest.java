@@ -28,8 +28,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.util.SilverpeasArrayList;
-import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,7 +67,7 @@ class PaginationTest {
   @Test
   void firstPageWithoutFilteringShouldWork() {
     final List<Integer> result =
-        new Pagination<Integer, SilverpeasList<Integer>>(new PaginationPage(1, 5))
+        new Pagination<Integer>(new PaginationPage(1, 5))
         .paginatedDataSource(simplePaginatedDataSource)
         .filter(r -> r)
         .factor(1)
@@ -81,7 +79,7 @@ class PaginationTest {
   @Test
   void secondPageWithoutFilteringShouldWork() {
     final List<Integer> result =
-        new Pagination<Integer, SilverpeasList<Integer>>(new PaginationPage(2, 3))
+        new Pagination<Integer>(new PaginationPage(2, 3))
         .paginatedDataSource(simplePaginatedDataSource)
         .filter(r -> r)
         .factor(1)
@@ -93,7 +91,7 @@ class PaginationTest {
   @Test
   void firstPageButFilteringAlmostAllDataShouldWork() {
     final List<Integer> result =
-        new Pagination<Integer, SilverpeasList<Integer>>(new PaginationPage(1, 5))
+        new Pagination<Integer>(new PaginationPage(1, 5))
         .paginatedDataSource(simplePaginatedDataSource)
         .filter(r -> r.stream().filter(i -> i > 996).collect(SilverpeasList.collector(r)))
         .factor(1)
@@ -105,7 +103,7 @@ class PaginationTest {
   @Test
   void middlePageWithFilteringAlmostAllDataShouldWork() {
     final List<Integer> result =
-        new Pagination<Integer, SilverpeasList<Integer>>(new PaginationPage(100, 5))
+        new Pagination<Integer>(new PaginationPage(100, 5))
         .paginatedDataSource(simplePaginatedDataSource)
         .filter(r -> r.stream().filter(i -> i > 996).collect(SilverpeasList.collector(r)))
         .factor(1)
@@ -117,7 +115,7 @@ class PaginationTest {
   @Test
   void middlePageWithFilteringShouldWork() {
     final List<Integer> result =
-        new Pagination<Integer, SilverpeasList<Integer>>(new PaginationPage(100, 5))
+        new Pagination<Integer>(new PaginationPage(100, 5))
         .paginatedDataSource(simplePaginatedDataSource)
         .filter(r -> r.stream().filter(i -> i > 496 && i != 499).collect(SilverpeasList.collector(r)))
         .factor(1)
@@ -129,7 +127,7 @@ class PaginationTest {
   @Test
   void justLittleDataShouldWork() {
     final List<Integer> result =
-        new Pagination<Integer, SilverpeasList<Integer>>(new PaginationPage(1, 5))
+        new Pagination<Integer>(new PaginationPage(1, 5))
         .paginatedDataSource(p -> new SilverpeasArrayList<>(Arrays.asList(3, 7, 8)))
         .filter(r -> r)
         .execute();

@@ -56,8 +56,8 @@ public class PublicationFatherDAO {
   private static final String INSTANCE_ID_SET = INSTANCE_ID + EQUALITY;
   private static final String PUB_ID_SET = PUB_ID + EQUALITY;
   private static final String NODE_ID_SET = NODE_ID + EQUALITY;
-  private static final String PUBLICATION_FATHER_TABLE_NAME = "SB_Publication_PubliFather";
   private static final String LOCATION_FIELDS = "nodeId, instanceId, aliasUserId, aliasDate, pubOrder";
+  static final String PUBLICATION_FATHER_TABLE_NAME = "SB_Publication_PubliFather";
 
   private PublicationFatherDAO() {
   }

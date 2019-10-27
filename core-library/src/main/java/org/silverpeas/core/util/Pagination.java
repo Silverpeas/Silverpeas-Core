@@ -27,20 +27,21 @@ package org.silverpeas.core.util;
 import org.silverpeas.core.admin.PaginationPage;
 
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * @author silveryocha
  */
-public class Pagination<T, R extends SilverpeasList<T>> {
+public class Pagination<T> {
 
-  final PaginationPage pagination;
-  private Function<PaginationPage, R> paginatedDataSource;
-  private Function<R, R> filter;
+  private final PaginationPage paginationPage;
+  private Function<PaginationPage, SilverpeasList<T>> paginatedDataSource;
+  private UnaryOperator<SilverpeasList<T>> filter;
   private int minPerPage = 0;
   private int factor = 5;
 
-  public Pagination(final PaginationPage pagination) {
-    this.pagination = pagination;
+  public Pagination(final PaginationPage paginationPage) {
+    this.paginationPage = paginationPage;
   }
 
   /**
@@ -49,7 +50,7 @@ public class Pagination<T, R extends SilverpeasList<T>> {
    * @param factor a positive integer.
    * @return the process instance itself.
    */
-  public Pagination<T, R> factor(final int factor) {
+  public Pagination<T> factor(final int factor) {
     this.factor = factor;
     return this;
   }
@@ -59,7 +60,7 @@ public class Pagination<T, R extends SilverpeasList<T>> {
    * @param minPerPage a minimum per page.
    * @return the process instance itself.
    */
-  public Pagination<T, R> withMinPerPage(final int minPerPage) {
+  public Pagination<T> withMinPerPage(final int minPerPage) {
     this.minPerPage = minPerPage;
     return this;
   }
@@ -69,8 +70,8 @@ public class Pagination<T, R extends SilverpeasList<T>> {
    * @param paginatedDataSource the directive of data querying with pagination clause.
    * @return the process instance itself.
    */
-  public Pagination<T, R> paginatedDataSource(
-      final Function<PaginationPage, R> paginatedDataSource) {
+  public Pagination<T> paginatedDataSource(
+      final Function<PaginationPage, SilverpeasList<T>> paginatedDataSource) {
     this.paginatedDataSource = paginatedDataSource;
     return this;
   }
@@ -80,7 +81,7 @@ public class Pagination<T, R extends SilverpeasList<T>> {
    * @param filter the filtering directive.
    * @return the process instance itself.
    */
-  public Pagination<T, R> filter(final Function<R, R> filter) {
+  public Pagination<T> filter(final UnaryOperator<SilverpeasList<T>> filter) {
     this.filter = filter;
     return this;
   }
@@ -89,8 +90,7 @@ public class Pagination<T, R extends SilverpeasList<T>> {
    * Execute the process of paginated data querying.
    * @return the result {@link SilverpeasList}.
    */
-  @SuppressWarnings("unchecked")
-  public R execute() {
+  public SilverpeasList<T> execute() {
     if (paginatedDataSource == null) {
       throw new IllegalArgumentException("paginatedDataSource must be defined");
     }
@@ -100,34 +100,40 @@ public class Pagination<T, R extends SilverpeasList<T>> {
     if (minPerPage < 0) {
       throw new IllegalArgumentException("minPerPage must be positive or equal to zero");
     }
-    PaginationPage currentPagination = new PaginationPage(pagination.getPageNumber(),
-        Math.max(pagination.getPageSize() * factor, minPerPage));
-    R result = null;
+    PaginationPage currentPagination = new PaginationPage(paginationPage.getPageNumber(),
+        Math.max(paginationPage.getPageSize() * factor, minPerPage));
+    if (!paginationPage.asCriterion().isOriginalSizeNeeded()) {
+      currentPagination.originalSizeIsNotRequired();
+    }
+    SilverpeasList<T> result = null;
     boolean running = true;
     while(running) {
-      R currentResult = paginatedDataSource.apply(currentPagination);
-      if (currentResult.size() < pagination.getPageSize()) {
+      SilverpeasList<T> currentResult = paginatedDataSource.apply(currentPagination);
+      if (currentResult.size() < paginationPage.getPageSize()) {
         running = false;
       }
       currentResult = filter.apply(currentResult);
       result = completeResult(currentResult, result);
       currentPagination = new PaginationPage(currentPagination.getPageNumber() + 1,
           currentPagination.getPageSize());
-      if (result.size() >= pagination.getPageSize()) {
+      if (!paginationPage.asCriterion().isOriginalSizeNeeded()) {
+        currentPagination.originalSizeIsNotRequired();
+      }
+      if (result.size() >= paginationPage.getPageSize()) {
         running = false;
       }
     }
     return result;
   }
 
-  private R completeResult(final R currentResult, final R previousResult) {
-    R result = previousResult;
+  private SilverpeasList<T> completeResult(final SilverpeasList<T> currentResult, final SilverpeasList<T> previousResult) {
+    SilverpeasList<T> result = previousResult;
     if (result == null) {
-      result = pagination.getPageSize() > 0 && currentResult.size() > pagination.getPageSize()
-          ? currentResult.stream().limit(pagination.getPageSize()).collect(SilverpeasList.collector(currentResult))
+      result = paginationPage.getPageSize() > 0 && currentResult.size() > paginationPage.getPageSize()
+          ? currentResult.stream().limit(paginationPage.getPageSize()).collect(SilverpeasList.collector(currentResult))
           : currentResult;
     } else {
-      for (int i = 0; i < currentResult.size() && result.size() < pagination.getPageSize(); i++) {
+      for (int i = 0; i < currentResult.size() && result.size() < paginationPage.getPageSize(); i++) {
         result.add(currentResult.get(i));
       }
     }
