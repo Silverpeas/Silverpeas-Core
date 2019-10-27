@@ -31,7 +31,6 @@ public class QueryStringFactory {
    * Hashtable which contains the specifics code encoded as key and their values are right code
    * encoded
    */
-  private static String selectByBeginDateDescAndStatusAndNotLinkedToFatherId = null;
   private static String selectByFatherPK = null;
   private static String selectByFatherPKPeriodSensitive = null;
   private static String selectByFatherPKAndUserId = null;
@@ -58,29 +57,6 @@ public class QueryStringFactory {
 
   private QueryStringFactory() {
 
-  }
-
-  public static synchronized String getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(
-      final String tableName) {
-    if (selectByBeginDateDescAndStatusAndNotLinkedToFatherId == null) {
-      final StringBuilder query = new StringBuilder();
-      query.append("SELECT DISTINCT(P.pubId), P.infoId, P.pubName, P.pubDescription, ");
-      query.append("P.pubCreationDate, P.pubBeginDate, P.pubEndDate, P.pubCreatorId, ");
-      query.append("P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
-      query.append("P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, ");
-      query.append("P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, ");
-      query.append("P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, ");
-      query.append("P.pubDraftOutDate FROM ").append(tableName).append(" P, ").append(tableName);
-      query.append("Father F WHERE F.pubId = P.pubId AND F.instanceId = ? ");
-      query.append(" AND F.nodeId <> ?  AND P.pubStatus = ? AND (");
-      query.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
-      query.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      query.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      query.append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour ");
-      query.append("AND ? < P.pubEndHour )) ORDER BY P.pubBeginDate DESC, P.pubCreationDate DESC ");
-      selectByBeginDateDescAndStatusAndNotLinkedToFatherId = query.toString();
-    }
-    return selectByBeginDateDescAndStatusAndNotLinkedToFatherId;
   }
 
   public static String getSelectByFatherPK(final String tableName) {

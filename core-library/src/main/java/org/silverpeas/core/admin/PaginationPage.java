@@ -30,6 +30,7 @@ import org.silverpeas.core.util.SilverpeasList;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * A page in a pagination of resources.
@@ -129,5 +130,12 @@ public class PaginationPage implements Serializable {
       lastIndex = firstIndex + getPageSize();
     }
     return Pair.of(firstIndex, lastIndex);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", PaginationPage.class.getSimpleName() + "[", "]")
+        .add("page=" + page).add("count=" + count)
+        .add("originalSizeRequired=" + originalSizeRequired).toString();
   }
 }

@@ -229,7 +229,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       List<NodeDetail> headers = nodeDAO.getAllHeaders(con, pk, sorting, level);
       NodeDetail root = nodeDAO.loadRow(con, pk);
       root.setChildrenDetails(new ArrayList<>());
-      Map<String, NodeDetail> tree = new HashMap<>();
+      Map<String, NodeDetail> tree = new HashMap<>(headers.size());
       tree.put(root.getNodePK().getId(), root);
       for (NodeDetail header : headers) {
         header.setChildrenDetails(new ArrayList<>());
