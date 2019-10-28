@@ -24,13 +24,13 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.admin.ProfiledObjectId;
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.node.model.NodeRuntimeException;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.node.model.NodeRuntimeException;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -95,21 +95,20 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
         authorized = true;
       } else {
         try {
-          NodeDetail node = nodeService.getDetail(nodePK);
-          while (node.haveInheritedRights() && node.hasFather()) {
-            node = nodeService.getDetail(node.getFatherPK());
-          }
-          if (node.haveLocalRights()) {
-            NodePK objectPK = node.getNodePK();
-            authorized =
-                controller.isObjectAvailableToGroup(ProfiledObjectId.fromNode(objectPK.getId()),
-                    objectPK.getInstanceId(), groupId);
-          } else {
-            authorized = controller.isComponentAvailableToGroup(nodePK.getInstanceId(), groupId);
+          final NodeDetail node = getNodeService().getHeader(nodePK, false);
+          if (node != null) {
+            if (node.haveRights()) {
+              NodePK objectPK = node.getNodePK();
+              authorized = controller
+                  .isObjectAvailableToGroup(ProfiledObjectId.fromNode(node.getRightsDependsOn()),
+                      objectPK.getInstanceId(), groupId);
+            } else {
+              authorized = true;
+            }
           }
         } catch (Exception e) {
           SilverLogger.getLogger(this).warn(e);
-          authorized = true;
+          authorized = false;
         }
       }
     }

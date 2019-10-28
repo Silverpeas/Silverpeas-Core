@@ -55,8 +55,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria.QUERY_ORDER_BY.*;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class SILVERMAILSessionController extends AbstractComponentSessionController {
 
@@ -155,7 +157,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
 
   private String getSource(String componentId) {
     final Mutable<String> source = Mutable.empty();
-    if (StringUtil.isDefined(componentId)) {
+    if (isDefined(componentId)) {
       final String componentCacheKey = PREFIX_CACHE_KEY + componentId;
       final String cachedValue = getRequestCacheService().getCache()
           .computeIfAbsent(componentCacheKey, String.class, () -> {
@@ -166,15 +168,13 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
             }
             final SilverpeasComponentInstance componentInstance = optionalComponentInstance.get();
             final String spaceCacheKey = PREFIX_SPACE_CACHE_KEY + componentInstance.getSpaceId();
-            return getRequestCacheService().getCache()
+            final String spaceLabel = getRequestCacheService().getCache()
                 .computeIfAbsent(spaceCacheKey, String.class, () -> {
                   final SpaceInstLight space = OrganizationController.get()
                       .getSpaceInstLightById(componentInstance.getSpaceId());
-                  if (space != null) {
-                    return space.getName() + " - " + componentInstance.getLabel();
-                  }
-                  return componentInstance.getLabel();
+                  return space != null ? (space.getName() + " - ") : EMPTY;
                 });
+            return spaceLabel + componentInstance.getLabel();
           });
       source.set(cachedValue);
     } else {

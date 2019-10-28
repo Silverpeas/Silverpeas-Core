@@ -45,8 +45,9 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler.getSubscriptionNotificationUserNoteFromCurrentRequest;
 import static org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler.isSubscriptionNotificationEnabledForCurrentRequest;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -212,7 +213,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * @return a collection of identifiers of the users to exclude from the notification.
    */
   protected Collection<String> getUserIdsToExcludeFromNotifying() {
-    return Collections.emptyList();
+    return emptyList();
   }
 
   /**
@@ -221,7 +222,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * @return a collection of user group's identifiers.
    */
   protected Collection<String> getGroupIdsToNotify() {
-    return Collections.emptyList();
+    return emptyList();
   }
 
   /**
@@ -230,13 +231,17 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * @return a collection of email addresses.
    */
   protected Collection<String> getExternalAddressesToNotify() {
-    return Collections.emptyList();
+    return emptyList();
   }
 
   private void performUsersToBeNotified() {
-    final Collection<String> userIdsToNotify = getUserIdsToNotify();
+    final Collection<String> userIdsToNotify = getSafeCollection(getUserIdsToNotify()).stream()
+        .filter(this::isUserCanBeNotified)
+        .collect(Collectors.toSet());
     final Collection<String> userIdsToExcludeFromNotifying = getUserIdsToExcludeFromNotifying();
-    final Collection<String> groupIdsToNotify = getGroupIdsToNotify();
+    final Collection<String> groupIdsToNotify = getSafeCollection(getGroupIdsToNotify()).stream()
+        .filter(this::isGroupCanBeNotified)
+        .collect(Collectors.toSet());
     final Collection<String> emailsToNotify = getExternalAddressesToNotify();
 
     // Stopping the process if no user to notify
@@ -251,6 +256,10 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
     addExternalRecipients(emailsToNotify);
   }
 
+  private Collection<String> getSafeCollection(final Collection<String> collection) {
+    return collection != null ? collection : emptyList();
+  }
+
   private void addExternalRecipients(final Collection<String> emailsToNotify) {
     if (CollectionUtil.isNotEmpty(emailsToNotify)) {
       for (String address : emailsToNotify) {
@@ -263,9 +272,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
     if (CollectionUtil.isNotEmpty(groupIdsToNotify)) {
       // There is at least one group to notify
       for (final String groupId : groupIdsToNotify) {
-        if (isGroupCanBeNotified(groupId)) {
-          getNotificationMetaData().addGroupRecipient(new GroupRecipient(groupId));
-        }
+        getNotificationMetaData().addGroupRecipient(new GroupRecipient(groupId));
       }
     }
   }
@@ -275,9 +282,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
     if (CollectionUtil.isNotEmpty(userIdsToNotify)) {
       // There is at least one user to notify
       for (final String userId : userIdsToNotify) {
-        if (isUserCanBeNotified(userId)) {
-          getNotificationMetaData().addUserRecipient(new UserRecipient(userId));
-        }
+        getNotificationMetaData().addUserRecipient(new UserRecipient(userId));
       }
     }
 
@@ -299,10 +304,10 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   }
 
   /**
-   * Should the notification treatment be stopped in there is no users to notify? By default true.
+   * Should the notification treatment be stopped if there is no user to notify? By default true.
    * This method can be overridden to specify a different or a contextualized answer. In that case,
    * the recipients setting should be then performed out of the builder.
-   * @return true if no notification has to be done when no recipients are defined.
+   * @return true if no notification has to be done when no recipient is defined.
    */
   protected boolean stopWhenNoUserToNotify() {
     return true;

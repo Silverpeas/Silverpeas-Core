@@ -110,7 +110,8 @@
     if (!subscriptions.isEmpty()) {
       for (ComponentSubscriptionBean subscription : subscriptions) {
         ArrayLine line = arrayPane.addArrayLine();
-        if (!subscription.isValid()) {
+        final boolean isSubscriptionValid = subscription.isValid();
+        if (!isSubscriptionValid) {
           line.setStyleSheet("ArrayCell disabled");
         }
         StringBuilder subTypeLabel = new StringBuilder();
@@ -124,15 +125,15 @@
           subTypeLabel.append("</b>");
         }
         final ArrayCell labelCell = line.addArrayCellText(subTypeLabel.toString());
-        if (!subscription.isValid()) {
+        if (!isSubscriptionValid) {
           labelCell.setStyleSheet(labelCell.getStyleSheet() + " disabled");
         }
-        if (!isReadOnly && subscription.isValid()) {
+        if (!isReadOnly && isSubscriptionValid) {
           final ArrayCell cellLink = line.addArrayCellLink(subscription.getPath(), subscription.getLink());
           cellLink.setStyleSheet("sp-link");
         } else {
           final ArrayCell cellLink = line.addArrayCellText(subscription.getPath());
-          if (!subscription.isValid()) {
+          if (!isSubscriptionValid) {
             cellLink.setStyleSheet("disabled");
           }
         }

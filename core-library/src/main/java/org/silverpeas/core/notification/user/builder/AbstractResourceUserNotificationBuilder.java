@@ -28,10 +28,7 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
@@ -44,7 +41,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 
-import java.util.Collection;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier
@@ -54,7 +51,7 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
 
   private T resource;
 
-  public AbstractResourceUserNotificationBuilder(final T resource, final String title,
+  private AbstractResourceUserNotificationBuilder(final T resource, final String title,
       final String content) {
     super(title, content);
     setResource(resource);
@@ -85,12 +82,19 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   protected boolean isUserCanBeNotified(final String userId) {
     final boolean isAccessible;
     if (resource instanceof Contribution) {
-      isAccessible = isUserAuthorized(userId, (Contribution) resource);
+      final Contribution contribution = (Contribution) this.resource;
+      final String instanceId = contribution.getContributionId().getComponentInstanceId();
+      isAccessible = ComponentAccessControl.get().isUserAuthorized(userId, instanceId);
     } else if (resource instanceof NodeDetail) {
       final NodeDetail node = (NodeDetail) resource;
       isAccessible = NodeAccessControl.get().isUserAuthorized(userId, node.getNodePK());
     } else {
-      isAccessible = true;
+      final String instanceId = getComponentInstanceId();
+      if (isDefined(instanceId)) {
+        isAccessible = ComponentAccessControl.get().isUserAuthorized(userId, instanceId);
+      } else {
+        isAccessible = true;
+      }
     }
     return isAccessible;
   }
@@ -107,55 +111,19 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   protected boolean isGroupCanBeNotified(final String groupId) {
     final boolean isAccessible;
     if (resource instanceof Contribution) {
-      isAccessible = isGroupAuthorized(groupId, (Contribution) resource);
+      final Contribution contribution = (Contribution) this.resource;
+      final String instanceId = contribution.getContributionId().getComponentInstanceId();
+      isAccessible = ComponentAccessControl.get().isGroupAuthorized(groupId, instanceId);
     } else if (resource instanceof NodeDetail) {
       final NodeDetail node = (NodeDetail) resource;
       isAccessible = NodeAccessControl.get().isGroupAuthorized(groupId, node.getNodePK());
     } else {
-      isAccessible = true;
-    }
-    return isAccessible;
-  }
-
-  private boolean isUserAuthorized(final String userId, final Contribution contribution) {
-    final String id = contribution.getContributionId().getLocalId();
-    final String instanceId = contribution.getContributionId().getComponentInstanceId();
-    Collection<NodePK> fatherPKs = PublicationService.get()
-        .getAllFatherPKInSamePublicationComponentInstance(new PublicationPK(id, instanceId));
-    boolean isAccessible;
-    if (fatherPKs != null && !fatherPKs.isEmpty()) {
-      NodeAccessControl nodeAccessControl = NodeAccessControl.get();
-      isAccessible = false;
-      for (NodePK fatherPK : fatherPKs) {
-        if ((nodeAccessControl.isUserAuthorized(userId, fatherPK))) {
-          isAccessible = true;
-          break;
-        }
+      final String instanceId = getComponentInstanceId();
+      if (isDefined(instanceId)) {
+        isAccessible = ComponentAccessControl.get().isGroupAuthorized(groupId, instanceId);
+      } else {
+        isAccessible = true;
       }
-    } else {
-      ComponentAccessControl componentAccessControl = ComponentAccessControl.get();
-      isAccessible = componentAccessControl.isUserAuthorized(userId, instanceId);
-    }
-    return isAccessible;
-  }
-
-  private boolean isGroupAuthorized(final String groupId, final Contribution contribution) {
-    final String id = contribution.getContributionId().getLocalId();
-    final String instanceId = contribution.getContributionId().getComponentInstanceId();
-    Collection<NodePK> fatherPKs = PublicationService.get()
-        .getAllFatherPKInSamePublicationComponentInstance(new PublicationPK(id, instanceId));
-    boolean isAccessible;
-    if (fatherPKs != null && !fatherPKs.isEmpty()) {
-      NodeAccessControl nodeAccessControl = NodeAccessControl.get();
-      isAccessible = false;
-      for (NodePK fatherPK: fatherPKs) {
-        if ((nodeAccessControl.isGroupAuthorized(groupId, fatherPK))) {
-          isAccessible = true;
-          break;
-        }
-      }
-    } else {
-      isAccessible = ComponentAccessControl.get().isGroupAuthorized(groupId, instanceId);
     }
     return isAccessible;
   }

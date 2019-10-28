@@ -1681,8 +1681,10 @@ class Admin implements Administration {
 
   @Override
   public String[] getProfilesByObjectAndGroupId(final ProfiledObjectId objectRef, final String componentId, final String groupId) throws AdminException {
+    List<String> groupIds = groupManager.getPathToGroup(groupId);
+    groupIds.add(groupId);
     return profiledObjectManager.getUserProfileNames(objectRef, getDriverComponentId(componentId),
-        -1, Collections.singletonList(groupId));
+        -1, groupIds);
   }
 
   @Override

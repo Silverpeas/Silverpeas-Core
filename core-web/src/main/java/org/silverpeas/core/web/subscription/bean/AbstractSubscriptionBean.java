@@ -39,7 +39,6 @@ import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
 import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Date;
 
@@ -133,20 +132,15 @@ public abstract class AbstractSubscriptionBean implements Subscription {
   }
 
   private boolean isGroupCanAccess(final String groupId, SubscriptionResource resource) {
-    try {
-      boolean accessOK;
-      if (resource.getType() == SubscriptionResourceType.NODE) {
-        NodePK nodePK = new NodePK(resource.getId(), resource.getInstanceId());
-        accessOK = NodeAccessControl.get().isGroupAuthorized(groupId, nodePK);
-      } else {
-        String instanceId = resource.getInstanceId();
-        accessOK = ComponentAccessControl.get().isGroupAuthorized(instanceId, groupId);
-      }
-      return accessOK;
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).silent(e);
-      return true;
+    final boolean accessOK;
+    if (resource.getType() == SubscriptionResourceType.NODE) {
+      NodePK nodePK = new NodePK(resource.getId(), resource.getInstanceId());
+      accessOK = NodeAccessControl.get().isGroupAuthorized(groupId, nodePK);
+    } else {
+      String instanceId = resource.getInstanceId();
+      accessOK = ComponentAccessControl.get().isGroupAuthorized(groupId, instanceId);
     }
+    return accessOK;
   }
 
   /**
