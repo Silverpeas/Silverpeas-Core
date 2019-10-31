@@ -31,24 +31,34 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * User: Yohann Chastagnier
+ * The type of a subscriber. It can be either a user or a group of users.
+ * @author Yohann Chastagnier
  * Date: 19/02/13
  */
 public enum SubscriberType {
+  /**
+   * The type is unknown. Assimilable to nothing.
+   */
   UNKNOWN,
+  /**
+   * The subscriber is a user.
+   */
   USER,
+  /**
+   * The subscriber is a group of users.
+   */
   GROUP;
 
   private static final Collection<SubscriberType> VALID_VALUES;
 
   static {
-    VALID_VALUES = new ArrayList<SubscriberType>(Arrays.asList(SubscriberType.values()));
+    VALID_VALUES = new ArrayList<>(Arrays.asList(SubscriberType.values()));
     VALID_VALUES.remove(SubscriberType.UNKNOWN);
   }
 
   /**
-   * Valid if current instance is not the one of UNKNOWN.
-   * @return
+   * Is this type is valid? It is valid if the type of the subscriber isn't unknown.
+   * @return true if the type of the subscriber is known, false otherwise.
    */
   public boolean isValid() {
     return !this.equals(UNKNOWN);
@@ -72,8 +82,8 @@ public enum SubscriberType {
   }
 
   /**
-   * All SubscriberType are returned into a Collection excepted UNKNOWN type.
-   * @return
+   * All subscriber types are returned into a collection excepted the UNKNOWN one.
+   * @return a collection of all of the valid subscriber types.
    */
   public static Collection<SubscriberType> getValidValues() {
     return VALID_VALUES;

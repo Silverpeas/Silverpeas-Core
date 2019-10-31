@@ -24,7 +24,8 @@
 package org.silverpeas.core.socialnetwork.mock;
 
 
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -232,6 +233,11 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
+  public Group[] getRecursivelyAllSubgroups(final String parentGroupId) {
+    return new Group[0];
+  }
+
+  @Override
   public UserDetail[] getAllUsers() {
     return new UserDetail[0];
   }
@@ -254,20 +260,20 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public String[] getUserProfiles(final String userId, final String componentId, final int objectId,
-      final ObjectType objectType) {
+  public String[] getUserProfiles(final String userId, final String componentId,
+      final ProfiledObjectId objectId) {
     return new String[0];
   }
 
   @Override
   public Map<Integer, List<String>> getUserObjectProfiles(final String userId,
-      final String componentId, final ObjectType objectType) {
+      final String componentId, final ProfiledObjectType objectType) {
     return null;
   }
 
   @Override
-  public List<ProfileInst> getUserProfiles(final String componentId, final String objectId,
-      final String objectType) {
+  public List<ProfileInst> getUserProfiles(final String componentId,
+      final ProfiledObjectId objectId) {
     return null;
   }
 
@@ -370,7 +376,12 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public boolean isComponentAvailable(final String componentId, final String userId) {
+  public boolean isComponentAvailableToUser(final String componentId, final String userId) {
+    return false;
+  }
+
+  @Override
+  public boolean isComponentAvailableToGroup(final String componentId, final String groupId) {
     return false;
   }
 
@@ -390,8 +401,17 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public boolean isObjectAvailable(final int objectId, final ObjectType objectType,
-      final String componentId, final String userId) {
+  public boolean isComponentAvailable(final String componentId, final String userId) {
+    return isComponentAvailableToUser(componentId, userId);
+  }
+
+  @Override
+  public boolean isObjectAvailableToUser(final ProfiledObjectId objectId, final String componentId, final String userId) {
+    return false;
+  }
+
+  @Override
+  public boolean isObjectAvailableToGroup(final ProfiledObjectId objectId, final String componentId, final String groupId) {
     return false;
   }
 
@@ -422,8 +442,8 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public String[] getUsersIdsByRoleNames(final String componentId, final String objectId,
-      final ObjectType objectType, final List<String> profileNames) {
+  public String[] getUsersIdsByRoleNames(final String componentId, final ProfiledObjectId objectId,
+      final List<String> profileNames) {
     return new String[0];
   }
 

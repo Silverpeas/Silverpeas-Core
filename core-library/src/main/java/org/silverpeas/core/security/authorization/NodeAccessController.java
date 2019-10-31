@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.security.authorization;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.node.model.NodeRuntimeException;
+import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.ObjectType;
-import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.node.model.NodeRuntimeException;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -88,6 +88,34 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
   }
 
   @Override
+  public boolean isGroupAuthorized(final String groupId, final NodePK nodePK) {
+    boolean authorized = false;
+    if (componentAccessController.isGroupAuthorized(groupId, nodePK.getInstanceId())) {
+      if (!componentAccessController.isRightOnTopicsEnabled(nodePK.getInstanceId())) {
+        authorized = true;
+      } else {
+        try {
+          final NodeDetail node = getNodeService().getHeader(nodePK, false);
+          if (node != null) {
+            if (node.haveRights()) {
+              NodePK objectPK = node.getNodePK();
+              authorized = controller
+                  .isObjectAvailableToGroup(ProfiledObjectId.fromNode(node.getRightsDependsOn()),
+                      objectPK.getInstanceId(), groupId);
+            } else {
+              authorized = true;
+            }
+          }
+        } catch (Exception e) {
+          SilverLogger.getLogger(this).warn(e);
+          authorized = false;
+        }
+      }
+    }
+    return authorized;
+  }
+
+  @Override
   protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
       String userId, NodePK nodePK) {
 
@@ -117,9 +145,8 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
         userRoles.addAll(componentUserRoles);
         return;
       }
-      userRoles.addAll(SilverpeasRole.from(getOrganisationController()
-          .getUserProfiles(userId, nodePK.getInstanceId(), node.getRightsDependsOn(),
-              ObjectType.NODE)));
+      userRoles.addAll(SilverpeasRole.from(getOrganisationController().getUserProfiles(userId,
+          nodePK.getInstanceId(), ProfiledObjectId.fromNode(node.getRightsDependsOn()))));
     }
   }
 

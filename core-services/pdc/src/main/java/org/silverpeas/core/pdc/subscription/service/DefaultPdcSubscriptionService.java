@@ -264,7 +264,7 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
             // Now, we have to test if subscription's owner is allowed to access
             // the classified item.
             String userId = String.valueOf(subscription.getOwnerId());
-            if (organizationController.isComponentAvailable(componentId, userId)) {
+            if (organizationController.isComponentAvailableToUser(componentId, userId)) {
               // if user is able to see component which contains content
               SilverContentInterface silverContent =
                   getSilverContent(componentId, silverObjectid, userId);

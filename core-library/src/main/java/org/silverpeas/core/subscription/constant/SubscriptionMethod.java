@@ -31,24 +31,34 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * User: Yohann Chastagnier
+ * The method used to subscribe a user or a group of users to a given resource in Silverpeas.
+ * @author Yohann Chastagnier
  * Date: 19/02/13
  */
 public enum SubscriptionMethod {
+  /**
+   * The subscription is unknown. assimilable to nothing.
+   */
   UNKNOWN,
+  /**
+   * The subscription was done by the subscriber himself.
+   */
   SELF_CREATION,
+  /**
+   * The subscription was done by another user with management rights.
+   */
   FORCED;
 
   private static final Collection<SubscriptionMethod> VALID_VALUES;
 
   static {
-    VALID_VALUES = new ArrayList<SubscriptionMethod>(Arrays.asList(SubscriptionMethod.values()));
+    VALID_VALUES = new ArrayList<>(Arrays.asList(SubscriptionMethod.values()));
     VALID_VALUES.remove(SubscriptionMethod.UNKNOWN);
   }
 
   /**
-   * Valid if current instance is not the one of UNKNOWN.
-   * @return
+   * Is this method is valid? It is valid if the method isn't unknown.
+   * @return true if the method used in the subscription is known, false otherwise.
    */
   public boolean isValid() {
     return !this.equals(UNKNOWN);
@@ -72,8 +82,8 @@ public enum SubscriptionMethod {
   }
 
   /**
-   * All SubscriptionMethod are returned into a Collection excepted UNKNOWN type.
-   * @return
+   * All Subscription methods are returned into a collection excepted the UNKNOWN one.
+   * @return a collection of all of the valid subscription methods.
    */
   public static Collection<SubscriptionMethod> getValidValues() {
     return VALID_VALUES;

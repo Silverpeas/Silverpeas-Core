@@ -28,15 +28,20 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier
@@ -46,7 +51,7 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
 
   private T resource;
 
-  public AbstractResourceUserNotificationBuilder(final T resource, final String title,
+  private AbstractResourceUserNotificationBuilder(final T resource, final String title,
       final String content) {
     super(title, content);
     setResource(resource);
@@ -62,7 +67,65 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   @Override
   protected void initialize() {
     super.initialize();
-    getNotificationMetaData().setLink(getResourceURL(resource));
+    final String link = getResourceURL(resource);
+    getNotificationMetaData().setLink(link);
+  }
+
+  /**
+   * The access control of the specified user to the resource behind this notification builder
+   * is verified. If the resource is a contribution, then the access controllers are used to verify
+   * such an access. Otherwise, by default the user can be notified (no access control required).
+   * @param userId the unique identifier of the user.
+   * @return true if the user can access the resource. False otherwise.
+   */
+  @Override
+  protected boolean isUserCanBeNotified(final String userId) {
+    final boolean isAccessible;
+    if (resource instanceof Contribution) {
+      final Contribution contribution = (Contribution) this.resource;
+      final String instanceId = contribution.getContributionId().getComponentInstanceId();
+      isAccessible = ComponentAccessControl.get().isUserAuthorized(userId, instanceId);
+    } else if (resource instanceof NodeDetail) {
+      final NodeDetail node = (NodeDetail) resource;
+      isAccessible = NodeAccessControl.get().isUserAuthorized(userId, node.getNodePK());
+    } else {
+      final String instanceId = getComponentInstanceId();
+      if (isDefined(instanceId)) {
+        isAccessible = ComponentAccessControl.get().isUserAuthorized(userId, instanceId);
+      } else {
+        isAccessible = true;
+      }
+    }
+    return isAccessible;
+  }
+
+  /**
+   * The access control of the specified group to the resource behind this notification builder
+   * is verified. If the resource is a contribution, then the access controllers are used to verify
+   * such an access. Otherwise, by default the users in the group can be notified (no access
+   * control required).
+   * @param groupId the unique identifier of the group of users.
+   * @return true if the group can access the resource. False otherwise.
+   */
+  @Override
+  protected boolean isGroupCanBeNotified(final String groupId) {
+    final boolean isAccessible;
+    if (resource instanceof Contribution) {
+      final Contribution contribution = (Contribution) this.resource;
+      final String instanceId = contribution.getContributionId().getComponentInstanceId();
+      isAccessible = ComponentAccessControl.get().isGroupAuthorized(groupId, instanceId);
+    } else if (resource instanceof NodeDetail) {
+      final NodeDetail node = (NodeDetail) resource;
+      isAccessible = NodeAccessControl.get().isGroupAuthorized(groupId, node.getNodePK());
+    } else {
+      final String instanceId = getComponentInstanceId();
+      if (isDefined(instanceId)) {
+        isAccessible = ComponentAccessControl.get().isGroupAuthorized(groupId, instanceId);
+      } else {
+        isAccessible = true;
+      }
+    }
+    return isAccessible;
   }
 
   /**

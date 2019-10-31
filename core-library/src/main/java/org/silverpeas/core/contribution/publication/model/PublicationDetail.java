@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.publication.model;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -91,6 +90,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -103,7 +104,7 @@ import static org.silverpeas.core.util.StringUtil.split;
 @XmlAccessorType(XmlAccessType.NONE)
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     implements I18nContribution, SilverContentInterface, Rateable, Serializable,
-    Cloneable, WithAttachment, WithThumbnail, WithReminder {
+    WithAttachment, WithThumbnail, WithReminder {
   private static final long serialVersionUID = 9199848912262605680L;
 
   public static final String DELAYED_VISIBILITY_AT_MODEL_PROPERTY = "DELAYED_VISIBILITY_AT";
@@ -624,9 +625,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     if (!I18NHelper.isI18nContentActivated) {
       return getKeywords();
     }
-    PublicationI18N p = (PublicationI18N) getTranslations().get(lang);
+    PublicationI18N p = getTranslations().get(lang);
     if (p == null) {
-      p = (PublicationI18N) getNextTranslation();
+      p = getNextTranslation();
     }
     if (p != null) {
       return p.getKeywords();
@@ -832,7 +833,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   public List<XMLField> getXmlFields(String language) {
     if ("0".equals(getInfoId())) {
       // this publication does not use a form
-      return new ArrayList<XMLField>();
+      return new ArrayList<>();
     }
     if (xmlFields == null) {
       try {
@@ -846,7 +847,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     return xmlFields;
   }
 
-  public HashMap<String, String> getFormValues(String language) {
+  public Map<String, String> getFormValues(String language) {
     HashMap<String, String> formValues = new HashMap<>();
     if ("0".equals(getInfoId())) {
       // this publication does not use a form
@@ -1079,8 +1080,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     return new PublicationPK(getCloneId(), getPK());
   }
 
-  @Override
-  public Object clone() throws CloneNotSupportedException {
+  public PublicationDetail copy() {
     PublicationDetail clone = new PublicationDetail();
     clone.setAuthor(author);
     clone.setBeginDate(beginDate);
@@ -1173,12 +1173,13 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     this.draftOutDate = null;
   }
 
+  @Override
   public boolean isIndexable() {
     return VALID_STATUS.equals(this.status);
   }
 
   public boolean isPublicationEditor(String userId) {
-    return ObjectUtils.equals(creatorId, userId) || ObjectUtils.equals(updaterId, userId);
+    return Objects.equals(creatorId, userId) || Objects.equals(updaterId, userId);
   }
 
   @Override
@@ -1265,7 +1266,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   public ContributionRating getRating() {
     if (contributionRating == null) {
       contributionRating = RatingService.get()
-          .getRating(new ContributionRatingPK(getId(), getInstanceId(), "Publication"));
+          .getRating(new ContributionRatingPK(getId(), getInstanceId(), PublicationDetail.TYPE));
     }
     return contributionRating;
   }

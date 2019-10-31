@@ -45,8 +45,9 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler.getSubscriptionNotificationUserNoteFromCurrentRequest;
 import static org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler.isSubscriptionNotificationEnabledForCurrentRequest;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -122,6 +123,24 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   protected abstract String getSender();
 
   /**
+   * Is the specified user can be notified? The reason depends on the nature of the notification
+   * and as such it is delegated to the implementor. For example, for notifications about a
+   * resource, only users that can access the resource can be notified, not the others even if they
+   * are part of the recipients.
+   * @return true of the specified user satisfies all the requirements to be notified.
+   */
+  protected abstract boolean isUserCanBeNotified(final String userId);
+
+  /**
+   * Is the specified group of users can be notified? The reason depends on the nature of the
+   * notification and as such it is delegated to the implementor. For example, for notifications
+   * about a resource, only groups of users that can access the resource can be notified, not the
+   * others even if they are part of the recipients.
+   * @return true of the specified group satisfies all the requirements to be notified.
+   */
+  protected abstract boolean isGroupCanBeNotified(final String groupId);
+
+  /**
    * Gets the notification metadata.
    * @return the metadata about the notification to build.
    */
@@ -194,7 +213,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * @return a collection of identifiers of the users to exclude from the notification.
    */
   protected Collection<String> getUserIdsToExcludeFromNotifying() {
-    return Collections.emptyList();
+    return emptyList();
   }
 
   /**
@@ -203,7 +222,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * @return a collection of user group's identifiers.
    */
   protected Collection<String> getGroupIdsToNotify() {
-    return Collections.emptyList();
+    return emptyList();
   }
 
   /**
@@ -212,13 +231,17 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * @return a collection of email addresses.
    */
   protected Collection<String> getExternalAddressesToNotify() {
-    return Collections.emptyList();
+    return emptyList();
   }
 
   private void performUsersToBeNotified() {
-    final Collection<String> userIdsToNotify = getUserIdsToNotify();
+    final Collection<String> userIdsToNotify = getSafeCollection(getUserIdsToNotify()).stream()
+        .filter(this::isUserCanBeNotified)
+        .collect(Collectors.toSet());
     final Collection<String> userIdsToExcludeFromNotifying = getUserIdsToExcludeFromNotifying();
-    final Collection<String> groupIdsToNotify = getGroupIdsToNotify();
+    final Collection<String> groupIdsToNotify = getSafeCollection(getGroupIdsToNotify()).stream()
+        .filter(this::isGroupCanBeNotified)
+        .collect(Collectors.toSet());
     final Collection<String> emailsToNotify = getExternalAddressesToNotify();
 
     // Stopping the process if no user to notify
@@ -231,6 +254,10 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
     addUserRecipients(userIdsToNotify, userIdsToExcludeFromNotifying);
     addGroupRecipients(groupIdsToNotify);
     addExternalRecipients(emailsToNotify);
+  }
+
+  private Collection<String> getSafeCollection(final Collection<String> collection) {
+    return collection != null ? collection : emptyList();
   }
 
   private void addExternalRecipients(final Collection<String> emailsToNotify) {
@@ -277,10 +304,10 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   }
 
   /**
-   * Should the notification treatment be stopped in there is no users to notify? By default true.
+   * Should the notification treatment be stopped if there is no user to notify? By default true.
    * This method can be overridden to specify a different or a contextualized answer. In that case,
    * the recipients setting should be then performed out of the builder.
-   * @return true if no notification has to be done when no recipients are defined.
+   * @return true if no notification has to be done when no recipient is defined.
    */
   protected boolean stopWhenNoUserToNotify() {
     return true;

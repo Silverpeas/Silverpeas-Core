@@ -84,11 +84,11 @@ class StringUtilTest {
    */
   @Test
   void testConvertFloat() {
-    assertEquals(1.0f, StringUtil.convertFloat("1"), 0.001f);
-    assertEquals(1.1f, StringUtil.convertFloat("1.1"), 0.001f);
-    assertEquals(0f, StringUtil.convertFloat("a"), 0.001f);
-    assertEquals(-1.0f, StringUtil.convertFloat("-1"), 0.001f);
-    assertEquals(1.1f, StringUtil.convertFloat("1,1"), 0.001f);
+    assertEquals(1.0f, StringUtil.asFloat("1"), 0.001f);
+    assertEquals(1.1f, StringUtil.asFloat("1.1"), 0.001f);
+    assertEquals(0f, StringUtil.asFloat("a"), 0.001f);
+    assertEquals(-1.0f, StringUtil.asFloat("-1"), 0.001f);
+    assertEquals(1.1f, StringUtil.asFloat("1,1"), 0.001f);
   }
 
   /**

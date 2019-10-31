@@ -149,18 +149,18 @@ public class TestComponentAccessController {
     when(controller.getComponentParameterValue(componentIdWithoutTopicRigths, "rightsOnTopics")).
         thenReturn("false");
 
-    when(controller.isComponentAvailable(componentId, USER_ID)).thenReturn(Boolean.TRUE);
-    when(controller.isComponentAvailable(publicComponentId, USER_ID)).thenReturn(Boolean.TRUE);
-    when(controller.isComponentAvailable(publicComponentIdWithUserRole, USER_ID))
+    when(controller.isComponentAvailableToUser(componentId, USER_ID)).thenReturn(Boolean.TRUE);
+    when(controller.isComponentAvailableToUser(publicComponentId, USER_ID)).thenReturn(Boolean.TRUE);
+    when(controller.isComponentAvailableToUser(publicComponentIdWithUserRole, USER_ID))
         .thenReturn(Boolean.TRUE);
-    when(controller.isComponentAvailable(componentIdWithTopicRigths, USER_ID))
+    when(controller.isComponentAvailableToUser(componentIdWithTopicRigths, USER_ID))
         .thenReturn(Boolean.TRUE);
-    when(controller.isComponentAvailable(componentIdWithoutTopicRigths, USER_ID))
+    when(controller.isComponentAvailableToUser(componentIdWithoutTopicRigths, USER_ID))
         .thenReturn(Boolean.TRUE);
-    when(controller.isComponentAvailable(publicFilesComponentId, USER_ID)).thenReturn(Boolean.FALSE);
-    when(controller.isComponentAvailable(publicFilesComponentIdWithUserRole, USER_ID))
+    when(controller.isComponentAvailableToUser(publicFilesComponentId, USER_ID)).thenReturn(Boolean.FALSE);
+    when(controller.isComponentAvailableToUser(publicFilesComponentIdWithUserRole, USER_ID))
         .thenReturn(Boolean.TRUE);
-    when(controller.isComponentAvailable(forbiddenComponent, USER_ID)).thenReturn(Boolean.FALSE);
+    when(controller.isComponentAvailableToUser(forbiddenComponent, USER_ID)).thenReturn(Boolean.FALSE);
   }
 
   /**

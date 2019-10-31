@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.apache.commons.exec.LogOutputStream;
 
-import static org.silverpeas.core.util.StringUtil.newline;
+import static org.silverpeas.core.util.StringUtil.NEWLINE;
 
 /**
  * Helper class to collectect the output of a command execution.
@@ -59,7 +59,7 @@ public class CollectingLogOutputStream extends LogOutputStream {
     StringBuilder builder = new StringBuilder(512 * lines.size());
     for (String line : lines) {
       builder.append(line);
-      builder.append(newline);
+      builder.append(NEWLINE);
     }
     return builder.toString();
   }

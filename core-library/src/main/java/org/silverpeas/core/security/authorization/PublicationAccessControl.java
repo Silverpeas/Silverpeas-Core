@@ -24,10 +24,15 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * This interface extends access controller for a Publication resource.
  * @author Yohann Chastagnier
  */
 public interface PublicationAccessControl extends AccessController<PublicationPK> {
+
+  static PublicationAccessControl get() {
+    return ServiceProvider.getService(PublicationAccessControl.class);
+  }
 }

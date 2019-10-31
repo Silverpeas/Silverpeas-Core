@@ -519,7 +519,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
           topSpaceIds.add(item.getSpaceId());
         }
       } else {
-        if (organizationController.isComponentAvailable(itemId, getUserId())) {
+        if (organizationController.isComponentAvailableToUser(itemId, getUserId())) {
           ComponentInstLight component = organizationController.getComponentInstLight(itemId);
           String currentSpaceId = component.getDomainFatherId();
           SpaceInstLight rootSpace = organizationController.getRootSpace(currentSpaceId);
@@ -689,7 +689,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
         && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST)
         && spaceStruct.getFirstPageExtraParam() != null
         && spaceStruct.getFirstPageExtraParam().length() > 0) {
-      if (getOrganisationController().isComponentAvailable(
+      if (getOrganisationController().isComponentAvailableToUser(
           spaceStruct.getFirstPageExtraParam(), getUserId())) {
         return URLUtil.getSimpleURL(URLUtil.URL_COMPONENT,
             spaceStruct.getFirstPageExtraParam());

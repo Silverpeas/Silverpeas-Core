@@ -283,7 +283,7 @@ public class MyLinksResourceTest {
   @Test
   public void addComponentLink() {
     doReturn(null).when(rest).getMyLink(anyString());
-    when(orgaCtrl.isComponentAvailable("1050", CURRENT_USER_ID)).thenReturn(true);
+    when(orgaCtrl.isComponentAvailableToUser("1050", CURRENT_USER_ID)).thenReturn(true);
     when(orgaCtrl.getComponentInstLight(anyString())).thenAnswer(new Answer<ComponentInstLight>() {
       @Override
       public ComponentInstLight answer(final InvocationOnMock invocation) throws Throwable {

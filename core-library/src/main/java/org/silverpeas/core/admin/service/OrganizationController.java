@@ -23,7 +23,8 @@
  */
 package org.silverpeas.core.admin.service;
 
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -241,6 +242,14 @@ public interface OrganizationController extends java.io.Serializable {
   <T extends Group> T[] getAllSubGroups(String parentGroupId);
 
   /**
+   * Gets all the groups and sub groups that are children of the specified group.
+   * @param parentGroupId the unique identifier of a group.
+   * @param <T> the concrete type of the {@link Group} instances to return.
+   * @return an array with all the groups that are children of the specified group.
+   */
+  <T extends Group> T[] getRecursivelyAllSubgroups(String parentGroupId);
+
+  /**
    * Return all the users of Silverpeas
    */
   <T extends User> T[] getAllUsers();
@@ -255,8 +264,8 @@ public interface OrganizationController extends java.io.Serializable {
    * Gets the collection of silverpeas roles the given user has on the component instance
    * represented by the given identifier.<br>
    * In contrary to {@link #getUserProfiles(String, String)},
-   * {@link #getUserProfiles(String, String, String)} or
-   * {@link #getUserProfiles(String, String, int, ObjectType)}
+   * {@link #getUserProfiles(String, ProfiledObjectId)} or
+   * {@link #getUserProfiles(String, String, ProfiledObjectId)}
    * signatures, this one is able to return user roles of different kinds of implementation of
    * {@link SilverpeasComponentInstance}.<br>
    * So, this signature is useful into contexts of transversal treatments.<br>
@@ -269,12 +278,12 @@ public interface OrganizationController extends java.io.Serializable {
 
   String[] getUserProfiles(String userId, String componentId);
 
-  String[] getUserProfiles(String userId, String componentId, int objectId, ObjectType objectType);
+  String[] getUserProfiles(String userId, String componentId, ProfiledObjectId objectId);
 
   Map<Integer, List<String>> getUserObjectProfiles(String userId, String componentId,
-      ObjectType objectType);
+      ProfiledObjectType objectType);
 
-  List<ProfileInst> getUserProfiles(String componentId, String objectId, String objectType);
+  List<ProfileInst> getUserProfiles(String componentId, ProfiledObjectId objectId);
 
   ProfileInst getUserProfile(String profileId);
 
@@ -377,7 +386,19 @@ public interface OrganizationController extends java.io.Serializable {
 
   boolean isToolAvailable(String toolId);
 
+  /**
+   * Is the specified component instance available to the given user?
+   * @param componentId the unique identifier of a component instance.
+   * @param userId the unique identifier of a user.
+   * @return true if the user can access the given component instance. False otherwise.
+   * @deprecated Replaced by {@link OrganizationController#isComponentAvailableToUser(String, String)}
+   */
+  @Deprecated
   boolean isComponentAvailable(String componentId, String userId);
+
+  boolean isComponentAvailableToUser(String componentId, String userId);
+
+  boolean isComponentAvailableToGroup(String componentId, String groupId);
 
   boolean isComponentExist(String componentId);
 
@@ -385,7 +406,9 @@ public interface OrganizationController extends java.io.Serializable {
 
   boolean isSpaceAvailable(String spaceId, String userId);
 
-  boolean isObjectAvailable(int objectId, ObjectType objectType, String componentId, String userId);
+  boolean isObjectAvailableToUser(ProfiledObjectId objectId, String componentId, String userId);
+
+  boolean isObjectAvailableToGroup(ProfiledObjectId objectId, String componentId, String groupId);
 
   List<SpaceInstLight> getSpaceTreeview(String userId);
 
@@ -407,8 +430,7 @@ public interface OrganizationController extends java.io.Serializable {
    */
   String[] getUsersIdsByRoleNames(String componentId, List<String> profileNames);
 
-  String[] getUsersIdsByRoleNames(String componentId, String objectId, ObjectType objectType,
-      List<String> profileNames);
+  String[] getUsersIdsByRoleNames(String componentId, ProfiledObjectId objectId, List<String> profileNames);
 
   /**
    * Get a domain with given id

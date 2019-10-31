@@ -309,7 +309,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   // isUserStateValid if the user is allowed to access the required component
   private boolean isUserAllowed(MainSessionController controller, String componentId) {
     boolean[] userAllowed = {componentId == null ||
-        getOrganizationController().isComponentAvailable(componentId, controller.getUserId())};
+        getOrganizationController().isComponentAvailableToUser(componentId, controller.getUserId())};
     if (!userAllowed[0]) {
       // Maybe a case of a personal component instance
       PersonalComponentInstance.from(componentId).ifPresent(

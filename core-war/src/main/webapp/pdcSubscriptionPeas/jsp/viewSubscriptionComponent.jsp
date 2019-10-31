@@ -110,6 +110,10 @@
     if (!subscriptions.isEmpty()) {
       for (ComponentSubscriptionBean subscription : subscriptions) {
         ArrayLine line = arrayPane.addArrayLine();
+        final boolean isSubscriptionValid = subscription.isValid();
+        if (!isSubscriptionValid) {
+          line.setStyleSheet("ArrayCell disabled");
+        }
         StringBuilder subTypeLabel = new StringBuilder();
         subTypeLabel.append(
             resource.getString("SubscriptionMethod." + subscription.getSubscriptionMethod()));
@@ -120,12 +124,18 @@
           subTypeLabel.append(subscription.getSubscriberName());
           subTypeLabel.append("</b>");
         }
-        line.addArrayCellText(subTypeLabel.toString());
-        if (!isReadOnly) {
+        final ArrayCell labelCell = line.addArrayCellText(subTypeLabel.toString());
+        if (!isSubscriptionValid) {
+          labelCell.setStyleSheet(labelCell.getStyleSheet() + " disabled");
+        }
+        if (!isReadOnly && isSubscriptionValid) {
           final ArrayCell cellLink = line.addArrayCellLink(subscription.getPath(), subscription.getLink());
           cellLink.setStyleSheet("sp-link");
         } else {
-          line.addArrayCellText(subscription.getPath());
+          final ArrayCell cellLink = line.addArrayCellText(subscription.getPath());
+          if (!isSubscriptionValid) {
+            cellLink.setStyleSheet("disabled");
+          }
         }
         if (!isReadOnly && !subscription.isReadOnly()) {
           String delete = subscription.getResource().getInstanceId() + "-" +

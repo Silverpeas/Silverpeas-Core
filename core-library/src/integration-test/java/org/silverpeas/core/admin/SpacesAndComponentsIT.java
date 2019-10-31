@@ -759,7 +759,7 @@ public class SpacesAndComponentsIT {
     ProfileInst profile = component.getInheritedProfileInst(SilverpeasRole.publisher.name());
     assertThat(profile.getAllUsers().size(), is(1));
 
-    boolean accessAllowed = admin.isComponentAvailable(componentId, "1");
+    boolean accessAllowed = admin.isComponentAvailableToUser(componentId, "1");
     assertThat(accessAllowed, is(false));
     assertThat(profile.getAllUsers().contains("2"), is(true));
 
@@ -774,7 +774,7 @@ public class SpacesAndComponentsIT {
     // check propagation
     component = admin.getComponentInst(componentId);
     assertThat(component.getAllProfilesInst().size(), is(3));
-    accessAllowed = admin.isComponentAvailable(componentId, "1");
+    accessAllowed = admin.isComponentAvailableToUser(componentId, "1");
     assertThat(accessAllowed, is(true));
   }
 }

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,19 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.admin;
 
-public enum ObjectType {
-  NODE("O");
+package org.silverpeas.core.subscription;
 
-  private String code;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.notification.NodeEvent;
+import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 
-  ObjectType(String code) {
-    this.code = code;
+import javax.inject.Singleton;
+
+/**
+ * Listener of events on the deletion of a node in a component instance to delete all subscriptions
+ * on that node.
+ * @author mmoquillon
+ */
+@Singleton
+public class SubscriptionNodeEventListener
+    extends AbstractProfiledResourceSubscriptionListener<NodeDetail, NodeEvent> {
+
+  @Override
+  protected SubscriptionResource getSubscriptionResource(final NodeDetail resource) {
+    return NodeSubscriptionResource.from(resource.getNodePK());
   }
-
-  public String getCode() {
-    return this.code;
-  }
-
 }
+  

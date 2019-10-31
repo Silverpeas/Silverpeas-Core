@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.service;
 
+import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -361,16 +362,20 @@ public interface Administration {
    */
   ProfileInst getProfileInst(String sProfileId) throws AdminException;
 
-  List<ProfileInst> getProfilesByObject(String objectId, String objectType, String componentId)
+  List<ProfileInst> getProfilesByObject(ProfiledObjectId objectRef, String componentId)
       throws AdminException;
 
-  String[] getProfilesByObjectAndUserId(int objectId, String objectType, String componentId,
-      String userId) throws AdminException;
+  String[] getProfilesByObjectAndGroupId(ProfiledObjectId objectRef, String componentId, String groupId) throws AdminException;
+
+  String[] getProfilesByObjectAndUserId(ProfiledObjectId objectRef, String componentId, String userId) throws AdminException;
 
   Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(String objectType,
       String componentId, String userId) throws AdminException;
 
-  boolean isObjectAvailable(String componentId, int objectId, String objectType, String userId)
+  boolean isObjectAvailableToUser(String componentId, ProfiledObjectId objectRef, String userId)
+      throws AdminException;
+
+  boolean isObjectAvailableToGroup(String componentId, ProfiledObjectId objectRef, String groupId)
       throws AdminException;
 
   String addProfileInst(ProfileInst profileInst) throws AdminException;
@@ -904,7 +909,7 @@ public interface Administration {
   boolean isAnAdminTool(String toolId);
 
   /**
-   * Is the specified component instance available among the components instances accessibles by
+   * Is the specified component instance available among the components instances accessible by
    * the
    * specified user?
    * </p>
@@ -919,8 +924,33 @@ public interface Administration {
    * @param userId the unique identifier of a user.
    * @return true if the component instance is available, false otherwise.
    */
-  boolean isComponentAvailable(String componentId, String userId) throws AdminException;
+  boolean isComponentAvailableToUser(String componentId, String userId) throws AdminException;
 
+  /**
+   * Is the specified component instance available among the components instances accessible by
+   * the specified group of users?
+   * </p>
+   * A component is an application in Silverpeas to perform some tasks and to manage some
+   * resources.
+   * Each component in Silverpeas can be instanciated several times, each of them corresponding
+   * then
+   * to a running application in Silverpeas and it is uniquely identified from others instances by
+   * a
+   * given identifier.
+   * @param componentId the unique identifier of a component instance.
+   * @param groupId the unique identifier of a group of users.
+   * @return true if the component instance is available, false otherwise.
+   */
+  boolean isComponentAvailableToGroup(String componentId, String groupId) throws AdminException;
+
+  /**
+   * Is the specified component instance manageable by the given user? The component instance is
+   * manageable if the user has enough access right to manage it.
+   * @param componentId the unique identifier of the component instance.
+   * @param userId the unique identifier of a user.
+   * @return true of the user can manage the specified component instance. False otherwise.
+   * @throws AdminException if an error occurs while checking the access right of the user.
+   */
   boolean isComponentManageable(String componentId, String userId) throws AdminException;
 
   /**

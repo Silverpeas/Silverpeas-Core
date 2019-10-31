@@ -642,7 +642,7 @@ public class SPDesktopServlet extends SilverpeasAuthenticatedHttpServlet {
       if (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST
           && isDefined(spaceStruct.getFirstPageExtraParam())) {
         String componentId = spaceStruct.getFirstPageExtraParam();
-        if (organizationCtrl.isComponentAvailable(componentId, userId)) {
+        if (organizationCtrl.isComponentAvailableToUser(componentId, userId)) {
           return URLUtil.getApplicationURL() + URLUtil.getURL("useless", componentId) + "Main";
         } else {
           // component does not exist anymore or component is not available to current user

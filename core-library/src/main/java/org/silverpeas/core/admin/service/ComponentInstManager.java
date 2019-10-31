@@ -38,6 +38,8 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -51,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
+import static org.silverpeas.core.notification.system.ResourceEvent.Type.DELETION;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.UPDATE;
 
 @Singleton
@@ -64,6 +67,10 @@ public class ComponentInstManager {
   private ComponentInstanceEventNotifier notifier;
   @Inject
   private OrganizationSchema organizationSchema;
+
+  public static ComponentInstManager get() {
+    return ServiceProvider.getService(ComponentInstManager.class);
+  }
 
   protected ComponentInstManager() {
   }
@@ -371,6 +378,9 @@ public class ComponentInstManager {
 
       // delete the component node
       organizationSchema.instance().removeComponentInstance(componentInst.getLocalId());
+
+      // notify about the deletion
+      notifier.notifyEventOn(DELETION, componentInst);
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting(COMPONENT, componentInst.getLocalId()), e);
     }
@@ -663,16 +673,7 @@ public class ComponentInstManager {
    * Convert String Id to int Id
    */
   private int idAsInt(String id) {
-    if (id == null || id.length() == 0) {
-      // the null id.
-      return -1;
-    }
-    try {
-      return Integer.parseInt(id);
-    } catch (NumberFormatException e) {
-      // the null id.
-      return -1;
-    }
+    return StringUtil.asInt(id, -1);
   }
 
   /**

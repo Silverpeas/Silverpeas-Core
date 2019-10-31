@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -52,6 +53,15 @@ public class ComponentAccessController extends AbstractAccessController<String>
 
   ComponentAccessController() {
     // Instance by IoC only.
+  }
+
+  @Override
+  public boolean isGroupAuthorized(final String groupId, final String instanceId) {
+    try {
+      return controller.isComponentAvailableToGroup(instanceId, groupId);
+    } catch (Exception e) {
+      throw new SilverpeasRuntimeException(e);
+    }
   }
 
   @Override
@@ -148,7 +158,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
       return;
     }
 
-    if (controller.isComponentAvailable(componentId, userId)) {
+    if (controller.isComponentAvailableToUser(componentId, userId)) {
       final String[] userProfiles = controller.getUserProfiles(userId, componentId);
       userRoles.addAll(SilverpeasRole.from(userProfiles));
       if (userRoles.isEmpty() && userProfiles != null && userProfiles.length > 0) {

@@ -41,7 +41,7 @@ import java.io.UnsupportedEncodingException;
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings
     .isDisplayableAsContentForComponentInstanceId;
-import static org.silverpeas.core.util.StringUtil.newline;
+import static org.silverpeas.core.util.StringUtil.NEWLINE;
 
 /**
  * @author ehugonnet
@@ -126,7 +126,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
     StringBuilder builder = new StringBuilder(HTML_BUFFER_CAPACITY);
 
-    builder.append("<ul class=\"first-of-type\">").append(newline);
+    builder.append("<ul class=\"first-of-type\">").append(NEWLINE);
     prepareMenuItem(builder, "checkout('" + attachment.getId() + "'," + attachmentId + ','
         + webDavOK + ");", resources.getString("checkOut"));
     prepareMenuItem(builder, "checkoutAndDownload('" + attachment.getId() + "'," + attachmentId
@@ -145,8 +145,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     prepareMenuItem(builder, "checkin('" + attachment.getId() + "'," + attachmentId + "," +
         attachment.isOpenOfficeCompatible() + ", false, " + attachment.isVersioned() + ", '" +
         webdavContentEditionLanguageLabel + "');", resources.getString("checkIn"));
-    builder.append("</ul>").append(newline);
-    builder.append("<ul>").append(newline);
+    builder.append("</ul>").append(NEWLINE);
+    builder.append("<ul>").append(NEWLINE);
     prepareMenuItem(builder,
         "updateAttachment('" + attachment.getId() + "','" + attachment.getLanguage() + "');",
         resources.getString("GML.modify"));
@@ -179,16 +179,16 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       prepareMenuItem(builder, "switchDisplayAsContentEnabled('" + attachment.getId() + "', " +
           !isDisplayAsContentEnabled + ");", message);
     }
-    builder.append("</ul>").append(newline);
-    builder.append("<ul>").append(newline);
+    builder.append("</ul>").append(NEWLINE);
+    builder.append("<ul>").append(NEWLINE);
     prepareMenuItem(builder, "ShareAttachment('" + attachmentId + "');", resources.getString(
         "GML.share.file"));
 
-    builder.append("</ul>").append(newline);
-    builder.append("<ul>").append(newline);
+    builder.append("</ul>").append(NEWLINE);
+    builder.append("<ul>").append(NEWLINE);
     prepareMenuItem(builder, "notifyAttachment('" + attachmentId + "');", resources.getString(
         "GML.notify"));
-    builder.append("</ul>").append(newline);
+    builder.append("</ul>").append(NEWLINE);
 
     String menuItems = builder.toString();
 
@@ -227,7 +227,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       LocalizationBundle resources, boolean showMenuNotif) throws UnsupportedEncodingException {
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     StringBuilder itemsBuilder = new StringBuilder(HTML_BUFFER_CAPACITY);
-    itemsBuilder.append("<ul>").append(newline);
+    itemsBuilder.append("<ul>").append(NEWLINE);
 
     boolean sharingAllowed = attachment.isSharingAllowedForRolesFrom(user);
 
@@ -237,7 +237,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     }
     prepareMenuItem(itemsBuilder, "notifyAttachment('" + attachmentId + "');", resources.getString(
         "GML.notify"));
-    itemsBuilder.append("</ul>").append(newline);
+    itemsBuilder.append("</ul>").append(NEWLINE);
 
     StringBuilder configBuilder = new StringBuilder();
     configBuilder.append(String.format(TEMPLATE, attachmentId, "0", !showMenuNotif));
@@ -253,14 +253,14 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     String oMenuId = "oMenu" + attachmentId;
     String basicMenuId = "basicmenu" + attachmentId;
     builder.append("<div id=\"").append(basicMenuId).append("\" class=\"yuimenu\">").
-        append(newline);
-    builder.append("<div class=\"bd\">").append(newline);
+        append(NEWLINE);
+    builder.append("<div class=\"bd\">").append(NEWLINE);
 
     // adding menu items
     builder.append(items);
 
-    builder.append("</div>").append(newline);
-    builder.append("</div>").append(newline);
+    builder.append("</div>").append(NEWLINE);
+    builder.append("</div>").append(NEWLINE);
     builder.append("<script type=\"text/javascript\">");
     builder.append("var ").append(oMenuId).append(";");
     builder.append("YAHOO.util.Event.onContentReady(\"").append(basicMenuId).append(

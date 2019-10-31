@@ -52,6 +52,7 @@ date 14/09/2000
 */
 package org.silverpeas.core.admin.service;
 
+import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.PasteDetail;
@@ -428,7 +429,7 @@ public class AdminController implements java.io.Serializable {
   public boolean isComponentAvailable(String componentId, String userId) {
 
     try {
-      return admin.isComponentAvailable(componentId, userId);
+      return admin.isComponentAvailableToUser(componentId, userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return false;
@@ -530,33 +531,28 @@ public class AdminController implements java.io.Serializable {
     }
   }
 
-  public List<ProfileInst> getProfilesByObject(String objectId, String objectType,
-      String componentId) {
-
+  public List<ProfileInst> getProfilesByObject(ProfiledObjectId objectId, String componentId) {
     try {
-      return admin.getProfilesByObject(objectId, objectType, componentId);
+      return admin.getProfilesByObject(objectId, componentId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return Collections.emptyList();
     }
   }
 
-  public String[] getProfilesByObjectAndUserId(int objectId, String objectType,
-      String componentId, String userId) {
-
+  public String[] getProfilesByObjectAndUserId(ProfiledObjectId objectRef, String componentId,
+      String userId) {
     try {
-      return admin.getProfilesByObjectAndUserId(objectId, objectType, componentId, userId);
+      return admin.getProfilesByObjectAndUserId(objectRef, componentId, userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
-  public boolean isObjectAvailable(int objectId, String objectType,
-      String componentId, String userId) {
-
+  public boolean isObjectAvailable(ProfiledObjectId objectRef, String componentId, String userId) {
     try {
-      return admin.isObjectAvailable(componentId, objectId, objectType, userId);
+      return admin.isObjectAvailableToUser(componentId, objectRef, userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return false;

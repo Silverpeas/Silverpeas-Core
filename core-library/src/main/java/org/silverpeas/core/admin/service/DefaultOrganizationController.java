@@ -28,7 +28,8 @@
  */
 package org.silverpeas.core.admin.service;
 
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -420,6 +421,16 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
+  public Group[] getRecursivelyAllSubgroups(final String parentGroupId) {
+    try {
+      return getAdminService().getRecursivelyAllSubGroups(parentGroupId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return new Group[0];
+    }
+  }
+
+  @Override
   public UserDetail[] getAllUsers() {
     try {
       return getAdminService().getAllUsers().toArray(new UserDetail[0]);
@@ -486,11 +497,9 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public String[] getUserProfiles(String userId, String componentId, int objectId,
-      ObjectType objectType) {
+  public String[] getUserProfiles(String userId, String componentId, ProfiledObjectId objectId) {
     try {
-      return getAdminService().getProfilesByObjectAndUserId(objectId, objectType.getCode(),
-          componentId, userId);
+      return getAdminService().getProfilesByObjectAndUserId(objectId, componentId, userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new String[0];
@@ -499,7 +508,7 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @Override
   public Map<Integer, List<String>> getUserObjectProfiles(final String userId,
-      final String componentId, final ObjectType objectType) {
+      final String componentId, final ProfiledObjectType objectType) {
     try {
       return getAdminService().getProfilesByObjectTypeAndUserId(objectType.getCode(),
           componentId, userId);
@@ -510,9 +519,9 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public List<ProfileInst> getUserProfiles(String componentId, String objectId, String objectType) {
+  public List<ProfileInst> getUserProfiles(String componentId, ProfiledObjectId objectId) {
     try {
-      return getAdminService().getProfilesByObject(objectId, objectType, componentId);
+      return getAdminService().getProfilesByObject(objectId, componentId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return Collections.emptyList();
@@ -749,8 +758,13 @@ public class DefaultOrganizationController implements OrganizationController {
     return isToolAvailable;
   }
 
+  @Override
+  public boolean isComponentAvailable(final String componentId, final String userId) {
+    return isComponentAvailableToUser(componentId, userId);
+  }
+
   /**
-   * Is the specified component instance available among the components instances accessibles by the
+   * Is the specified component instance available among the components instances accessible by the
    * specified user?
    * </p>
    * A component is an application in Silverpeas to perform some tasks and to manage some resources.
@@ -763,9 +777,19 @@ public class DefaultOrganizationController implements OrganizationController {
    * @return true if the component instance is available, false otherwise.
    */
   @Override
-  public boolean isComponentAvailable(String componentId, String userId) {
+  public boolean isComponentAvailableToUser(String componentId, String userId) {
     try {
-      return getAdminService().isComponentAvailable(componentId, userId);
+      return getAdminService().isComponentAvailableToUser(componentId, userId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return false;
+    }
+  }
+
+  @Override
+  public boolean isComponentAvailableToGroup(String componentId, String groupId) {
+    try {
+      return getAdminService().isComponentAvailableToGroup(componentId, groupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return false;
@@ -803,11 +827,19 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public boolean isObjectAvailable(int objectId, ObjectType objectType, String componentId,
-      String userId) {
+  public boolean isObjectAvailableToUser(ProfiledObjectId objectId, String componentId, String userId) {
     try {
-      return getAdminService().isObjectAvailable(componentId, objectId, objectType.getCode(),
-          userId);
+      return getAdminService().isObjectAvailableToUser(componentId, objectId, userId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return false;
+    }
+  }
+
+  @Override
+  public boolean isObjectAvailableToGroup(ProfiledObjectId objectId, String componentId, String groupId) {
+    try {
+      return getAdminService().isObjectAvailableToGroup(componentId, objectId, groupId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return false;
@@ -882,13 +914,10 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public String[] getUsersIdsByRoleNames(String componentId, String objectId, ObjectType objectType,
-      List<String> profileNames) {
+  public String[] getUsersIdsByRoleNames(String componentId, ProfiledObjectId objectId, List<String> profileNames) {
 
     try {
-      List<ProfileInst> profiles = getAdminService().getProfilesByObject(objectId, objectType.
-          getCode(),
-          componentId);
+      List<ProfileInst> profiles = getAdminService().getProfilesByObject(objectId, componentId);
       List<String> profileIds = new ArrayList<>();
       for (ProfileInst profile : profiles) {
         if (profile != null && profileNames.contains(profile.getName())) {

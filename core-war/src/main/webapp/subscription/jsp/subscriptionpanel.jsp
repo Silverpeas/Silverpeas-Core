@@ -76,7 +76,7 @@
 </fmt:message>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="${requestScope.resources.language}">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel/>
@@ -103,8 +103,7 @@
      * Go to screen that proposing to select groups and users : User Panel.
      */
     function modifyForcedSubscriptions() {
-      $("<form>").attr('method', 'GET').attr('action',
-          '<c:url value="/RSubscription/jsp/ToUserPanel"/>').appendTo(document.body).submit();
+      sp.navRequest('<c:url value="/RSubscription/jsp/ToUserPanel"/>').go();
     }
 
     /**
@@ -400,8 +399,11 @@
         $subscription.append($avatar);
 
         // Name
-        $subscription.append($('<span>').addClass('name_' +
-            subscription.ui.classSuffix).text(subscription.ui.name));
+        var $name =  $('<span>').addClass('name_' + subscription.ui.classSuffix).text(subscription.ui.name);
+        if (!subscription.enabled) {
+           $name.addClass('removed');
+        }
+        $subscription.append($name);
 
         // Details
         if (subscription.creationDate) {

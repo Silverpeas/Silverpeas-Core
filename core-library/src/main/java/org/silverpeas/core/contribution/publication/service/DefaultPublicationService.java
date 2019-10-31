@@ -338,7 +338,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   private void updateDetail(PublicationDetail pubDetail, boolean forceUpdateDate) {
     try (Connection con = getConnection()) {
       PublicationDetail publi = PublicationDAO.loadRow(con, pubDetail.getPK());
-      PublicationDetail before = (PublicationDetail) publi.clone();
+      PublicationDetail before = publi.copy();
       String oldName = publi.getName();
       String oldDesc = publi.getDescription();
       String oldKeywords = publi.getKeywords();
@@ -376,7 +376,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       loadTranslations(publi);
       PublicationDAO.storeRow(con, publi);
       notifier.notifyEventOn(ResourceEvent.Type.UPDATE, before, publi);
-    } catch (SQLException | CloneNotSupportedException e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
   }

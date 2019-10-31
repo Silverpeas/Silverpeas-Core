@@ -118,12 +118,19 @@
           subTypeLabel.append(subscription.getSubscriberName());
           subTypeLabel.append("</b>");
         }
-        line.addArrayCellText(subTypeLabel.toString());
-        if (!isReadOnly) {
+        final ArrayCell labelCell = line.addArrayCellText(subTypeLabel.toString());
+        final boolean isSubscriptionValid = subscription.isValid();
+        if (!isSubscriptionValid) {
+          labelCell.setStyleSheet(labelCell.getStyleSheet() + " disabled");
+        }
+        if (!isReadOnly && isSubscriptionValid) {
           final ArrayCell cellLink = line.addArrayCellLink(subscription.getPath(), subscription.getLink());
           cellLink.setStyleSheet("sp-link");
         } else {
-          line.addArrayCellText(subscription.getPath());
+          final ArrayCell cellLink = line.addArrayCellText(subscription.getPath());
+          if (!isSubscriptionValid) {
+            cellLink.setStyleSheet("disabled");
+          }
         }
         if (!isReadOnly && !subscription.isReadOnly()) {
           String delete = subscription.getResource().getId() + "-" +

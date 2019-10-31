@@ -139,7 +139,7 @@ public abstract class GoTo extends HttpServlet {
       // Personal space
       return true;
     }
-    return OrganizationController.get().isComponentAvailable(componentId, mainSessionCtrl.getUserId());
+    return OrganizationController.get().isComponentAvailableToUser(componentId, mainSessionCtrl.getUserId());
   }
 
   public String getUserId(HttpServletRequest req) {

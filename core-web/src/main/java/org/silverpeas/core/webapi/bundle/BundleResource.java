@@ -179,7 +179,8 @@ public class BundleResource extends RESTWebService {
         if (withGeneral) {
           generalProperties.store(messages, generalBundleName);
         }
-        return Response.ok(messages.toString()).build();
+        // Escaping single ' in order to be compliant with jQuery i18n plugin...
+        return Response.ok(messages.toString().replaceAll("([^'])[']([^'])", "$1''$2")).build();
       } else {
         return Response.status(Response.Status.BAD_REQUEST).entity(
             "It is not a localized bundle with translations").build();

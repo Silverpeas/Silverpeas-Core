@@ -460,7 +460,8 @@ public class AdminCache {
   private void opResetProfile(ProfileInst profile) {
     // First level cache reset : it's not the best but it's simple : remove all
     // structs from cache that includes the profile
-    Optional<ComponentInst> theComponent = getComponentInst(Integer.parseInt(profile.getComponentFatherId()));
+    int compoLocalId = ComponentInst.getComponentLocalId(profile.getComponentFatherId());
+    Optional<ComponentInst> theComponent = getComponentInst(compoLocalId);
     theComponent.ifPresent(this::removeComponent);
     removeProfileInst(profile);
     resetProfileIds();

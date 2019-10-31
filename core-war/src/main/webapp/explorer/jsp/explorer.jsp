@@ -59,7 +59,7 @@ String[] componentIds = scope.split(",");
 // retain only available instances for current user
 List<ComponentInstLight> availableComponents = new ArrayList<>();
 for (String componentId : componentIds) {
-  if (OrganizationController.get().isComponentAvailable(componentId, mainSessionCtrl.getUserId())) {
+  if (OrganizationController.get().isComponentAvailableToUser(componentId, mainSessionCtrl.getUserId())) {
     availableComponents.add(OrganizationController.get().getComponentInstLight(componentId));
   }
 }

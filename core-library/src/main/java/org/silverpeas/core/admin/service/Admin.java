@@ -26,6 +26,8 @@ package org.silverpeas.core.admin.service;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.RightProfile;
 import org.silverpeas.core.admin.component.ApplicationResourcePasting;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
@@ -1408,7 +1410,7 @@ class Admin implements Administration {
     List<String> userIdsToRemove = new ArrayList<>();
     List<String> userIds = objectProfile.getAllUsers();
     for (String userId : userIds) {
-      if (!isComponentAvailable(componentId, userId)) {
+      if (!isComponentAvailableToUser(componentId, userId)) {
         userIdsToRemove.add(userId);
       }
     }
@@ -1421,7 +1423,7 @@ class Admin implements Administration {
     List<String> groupIdsToRemove = new ArrayList<>();
     List<String> groupIds = objectProfile.getAllGroups();
     for (String groupId : groupIds) {
-      if (!isComponentAvailableByGroup(componentId, groupId)) {
+      if (!isComponentAvailableToGroup(componentId, groupId)) {
         groupIdsToRemove.add(groupId);
       }
     }
@@ -1439,13 +1441,6 @@ class Admin implements Administration {
           .warn("Error when getting all component objects profiles " + componentId, e);
     }
     return objectsProfiles;
-  }
-
-  private boolean isComponentAvailableByGroup(String componentId, String groupId)
-      throws AdminException {
-      List<String> groupIds = groupManager.getPathToGroup(groupId);
-      groupIds.add(groupId);
-      return componentManager.getAllowedComponentIds(-1, groupIds).contains(componentId);
   }
 
   @Override
@@ -1672,18 +1667,24 @@ class Admin implements Administration {
   }
 
   @Override
-  public List<ProfileInst> getProfilesByObject(String objectId, String objectType,
-      String componentId) throws AdminException {
-    return profiledObjectManager.getProfiles(Integer.parseInt(objectId), objectType,
-        getDriverComponentId(componentId));
+  public List<ProfileInst> getProfilesByObject(ProfiledObjectId objectRef, String componentId) throws AdminException {
+    return profiledObjectManager.getProfiles(objectRef, getDriverComponentId(componentId));
   }
 
   @Override
-  public String[] getProfilesByObjectAndUserId(int objectId, String objectType, String componentId,
+  public String[] getProfilesByObjectAndUserId(ProfiledObjectId objectRef, String componentId,
       String userId) throws AdminException {
     List<String> groups = getAllGroupsOfUser(userId);
-    return profiledObjectManager.getUserProfileNames(objectId, objectType,
-        getDriverComponentId(componentId), Integer.parseInt(userId), groups);
+    return profiledObjectManager.getUserProfileNames(objectRef, getDriverComponentId(componentId),
+        Integer.parseInt(userId), groups);
+  }
+
+  @Override
+  public String[] getProfilesByObjectAndGroupId(final ProfiledObjectId objectRef, final String componentId, final String groupId) throws AdminException {
+    List<String> groupIds = groupManager.getPathToGroup(groupId);
+    groupIds.add(groupId);
+    return profiledObjectManager.getUserProfileNames(objectRef, getDriverComponentId(componentId),
+        -1, groupIds);
   }
 
   @Override
@@ -1695,10 +1696,16 @@ class Admin implements Administration {
   }
 
   @Override
-  public boolean isObjectAvailable(String componentId, int objectId, String objectType,
+  public boolean isObjectAvailableToUser(String componentId, ProfiledObjectId objectRef,
       String userId) throws AdminException {
-    return userId == null
-        || getProfilesByObjectAndUserId(objectId, objectType, componentId, userId).length > 0;
+    return userId == null ||
+        getProfilesByObjectAndUserId(objectRef, componentId, userId).length > 0;
+  }
+
+  @Override
+  public boolean isObjectAvailableToGroup(String componentId, ProfiledObjectId objectRef, String groupId) throws AdminException {
+    return groupId == null ||
+        getProfilesByObjectAndGroupId(objectRef, componentId, groupId).length > 0;
   }
 
   @Override
@@ -1718,7 +1725,7 @@ class Admin implements Administration {
       String sProfileId = profileManager.createProfileInst(profileInst, driverFatherId);
       profileInst.setId(sProfileId);
 
-      if (profileInst.getObjectId() == -1 || profileInst.getObjectId() == 0) {
+      if (profileInst.getObjectId().isNotDefined() || profileInst.getObjectId().isRootNode()) {
         ComponentInst componentInstFather = getComponentInst(driverFatherId, null);
         componentInstFather = checkComponentInstanceById(componentInstFather, componentFatherId,
             nullComponentInstSupplier);
@@ -1728,9 +1735,6 @@ class Admin implements Administration {
           componentInstFather.setUpdaterUserId(userId);
           updateComponentInst(componentInstFather);
         }
-      }
-
-      if (profileInst.getObjectId() == -1 || profileInst.getObjectId() == 0) {
         cache.opAddProfile(profileManager.getProfileInst(sProfileId));
       }
       return sProfileId;
@@ -1759,7 +1763,7 @@ class Admin implements Administration {
     try {
       profileManager.deleteProfileInst(profile);
       if (StringUtil.isDefined(userId)
-          && (profile.getObjectId() == -1 || profile.getObjectId() == 0)) {
+          && (profile.getObjectId().isNotDefined() || profile.getObjectId().isRootNode())) {
         final String componentFatherId = profile.getComponentFatherId();
         int driverFatherId = getDriverComponentId(componentFatherId);
         ComponentInst component = getComponentInst(driverFatherId, null);
@@ -1771,7 +1775,7 @@ class Admin implements Administration {
         updateComponentInst(component);
       }
 
-      if (profile.getObjectId() == -1 || profile.getObjectId() == 0) {
+      if (profile.getObjectId().isNotDefined() || profile.getObjectId().isRootNode()) {
         cache.opRemoveProfile(profile);
       }
 
@@ -1796,7 +1800,7 @@ class Admin implements Administration {
     try {
       profileManager.updateProfileInst(newProfile);
       if (StringUtil.isDefined(
-          userId) && (newProfile.getObjectId() == -1 || newProfile.getObjectId() == 0)) {
+          userId) && (newProfile.getObjectId().isNotDefined() || newProfile.getObjectId().isRootNode())) {
         final String componentFatherId = newProfile.getComponentFatherId();
         int driverFatherId = getDriverComponentId(componentFatherId);
         ComponentInst component = getComponentInst(driverFatherId, null);
@@ -1806,7 +1810,7 @@ class Admin implements Administration {
         component.setUpdaterUserId(userId);
         updateComponentInst(component);
       }
-      if (newProfile.getObjectId() == -1 || newProfile.getObjectId() == 0) {
+      if (newProfile.getObjectId().isNotDefined() || newProfile.getObjectId().isRootNode()) {
         cache.opUpdateProfile(newProfile);
       }
 
@@ -3556,13 +3560,21 @@ class Admin implements Administration {
   }
 
   @Override
-  public boolean isComponentAvailable(String componentId, String userId)
+  public boolean isComponentAvailableToUser(String componentId, String userId)
       throws AdminException {
     try {
       return getAllowedComponentIds(userId).contains(componentId);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("components available by user", userId), e);
     }
+  }
+
+  @Override
+  public boolean isComponentAvailableToGroup(final String componentId, final String groupId)
+      throws AdminException {
+    List<String> groupIds = groupManager.getPathToGroup(groupId);
+    groupIds.add(groupId);
+    return componentManager.getAllowedComponentIds(-1, groupIds).contains(componentId);
   }
 
   @Override
@@ -5682,7 +5694,8 @@ class Admin implements Administration {
     if (matcher.matches() && matcher.groupCount() == 2) {
       String type = matcher.group(1);
       String id = matcher.group(2);
-      return getProfilesByObject(id, type, instanceId);
+      ProfiledObjectId objectId = new ProfiledObjectId(ProfiledObjectType.fromCode(type), id);
+      return getProfilesByObject(objectId, instanceId);
     }
     throw new AdminPersistenceException(
         failureOnGetting("profiles on resource " + resourceId, "of component " + instanceId));
