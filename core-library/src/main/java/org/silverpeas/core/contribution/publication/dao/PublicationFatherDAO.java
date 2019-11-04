@@ -172,21 +172,6 @@ public class PublicationFatherDAO {
   }
 
   /**
-   * Selects massively simple data about main locations.
-   * <p>
-   *   This method is designed for process performance needs.
-   * </p>
-   * @param con the database connection.
-   * @param ids the instance ids aimed.
-   * @return a list of {@link Location} instances.
-   * @throws SQLException on database error.
-   */
-  public static Map<String, List<Location>> getAllMainLocationsByPublicationIds(Connection con,
-      Collection<PublicationPK> ids) throws SQLException {
-    return getAllLocationsByPublicationIds(con, ids, true);
-  }
-
-  /**
    * Selects massively simple data about all locations (main or aliases).
    * <p>
    *   This method is designed for process performance needs.
@@ -198,20 +183,11 @@ public class PublicationFatherDAO {
    */
   public static Map<String, List<Location>> getAllLocationsByPublicationIds(Connection con,
       Collection<PublicationPK> ids) throws SQLException {
-    return getAllLocationsByPublicationIds(con, ids, false);
-  }
-
-  private static Map<String, List<Location>> getAllLocationsByPublicationIds(Connection con,
-      Collection<PublicationPK> ids, boolean onlyMainLocations) throws SQLException {
     final List<String> pubIds = ids.stream().map(PublicationPK::getId).collect(Collectors.toList());
     return JdbcSqlQuery.executeBySplittingOn(pubIds, (pubIdBatch, result) -> {
       final JdbcSqlQuery query = JdbcSqlQuery.createSelect(LOCATION_FIELDS + ", " + PUB_ID)
           .from(PUBLICATION_FATHER_TABLE_NAME)
           .where(PUB_ID).in(pubIdBatch.stream().map(Integer::parseInt).collect(Collectors.toList()));
-      if (onlyMainLocations) {
-        query.andNull(ALIAS_USER_ID);
-        query.andNull(ALIAS_DATE);
-      }
       query.executeWith(con, r -> {
         final Location location = fetchLocation(r);
         MapUtil.putAddList(result, Integer.toString(r.getInt(6)), location);

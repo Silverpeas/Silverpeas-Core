@@ -24,8 +24,10 @@
 package org.silverpeas.core.io.media.image.thumbnail.service;
 
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
+import org.silverpeas.core.io.media.image.thumbnail.ThumbnailRuntimeException;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDAO;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailReference;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.enterprise.inject.Default;
@@ -33,6 +35,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
 
 @Singleton
 @Default
@@ -83,6 +87,15 @@ public class ThumbnailServiceImpl implements ThumbnailService {
           thumbDetail.getObjectType());
     } catch (SQLException se) {
       throw new ThumbnailException("Thumbnail not found", se);
+    }
+  }
+
+  @Override
+  public List<ThumbnailDetail> getByReference(final Set<ThumbnailReference> references) {
+    try (final Connection con = DBUtil.openConnection()) {
+      return thumbnailDAO.selectByReference(con, references);
+    } catch (SQLException se) {
+      throw new ThumbnailRuntimeException("Thumbnail not found", se);
     }
   }
 

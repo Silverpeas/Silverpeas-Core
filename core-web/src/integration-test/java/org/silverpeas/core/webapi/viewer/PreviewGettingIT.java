@@ -39,9 +39,11 @@ import org.silverpeas.web.ResourceGettingTest;
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
+import javax.ws.rs.core.Response;
 import java.io.File;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -65,6 +67,7 @@ public class PreviewGettingIT extends ResourceGettingTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4WebCore.onWarForTestClass(PreviewGettingIT.class)
         .addRESTWebServiceEnvironment().testFocusedOn(warBuilder -> {
+          warBuilder.addClasses(StubbedUserPrivilegeValidator.class);
           warBuilder.addPackages(true, "org.silverpeas.core.webapi.viewer");
           warBuilder.addAsResource("org/silverpeas/viewer/viewer.properties");
         }).build();
@@ -97,6 +100,15 @@ public class PreviewGettingIT extends ResourceGettingTest {
     final PreviewEntity entity = getAt(aResourceURI(), PreviewEntity.class);
     assertNotNull(entity);
     assertThat(entity, PreviewEntityMatcher.matches(expected));
+  }
+
+  @Override
+  public void gettingAResourceByAnUnauthorizedUser() {
+    // verifications of authorization are done after (Alias management)
+    denyAuthorizationToUsers();
+    final int ok = Response.Status.OK.getStatusCode();
+    Response response = getAt(aResourceURI(), Response.class);
+    assertThat(response.getStatus(), is(ok));
   }
 
   @Override

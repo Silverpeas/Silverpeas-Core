@@ -66,7 +66,8 @@ import static org.silverpeas.core.util.CollectionUtil.asList;
 @UnitTest
 public class TestPublicationAccessController {
 
-  private static final String userId = "bart";
+  private static final String USER_ID = "bart";
+  private static final String GED_INSTANCE_ID = "kmelia26";
 
   private PublicationService publicationService;
   private OrganizationController organizationController;
@@ -85,7 +86,7 @@ public class TestPublicationAccessController {
   @Before
   public void setup() {
     user = mock(User.class);
-    when(UserProvider.get().getUser(userId)).thenReturn(user);
+    when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
     publicationService = mock(PublicationService.class);
     commonAPI4Test.injectIntoMockedBeanContainer(publicationService);
     organizationController = mock(OrganizationController.class);
@@ -3687,15 +3688,15 @@ public class TestPublicationAccessController {
   private void assertIsUserAuthorized(boolean expectedUserAuthorization) {
     testContext.setup();
     PublicationPK publicationPK =
-        new PublicationPK("124", testContext.isGED ? "kmelia26" : "yellowpages38");
+        new PublicationPK("124", testContext.isGED ? GED_INSTANCE_ID : "yellowpages38");
     publicationPK.setId(
         testContext.isPubIdNull ? null : (testContext.isWrongIdentifierFormat ? "dummyId" : "124"));
     final boolean result;
     if (testContext.publicationIsGiven) {
       final PublicationDetail publicationDetail = testContext.newPublicationWith(publicationPK);
-      result = testInstance.isUserAuthorized(userId, publicationDetail, testContext.accessControlContext);
+      result = testInstance.isUserAuthorized(USER_ID, publicationDetail, testContext.accessControlContext);
     } else {
-      result = testInstance.isUserAuthorized(userId, publicationPK, testContext.accessControlContext);
+      result = testInstance.isUserAuthorized(USER_ID, publicationPK, testContext.accessControlContext);
     }
     assertThat(result, is(expectedUserAuthorization));
     testContext.results().verifyMethodCalls();
@@ -3866,7 +3867,7 @@ public class TestPublicationAccessController {
 
     @SuppressWarnings("unchecked")
     public void setup() {
-      when(user.getId()).thenReturn(userId);
+      when(user.getId()).thenReturn(USER_ID);
       when(user.isAnonymous()).thenReturn(userIsAnonymous);
       when(componentAccessController
           .getUserRoles(anyString(), anyString(), any(AccessControlContext.class)))
@@ -3917,21 +3918,23 @@ public class TestPublicationAccessController {
         final PublicationDetail publi = newPublicationWith(pubPk);
         return singletonList(publi);
       });
-      when(publicationService.getMainLocation(any(PublicationPK.class))).then(invocation -> {
+      when(publicationService.getAllLocations(any(PublicationPK.class))).then(invocation -> {
+        final Collection<Location> allLocations = new ArrayList<>();
+        final String instanceId = GED_INSTANCE_ID;
         if (testContext.isPublicationOnRootDirectory) {
-          return Optional.of(new Location(NodePK.ROOT_NODE_ID, "instanceId"));
+          allLocations.add(new Location(NodePK.ROOT_NODE_ID, instanceId));
         } else if (testContext.isPublicationOnTrashDirectory) {
-          return Optional.of(new Location(NodePK.BIN_NODE_ID, "instanceId"));
+          allLocations.add(new Location(NodePK.BIN_NODE_ID, instanceId));
+        } else {
+          allLocations.add(new Location("nodeId", instanceId));
         }
-        return Optional.of(new Location("nodeId", "instanceId"));
-      });
-      when(publicationService.getAllAliases(any(PublicationPK.class))).then(invocation -> {
-        Collection<Location> aliases = new ArrayList<>();
         if (testContext.aliasUserRoles != null) {
-          aliases.add(
-              new Location("nodeId", ((PublicationPK) invocation.getArguments()[0]).getInstanceId()));
+          final PublicationPK pubPK = invocation.getArgument(0);
+          final Location alias = new Location("aliasNodeId", pubPK.getInstanceId());
+          alias.setAsAlias(USER_ID);
+          allLocations.add(alias);
         }
-        return aliases;
+        return allLocations;
       });
       ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
     }
@@ -3940,7 +3943,7 @@ public class TestPublicationAccessController {
       PublicationDetail publi = new PublicationDetail();
       publi.setPk(pubPk);
       publi.setStatus(testContext.pubStatus);
-      publi.setCreatorId(testContext.isUserThePublicationAuthor ? userId : "otherUserId");
+      publi.setCreatorId(testContext.isUserThePublicationAuthor ? USER_ID : "otherUserId");
       if (!testContext.isPubVisible) {
         final Visibility visibility = mock(Visibility.class);
         when(visibility.isVisible()).thenReturn(false);
@@ -4014,10 +4017,12 @@ public class TestPublicationAccessController {
           .isUserAuthorized(any(EnumSet.class));
       verify(publicationService, times(nbCallOfPublicationBmGetDetail))
           .getMinimalDataByIds(any(Collection.class));
-      verify(publicationService, times(nbCallOfPublicationMainLocation))
+      verify(publicationService, times(0))
           .getMainLocation(any(PublicationPK.class));
-      verify(publicationService, times(nbCallOfPublicationBmGetAliases))
+      verify(publicationService, times(0))
           .getAllAliases(any(PublicationPK.class));
+      verify(publicationService, times(Math.max(nbCallOfPublicationMainLocation, nbCallOfPublicationBmGetAliases)))
+          .getAllLocations(any(PublicationPK.class));
     }
   }
 

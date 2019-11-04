@@ -164,6 +164,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   public static final String CLONE_STATUS = "Clone";
   public static final String TYPE = "Publication";
   private boolean alias = false;
+  private transient ThumbnailDetail thumbnail = null;
 
   private ContributionRating contributionRating;
 
@@ -642,31 +643,40 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public String getImage() {
-    ThumbnailDetail thumbDetail = getThumbnail();
+    final ThumbnailDetail thumbDetail = getThumbnail();
     if (thumbDetail != null) {
-      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail);
-      return imageProps[0];
+      return thumbDetail.getImageFileName();
     }
     return null;
 
   }
 
   public String getImageMimeType() {
-    ThumbnailDetail thumbDetail = getThumbnail();
+    final ThumbnailDetail thumbDetail = getThumbnail();
     if (thumbDetail != null) {
-      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail);
-      return imageProps[1];
+      return thumbDetail.getMimeType();
     }
     return null;
   }
 
+  /**
+   * Gets the thumbnail linked to the publication.
+   * <p>
+   * The corresponding {@link ThumbnailDetail} is loaded once and cached into publication instance.
+   * </p>
+   * @return the {@link ThumbnailDetail} instance if any.
+   */
   public ThumbnailDetail getThumbnail() {
-    if (getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null) {
-      ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.
-          valueOf(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-      return ThumbnailController.getCompleteThumbnail(thumbDetail);
+    if (thumbnail == null && getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null) {
+      ThumbnailDetail thumbnailReference = new ThumbnailDetail(getPK().getInstanceId(), Integer.
+          parseInt(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+      thumbnail = ThumbnailController.getCompleteThumbnail(thumbnailReference);
     }
-    return null;
+    return thumbnail;
+  }
+
+  public void setThumbnail(final ThumbnailDetail thumbnail) {
+    this.thumbnail = thumbnail;
   }
 
   public Date getUpdateDate() {

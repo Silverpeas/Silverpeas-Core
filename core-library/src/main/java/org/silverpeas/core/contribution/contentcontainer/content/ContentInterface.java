@@ -56,8 +56,8 @@ public interface ContentInterface {
    * @param currentUserId the identifier of the user accessing the content.
    * @return the content as {@link SilverpeasComponentInstance}
    */
-  List<SilverContentInterface> getSilverContentById(List<ResourceReference> resourceReferences,
-      String currentUserId);
+  List<SilverContentInterface> getSilverContentByReference(
+      List<ResourceReference> resourceReferences, String currentUserId);
 
   /**
    * Gets the silverpeas content identifier about a contribution.

@@ -21,46 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.web.jobdomain;
+package org.silverpeas.core.contribution.contentcontainer.content;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Stream;
 
-public class ComponentProfilesList extends ArrayList<ComponentProfiles> {
-  private static final long serialVersionUID = 5012329059821756668L;
+public interface GlobalSilverContentProcessor {
 
-  private transient Map<Integer, ComponentProfiles> profilesByLocalComponentInstanceIds = new HashMap<>();
+  class Constants {
 
-  public ComponentProfilesList() {
-    super();
-  }
+    public static final String PROCESSOR_NAME_SUFFIX = "GlobalSilverContentProcessor";
 
-  public ComponentProfiles getByLocalComponentInstanceId(int localComponentInstanceId) {
-    return profilesByLocalComponentInstanceIds.get(localComponentInstanceId);
-  }
-
-  @Override
-  public boolean add(final ComponentProfiles componentProfiles) {
-    if (profilesByLocalComponentInstanceIds.putIfAbsent(componentProfiles.getComponent().getLocalId(), componentProfiles) == null) {
-     return super.add(componentProfiles);
+    private Constants() {
     }
-    return false;
   }
 
-  @Override
-  public boolean equals(final Object o) {
-    return super.equals(o);
-  }
+  /**
+   * Indicates the name of component the processor is related to.
+   * @return name of component.
+   */
+  String relatedToComponent();
 
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
-
-  @Override
-  public void clear() {
-    super.clear();
-    profilesByLocalComponentInstanceIds.clear();
-  }
+  /**
+   * Converts given {@link SilverContentInterface} instances into {@link GlobalSilverContent}.
+   * @param silverContents a {@link SilverContentInterface} instance list.
+   * @return the converted instances.
+   */
+  Stream<GlobalSilverContent> asGlobalSilverContent(List<SilverContentInterface> silverContents);
 }

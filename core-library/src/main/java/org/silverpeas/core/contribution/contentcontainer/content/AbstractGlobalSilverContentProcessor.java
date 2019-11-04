@@ -21,46 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.web.jobdomain;
+package org.silverpeas.core.contribution.contentcontainer.content;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Stream;
 
-public class ComponentProfilesList extends ArrayList<ComponentProfiles> {
-  private static final long serialVersionUID = 5012329059821756668L;
-
-  private transient Map<Integer, ComponentProfiles> profilesByLocalComponentInstanceIds = new HashMap<>();
-
-  public ComponentProfilesList() {
-    super();
-  }
-
-  public ComponentProfiles getByLocalComponentInstanceId(int localComponentInstanceId) {
-    return profilesByLocalComponentInstanceIds.get(localComponentInstanceId);
-  }
+public abstract class AbstractGlobalSilverContentProcessor implements GlobalSilverContentProcessor {
 
   @Override
-  public boolean add(final ComponentProfiles componentProfiles) {
-    if (profilesByLocalComponentInstanceIds.putIfAbsent(componentProfiles.getComponent().getLocalId(), componentProfiles) == null) {
-     return super.add(componentProfiles);
-    }
-    return false;
-  }
-
-  @Override
-  public boolean equals(final Object o) {
-    return super.equals(o);
-  }
-
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
-
-  @Override
-  public void clear() {
-    super.clear();
-    profilesByLocalComponentInstanceIds.clear();
+  public Stream<GlobalSilverContent> asGlobalSilverContent(List<SilverContentInterface> silverContents) {
+    return silverContents.stream().map(GlobalSilverContent::new);
   }
 }

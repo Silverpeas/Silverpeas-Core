@@ -39,6 +39,8 @@ public class Pagination<T> {
   private UnaryOperator<SilverpeasList<T>> filter;
   private int minPerPage = 0;
   private int factor = 5;
+  private int nbMaxDataSourceCalls = 0;
+  private boolean nbMaxDataSourceCallLimitReached = false;
 
   public Pagination(final PaginationPage paginationPage) {
     this.paginationPage = paginationPage;
@@ -62,6 +64,19 @@ public class Pagination<T> {
    */
   public Pagination<T> withMinPerPage(final int minPerPage) {
     this.minPerPage = minPerPage;
+    return this;
+  }
+
+  /**
+   * The maximum number of data source calls must be done.
+   * <p>
+   * zero or negative value means no limit.
+   * </p>
+   * @param nbMaxDataSourceCalls a maximum data source calls.
+   * @return the process instance itself.
+   */
+  public Pagination<T> limitDataSourceCallsTo(final int nbMaxDataSourceCalls) {
+    this.nbMaxDataSourceCalls = nbMaxDataSourceCalls;
     return this;
   }
 
@@ -107,8 +122,10 @@ public class Pagination<T> {
     }
     SilverpeasList<T> result = null;
     boolean running = true;
+    int nbDataSourceCalls = 0;
     while(running) {
       SilverpeasList<T> currentResult = paginatedDataSource.apply(currentPagination);
+      nbDataSourceCalls++;
       if (currentResult.size() < paginationPage.getPageSize()) {
         running = false;
       }
@@ -121,9 +138,21 @@ public class Pagination<T> {
       }
       if (result.size() >= paginationPage.getPageSize()) {
         running = false;
+      } else if (nbDataSourceCalls == nbMaxDataSourceCalls) {
+        running = false;
+        nbMaxDataSourceCallLimitReached = true;
       }
     }
     return result;
+  }
+
+  /**
+   * Indicates if the limit of number of data source call has been reached.
+   * @see #limitDataSourceCallsTo(int)
+   * @return true if reached, false otherwise.
+   */
+  public boolean isNbMaxDataSourceCallLimitReached() {
+    return nbMaxDataSourceCallLimitReached;
   }
 
   private SilverpeasList<T> completeResult(final SilverpeasList<T> currentResult, final SilverpeasList<T> previousResult) {

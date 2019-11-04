@@ -25,14 +25,13 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 
 import javax.inject.Named;
 
-import static org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor
-    .PROCESSOR_NAME_SUFFIX;
+import static org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContentProcessor.Constants.PROCESSOR_NAME_SUFFIX;
 
 @Named("default" + PROCESSOR_NAME_SUFFIX)
-public class DefaultGlobalSilverContentProcessor implements IGlobalSilverContentProcessor {
+public class DefaultGlobalSilverContentProcessor extends AbstractGlobalSilverContentProcessor {
 
   @Override
-  public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci) {
-    return new GlobalSilverContent(sci);
+  public String relatedToComponent() {
+    return "default";
   }
 }

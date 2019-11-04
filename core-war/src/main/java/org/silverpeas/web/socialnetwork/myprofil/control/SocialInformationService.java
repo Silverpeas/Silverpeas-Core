@@ -27,6 +27,7 @@ import org.silverpeas.core.date.Date;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.socialnetwork.provider.ProviderSwitchInterface;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -66,7 +67,7 @@ public class SocialInformationService {
     } catch (Exception ex) {
 
     }
-    return new ArrayList<SocialInformation>();
+    return new ArrayList<>();
   }
 
   /**
@@ -87,9 +88,9 @@ public class SocialInformationService {
       return switchInterface.getSocialInformationsListOfMyContacts(socialInformationType, myId,
           myContactIds, begin, end);
     } catch (Exception ex) {
-
+      SilverLogger.getLogger(this).warn(ex);
     }
-    return new ArrayList<SocialInformation>();
+    return new ArrayList<>();
   }
 
 }

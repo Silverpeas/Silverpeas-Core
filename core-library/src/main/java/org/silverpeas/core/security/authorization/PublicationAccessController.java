@@ -39,6 +39,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -260,10 +261,17 @@ public class PublicationAccessController extends AbstractAccessController<Public
     try {
       final Optional<Location> mainLocation = getDataManager(context).getPublicationMainLocationSupplier(pubPK).get();
       if (mainLocation.isPresent()) {
-        final Set<SilverpeasRole> nodeUserRoles = nodeAccessController
-            .getUserRoles(userId, mainLocation.get(), context);
-        if (nodeAccessController.isUserAuthorized(nodeUserRoles)) {
-          userRoles.addAll(nodeUserRoles);
+        if (pubPK.getInstanceId().equals(mainLocation.get().getInstanceId())) {
+          // Checking on the instance hosting the publication
+          final Set<SilverpeasRole> nodeUserRoles = nodeAccessController
+              .getUserRoles(userId, mainLocation.get(), context);
+          if (nodeAccessController.isUserAuthorized(nodeUserRoles)) {
+            userRoles.addAll(nodeUserRoles);
+          }
+        } else {
+          // Rights can not be verified from this main location as it is not hosted into the
+          // component instance
+          return true;
         }
       } else {
         // case of publications on root node (so component rights will be checked)
@@ -307,11 +315,12 @@ public class PublicationAccessController extends AbstractAccessController<Public
     private final AccessControlContext context;
     private final Collection<AccessControlOperation> operations;
     private PublicationService publicationService;
+    private MemoizedSupplier<List<Location>> allLocations = null;
     private MemoizedSupplier<Optional<Location>> lastMainLocation = null;
     private PublicationDetail lastPublicationDetail = null;
     boolean lotOfDataMode;
     List<PublicationPK> givenPublicationPks = null;
-    Map<String, PublicationDetail> publicationCache = null;
+    Map<PublicationPK, PublicationDetail> publicationCache = null;
     Map<String, List<Location>> locationsByPublicationCache = null;
 
     DataManager(final AccessControlContext context) {
@@ -341,20 +350,22 @@ public class PublicationAccessController extends AbstractAccessController<Public
           .map(PublicationPK::getInstanceId)
           .collect(Collectors.toSet());
       final NodeAccessController.DataManager nodeDataManager = NodeAccessController.getDataManager(context);
-      nodeDataManager.loadCaches(userId, instanceIds);
-      final Set<String> instanceIdsWithRightsOnTopic = nodeDataManager.getInstanceIdsWithRightsOnTopic();
+      final Set<String> instanceIdsWithRightsOnTopic = nodeDataManager.loadCaches(userId, instanceIds);
       if (instanceIdsWithRightsOnTopic.isEmpty()) {
         locationsByPublicationCache = emptyMap();
       } else {
         final List<PublicationPK> pksForLocations = givenPublicationPks.stream()
             .filter(p -> instanceIdsWithRightsOnTopic.contains(p.getInstanceId()))
             .collect(Collectors.toList());
-        if (!isPersistActionFrom(operations)) {
-          locationsByPublicationCache = publicationService
-              .getAllLocationsByPublicationIds(pksForLocations);
-        } else {
-          locationsByPublicationCache = publicationService
-              .getAllMainLocationsByPublicationIds(pksForLocations);
+        locationsByPublicationCache = publicationService
+            .getAllLocationsByPublicationIds(pksForLocations);
+        final Set<String> additionalInstanceIdsToLoad = locationsByPublicationCache.entrySet().stream()
+            .flatMap(e -> new ArrayList<>(e.getValue()).stream())
+            .map(Location::getInstanceId)
+            .filter(i -> ! instanceIds.contains(i))
+            .collect(Collectors.toSet());
+        if (!additionalInstanceIdsToLoad.isEmpty()) {
+          nodeDataManager.completeCaches(userId, additionalInstanceIdsToLoad);
         }
       }
       return this;
@@ -398,12 +409,13 @@ public class PublicationAccessController extends AbstractAccessController<Public
       }
       final int cacheSize = publications.size() + masterPubs.size();
       publicationCache = new HashMap<>(cacheSize);
-      final Consumer<PublicationDetail> cacheSupplier = p -> publicationCache.put(p.getId(), p);
+      final Consumer<PublicationDetail> cacheSupplier = p -> publicationCache.put(p.getPK(), p);
       publications.forEach(cacheSupplier);
       masterPubs.forEach(cacheSupplier);
     }
 
     PublicationPK prepareCheckFor(final PublicationPK pubPK) {
+      allLocations = null;
       lastMainLocation = null;
       lastPublicationDetail = null;
       return pubPK;
@@ -419,25 +431,34 @@ public class PublicationAccessController extends AbstractAccessController<Public
 
     Supplier<Optional<Location>> getPublicationMainLocationSupplier(final PublicationPK pk) {
       if (lastMainLocation == null) {
-        lastMainLocation = new MemoizedSupplier<>(() -> {
-          if (locationsByPublicationCache != null) {
-            return locationsByPublicationCache.getOrDefault(pk.getId(), emptyList()).stream()
-                .filter(l -> !l.isAlias())
-                .findFirst();
-          }
-          return publicationService.getMainLocation(pk);
-        });
+        lastMainLocation = new MemoizedSupplier<>(() -> getAllLocations(pk).get().stream()
+            .filter(l -> !l.isAlias())
+            .findFirst());
       }
       return lastMainLocation;
     }
 
+    /**
+     * Gets the aliases on the component instance referenced by the given {@link PublicationPK}.
+     * @param pk the publication primary key.
+     * @return a list of {@link Location} on the component instance.
+     */
     List<Location> getAllPublicationAliases(final PublicationPK pk) {
-      if (locationsByPublicationCache != null) {
-        return locationsByPublicationCache.getOrDefault(pk.getId(), emptyList()).stream()
-            .filter(Location::isAlias)
-            .collect(Collectors.toList());
+      return getAllLocations(pk).get().stream()
+          .filter(Location::isAlias)
+          .collect(Collectors.toList());
+    }
+
+    private Supplier<List<Location>> getAllLocations(final PublicationPK pk) {
+      if (allLocations == null) {
+        allLocations = new MemoizedSupplier<>(() -> {
+          if (locationsByPublicationCache != null) {
+            return locationsByPublicationCache.getOrDefault(pk.getId(), emptyList());
+          }
+          return publicationService.getAllLocations(pk);
+        });
       }
-      return publicationService.getAllAliases(pk);
+      return allLocations;
     }
 
     /**
@@ -475,7 +496,7 @@ public class PublicationAccessController extends AbstractAccessController<Public
 
     private PublicationDetail getPublicationData(final PublicationPK pk) {
       if (publicationCache != null) {
-        return publicationCache.get(pk.getId());
+        return publicationCache.get(pk);
       }
       return publicationService.getMinimalDataByIds(singleton(pk)).stream().findFirst().orElse(null);
     }

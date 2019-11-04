@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.security.authorization;
 
+import org.jodconverter.office.utils.Lo;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -46,6 +47,7 @@ class PublicationDetail4Test extends PublicationDetail {
     setPk(new PublicationPK(id, nodePK.getInstanceId()));
     setStatus(PublicationDetail.VALID_STATUS);
     locations.add(new Location(nodePK.getId(), nodePK.getInstanceId()));
+    clearAliases();
   }
 
   PublicationDetail4Test(final String id, final NodeDetail node, final String cloneId) {
@@ -56,6 +58,13 @@ class PublicationDetail4Test extends PublicationDetail {
   PublicationDetail4Test(final String id, final NodeDetail node, final String cloneId, final boolean isTheClone) {
     this(id, node, cloneId);
     setStatus(CLONE_STATUS);
+  }
+
+  PublicationDetail4Test clearAliases() {
+    final Location main = locations.get(0);
+    locations.clear();
+    locations.add(main);
+    return this;
   }
 
   PublicationDetail4Test addAliasLocation(final NodeDetail node) {

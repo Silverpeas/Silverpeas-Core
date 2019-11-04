@@ -645,7 +645,7 @@ public class ComponentInstManager {
    * @return a map filled with couples of parameter name / value per component instance identifier.
    * @throws AdminException on database error.
    */
-  public Map<Integer, Map<String, String>> getParameterValuesByComponentAndByParamName(
+  public Map<Integer, Map<String, String>> getParameterValuesByComponentIdThenByParamName(
       final Collection<Integer> componentIds, final Collection<String> paramNames)
       throws AdminException {
     try {

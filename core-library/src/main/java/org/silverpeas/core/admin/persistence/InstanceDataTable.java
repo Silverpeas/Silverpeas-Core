@@ -133,7 +133,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
       result.set(r.getString(1));
       return null;
     });
-    return result.orElse(null);
+    return result.orElse(StringUtil.EMPTY);
   }
 
   /**

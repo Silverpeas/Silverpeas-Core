@@ -36,9 +36,9 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Nicolas Eysseric
@@ -65,38 +65,24 @@ public class PdcSearchProcessor implements SearchQueryProcessor {
   @Override
   public List<SearchResult> process(final QueryDescription query,
       final List<SearchResult> results) {
-
-    SearchContext pdcContext = new SearchContext(query.getSearchingUser());
-
-    List<AxisValueCriterion> axisValueCriteria =
-        AxisValueCriterion.fromFlattenedAxisValues(query.getTaxonomyPosition());
-    axisValueCriteria.forEach(anAxisValueCriterion->pdcContext.addCriteria(anAxisValueCriterion));
-
+    final SearchContext pdcContext = new SearchContext(query.getSearchingUser());
+    AxisValueCriterion.fromFlattenedAxisValues(query.getTaxonomyPosition()).forEach(pdcContext::addCriteria);
     if (!pdcContext.isEmpty()) {
-      // We get silvercontentids according to the search context, author, components and dates
       try {
-        List<Integer> contentIds = pdcManager
+        // getting silver content ids according to the search context, author, components and dates
+        final List<Integer> contentIds = pdcManager
             .findSilverContentIdByPosition(pdcContext, new ArrayList<>(query.getWhereToSearch()),
                 null, query.getRequestedCreatedAfter(), query.getRequestedCreatedBefore());
-
-        List<GlobalSilverContent> contents =
-            pdcManager.getSilverContentsByIds(contentIds, pdcContext.getUserId());
-        Collections.sort(contents, cDateDesc);
-
-        return toSearchResults(contents);
+        // getting sorted instance local contents by their ids
+        return pdcManager.getSilverContentsByIds(contentIds, pdcContext.getUserId()).stream()
+            .sorted(cDateDesc)
+            .map(SearchResult::fromGlobalSilverContent)
+            .collect(Collectors.toList());
       } catch (Exception e) {
         SilverLogger.getLogger(this).error("Error during taxonomy search by user {0}",
             new String[] {User.getById(pdcContext.getUserId()).getDisplayedName()}, e);
       }
     }
     return new ArrayList<>();
-  }
-
-  private List<SearchResult> toSearchResults(List<GlobalSilverContent> contents) {
-    List<SearchResult> results = new ArrayList<>();
-    for (GlobalSilverContent gsc : contents) {
-      results.add(SearchResult.fromGlobalSilverContent(gsc));
-    }
-    return results;
   }
 }

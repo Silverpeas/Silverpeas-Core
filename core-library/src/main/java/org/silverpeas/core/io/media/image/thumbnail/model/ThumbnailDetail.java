@@ -23,17 +23,16 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.model;
 
-import java.io.Serializable;
-
 import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.ResourceLocator;
+
+import java.io.Serializable;
 
 /**
- * Class declaration
- * @author
+ * Representation of a thumbnail of an object.
  */
 public class ThumbnailDetail implements Serializable, MimeTypes {
 
@@ -43,10 +42,7 @@ public class ThumbnailDetail implements Serializable, MimeTypes {
 
   private static final long serialVersionUID = 1L;
 
-  private int objectId;
-  private int objectType;
-
-  private String instanceId = null;
+  private final ThumbnailReference reference;
   private String originalFileName = null;
   private String cropFileName = null;
   private int xStart = -1;
@@ -57,9 +53,11 @@ public class ThumbnailDetail implements Serializable, MimeTypes {
   private String mimeType = null;
 
   public ThumbnailDetail(String instanceId, int objectId, int objectType) {
-    this.instanceId = instanceId;
-    this.objectId = objectId;
-    this.objectType = objectType;
+    this.reference = new ThumbnailReference(objectId, instanceId, objectType);
+  }
+
+  public ThumbnailReference getReference() {
+    return reference;
   }
 
   public String getOriginalFileName() {
@@ -70,8 +68,17 @@ public class ThumbnailDetail implements Serializable, MimeTypes {
     return cropFileName;
   }
 
+  /**
+   * Returns the image file name of thumbnail by priority.
+   * If the crop file name exists it is returned, otherwise the original file name is returned.
+   * @return a file name as string.
+   */
+  public String getImageFileName() {
+    return this.getCropFileName() != null ? this.getCropFileName() : this.getOriginalFileName();
+  }
+
   public String getInstanceId() {
-    return instanceId;
+    return reference.getComponentInstanceId();
   }
 
   public int getXStart() {
@@ -91,23 +98,23 @@ public class ThumbnailDetail implements Serializable, MimeTypes {
   }
 
   public void setObjectId(int objectId) {
-    this.objectId = objectId;
+    this.reference.setObjectId(objectId);
   }
 
   public int getObjectId() {
-    return objectId;
+    return this.reference.getObjectId();
   }
 
   public int getObjectType() {
-    return objectType;
+    return this.reference.getObjectType();
   }
 
   public void setObjectType(int objectType) {
-    this.objectType = objectType;
+    this.reference.setObjectType(objectType);
   }
 
   public void setInstanceId(String instanceId) {
-    this.instanceId = instanceId;
+    this.reference.setComponentName(instanceId);
   }
 
   public void setOriginalFileName(String originalFileName) {
@@ -150,7 +157,7 @@ public class ThumbnailDetail implements Serializable, MimeTypes {
     String image = getOriginalFileName();
     if (image.startsWith("/")) {
       // case of an image from 'gallery' app
-      return image; // + "&Size=133x100";
+      return image;
     }
     if (getCropFileName() != null) {
       image = getCropFileName();
@@ -158,5 +165,4 @@ public class ThumbnailDetail implements Serializable, MimeTypes {
     return FileServerUtils.getUrl(getInstanceId(), "thumbnail", image, getMimeType(),
         publicationSettings.getString("imagesSubDirectory"));
   }
-
 }

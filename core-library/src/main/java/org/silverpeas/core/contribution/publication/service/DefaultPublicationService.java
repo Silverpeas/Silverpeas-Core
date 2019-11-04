@@ -89,15 +89,7 @@ import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
@@ -602,16 +594,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Map<String, List<Location>> getAllMainLocationsByPublicationIds(
-      final Collection<PublicationPK> ids) {
-    try (Connection con = getConnection()) {
-      return PublicationFatherDAO.getAllMainLocationsByPublicationIds(con, ids);
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException(e);
-    }
-  }
-
-  @Override
   public Map<String, List<Location>> getAllLocationsByPublicationIds(
       final Collection<PublicationPK> ids) {
     try (Connection con = getConnection()) {
@@ -622,7 +604,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Collection<Location> getAllLocations(PublicationPK pubPK) {
+  public List<Location> getAllLocations(PublicationPK pubPK) {
     try (Connection con = getConnection()) {
       return PublicationFatherDAO.getLocations(con, pubPK);
     } catch (SQLException e) {
@@ -812,13 +794,22 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   @Override
   public List<PublicationDetail> getPublications(Collection<PublicationPK> publicationPKs) {
-    return getByIds(publicationPKs.stream().map(PublicationPK::getId).collect(Collectors.toList()));
+    final Set<PublicationPK> indexedPks = new HashSet<>(publicationPKs.size());
+    final List<String> pubIds = publicationPKs.stream().map(pk -> {
+      indexedPks.add(pk);
+      return pk.getId();
+    }).collect(Collectors.toList());
+    return getByIds(pubIds, indexedPks);
   }
 
   @Override
   public List<PublicationDetail> getByIds(final Collection<String> publicationIds) {
+    return getByIds(publicationIds, null);
+  }
+
+  private List<PublicationDetail> getByIds(final Collection<String> publicationIds, final Set<PublicationPK> indexedPks) {
     try (Connection con = getConnection()) {
-      final List<PublicationDetail> publications = PublicationDAO.getByIds(con, publicationIds);
+      final List<PublicationDetail> publications = PublicationDAO.getByIds(con, publicationIds, indexedPks);
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, publications);
       }
@@ -1431,31 +1422,50 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   public SilverpeasList<PublicationDetail> getAuthorizedPublicationsForUserByCriteria(
       final String userId, final PublicationCriteria criteria) {
     long startTime = System.currentTimeMillis();
+    SilverpeasList<PublicationDetail> authorizedPublications = null;
     try (final Connection con = getConnection()) {
       final PaginationPage pagination = criteria.getPagination();
-      if (pagination != null && pagination.getPageNumber() == 1) {
-        return new Pagination<PublicationDetail>(pagination)
-            .withMinPerPage(pagination.getPageNumber() > 0 ? 200 : 0)
-            .paginatedDataSource(p -> {
-              try {
-                final SilverpeasList<PublicationPK> pubPks = PublicationDAO.selectPksByCriteria(con, criteria.paginateBy(p));
-                return getPublications(pubPks).stream().collect(SilverpeasList.collector(pubPks));
-              } catch (Exception e) {
-                SilverLogger.getLogger(this)
-                    .error(failureOnGetting("publications of with ", criteria));
-                return new SilverpeasArrayList<>(0);
-              }
-            })
-            .filter(p -> PublicationAccessControl.get()
-                .filterAuthorizedByUser(userId, p)
-                .collect(SilverpeasList.collector(p)))
-            .execute();
-      } else {
-        final List<PublicationDetail> pubDetails = getPublicationsByCriteria(criteria);
-        return PublicationAccessControl.get()
-            .filterAuthorizedByUser(userId, pubDetails)
-            .collect(SilverpeasList.collector(pubDetails));
+      if (pagination != null) {
+        if (pagination.getPageNumber() != 1) {
+          throw new IllegalArgumentException(
+              "Searching for PAGINATED authorized publications is not yet implemented. It is only" +
+                  " possible to get a limited search");
+        }
+        for (Pair<Integer, Integer> window : Arrays
+            .asList(Pair.of(200, 10), Pair.of(1000, 5), Pair.of(100000, 2))) {
+          final Pagination<PublicationDetail> filteredPagination =
+              getAuthorizedPaginatedPublicationsForUserByCriteria(
+              con, userId, criteria.paginateBy(pagination), window.getFirst(), window.getSecond());
+          final SilverpeasList<PublicationDetail> filteredPubs = filteredPagination.execute();
+          if (!filteredPagination.isNbMaxDataSourceCallLimitReached()) {
+            authorizedPublications = filteredPubs;
+            break;
+          }
+          SilverLogger.getLogger(PublicationService.class).debug(() -> MessageFormat.format(
+              " trying {0} times to retrieve {1} authorized publications without success (for requested {2})",
+              window.getSecond(), window.getFirst(), pagination));
+        }
+        if (authorizedPublications == null) {
+          SilverLogger.getLogger(PublicationService.class).debug(() -> MessageFormat.format(
+              " retrieving paginated authorized publications failed with {0} directive, searching on all data",
+              pagination));
+        }
       }
+      if (authorizedPublications == null) {
+        final SilverpeasList<PublicationDetail> publications = PublicationDAO.selectPublicationsByCriteria(con, criteria.paginateBy(null));
+        authorizedPublications = PublicationAccessControl.get()
+            .filterAuthorizedByUser(userId, publications)
+            .collect(SilverpeasList.collector(publications));
+        if (pagination != null) {
+          authorizedPublications = authorizedPublications.stream()
+              .limit(pagination.getPageSize())
+              .collect(SilverpeasList.collector(publications));
+        }
+      }
+      if (I18NHelper.isI18nContentActivated) {
+        setTranslations(con, authorizedPublications);
+      }
+      return authorizedPublications;
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     } finally {
@@ -1464,6 +1474,32 @@ public class DefaultPublicationService implements PublicationService, ComponentI
           .format(" search authorized publications by criteria in {0} with {1}",
               formatDurationHMS(endTime - startTime), criteria));
     }
+  }
+
+  private Pagination<PublicationDetail> getAuthorizedPaginatedPublicationsForUserByCriteria(
+      final Connection con, final String userId, final PublicationCriteria criteria,
+      final int minimumPerPage, final int nbMaxSqlQueryPerforming) {
+    return new Pagination<PublicationDetail>(criteria.getPagination())
+        .withMinPerPage(minimumPerPage)
+        .limitDataSourceCallsTo(nbMaxSqlQueryPerforming)
+        .paginatedDataSource(p -> {
+          try {
+            final SilverpeasList<PublicationPK> pubPks = PublicationDAO.selectPksByCriteria(con, criteria.paginateBy(p));
+            final Set<PublicationPK> indexedPks = new HashSet<>(pubPks.size());
+            final List<String> pubIds = pubPks.stream().map(pk -> {
+              indexedPks.add(pk);
+              return pk.getId();
+            }).collect(Collectors.toList());
+            return PublicationDAO.getByIds(con, pubIds, indexedPks).stream().collect(SilverpeasList.collector(pubPks));
+          } catch (Exception e) {
+            SilverLogger.getLogger(this)
+                .error(failureOnGetting("publications of with ", criteria));
+            return new SilverpeasArrayList<>(0);
+          }
+        })
+        .filter(p -> PublicationAccessControl.get()
+            .filterAuthorizedByUser(userId, p)
+            .collect(SilverpeasList.collector(p)));
   }
 
   @Override

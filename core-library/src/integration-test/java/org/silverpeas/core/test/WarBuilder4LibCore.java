@@ -28,9 +28,10 @@ import org.silverpeas.core.IdentifiableResource;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.BaseRightProfile;
-import org.silverpeas.core.admin.ProfiledObjectId;
-import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectIds;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.RightProfile;
 import org.silverpeas.core.admin.StubbedAdministration;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
@@ -392,6 +393,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addBundleBaseFeatures();
     addCommonUserBeans();
     addClasses(PaginationPage.class);
+    addClasses(Pagination.class);
     return this;
   }
 
@@ -514,7 +516,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
           PasteDetail.class, WAComponent.class, ComponentInst.class, RightProfile.class,
           ComponentInstLight.class, SpaceInst.class, SpaceInstLight.class, CompoSpace.class,
           QuotaException.class, ProfileInst.class, SpaceProfileInst.class, ProfiledObjectId.class,
-          BaseRightProfile.class,
+          ProfiledObjectIds.class, BaseRightProfile.class,
           Group.class, GroupProfileInst.class, SearchCriteria.class, ProfiledObjectType.class,
           UserDetailsSearchCriteria.class, GroupsSearchCriteria.class, DomainProperty.class);
       addClasses(RightRecover.class, AdminException.class);
@@ -639,7 +641,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(DriverSettings.class);
       addClasses(ProfiledObjectType.class);
       addClasses(ProfiledObjectId.class);
+      addClasses(ProfiledObjectIds.class);
       addClasses(BaseRightProfile.class);
+      addClasses(Pagination.class);
       addClasses(PaginationPage.class);
       addClasses(RightProfile.class);
       addPackages(true, "org.silverpeas.core.i18n");

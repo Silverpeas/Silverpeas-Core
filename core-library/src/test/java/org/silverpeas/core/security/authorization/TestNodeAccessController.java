@@ -28,7 +28,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.internal.stubbing.answers.Returns;
-import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -99,23 +98,52 @@ public class TestNodeAccessController {
     NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
-    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
     boolean result = instance.isUserAuthorized(userId, nodPk);
     assertThat(result, Matchers.is(true));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
    * Test of isUserAuthorized method, of class NodeAccessController.
    */
   @Test
-  public void userIsNotAuthorizedOnRootNodeWithUserRoleWhenNodeHaveNoSpecificRightsOnNode() {
+  public void userIsAuthorizedWhenNodeHaveNoSpecificRightsOnNodeByGivingDirectlyNodeDetail() {
+    setComponentInstanceUserRole(SilverpeasRole.user);
+    NodePK nodPk = new NodePK("10", componentId);
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodPk);
+    boolean result = instance.isUserAuthorized(userId, nodPk);
+    assertThat(result, Matchers.is(true));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
+  }
+
+  /**
+   * Test of isUserAuthorized method, of class NodeAccessController.
+   */
+  @Test
+  public void userIsAuthorizedOnRootNodeWithUserRoleWhenNodeHaveNoSpecificRightsOnNode() {
+    setComponentInstanceUserRole(SilverpeasRole.user);
+    NodePK nodPk = new NodePK(NodePK.ROOT_NODE_ID, componentId);
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodPk);
+    boolean result = instance.isUserAuthorized(userId, nodPk);
+    assertThat(result, Matchers.is(true));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
+  }
+
+  /**
+   * Test of isUserAuthorized method, of class NodeAccessController.
+   */
+  @Test
+  public void userIsAuthorizedOnRootNodeWithUserRoleWhenNodeHaveNoSpecificRightsOnNodeByGivingDirectlyNodeDetail() {
     setComponentInstanceUserRole(SilverpeasRole.user);
     NodePK nodPk = new NodePK(NodePK.ROOT_NODE_ID, componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     when(nodeService.getHeader(nodPk, false)).thenReturn(node);
-    boolean result = instance.isUserAuthorized(userId, nodPk);
+    boolean result = instance.isUserAuthorized(userId, node);
     assertThat(result, Matchers.is(true));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -127,9 +155,9 @@ public class TestNodeAccessController {
     NodePK nodPk = new NodePK(NodePK.ROOT_NODE_ID, componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
-    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
     boolean result = instance.isUserAuthorized(userId, nodPk);
     assertThat(result, Matchers.is(true));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -141,9 +169,9 @@ public class TestNodeAccessController {
     NodePK nodPk = new NodePK(NodePK.BIN_NODE_ID, componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
-    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
     boolean result = instance.isUserAuthorized(userId, nodPk);
     assertThat(result, Matchers.is(false));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -155,9 +183,9 @@ public class TestNodeAccessController {
     NodePK nodPk = new NodePK(NodePK.BIN_NODE_ID, componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
-    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
     boolean result = instance.isUserAuthorized(userId, nodPk);
     assertThat(result, Matchers.is(true));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -169,11 +197,11 @@ public class TestNodeAccessController {
     NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
-    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
     AccessControlContext context = AccessControlContext.init();
     context.onOperationsOf(AccessControlOperation.sharing);
     boolean result = instance.isUserAuthorized(userId, nodPk, context);
     assertThat(result, Matchers.is(false));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -187,11 +215,11 @@ public class TestNodeAccessController {
     NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
-    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
     AccessControlContext context = AccessControlContext.init();
     context.onOperationsOf(AccessControlOperation.sharing);
     boolean result = instance.isUserAuthorized(userId, nodPk, context);
     assertThat(result, Matchers.is(false));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -205,11 +233,11 @@ public class TestNodeAccessController {
     NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
-    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
     AccessControlContext context = AccessControlContext.init();
     context.onOperationsOf(AccessControlOperation.sharing);
     boolean result = instance.isUserAuthorized(userId, nodPk, context);
     assertThat(result, Matchers.is(false));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -223,11 +251,11 @@ public class TestNodeAccessController {
     NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
-    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
     AccessControlContext context = AccessControlContext.init();
     context.onOperationsOf(AccessControlOperation.sharing);
     boolean result = instance.isUserAuthorized(userId, nodPk, context);
     assertThat(result, Matchers.is(true));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -239,9 +267,9 @@ public class TestNodeAccessController {
     NodePK nodePk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodePk);
-    when(nodeService.getHeader(nodePk, false)).thenReturn(node);
     boolean result = instance.isUserAuthorized(userId, nodePk);
     assertThat(result, Matchers.is(false));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -259,7 +287,26 @@ public class TestNodeAccessController {
     boolean result = instance.isUserAuthorized(userId, nodPk);
     assertThat(result, Matchers.is(true));
     verify(organizationController, times(0))
-        .getUserProfiles(anyString(), anyString(), anyInt(), any(ObjectType.class));
+        .getUserProfiles(anyString(), anyString(), any(ProfiledObjectId.class));
+    verify(nodeService, times(1)).getHeader(any(NodePK.class), anyBoolean());
+  }
+
+  /**
+   * Test of isUserAuthorized method, of class NodeAccessController.
+   */
+  @Test
+  public void userIsAuthorizedWithRightOnTopicEnableButNoRightsDependOnByGivingDirectlyNodeDetail() {
+    setComponentInstanceUserRole(SilverpeasRole.user);
+    setComponentRightOnTopicEnabled();
+    NodePK nodPk = new NodePK("10", componentId);
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodPk);
+    node.setRightsDependsOn(-1);
+    boolean result = instance.isUserAuthorized(userId, node);
+    assertThat(result, Matchers.is(true));
+    verify(organizationController, times(0))
+        .getUserProfiles(anyString(), anyString(), any(ProfiledObjectId.class));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -280,6 +327,27 @@ public class TestNodeAccessController {
     assertThat(result, Matchers.is(true));
     verify(organizationController, times(1))
         .getUserProfiles(userId, componentId, ProfiledObjectId.fromNode(5));
+    verify(nodeService, times(1)).getHeader(any(NodePK.class), anyBoolean());
+  }
+
+  /**
+   * Test of isUserAuthorized method, of class NodeAccessController.
+   */
+  @Test
+  public void userIsAuthorizedWithRightsDependOnByGivingDirectlyNodeDetail() {
+    setComponentInstanceUserRole(SilverpeasRole.user);
+    setComponentRightOnTopicEnabled();
+    NodePK nodPk = new NodePK("10", componentId);
+    NodeDetail node = new NodeDetail();
+    node.setNodePK(nodPk);
+    node.setRightsDependsOn(5);
+    when(organizationController.getUserProfiles(userId, componentId, ProfiledObjectId.fromNode(5)))
+        .thenReturn(new String[]{SilverpeasRole.user.name()});
+    boolean result = instance.isUserAuthorized(userId, node);
+    assertThat(result, Matchers.is(true));
+    verify(organizationController, times(1))
+        .getUserProfiles(userId, componentId, ProfiledObjectId.fromNode(5));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -298,6 +366,7 @@ public class TestNodeAccessController {
     assertThat(result, Matchers.is(false));
     verify(organizationController, times(1))
         .getUserProfiles(userId, componentId, ProfiledObjectId.fromNode(5));
+    verify(nodeService, times(1)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -311,13 +380,13 @@ public class TestNodeAccessController {
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     node.setRightsDependsOn(5);
-    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
-    when(organizationController.getUserProfiles(userId, componentId, 5, ObjectType.NODE))
+    when(organizationController.getUserProfiles(userId, componentId, ProfiledObjectId.fromNode(5)))
         .thenReturn(new String[]{SilverpeasRole.admin.name()});
     boolean result = instance.isUserAuthorized(userId, nodPk);
     assertThat(result, Matchers.is(true));
     verify(organizationController, times(0))
-        .getUserProfiles(anyString(), anyString(), anyInt(), any(ObjectType.class));
+        .getUserProfiles(anyString(), anyString(), any(ProfiledObjectId.class));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -331,13 +400,13 @@ public class TestNodeAccessController {
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     node.setRightsDependsOn(5);
-    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
-    when(organizationController.getUserProfiles(userId, componentId, 5, ObjectType.NODE))
+    when(organizationController.getUserProfiles(userId, componentId, ProfiledObjectId.fromNode(5)))
         .thenReturn(new String[]{SilverpeasRole.admin.name()});
     boolean result = instance.isUserAuthorized(userId, nodPk);
     assertThat(result, Matchers.is(true));
     verify(organizationController, times(0))
-        .getUserProfiles(anyString(), anyString(), anyInt(), any(ObjectType.class));
+        .getUserProfiles(anyString(), anyString(), any(ProfiledObjectId.class));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -351,13 +420,13 @@ public class TestNodeAccessController {
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     node.setRightsDependsOn(5);
-    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
-    when(organizationController.getUserProfiles(userId, componentId, 5, ObjectType.NODE))
+    when(organizationController.getUserProfiles(userId, componentId, ProfiledObjectId.fromNode(5)))
         .thenReturn(new String[]{SilverpeasRole.admin.name()});
     boolean result = instance.isUserAuthorized(userId, nodPk);
     assertThat(result, Matchers.is(false));
     verify(organizationController, times(0))
-        .getUserProfiles(anyString(), anyString(), anyInt(), any(ObjectType.class));
+        .getUserProfiles(anyString(), anyString(), any(ProfiledObjectId.class));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   /**
@@ -371,13 +440,13 @@ public class TestNodeAccessController {
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     node.setRightsDependsOn(5);
-    when(nodeService.getHeader(nodPk, false)).thenReturn(node);
-    when(organizationController.getUserProfiles(userId, componentId, 5, ObjectType.NODE))
+    when(organizationController.getUserProfiles(userId, componentId, ProfiledObjectId.fromNode(5)))
         .thenReturn(new String[]{SilverpeasRole.admin.name()});
     boolean result = instance.isUserAuthorized(userId, nodPk);
     assertThat(result, Matchers.is(true));
     verify(organizationController, times(0))
-        .getUserProfiles(anyString(), anyString(), anyInt(), any(ObjectType.class));
+        .getUserProfiles(anyString(), anyString(), any(ProfiledObjectId.class));
+    verify(nodeService, times(0)).getHeader(any(NodePK.class), anyBoolean());
   }
 
   private void setComponentInstanceUserRole(SilverpeasRole... roles) {
