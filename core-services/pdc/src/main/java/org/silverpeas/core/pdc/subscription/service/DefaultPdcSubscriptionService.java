@@ -27,6 +27,7 @@
  */
 package org.silverpeas.core.pdc.subscription.service;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscriptionRuntimeException;
@@ -41,13 +42,14 @@ import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVi
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Transactional
@@ -297,27 +299,28 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
    * @return SilverContentInterface the object which has been classified
    */
   private SilverContentInterface getSilverContent(String componentId, int silverObjectId, String userId) {
-    ArrayList<Integer> silverobjectIds = new ArrayList<Integer>();
-    silverobjectIds.add(silverObjectId);
 
     List<SilverContentInterface> silverContents;
-    SilverContentInterface silverContent = null;
     try {
       ContentManager contentManager = ContentManagerProvider.getContentManager();
       ContentPeas contentPeas = contentManager.getContentPeas(componentId);
       ContentInterface contentInterface = contentPeas.getContentInterface();
-      silverContents = contentInterface.getSilverContentById(silverobjectIds, componentId, userId);
+
+      List<Integer> silverContentIds = Collections.singletonList(silverObjectId);
+      List<ResourceReference> resourceReferences = contentManager.getResourceReferencesByContentIds(silverContentIds);
+
+      silverContents = contentInterface.getSilverContentById(resourceReferences, userId);
     } catch (Exception e) {
       throw new PdcSubscriptionRuntimeException(
           "PdcSubscriptionBmEJB.sendSubscriptionNotif",
           PdcSubscriptionRuntimeException.ERROR,
           "PdcSubscription.EX_CHECK_SUBSCR_FALIED", e);
     }
-    if (silverContents != null && !silverContents.isEmpty()) {
-      silverContent = silverContents.get(0);
+    if (CollectionUtil.isNotEmpty(silverContents)) {
+      return silverContents.get(0);
     }
 
-    return silverContent;
+    return null;
   }
 
   /**

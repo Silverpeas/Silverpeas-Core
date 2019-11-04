@@ -114,6 +114,8 @@ public class SearchResult extends AbstractI18NBean {
     this.creationDate = getLocalDate(gsc.getCreationDate());
     this.creatorId = gsc.getUserId();
 
+    this.lastUpdateDate = getLocalDate(gsc.getDate());
+
     this.id = gsc.getId();
     this.componentId = gsc.getInstanceId();
     this.type = gsc.getType();

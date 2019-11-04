@@ -23,8 +23,11 @@
  */
 package org.silverpeas.core.contribution.contentcontainer.content;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasExceptionMessages;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -237,30 +240,25 @@ public class ContentManager implements Serializable {
    * @return
    * @throws ContentManagerException
    */
-  public ContentPeas getContentPeas(String sComponentId) throws ContentManagerException {
-    // Get the ContentType
-    String sContentType = this.getContentType(sComponentId);
-
-
-    // Get the ContentPeas from the ContentType
-    for (ContentPeas s_acContentPea : acContentPeas) {
-
-      if (s_acContentPea.getType().equals(sContentType)) {
-
-        return s_acContentPea;
-      }
-    }
-
-    return null;
+  public ContentPeas getContentPeas(String sComponentId) {
+    return getContentPeasByComponentName(
+        SilverpeasComponentInstance.getComponentName(sComponentId));
   }
 
   /**
-   * Add a silver content Called when a content add a document and register it to get its
-   * SilverContentId in return
+   * Return the ContentPeas corresponding to the given component
+   * @param componentName
+   * @return
+   * @throws ContentManagerException
    */
-  public int addSilverContent(Connection connection, String sInternalContentId, String sComponentId,
-      String sAuthorId) throws ContentManagerException {
-    return addSilverContent(connection, sInternalContentId, sComponentId, sAuthorId, null);
+  public ContentPeas getContentPeasByComponentName(String componentName) {
+    // Get the ContentPeas from the ContentType
+    for (ContentPeas s_acContentPea : acContentPeas) {
+      if (s_acContentPea.getType().equals(componentName)) {
+        return s_acContentPea;
+      }
+    }
+    return null;
   }
 
   /**
@@ -552,46 +550,24 @@ public class ContentManager implements Serializable {
    * @param alSilverContentId - la liste de silvercontentId silvercontentId
    * @return la liste contenant les instances
    */
-  public List<String> getInstanceId(List<Integer> alSilverContentId)
+  public List<ResourceReference> getResourceReferencesByContentIds(List<Integer> alSilverContentId)
       throws ContentManagerException {
-    Connection connection = null;
-    PreparedStatement prepStmt = null;
-    ResultSet resSet = null;
-    List<String> alInstanceIds = new ArrayList<>();
     try {
-      // Open connection
-      connection = DBUtil.openConnection();
-
-      String sSQLStatement =
-          "select I.componentId from " + INSTANCE_TABLE + " I, " + SILVER_CONTENT_TABLE + " C " +
-              " where I.instanceId = C.contentInstanceId " + " and C.silverContentId = ?";
-
-      // Execute the search
-      prepStmt = connection.prepareStatement(sSQLStatement);
-
-      // Loop on the alSilverContentId
-      String instanceId = "";
-      for (Integer oneSilverContentId : alSilverContentId) {
-        prepStmt.setInt(1, oneSilverContentId);
-        resSet = prepStmt.executeQuery();
-        if (resSet.next()) {
-          instanceId = resSet.getString(1);
-        }
-        if (!alInstanceIds.contains(instanceId)) {
-          alInstanceIds.add(instanceId);
-        }
-
-        DBUtil.close(resSet);
-        resSet = null;
-      }
-
-      return alInstanceIds;
+      final List<ResourceReference> result = new ArrayList<>();
+      JdbcSqlQuery.executeBySplittingOn(alSilverContentId, (idBatch, ignore) ->
+          JdbcSqlQuery.createSelect("C.internalcontentid, I.componentId ")
+              .from(INSTANCE_TABLE + " I")
+              .join(SILVER_CONTENT_TABLE + " C").on("I.instanceId = C.contentInstanceId")
+              .where("C.silverContentId").in(idBatch)
+              .execute(r -> {
+                final ResourceReference ref = new ResourceReference(r.getString(1), r.getString(2));
+                result.add(ref);
+                return null;
+              }));
+      return result;
     } catch (Exception e) {
       throw new ContentManagerException(
           failureOnGetting("instance id for content", alSilverContentId), e);
-    } finally {
-      DBUtil.close(resSet, prepStmt);
-      closeConnection(connection);
     }
   }
 
@@ -779,16 +755,6 @@ public class ContentManager implements Serializable {
     deletion.execute();
   }
 
-  // Return the Content type corresponding to the given componentId
-  private String getContentType(String componentId) throws ContentManagerException {
-    // Build the SQL statement
-    String sSQLStatement =
-        "SELECT contentType FROM " + INSTANCE_TABLE + " WHERE (componentId = '" + componentId +
-            "')";
-    // Get the contentType from the DB Query
-    return this.getFirstStringValue(sSQLStatement);
-  }
-
   private void checkParameters(String sComponentId, String sContainerType, String sContentType)
       throws ContentManagerException {
     // Check if the given componentId is not null
@@ -807,31 +773,4 @@ public class ContentManager implements Serializable {
     }
   }
 
-  private String getFirstStringValue(String sSQLStatement) throws ContentManagerException {
-    Connection connection = null;
-    PreparedStatement prepStmt = null;
-    ResultSet resSet = null;
-    try {
-      String sValue = null;
-
-      // Open connection
-      connection = DBUtil.openConnection();
-
-      // Execute the query
-      prepStmt = connection.prepareStatement(sSQLStatement);
-      resSet = prepStmt.executeQuery();
-
-      // Fetch the result
-      while (resSet.next() && sValue == null) {
-        sValue = resSet.getString(1);
-      }
-
-      return sValue;
-    } catch (Exception e) {
-      throw new ContentManagerException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(resSet, prepStmt);
-      closeConnection(connection);
-    }
-  }
 }

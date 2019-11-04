@@ -452,4 +452,6 @@ public interface PdcManager {
 
   SearchContext getSilverContentIdSearchContext(int nSilverContentId,
       String sComponentId) throws PdcException;
+
+  List<GlobalSilverContent> getSilverContentsByIds(List<Integer> silverContentIds, String userId);
 }

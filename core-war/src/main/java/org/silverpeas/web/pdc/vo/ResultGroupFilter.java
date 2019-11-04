@@ -71,17 +71,17 @@ public class ResultGroupFilter {
   public void sortFacetsEntries() {
     EntryComparator comparator = new EntryComparator();
     YearComparator yearComparator = new YearComparator();
-    Collections.sort(authorFacet.getEntries(), comparator);
-    Collections.sort(componentFacet.getEntries(), comparator);
-    Collections.sort(datatypeFacet.getEntries(), comparator);
-    Collections.sort(filetypeFacet.getEntries(), comparator);
-    Collections.sort(lastUpdateFacet.getEntries(), yearComparator);
+    Collections.sort(authorFacet.getSortedEntries(), comparator);
+    Collections.sort(componentFacet.getSortedEntries(), comparator);
+    Collections.sort(datatypeFacet.getSortedEntries(), comparator);
+    Collections.sort(filetypeFacet.getSortedEntries(), comparator);
+    Collections.sort(lastUpdateFacet.getSortedEntries(), yearComparator);
 
     for (Facet formFieldFacet : formfieldFacets) {
       if (formFieldFacet instanceof FacetOnDates) {
-        Collections.sort(formFieldFacet.getEntries(), yearComparator);
+        Collections.sort(formFieldFacet.getSortedEntries(), yearComparator);
       } else {
-        Collections.sort(formFieldFacet.getEntries(), comparator);
+        Collections.sort(formFieldFacet.getSortedEntries(), comparator);
       }
     }
   }
