@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.contentcontainer.content;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -51,13 +52,12 @@ public interface ContentInterface {
 
   /**
    * Find all the SilverContents with the given silverpeas content identifiers.
-   * @param silverpeasContentIds list of silverpeas content identifier as integer
-   * @param instanceId the identifier of a component instance.
+   * @param resourceReferences list of silverpeas content identifier as integer
    * @param currentUserId the identifier of the user accessing the content.
    * @return the content as {@link SilverpeasComponentInstance}
    */
-  List<SilverContentInterface> getSilverContentById(List<Integer> silverpeasContentIds,
-      String instanceId, String currentUserId);
+  List<SilverContentInterface> getSilverContentById(List<ResourceReference> resourceReferences,
+      String currentUserId);
 
   /**
    * Gets the silverpeas content identifier about a contribution.

@@ -46,7 +46,7 @@ public class FacetEntryVO {
     super();
     this.name = name;
     this.id = id;
-    this.nbElt = 1;
+    this.nbElt = 0;
   }
 
   public String getName() {
