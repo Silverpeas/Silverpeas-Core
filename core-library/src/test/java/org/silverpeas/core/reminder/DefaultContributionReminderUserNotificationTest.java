@@ -67,6 +67,7 @@ import java.util.TimeZone;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
@@ -133,6 +134,9 @@ class DefaultContributionReminderUserNotificationTest {
 
     when(UserProvider.get().getUser(receiver.getId())).thenReturn(receiver);
     mocker.setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(), "defaultLanguage");
+
+    when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
+    when(componentAccessControl.isGroupAuthorized(anyString(), anyString())).thenReturn(true);
   }
 
   @Test

@@ -76,6 +76,7 @@ import java.util.TimeZone;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -147,6 +148,9 @@ public class CalendarEventUserNotificationReminderTest {
     when(userProvider.getUser(receiver.getId())).thenReturn(receiver);
     reflectionRule
         .setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(), "defaultLanguage");
+
+    when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
+    when(componentAccessControl.isGroupAuthorized(anyString(), anyString())).thenReturn(true);
   }
 
   @Test

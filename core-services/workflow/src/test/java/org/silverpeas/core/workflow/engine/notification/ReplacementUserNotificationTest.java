@@ -24,19 +24,24 @@
 
 package org.silverpeas.core.workflow.engine.notification;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.FieldMocker;
+import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -52,12 +57,15 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * @author silveryocha
  */
+@EnableSilverTestEnv
+@TestManagedBeans(ReplacementConstructor.class)
 public class ReplacementUserNotificationTest {
 
   private static final String INSTANCE_ID = "workflow26";
@@ -66,11 +74,15 @@ public class ReplacementUserNotificationTest {
   private static final String DE = "de";
   private static final String COMPONENT_NAME = "componentNameTest";
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  @RegisterExtension
+  FieldMocker mocker = new FieldMocker();
 
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
+  @TestManagedMock
+  private PublicationService publicationService;
+  @TestManagedMock
+  private ComponentAccessControl componentAccessControl;
+  @TestManagedMock
+  private Administration administration;
 
   private final org.silverpeas.core.workflow.api.user.User userA = mock(
       org.silverpeas.core.workflow.api.user.User.class);
@@ -78,18 +90,12 @@ public class ReplacementUserNotificationTest {
       org.silverpeas.core.workflow.api.user.User.class);
 
   @SuppressWarnings("unchecked")
-  @Before
-  public void setup() throws WorkflowException {
-    commonAPI4Test.injectIntoMockedBeanContainer(new ReplacementConstructor());
-    UserProvider userProvider = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(UserProvider.class));
-    UserManager userManager = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(UserManager.class));
-    OrganizationController organizationController = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(OrganizationController.class));
-    SilverpeasComponentInstanceProvider silverpeasComponentInstanceProvider = commonAPI4Test
-        .injectIntoMockedBeanContainer(mock(SilverpeasComponentInstanceProvider.class));
-
+  @BeforeEach
+  public void setup(@TestManagedMock UserProvider userProvider,
+      @TestManagedMock UserManager userManager,
+      @TestManagedMock OrganizationController organizationController,
+      @TestManagedMock SilverpeasComponentInstanceProvider silverpeasComponentInstanceProvider)
+      throws WorkflowException {
     ComponentInst componentInstance = mock(ComponentInst.class);
 
     when(silverpeasComponentInstanceProvider.getById(INSTANCE_ID))
@@ -109,8 +115,11 @@ public class ReplacementUserNotificationTest {
 
     when(userManager.getUser(userA.getUserId())).thenReturn(userA);
     when(userManager.getUser(userB.getUserId())).thenReturn(userB);
-    reflectionRule
-        .setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(), "defaultLanguage");
+
+    mocker.setField(DisplayI18NHelper.class, Locale.getDefault().getLanguage(), "defaultLanguage");
+
+    when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
+    when(componentAccessControl.isGroupAuthorized(anyString(), anyString())).thenReturn(true);
   }
 
   @Test
