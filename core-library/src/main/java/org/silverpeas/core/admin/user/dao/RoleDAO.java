@@ -24,6 +24,8 @@
 package org.silverpeas.core.admin.user.dao;
 
 import org.jetbrains.annotations.NotNull;
+import org.silverpeas.core.admin.ProfiledObjectIds;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
@@ -38,17 +40,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
-import static org.silverpeas.core.util.StringUtil.isDefined;
 
 @Singleton
 public class RoleDAO {
 
   private static final String USERROLE_COLUMNS =
       "id,instanceId,name,roleName,description,isInherited,objectId,objecttype";
-  private static final String FROM_ST_USERROLE_AND_ST_USERROLE_GROUP_REL =
+  private static final String FROM_GROUP_RELATION =
       " from st_userrole r, st_userrole_group_rel gr";
   private static final String WHERE_ID_EQUALS_USERROLEID = " where r.id=gr.userroleid";
   private static final String AND_GROUP_ID_IN = " and gr.groupId IN (";
+  private static final String ROLE_INSTANCE_ID = "r.instanceId";
 
 
   private static String list2String(List<String> ids) {
@@ -63,12 +65,12 @@ public class RoleDAO {
   }
 
   private static final String SELECT = "select ";
-  private static final String FROM_ST_USERROLE_AND_ST_USERROLE_USER_REL =
+  private static final String FROM_USER_RELATION =
       " from st_userrole r, st_userrole_user_rel ur";
   private static final String WHERE_ID_EQUALS_TO_USERROLEID = " where r.id=ur.userroleid";
   private static final String AND_USER_ID_EQUALS_TO_GIVEN_VALUE = " and ur.userId = ? ";
   private static final String QUERY_ALL_USER_ROLES =
-      SELECT + USERROLE_COLUMNS + FROM_ST_USERROLE_AND_ST_USERROLE_USER_REL +
+      SELECT + USERROLE_COLUMNS + FROM_USER_RELATION +
           WHERE_ID_EQUALS_TO_USERROLEID + " and r.objectId is null " +
           AND_USER_ID_EQUALS_TO_GIVEN_VALUE;
 
@@ -115,7 +117,7 @@ public class RoleDAO {
   }
 
   private static final String QUERY_ALL_USER_COMPONENT_OBJECT_ROLES =
-      SELECT + USERROLE_COLUMNS + FROM_ST_USERROLE_AND_ST_USERROLE_USER_REL +
+      SELECT + USERROLE_COLUMNS + FROM_USER_RELATION +
           WHERE_ID_EQUALS_TO_USERROLEID + " and r.objectId is not null " +
           AND_USER_ID_EQUALS_TO_GIVEN_VALUE;
 
@@ -125,7 +127,7 @@ public class RoleDAO {
   }
 
   private List<UserRoleRow> getRoles(Connection con, List<String> groupIds) throws SQLException {
-    final String query = SELECT + USERROLE_COLUMNS + FROM_ST_USERROLE_AND_ST_USERROLE_GROUP_REL +
+    final String query = SELECT + USERROLE_COLUMNS + FROM_GROUP_RELATION +
         WHERE_ID_EQUALS_USERROLEID + " and r.objectId is null " + AND_GROUP_ID_IN +
         list2String(groupIds) + ")";
 
@@ -146,7 +148,7 @@ public class RoleDAO {
   }
 
   private List<UserRoleRow> getAllComponentObjectRolesForGroups(Connection con, List<String> groupIds) throws SQLException {
-    String query = SELECT + USERROLE_COLUMNS + FROM_ST_USERROLE_AND_ST_USERROLE_GROUP_REL +
+    String query = SELECT + USERROLE_COLUMNS + FROM_GROUP_RELATION +
         WHERE_ID_EQUALS_USERROLEID + " and r.objectId is not null " + AND_GROUP_ID_IN +
         list2String(groupIds) + ")";
     return getUserRoleRows(con, query);
@@ -180,10 +182,10 @@ public class RoleDAO {
       Collection<Integer> instanceIds) throws SQLException {
     List<UserRoleRow> roles = new ArrayList<>();
     if (isNotEmpty(groupIds)) {
-      roles.addAll(getGroupRoles(con, null, null, instanceIds, groupIds));
+      roles.addAll(getGroupRoles(con, ProfiledObjectIds.none(), instanceIds, groupIds));
     }
     if (userId != -1) {
-      roles.addAll(getUserRoles(con, null, null, instanceIds, userId));
+      roles.addAll(getUserRoles(con, ProfiledObjectIds.none(), instanceIds, userId));
     }
     return roles;
   }
@@ -194,63 +196,84 @@ public class RoleDAO {
    * To get only groups roles, specify -1 for userId.
    * To get only user roles, specify null or empty list for groupIds.
    * @param con a connection with the database.
-   * @param objectIds if empty or null is given, then all the rows associated to the type are returned
-   * @param objectType the type of the object on which the roles are related.
+   * @param profiledObjectIds if NOTHING is given, then all the rows associated to the type
+   * are returned, otherwise all the rows associated to type and ids.
    * @param instanceIds the component instance identifiers.
    * @param groupIds a list of group identifiers.
    * @param userId the user identifier.
    * @return a list of {@link UserRoleRow} instances.
    * @throws SQLException if an error occurs.
    */
-  public List<UserRoleRow> getRoles(Connection con, Collection<Integer> objectIds,
-      String objectType, Collection<Integer> instanceIds, List<String> groupIds, int userId)
+  public List<UserRoleRow> getRoles(Connection con, final ProfiledObjectIds profiledObjectIds,
+      final Collection<Integer> instanceIds, final List<String> groupIds, final int userId)
       throws SQLException {
     final List<UserRoleRow> roles = new ArrayList<>();
     if (isNotEmpty(groupIds)) {
-      roles.addAll(getGroupRoles(con, objectIds, objectType, instanceIds, groupIds));
+      roles.addAll(getGroupRoles(con, profiledObjectIds, instanceIds, groupIds));
     }
     if (userId != -1) {
-      roles.addAll(getUserRoles(con, objectIds, objectType, instanceIds, userId));
+      roles.addAll(getUserRoles(con, profiledObjectIds, instanceIds, userId));
     }
     return roles;
   }
 
-  private List<UserRoleRow> getGroupRoles(final Connection con, final Collection<Integer> objectIds,
-      final String objectType, final Collection<Integer> instanceIds, final List<String> groupIds)
-      throws SQLException {
+  private List<UserRoleRow> getGroupRoles(final Connection con,
+      final ProfiledObjectIds profiledObjectIds, final Collection<Integer> instanceIds,
+      final List<String> groupIds) throws SQLException {
     final List<UserRoleRow> roles = new ArrayList<>();
     final List<Integer> groupIdsAsInt = groupIds.stream().map(Integer::parseInt).collect(Collectors.toList());
-    JdbcSqlQuery.executeBySplittingOn(groupIdsAsInt, (groupIdBatch, ignore) ->
-      JdbcSqlQuery.executeBySplittingOn(instanceIds, (instanceIdBatch, ignoreToo) ->
-          getQueryCommons(FROM_ST_USERROLE_AND_ST_USERROLE_GROUP_REL, WHERE_ID_EQUALS_USERROLEID, objectIds, objectType)
-          .and("gr.groupId").in(groupIdBatch)
-          .and("r.instanceId").in(instanceIdBatch)
-          .executeWith(con, r -> roles.add(UserRoleRow.fetch(r)))));
+    final ProfiledObjectType type = profiledObjectIds.getType();
+    if (type == ProfiledObjectType.NONE || profiledObjectIds.typeFilledOnly()) {
+      JdbcSqlQuery.executeBySplittingOn(groupIdsAsInt, (groupIdBatch, ignore) ->
+          JdbcSqlQuery.executeBySplittingOn(instanceIds, (instanceIdBatch, ignoreToo) ->
+              getQueryCommons(FROM_GROUP_RELATION, WHERE_ID_EQUALS_USERROLEID, profiledObjectIds, type)
+              .and("gr.groupId").in(groupIdBatch)
+              .and(ROLE_INSTANCE_ID).in(instanceIdBatch)
+              .executeWith(con, r -> roles.add(UserRoleRow.fetch(r)))));
+    } else {
+      JdbcSqlQuery.executeBySplittingOn(profiledObjectIds, (profileIdBatch, ignore) ->
+        JdbcSqlQuery.executeBySplittingOn(groupIdsAsInt, (groupIdBatch, ignoreToo) ->
+          JdbcSqlQuery.executeBySplittingOn(instanceIds, (instanceIdBatch, ignoreAlsoToo) ->
+              getQueryCommons(FROM_GROUP_RELATION, WHERE_ID_EQUALS_USERROLEID, profileIdBatch, type)
+              .and("gr.groupId").in(groupIdBatch)
+              .and(ROLE_INSTANCE_ID).in(instanceIdBatch)
+              .executeWith(con, r -> roles.add(UserRoleRow.fetch(r))))));
+    }
     return roles;
   }
 
-  private List<UserRoleRow> getUserRoles(final Connection con, final Collection<Integer> objectIds,
-      final String objectType, final Collection<Integer> instanceIds, final int userId)
-      throws SQLException {
+  private List<UserRoleRow> getUserRoles(final Connection con,
+      final ProfiledObjectIds profiledObjectIds, final Collection<Integer> instanceIds,
+      final int userId) throws SQLException {
     final List<UserRoleRow> roles = new ArrayList<>();
-    JdbcSqlQuery.executeBySplittingOn(instanceIds, (idBatch, ignore) ->
-        getQueryCommons(FROM_ST_USERROLE_AND_ST_USERROLE_USER_REL, WHERE_ID_EQUALS_TO_USERROLEID, objectIds, objectType)
-        .and("ur.userId = ?", userId)
-        .and("r.instanceId").in(idBatch)
-        .executeWith(con, r -> roles.add(UserRoleRow.fetch(r))));
+    final ProfiledObjectType type = profiledObjectIds.getType();
+    if (type == ProfiledObjectType.NONE || profiledObjectIds.typeFilledOnly()) {
+      JdbcSqlQuery.executeBySplittingOn(instanceIds, (idBatch, ignore) ->
+          getQueryCommons(FROM_USER_RELATION, WHERE_ID_EQUALS_TO_USERROLEID, profiledObjectIds, type)
+          .and("ur.userId = ?", userId)
+          .and(ROLE_INSTANCE_ID).in(idBatch)
+          .executeWith(con, r -> roles.add(UserRoleRow.fetch(r))));
+    } else {
+      JdbcSqlQuery.executeBySplittingOn(profiledObjectIds, (profileIdBatch, ignore) ->
+        JdbcSqlQuery.executeBySplittingOn(instanceIds, (instanceIdBatch, ignoreToo) ->
+            getQueryCommons(FROM_USER_RELATION, WHERE_ID_EQUALS_TO_USERROLEID, profileIdBatch, type)
+            .and("ur.userId = ?", userId)
+            .and(ROLE_INSTANCE_ID).in(instanceIdBatch)
+            .executeWith(con, r -> roles.add(UserRoleRow.fetch(r)))));
+    }
     return roles;
   }
 
   private JdbcSqlQuery getQueryCommons(final String joins, final String clauses,
-      final Collection<Integer> objectIds, final String objectType) {
-    final JdbcSqlQuery query = JdbcSqlQuery.createSelect(USERROLE_COLUMNS)
+      final Collection<String> objectIds, final ProfiledObjectType profiledObjectType) {
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect("DISTINCT " + USERROLE_COLUMNS)
         .addSqlPart(joins)
         .addSqlPart(clauses);
     if (isNotEmpty(objectIds)) {
-      query.and("r.objectId").in(objectIds);
+      query.and("r.objectId").in(objectIds.stream().map(Integer::parseInt).collect(Collectors.toSet()));
     }
-    if (isDefined(objectType)) {
-      query.and("r.objectType = ?", objectType);
+    if (profiledObjectType != ProfiledObjectType.NONE) {
+      query.and("r.objectType = ?", profiledObjectType.getCode());
     } else {
       query.andNull("r.objectType");
     }

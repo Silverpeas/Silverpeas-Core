@@ -173,16 +173,6 @@ public interface PublicationService {
   List<NodePK> getAllFatherPKInSamePublicationComponentInstance(PublicationPK pubPK);
 
   /**
-   * Selects massively simple data about main locations.
-   * <p>
-   *   This method is designed for process performance needs.
-   * </p>
-   * @param ids the instance ids aimed.
-   * @return a list of {@link Location} instances.
-   */
-  Map<String, List<Location>> getAllMainLocationsByPublicationIds(Collection<PublicationPK> ids);
-
-  /**
    * Selects massively simple data about all locations (main or aliases).
    * <p>
    *   This method is designed for process performance needs.
@@ -200,7 +190,7 @@ public interface PublicationService {
    * @return a collection of the locations of the publication.
    * @see org.silverpeas.core.contribution.publication.model.Location
    */
-  Collection<Location> getAllLocations(PublicationPK pubPK);
+  List<Location> getAllLocations(PublicationPK pubPK);
 
   /**
    * Gets the locations of the specified publication in the given component instance.

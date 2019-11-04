@@ -162,7 +162,7 @@ public class TestComponentAccessControllerFilter {
   private void assertAvailableComponentCache( final ComponentAccessController.DataManager componentDataManager) {
     assertThat(componentDataManager.availableComponentCache, containsInAnyOrder(KMELIA_38, KMELIA_83));
     verify(organizationController, times(1)).getAvailableComponentsByUser(anyString());
-    verify(organizationController, times(1)).getUserProfilesByComponent(anyString(), anyCollection());
+    verify(organizationController, times(1)).getUserProfilesByComponentId(anyString(), anyCollection());
   }
 
   /**
@@ -205,7 +205,7 @@ public class TestComponentAccessControllerFilter {
             when(instance.isTopicTracker()).then(new Returns(i.startsWith("kmelia") || i.startsWith("kmax") || i.startsWith("toolbox")));
             return Optional.of(instance);
           });
-      when(organizationController.getParameterValuesByComponentAndByParamName(anyCollection(), eq(Arrays
+      when(organizationController.getParameterValuesByComponentIdThenByParamName(anyCollection(), eq(Arrays
           .asList("rightsOnTopics", "usePublicationSharing", "useFileSharing",
               "useFolderSharing", "coWriting", "publicFiles"))))
           .thenAnswer(a -> {
@@ -218,7 +218,7 @@ public class TestComponentAccessControllerFilter {
             });
             return result;
           });
-      when(organizationController.getUserProfilesByComponent(anyString(), anyCollection())).thenAnswer(a -> {
+      when(organizationController.getUserProfilesByComponentId(anyString(), anyCollection())).thenAnswer(a -> {
         final Collection<String> instanceIds = a.getArgument(1);
         final Map<String, Set<String>> result = new HashMap<>(instanceIds.size());
         instanceIds.forEach(i -> result.put(i, CollectionUtil.asSet(SilverpeasRole.user.getName())));

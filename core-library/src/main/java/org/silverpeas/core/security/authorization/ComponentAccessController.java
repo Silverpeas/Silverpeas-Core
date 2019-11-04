@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -182,7 +183,9 @@ public class ComponentAccessController extends AbstractAccessController<String>
    * Data manager.
    */
   static class DataManager {
-
+    private static final List<String> HANDLED_PARAM_NAMES = Arrays
+        .asList(RIGHTS_ON_TOPICS_PARAM_NAME, "usePublicationSharing", "useFileSharing",
+            "useFolderSharing", "coWriting", "publicFiles");
     private OrganizationController controller;
     private Map<String, Optional<SilverpeasComponentInstance>> componentInstancesCache = new HashMap<>(1);
     private Map<String, Boolean> isPublicationSharingEnabledForRoleCache = new HashMap<>(1);
@@ -212,11 +215,24 @@ public class ComponentAccessController extends AbstractAccessController<String>
       isCoWritingEnabledCache = new HashMap<>(nbElements);
       isTopicTrackerSupportedCache = new HashMap<>(nbElements);
       availableComponentCache = new HashSet<>(controller.getAvailableComponentsByUser(userId));
-      userProfiles = controller.getUserProfilesByComponent(userId, instanceIds);
-      componentParameterValueCache = controller
-          .getParameterValuesByComponentAndByParamName(instanceIds, Arrays
-              .asList(RIGHTS_ON_TOPICS_PARAM_NAME, "usePublicationSharing", "useFileSharing",
-                  "useFolderSharing", "coWriting", "publicFiles"));
+      completeCaches(userId, instanceIds);
+    }
+
+    void completeCaches(final String userId, final Collection<String> instanceIds) {
+      final boolean firstLoad = userProfiles == null;
+      if (firstLoad) {
+        userProfiles = controller.getUserProfilesByComponentId(userId, instanceIds);
+      } else {
+        controller.getUserProfilesByComponentId(userId, instanceIds)
+            .forEach((k, v) -> userProfiles.put(k, v));
+      }
+      if (firstLoad) {
+        componentParameterValueCache = controller
+            .getParameterValuesByComponentIdThenByParamName(instanceIds, HANDLED_PARAM_NAMES);
+      } else {
+        controller.getParameterValuesByComponentIdThenByParamName(instanceIds, HANDLED_PARAM_NAMES)
+            .forEach((k, v) -> componentParameterValueCache.put(k, v));
+      }
     }
 
     boolean isRightOnTopicsEnabled(final String instanceId) {

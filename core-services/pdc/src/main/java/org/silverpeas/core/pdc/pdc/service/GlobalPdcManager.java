@@ -24,13 +24,12 @@
 package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.contribution.contentcontainer.content.IGlobalSilverContentProcessor;
+import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -49,9 +48,7 @@ import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -70,15 +67,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.silverpeas.core.contribution.contentcontainer.content
-    .IGlobalSilverContentProcessor.PROCESSOR_NAME_SUFFIX;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.*;
+import static org.silverpeas.core.admin.component.model.SilverpeasComponentInstance.getComponentName;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.search;
+import static org.silverpeas.core.util.CollectionUtil.isEmpty;
 
 @Singleton
 public class GlobalPdcManager implements PdcManager {
 
   private static final String UNKNOWN = "unknown";
+  private static final String KMELIA_COMPONENT_NAME = "kmelia";
+
   /**
    * SilverpeasBeanDAO is the main link with the SilverPeas persistence. We indicate the Object
    * SilverPeas which map the database.
@@ -1667,6 +1669,7 @@ public class GlobalPdcManager implements PdcManager {
     }
   }
 
+  @Override
   public void addPositions(List<ClassifyPosition> positions, int objectId, String instanceId)
       throws PdcException {
     List<UsedAxis> usedAxis = getUsedAxisByInstanceId(instanceId);
@@ -2044,17 +2047,17 @@ public class GlobalPdcManager implements PdcManager {
 
   private List<ObjectValuePair> filterAvailableContents(List<ObjectValuePair> ovps, String userId) {
     final List<PublicationPK> pks = ovps.stream()
-        .filter(o -> o.getInstanceId().startsWith("kmelia") )
+        .filter(o -> o.getInstanceId().startsWith(KMELIA_COMPONENT_NAME) )
         .map(o -> new PublicationPK(o.getObjectId(), o.getInstanceId()))
-        .collect(Collectors.toList());
+        .collect(toList());
     final AccessControlContext context = AccessControlContext.init().onOperationsOf(search);
     final Set<String> accessiblePks = PublicationAccessControl.get()
         .filterAuthorizedByUser(pks, userId, context)
         .map(p -> p.getInstanceId() + "@" + p.getId())
         .collect(Collectors.toSet());
     return ovps.stream()
-        .filter(o -> !o.getInstanceId().startsWith("kmelia") || accessiblePks.contains(o.getInstanceId() + "@" + o.getObjectId()))
-        .collect(Collectors.toList());
+        .filter(o -> !o.getInstanceId().startsWith(KMELIA_COMPONENT_NAME) || accessiblePks.contains(o.getInstanceId() + "@" + o.getObjectId()))
+        .collect(toList());
   }
 
   private int getNumberOfContents(List<ObjectValuePair> ovps, String valuePath, boolean deeply) {
@@ -2245,69 +2248,53 @@ public class GlobalPdcManager implements PdcManager {
     return allChildren;
   }
 
+  @Override
   public List<GlobalSilverContent> getSilverContentsByIds(List<Integer> silverContentIds,
       String userId) {
-
-    List<GlobalSilverContent> silverContents = new ArrayList<>();
-    if (CollectionUtil.isEmpty(silverContentIds)) {
-      return silverContents;
+    if (isEmpty(silverContentIds)) {
+      return emptyList();
     }
-
     try {
-      List<ResourceReference> resourceReferences =
-          contentManager.getResourceReferencesByContentIds(silverContentIds);
-
-      Map<String, List<ResourceReference>> byComponentName = new HashMap<>();
-      resourceReferences.forEach(r -> {
-        final String componentName = SilverpeasComponentInstance.getComponentName(r.getComponentInstanceId());
-        MapUtil.putAddList(byComponentName, componentName, r);
-      });
-      byComponentName.forEach((c, l) -> {
-        try {
-          ContentPeas contentP = contentManager.getContentPeasByComponentName(c);
-          if (contentP != null) {
-            // we are going to search only SilverContent of this instanceId
-            ContentInterface contentInterface = contentP.getContentInterface();
-            List<SilverContentInterface> silverContentTempo =
-                contentInterface.getSilverContentById(l, userId);
-
-            if (silverContentTempo != null) {
-              silverContents.addAll(
-                  transformSilverContentsToGlobalSilverContents(silverContentTempo));
+      final Map<String, GlobalSilverContentProcessor> processors = ServiceProvider
+          .getAllServices(GlobalSilverContentProcessor.class).stream()
+          .collect(toMap(GlobalSilverContentProcessor::relatedToComponent, p -> p));
+      return contentManager.getResourceReferencesByContentIds(silverContentIds).stream()
+          .collect(groupingBy(r -> getComponentName(r.getComponentInstanceId()),
+                   mapping(r -> r, toList())))
+          .entrySet().stream()
+          .flatMap(e -> {
+            final String componentName = e.getKey();
+            final List<ResourceReference> references = e.getValue();
+            try {
+              final ContentPeas contentP = contentManager.getContentPeasByComponentName(componentName);
+              if (contentP != null) {
+                // we are going to search only SilverContent of this instanceId
+                final ContentInterface contentInterface = contentP.getContentInterface();
+                final List<SilverContentInterface> localSilverContents = contentInterface.getSilverContentByReference(references, userId);
+                if (localSilverContents != null) {
+                  final GlobalSilverContentProcessor processor = getGlobalSilverContentProcessor(processors, componentName);
+                  return processor.asGlobalSilverContent(localSilverContents);
+                }
+              }
+            } catch (Exception ex) {
+              SilverLogger.getLogger(this)
+                  .error("Can't retrieve content from taxonomy for component {0}",
+                      new String[]{componentName}, ex);
             }
-          }
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error("Can't retrieve content from taxonomy for component {0}",
-              new String[] {c}, e);
-        }
-      });
+            return Stream.empty();
+          })
+          .collect(toList());
     } catch (Exception e) {
       throw new PdcRuntimeException(e);
     }
-
-    return silverContents;
   }
 
-  /*
-   * @return a List of GlobalSilverContent
-   */
-  private List<GlobalSilverContent> transformSilverContentsToGlobalSilverContents(
-      List<SilverContentInterface> silverContentTempo) {
-    String instanceId = silverContentTempo.iterator().next().getInstanceId();
-    List<GlobalSilverContent> alSilverContents = new ArrayList<>(silverContentTempo.size());
-    String contentProcessorPrefixId = "default";
-    if (instanceId.startsWith("gallery")) {
-      contentProcessorPrefixId = "gallery";
-    } else if (instanceId.startsWith("kmelia")) {
-      contentProcessorPrefixId = "kmelia";
+  private GlobalSilverContentProcessor getGlobalSilverContentProcessor(
+      final Map<String, GlobalSilverContentProcessor> processors, final String c) {
+    GlobalSilverContentProcessor processor = processors.get(c);
+    if (processor == null) {
+      processor = processors.get("default");
     }
-    IGlobalSilverContentProcessor processor =
-        ServiceProvider.getSingleton(contentProcessorPrefixId + PROCESSOR_NAME_SUFFIX);
-
-    for (SilverContentInterface sci : silverContentTempo) {
-      GlobalSilverContent gsc = processor.getGlobalSilverContent(sci);
-      alSilverContents.add(gsc);
-    }
-    return alSilverContents;
+    return processor;
   }
 }

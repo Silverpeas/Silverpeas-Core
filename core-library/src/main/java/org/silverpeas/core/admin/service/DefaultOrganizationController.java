@@ -29,6 +29,7 @@
 package org.silverpeas.core.admin.service;
 
 import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -222,9 +223,9 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public Map<String, Map<String, String>> getParameterValuesByComponentAndByParamName(
+  public Map<String, Map<String, String>> getParameterValuesByComponentIdThenByParamName(
       final Collection<String> componentIds, final Collection<String> paramNames) {
-    return getAdminService().getParameterValuesByComponentAndByParamName(componentIds, paramNames);
+    return getAdminService().getParameterValuesByComponentIdThenByParamName(componentIds, paramNames);
   }
 
   // -------------------------------------------------------------------
@@ -497,10 +498,10 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public Map<String, Set<String>> getUserProfilesByComponent(final String userId,
+  public Map<String, Set<String>> getUserProfilesByComponentId(final String userId,
       final Collection<String> componentIds) {
     try {
-      return getAdminService().getUserProfilesByComponent(userId, componentIds);
+      return getAdminService().getUserProfilesByComponentId(userId, componentIds);
     } catch (Exception e) {
       if (componentIds.stream().anyMatch(i -> !isToolAvailable(i))) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);
@@ -520,13 +521,12 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentAndObject(
+  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
       final String userId, final Collection<String> componentIds,
-      final Collection<Integer> objectIds, final ObjectType objectType) {
+      final ProfiledObjectIds profiledObjectIds) {
     try {
       return getAdminService()
-          .getUserProfilesByComponentAndObject(objectIds, objectType.getCode(), componentIds,
-              userId);
+          .getUserProfilesByComponentIdAndObjectId(profiledObjectIds, componentIds, userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return emptyMap();
@@ -535,10 +535,9 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @Override
   public Map<Integer, List<String>> getUserObjectProfiles(final String userId,
-      final String componentId, final ProfiledObjectType objectType) {
+      final String componentId, final ProfiledObjectType profiledObjectType) {
     try {
-      return getAdminService().getProfilesByObjectTypeAndUserId(objectType.getCode(),
-          componentId, userId);
+      return getAdminService().getProfilesByObjectTypeAndUserId(profiledObjectType, componentId, userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;

@@ -21,11 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.contribution.contentcontainer.content;
 
-public interface IGlobalSilverContentProcessor {
+package org.silverpeas.core.webapi.viewer;
 
-  String PROCESSOR_NAME_SUFFIX = "GlobalSilverContentProcessor";
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidator;
 
-  GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci);
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
+import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
+
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
+
+/**
+ * @author silveryocha
+ */
+
+@Singleton
+@Alternative
+@Priority(APPLICATION + 10)
+public class StubbedUserPrivilegeValidator extends UserPrivilegeValidator {
+
+  @Override
+  public void validateUserAuthorizationOnAttachment(final HttpServletRequest request,
+      final User user, final SimpleDocument doc) {
+    // Nothing is checked
+  }
 }

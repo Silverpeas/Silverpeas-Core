@@ -66,71 +66,104 @@ class PaginationTest {
 
   @Test
   void firstPageWithoutFilteringShouldWork() {
-    final List<Integer> result =
-        new Pagination<Integer>(new PaginationPage(1, 5))
+    final Pagination<Integer> pagination = new Pagination<>(new PaginationPage(1, 5));
+    final List<Integer> result = pagination
         .paginatedDataSource(simplePaginatedDataSource)
         .filter(r -> r)
         .factor(1)
         .execute();
+    assertThat(pagination.isNbMaxDataSourceCallLimitReached(), is(false));
     assertThat(result.size(), is(5));
     assertThat(result, contains(0, 1 ,2 ,3 ,4));
   }
 
   @Test
   void secondPageWithoutFilteringShouldWork() {
-    final List<Integer> result =
-        new Pagination<Integer>(new PaginationPage(2, 3))
+    final Pagination<Integer> pagination = new Pagination<>(new PaginationPage(2, 3));
+    final List<Integer> result = pagination
         .paginatedDataSource(simplePaginatedDataSource)
         .filter(r -> r)
         .factor(1)
         .execute();
+    assertThat(pagination.isNbMaxDataSourceCallLimitReached(), is(false));
     assertThat(result.size(), is(3));
     assertThat(result, contains(3 ,4, 5));
   }
 
   @Test
   void firstPageButFilteringAlmostAllDataShouldWork() {
-    final List<Integer> result =
-        new Pagination<Integer>(new PaginationPage(1, 5))
+    final Pagination<Integer> pagination = new Pagination<>(new PaginationPage(1, 5));
+    final List<Integer> result = pagination
         .paginatedDataSource(simplePaginatedDataSource)
         .filter(r -> r.stream().filter(i -> i > 996).collect(SilverpeasList.collector(r)))
         .factor(1)
         .execute();
+    assertThat(pagination.isNbMaxDataSourceCallLimitReached(), is(false));
     assertThat(result.size(), is(3));
     assertThat(result, contains(997, 998, 999));
   }
 
   @Test
+  void firstPageButFilteringAlmostAllDataAndLimitingDataSourceUseShouldWork() {
+    final Pagination<Integer> pagination = new Pagination<>(new PaginationPage(1, 5));
+    final List<Integer> result = pagination
+        .paginatedDataSource(simplePaginatedDataSource)
+        .limitDataSourceCallsTo(50)
+        .filter(r -> r.stream().filter(i -> i > 996).collect(SilverpeasList.collector(r)))
+        .factor(1)
+        .execute();
+    assertThat(pagination.isNbMaxDataSourceCallLimitReached(), is(true));
+    assertThat(result.size(), is(0));
+  }
+
+  @Test
+  void firstPageButFilteringAlmostAllDataAndLimitingDataSourceUseCanReturnPartialResult() {
+    final Pagination<Integer> pagination = new Pagination<>(new PaginationPage(1, 3));
+    final List<Integer> result = pagination
+        .paginatedDataSource(simplePaginatedDataSource)
+        .limitDataSourceCallsTo(333)
+        .filter(r -> r.stream().filter(i -> i > 996).collect(SilverpeasList.collector(r)))
+        .factor(1)
+        .execute();
+    assertThat(pagination.isNbMaxDataSourceCallLimitReached(), is(true));
+    assertThat(result.size(), is(2));
+    assertThat(result, contains(997, 998));
+  }
+
+  @Test
   void middlePageWithFilteringAlmostAllDataShouldWork() {
-    final List<Integer> result =
-        new Pagination<Integer>(new PaginationPage(100, 5))
+    final Pagination<Integer> pagination = new Pagination<>(new PaginationPage(100, 5));
+    final List<Integer> result = pagination
         .paginatedDataSource(simplePaginatedDataSource)
         .filter(r -> r.stream().filter(i -> i > 996).collect(SilverpeasList.collector(r)))
         .factor(1)
         .execute();
+    assertThat(pagination.isNbMaxDataSourceCallLimitReached(), is(false));
     assertThat(result.size(), is(3));
     assertThat(result, contains(997, 998, 999));
   }
 
   @Test
   void middlePageWithFilteringShouldWork() {
-    final List<Integer> result =
-        new Pagination<Integer>(new PaginationPage(100, 5))
+    final Pagination<Integer> pagination = new Pagination<>(new PaginationPage(100, 5));
+    final List<Integer> result = pagination
         .paginatedDataSource(simplePaginatedDataSource)
         .filter(r -> r.stream().filter(i -> i > 496 && i != 499).collect(SilverpeasList.collector(r)))
         .factor(1)
         .execute();
+    assertThat(pagination.isNbMaxDataSourceCallLimitReached(), is(false));
     assertThat(result.size(), is(5));
     assertThat(result, contains(497, 498, 500, 501, 502));
   }
 
   @Test
   void justLittleDataShouldWork() {
-    final List<Integer> result =
-        new Pagination<Integer>(new PaginationPage(1, 5))
+    final Pagination<Integer> pagination = new Pagination<>(new PaginationPage(1, 5));
+    final List<Integer> result = pagination
         .paginatedDataSource(p -> new SilverpeasArrayList<>(Arrays.asList(3, 7, 8)))
         .filter(r -> r)
         .execute();
+    assertThat(pagination.isNbMaxDataSourceCallLimitReached(), is(false));
     assertThat(result.size(), is(3));
     assertThat(result, contains(3, 7, 8));
   }

@@ -34,6 +34,8 @@ import org.silverpeas.core.viewer.service.ViewService;
 import org.silverpeas.core.viewer.service.ViewerContext;
 import org.silverpeas.core.viewer.service.ViewerException;
 import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidator;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.inject.Inject;
@@ -82,8 +84,9 @@ public class DocumentViewResource extends RESTWebService {
   static final String PATH = "view";
 
   @Inject
+  private UserPrivilegeValidation validation;
+  @Inject
   private AttachmentService attachmentService;
-
   @Inject
   private ViewService viewService;
   @PathParam("componentId")
@@ -120,6 +123,9 @@ public class DocumentViewResource extends RESTWebService {
         throw new ViewerException("ATTACHMENT DOESN'T EXIST");
       }
 
+      // Verifying authorizations
+      validation.validateUserAuthorizationOnAttachment(getHttpServletRequest(), getUser(), attachment);
+
       // Computing the document view entity
       return asWebEntity(viewService.getDocumentView(ViewerContext.from(attachment)));
 
@@ -154,5 +160,10 @@ public class DocumentViewResource extends RESTWebService {
   @Override
   public String getComponentId() {
     return componentId;
+  }
+
+  @Override
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
+    // authorization verifications MUST be done directly into each signatures
   }
 }

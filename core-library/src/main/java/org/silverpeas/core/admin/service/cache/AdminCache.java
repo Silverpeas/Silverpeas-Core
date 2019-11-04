@@ -237,7 +237,7 @@ public class AdminCache {
   private void removeComponentsProfilesInst(int componentId) {
     final Collection<ProfileInst> theProfiles = profileInstCache.values();
     for (ProfileInst theProfile : theProfiles) {
-      if (String.valueOf(componentId).equals(theProfile.getComponentFatherId())) {
+      if (componentId == theProfile.getComponentFatherId()) {
         removeProfileInst(theProfile);
       }
     }
@@ -460,8 +460,7 @@ public class AdminCache {
   private void opResetProfile(ProfileInst profile) {
     // First level cache reset : it's not the best but it's simple : remove all
     // structs from cache that includes the profile
-    int compoLocalId = ComponentInst.getComponentLocalId(profile.getComponentFatherId());
-    Optional<ComponentInst> theComponent = getComponentInst(compoLocalId);
+    Optional<ComponentInst> theComponent = getComponentInst(profile.getComponentFatherId());
     theComponent.ifPresent(this::removeComponent);
     removeProfileInst(profile);
     resetProfileIds();

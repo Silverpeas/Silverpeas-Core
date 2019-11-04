@@ -25,6 +25,7 @@ package org.silverpeas.core.socialnetwork.mock;
 
 
 import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -149,7 +150,7 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public Map<String, Map<String, String>> getParameterValuesByComponentAndByParamName(
+  public Map<String, Map<String, String>> getParameterValuesByComponentIdThenByParamName(
       final Collection<String> componentIds, final Collection<String> paramNames) {
     return null;
   }
@@ -268,7 +269,7 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public Map<String, Set<String>> getUserProfilesByComponent(final String userId,
+  public Map<String, Set<String>> getUserProfilesByComponentId(final String userId,
       final Collection<String> componentIds) {
     return Collections.emptyMap();
   }
@@ -280,9 +281,9 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentAndObject(
+  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
       final String userId, final Collection<String> componentIds,
-      final Collection<Integer> objectIds, final ObjectType objectType) {
+      final ProfiledObjectIds profiledObjectIds) {
     return Collections.emptyMap();
   }
 

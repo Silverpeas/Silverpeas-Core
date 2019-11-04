@@ -32,14 +32,18 @@ import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.viewer.service.PreviewService;
 import org.silverpeas.core.viewer.service.ViewService;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -53,6 +57,9 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.user;
 @Path(AbstractSimpleDocumentResource.PATH + "/{componentId}/resource/{id}")
 @Authorized
 public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
+
+  @Inject
+  private UserPrivilegeValidation validation;
 
   @PathParam("id")
   private String resourceId;
@@ -110,20 +117,38 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
 
   private List<SimpleDocumentEntity> asWebEntities(List<SimpleDocument> docs) {
     final SilverpeasRole userRole = highestUserRole != null ? highestUserRole : getHighestUserRole();
-    return docs.stream().map(d -> {
-      if (d.isVersioned() && !d.isPublic() && (userRole == user || userRole == reader)) {
-        return d.getLastPublicVersion();
-      }
-      return d;
-    }).map(d -> {
-      final SimpleDocumentEntity entity = SimpleDocumentEntity.fromAttachment(d);
-      if (viewIndicators) {
-        entity.prewiewable(PreviewService.get().isPreviewable(new File(d.getAttachmentPath())))
-            .viewable(ViewService.get().isViewable(new File(d.getAttachmentPath())))
-            .displayAsContent(d.isDisplayableAsContent());
-      }
-      return entity;
-    }).collect(Collectors.toList());
+    return docs.stream()
+        .map(d -> {
+            if (d.isVersioned() && !d.isPublic() && (userRole == user || userRole == reader)) {
+              return d.getLastPublicVersion();
+            }
+            return d;
+          })
+        .filter(d -> {
+          try {
+            validation.validateUserAuthorizationOnAttachment(getHttpServletRequest(), getUser(), d);
+          } catch (WebApplicationException e) {
+            if (e.getResponse().getStatus() != Response.Status.FORBIDDEN.getStatusCode()) {
+              throw e;
+            }
+            return false;
+          }
+          return true;
+        })
+        .map(d -> {
+          final SimpleDocumentEntity entity = SimpleDocumentEntity.fromAttachment(d);
+          if (viewIndicators) {
+            entity.prewiewable(PreviewService.get().isPreviewable(new File(d.getAttachmentPath())))
+                .viewable(ViewService.get().isViewable(new File(d.getAttachmentPath())))
+                .displayAsContent(d.isDisplayableAsContent());
+          }
+          return entity;
+        })
+        .collect(Collectors.toList());
   }
 
+  @Override
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
+    // authorization verifications MUST be done directly into each signatures
+  }
 }

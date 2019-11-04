@@ -63,6 +63,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.core.contribution.publication.dao.PublicationFatherDAO.PUBLICATION_FATHER_TABLE_NAME;
 import static org.silverpeas.core.util.DateUtil.formatDate;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
@@ -679,18 +680,19 @@ public class PublicationDAO {
     return list;
   }
 
-  public static List<PublicationDetail> getByIds(Connection con,
-      Collection<String> publicationIds) {
-    final String tableName = new PublicationPK(null).getTableName();
+  public static List<PublicationDetail> getByIds(final Connection con,
+      final Collection<String> publicationIds, final Set<PublicationPK> indexedPks) {
     try {
       final Map<String, PublicationDetail> result = new HashMap<>(publicationIds.size());
       JdbcSqlQuery.executeBySplittingOn(publicationIds, (idBatch, ignore) -> JdbcSqlQuery
         .createSelect(QueryStringFactory.getLoadRowFields())
-        .from(tableName)
+        .from(SB_PUBLICATION_PUBLI_TABLE)
         .where(PUB_ID).in(idBatch.stream().map(Integer::parseInt).collect(Collectors.toList()))
         .executeWith(con, r -> {
           final PublicationDetail publicationDetail = resultSet2PublicationDetail(r);
-          result.put(publicationDetail.getId(), publicationDetail);
+          if (indexedPks == null || indexedPks.contains(publicationDetail.getPK())) {
+            result.put(publicationDetail.getId(), publicationDetail);
+          }
           return null;
         }));
       return publicationIds.stream()
@@ -731,41 +733,42 @@ public class PublicationDAO {
    */
   public static List<PublicationDetail> getMinimalDataByIds(Connection con,
       Collection<PublicationPK> ids) throws SQLException {
-    final List<Integer> pubIds = ids.stream()
-        .map(i -> Integer.parseInt(i.getId()))
-        .collect(Collectors.toList());
+    final Map<PublicationPK, Integer> indexedPubPks = ids.stream()
+        .collect(toMap(p -> p, p -> Integer.parseInt(p.getId())));
     final List<PublicationDetail> result = new ArrayList<>(ids.size());
-    JdbcSqlQuery.executeBySplittingOn(pubIds, (pubIdBatch, ignore) ->
+    JdbcSqlQuery.executeBySplittingOn(indexedPubPks.values(), (idBatch, ignore) ->
         JdbcSqlQuery.createSelect("pubId, instanceId, pubStatus, pubCloneId, pubCloneStatus,")
         .addSqlPart("pubBeginDate, pubEndDate, pubBeginHour, pubEndHour,")
         .addSqlPart("pubcreatorid, pubupdaterid")
         .from(SB_PUBLICATION_PUBLI_TABLE)
-        .where(PUB_ID).in(pubIdBatch)
+        .where(PUB_ID).in(idBatch)
         .executeWith(con, r -> {
-          final PublicationDetail pubDetail = new PublicationDetail();
-          pubDetail.setPk(new PublicationPK(Integer.toString(r.getInt(1)), r.getString(2)));
-          pubDetail.setStatus(r.getString(3));
-          pubDetail.setCloneId(Integer.toString(r.getInt(4)));
-          pubDetail.setCloneStatus(r.getString(5));
-          try {
-            pubDetail.setBeginDate(asDate(r.getString(6), NULL_BEGIN_DATE));
-            pubDetail.setEndDate(asDate(r.getString(7), NULL_END_DATE));
-          } catch (ParseException e) {
-            throw new SQLException(e);
+          final PublicationPK pk = new PublicationPK(Integer.toString(r.getInt(1)), r.getString(2));
+          if (indexedPubPks.containsKey(pk)) {
+            final PublicationDetail pubDetail = new PublicationDetail();
+            pubDetail.setPk(pk);
+            pubDetail.setStatus(r.getString(3));
+            pubDetail.setCloneId(Integer.toString(r.getInt(4)));
+            pubDetail.setCloneStatus(r.getString(5));
+            try {
+              pubDetail.setBeginDate(asDate(r.getString(6), NULL_BEGIN_DATE));
+              pubDetail.setEndDate(asDate(r.getString(7), NULL_END_DATE));
+            } catch (ParseException e) {
+              throw new SQLException(e);
+            }
+            pubDetail.setBeginHour(r.getString(8));
+            pubDetail.setEndHour(r.getString(9));
+            pubDetail.setCreatorId(r.getString(10));
+            pubDetail.setUpdaterId(r.getString(11));
+            result.add(pubDetail);
           }
-          pubDetail.setBeginHour(r.getString(8));
-          pubDetail.setEndHour(r.getString(9));
-          pubDetail.setCreatorId(r.getString(10));
-          pubDetail.setUpdaterId(r.getString(11));
-          result.add(pubDetail);
           return null;
         }));
     return result;
   }
 
   public static SilverpeasList<PublicationPK> selectPksByCriteria(final Connection con,
-      final PublicationCriteria criteria) throws
-      SQLException {
+      final PublicationCriteria criteria) throws SQLException {
     if (criteria.emptyResultWhenNoFilteringOnComponentInstances()) {
       return new SilverpeasArrayList<>(0);
     }
@@ -1296,7 +1299,7 @@ public class PublicationDAO {
       final Connection con, final List<String> pubIds,
       final Map<String, List<Boolean>> statusMapping) {
     final Map<String, PublicationDetail> publications = new HashMap<>(pubIds.size());
-    getByIds(con, pubIds).forEach(p -> publications.put(p.getId(), p));
+    getByIds(con, pubIds, null).forEach(p -> publications.put(p.getId(), p));
     return pubIds
         .stream()
         .map(i -> {

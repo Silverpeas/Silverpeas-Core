@@ -55,7 +55,7 @@ public abstract class AbstractContentInterface implements ContentInterface {
   }
 
   @Override
-  public final List<SilverContentInterface> getSilverContentById(
+  public final List<SilverContentInterface> getSilverContentByReference(
       final List<ResourceReference> resourceReferences, final String currentUserId) {
     List<Contribution> contributions =
         getAccessibleContributions(resourceReferences, currentUserId);

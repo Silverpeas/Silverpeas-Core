@@ -31,7 +31,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.Returns;
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectIds;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -127,17 +128,16 @@ public class TestNodeAccessControllerFilter {
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_38, KMELIA_83));
     assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620));
-    assertThat(nodeDataManager.instanceIdsWithRightsOnTopic, containsInAnyOrder(KMELIA_83));
     assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(
         Pair.of(KMELIA_83, NODE_83_620.getId())));
     // Node level
     verify(nodeService, times(1)).getMinimalDataByInstances(anyCollection());
-    final ArgumentCaptor<Collection<Integer>> nodeIds = ArgumentCaptor.forClass(Collection.class);
+    final ArgumentCaptor<ProfiledObjectIds> nodeIds = ArgumentCaptor.forClass(ProfiledObjectIds.class);
     verify(organizationController, times(1))
-        .getUserProfilesByComponentAndObject(anyString(), anyCollection(), nodeIds.capture(),
-            eq(ObjectType.NODE));
-    final Collection<Integer> capturedNodeIds = nodeIds.getValue();
-    assertThat(capturedNodeIds, not(hasItem(-1)));
+        .getUserProfilesByComponentIdAndObjectId(anyString(), anyCollection(), nodeIds.capture());
+    final ProfiledObjectIds capturedNodeIds = nodeIds.getValue();
+    assertThat(capturedNodeIds, not(hasItem(NodePK.UNDEFINED_NODE_ID)));
+    assertThat(capturedNodeIds.getType(), is(ProfiledObjectType.NODE));
   }
 
   @Test
@@ -154,13 +154,11 @@ public class TestNodeAccessControllerFilter {
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_38));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_38));
     assertThat(nodeDataManager.nodeDetailCache.values(), empty());
-    assertThat(nodeDataManager.instanceIdsWithRightsOnTopic, empty());
     assertThat(nodeDataManager.userProfiles.keySet(), empty());
     // Node level
     verify(nodeService, times(0)).getMinimalDataByInstances(anyCollection());
     verify(organizationController, times(0))
-        .getUserProfilesByComponentAndObject(anyString(), anyCollection(), anyCollection(),
-            eq(ObjectType.NODE));
+        .getUserProfilesByComponentIdAndObjectId(anyString(), anyCollection(), ArgumentMatchers.any(ProfiledObjectIds.class));
   }
 
   @Test
@@ -178,16 +176,15 @@ public class TestNodeAccessControllerFilter {
     assertThat(componentDataManager.userProfiles.keySet(), containsInAnyOrder(KMELIA_83));
     assertThat(componentDataManager.componentParameterValueCache.keySet(), containsInAnyOrder(KMELIA_83));
     assertThat(nodeDataManager.nodeDetailCache.values(), containsInAnyOrder(NODE_83_260, NODE_83_620));
-    assertThat(nodeDataManager.instanceIdsWithRightsOnTopic, containsInAnyOrder(KMELIA_83));
     assertThat(nodeDataManager.userProfiles.keySet(), containsInAnyOrder(Pair.of(KMELIA_83, NODE_83_620.getId())));
     // Node level
     verify(nodeService, times(1)).getMinimalDataByInstances(anyCollection());
-    final ArgumentCaptor<Collection<Integer>> nodeIds = ArgumentCaptor.forClass(Collection.class);
+    final ArgumentCaptor<ProfiledObjectIds> nodeIds = ArgumentCaptor.forClass(ProfiledObjectIds.class);
     verify(organizationController, times(1))
-        .getUserProfilesByComponentAndObject(anyString(), anyCollection(), nodeIds.capture(),
-            eq(ObjectType.NODE));
-    final Collection<Integer> capturedNodeIds = nodeIds.getValue();
-    assertThat(capturedNodeIds, not(hasItem(-1)));
+        .getUserProfilesByComponentIdAndObjectId(anyString(), anyCollection(), nodeIds.capture());
+    final ProfiledObjectIds capturedNodeIds = nodeIds.getValue();
+    assertThat(capturedNodeIds, not(hasItem(NodePK.UNDEFINED_NODE_ID)));
+    assertThat(capturedNodeIds.getType(), is(ProfiledObjectType.NODE));
   }
 
   @Test
@@ -213,7 +210,7 @@ public class TestNodeAccessControllerFilter {
   private void assertAvailableComponentCache( final ComponentAccessController.DataManager componentDataManager) {
     assertThat(componentDataManager.availableComponentCache, containsInAnyOrder(KMELIA_38, KMELIA_83));
     verify(organizationController, times(1)).getAvailableComponentsByUser(anyString());
-    verify(organizationController, times(1)).getUserProfilesByComponent(anyString(), anyCollection());
+    verify(organizationController, times(1)).getUserProfilesByComponentId(anyString(), anyCollection());
   }
 
   private static List<NodePK> toNodePks(final List<NodeDetail4Test> nodes) {
@@ -261,7 +258,7 @@ public class TestNodeAccessControllerFilter {
             when(instance.isTopicTracker()).then(new Returns(i.startsWith("kmelia") || i.startsWith("kmax") || i.startsWith("toolbox")));
             return Optional.of(instance);
           });
-      when(organizationController.getParameterValuesByComponentAndByParamName(anyCollection(), eq(Arrays
+      when(organizationController.getParameterValuesByComponentIdThenByParamName(anyCollection(), eq(Arrays
           .asList("rightsOnTopics", "usePublicationSharing", "useFileSharing",
               "useFolderSharing", "coWriting", "publicFiles"))))
           .thenAnswer(a -> {
@@ -274,21 +271,20 @@ public class TestNodeAccessControllerFilter {
             });
             return result;
           });
-      when(organizationController.getUserProfilesByComponent(anyString(), anyCollection())).thenAnswer(a -> {
+      when(organizationController.getUserProfilesByComponentId(anyString(), anyCollection())).thenAnswer(a -> {
         final Collection<String> instanceIds = a.getArgument(1);
         final Map<String, Set<String>> result = new HashMap<>(instanceIds.size());
         instanceIds.forEach(i -> result.put(i, CollectionUtil.asSet(SilverpeasRole.user.getName())));
         return result;
       });
-      when(organizationController
-          .getUserProfilesByComponentAndObject(anyString(), anyCollection(), anyCollection(),
-              eq(ObjectType.NODE))).thenAnswer(a -> {
+      when(organizationController.getUserProfilesByComponentIdAndObjectId(anyString(), anyCollection(),
+          ArgumentMatchers.any(ProfiledObjectIds.class))).thenAnswer(a -> {
         final Collection<String> instanceIds = a.getArgument(1);
-        final Collection<Integer> objectIds = a.getArgument(2);
+        final ProfiledObjectIds profiledObjectIds = a.getArgument(2);
         final Map<Pair<String, Integer>, Set<String>> result = new HashMap<>();
         ALL_NODES.stream()
             .filter(n -> instanceIds.contains(n.getNodePK().getInstanceId()))
-            .filter(n -> objectIds.contains(n.getId()))
+            .filter(n -> profiledObjectIds.contains(String.valueOf(n.getId())))
             .map(NodeDetail::getNodePK)
             .forEach(p -> result.put(Pair.of(p.getInstanceId(), Integer.parseInt(p.getId())),
                 CollectionUtil.asSet(SilverpeasRole.user.getName())));

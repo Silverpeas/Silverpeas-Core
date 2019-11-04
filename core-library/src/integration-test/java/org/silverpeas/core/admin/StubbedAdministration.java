@@ -213,7 +213,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public Map<String, Map<String, String>> getParameterValuesByComponentAndByParamName(
+  public Map<String, Map<String, String>> getParameterValuesByComponentIdThenByParamName(
       final Collection<String> componentIds, final Collection<String> paramNames) {
     return null;
   }
@@ -332,14 +332,13 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentAndObject(
-      final Collection<Integer> objectIds, final String objectType,
-      final Collection<String> componentIds, final String userId) throws AdminException {
+  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
+      final ProfiledObjectIds profiledObjectIds, final Collection<String> componentIds, final String userId) throws AdminException {
     return Collections.emptyMap();
   }
 
   @Override
-  public Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(final String objectType,
+  public Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(final ProfiledObjectType profiledObjectType,
       final String componentId, final String userId) {
     return null;
   }
@@ -921,7 +920,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public Map<String, Set<String>> getUserProfilesByComponent(final String userId,
+  public Map<String, Set<String>> getUserProfilesByComponentId(final String userId,
       final Collection<String> componentIds) throws AdminException {
     return Collections.emptyMap();
   }

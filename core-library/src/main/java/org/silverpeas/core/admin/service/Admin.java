@@ -27,6 +27,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.RightProfile;
 import org.silverpeas.core.admin.component.ApplicationResourcePasting;
@@ -102,6 +103,7 @@ import java.util.stream.Stream;
 
 import static java.text.MessageFormat.format;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_MIXED_GROUPS;
 import static org.silverpeas.core.util.StringUtil.isLong;
@@ -922,14 +924,14 @@ class Admin implements Administration {
   }
 
   @Override
-  public Map<String, Map<String, String>> getParameterValuesByComponentAndByParamName(
+  public Map<String, Map<String, String>> getParameterValuesByComponentIdThenByParamName(
       final Collection<String> componentIds, final Collection<String> paramNames) {
     final Map<Integer, String> localComponentIds = new HashMap<>(componentIds.size());
     componentIds.forEach(i -> localComponentIds.put(getDriverComponentId(i), i));
     final Map<String,  Map<String, String>> result = new HashMap<>(componentIds.size());
     try {
       componentManager
-          .getParameterValuesByComponentAndByParamName(localComponentIds.keySet(), paramNames)
+          .getParameterValuesByComponentIdThenByParamName(localComponentIds.keySet(), paramNames)
           .forEach((k, v) -> result.put(localComponentIds.get(k), v));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
@@ -1392,7 +1394,7 @@ class Admin implements Administration {
       inheritedProfile.removeAllUsers();
     } else {
       inheritedProfile = new ProfileInst();
-      inheritedProfile.setComponentFatherId(component.getId());
+      inheritedProfile.setComponentFatherId(component.getLocalId());
       inheritedProfile.setInherited(true);
       inheritedProfile.setName(componentRole.getName());
     }
@@ -1697,33 +1699,35 @@ class Admin implements Administration {
   }
 
   @Override
-  public String[] getProfilesByObjectAndGroupId(final ProfiledObjectId objectRef, final String componentId, final String groupId) throws AdminException {
+  public String[] getProfilesByObjectAndGroupId(final ProfiledObjectId objectRef,
+      final String componentId, final String groupId) throws AdminException {
     List<String> groupIds = groupManager.getPathToGroup(groupId);
     groupIds.add(groupId);
-    return profiledObjectManager.getUserProfileNames(objectRef, getDriverComponentId(componentId),
-        -1, groupIds);
+    return profiledObjectManager.getUserProfileNames(objectRef, getDriverComponentId(componentId), -1, groupIds);
   }
 
   @Override
-  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentAndObject(
-      final Collection<Integer> objectIds, final String objectType,
-      final Collection<String> componentIds, final String userId) throws AdminException {
-    final Map<Integer, String> localComponentIds = new HashMap<>(componentIds.size());
-    componentIds.forEach(i -> localComponentIds.put(getDriverComponentId(i), i));
+  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
+      final ProfiledObjectIds profiledObjectIds, final Collection<String> componentIds,
+      final String userId) throws AdminException {
+    final Map<Integer, String> localComponentIds = componentIds.stream()
+        .collect(toMap(this::getDriverComponentId, i -> i));
     final List<String> groups = getAllGroupsOfUser(userId);
-    final Map<Pair<Integer, Integer>, Set<String>> roles = profiledObjectManager
-        .getUserProfileNames(objectIds, objectType, localComponentIds.keySet(), Integer.parseInt(userId), groups);
-    final Map<Pair<String, Integer>, Set<String>> result = new HashMap<>(roles.size());
-    roles.forEach((k, v) -> result.put(Pair.of(localComponentIds.get(k.getFirst()), k.getSecond()), v));
-    return result;
+    return profiledObjectManager.getUserProfileNames(profiledObjectIds, localComponentIds.keySet(), Integer.parseInt(userId), groups)
+        .entrySet().stream()
+        .collect(toMap(
+          e -> Pair.of(localComponentIds.get(e.getKey().getFirst()), e.getKey().getSecond()),
+          Map.Entry::getValue));
   }
 
   @Override
-  public Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(String objectType,
-      String componentId, String userId) throws AdminException {
-    List<String> groups = getAllGroupsOfUser(userId);
-    return profiledObjectManager.getUserProfileNames(objectType, getDriverComponentId(componentId),
-        Integer.parseInt(userId), groups);
+  public Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(
+      final ProfiledObjectType profiledObjectType, final String componentId, final String userId)
+      throws AdminException {
+    final List<String> groups = getAllGroupsOfUser(userId);
+    return profiledObjectManager
+        .getUserProfileNames(profiledObjectType, getDriverComponentId(componentId),
+            Integer.parseInt(userId), groups);
   }
 
   @Override
@@ -1751,15 +1755,14 @@ class Admin implements Administration {
   public String addProfileInst(ProfileInst profileInst, String userId)
       throws AdminException {
     try {
-      final String componentFatherId = profileInst.getComponentFatherId();
-      int driverFatherId = getDriverComponentId(componentFatherId);
+      int driverFatherId = profileInst.getComponentFatherId();
       String sProfileId = profileManager.createProfileInst(profileInst, driverFatherId);
       profileInst.setId(sProfileId);
 
       if (profileInst.getObjectId().isNotDefined() || profileInst.getObjectId().isRootNode()) {
         ComponentInst componentInstFather = getComponentInst(driverFatherId, null);
-        componentInstFather = checkComponentInstanceById(componentInstFather, componentFatherId,
-            nullComponentInstSupplier);
+        componentInstFather = checkComponentInstanceById(componentInstFather,
+            String.valueOf(driverFatherId), nullComponentInstSupplier);
         Objects.requireNonNull(componentInstFather);
         componentInstFather.addProfileInst(profileInst);
         if (StringUtil.isDefined(userId)) {
@@ -1795,10 +1798,9 @@ class Admin implements Administration {
       profileManager.deleteProfileInst(profile);
       if (StringUtil.isDefined(userId)
           && (profile.getObjectId().isNotDefined() || profile.getObjectId().isRootNode())) {
-        final String componentFatherId = profile.getComponentFatherId();
-        int driverFatherId = getDriverComponentId(componentFatherId);
+        final int driverFatherId = profile.getComponentFatherId();
         ComponentInst component = getComponentInst(driverFatherId, null);
-        component = checkComponentInstanceById(component, componentFatherId,
+        component = checkComponentInstanceById(component, String.valueOf(driverFatherId),
             nullComponentInstSupplier);
         Objects.requireNonNull(component);
 
@@ -1830,12 +1832,11 @@ class Admin implements Administration {
       throws AdminException {
     try {
       profileManager.updateProfileInst(newProfile);
-      if (StringUtil.isDefined(
-          userId) && (newProfile.getObjectId().isNotDefined() || newProfile.getObjectId().isRootNode())) {
-        final String componentFatherId = newProfile.getComponentFatherId();
-        int driverFatherId = getDriverComponentId(componentFatherId);
+      if (StringUtil.isDefined(userId)
+          && (newProfile.getObjectId().isNotDefined() || newProfile.getObjectId().isRootNode())) {
+        final int driverFatherId = newProfile.getComponentFatherId();
         ComponentInst component = getComponentInst(driverFatherId, null);
-        component = checkComponentInstanceById(component, componentFatherId,
+        component = checkComponentInstanceById(component, String.valueOf(driverFatherId),
             nullComponentInstSupplier);
         Objects.requireNonNull(component);
         component.setUpdaterUserId(userId);
@@ -2083,7 +2084,7 @@ class Admin implements Administration {
       final ComponentInstLight component) throws AdminException {
     final ProfileInst inheritedProfile;
     inheritedProfile = new ProfileInst();
-    inheritedProfile.setComponentFatherId(component.getId());
+    inheritedProfile.setComponentFatherId(component.getLocalId());
     inheritedProfile.setName(componentRole);
     inheritedProfile.setInherited(true);
     inheritedProfile.addGroups(spaceProfile.getAllGroups());
@@ -3865,15 +3866,14 @@ class Admin implements Administration {
   }
 
   @Override
-  public Map<String, Set<String>> getUserProfilesByComponent(final String userId,
+  public Map<String, Set<String>> getUserProfilesByComponentId(final String userId,
       final Collection<String> componentIds) throws AdminException {
-    final Map<Integer, String> localComponentIds = new HashMap<>(componentIds.size());
-    final Map<String, Set<String>> result = new HashMap<>(componentIds.size());
-    componentIds.forEach(i -> localComponentIds.put(getDriverComponentId(i), i));
-    profileManager
+    final Map<Integer, String> localComponentIds = componentIds.stream()
+        .collect(toMap(this::getDriverComponentId, i -> i));
+    return profileManager
         .getProfileNamesOfUser(userId, getAllGroupsOfUser(userId), localComponentIds.keySet())
-        .forEach((k, v) -> result.put(localComponentIds.get(k), v));
-    return result;
+        .entrySet().stream()
+        .collect(toMap(e -> localComponentIds.get(e.getKey()), Map.Entry::getValue));
   }
 
   @Override
@@ -5792,8 +5792,7 @@ class Admin implements Administration {
       final String[] sourceComponentProfileIds) throws AdminException {
     for (String profileId : sourceComponentProfileIds) {
       ProfileInst currentSourceProfile = getProfileInst(profileId);
-      ComponentInst currentComponent =
-          getComponentInst(currentSourceProfile.getComponentFatherId());
+      ComponentInst currentComponent = getComponentInst(currentSourceProfile.getComponentFatherId(), null);
       String spaceId = currentComponent.getDomainFatherId();
       SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
       if (currentComponent.getStatus() == null && spaceInst != null &&
@@ -5836,8 +5835,7 @@ class Admin implements Administration {
     // component and node rights)
     for (String profileId : componentProfileIdsForTarget) {
       ProfileInst currentTargetProfile = getProfileInst(profileId);
-      ComponentInst currentComponent =
-          getComponentInst(currentTargetProfile.getComponentFatherId());
+      ComponentInst currentComponent = getComponentInst(currentTargetProfile.getComponentFatherId(), null);
       String spaceId = currentComponent.getDomainFatherId();
       SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
 

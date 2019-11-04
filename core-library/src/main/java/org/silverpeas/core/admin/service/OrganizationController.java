@@ -24,6 +24,7 @@
 package org.silverpeas.core.admin.service;
 
 import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -149,7 +150,7 @@ public interface OrganizationController extends java.io.Serializable {
    * filled or null
    * @return a map filled with couples of parameter name / value per component instance identifier.
    */
-  Map<String, Map<String, String>> getParameterValuesByComponentAndByParamName(
+  Map<String, Map<String, String>> getParameterValuesByComponentIdThenByParamName(
       final Collection<String> componentIds, final Collection<String> paramNames);
 
   /**
@@ -297,7 +298,7 @@ public interface OrganizationController extends java.io.Serializable {
    * @return a map filled with list of profile name as string by component instance identifier as
    * string.
    */
-  Map<String, Set<String>> getUserProfilesByComponent(String userId, Collection<String> componentIds);
+  Map<String, Set<String>> getUserProfilesByComponentId(String userId, Collection<String> componentIds);
 
   String[] getUserProfiles(String userId, String componentId, ProfiledObjectId objectId);
 
@@ -306,16 +307,16 @@ public interface OrganizationController extends java.io.Serializable {
    * object instances.
    * @param userId a user identifier as string.
    * @param componentIds list of component instance identifier as string.
-   * @param objectIds list of Silverpeas's object identifier as string.
-   * @param objectType the type of the aimed object.
+   * @param profiledObjectIds if NOTHING is given, then all the rows associated to the type
+   * are returned, otherwise all the rows associated to type and ids.
    * @return a map filled with list of profile name as string by couple component instance
    * identifier as string - object identifier as integer.
    */
-  Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentAndObject(String userId,
-      Collection<String> componentIds, Collection<Integer> objectIds, ObjectType objectType);
+  Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(String userId,
+      Collection<String> componentIds, ProfiledObjectIds profiledObjectIds);
 
   Map<Integer, List<String>> getUserObjectProfiles(String userId, String componentId,
-      ProfiledObjectType objectType);
+      ProfiledObjectType profiledObjectType);
 
   List<ProfileInst> getUserProfiles(String componentId, ProfiledObjectId objectId);
 

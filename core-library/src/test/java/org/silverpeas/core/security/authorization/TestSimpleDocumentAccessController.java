@@ -46,6 +46,7 @@ import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
 import org.silverpeas.core.util.CollectionUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -62,7 +63,8 @@ import static org.mockito.Mockito.*;
 @UnitTest
 public class TestSimpleDocumentAccessController {
 
-  private static final String userId = "bart";
+  private static final String USER_ID = "bart";
+  private static final String GED_INSTANCE_ID = "kmelia26";
 
   private PublicationService publicationService;
   private OrganizationController organizationController;
@@ -77,7 +79,7 @@ public class TestSimpleDocumentAccessController {
   @Before
   public void setup() {
     user = mock(User.class);
-    when(UserProvider.get().getUser(userId)).thenReturn(user);
+    when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
     organizationController = mock(OrganizationController.class);
     commonAPI4Test.injectIntoMockedBeanContainer(organizationController);
     publicationService = mock(PublicationService.class);
@@ -1705,14 +1707,14 @@ public class TestSimpleDocumentAccessController {
     testContext.setup();
     SimpleDocument document = new SimpleDocument();
     document
-        .setPK(new SimpleDocumentPK("dummyUuid", testContext.isGED ? "kmelia26" : "yellowpages38"));
+        .setPK(new SimpleDocumentPK("dummyUuid", testContext.isGED ? GED_INSTANCE_ID : "yellowpages38"));
     document.setForeignId(testContext.isDocumentAttachedToDirectory ? "Node_26" :
         (testContext.isDocumentAttachedToPublication ? "26" : "dummyId"));
     if (!testContext.isDownloadAllowedForReaders) {
       document.addRolesForWhichDownloadIsForbidden(SilverpeasRole.READER_ROLES);
     }
     boolean result =
-        testInstance.isUserAuthorized(userId, document, testContext.accessControlContext);
+        testInstance.isUserAuthorized(USER_ID, document, testContext.accessControlContext);
     assertThat(result, is(expectedUserAuthorization));
     testContext.results().verifyMethodCalls();
   }
@@ -1828,7 +1830,7 @@ public class TestSimpleDocumentAccessController {
 
     @SuppressWarnings("unchecked")
     public void setup() {
-      when(user.getId()).thenReturn(userId);
+      when(user.getId()).thenReturn(USER_ID);
       when(user.isAnonymous()).thenReturn(userIsAnonymous);
       when(componentAccessController
           .getUserRoles(anyString(), anyString(), any(AccessControlContext.class)))
@@ -1870,14 +1872,15 @@ public class TestSimpleDocumentAccessController {
         PublicationDetail publi = new PublicationDetail();
         publi.setPk(((Collection<PublicationPK>) invocation.getArguments()[0]).iterator().next());
         publi.setStatus(PublicationDetail.VALID_STATUS);
-        publi.setCreatorId(testContext.isUserThePublicationAuthor ? userId : "otherUserId");
+        publi.setCreatorId(testContext.isUserThePublicationAuthor ? USER_ID : "otherUserId");
         return singletonList(publi);
       });
-      when(publicationService.getMainLocation(any(PublicationPK.class))).then(invocation -> {
+      when(publicationService.getAllLocations(any(PublicationPK.class))).then(invocation -> {
+        final Collection<Location> allLocations = new ArrayList<>();
         if (!testContext.isPublicationOnRootDirectory) {
-          return Optional.of(new Location("nodeId", "instanceId"));
+          allLocations.add(new Location("nodeId", GED_INSTANCE_ID));
         }
-        return Optional.empty();
+        return allLocations;
       });
       ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
     }
@@ -1956,10 +1959,12 @@ public class TestSimpleDocumentAccessController {
           .isUserAuthorized(any(EnumSet.class));
       verify(publicationService, times(nbCallOfPublicationBmGetDetail))
           .getMinimalDataByIds(any(Collection.class));
-      verify(publicationService, times(nbCallOfPublicationBmGetMainLocation))
+      verify(publicationService, times(0))
           .getMainLocation(any(PublicationPK.class));
-      verify(publicationService, times(nbCallOfPublicationBmGetAllAliases))
+      verify(publicationService, times(0))
           .getAllAliases(any(PublicationPK.class));
+      verify(publicationService, times(Math.max(nbCallOfPublicationBmGetMainLocation, nbCallOfPublicationBmGetAllAliases)))
+          .getAllLocations(any(PublicationPK.class));
     }
   }
 }

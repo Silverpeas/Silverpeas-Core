@@ -44,8 +44,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.util.DateUtil.date2SQLDate;
 import static org.silverpeas.core.util.DateUtil.parseDate;
@@ -412,7 +415,8 @@ public class JDBCCommentRequester {
       }
     }
     if (CollectionUtil.isNotEmpty(listUserId)) {
-      appendInList(query, params, clause, COMMENT_OWNER_ID, listUserId);
+      final Set<Integer> listUserIdsAsInt = listUserId.stream().map(Integer::parseInt).collect(Collectors.toSet());
+      appendInList(query, params, clause, COMMENT_OWNER_ID, listUserIdsAsInt);
       clause = "AND ";
     }
     if (listInstanceId != null) {
@@ -438,14 +442,14 @@ public class JDBCCommentRequester {
     }
   }
 
-  private void appendInList(final StringBuilder query, final List<Object> params,
-      final String clause, final String listName, final List<String> list) {
+  private <T> void appendInList(final StringBuilder query, final List<Object> params,
+      final String clause, final String listName, final Collection<T> values) {
     query.append(clause).append(listName).append(" IN (");
     String sep = "";
-    for (String item : list) {
+    for (T value : values) {
       query.append(sep).append("?");
       sep = ", ";
-      params.add(item);
+      params.add(value);
     }
     query.append(") ");
   }
