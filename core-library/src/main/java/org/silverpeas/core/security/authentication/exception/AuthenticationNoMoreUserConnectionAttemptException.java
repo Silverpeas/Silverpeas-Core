@@ -29,28 +29,21 @@
 
 package org.silverpeas.core.security.authentication.exception;
 
-/**
- *
- */
 public class AuthenticationNoMoreUserConnectionAttemptException extends AuthenticationException {
 
-  public AuthenticationNoMoreUserConnectionAttemptException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  private static final long serialVersionUID = -3589975136567037191L;
+
+  public AuthenticationNoMoreUserConnectionAttemptException(final String message,
+      final String... parameters) {
+    super(message, parameters);
   }
 
-  public AuthenticationNoMoreUserConnectionAttemptException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public AuthenticationNoMoreUserConnectionAttemptException(final String message,
+      final Throwable cause) {
+    super(message, cause);
   }
 
-  public AuthenticationNoMoreUserConnectionAttemptException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AuthenticationNoMoreUserConnectionAttemptException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public AuthenticationNoMoreUserConnectionAttemptException(final Throwable cause) {
+    super(cause);
   }
 }

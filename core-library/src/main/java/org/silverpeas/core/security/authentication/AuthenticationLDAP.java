@@ -31,50 +31,76 @@ import com.novell.ldap.LDAPJSSESecureSocketFactory;
 import com.novell.ldap.LDAPModification;
 import com.novell.ldap.LDAPSearchResults;
 import org.silverpeas.core.admin.domain.driver.ldapdriver.LdapConfiguration;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import static java.time.temporal.ChronoField.*;
 import static org.silverpeas.core.util.Charsets.UTF_8;
 
 /**
  * This class performs the LDAP authentication
  *
- * @author tleroi
- * @version
+ * @author tleroi, mmoquillon
  */
 public class AuthenticationLDAP extends Authentication {
 
-  private final static int INTERVALS_PER_MILLISECOND = 1000000 / 100;
-  private final static long MILLISECONDS_BETWEEN_1601_AND_1970 = Long.parseLong("11644473600000");
-  private final static String BASEDN_SEPARATOR = ";;";
-  private final static int FORMAT_NANOSECOND = 0;
-  private final static int FORMAT_TIMESTAMP = 1;
-  protected boolean m_MustAlertPasswordExpiration = false;
-  protected String m_PwdLastSetFieldName;
-  protected int m_PwdLastSetFieldFormat;
-  protected int m_PwdMaxAge;
-  protected int m_PwdExpirationReminderDelay;
-  protected String ldapImpl;
-  protected String m_UserBaseDN;
-  protected String m_UserLoginFieldName;
-  protected LdapConfiguration configuration = new LdapConfiguration();
+  private static final int INTERVALS_PER_MILLISECOND = 1000000 / 100;
+  private static final long MILLISECONDS_BETWEEN_1601_AND_1970 = Long.parseLong("11644473600000");
+  private static final String BASEDN_SEPARATOR = ";;";
+  private static final int FORMAT_NANOSECOND = 0;
+  private static final int FORMAT_TIMESTAMP = 1;
+
+  /**
+   * Formatter used to format the 'TimeStamp' representation of a LDAP attribute.
+   * Its pattern is derived from the GeneralizedTime type as defined by the LDAP standard.
+   * See https://ldapwiki.com/wiki/GeneralizedTime for more information.
+   * Here, it is a simple attempt to implement the standard with some restrictions in order to not
+   * complexify the code for date time format not used by the commonly used LDAP servers: we don't
+   * support the optional leap-second and the comma separator in the optional fraction parts.
+   */
+  private static final DateTimeFormatter GENERALIZED_TIME =
+      new DateTimeFormatterBuilder().appendValue(YEAR, 4)
+          .appendValue(MONTH_OF_YEAR, 2)
+          .appendValue(DAY_OF_MONTH, 2)
+          .appendValue(HOUR_OF_DAY, 2)
+          .appendOptional(new DateTimeFormatterBuilder().appendValue(MINUTE_OF_HOUR, 2)
+              .appendOptional(DateTimeFormatter.ofPattern("ss"))
+              .toFormatter())
+          .appendOptional(new DateTimeFormatterBuilder()
+              .appendFraction(MILLI_OF_SECOND, 0, 9, true)
+              .toFormatter())
+          .appendPattern("X")
+          .toFormatter();
+
+  private boolean m_MustAlertPasswordExpiration = false;
+  private String m_PwdLastSetFieldName;
+  private int m_PwdLastSetFieldFormat;
+  private int m_PwdMaxAge;
+  private int m_PwdExpirationReminderDelay;
+  private String ldapImpl;
+  private String m_UserBaseDN;
+  private String m_UserLoginFieldName;
+  private LdapConfiguration configuration = new LdapConfiguration();
 
   @Override
   public void loadProperties(SettingBundle settings) {
@@ -97,15 +123,15 @@ public class AuthenticationLDAP extends Authentication {
     m_MustAlertPasswordExpiration = settings.getBoolean(serverName + ".MustAlertPasswordExpiration",
         false);
     if (m_MustAlertPasswordExpiration) {
-      m_PwdLastSetFieldName = settings.getString(serverName + ".LDAPPwdLastSetFieldName");
-      String propValue = settings.getString(serverName + ".LDAPPwdMaxAge");
-      m_PwdMaxAge = (propValue == null) ? Integer.MAX_VALUE : Integer.parseInt(propValue);
+      m_PwdLastSetFieldName = settings.getString(serverName + ".LDAPPwdLastSetFieldName", null);
+      m_PwdMaxAge = settings.getInteger(serverName + ".LDAPPwdMaxAge", Integer.MAX_VALUE);
 
-      propValue = settings.getString(serverName + ".LDAPPwdLastSetFieldFormat");
-      m_PwdLastSetFieldFormat = ((propValue == null) || (propValue.equals("nanoseconds"))) ? 0 : 1;
+      String propValue =
+          settings.getString(serverName + ".LDAPPwdLastSetFieldFormat", "nanoseconds");
+      m_PwdLastSetFieldFormat = propValue.equals("nanoseconds") ? 0 : 1;
 
-      propValue = settings.getString(serverName + ".PwdExpirationReminderDelay");
-      m_PwdExpirationReminderDelay = (propValue == null) ? 5 : Integer.parseInt(propValue);
+      m_PwdExpirationReminderDelay =
+          settings.getInteger(serverName + ".PwdExpirationReminderDelay", 5);
       if (m_PwdLastSetFieldName == null) {
         m_MustAlertPasswordExpiration = false;
       }
@@ -126,11 +152,11 @@ public class AuthenticationLDAP extends Authentication {
     try {
       ldapConnection.connect(configuration.getLdapHost(), configuration.getLdapPort());
     } catch (LDAPException ex) {
-      throw new AuthenticationHostException("AuthenticationLDAP.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "Configuration="
+      throw new AuthenticationHostException(
+          "Connection to the LDAP server failed with the following configuration: "
           + configuration, ex);
     }
-    return new AuthenticationConnection<LDAPConnection>(ldapConnection);
+    return new AuthenticationConnection<>(ldapConnection);
   }
 
   @Override
@@ -142,9 +168,9 @@ public class AuthenticationLDAP extends Authentication {
         ldapConnection.disconnect();
       }
     } catch (Exception ex) {
-      throw new AuthenticationHostException("AuthenticationLDAP.closeConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", "Configuration="
-          + configuration, ex);
+      throw new AuthenticationHostException(
+          "Cannot close the connection with the LDAP server with the following configuration: " +
+              configuration, ex);
     }
   }
 
@@ -154,7 +180,7 @@ public class AuthenticationLDAP extends Authentication {
       throws AuthenticationException {
     String searchString = m_UserLoginFieldName + "=" + credential.getLogin();
     String[] attrNames;
-    int nbDaysBeforeExpiration = 0;
+    long nbDaysBeforeExpiration = 0;
 
     /*
      * Step 1 : Find LDAP User object with given login
@@ -174,8 +200,7 @@ public class AuthenticationLDAP extends Authentication {
       ldapConnection.bind(LDAPConnection.LDAP_V3, configuration.getUsername(), configuration
           .getPassword());
     } catch (LDAPException e) {
-      throw new AuthenticationHostException("AuthenticationLDAP.doAuthentication()",
-          SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", e);
+      throw new AuthenticationHostException(e);
     }
 
     // bind to LDAP with administrator account
@@ -191,15 +216,13 @@ public class AuthenticationLDAP extends Authentication {
           break;
         }
       } catch (LDAPException ex) {
-        throw new AuthenticationHostException("AuthenticationLDAP.doAuthentication()",
-            SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", ex);
+        throw new AuthenticationHostException(ex);
       }
     }
 
     // No user found
     if (fe == null) {
-      throw new AuthenticationBadCredentialException("AuthenticationLDAP.doAuthentication()",
-          SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login
+      throw new AuthenticationBadCredentialException("User not found with login: " + login
           + ";LoginField=" + m_UserLoginFieldName);
     }
 
@@ -214,24 +237,21 @@ public class AuthenticationLDAP extends Authentication {
     // Checks if password is correct
     String userFullDN = fe.getDN();
     if (!StringUtil.isDefined(password)) {
-      throw new AuthenticationBadCredentialException("AuthenticationLDAP.doAuthentication()",
-          SilverpeasException.ERROR, "authentication.EX_PWD_EMPTY", "User=" + login);
+      throw new AuthenticationBadCredentialException(
+          "Password not set for user with login: " + login);
     }
     try {
 
       ldapConnection.bind(LDAPConnection.LDAP_V3, userFullDN, password.getBytes(UTF_8));
 
     } catch (LDAPException ex) {
-      throw new AuthenticationBadCredentialException("AuthenticationLDAP.doAuthentication()",
-          SilverpeasException.ERROR, "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "User="
+      throw new AuthenticationBadCredentialException("Bad credential for user with login: "
           + login, ex);
     }
 
     if (m_MustAlertPasswordExpiration && (nbDaysBeforeExpiration < m_PwdExpirationReminderDelay)) {
       throw new AuthenticationPasswordAboutToExpireException(
-          "AuthenticationLDAP.doAuthentication()",
-          SilverpeasException.WARNING, "authentication.EX_AUTHENTICATION_PASSWORD_ABOUT_TO_EXPIRE",
-          "User=" + login);
+          "The password of the user with login " + login + " is about to expire");
     }
   }
 
@@ -242,18 +262,17 @@ public class AuthenticationLDAP extends Authentication {
    * @throws AuthenticationPasswordMustBeChangedAtNextLogon
    * @return duration in days
    */
-  private int calculateDaysBeforeExpiration(LDAPEntry fe) throws
-      AuthenticationPasswordMustBeChangedAtNextLogon {
+  private long calculateDaysBeforeExpiration(LDAPEntry fe)
+      throws AuthenticationPasswordMustBeChangedAtNextLogon {
     LDAPAttribute pwdLastSetAttr = fe.getAttribute(m_PwdLastSetFieldName);
 
-    // if password last set attribute is not found, return max value : user
-    // won't be notified
+    // if password last set attribute is not found, return max value: user won't be notified
     if (pwdLastSetAttr == null) {
       return Integer.MAX_VALUE;
     }
 
     // convert ldap value
-    Date pwdLastSet = null;
+    ZonedDateTime pwdLastSet = null;
     switch (m_PwdLastSetFieldFormat) {
       case FORMAT_NANOSECOND:
         long lastSetValue = Long.parseLong(pwdLastSetAttr.getStringValue());
@@ -262,41 +281,33 @@ public class AuthenticationLDAP extends Authentication {
         if (lastSetValue == 0) {
           throw new AuthenticationPasswordMustBeChangedAtNextLogon("user=" + fe.getDN());
         }
-        lastSetValue = lastSetValue / INTERVALS_PER_MILLISECOND;
-        lastSetValue -= MILLISECONDS_BETWEEN_1601_AND_1970;
-        pwdLastSet = new Date(lastSetValue);
+        lastSetValue =
+            (lastSetValue / INTERVALS_PER_MILLISECOND) - MILLISECONDS_BETWEEN_1601_AND_1970;
+        pwdLastSet =
+            ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastSetValue), ZoneId.systemDefault());
         break;
 
       case FORMAT_TIMESTAMP:
         try {
-        DateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-        String ldapValue = pwdLastSetAttr.getStringValue();
-        if (ldapValue == null) {
-          SilverTrace.error(module,
-              "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-              "authentication.NO_VALUE", "m_PwdLastSetField=" + m_PwdLastSetFieldName);
-          return Integer.MAX_VALUE;
-        } else if (ldapValue.length() >= 14) {
-          ldapValue = ldapValue.substring(0, 14);
-        } else {
-          SilverTrace.error(module,
-              "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-              "authentication.EX_BAD_DATE_FORMAT", "ldapValue=" + ldapValue);
-          return Integer.MAX_VALUE;
+          String ldapValue = pwdLastSetAttr.getStringValue();
+          if (ldapValue == null) {
+            SilverLogger.getLogger(this)
+                .warn("Attribute {0} has no value! Use max integer value", m_PwdLastSetFieldFormat);
+            return Integer.MAX_VALUE;
+          }
+          pwdLastSet = OffsetDateTime.parse(ldapValue, GENERALIZED_TIME)
+              .atZoneSameInstant(ZoneId.systemDefault());
+        } catch (DateTimeParseException e) {
+          SilverLogger.getLogger(this).error(e);
         }
-        pwdLastSet = format.parse(pwdLastSetAttr.getStringValue());
-      } catch (ParseException e) {
-        SilverTrace.error(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-            "authentication.EX_BAD_DATE_FORMAT", e);
-      }
+        break;
 
       default:
-        throw new IllegalArgumentException("Unknown time format: expected nano or milliseconds");
+        throw new IllegalArgumentException("Unknown time format: " + m_PwdLastSetFieldFormat +
+            ". Expected either 'nanoseconds' or 'TimeStamp' format");
     }
-    Date now = new Date();
-    long delayInMilliseconds = pwdLastSet.getTime() - now.getTime();
-    int delayInDays = Math.round((float) ((delayInMilliseconds / (1000 * 3600 * 24)) + m_PwdMaxAge));
-    return delayInDays;
+    long delayInDays = Duration.between(pwdLastSet, ZonedDateTime.now()).getSeconds() / 86400;
+    return delayInDays + m_PwdMaxAge;
   }
 
   @Override
@@ -318,9 +329,7 @@ public class AuthenticationLDAP extends Authentication {
       LDAPSearchResults res = ldapConnection.search(m_UserBaseDN, LDAPConnection.SCOPE_SUB,
           searchString, strAttributes, false);
       if (!res.hasMore()) {
-        throw new AuthenticationBadCredentialException(
-            "AuthenticationLDAP.changePassword()", SilverpeasException.ERROR,
-            "authentication.EX_USER_NOT_FOUND", "User=" + login
+        throw new AuthenticationBadCredentialException("User not found with login: " + login
             + ";LoginField=" + m_UserLoginFieldName);
       }
       LDAPEntry fe = res.next();
@@ -337,8 +346,7 @@ public class AuthenticationLDAP extends Authentication {
         if (!configuration.isSecure()) {
           Exception e = new UnsupportedOperationException(
               "LDAP connection must be secured to allow password update");
-          throw new AuthenticationException("AuthenticationLDAP.changePassword",
-              SilverpeasException.ERROR, "authentication.EX_CANT_CHANGE_USERPASSWORD", e);
+          throw new AuthenticationException(e);
         }
         // prepare password change (old password will be verified by DELETE modification)
         mod = getActiveDirectoryPasswordChange(oldPassword, newPassword);
@@ -346,8 +354,7 @@ public class AuthenticationLDAP extends Authentication {
       // Perform the update
       ldapConnection.modify(userFullDN, mod);
     } catch (Exception ex) {
-      throw new AuthenticationHostException("AuthenticationLDAP.doChangePassword()",
-          SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", ex);
+      throw new AuthenticationHostException(ex);
     }
   }
 
@@ -417,8 +424,7 @@ public class AuthenticationLDAP extends Authentication {
       LDAPSearchResults res = ldapConnection.search(
           m_UserBaseDN, LDAPConnection.SCOPE_SUB, searchString, strAttributes, false);
       if (!res.hasMore()) {
-        throw new AuthenticationBadCredentialException("AuthenticationLDAP.doResetPassword()",
-            SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login
+        throw new AuthenticationBadCredentialException("User not found with login: " + login
             + ";LoginField=" + m_UserLoginFieldName);
       }
       LDAPEntry fe = res.next();
@@ -436,8 +442,7 @@ public class AuthenticationLDAP extends Authentication {
       // Perform the update
       ldapConnection.modify(userFullDN, mod);
     } catch (Exception ex) {
-      throw new AuthenticationHostException("AuthenticationLDAP.doResetPassword()",
-          SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", ex);
+      throw new AuthenticationHostException(ex);
     }
   }
 

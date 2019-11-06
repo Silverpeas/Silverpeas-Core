@@ -23,18 +23,17 @@
  */
 package org.silverpeas.core.security.authentication;
 
-import org.silverpeas.core.security.authentication.password.PasswordEncryption;
-import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPwdNotAvailException;
+import org.silverpeas.core.security.authentication.password.PasswordEncryption;
+import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.security.encryption.cipher.CryptMD5;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -70,11 +69,10 @@ public class AuthenticationSQL extends Authentication {
     try {
       DataSource dataSource = InitialContext.doLookup(dataSourceJndiName);
       Connection connection = dataSource.getConnection();
-      return new AuthenticationConnection<Connection>(connection);
+      return new AuthenticationConnection<>(connection);
     } catch (Exception iex) {
-      throw new AuthenticationHostException("AuthenticationSQL.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED",
-          "Datasource=" + dataSourceJndiName, iex);
+      throw new AuthenticationHostException(
+          "Connection failure with datasource " + dataSourceJndiName, iex);
     }
   }
 
@@ -86,9 +84,8 @@ public class AuthenticationSQL extends Authentication {
         sqlConnection.close();
       }
     } catch (SQLException ex) {
-      throw new AuthenticationHostException("AuthenticationSQL.closeConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED",
-          "Datasource=" + dataSourceJndiName, ex);
+      throw new AuthenticationHostException(
+          "Cannot close the connection with datasource " + dataSourceJndiName, ex);
     }
   }
 
@@ -102,9 +99,8 @@ public class AuthenticationSQL extends Authentication {
     }
     String sqlPassword = getPassword(getSQLConnection(connection), login);
     if (!StringUtil.isDefined(sqlPassword)) {
-      throw new AuthenticationBadCredentialException("AuthenticationSQL.doAuthentication()",
-          SilverpeasException.ERROR, "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL",
-          "User=" + login);
+      throw new AuthenticationBadCredentialException(
+          "Invalid credential for user with login: " + login);
     } else {
       checkPassword(login, password, sqlPassword);
     }
@@ -136,19 +132,17 @@ public class AuthenticationSQL extends Authentication {
         if (StringUtil.isDefined(passwordAvailableColumnName)) {
           String validString = rs.getString(passwordAvailableColumnName);
           if ("N".equalsIgnoreCase(validString)) {
-            throw new AuthenticationPwdNotAvailException("AuthenticationSQL.getPassword()",
-                SilverpeasException.ERROR, "authentication.EX_PWD_NOT_AVAILABLE", "User=" + login);
+            throw new AuthenticationPwdNotAvailException(
+                "Not password set for user with login: " + login);
           }
         }
         sqlPasswd = rs.getString(passwordColumnName);
       } else {
-        throw new AuthenticationBadCredentialException("AuthenticationSQL.doAuthentication()",
-            SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login);
+        throw new AuthenticationBadCredentialException("User not found with login: " + login);
       }
 
     } catch (SQLException ex) {
-      throw new AuthenticationHostException("AuthenticationSQL.doAuthentication()",
-          SilverpeasException.ERROR, "authentication.EX_SQL_ACCESS_ERROR", ex);
+      throw new AuthenticationHostException(ex);
     } finally {
       DBUtil.close(rs, stmt);
     }
@@ -166,8 +160,7 @@ public class AuthenticationSQL extends Authentication {
       stmt.setString(2, login);
       stmt.executeUpdate();
     } catch (SQLException ex) {
-      throw new AuthenticationHostException("AuthenticationSQL.updatePassword()",
-          SilverpeasException.ERROR, "authentication.EX_SQL_ACCESS_ERROR", ex);
+      throw new AuthenticationHostException(ex);
     } finally {
       DBUtil.close(stmt);
     }
@@ -231,8 +224,8 @@ public class AuthenticationSQL extends Authentication {
       // the password doesn't match the digest. It is then possible the digest was a pure MD5 one!
       String actualDigest = CryptMD5.encrypt(password);
       if (!actualDigest.equals(digest)) {
-        throw new AuthenticationBadCredentialException("AuthenticationSQL.checkPassword()",
-            SilverpeasException.ERROR, "authentication.EX_INCORRECT_PASSWORD", "User=" + login);
+        throw new AuthenticationBadCredentialException(
+            "Invalid credential for user with login: " + login);
       }
     }
   }

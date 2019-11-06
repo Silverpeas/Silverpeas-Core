@@ -31,7 +31,6 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
@@ -124,9 +123,8 @@ public class AuthenticationService {
       DataSource dataSource = InitialContext.doLookup(DATA_SOURCE_JNDI_NAME);
       connection = dataSource.getConnection();
     } catch (Exception iex) {
-      throw new AuthenticationHostException("AuthenticationService.openConnection()",
-          SilverpeasException.ERROR, "root.root.EX_CONNECTION_OPEN_FAILED",
-          "Datasource=" + DATA_SOURCE_JNDI_NAME, iex);
+      throw new AuthenticationHostException(
+          "Connection failure with datasource " + DATA_SOURCE_JNDI_NAME, iex);
     }
     return connection;
   }
@@ -181,13 +179,8 @@ public class AuthenticationService {
         } else {
           key = authenticateByLoginAndDomain(userCredential);
         }
-      } catch (AuthenticationException e) {
-        AuthenticationException ae = e;
+      } catch (AuthenticationException ae) {
         String errorCause = ERROR_AUTHENTICATION_FAILURE;
-        Exception nested = ae.getNested();
-        if (nested instanceof AuthenticationException) {
-          ae = (AuthenticationException) nested;
-        }
         if (ae instanceof AuthenticationBadCredentialException) {
           List<Domain> listDomain = getAllDomains();
           if(listDomain != null && listDomain.size() > 1) {
@@ -370,8 +363,8 @@ public class AuthenticationService {
     String oldPassword = credential.getPassword();
     String domainId = credential.getDomainId();
     if (login == null || oldPassword == null || domainId == null || newPassword == null) {
-      throw new AuthenticationBadCredentialException("AuthenticationService.changePassword",
-          SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
+      throw new AuthenticationBadCredentialException(
+          "The login, the password or the domain isn't set!");
     }
 
     // Verify that the user can login
@@ -429,24 +422,15 @@ public class AuthenticationService {
       if (rs.next()) {
         String serverName = rs.getString(DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME);
         if (!StringUtil.isDefined(serverName)) {
-          throw new AuthenticationException(
-              "AuthenticationService.getAuthenticationServerName()",
-              SilverpeasException.ERROR, "authentication.EX_SERVER_NOT_FOUND",
-              "DomainId=" + domainId);
+          throw new AuthenticationException("No server found for domain of id " + domainId);
         } else {
           return serverName;
         }
       } else {
-        throw new AuthenticationException(
-            "AuthenticationService.getAuthenticationServerName()",
-            SilverpeasException.ERROR, "authentication.EX_DOMAIN_NOT_FOUND",
-            "DomainId=" + domainId);
+        throw new AuthenticationException("No such domain with id " + domainId);
       }
     } catch (SQLException ex) {
-      throw new AuthenticationException(
-          "AuthenticationService.getAuthenticationServerName()",
-          SilverpeasException.ERROR, "authentication.EX_DOMAIN_INFO_ERROR",
-          "DomainId=" + domainId, ex);
+      throw new AuthenticationException("Error with domain of id" + domainId, ex);
     } finally {
       DBUtil.close(rs, stmt);
     }
@@ -515,8 +499,8 @@ public class AuthenticationService {
     String login = credential.getLogin();
     String domainId = credential.getDomainId();
     if (login == null || domainId == null || newPassword == null) {
-      throw new AuthenticationBadCredentialException("AuthenticationService.resetPassword",
-          SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
+      throw new AuthenticationBadCredentialException(
+          "The login, the password or the domain isn't set!");
     }
 
     // Verify that the user can login
@@ -577,8 +561,7 @@ public class AuthenticationService {
     try {
       adminController.updateUserFull(userFull);
     } catch (AdminException e) {
-      throw new AuthenticationException("AuthenticationService.onPasswordAndEmailChanged",
-          SilverpeasException.ERROR, "authentication.EX_CANT_UPDATE_USERFULL", e);
+      throw new AuthenticationException("Cannot update user full information", e);
     }
   }
 

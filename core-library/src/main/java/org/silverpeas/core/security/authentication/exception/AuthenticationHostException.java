@@ -29,30 +29,18 @@ package org.silverpeas.core.security.authentication.exception;
  */
 public class AuthenticationHostException extends AuthenticationException {
 
-  private static final long serialVersionUID = 3318090264755986318L;
+  private static final long serialVersionUID = 3690730936110857259L;
 
-  /**
-   * -------------------------------------------------------------------------- constructor
-   * constructor
-   */
-  public AuthenticationHostException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  public AuthenticationHostException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public AuthenticationHostException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public AuthenticationHostException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public AuthenticationHostException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AuthenticationHostException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public AuthenticationHostException(final Throwable cause) {
+    super(cause);
   }
 
   @Override

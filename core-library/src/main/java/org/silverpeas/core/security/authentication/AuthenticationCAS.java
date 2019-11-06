@@ -23,19 +23,18 @@
  */
 package org.silverpeas.core.security.authentication;
 
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
+import org.silverpeas.core.util.SettingBundle;
+
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
-
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
 
 public class AuthenticationCAS extends Authentication {
 
@@ -68,25 +67,14 @@ public class AuthenticationCAS extends Authentication {
       info.setProperty("user", jdbcLogin);
       info.setProperty("password", jdbcPasswd);
       driverSQL = (Driver) Class.forName(jdbcDriver).newInstance();
-    } catch (InstantiationException ex) {
-      throw new AuthenticationHostException("AuthenticationCAS.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER",
-          "Driver=" + jdbcDriver, ex);
-    } catch (IllegalAccessException ex) {
-      throw new AuthenticationHostException("AuthenticationCAS.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER",
-          "Driver=" + jdbcDriver, ex);
-    } catch (ClassNotFoundException ex) {
-      throw new AuthenticationHostException("AuthenticationCAS.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER",
-          "Driver=" + jdbcDriver, ex);
+    } catch (InstantiationException|IllegalAccessException|ClassNotFoundException ex) {
+      throw new AuthenticationHostException("Invalid JDBC driver: " + jdbcDriver, ex);
     }
     try {
       Connection connection = driverSQL.connect(jdbcUrl, info);
-      return new AuthenticationConnection<Connection>(connection);
+      return new AuthenticationConnection<>(connection);
     } catch (SQLException ex) {
-      throw new AuthenticationHostException("AuthenticationCAS.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "JDBCUrl=" + jdbcUrl, ex);
+      throw new AuthenticationHostException("Cannot connect to database at " + jdbcUrl, ex);
     }
   }
 
@@ -101,13 +89,11 @@ public class AuthenticationCAS extends Authentication {
       rs = stmt.executeQuery();
       if (!rs.next()) {
         throw new AuthenticationBadCredentialException(
-            "AuthenticationCAS.doAuthentication()",
-            SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + credential.getLogin());
+            "User not found with login: " + credential.getLogin());
       }
 
     } catch (SQLException ex) {
-      throw new AuthenticationHostException("AuthenticationCAS.doAuthentication()",
-          SilverpeasException.ERROR, "authentication.EX_SQL_ACCESS_ERROR", ex);
+      throw new AuthenticationHostException(ex);
     } finally {
       DBUtil.close(rs, stmt);
     }

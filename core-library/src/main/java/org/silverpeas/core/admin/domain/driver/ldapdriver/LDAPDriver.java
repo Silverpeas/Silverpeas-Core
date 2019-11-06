@@ -33,7 +33,6 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -223,9 +222,9 @@ public class LDAPDriver extends AbstractDomainDriver {
       LDAPEntry theEntry = getUserLDAPEntry(ld, user.getSpecificId());
 
       if (theEntry == null) {
-        throw new AuthenticationBadCredentialException("LDAPDriver.updateUserFull()",
-            SilverpeasException.ERROR, "admin.EX_USER_NOT_FOUND",
-            "User=" + user.getSpecificId() + ";IdField=" + driverSettings.getUsersIdField());
+        throw new AuthenticationBadCredentialException(
+            "User not found: " + user.getSpecificId() + ";IdField=" +
+                driverSettings.getUsersIdField());
       }
 
       String userFullDN = theEntry.getDN();

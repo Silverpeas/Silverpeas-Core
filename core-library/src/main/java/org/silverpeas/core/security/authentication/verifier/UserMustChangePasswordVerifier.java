@@ -23,14 +23,13 @@
  */
 package org.silverpeas.core.security.authentication.verifier;
 
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordExpired;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -143,9 +142,8 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
 
     if (proposeToUserToChangePassword()) {
       throw new AuthenticationPasswordAboutToExpireException(
-          "UserMustChangePasswordVerifier.verify()", SilverpeasException.ERROR,
-          "authentication.EX_VERIFY_ASKING_USER_CHANGE_PASSWORD",
-          getUser() != null ? "Login=" + getUser().getLogin() : "");
+          "The password has to be changed for the user" + getUser() != null ?
+              "Login=" + getUser().getLogin() : "");
     }
 
     if (mustForceUserToChangePassword()) {

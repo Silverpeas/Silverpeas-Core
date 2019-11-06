@@ -29,36 +29,21 @@
 
 package org.silverpeas.core.security.authentication.exception;
 
-/**
- * @author tleroi
- * @version
- */
 public class AuthenticationPasswordAboutToExpireException extends AuthenticationException {
 
-  private static final long serialVersionUID = -6944881509553671169L;
+  private static final long serialVersionUID = -8442163373117133600L;
 
-  /**
-   * -------------------------------------------------------------------------- constructor
-   * constructor
-   */
-  public AuthenticationPasswordAboutToExpireException(String callingClass,
-      int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public AuthenticationPasswordAboutToExpireException(final String message,
+      final String... parameters) {
+    super(message, parameters);
   }
 
-  public AuthenticationPasswordAboutToExpireException(String callingClass,
-      int errorLevel, String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public AuthenticationPasswordAboutToExpireException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public AuthenticationPasswordAboutToExpireException(String callingClass,
-      int errorLevel, String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AuthenticationPasswordAboutToExpireException(String callingClass,
-      int errorLevel, String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public AuthenticationPasswordAboutToExpireException(final Throwable cause) {
+    super(cause);
   }
 
   @Override

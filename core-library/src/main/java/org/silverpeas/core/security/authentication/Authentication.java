@@ -24,11 +24,9 @@
 package org.silverpeas.core.security.authentication;
 
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationPwdChangeNotAvailException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationPwdChangeNotAvailException;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * A set of security-related operations about a user authentication.
@@ -198,9 +196,7 @@ public abstract class Authentication {
   protected <T> void doChangePassword(AuthenticationConnection<T> connection,
                                       AuthenticationCredential credential,
                                       String newPassword) throws AuthenticationException {
-    throw new AuthenticationPwdChangeNotAvailException(
-        "AuthenticationServer.changePassword", SilverpeasException.ERROR,
-        "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
+    throw new AuthenticationPwdChangeNotAvailException("The password modification isn't available");
   }
 
   /**
@@ -218,9 +214,7 @@ public abstract class Authentication {
    */
   protected <T> void doResetPassword(AuthenticationConnection<T> connection, String login, String newPassword)
       throws AuthenticationException {
-    throw new AuthenticationPwdChangeNotAvailException(
-        "AuthenticationServer.doResetPassword", SilverpeasException.ERROR,
-        "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
+    throw new AuthenticationPwdChangeNotAvailException("The password reset isn't available");
   }
 
   private void doSecurityOperation(SecurityOperation op) throws AuthenticationException {

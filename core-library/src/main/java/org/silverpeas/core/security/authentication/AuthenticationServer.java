@@ -23,15 +23,12 @@
  */
 package org.silverpeas.core.security.authentication;
 
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationExceptionVisitor;
 import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationPasswordAboutToExpireException;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationPwdChangeNotAvailException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationPwdChangeNotAvailException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPwdNotAvailException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -140,8 +137,7 @@ public class AuthenticationServer {
   public void changePassword(final AuthenticationCredential credential,
       final String newPassword) throws AuthenticationException {
     if (!passwordChangeAllowed) {
-      throw new AuthenticationPwdChangeNotAvailException("AuthenticationServer.changePassword",
-          SilverpeasException.ERROR, "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
+      throw new AuthenticationPwdChangeNotAvailException("The password modification isn't available");
     }
 
     doSecurityOperation(new SecurityOperation(SecurityOperation.P_CHANGE, credential) {
@@ -177,8 +173,7 @@ public class AuthenticationServer {
   public void resetPassword(final String login, final String newPassword) throws
       AuthenticationException {
     if (!passwordChangeAllowed) {
-      throw new AuthenticationPwdChangeNotAvailException("AuthenticationServer.resetPassword",
-          SilverpeasException.ERROR, "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
+      throw new AuthenticationPwdChangeNotAvailException("The password reset isn't available");
     }
 
     doSecurityOperation(new SecurityOperation(SecurityOperation.P_RESET,
@@ -192,8 +187,7 @@ public class AuthenticationServer {
 
   private void doSecurityOperation(SecurityOperation op) throws AuthenticationException {
     if (!StringUtil.isDefined(op.getAuthenticationCredential().getLogin())) {
-      throw new AuthenticationException("AuthenticationServer." + op.getName(),
-          SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
+      throw new AuthenticationException("The login of the user isn't set!");
     }
 
     boolean serverNotFound = true;
@@ -218,12 +212,9 @@ public class AuthenticationServer {
 
     if (serverNotFound) {
       if (lastException == null) {
-        throw new AuthenticationException("AuthenticationServer." + op.getName(),
-            SilverpeasException.ERROR, "authentication.EX_NO_SERVER_AVAILABLE");
+        throw new AuthenticationException("No server definition found");
       } else {
-        throw new AuthenticationException("AuthenticationServer." + op.getName(),
-            SilverpeasException.ERROR, "authentication.EX_AUTHENTICATION_FAILED_LAST_ERROR",
-            lastException);
+        throw lastException;
       }
     }
   }

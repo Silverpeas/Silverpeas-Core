@@ -217,6 +217,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
           append("PB getting Group's subgroups : ").append(parentId).append("\n");
           SynchroDomainReport.error(LDAPGROUP_ALL_ROOT_GET_CHILD_GROUPS_ENTRY,
               "Erreur lors de la récupération des groupes racine (parentId = " + parentId + ")", e);
+          theEntries = new LDAPEntry[0];
         } else {
           throw e;
         }
