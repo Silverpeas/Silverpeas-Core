@@ -5198,6 +5198,11 @@ class Admin implements Administration {
     List<String> userIds = null;
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
       userIds = searchUsersInComponentInstance(searchCriteria, userIds);
+      if (CollectionUtil.isEmpty(userIds)) {
+        // no users in component instance or component instance role
+        // no additional filtering is needed
+        return new ListSlice<>(0, 0, 0);
+      }
     }
 
     if (searchCriteria.isCriterionOnUserIdsSet()) {
