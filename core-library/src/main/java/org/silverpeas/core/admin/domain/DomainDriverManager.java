@@ -239,18 +239,23 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   private UserDetail getUserDetail(final String userId, final boolean isUserFull,
       final UserDetail silverpeasUser, final DomainDriver domainDriver) {
-    UserDetail user;
+    UserDetail user = null;
     try {
       user = isUserFull ? domainDriver.getUserFull(silverpeasUser.getSpecificId()) :
           domainDriver.getUser(silverpeasUser.getSpecificId());
     } catch (AdminException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+
+    if (user == null) {
       SilverLogger.getLogger(this)
-          .error("Cannot find user " + userId + " in domain " + silverpeasUser.getDomainId(), e);
+          .error("Cannot find user " + userId + " in domain " + silverpeasUser.getDomainId());
       user = isUserFull ? new UserFull(domainDriver) : new UserDetail();
       user.setFirstName(silverpeasUser.getFirstName());
       user.setLastName(silverpeasUser.getLastName());
       user.seteMail(silverpeasUser.geteMail());
     }
+
     return user;
   }
 
