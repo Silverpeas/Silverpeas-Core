@@ -49,9 +49,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.MissingFormatArgumentException;
 import java.util.StringTokenizer;
 
 import static java.time.temporal.ChronoField.*;
@@ -92,14 +92,15 @@ public class AuthenticationLDAP extends Authentication {
           .appendPattern("X")
           .toFormatter();
 
-  private boolean m_MustAlertPasswordExpiration = false;
-  private String m_PwdLastSetFieldName;
-  private int m_PwdLastSetFieldFormat;
-  private int m_PwdMaxAge;
-  private int m_PwdExpirationReminderDelay;
+  private boolean mustAlertPasswordExpiration = false;
+  private String pwdLastSetFieldName;
+  private int pwdDateTimeFieldFormat;
+  private int pwdMaxAge;
+  private int pwdExpirationReminderDelay = -1;
+  private String pwdExpirationTimeFieldName;
   private String ldapImpl;
-  private String m_UserBaseDN;
-  private String m_UserLoginFieldName;
+  private String userBaseDN;
+  private String userLoginFieldName;
   private LdapConfiguration configuration = new LdapConfiguration();
 
   @Override
@@ -116,24 +117,37 @@ public class AuthenticationLDAP extends Authentication {
     ldapImpl = settings.getString(serverName + ".LDAPImpl", "unknown");
     configuration.setUsername(settings.getString(serverName + ".LDAPAccessLogin"));
     configuration.setPassword(settings.getString(serverName + ".LDAPAccessPasswd").getBytes(UTF_8));
-    m_UserBaseDN = settings.getString(serverName + ".LDAPUserBaseDN", "");
-    m_UserLoginFieldName = settings.getString(serverName + ".LDAPUserLoginFieldName");
+    userBaseDN = settings.getString(serverName + ".LDAPUserBaseDN", "");
+    userLoginFieldName = settings.getString(serverName + ".LDAPUserLoginFieldName");
 
     // get parameters about user alert if password is about to expire or is already expired
-    m_MustAlertPasswordExpiration = settings.getBoolean(serverName + ".MustAlertPasswordExpiration",
+    mustAlertPasswordExpiration = settings.getBoolean(serverName + ".MustAlertPasswordExpiration",
         false);
-    if (m_MustAlertPasswordExpiration) {
-      m_PwdLastSetFieldName = settings.getString(serverName + ".LDAPPwdLastSetFieldName", null);
-      m_PwdMaxAge = settings.getInteger(serverName + ".LDAPPwdMaxAge", Integer.MAX_VALUE);
-
-      String propValue =
-          settings.getString(serverName + ".LDAPPwdLastSetFieldFormat", "nanoseconds");
-      m_PwdLastSetFieldFormat = propValue.equals("nanoseconds") ? 0 : 1;
-
-      m_PwdExpirationReminderDelay =
-          settings.getInteger(serverName + ".PwdExpirationReminderDelay", 5);
-      if (m_PwdLastSetFieldName == null) {
-        m_MustAlertPasswordExpiration = false;
+    pwdExpirationReminderDelay = -1;
+    if (mustAlertPasswordExpiration) {
+      pwdExpirationTimeFieldName =
+          settings.getString(serverName + ".LDAPPwdExpirationTimeFieldName", null);
+      if (pwdExpirationTimeFieldName == null) {
+        pwdLastSetFieldName = settings.getString(serverName + ".LDAPPwdLastSetFieldName", null);
+        if (pwdLastSetFieldName == null) {
+          mustAlertPasswordExpiration = false;
+        } else {
+          pwdMaxAge = settings.getInteger(serverName + ".LDAPPwdMaxAge", Integer.MAX_VALUE);
+          pwdExpirationReminderDelay =
+              settings.getInteger(serverName + ".PwdExpirationReminderDelay", 5);
+        }
+      }
+      if (mustAlertPasswordExpiration) {
+        String propValue = settings.getString(serverName + ".LDAPTimeFieldFormat", "");
+        if (propValue.equals("nanoseconds")) {
+          pwdDateTimeFieldFormat = FORMAT_NANOSECOND;
+        } else if (propValue.equals("TimeStamp")) {
+          pwdDateTimeFieldFormat = FORMAT_TIMESTAMP;
+        } else {
+          throw new MissingFormatArgumentException("The property " + serverName +
+              ".LDAPTimeFieldFormat isn't valued correctly. Expected either 'nanoseconds' or " +
+              "'TimeStamp'");
+        }
       }
     }
   }
@@ -178,16 +192,19 @@ public class AuthenticationLDAP extends Authentication {
   protected void doAuthentication(AuthenticationConnection connection,
       AuthenticationCredential credential)
       throws AuthenticationException {
-    String searchString = m_UserLoginFieldName + "=" + credential.getLogin();
+    String searchString = userLoginFieldName + "=" + credential.getLogin();
     String[] attrNames;
-    long nbDaysBeforeExpiration = 0;
 
     /*
      * Step 1 : Find LDAP User object with given login
      */
     // retrieve or not password last set date
-    if (m_MustAlertPasswordExpiration) {
-      attrNames = new String[]{"uid", m_PwdLastSetFieldName};
+    if (mustAlertPasswordExpiration) {
+      if (pwdExpirationTimeFieldName != null) {
+        attrNames = new String[]{"uid", pwdExpirationTimeFieldName};
+      } else {
+        attrNames = new String[]{"uid", pwdLastSetFieldName};
+      }
     } else {
       attrNames = new String[]{"uid"};
     }
@@ -205,7 +222,7 @@ public class AuthenticationLDAP extends Authentication {
 
     // bind to LDAP with administrator account
     LDAPEntry fe = null;
-    String[] baseDNs = extractBaseDNs(m_UserBaseDN);
+    String[] baseDNs = extractBaseDNs(userBaseDN);
     for (String baseDN : baseDNs) {
       try {
 
@@ -222,16 +239,22 @@ public class AuthenticationLDAP extends Authentication {
 
     // No user found
     if (fe == null) {
-      throw new AuthenticationBadCredentialException("User not found with login: " + login
-          + ";LoginField=" + m_UserLoginFieldName);
+      throw new AuthenticationBadCredentialException(
+          "User not found with login: " + login + ";LoginField=" + userLoginFieldName);
     }
 
-    // Calculate nb days before password expiration
-    if (m_MustAlertPasswordExpiration) {
-      nbDaysBeforeExpiration = calculateDaysBeforeExpiration(fe);
-      if (nbDaysBeforeExpiration < 0) {
+    // Checks password expiration date time
+    ZonedDateTime pwdExpirationDateTime;
+    if (mustAlertPasswordExpiration) {
+      pwdExpirationDateTime = getPasswordExpirationDateTime(fe);
+      if (pwdExpirationDateTime == null) {
+        // special case of MS AD
+        throw new AuthenticationPasswordMustBeChangedAtNextLogon("user=" + fe.getDN());
+      } else if (pwdExpirationDateTime.isBefore(ZonedDateTime.now())) {
         throw new AuthenticationPasswordExpired("User=" + login);
       }
+    } else {
+      pwdExpirationDateTime = null;
     }
 
     // Checks if password is correct
@@ -241,73 +264,77 @@ public class AuthenticationLDAP extends Authentication {
           "Password not set for user with login: " + login);
     }
     try {
-
       ldapConnection.bind(LDAPConnection.LDAP_V3, userFullDN, password.getBytes(UTF_8));
-
     } catch (LDAPException ex) {
       throw new AuthenticationBadCredentialException("Bad credential for user with login: "
           + login, ex);
     }
 
-    if (m_MustAlertPasswordExpiration && (nbDaysBeforeExpiration < m_PwdExpirationReminderDelay)) {
-      throw new AuthenticationPasswordAboutToExpireException(
-          "The password of the user with login " + login + " is about to expire");
+    if (pwdExpirationDateTime != null && pwdExpirationReminderDelay > -1) {
+      Duration durationBeforePwdExpiration =
+          Duration.between(ZonedDateTime.now(), pwdExpirationDateTime);
+      long daysCountBeforeExpiration = durationBeforePwdExpiration.getSeconds() / 86400;
+      if (daysCountBeforeExpiration < pwdExpirationReminderDelay) {
+        throw new AuthenticationPasswordAboutToExpireException(
+            "The password of the user with login " + login + " is about to expire");
+      }
     }
   }
 
-  /**
-   * Given an user ldap entry, compute the numbers of days before password expiration
-   *
-   * @param fe the user ldap entry
-   * @throws AuthenticationPasswordMustBeChangedAtNextLogon
-   * @return duration in days
-   */
-  private long calculateDaysBeforeExpiration(LDAPEntry fe)
-      throws AuthenticationPasswordMustBeChangedAtNextLogon {
-    LDAPAttribute pwdLastSetAttr = fe.getAttribute(m_PwdLastSetFieldName);
-
-    // if password last set attribute is not found, return max value: user won't be notified
-    if (pwdLastSetAttr == null) {
-      return Integer.MAX_VALUE;
+  private ZonedDateTime getPasswordExpirationDateTime(final LDAPEntry entry) {
+    ZonedDateTime expirationDateTime;
+    if (pwdExpirationTimeFieldName != null) {
+      final LDAPAttribute pwdExpirationTime = entry.getAttribute(pwdExpirationTimeFieldName);
+      expirationDateTime =
+          getPasswordExpirationDateTime(pwdExpirationTimeFieldName, pwdExpirationTime);
+    } else {
+      final LDAPAttribute pwdChangeTime = entry.getAttribute(pwdLastSetFieldName);
+      ZonedDateTime lastChangeDateTime =
+          getPasswordExpirationDateTime(pwdLastSetFieldName, pwdChangeTime);
+      expirationDateTime =
+          lastChangeDateTime != null ? lastChangeDateTime.plusDays(pwdMaxAge) : null;
     }
+    return expirationDateTime;
+  }
 
-    // convert ldap value
-    ZonedDateTime pwdLastSet = null;
-    switch (m_PwdLastSetFieldFormat) {
-      case FORMAT_NANOSECOND:
-        long lastSetValue = Long.parseLong(pwdLastSetAttr.getStringValue());
-
-        // Special value : 0, password must be changed
-        if (lastSetValue == 0) {
-          throw new AuthenticationPasswordMustBeChangedAtNextLogon("user=" + fe.getDN());
-        }
-        lastSetValue =
-            (lastSetValue / INTERVALS_PER_MILLISECOND) - MILLISECONDS_BETWEEN_1601_AND_1970;
-        pwdLastSet =
-            ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastSetValue), ZoneId.systemDefault());
-        break;
-
-      case FORMAT_TIMESTAMP:
-        try {
-          String ldapValue = pwdLastSetAttr.getStringValue();
-          if (ldapValue == null) {
-            SilverLogger.getLogger(this)
-                .warn("Attribute {0} has no value! Use max integer value", m_PwdLastSetFieldFormat);
-            return Integer.MAX_VALUE;
-          }
-          pwdLastSet = OffsetDateTime.parse(ldapValue, GENERALIZED_TIME)
-              .atZoneSameInstant(ZoneId.systemDefault());
-        } catch (DateTimeParseException e) {
-          SilverLogger.getLogger(this).error(e);
-        }
-        break;
-
-      default:
-        throw new IllegalArgumentException("Unknown time format: " + m_PwdLastSetFieldFormat +
-            ". Expected either 'nanoseconds' or 'TimeStamp' format");
+  private ZonedDateTime getPasswordExpirationDateTime(final String attrName,
+      final LDAPAttribute dateTimeAttr) {
+    final ZonedDateTime expirationDateTime;
+    if (dateTimeAttr == null) {
+      SilverLogger.getLogger(this)
+          .warn("Not such LDAP attribute {0}! No password expiration", attrName);
+      expirationDateTime = ZonedDateTime.now().plusDays(1);
+    } else {
+      final String dateTimeValue = dateTimeAttr.getStringValue();
+      if (dateTimeValue == null) {
+        SilverLogger.getLogger(this)
+            .warn("LDAP Attribute {0} not valued! No password expiration", attrName);
+        expirationDateTime = ZonedDateTime.now().plusDays(1);
+      } else {
+        expirationDateTime = parseDateTimeValue(dateTimeValue);
+      }
     }
-    long delayInDays = Duration.between(pwdLastSet, ZonedDateTime.now()).getSeconds() / 86400;
-    return delayInDays + m_PwdMaxAge;
+    return expirationDateTime;
+  }
+
+  private ZonedDateTime parseDateTimeValue(final String value) {
+    ZonedDateTime dateTime;
+    if (pwdDateTimeFieldFormat == FORMAT_NANOSECOND) {
+      long nanoseconds = Long.parseLong(value);
+      if (nanoseconds == 0) {
+        // special case in MS AD
+        dateTime = null;
+      } else {
+        nanoseconds =
+            (nanoseconds / INTERVALS_PER_MILLISECOND) - MILLISECONDS_BETWEEN_1601_AND_1970;
+        dateTime =
+            ZonedDateTime.ofInstant(Instant.ofEpochMilli(nanoseconds), ZoneId.systemDefault());
+      }
+    } else {
+      dateTime =
+          OffsetDateTime.parse(value, GENERALIZED_TIME).atZoneSameInstant(ZoneId.systemDefault());
+    }
+    return dateTime;
   }
 
   @Override
@@ -316,7 +343,7 @@ public class AuthenticationLDAP extends Authentication {
     String login = credential.getLogin();
     String oldPassword = credential.getPassword();
     String userFullDN;
-    String searchString = m_UserLoginFieldName + "=" + login;
+    String searchString = userLoginFieldName + "=" + login;
     String[] strAttributes = {"sAMAccountName", "memberOf"};
     LDAPConnection ldapConnection = getLDAPConnection(connection);
     try {
@@ -326,11 +353,11 @@ public class AuthenticationLDAP extends Authentication {
 
       // Get user DN
 
-      LDAPSearchResults res = ldapConnection.search(m_UserBaseDN, LDAPConnection.SCOPE_SUB,
+      LDAPSearchResults res = ldapConnection.search(userBaseDN, LDAPConnection.SCOPE_SUB,
           searchString, strAttributes, false);
       if (!res.hasMore()) {
-        throw new AuthenticationBadCredentialException("User not found with login: " + login
-            + ";LoginField=" + m_UserLoginFieldName);
+        throw new AuthenticationBadCredentialException(
+            "User not found with login: " + login + ";LoginField=" + userLoginFieldName);
       }
       LDAPEntry fe = res.next();
       userFullDN = fe.getDN();
@@ -411,7 +438,7 @@ public class AuthenticationLDAP extends Authentication {
       String newPassword)
       throws AuthenticationException {
     String userFullDN;
-    String searchString = m_UserLoginFieldName + "=" + login;
+    String searchString = userLoginFieldName + "=" + login;
     String[] strAttributes = {"sAMAccountName", "memberOf"};
     LDAPConnection ldapConnection = getLDAPConnection(connection);
     try {
@@ -421,11 +448,12 @@ public class AuthenticationLDAP extends Authentication {
 
       // Get user DN
 
-      LDAPSearchResults res = ldapConnection.search(
-          m_UserBaseDN, LDAPConnection.SCOPE_SUB, searchString, strAttributes, false);
+      LDAPSearchResults res =
+          ldapConnection.search(userBaseDN, LDAPConnection.SCOPE_SUB, searchString, strAttributes,
+              false);
       if (!res.hasMore()) {
-        throw new AuthenticationBadCredentialException("User not found with login: " + login
-            + ";LoginField=" + m_UserLoginFieldName);
+        throw new AuthenticationBadCredentialException(
+            "User not found with login: " + login + ";LoginField=" + userLoginFieldName);
       }
       LDAPEntry fe = res.next();
       userFullDN = fe.getDN();
