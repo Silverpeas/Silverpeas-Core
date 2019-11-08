@@ -241,7 +241,7 @@ public class FileUtil implements MimeTypes {
   }
 
   static boolean isMsOfficeExtension(final String mimeType) {
-    return mimeType.startsWith(WORD_2007_EXTENSION) || mimeType.startsWith(EXCEL_2007_EXTENSION)
+    return mimeType.startsWith(WORD_2007_EXTENSION) || mimeType.startsWith(MSPROJECT_MIME_TYPE) || mimeType.startsWith(MSPROJECT_TEMPLATE_MIME_TYPE) || mimeType.startsWith(EXCEL_2007_EXTENSION)
         || mimeType.startsWith(POWERPOINT_2007_EXTENSION);
   }
 

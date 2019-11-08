@@ -112,10 +112,13 @@ public interface MimeTypes {
   String MIME_TYPE_OO_IMAGE = "application/vnd.oasis.opendocument.image";
   // Extension .odm (Document principal)
   String MIME_TYPE_OO_MASTER = "application/vnd.oasis.opendocument.text-master";
-  Set<String> MS_OFFICE_MIME_TYPES = new HashSet<String>(Arrays
-      .asList(
-          new String[]{WORD_MIME_TYPE, EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, POWERPOINT_MIME_TYPE1,
-            POWERPOINT_MIME_TYPE2}));
+
+  //Extension .mpp
+  String MSPROJECT_MIME_TYPE = "application/vnd.ms-project";
+
+  //Extension .mpt
+  String MSPROJECT_TEMPLATE_MIME_TYPE = "application/vnd.ms-project";
+
   Set<String> OPEN_OFFICE_MIME_TYPES = new HashSet<String>(Arrays.asList(
       new String[]{WORD_MIME_TYPE, WORD_2007_MIME_TYPE, WORD_2007_TEMPLATE_MIME_TYPE,
         EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, EXCEL_2007_MIME_TYPE, EXCEL_2007_TEMPLATE_MIME_TYPE,
