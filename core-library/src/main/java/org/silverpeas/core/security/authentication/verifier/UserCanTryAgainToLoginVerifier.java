@@ -55,7 +55,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifier {
 
   private static final Map<String, UserCanTryAgainToLoginVerifier> cache =
-      new ConcurrentHashMap<String, UserCanTryAgainToLoginVerifier>();
+      new ConcurrentHashMap<>();
 
   private static boolean isActivated = false;
   private static boolean isCacheCleanerInitialized = false;
@@ -246,7 +246,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
    */
   private class CacheCleanerJob extends Job {
 
-    public final static String JOB_NAME = "AuthenticationUserConnectionAttemptsVerifierCleanerJob";
+    public static final String JOB_NAME = "AuthenticationUserConnectionAttemptsVerifierCleanerJob";
 
     /**
      * Default constructor.

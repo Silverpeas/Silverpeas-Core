@@ -29,6 +29,8 @@ import org.silverpeas.core.security.authentication.exception.AuthenticationExcep
 import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
 import org.silverpeas.core.util.SettingBundle;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
@@ -60,14 +62,18 @@ public class AuthenticationCAS extends Authentication {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   protected AuthenticationConnection<Connection> openConnection() throws AuthenticationException {
     Properties info = new Properties();
-    Driver driverSQL = null;
+    Driver driverSQL;
     try {
       info.setProperty("user", jdbcLogin);
       info.setProperty("password", jdbcPasswd);
-      driverSQL = (Driver) Class.forName(jdbcDriver).newInstance();
-    } catch (InstantiationException|IllegalAccessException|ClassNotFoundException ex) {
+      Constructor<Driver> constructor =
+          ((Class<Driver>) Class.forName(jdbcDriver)).getConstructor();
+      driverSQL = constructor.newInstance();
+    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+        ClassNotFoundException | InvocationTargetException ex) {
       throw new AuthenticationHostException("Invalid JDBC driver: " + jdbcDriver, ex);
     }
     try {

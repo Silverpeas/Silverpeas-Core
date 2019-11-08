@@ -52,8 +52,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
     PASSWORD_CHANGED
   }
 
-  private static Map<String, UserFirstLoginStep> usersFirstLoginStep =
-      new ConcurrentHashMap<String, UserFirstLoginStep>();
+  private static Map<String, UserFirstLoginStep> usersFirstLoginStep = new ConcurrentHashMap<>();
 
   protected static boolean isThatUserMustChangePasswordOnFirstLogin = false;
   protected static boolean isThatUserMustFillEmailAddressOnFirstLogin = false;
@@ -142,8 +141,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
 
     if (proposeToUserToChangePassword()) {
       throw new AuthenticationPasswordAboutToExpireException(
-          "The password has to be changed for the user" + getUser() != null ?
-              "Login=" + getUser().getLogin() : "");
+          "The password has to be changed for the user with login " + getUser().getLogin());
     }
 
     if (mustForceUserToChangePassword()) {

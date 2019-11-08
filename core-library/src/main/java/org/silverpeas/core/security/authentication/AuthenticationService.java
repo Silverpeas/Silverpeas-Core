@@ -96,7 +96,7 @@ public class AuthenticationService {
   private static final String USER_LOGIN_COLUMN_NAME;
   private static final String USER_DOMAIN_COLUMN_NAME;
   private static final String ERROR_PREFIX = "Error";
-  private static int m_AutoInc = 1;
+  private static int autoInc = 1;
 
   @Inject
   private AdminController adminController;
@@ -171,45 +171,52 @@ public class AuthenticationService {
    * he can be identified from it.
    */
   public String authenticate(final AuthenticationCredential userCredential) {
-    String key = null;
-    if (userCredential.getLogin() != null) {
-      try {
-        if (userCredential.isPasswordSet()) {
-          key = authenticateByLoginAndPasswordAndDomain(userCredential);
-        } else {
-          key = authenticateByLoginAndDomain(userCredential);
-        }
-      } catch (AuthenticationException ae) {
-        String errorCause = ERROR_AUTHENTICATION_FAILURE;
-        if (ae instanceof AuthenticationBadCredentialException) {
-          List<Domain> listDomain = getAllDomains();
-          if(listDomain != null && listDomain.size() > 1) {
-            errorCause = ERROR_INCORRECT_LOGIN_PWD_DOMAIN;
-          } else {
-            errorCause = ERROR_INCORRECT_LOGIN_PWD;
-          }
-        } else if (ae instanceof AuthenticationHostException) {
-          errorCause = ERROR_AUTHENTICATION_FAILURE;
-        } else if (ae instanceof AuthenticationPwdNotAvailException) {
-          errorCause = ERROR_PASSWORD_NOT_AVAILABLE;
-        } else if (ae instanceof AuthenticationPasswordExpired) {
-          errorCause = ERROR_PWD_EXPIRED;
-        } else if (ae instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
-          errorCause = ERROR_PWD_MUST_BE_CHANGED;
-        } else if (ae instanceof AuthenticationPasswordMustBeChangedOnFirstLogin) {
-          errorCause = UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
-        } else if (ae instanceof AuthenticationUserAccountBlockedException) {
-          errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
-        } else if (ae instanceof AuthenticationUserAccountDeactivatedException) {
-          errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED;
-        }
+    if (userCredential.getLogin() == null) {
+      return null;
+    }
 
-        SilverLogger.getLogger(this)
-            .error("authentication error ({0}) with login ''{1}'' and domain id ''{2}''",
-                errorCause, userCredential.getLogin(), userCredential.getDomainId());
-
-        return errorCause;
+    String key;
+    try {
+      key = checkAuthentication(userCredential);
+    } catch (AuthenticationBadCredentialException e) {
+      List<Domain> listDomain = getAllDomains();
+      if (listDomain != null && listDomain.size() > 1) {
+        key = ERROR_INCORRECT_LOGIN_PWD_DOMAIN;
+      } else {
+        key = ERROR_INCORRECT_LOGIN_PWD;
       }
+    } catch (AuthenticationPwdNotAvailException e) {
+      key = ERROR_PASSWORD_NOT_AVAILABLE;
+    } catch (AuthenticationPasswordExpired e) {
+      key = ERROR_PWD_EXPIRED;
+    } catch (AuthenticationPasswordMustBeChangedAtNextLogon e) {
+      key = ERROR_PWD_MUST_BE_CHANGED;
+    } catch (AuthenticationPasswordMustBeChangedOnFirstLogin e) {
+      key = UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
+    } catch (AuthenticationUserAccountBlockedException e) {
+      key = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
+    } catch (AuthenticationUserAccountDeactivatedException e) {
+      key = UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED;
+    } catch (AuthenticationException ae) {
+      key = ERROR_AUTHENTICATION_FAILURE;
+    }
+
+    if (key != null && key.startsWith(ERROR_PREFIX)) {
+      SilverLogger.getLogger(this)
+          .error("authentication error ({0}) with login ''{1}'' and domain id ''{2}''", key,
+              userCredential.getLogin(), userCredential.getDomainId());
+    }
+
+    return key;
+  }
+
+  private String checkAuthentication(final AuthenticationCredential userCredential)
+      throws AuthenticationException {
+    final String key;
+    if (userCredential.isPasswordSet()) {
+      key = authenticateByLoginAndPasswordAndDomain(userCredential);
+    } else {
+      key = authenticateByLoginAndDomain(userCredential);
     }
     return key;
   }
@@ -442,9 +449,9 @@ public class AuthenticationService {
    * @param login a user login
    * @return the generated authentication key.
    */
-  private String computeGenerationKey(String login) {
+  private static String computeGenerationKey(String login) {
     // Random key generation
-    long nStart = login.hashCode() * new Date().getTime() * (m_AutoInc++);
+    long nStart = login.hashCode() * new Date().getTime() * (autoInc++);
     Random rand = new Random(nStart);
     int key = rand.nextInt();
 
