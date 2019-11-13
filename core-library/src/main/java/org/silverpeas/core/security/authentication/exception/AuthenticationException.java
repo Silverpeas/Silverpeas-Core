@@ -29,48 +29,30 @@
 
 package org.silverpeas.core.security.authentication.exception;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 /**
- * @author tleroi
- * @version
+ * Exception thrown when an error occurs while a user is authenticating himself against
+ * Silverpeas.
+ * @author tleroi, mmoquillon
  */
 public class AuthenticationException extends SilverpeasException {
 
-  private static final long serialVersionUID = 8552020923204390308L;
+  private static final long serialVersionUID = -2893207451975784160L;
 
-  /**
-   * -------------------------------------------------------------------------- constructor
-   * constructor
-   */
-  public AuthenticationException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  public AuthenticationException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public AuthenticationException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public AuthenticationException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public AuthenticationException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AuthenticationException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public AuthenticationException(final Throwable cause) {
+    super(cause);
   }
 
   public void accept(AuthenticationExceptionVisitor visitor) throws AuthenticationException {
     visitor.visit(this);
-  }
-
-  /**
-   * -------------------------------------------------------------------------- getModule getModule
-   */
-  public String getModule() {
-    return "authentication";
   }
 }

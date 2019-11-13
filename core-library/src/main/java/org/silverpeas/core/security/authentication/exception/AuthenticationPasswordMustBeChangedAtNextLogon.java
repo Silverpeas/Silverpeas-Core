@@ -24,7 +24,20 @@
 package org.silverpeas.core.security.authentication.exception;
 
 public class AuthenticationPasswordMustBeChangedAtNextLogon extends AuthenticationException {
-  public AuthenticationPasswordMustBeChangedAtNextLogon(String extraParams) {
-    super(null, ERROR, "authentication.EX_PASSWORD_MUST_BE_CHANGED_AT_NEXT_LOGON", extraParams);
+
+  private static final long serialVersionUID = -4913081751513865879L;
+
+  public AuthenticationPasswordMustBeChangedAtNextLogon(final String message,
+      final String... parameters) {
+    super(message, parameters);
+  }
+
+  public AuthenticationPasswordMustBeChangedAtNextLogon(final String message,
+      final Throwable cause) {
+    super(message, cause);
+  }
+
+  public AuthenticationPasswordMustBeChangedAtNextLogon(final Throwable cause) {
+    super(cause);
   }
 }

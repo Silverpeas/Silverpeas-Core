@@ -23,28 +23,21 @@
  */
 package org.silverpeas.core.security.authentication.exception;
 
-/**
- *
- */
 public class AuthenticationUserAccountDeactivatedException extends AuthenticationException {
 
-  public AuthenticationUserAccountDeactivatedException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  private static final long serialVersionUID = -2238547859290425020L;
+
+  public AuthenticationUserAccountDeactivatedException(final String message,
+      final String... parameters) {
+    super(message, parameters);
   }
 
-  public AuthenticationUserAccountDeactivatedException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public AuthenticationUserAccountDeactivatedException(final String message,
+      final Throwable cause) {
+    super(message, cause);
   }
 
-  public AuthenticationUserAccountDeactivatedException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AuthenticationUserAccountDeactivatedException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public AuthenticationUserAccountDeactivatedException(final Throwable cause) {
+    super(cause);
   }
 }

@@ -24,7 +24,20 @@
 package org.silverpeas.core.security.authentication.exception;
 
 public class AuthenticationPasswordMustBeChangedOnFirstLogin extends AuthenticationException {
-  public AuthenticationPasswordMustBeChangedOnFirstLogin(String extraParams) {
-    super(null, ERROR, "authentication.EX_PASSWORD_MUST_BE_CHANGED_ON_FIRST_LOGIN", extraParams);
+
+  private static final long serialVersionUID = -9059548758621418900L;
+
+  public AuthenticationPasswordMustBeChangedOnFirstLogin(final String message,
+      final String... parameters) {
+    super(message, parameters);
+  }
+
+  public AuthenticationPasswordMustBeChangedOnFirstLogin(final String message,
+      final Throwable cause) {
+    super(message, cause);
+  }
+
+  public AuthenticationPasswordMustBeChangedOnFirstLogin(final Throwable cause) {
+    super(cause);
   }
 }
