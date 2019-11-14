@@ -1564,6 +1564,12 @@ if (typeof window.sp === 'undefined') {
       }
     },
     element : {
+      removeAllEventListenerOfAndGettingClone: function(elementOrCssSelector) {
+        var element = typeof elementOrCssSelector === 'string' ? document.querySelector(elementOrCssSelector) : elementOrCssSelector;
+        var elClone = element.cloneNode(true);
+        element.parentNode.replaceChild(elClone, element);
+        return elClone;
+      },
       isVisible: function (element) {
         return element === document.body || element.offsetParent !== null;
       },
