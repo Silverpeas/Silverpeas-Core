@@ -24,9 +24,19 @@
 package org.silverpeas.core.security.authentication.exception;
 
 public class AuthenticationUserMustAcceptTermsOfService extends AuthenticationException {
-  private static final long serialVersionUID = 9019312668487778347L;
 
-  public AuthenticationUserMustAcceptTermsOfService() {
-    super(null, WARNING, "authentication.EX_USER_MUST_ACCEPT_TERMS_OF_SERVICE", "");
+  private static final long serialVersionUID = -2474749140822463181L;
+
+  public AuthenticationUserMustAcceptTermsOfService(final String message,
+      final String... parameters) {
+    super(message, parameters);
+  }
+
+  public AuthenticationUserMustAcceptTermsOfService(final String message, final Throwable cause) {
+    super(message, cause);
+  }
+
+  public AuthenticationUserMustAcceptTermsOfService(final Throwable cause) {
+    super(cause);
   }
 }

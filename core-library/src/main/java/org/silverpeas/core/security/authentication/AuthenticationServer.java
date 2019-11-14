@@ -23,21 +23,19 @@
  */
 package org.silverpeas.core.security.authentication;
 
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationExceptionVisitor;
 import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationPasswordAboutToExpireException;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationPwdChangeNotAvailException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationPwdChangeNotAvailException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPwdNotAvailException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,18 +89,25 @@ public class AuthenticationServer {
       for (int i = 0; i < nbServers; i++) {
         String serverName = "autServer" + i;
         if (serverSettings.getBoolean(serverName + ".enabled", true)) {
-          try {
-            Authentication authenticationWithAServer = (Authentication) Class.forName(
-                serverSettings.getString(serverName + ".type")).newInstance();
-            authenticationWithAServer.init(serverName, serverSettings);
-            authServers.add(authenticationWithAServer);
-          } catch (Exception ex) {
-            SilverLogger.getLogger(this).error(authServerName + " / " + serverName, ex);
-          }
+          addAuthenticationService(serverName, authServerName, serverSettings);
         }
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Server=" + authServerName, e);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private void addAuthenticationService(final String serverName, final String authServerName,
+      final SettingBundle serverSettings) {
+    try {
+      Constructor<Authentication> constructor = ((Class<Authentication>) Class.forName(
+          serverSettings.getString(serverName + ".type"))).getConstructor();
+      Authentication authenticationWithAServer = constructor.newInstance();
+      authenticationWithAServer.init(serverName, serverSettings);
+      authServers.add(authenticationWithAServer);
+    } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(authServerName + " / " + serverName, ex);
     }
   }
 
@@ -140,8 +145,7 @@ public class AuthenticationServer {
   public void changePassword(final AuthenticationCredential credential,
       final String newPassword) throws AuthenticationException {
     if (!passwordChangeAllowed) {
-      throw new AuthenticationPwdChangeNotAvailException("AuthenticationServer.changePassword",
-          SilverpeasException.ERROR, "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
+      throw new AuthenticationPwdChangeNotAvailException("The password modification isn't available");
     }
 
     doSecurityOperation(new SecurityOperation(SecurityOperation.P_CHANGE, credential) {
@@ -177,8 +181,7 @@ public class AuthenticationServer {
   public void resetPassword(final String login, final String newPassword) throws
       AuthenticationException {
     if (!passwordChangeAllowed) {
-      throw new AuthenticationPwdChangeNotAvailException("AuthenticationServer.resetPassword",
-          SilverpeasException.ERROR, "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
+      throw new AuthenticationPwdChangeNotAvailException("The password reset isn't available");
     }
 
     doSecurityOperation(new SecurityOperation(SecurityOperation.P_RESET,
@@ -192,8 +195,7 @@ public class AuthenticationServer {
 
   private void doSecurityOperation(SecurityOperation op) throws AuthenticationException {
     if (!StringUtil.isDefined(op.getAuthenticationCredential().getLogin())) {
-      throw new AuthenticationException("AuthenticationServer." + op.getName(),
-          SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
+      throw new AuthenticationException("The login of the user isn't set!");
     }
 
     boolean serverNotFound = true;
@@ -205,8 +207,7 @@ public class AuthenticationServer {
           serverNotFound = false;
         } catch (AuthenticationException ex) {
           AuthenticationExceptionProcessor processor =
-              new AuthenticationExceptionProcessor(op.getName(), authServer,
-              op.getAuthenticationCredential());
+              new AuthenticationExceptionProcessor(op);
           serverNotFound = processor.processAuthenticationException(ex);
           lastException = ex;
         }
@@ -218,12 +219,9 @@ public class AuthenticationServer {
 
     if (serverNotFound) {
       if (lastException == null) {
-        throw new AuthenticationException("AuthenticationServer." + op.getName(),
-            SilverpeasException.ERROR, "authentication.EX_NO_SERVER_AVAILABLE");
+        throw new AuthenticationException("No server definition found");
       } else {
-        throw new AuthenticationException("AuthenticationServer." + op.getName(),
-            SilverpeasException.ERROR, "authentication.EX_AUTHENTICATION_FAILED_LAST_ERROR",
-            lastException);
+        throw lastException;
       }
     }
   }
@@ -254,16 +252,11 @@ public class AuthenticationServer {
 
   private class AuthenticationExceptionProcessor implements AuthenticationExceptionVisitor {
 
-    private final Authentication authentication;
     private final AuthenticationCredential credential;
     private boolean continueAuthentication = true;
-    private final String operation;
 
-    public AuthenticationExceptionProcessor(String authOperation, Authentication authentication,
-        AuthenticationCredential credential) {
-      this.operation = authOperation;
-      this.authentication = authentication;
-      this.credential = credential;
+    public AuthenticationExceptionProcessor(final SecurityOperation operation) {
+      this.credential = operation.getAuthenticationCredential();
     }
 
     public boolean processAuthenticationException(AuthenticationException ex) throws
@@ -297,7 +290,7 @@ public class AuthenticationServer {
     }
 
     @Override
-    public void visit(AuthenticationPwdNotAvailException ex) throws AuthenticationException {
+    public void visit(AuthenticationPwdNotAvailException ex) {
       continueAuthentication = true;
     }
 
@@ -306,14 +299,13 @@ public class AuthenticationServer {
      * is about to expire.
      */
     @Override
-    public void visit(AuthenticationPasswordAboutToExpireException ex) throws
-        AuthenticationException {
+    public void visit(AuthenticationPasswordAboutToExpireException ex) {
       credential.getCapabilities().put(Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE, Boolean.TRUE);
       continueAuthentication = false;
     }
 
     @Override
-    public void visit(AuthenticationPwdChangeNotAvailException ex) throws AuthenticationException {
+    public void visit(AuthenticationPwdChangeNotAvailException ex) {
       continueAuthentication = true;
     }
   }

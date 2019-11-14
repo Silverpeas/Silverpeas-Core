@@ -91,7 +91,8 @@ public class UserMustAcceptTermsOfServiceVerifier extends AbstractAuthentication
     if (isTermsOfServiceAcceptanceDateIsExpired()) {
       // Caching for 10 minutes
       tosToken = applicationCache.add(this, LIVE_10_MINUTES);
-      throw new AuthenticationUserMustAcceptTermsOfService();
+      throw new AuthenticationUserMustAcceptTermsOfService(
+          "The user must accept the terms of service");
     }
     return this;
   }

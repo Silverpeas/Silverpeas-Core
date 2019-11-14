@@ -26,7 +26,6 @@ package org.silverpeas.core.security.authentication.verifier;
 import org.apache.commons.lang3.time.DateUtils;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
@@ -34,8 +33,7 @@ import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.scheduler.trigger.TimeUnit;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationNoMoreUserConnectionAttemptException;
+import org.silverpeas.core.security.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -57,7 +55,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifier {
 
   private static final Map<String, UserCanTryAgainToLoginVerifier> cache =
-      new ConcurrentHashMap<String, UserCanTryAgainToLoginVerifier>();
+      new ConcurrentHashMap<>();
 
   private static boolean isActivated = false;
   private static boolean isCacheCleanerInitialized = false;
@@ -163,8 +161,6 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
         clearCache();
       }
       throw new AuthenticationNoMoreUserConnectionAttemptException(
-          "UserCanTryAgainToLoginVerifier.verify()", SilverpeasException.ERROR,
-          "authentication.EX_VERIFY_USER_CAN_TRY_AGAIN_TO_LOGIN",
           getUser() != null ? "Login=" + getUser().getLogin() : "");
     }
     return this;
@@ -250,7 +246,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
    */
   private class CacheCleanerJob extends Job {
 
-    public final static String JOB_NAME = "AuthenticationUserConnectionAttemptsVerifierCleanerJob";
+    public static final String JOB_NAME = "AuthenticationUserConnectionAttemptsVerifierCleanerJob";
 
     /**
      * Default constructor.

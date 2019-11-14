@@ -24,7 +24,18 @@
 package org.silverpeas.core.security.authentication.exception;
 
 public class AuthenticationPasswordExpired extends AuthenticationException {
-  public AuthenticationPasswordExpired(String extraParams) {
-    super(null, ERROR, "authentication.EX_PASSWORD_EXPIRED", extraParams);
+
+  private static final long serialVersionUID = 5100036068286015388L;
+
+  public AuthenticationPasswordExpired(final String message, final String... parameters) {
+    super(message, parameters);
+  }
+
+  public AuthenticationPasswordExpired(final String message, final Throwable cause) {
+    super(message, cause);
+  }
+
+  public AuthenticationPasswordExpired(final Throwable cause) {
+    super(cause);
   }
 }

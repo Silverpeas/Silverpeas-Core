@@ -24,11 +24,9 @@
 package org.silverpeas.core.security.authentication;
 
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.security.authentication.exception
-    .AuthenticationPwdChangeNotAvailException;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.security.authentication.exception.AuthenticationPwdChangeNotAvailException;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * A set of security-related operations about a user authentication.
@@ -44,8 +42,6 @@ import org.silverpeas.core.exception.SilverpeasException;
  * @author mmoquillon
  */
 public abstract class Authentication {
-
-  protected static final String module = "authentication";
 
   protected boolean enabled = true;
 
@@ -157,7 +153,8 @@ public abstract class Authentication {
    * @throws AuthenticationException if no connection can be established with a server of the remote
    * authentication service.
    */
-  abstract protected <T> AuthenticationConnection<T> openConnection() throws AuthenticationException;
+  protected abstract <T> AuthenticationConnection<T> openConnection()
+      throws AuthenticationException;
 
   /**
    * Closes the connection that was previously opened with the server of the remote authentication
@@ -168,7 +165,7 @@ public abstract class Authentication {
    * @throws AuthenticationException if no connection was previously opened or if the connection
    * cannot be closed for any reason.
    */
-  abstract protected <T> void closeConnection(AuthenticationConnection<T> connection)
+  protected abstract <T> void closeConnection(AuthenticationConnection<T> connection)
       throws AuthenticationException;
 
   /**
@@ -179,8 +176,8 @@ public abstract class Authentication {
    * @param <T> the type of the authentication server's connector.
    * @throws AuthenticationException if an error occurs while authenticating the user.
    */
-  abstract protected <T> void doAuthentication(AuthenticationConnection<T> connection,
-                                               AuthenticationCredential credential) throws AuthenticationException;
+  protected abstract <T> void doAuthentication(AuthenticationConnection<T> connection,
+       AuthenticationCredential credential) throws AuthenticationException;
 
   /**
    * Does the password change by using the specified connection with the remote server and with
@@ -196,11 +193,9 @@ public abstract class Authentication {
    * @throws AuthenticationException if an error occurs while changing the user password.
    */
   protected <T> void doChangePassword(AuthenticationConnection<T> connection,
-                                      AuthenticationCredential credential,
-                                      String newPassword) throws AuthenticationException {
-    throw new AuthenticationPwdChangeNotAvailException(
-        "AuthenticationServer.changePassword", SilverpeasException.ERROR,
-        "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
+        AuthenticationCredential credential,
+        String newPassword) throws AuthenticationException {
+    throw new AuthenticationPwdChangeNotAvailException("The password modification isn't available");
   }
 
   /**
@@ -216,11 +211,9 @@ public abstract class Authentication {
    * @param <T> the type of the authentication server's connector.
    * @throws AuthenticationException if an error occurs while resetting the user password.
    */
-  protected <T> void doResetPassword(AuthenticationConnection<T> connection, String login, String newPassword)
-      throws AuthenticationException {
-    throw new AuthenticationPwdChangeNotAvailException(
-        "AuthenticationServer.doResetPassword", SilverpeasException.ERROR,
-        "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
+  protected <T> void doResetPassword(AuthenticationConnection<T> connection, String login,
+      String newPassword) throws AuthenticationException {
+    throw new AuthenticationPwdChangeNotAvailException("The password reset isn't available");
   }
 
   private void doSecurityOperation(SecurityOperation op) throws AuthenticationException {
@@ -236,8 +229,7 @@ public abstract class Authentication {
         }
       } catch (AuthenticationException closeEx) {
         // The exception that could occur in the emergency stop is not interesting.
-        SilverTrace.error(module, "Authentication." + op.getName(),
-            "root.EX_EMERGENCY_CONNECTION_CLOSE_FAILED", "", closeEx);
+        SilverLogger.getLogger(this).error(closeEx);
       }
     }
   }

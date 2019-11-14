@@ -23,28 +23,20 @@
  */
 package org.silverpeas.core.security.authentication.exception;
 
-/**
- *
- */
 public class AuthenticationUserAccountBlockedException extends AuthenticationException {
 
-  public AuthenticationUserAccountBlockedException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  private static final long serialVersionUID = 6603968149549138503L;
+
+  public AuthenticationUserAccountBlockedException(final String message,
+      final String... parameters) {
+    super(message, parameters);
   }
 
-  public AuthenticationUserAccountBlockedException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public AuthenticationUserAccountBlockedException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public AuthenticationUserAccountBlockedException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AuthenticationUserAccountBlockedException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public AuthenticationUserAccountBlockedException(final Throwable cause) {
+    super(cause);
   }
 }

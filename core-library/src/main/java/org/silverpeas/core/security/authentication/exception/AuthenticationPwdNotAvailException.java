@@ -29,36 +29,20 @@
 
 package org.silverpeas.core.security.authentication.exception;
 
-/**
- * @author tleroi
- * @version
- */
 public class AuthenticationPwdNotAvailException extends AuthenticationException {
 
-  private static final long serialVersionUID = 3338040913682812355L;
+  private static final long serialVersionUID = -8615348829881392380L;
 
-  /**
-   * -------------------------------------------------------------------------- constructor
-   * constructor
-   */
-  public AuthenticationPwdNotAvailException(String callingClass,
-      int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public AuthenticationPwdNotAvailException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public AuthenticationPwdNotAvailException(String callingClass,
-      int errorLevel, String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public AuthenticationPwdNotAvailException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public AuthenticationPwdNotAvailException(String callingClass,
-      int errorLevel, String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AuthenticationPwdNotAvailException(String callingClass,
-      int errorLevel, String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public AuthenticationPwdNotAvailException(final Throwable cause) {
+    super(cause);
   }
 
   @Override

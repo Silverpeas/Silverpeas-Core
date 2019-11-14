@@ -29,36 +29,20 @@
 
 package org.silverpeas.core.security.authentication.exception;
 
-/**
- * @author tleroi
- * @version
- */
 public class AuthenticationBadCredentialException extends AuthenticationException {
 
-  private static final long serialVersionUID = -6224596419804291843L;
+  private static final long serialVersionUID = 415496726065000804L;
 
-  /**
-   * -------------------------------------------------------------------------- constructor
-   * constructor
-   */
-  public AuthenticationBadCredentialException(String callingClass,
-      int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public AuthenticationBadCredentialException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public AuthenticationBadCredentialException(String callingClass,
-      int errorLevel, String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public AuthenticationBadCredentialException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public AuthenticationBadCredentialException(String callingClass,
-      int errorLevel, String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AuthenticationBadCredentialException(String callingClass,
-      int errorLevel, String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public AuthenticationBadCredentialException(final Throwable cause) {
+    super(cause);
   }
 
   @Override
