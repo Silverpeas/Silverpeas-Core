@@ -29,6 +29,7 @@
 package org.silverpeas.core.admin.service;
 
 import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -50,6 +51,7 @@ import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
@@ -58,18 +60,11 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyMap;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
 import static org.silverpeas.core.util.ArrayUtil.EMPTY_STRING_ARRAY;
 
@@ -225,6 +220,12 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public List<ComponentInstLight> getComponentsWithParameterValue(String param, String value) {
     return getAdminService().getComponentsWithParameter(param, value);
+  }
+
+  @Override
+  public Map<String, Map<String, String>> getParameterValuesByComponentIdThenByParamName(
+      final Collection<String> componentIds, final Collection<String> paramNames) {
+    return getAdminService().getParameterValuesByComponentIdThenByParamName(componentIds, paramNames);
   }
 
   // -------------------------------------------------------------------
@@ -497,6 +498,19 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
+  public Map<String, Set<String>> getUserProfilesByComponentId(final String userId,
+      final Collection<String> componentIds) {
+    try {
+      return getAdminService().getUserProfilesByComponentId(userId, componentIds);
+    } catch (Exception e) {
+      if (componentIds.stream().anyMatch(i -> !isToolAvailable(i))) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
+      }
+      return emptyMap();
+    }
+  }
+
+  @Override
   public String[] getUserProfiles(String userId, String componentId, ProfiledObjectId objectId) {
     try {
       return getAdminService().getProfilesByObjectAndUserId(objectId, componentId, userId);
@@ -507,11 +521,23 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public Map<Integer, List<String>> getUserObjectProfiles(final String userId,
-      final String componentId, final ProfiledObjectType objectType) {
+  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
+      final String userId, final Collection<String> componentIds,
+      final ProfiledObjectIds profiledObjectIds) {
     try {
-      return getAdminService().getProfilesByObjectTypeAndUserId(objectType.getCode(),
-          componentId, userId);
+      return getAdminService()
+          .getUserProfilesByComponentIdAndObjectId(profiledObjectIds, componentIds, userId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return emptyMap();
+    }
+  }
+
+  @Override
+  public Map<Integer, List<String>> getUserObjectProfiles(final String userId,
+      final String componentId, final ProfiledObjectType profiledObjectType) {
+    try {
+      return getAdminService().getProfilesByObjectTypeAndUserId(profiledObjectType, componentId, userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
@@ -690,17 +716,6 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public String[] getAllComponentIdsRecur(String sSpaceId, String sUserId,
-      String sComponentRootName, boolean inCurrentSpace, boolean inAllSpaces) {
-    try {
-      return getAdminService().getAllComponentIdsRecur(sSpaceId,
-          sUserId, sComponentRootName, inCurrentSpace, inAllSpaces);
-    } catch (Exception e) {
-      return EMPTY_STRING_ARRAY;
-    }
-  }
-
-  @Override
   public List<SpaceInstLight> getRootSpacesContainingComponent(String userId, String componentName) {
     try {
       return getAdminService().getRootSpacesContainingComponent(userId, componentName);
@@ -763,19 +778,17 @@ public class DefaultOrganizationController implements OrganizationController {
     return isComponentAvailableToUser(componentId, userId);
   }
 
-  /**
-   * Is the specified component instance available among the components instances accessible by the
-   * specified user?
-   * </p>
-   * A component is an application in Silverpeas to perform some tasks and to manage some resources.
-   * Each component in Silverpeas can be instanciated several times, each of them corresponding then
-   * to a running application in Silverpeas and it is uniquely identified from others instances by a
-   * given identifier.
-   *
-   * @param componentId the unique identifier of a component instance.
-   * @param userId the unique identifier of a user.
-   * @return true if the component instance is available, false otherwise.
-   */
+
+  @Override
+  public List<String> getAvailableComponentsByUser(final String userId) {
+    try {
+      return getAdminService().getAvailableComponentsByUser(userId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return Collections.emptyList();
+    }
+  }
+
   @Override
   public boolean isComponentAvailableToUser(String componentId, String userId) {
     try {
@@ -1010,57 +1023,46 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public List<String> getSearchableComponentsByCriteria(ComponentSearchCriteria criteria) {
     final List<String> componentIds;
+    final String userId = criteria.getUser().getId();
     if (criteria.hasCriterionOnWorkspace()) {
       if (criteria.hasCriterionOnComponentInstances()) {
-        componentIds = new ArrayList<>();
-        componentIds.addAll(criteria.getComponentInstanceIds());
+        componentIds = new ArrayList<>(criteria.getComponentInstanceIds());
       } else {
-        String[] availableComponentIds = getAvailCompoIds(criteria.getWorkspaceId(),
-            criteria.getUser().getId());
-        componentIds = Stream.of(availableComponentIds)
-            .filter(c -> isSearchable(c, null))
-            .collect(Collectors.toList());
+        final String[] availableComponentIds = getAvailCompoIds(criteria.getWorkspaceId(), userId);
+        componentIds = extractSearchableComponents(availableComponentIds, userId);
       }
     } else {
-      String[] availableComponentIds = getAvailCompoIds(criteria.getUser().getId());
-      List<String> excludedComponentIds = getComponentsExcludedFromGlobalSearch(
-          criteria.getUser().getId());
-      componentIds = Stream.of(availableComponentIds)
-          .filter(c -> isSearchable(c, excludedComponentIds))
-          .collect(Collectors.toList());
+      final String[] availableComponentIds = getAvailCompoIds(userId);
+      componentIds = extractSearchableComponents(availableComponentIds, userId);
     }
     return componentIds;
   }
 
-  private boolean isSearchable(String componentId, List<String> exclusionList) {
-    if (exclusionList != null && !exclusionList.isEmpty() && exclusionList.contains(componentId)) {
-      return false;
-    }
-    if (componentId.startsWith("silverCrawler")
-        || componentId.startsWith("gallery")
-        || componentId.startsWith("kmelia")) {
-      boolean isPrivateSearch = "yes".equalsIgnoreCase(
-          getComponentParameterValue(componentId, "privateSearch"));
-      return !isPrivateSearch;
-    } else {
-      return true;
-    }
+  private List<String> extractSearchableComponents(String[] availableComponentIds, String userId) {
+    final Set<String> excludedComponentIds = getComponentsExcludedFromGlobalSearch(userId);
+    return Stream.of(availableComponentIds)
+        .filter(c -> !excludedComponentIds.contains(c))
+        .collect(Collectors.toList());
   }
 
-  private List<String> getComponentsExcludedFromGlobalSearch(String userId) {
-    List<String> excluded = new ArrayList<>();
+  private Set<String> getComponentsExcludedFromGlobalSearch(String userId) {
+    final Set<String> excluded = new HashSet<>();
 
     // exclude all components of all excluded spaces
-    List<String> spaces = getItemsExcludedFromGlobalSearch("SpacesExcludedFromGlobalSearch");
-    for (String space : spaces) {
+    final List<String> spaces = getItemsExcludedFromGlobalSearch("SpacesExcludedFromGlobalSearch");
+    for (final String space : spaces) {
       String[] availableComponentIds = getAvailCompoIds(space, userId);
       excluded.addAll(Arrays.asList(availableComponentIds));
     }
 
     // exclude components explicitly excluded
-    List<String> components =
+    final List<String> components =
         getItemsExcludedFromGlobalSearch("ComponentsExcludedFromGlobalSearch");
     excluded.addAll(components);
+
+    // exclude components (from instance parameter 'privateSearch')
+    getAdminService().getComponentsWithParameter("privateSearch", "yes")
+        .forEach(c -> excluded.add(c.getId()));
 
     return excluded;
   }
@@ -1114,6 +1116,12 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public SpaceWithSubSpacesAndComponents getFullTreeview(String userId) throws AdminException {
     return getAdminService().getAllowedFullTreeview(userId);
+  }
+
+  @Override
+  public SpaceWithSubSpacesAndComponents getFullTreeviewOnComponentName(final String userId,
+      final String componentName) throws AdminException {
+    return getAdminService().getAllowedFullTreeviewOnComponentName(userId, componentName);
   }
 
   @Override

@@ -40,7 +40,7 @@ public class ProfileInst extends BaseRightProfile {
 
   private static final long serialVersionUID = 3576802842674205633L;
 
-  private String componentFatherId = "";
+  private int componentFatherId = -1;
   private ProfiledObjectId objectId = ProfiledObjectId.NOTHING;
   private ProfiledObjectId parentObjectId = ProfiledObjectId.NOTHING;
 
@@ -48,7 +48,6 @@ public class ProfileInst extends BaseRightProfile {
    * Copy this profile to get another profile with the same value.
    * @return a copy of this profile.
    */
-  @SuppressWarnings("unchecked")
   public ProfileInst copy() {
     ProfileInst pi = new ProfileInst();
     pi.setName(getName());
@@ -70,7 +69,7 @@ public class ProfileInst extends BaseRightProfile {
    * {@link ProfiledObjectId#NOTHING}.
    * @param sComponentFatherId the unique identifier of a component instance
    */
-  public void setComponentFatherId(String sComponentFatherId) {
+  public void setComponentFatherId(int sComponentFatherId) {
     componentFatherId = sComponentFatherId;
   }
 
@@ -80,7 +79,7 @@ public class ProfileInst extends BaseRightProfile {
    * {@link ProfileInst#getObjectId()} returns other than {@link ProfiledObjectId#NOTHING}.
    * @return the unique identifier of a component instance.
    */
-  public String getComponentFatherId() {
+  public int getComponentFatherId() {
     return componentFatherId;
   }
 

@@ -25,6 +25,12 @@
 
 -->
 <dataset>
+  <st_componentinstance id="100" spaceId="1" name="A kmelia 100" componentName="kmelia" orderNum="1"
+                        isPublic="0" isHidden="0" isInheritanceBlocked="1"/>
+  <st_componentinstance id="200" spaceId="1" name="A kmelia 200" componentName="kmelia" orderNum="2"
+                        isPublic="1" isHidden="0" isInheritanceBlocked="0"/>
+  <st_componentinstance id="300" spaceId="1" name="A kmelia 300" componentName="kmelia" orderNum="3"
+                        isPublic="0" isHidden="1" isInheritanceBlocked="0"/>
   <sb_publication_publifather pubid="100" nodeid="110" instanceid="kmelia200" aliasuserid="0"
                               aliasdate="2009/10/18" puborder="0" />
   <sb_publication_publifather pubid="101" nodeid="110" instanceid="kmelia200" aliasuserid="0"

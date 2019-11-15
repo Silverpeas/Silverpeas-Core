@@ -46,7 +46,7 @@ public class WysiwygEditorConfigRegistry {
   }
 
   public static WysiwygEditorConfigRegistry get() {
-    return ServiceProvider.getService(WysiwygEditorConfigRegistry.class);
+    return ServiceProvider.getSingleton(WysiwygEditorConfigRegistry.class);
   }
 
   /**

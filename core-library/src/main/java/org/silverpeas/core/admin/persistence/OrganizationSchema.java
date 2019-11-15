@@ -55,7 +55,7 @@ public class OrganizationSchema {
   private GroupUserRoleTable groupUserRole;
 
   public static OrganizationSchema get() {
-    return ServiceProvider.getService(OrganizationSchema.class);
+    return ServiceProvider.getSingleton(OrganizationSchema.class);
   }
 
   protected OrganizationSchema() {

@@ -47,7 +47,9 @@ import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +71,7 @@ public class ComponentInstManager {
   private OrganizationSchema organizationSchema;
 
   public static ComponentInstManager get() {
-    return ServiceProvider.getService(ComponentInstManager.class);
+    return ServiceProvider.getSingleton(ComponentInstManager.class);
   }
 
   protected ComponentInstManager() {
@@ -611,6 +613,46 @@ public class ComponentInstManager {
       return organizationSchema.instanceData().getAllParametersInComponent(compLocalId);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("parameters of component", compLocalId), e);
+    }
+  }
+
+  /**
+   * Get the value of given parameter and about given component.
+   * @param componentId component identifier.
+   * @param paramName parameter name.
+   * @param ignoreCase true to ignore case on parameter name.
+   * @return return the value as string, or {@link StringUtil#EMPTY} if parameter has not been
+   * found.
+   * @throws AdminException on database error.
+   */
+  public String getParameterValueByComponentAndParamName(final Integer componentId,
+      final String paramName, final boolean ignoreCase) throws AdminException {
+    try {
+      return organizationSchema.instanceData()
+          .getParameterValueByComponentAndParamName(componentId, paramName, ignoreCase);
+    } catch (Exception e) {
+      throw new AdminException(MessageFormat
+          .format("Can''t get parameter value of parameter {0} on instance {1}",
+              String.valueOf(componentId), paramName), e);
+    }
+  }
+
+  /**
+   * Gets all parameters values by component and by parameter name.
+   * @param componentIds list of component identifier.
+   * @param paramNames optional list of parameter name. All parameters are retrieved if it is not
+   * filled or null
+   * @return a map filled with couples of parameter name / value per component instance identifier.
+   * @throws AdminException on database error.
+   */
+  public Map<Integer, Map<String, String>> getParameterValuesByComponentIdThenByParamName(
+      final Collection<Integer> componentIds, final Collection<String> paramNames)
+      throws AdminException {
+    try {
+      return organizationSchema.instanceData()
+          .getParameterValuesByComponentAndByParamName(componentIds, paramNames);
+    } catch (Exception e) {
+      throw new AdminException("Can't get parameter values...", e);
     }
   }
 

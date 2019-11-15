@@ -41,7 +41,7 @@ public interface ContributionContentRendererProvider {
    * @return an implementation of {@link ContributionContentRendererProvider}.
    */
   static ContributionContentRendererProvider get() {
-    return ServiceProvider.getService(ContributionContentRendererProvider.class);
+    return ServiceProvider.getSingleton(ContributionContentRendererProvider.class);
   }
 
   /**

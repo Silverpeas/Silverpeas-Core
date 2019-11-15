@@ -27,6 +27,7 @@ package org.silverpeas.core.workflow.engine.user;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.invocation.InvocationOnMock;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.util.JpaMocker;
@@ -76,6 +77,7 @@ public class TestContext extends CommonAPI4Test {
 
   public void init() {
     try {
+      CacheServiceProvider.clearAllThreadCaches();
       mockUserManager();
       mockReplacementConstructor();
       mockReplacementPersistence();

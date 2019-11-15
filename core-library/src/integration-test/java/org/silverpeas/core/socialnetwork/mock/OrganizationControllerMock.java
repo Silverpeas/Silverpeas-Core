@@ -25,6 +25,7 @@ package org.silverpeas.core.socialnetwork.mock;
 
 
 import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -49,6 +50,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.SilverpeasList;
 
 import javax.annotation.Priority;
@@ -59,6 +61,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.mockito.Mockito.mock;
@@ -143,6 +146,12 @@ public class OrganizationControllerMock implements OrganizationController {
   @Override
   public List<ComponentInstLight> getComponentsWithParameterValue(String paramName,
       String paramValue) {
+    return null;
+  }
+
+  @Override
+  public Map<String, Map<String, String>> getParameterValuesByComponentIdThenByParamName(
+      final Collection<String> componentIds, final Collection<String> paramNames) {
     return null;
   }
 
@@ -260,9 +269,22 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
+  public Map<String, Set<String>> getUserProfilesByComponentId(final String userId,
+      final Collection<String> componentIds) {
+    return Collections.emptyMap();
+  }
+
+  @Override
   public String[] getUserProfiles(final String userId, final String componentId,
       final ProfiledObjectId objectId) {
     return new String[0];
+  }
+
+  @Override
+  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
+      final String userId, final Collection<String> componentIds,
+      final ProfiledObjectIds profiledObjectIds) {
+    return Collections.emptyMap();
   }
 
   @Override
@@ -353,12 +375,6 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public String[] getAllComponentIdsRecur(final String sSpaceId, final String sUserId,
-      final String sComponentRootName, final boolean inCurrentSpace, final boolean inAllSpaces) {
-    return new String[0];
-  }
-
-  @Override
   public List<SpaceInstLight> getRootSpacesContainingComponent(final String userId,
       final String componentName) {
     return null;
@@ -373,6 +389,11 @@ public class OrganizationControllerMock implements OrganizationController {
   @Override
   public boolean isToolAvailable(final String toolId) {
     return false;
+  }
+
+  @Override
+  public List<String> getAvailableComponentsByUser(final String userId) {
+    return Collections.emptyList();
   }
 
   @Override
@@ -519,6 +540,12 @@ public class OrganizationControllerMock implements OrganizationController {
   @Override
   public SpaceWithSubSpacesAndComponents getFullTreeview(final String userId)
       throws AdminException {
+    return null;
+  }
+
+  @Override
+  public SpaceWithSubSpacesAndComponents getFullTreeviewOnComponentName(final String userId,
+      final String componentName) throws AdminException {
     return null;
   }
 

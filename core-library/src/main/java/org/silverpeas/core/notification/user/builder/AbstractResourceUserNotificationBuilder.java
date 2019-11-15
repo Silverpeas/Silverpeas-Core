@@ -87,7 +87,7 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
       isAccessible = ComponentAccessControl.get().isUserAuthorized(userId, instanceId);
     } else if (resource instanceof NodeDetail) {
       final NodeDetail node = (NodeDetail) resource;
-      isAccessible = NodeAccessControl.get().isUserAuthorized(userId, node.getNodePK());
+      isAccessible = NodeAccessControl.get().isUserAuthorized(userId, node);
     } else {
       final String instanceId = getComponentInstanceId();
       if (isDefined(instanceId)) {

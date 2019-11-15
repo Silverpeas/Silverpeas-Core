@@ -23,16 +23,20 @@
  */
 package org.silverpeas.web.pdc.vo;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.silverpeas.core.util.StringUtil;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Facet {
 
   private String name;
   private String id;
-  private List<FacetEntryVO> entries = new ArrayList<FacetEntryVO>();
+  private Map<String, FacetEntryVO> entries = new HashMap<>();
+  private List<FacetEntryVO> sortedEntries;
 
   public Facet(String id, String name) {
     super();
@@ -52,48 +56,30 @@ public class Facet {
     this.name = name;
   }
 
-  public List<FacetEntryVO> getEntries() {
-    return entries;
+  public Collection<FacetEntryVO> getEntries() {
+    return entries.values();
   }
 
-  public void setEntries(List<FacetEntryVO> entries) {
-    this.entries = entries;
+  public List<FacetEntryVO> getSortedEntries() {
+    if (sortedEntries == null) {
+      sortedEntries = new ArrayList<>(entries.values());
+    }
+    return sortedEntries;
   }
 
   public void addEntry(FacetEntryVO entry) {
     if (entry != null && StringUtil.isDefined(entry.getName())) {
-      int index = entries.indexOf(entry);
-      if (index == -1) {
-        entries.add(entry);
-      } else {
-        entries.get(index).incrementEntry();
-      }
+      FacetEntryVO registeredEntry = entries.computeIfAbsent(entry.getId(), k -> entry);
+      registeredEntry.incrementEntry();
     }
   }
 
   public boolean isEmpty() {
-    if (entries == null || entries.isEmpty()) {
-      return true;
-    }
-
-    for (FacetEntryVO entry : entries) {
-      if (entry.getNbElt() > 0) {
-        return false;
-      }
-    }
-
-    return true;
+    return entries.isEmpty();
   }
 
   public FacetEntryVO getEntryById(String id) {
-    for (FacetEntryVO entry : entries) {
-      if (entry.getId().equals(id)) {
-        return entry;
-      }
-    }
-    return null;
+    return entries.get(id);
   }
-
-
 
 }

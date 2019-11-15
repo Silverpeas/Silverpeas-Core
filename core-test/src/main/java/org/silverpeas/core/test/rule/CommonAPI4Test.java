@@ -161,6 +161,10 @@ public class CommonAPI4Test implements TestRule {
               .thenReturn(bean);
         }
       }
+      if (clazz.getSimpleName().endsWith("4Test") && clazz.getGenericSuperclass() instanceof Class) {
+        when(TestBeanContainer.getMockedBeanContainer()
+            .getBeanByType((Class) clazz.getGenericSuperclass(), qualifiers)).thenReturn(bean);
+      }
     }
     return bean;
   }

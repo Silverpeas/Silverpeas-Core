@@ -66,8 +66,6 @@ import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.reminder.WithReminder;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
@@ -166,6 +164,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   public static final String CLONE_STATUS = "Clone";
   public static final String TYPE = "Publication";
   private boolean alias = false;
+  private transient ThumbnailDetail thumbnail = null;
 
   private ContributionRating contributionRating;
 
@@ -644,31 +643,40 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public String getImage() {
-    ThumbnailDetail thumbDetail = getThumbnail();
+    final ThumbnailDetail thumbDetail = getThumbnail();
     if (thumbDetail != null) {
-      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail);
-      return imageProps[0];
+      return thumbDetail.getImageFileName();
     }
     return null;
 
   }
 
   public String getImageMimeType() {
-    ThumbnailDetail thumbDetail = getThumbnail();
+    final ThumbnailDetail thumbDetail = getThumbnail();
     if (thumbDetail != null) {
-      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail);
-      return imageProps[1];
+      return thumbDetail.getMimeType();
     }
     return null;
   }
 
+  /**
+   * Gets the thumbnail linked to the publication.
+   * <p>
+   * The corresponding {@link ThumbnailDetail} is loaded once and cached into publication instance.
+   * </p>
+   * @return the {@link ThumbnailDetail} instance if any.
+   */
   public ThumbnailDetail getThumbnail() {
-    if (getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null) {
-      ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.
-          valueOf(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-      return ThumbnailController.getCompleteThumbnail(thumbDetail);
+    if (thumbnail == null && getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null) {
+      ThumbnailDetail thumbnailReference = new ThumbnailDetail(getPK().getInstanceId(), Integer.
+          parseInt(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+      thumbnail = ThumbnailController.getCompleteThumbnail(thumbnailReference);
     }
-    return null;
+    return thumbnail;
+  }
+
+  public void setThumbnail(final ThumbnailDetail thumbnail) {
+    this.thumbnail = thumbnail;
   }
 
   public Date getUpdateDate() {
@@ -949,7 +957,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   private FormTemplateService getFormTemplateBm() {
     try {
-      return ServiceProvider.getService(FormTemplateService.class);
+      return ServiceProvider.getSingleton(FormTemplateService.class);
     } catch (Exception e) {
       throw new PublicationRuntimeException(e);
     }
@@ -957,7 +965,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   public PublicationService getPublicationService() {
     try {
-      return ServiceProvider.getService(PublicationService.class);
+      return PublicationService.get();
     } catch (Exception e) {
       throw new PublicationRuntimeException(e);
     }
@@ -1215,9 +1223,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    */
   @Override
   public boolean canBeAccessedBy(final User user) {
-    AccessController<PublicationPK> accessController =
-        AccessControllerProvider.getAccessController(PublicationAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getPK());
+    return PublicationAccessControl.get().isUserAuthorized(user.getId(), this);
   }
 
   /**
@@ -1231,9 +1237,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    */
   @Override
   public boolean canBeModifiedBy(final User user) {
-    AccessController<PublicationPK> accessController =
-        AccessControllerProvider.getAccessController(PublicationAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getPK(),
+    return PublicationAccessControl.get().isUserAuthorized(user.getId(), this,
         AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
   }
 
@@ -1295,9 +1299,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     }
 
     // Access is verified for sharing context
-    AccessController<PublicationPK> accessController = AccessControllerProvider
-        .getAccessController(PublicationAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getPK(),
+    return PublicationAccessControl.get().isUserAuthorized(user.getId(), this,
         AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
   }
 

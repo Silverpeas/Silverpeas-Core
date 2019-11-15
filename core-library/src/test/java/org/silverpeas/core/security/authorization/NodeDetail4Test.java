@@ -21,11 +21,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.contribution.contentcontainer.content;
 
-public interface IGlobalSilverContentProcessor {
+package org.silverpeas.core.security.authorization;
 
-  String PROCESSOR_NAME_SUFFIX = "GlobalSilverContentProcessor";
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 
-  GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci);
+/**
+ * @author silveryocha
+ */
+class NodeDetail4Test extends NodeDetail {
+
+  NodeDetail4Test(final String nodeId, final String instanceId) {
+    super();
+    setNodePK(new NodePK(nodeId, instanceId));
+  }
+
+  NodeDetail4Test(final String nodeId, final String instanceId, final boolean rightsOnTopic) {
+    this(nodeId, instanceId);
+    if (rightsOnTopic) {
+      setRightsDependsOn(getId());
+    }
+  }
 }

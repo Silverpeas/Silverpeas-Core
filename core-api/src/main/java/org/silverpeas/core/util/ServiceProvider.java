@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentDataProvider;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 
@@ -31,6 +32,8 @@ import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.Set;
+
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
 
 /**
  * A provider of Silverpeas services such as repositories, controllers, transactional services, and
@@ -56,20 +59,20 @@ import java.util.Set;
 public final class ServiceProvider {
 
   private static final BeanContainer _currentContainer;
+  private static final String CACHE_KEY_PREFIX = "ServiceProvider:CacheKey:";
 
   static {
     Iterator<BeanContainer> iterator = ServiceLoader.load(BeanContainer.class).iterator();
     if (iterator.hasNext()) {
       _currentContainer = iterator.next();
     } else {
-      throw new RuntimeException(
+      throw new SilverpeasRuntimeException(
           "No IoD container detected! At least one bean container should be available!");
     }
   }
 
   private ServiceProvider() {
   }
-
 
   /**
    * Gets an instance of the single implementation of mandatory given type and qualifier if any.<br>
@@ -92,6 +95,40 @@ public final class ServiceProvider {
   }
 
   /**
+   * Gets the service instance as {@link #getService(Class, Annotation...)} provides it.
+   * <p>
+   *   But in that case, the caller is knowingly requesting a singleton. It has to be SURE that
+   *   the service it requests can be processed as a singleton behavior.<br/>
+   *   Indeed, a lot of service implementations are {@link javax.inject.Singleton} annotated, but
+   *   in some cases, for memory reasons or others, some implementations are not.
+   * </p>
+   * <p>
+   *   The service instance provided by this method has a singleton behavior into the current
+   *   thread execution.
+   * </p>
+   * <p>
+   *   The advantage of this method over {@link #getService(Class, Annotation...)} is that
+   *   {@link org.silverpeas.core.cache.service.ThreadCacheService} is used in order to perform 
+   *   only one time the search into CDI containers per thread execution.
+   * </p>
+   * @param type the type of the bean.
+   * @param qualifiers zero, one or more qualifiers annotating the bean to look for.
+   * @param <T> the type of the bean to return.
+   * @return the singleton bean satisfying the expected type and, if any, the expected qualifiers.
+   * @throws java.lang.IllegalStateException if no bean of the specified type and with the
+   * specified qualifiers can be found.
+   * @see #getService(Class, java.lang.annotation.Annotation...)
+   */
+  public static <T> T getSingleton(Class<T> type, Annotation... qualifiers) {
+    final StringBuilder cacheKey = new StringBuilder(CACHE_KEY_PREFIX + type.getName());
+    for (final Annotation qualifier : qualifiers) {
+      cacheKey.append(":").append(qualifier.annotationType().getName());
+    }
+    return getThreadCacheService().getCache().computeIfAbsent(cacheKey.toString(), type,
+        () -> ServiceProvider.getService(type, qualifiers));
+  }
+
+  /**
    * Gets an instance of the single implementation that is qualified by the specified name.<br>
    * Please be attentive about that this method does not return result when trying to get
    * instance of an implementation of interfaces which are dealing with typed types
@@ -107,6 +144,38 @@ public final class ServiceProvider {
    */
   public static <T> T getService(String name) {
     return beanContainer().getBeanByName(name);
+  }
+
+
+
+  /**
+   * Gets the service instance as {@link #getService(String)} provides it.
+   * <p>
+   *   But in that case, the caller is knowingly requesting a singleton. It has to be SURE that
+   *   the service it requests can be processed as a singleton behavior.<br/>
+   *   Indeed, a lot of service implementations are {@link javax.inject.Singleton} annotated, but
+   *   in some cases, for memory reasons or others, some implementations are not.
+   * </p>
+   * <p>
+   *   The service instance provided by this method has a singleton behavior into the current
+   *   thread execution.
+   * </p>
+   * <p>
+   *   The advantage of this method over {@link #getService(String)} is that
+   *   {@link org.silverpeas.core.cache.service.ThreadCacheService} is used in order to perform 
+   *   only one time the search into CDI containers per thread execution.
+   * </p>
+   * @param name the name of the bean.
+   * @param <T> the type of the bean to return.
+   * @return the bean matching the specified name.
+   * @throws java.lang.IllegalStateException if no bean can be found with the specified name.
+   * @see #getService(String)
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> T getSingleton(String name) {
+    return (T) getThreadCacheService().getCache()
+        .computeIfAbsent(CACHE_KEY_PREFIX + name, Object.class,
+            () -> ServiceProvider.getService(name));
   }
 
   /**

@@ -40,7 +40,7 @@ public class ThumbnailServiceProvider {
    * @return the thumbnailService
    */
   public static ThumbnailService getThumbnailService() {
-    return ServiceProvider.getService(ThumbnailService.class);
+    return ServiceProvider.getSingleton(ThumbnailService.class);
   }
 
 }

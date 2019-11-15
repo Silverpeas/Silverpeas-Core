@@ -42,7 +42,7 @@ public interface SystemWrapper {
    * @return the instance of the System Wrapper.
    */
   static SystemWrapper get() {
-    return ServiceProvider.getService(SystemWrapper.class);
+    return ServiceProvider.getSingleton(SystemWrapper.class);
   }
 
   /**

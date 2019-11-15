@@ -25,8 +25,9 @@ package org.silverpeas.core.node.dao;
 
 import org.silverpeas.core.node.model.NodeI18NDetail;
 import org.silverpeas.core.node.model.NodeI18NPK;
-import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import java.sql.Connection;
@@ -35,6 +36,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is the Node Data Access Object.
@@ -43,22 +45,15 @@ import java.util.List;
  */
 public class NodeI18NDAO {
 
-  static final private String SELECT_TRANSLATIONS = "SELECT id, nodeId, lang, nodeName, "
-      + "nodeDescription FROM sb_node_nodeI18N WHERE nodeId = ?";
-  static final private String REMOVE_TRANSLATION = "DELETE FROM sb_node_nodeI18N WHERE id = ?";
-  static final private String REMOVE_TRANSLATIONS = "DELETE FROM sb_node_nodeI18N WHERE nodeId = ?";
-  static final private String INSERT_TRANSLATION
-      = "INSERT INTO sb_node_nodeI18N VALUES (?, ?, ?, ?, ?)";
-  static final private String UPDATE_TRANSLATION
-      = "UPDATE sb_node_nodeI18N SET lang = ?, nodeName =  ?, "
-      + "nodeDescription = ?  WHERE id = ?";
+  private static final String TABLENAME = "sb_node_nodeI18N";
+  private static final String FIELDS = "id, nodeId, lang, nodeName, nodeDescription";
+  private static final String SELECT_TRANSLATIONS = "SELECT " + FIELDS + " FROM " + TABLENAME + " WHERE nodeId = ?";
+  private static final String REMOVE_TRANSLATION = "DELETE FROM " + TABLENAME + " WHERE id = ?";
+  private static final String REMOVE_TRANSLATIONS = "DELETE FROM " + TABLENAME + " WHERE nodeId = ?";
+  private static final String INSERT_TRANSLATION = "INSERT INTO " + TABLENAME + " VALUES (?, ?, ?, ?, ?)";
+  private static final String UPDATE_TRANSLATION = "UPDATE " + TABLENAME + " SET lang = ?, nodeName =  ?, nodeDescription = ?  WHERE id = ?";
 
-  /**
-   * This class must not be instanciated
-   *
-   * @since 1.0
-   */
-  public NodeI18NDAO() {
+  private NodeI18NDAO() {
   }
 
   /**
@@ -69,7 +64,7 @@ public class NodeI18NDAO {
    * @throws SQLException
    */
   public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
-    JdbcSqlQuery.createDeleteFor("sb_node_nodeI18N").where("nodeId in (" +
+    JdbcSqlQuery.createDeleteFor(TABLENAME).where("nodeId in (" +
         JdbcSqlQuery.createSelect("nodeId from sb_node_node").where("instanceId = ?")
             .getSqlQuery() + ")", componentInstanceId).execute();
   }
@@ -87,18 +82,14 @@ public class NodeI18NDAO {
    * @since 1.0
    */
   private static NodeI18NDetail resultSet2NodeDetail(ResultSet rs) throws SQLException {
-
     int id = rs.getInt(1);
-    String lang = rs.getString("lang");
-    String name = rs.getString("nodeName");
-    String description = rs.getString("nodeDescription");
-    if (!StringUtil.isDefined(description)) {
-      description = "";
-    }
-    NodeI18NDetail nd = new NodeI18NDetail(id, lang, name, description);
-
-
-    return (nd);
+    int nodeId = rs.getInt(2);
+    String lang = rs.getString(3);
+    String name = rs.getString(4);
+    String description = StringUtil.defaultStringIfNotDefined(rs.getString(5));
+    final NodeI18NDetail i18n = new NodeI18NDetail(id, lang, name, description);
+    i18n.setObjectId(Integer.toString(nodeId));
+    return i18n;
   }
 
   /**
@@ -210,19 +201,28 @@ public class NodeI18NDAO {
    * @throws SQLException
    */
   public static List<NodeI18NDetail> getTranslations(Connection con, int nodeId) throws SQLException {
-    ResultSet rs = null;
-    PreparedStatement prepStmt = null;
-    List<NodeI18NDetail> result = new ArrayList<>();
-    try {
-      prepStmt = con.prepareStatement(SELECT_TRANSLATIONS);
+    try (PreparedStatement prepStmt = con.prepareStatement(SELECT_TRANSLATIONS)) {
       prepStmt.setInt(1, nodeId);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        result.add(resultSet2NodeDetail(rs));
+      try(ResultSet rs = prepStmt.executeQuery()) {
+        List<NodeI18NDetail> result = new ArrayList<>();
+        while (rs.next()) {
+          result.add(resultSet2NodeDetail(rs));
+        }
+        return result;
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
-    return result;
+  }
+
+  public static Map<Integer, List<NodeI18NDetail>> getIndexedTranslations(Connection con,
+      List<Integer> nodeId) throws SQLException {
+    return JdbcSqlQuery.executeBySplittingOn(nodeId, (idBatch, result) -> JdbcSqlQuery
+        .createSelect(FIELDS)
+        .from(TABLENAME)
+        .where("nodeId").in(idBatch)
+        .executeWith(con, r -> {
+          final NodeI18NDetail node = resultSet2NodeDetail(r);
+          MapUtil.putAddList(result, node.getNodeId(), node);
+          return null;
+        }));
   }
 }

@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.WAPrimaryKey;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * This abstract class provides common implementation about the access controller :
@@ -38,6 +40,17 @@ import java.util.Set;
  * </ul>
  */
 public abstract class AbstractAccessController<T> implements AccessController<T> {
+
+  @Override
+  public Stream<T> filterAuthorizedByUser(final Collection<T> objects, final String userId) {
+    return filterAuthorizedByUser(objects, userId, AccessControlContext.init());
+  }
+
+  @Override
+  public Stream<T> filterAuthorizedByUser(final Collection<T> objects, final String userId,
+      final AccessControlContext context) {
+    throw new UnsupportedOperationException();
+  }
 
   @Override
   public final boolean isUserAuthorized(String userId, T object) {

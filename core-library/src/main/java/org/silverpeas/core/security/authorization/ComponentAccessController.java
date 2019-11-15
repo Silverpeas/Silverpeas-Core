@@ -32,15 +32,25 @@ import org.silverpeas.core.admin.user.model.User;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 
 /**
  * It controls the access of a user to a given Silverpeas component. A Silverpeas component can be
- * either a Silverpeas application instance (like a KMelia instance for example) or a user
+ * either a Silverpeas application instance (like a Kmelia instance for example) or a user
  * personal tool or an administrative tool.
  * @author ehugonnet
  */
@@ -48,11 +58,15 @@ import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 public class ComponentAccessController extends AbstractAccessController<String>
     implements ComponentAccessControl {
 
-  @Inject
+  private static final String DATA_MANAGER_CONTEXT_KEY = "ComponentAccessControllerDataManager";
+  private static final String RIGHTS_ON_TOPICS_PARAM_NAME = "rightsOnTopics";
+
   private OrganizationController controller;
 
-  ComponentAccessController() {
+  @Inject
+  ComponentAccessController(OrganizationController controller) {
     // Instance by IoC only.
+    this.controller = controller;
   }
 
   @Override
@@ -64,63 +78,31 @@ public class ComponentAccessController extends AbstractAccessController<String>
     }
   }
 
-  @Override
-  public boolean isRightOnTopicsEnabled(String componentId) {
-    return isTopicTrackerSupported(componentId) &&
-        isComponentInstanceParameterEnabled(componentId, "rightsOnTopics");
-  }
-
-  @Override
-  public boolean isCoWritingEnabled(String componentId) {
-    return isTopicTrackerSupported(componentId) &&
-        isComponentInstanceParameterEnabled(componentId, "coWriting");
-  }
-
-  @Override
-  public boolean isFileSharingEnabledForRole(String componentId, SilverpeasRole greatestUserRole) {
-    return isSharingEnabledForRole(componentId, greatestUserRole, "useFileSharing");
-  }
-
-  @Override
-  public boolean isPublicationSharingEnabledForRole(String componentId,
-      SilverpeasRole greatestUserRole) {
-    return isSharingEnabledForRole(componentId, greatestUserRole, "usePublicationSharing");
-  }
-
-  @Override
-  public boolean isFolderSharingEnabledForRole(String componentId,
-      SilverpeasRole greatestUserRole) {
-    return isSharingEnabledForRole(componentId, greatestUserRole, "useFolderSharing");
-  }
-
-  private boolean isSharingEnabledForRole(String componentId, SilverpeasRole greatestUserRole,
-      String parameterName) {
-    if (!isTopicTrackerSupported(componentId)) {
-      return false;
+  static DataManager getDataManager(final AccessControlContext context) {
+    DataManager manager = context.get(DATA_MANAGER_CONTEXT_KEY, DataManager.class);
+    if (manager == null) {
+      manager = new DataManager();
+      context.put(DATA_MANAGER_CONTEXT_KEY, manager);
     }
-    final String value = controller.getComponentParameterValue(componentId, parameterName);
-    if ("1".equals(value)) {
-      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
-    } else if ("2".equals(value)) {
-      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.writer);
-    }
-    return "3".equals(value);
-  }
-
-  private boolean isComponentInstanceParameterEnabled(String componentId,
-      String componentParameterName) {
-    return getBooleanValue(controller.
-        getComponentParameterValue(componentId, componentParameterName));
+    return manager;
   }
 
   @Override
-  public boolean isTopicTrackerSupported(String componentId) {
-    boolean isSupported = false;
-    Optional<SilverpeasComponentInstance> optionalComponent = controller.getComponentInstance(componentId);
-    if (optionalComponent.isPresent()) {
-      isSupported = optionalComponent.get().isTopicTracker();
-    }
-    return isSupported;
+  public boolean isRightOnTopicsEnabled(final String instanceId) {
+    return isTopicTrackerSupported(instanceId) &&
+        getBooleanValue(controller.getComponentParameterValue(instanceId, RIGHTS_ON_TOPICS_PARAM_NAME));
+  }
+
+  private boolean isTopicTrackerSupported(String componentId) {
+    return controller.getComponentInstance(componentId)
+        .filter(SilverpeasComponentInstance::isTopicTracker).isPresent();
+  }
+
+  @Override
+  public Stream<String> filterAuthorizedByUser(final Collection<String> instanceIds, final String userId,
+      final AccessControlContext context) {
+    getDataManager(context).loadCaches(userId, instanceIds);
+    return instanceIds.stream().filter(p -> isUserAuthorized(userId, p, context));
   }
 
   @Override
@@ -130,10 +112,11 @@ public class ComponentAccessController extends AbstractAccessController<String>
   }
 
   @Override
-  protected void fillUserRoles(Set<SilverpeasRole> userRoles, AccessControlContext context,
-      String userId, String componentId) {
+  protected void fillUserRoles(final Set<SilverpeasRole> userRoles,
+      final AccessControlContext context, final String userId, final String componentId) {
+    final DataManager dataManager = getDataManager(context);
     final Predicate<User> isUserNotValidState = u -> u == null || (!u.isActivatedState() && !u.isAnonymous());
-    final Predicate<String> isTool = c -> c == null || controller.isToolAvailable(c);
+    final Predicate<String> isTool = c -> c == null || dataManager.isToolAvailable(c);
 
     // If userId corresponds to nothing or to a deleted or deactivated user, then no role is
     // retrieved.
@@ -158,8 +141,8 @@ public class ComponentAccessController extends AbstractAccessController<String>
       return;
     }
 
-    if (controller.isComponentAvailableToUser(componentId, userId)) {
-      final String[] userProfiles = controller.getUserProfiles(userId, componentId);
+    if (dataManager.isComponentAvailableToUser(componentId, userId)) {
+      final String[] userProfiles = dataManager.getUserProfiles(componentId, userId);
       userRoles.addAll(SilverpeasRole.from(userProfiles));
       if (userRoles.isEmpty() && userProfiles != null && userProfiles.length > 0) {
         // Taking into account the case where the user has only specific profiles.
@@ -172,7 +155,8 @@ public class ComponentAccessController extends AbstractAccessController<String>
 
   private boolean fillUserRolesFromComponentInstance(final String userId, final String componentId,
       final AccessControlContext context, final Set<SilverpeasRole> userRoles) {
-    final Optional<SilverpeasComponentInstance> optionalInstance = controller.getComponentInstance(componentId);
+    final DataManager dataManager = getDataManager(context);
+    final Optional<SilverpeasComponentInstance> optionalInstance = dataManager.getComponentInstance(componentId);
     if (!optionalInstance.isPresent()) {
       return true;
     }
@@ -189,10 +173,145 @@ public class ComponentAccessController extends AbstractAccessController<String>
       return true;
     }
 
-    if (componentInstance.isPublic() ||
-        getBooleanValue(controller.getComponentParameterValue(componentId, "publicFiles"))) {
+    if (componentInstance.isPublic() || dataManager.isPublicFilesEnabled(componentId)) {
       userRoles.add(SilverpeasRole.user);
     }
     return false;
+  }
+
+  /**
+   * Data manager.
+   */
+  static class DataManager {
+    private static final List<String> HANDLED_PARAM_NAMES = Arrays
+        .asList(RIGHTS_ON_TOPICS_PARAM_NAME, "usePublicationSharing", "useFileSharing",
+            "useFolderSharing", "coWriting", "publicFiles");
+    private OrganizationController controller;
+    private Map<String, Optional<SilverpeasComponentInstance>> componentInstancesCache = new HashMap<>(1);
+    private Map<String, Boolean> isPublicationSharingEnabledForRoleCache = new HashMap<>(1);
+    private Map<String, Boolean> isFileSharingEnabledForRoleCache = new HashMap<>(1);
+    private Map<String, Boolean> isFolderSharingEnabledForRoleCache = new HashMap<>(1);
+    private Map<String, Boolean> isCoWritingEnabledCache = new HashMap<>(1);
+    private Map<String, Boolean> isTopicTrackerSupportedCache = new HashMap<>(1);
+    Map<String, Boolean> isRightOnTopicsEnabledCache = new HashMap<>(1);
+    Set<String> availableComponentCache = null;
+    Map<String, Set<String>> userProfiles = null;
+    Map<String, Map<String, String>> componentParameterValueCache = null;
+
+    DataManager() {
+      controller = OrganizationController.get();
+    }
+
+    void loadCaches(final String userId, final Collection<String> instanceIds) {
+      if (availableComponentCache != null || instanceIds.isEmpty()) {
+        return;
+      }
+      final int nbElements = instanceIds.size();
+      componentInstancesCache = new HashMap<>(nbElements);
+      isRightOnTopicsEnabledCache = new HashMap<>(nbElements);
+      isPublicationSharingEnabledForRoleCache = new HashMap<>(nbElements);
+      isFileSharingEnabledForRoleCache = new HashMap<>(nbElements);
+      isFolderSharingEnabledForRoleCache = new HashMap<>(nbElements);
+      isCoWritingEnabledCache = new HashMap<>(nbElements);
+      isTopicTrackerSupportedCache = new HashMap<>(nbElements);
+      availableComponentCache = new HashSet<>(controller.getAvailableComponentsByUser(userId));
+      completeCaches(userId, instanceIds);
+    }
+
+    void completeCaches(final String userId, final Collection<String> instanceIds) {
+      final boolean firstLoad = userProfiles == null;
+      if (firstLoad) {
+        userProfiles = controller.getUserProfilesByComponentId(userId, instanceIds);
+      } else {
+        controller.getUserProfilesByComponentId(userId, instanceIds)
+            .forEach((k, v) -> userProfiles.put(k, v));
+      }
+      if (firstLoad) {
+        componentParameterValueCache = controller
+            .getParameterValuesByComponentIdThenByParamName(instanceIds, HANDLED_PARAM_NAMES);
+      } else {
+        controller.getParameterValuesByComponentIdThenByParamName(instanceIds, HANDLED_PARAM_NAMES)
+            .forEach((k, v) -> componentParameterValueCache.put(k, v));
+      }
+    }
+
+    boolean isRightOnTopicsEnabled(final String instanceId) {
+      return isRightOnTopicsEnabledCache.computeIfAbsent(instanceId, s ->
+          isTopicTrackerSupported(instanceId) && getBooleanValue(getComponentParameterValue(instanceId, RIGHTS_ON_TOPICS_PARAM_NAME)));
+    }
+
+    boolean isPublicationSharingEnabledForRole(final String componentId, final SilverpeasRole greatestUserRole) {
+      return isPublicationSharingEnabledForRoleCache
+          .computeIfAbsent(componentId + "@" + greatestUserRole,
+              s -> isSharingEnabledForRole(componentId, greatestUserRole, "usePublicationSharing"));
+    }
+
+    boolean isFileSharingEnabledForRole(String componentId, SilverpeasRole greatestUserRole) {
+      return isFileSharingEnabledForRoleCache.computeIfAbsent(componentId + "@" + greatestUserRole,
+          s -> isSharingEnabledForRole(componentId, greatestUserRole, "useFileSharing"));
+    }
+
+    boolean  isFolderSharingEnabledForRole(String componentId, SilverpeasRole greatestUserRole) {
+      return isFolderSharingEnabledForRoleCache.computeIfAbsent(componentId + "@" + greatestUserRole,
+          s -> isSharingEnabledForRole(componentId, greatestUserRole, "useFolderSharing"));
+    }
+
+    boolean isCoWritingEnabled(String componentId) {
+      return isCoWritingEnabledCache.computeIfAbsent(componentId, s ->
+          isTopicTrackerSupported(s) && getBooleanValue(getComponentParameterValue(s, "coWriting")));
+    }
+
+    boolean isTopicTrackerSupported(String componentId) {
+      return isTopicTrackerSupportedCache.computeIfAbsent(componentId, s ->
+          getComponentInstance(s).filter(SilverpeasComponentInstance::isTopicTracker).isPresent());
+    }
+
+    boolean isPublicFilesEnabled(String componentId) {
+      return getBooleanValue(getComponentParameterValue(componentId, "publicFiles"));
+    }
+
+    boolean isToolAvailable(final String componentId) {
+      return controller.isToolAvailable(componentId);
+    }
+
+    Optional<SilverpeasComponentInstance> getComponentInstance(final String componentId) {
+      return componentInstancesCache.computeIfAbsent(componentId, s -> controller.getComponentInstance(componentId));
+    }
+
+    boolean isComponentAvailableToUser(final String componentId, final String userId) {
+      if (availableComponentCache != null) {
+        return availableComponentCache.contains(componentId);
+      }
+      return controller.isComponentAvailableToUser(componentId, userId);
+    }
+
+    String[] getUserProfiles(final String componentId, final String userId) {
+      if (userProfiles != null) {
+        return userProfiles.getOrDefault(componentId, emptySet()).toArray(new String[0]);
+      }
+      return controller.getUserProfiles(userId, componentId);
+    }
+
+    private boolean isSharingEnabledForRole(String componentId, SilverpeasRole greatestUserRole,
+        String parameterName) {
+      if (!isTopicTrackerSupported(componentId)) {
+        return false;
+      }
+      final String value = getComponentParameterValue(componentId, parameterName);
+      if ("1".equals(value)) {
+        return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
+      } else if ("2".equals(value)) {
+        return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.writer);
+      }
+      return "3".equals(value);
+    }
+
+    private String getComponentParameterValue(final String componentId,
+        final String parameterName) {
+      if (componentParameterValueCache != null) {
+        return componentParameterValueCache.getOrDefault(componentId, emptyMap()).getOrDefault(parameterName, EMPTY);
+      }
+      return controller.getComponentParameterValue(componentId, parameterName);
+    }
   }
 }

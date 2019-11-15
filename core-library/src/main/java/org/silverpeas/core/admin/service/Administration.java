@@ -24,6 +24,8 @@
 package org.silverpeas.core.admin.service;
 
 import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectIds;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -48,11 +50,14 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This interface defines all the required services to manage administration data (domains, spaces,
@@ -265,6 +270,16 @@ public interface Administration {
    */
   String getComponentParameterValue(String componentId, String parameterName);
 
+  /**
+   * Gets all parameters values by component and by parameter name.
+   * @param componentIds list of component identifier.
+   * @param paramNames optional list of parameter name. All parameters are retrieved if it is not
+   * filled or null
+   * @return a map filled with couples of parameter name / value per component instance identifier.
+   */
+  Map<String, Map<String, String>> getParameterValuesByComponentIdThenByParamName(
+      final Collection<String> componentIds, final Collection<String> paramNames);
+
   List<ComponentInstLight> getComponentsWithParameter(String paramName, String paramValue);
 
   void restoreComponentFromBasket(String componentId) throws AdminException;
@@ -369,7 +384,20 @@ public interface Administration {
 
   String[] getProfilesByObjectAndUserId(ProfiledObjectId objectRef, String componentId, String userId) throws AdminException;
 
-  Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(String objectType,
+  /**
+   * Gets the profile names of given user indexed by couple of given component instances and
+   * object instances.
+   * @param profiledObjectIds if NOTHING is given, then all the rows associated to the type
+   * are returned, otherwise all the rows associated to type and ids.
+   * @param componentIds list of component instance identifier as string.
+   * @param userId a user identifier as string.
+   * @return a map filled with list of profile name as string by couple component instance
+   * identifier as string - object identifier as integer.
+   */
+  Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
+      ProfiledObjectIds profiledObjectIds, Collection<String> componentIds, String userId) throws AdminException;
+
+  Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(ProfiledObjectType profiledObjectType,
       String componentId, String userId) throws AdminException;
 
   boolean isObjectAvailableToUser(String componentId, ProfiledObjectId objectRef, String userId)
@@ -909,17 +937,28 @@ public interface Administration {
   boolean isAnAdminTool(String toolId);
 
   /**
+   * Gets the component instance identifiers available for the specified user?
+   * </p>
+   * A component is an application in Silverpeas to perform some tasks and to manage some
+   * resources.
+   * Each component in Silverpeas can be instantiated several times, each of them corresponding
+   * then to a running application in Silverpeas and it is uniquely identified from others
+   * instances by a given identifier.
+   * @param userId the unique identifier of a user.
+   * @return a list of component instance identifier as string.
+   */
+  List<String> getAvailableComponentsByUser(String userId) throws AdminException;
+
+  /**
    * Is the specified component instance available among the components instances accessible by
    * the
    * specified user?
    * </p>
    * A component is an application in Silverpeas to perform some tasks and to manage some
    * resources.
-   * Each component in Silverpeas can be instanciated several times, each of them corresponding
-   * then
-   * to a running application in Silverpeas and it is uniquely identified from others instances by
-   * a
-   * given identifier.
+   * Each component in Silverpeas can be instantiated several times, each of them corresponding
+   * then to a running application in Silverpeas and it is uniquely identified from others
+   * instances by a given identifier.
    * @param componentId the unique identifier of a component instance.
    * @param userId the unique identifier of a user.
    * @return true if the component instance is available, false otherwise.
@@ -1044,6 +1083,15 @@ public interface Administration {
   String[] getCurrentProfiles(String sUserId, String componentId) throws AdminException;
 
   /**
+   * Gets the profile names of given user indexed by the given component instances.
+   * @param userId a user identifier as string.
+   * @param componentIds list of component instance identifier as string.
+   * @return a map filled with list of profile name as string by component instance identifier as
+   * string.
+   */
+  Map<String, Set<String>> getUserProfilesByComponentId(String userId, Collection<String> componentIds) throws AdminException;
+
+  /**
    * if bAllProfiles = true, return all the user details for the given space and given component if
    * bAllProfiles = false, return the user details only for the given profile for the given space
    * and given component
@@ -1129,23 +1177,6 @@ public interface Administration {
    * <p>It returns also ids of {@link SilverpeasPersonalComponentInstance} instances.</p>
    */
   String[] getAllComponentIdsRecur(String sSpaceId) throws AdminException;
-
-  /**
-   * Return all the components Id recursively in (Space+subspaces, or only subspaces or in
-   * Silverpeas) available in silverpeas given a userId and a componentNameRoot
-   * @param sSpaceId
-   * @param sUserId
-   * @param componentNameRoot
-   * @param inCurrentSpace
-   * @param inAllSpaces
-   * @return Array of componentsIds
-   * @author dlesimple
-   * @deprecated please use {@link #getAllComponentIds(String)} or
-   * {@link #getAllComponentIdsRecur(String)}
-   */
-  @Deprecated
-  String[] getAllComponentIdsRecur(String sSpaceId, String sUserId, String componentNameRoot,
-      boolean inCurrentSpace, boolean inAllSpaces) throws AdminException;
 
   void synchronizeGroupByRule(String groupId, boolean scheduledMode) throws AdminException;
 
@@ -1278,6 +1309,8 @@ public interface Administration {
   SpaceWithSubSpacesAndComponents getFullTreeview() throws AdminException;
 
   SpaceWithSubSpacesAndComponents getAllowedFullTreeview(String userId) throws AdminException;
+
+  SpaceWithSubSpacesAndComponents getAllowedFullTreeviewOnComponentName(String userId, String componentName) throws AdminException;
 
   SpaceWithSubSpacesAndComponents getAllowedFullTreeview(String userId, String spaceId)
       throws AdminException;

@@ -90,7 +90,7 @@
   final PaginationPage newPagination = Pagination.getPaginationPageFrom(request, currentPagination);
   sessionCache.put(paginationCacheKey, newPagination);
 
-  final StatisticService statisticService = ServiceProvider.getService(StatisticService.class);
+  final StatisticService statisticService = StatisticService.get();
   final ResourceReference resourceReference = new ResourceReference(id, componentId);
   final SilverpeasList<HistoryObjectDetail> readingState = statisticService
       .getHistoryByObjectAndUser(resourceReference, 1, objectType, userId, newPagination, orderBy);

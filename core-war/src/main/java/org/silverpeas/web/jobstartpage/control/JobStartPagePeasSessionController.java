@@ -83,6 +83,8 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.*;
 
+import static org.silverpeas.core.admin.component.model.ComponentInst.getComponentLocalId;
+
 /**
  * Class declaration
  *
@@ -1078,7 +1080,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     profile.setGroups(Arrays.asList(groupIds));
 
     if (!StringUtil.isDefined(profile.getId())) {
-      profile.setComponentFatherId(getManagedInstanceId());
+      profile.setComponentFatherId(getComponentLocalId(getManagedInstanceId()));
       // Add the profile
       adminController.addProfileInst(profile, getUserId());
 

@@ -25,11 +25,9 @@ package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.ComponentInstManager;
 import org.silverpeas.core.admin.user.dao.RoleDAO;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -42,9 +40,14 @@ import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.*;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 @Singleton
@@ -113,7 +116,6 @@ public class ProfileInstManager {
       if (userRole != null) {
         profileInst = userRoleRow2ProfileInst(userRole);
         setUsersAndGroups(profileInst);
-        setComponentInstanceId(profileInst);
       } else {
         SilverLogger.getLogger(this).error("User profile {0} not found", sProfileId);
       }
@@ -130,7 +132,7 @@ public class ProfileInstManager {
     profileInst.setName(userRole.getRoleName());
     profileInst.setLabel(userRole.getName());
     profileInst.setDescription(userRole.getDescription());
-    profileInst.setComponentFatherId(Integer.toString(userRole.getInstanceId()));
+    profileInst.setComponentFatherId(userRole.getInstanceId());
     if (userRole.getInheritance() == 1) {
       profileInst.setInherited(true);
     }
@@ -152,12 +154,6 @@ public class ProfileInstManager {
     profileInst.setUsers(userIds);
   }
 
-  private void setComponentInstanceId(final ProfileInst profileInst) throws AdminException {
-    int localId = Integer.parseInt(profileInst.getComponentFatherId());
-    ComponentInstLight instLight = ComponentInstManager.get().getComponentInstLight(localId);
-    profileInst.setComponentFatherId(instLight.getId());
-  }
-
   public ProfileInst getInheritedProfileInst(int instanceLocalId, String roleName)
       throws AdminException {
     try {
@@ -170,7 +166,6 @@ public class ProfileInstManager {
         // Set the attributes of the profile Inst
         profileInst = userRoleRow2ProfileInst(userRole);
         setUsersAndGroups(profileInst);
-        setComponentInstanceId(profileInst);
       }
 
       return profileInst;
@@ -328,28 +323,27 @@ public class ProfileInstManager {
     }
   }
 
-  public String[] getProfileNamesOfUser(String sUserId, List<String> groupIds, int componentLocalId)
-      throws AdminException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-
-      List<UserRoleRow> roles =
-          roleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId), componentLocalId);
-      List<String> roleNames = new ArrayList<>();
-
-      for (UserRoleRow role : roles) {
-        if (!roleNames.contains(role.getRoleName())) {
-          roleNames.add(role.getRoleName());
-        }
-      }
-
-      return roleNames.toArray(new String[roleNames.size()]);
-
+  public String[] getProfileNamesOfUser(final String userId, final List<String> groupIds,
+      final int componentLocalId) throws AdminException {
+    try (final Connection con = DBUtil.openConnection()) {
+      return roleDAO.getRoles(con, groupIds, Integer.parseInt(userId), singleton(componentLocalId)).stream()
+          .map(UserRoleRow::getRoleName)
+          .distinct()
+          .toArray(String[]::new);
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting(PROFILES_OF_USER, sUserId), e);
-    } finally {
-      DBUtil.close(con);
+      throw new AdminException(failureOnGetting(PROFILES_OF_USER, userId), e);
+    }
+  }
+
+  public Map<Integer, Set<String>> getProfileNamesOfUser(final String userId,
+      final List<String> groupIds, final Collection<Integer> componentLocalIds)
+      throws AdminException {
+    try (final Connection con = DBUtil.openConnection()) {
+      return roleDAO.getRoles(con, groupIds, Integer.parseInt(userId), componentLocalIds).stream()
+          .collect(groupingBy(UserRoleRow::getInstanceId,
+                   mapping(UserRoleRow::getRoleName, toSet())));
+    } catch (Exception e) {
+      throw new AdminException(failureOnGetting(PROFILES_OF_USER, userId), e);
     }
   }
 

@@ -23,11 +23,15 @@
  */
 package org.silverpeas.core.contribution.publication.dao;
 
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.contribution.publication.dao.PublicationCriteria.QUERY_ORDER_BY;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
 import org.silverpeas.core.contribution.publication.model.PublicationWithStatus;
 import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
+import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
@@ -47,9 +51,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -58,9 +60,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toMap;
+import static org.silverpeas.core.contribution.publication.dao.PublicationFatherDAO.PUBLICATION_FATHER_TABLE_NAME;
+import static org.silverpeas.core.util.DateUtil.formatDate;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
@@ -97,11 +102,6 @@ public class PublicationDAO {
   private static final String SELECT_FROM = "select * from ";
   private static final String AND = " and (";
 
-  // this object caches last publications availables
-  // used only for kmelia
-  // keys : componentId
-  // values : Collection of PublicationDetail
-  private static Map<String, Collection<PublicationDetail>> lastPublis = new HashMap<>();
   static final String PUBLICATION_TABLE_NAME = "SB_Publication_Publi";
   private static final String UPDATE_PUBLICATION =
       "UPDATE SB_Publication_Publi SET infoId = ?, "
@@ -111,6 +111,8 @@ public class PublicationDAO {
           + "instanceId = ?, pubValidatorId = ?, pubValidateDate = ?, pubBeginHour = ?, pubEndHour = ?, "
           + "pubAuthor = ?, pubTargetValidatorId = ?, pubCloneId = ?, pubCloneStatus = ?, lang = ?, pubDraftOutDate = ?  "
           + "WHERE pubId = ? ";
+  private static final String WHERE_CONJUNCTION = "WHERE ";
+  private static final String AND_CONJUNCTION = "AND ";
 
   /**
    * This class must not be instanciated
@@ -128,53 +130,6 @@ public class PublicationDAO {
   public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
     JdbcSqlQuery.createDeleteFor(PUBLICATION_TABLE_NAME).where("instanceId = ?", componentInstanceId)
         .execute();
-  }
-
-  /**
-   * Invalidate last publications for a given instance
-   * @param instanceId
-   */
-  public static void invalidateLastPublis(String instanceId) {
-    lastPublis.remove(instanceId);
-  }
-
-  private static void cacheLastPublis(String instanceId,
-      Collection<PublicationDetail> lastPublications) {
-    lastPublis.put(instanceId, lastPublications);
-  }
-
-  private static LocalDateTime computeDateTime(final Date date, String time, String defaultDate) {
-    final int[] hourAndMinute = Stream.of(time.split(":")).mapToInt(Integer::parseInt).toArray();
-    final LocalDateTime dateTime;
-    if (date != null) {
-      dateTime = date.toInstant()
-          .atZone(ZoneId.systemDefault())
-          .toLocalDate()
-          .atTime(hourAndMinute[0], hourAndMinute[1]);
-    } else {
-      dateTime = LocalDate.parse(defaultDate).atTime(hourAndMinute[0], hourAndMinute[1]);
-    }
-    return dateTime;
-  }
-
-  private static Collection<PublicationDetail> getLastPublis(String instanceId) {
-    Collection<PublicationDetail> listLastPublisCache = lastPublis.get(instanceId);
-    if (listLastPublisCache != null && !listLastPublisCache.isEmpty()) {
-      // removing not visible publications from the cache
-      List<PublicationDetail> listLastPublisCacheMAJ = new ArrayList<>();
-      LocalDateTime now = LocalDateTime.now();
-      for (PublicationDetail pubDetail : listLastPublisCache) {
-        final LocalDateTime beginDateTime =
-            computeDateTime(pubDetail.getBeginDate(), pubDetail.getBeginHour(), "0000-01-01");
-        final LocalDateTime endDateTime =
-            computeDateTime(pubDetail.getEndDate(), pubDetail.getBeginHour(), "9999-12-31");
-        if (now.isAfter(beginDateTime) && now.isBefore(endDateTime)) {
-          listLastPublisCacheMAJ.add(pubDetail);
-        }
-      }
-      lastPublis.put(instanceId, listLastPublisCacheMAJ);
-    }
-    return lastPublis.get(instanceId);
   }
 
   /**
@@ -212,7 +167,7 @@ public class PublicationDAO {
 
       try (PreparedStatement prepStmt = con.prepareStatement(selectStatement.toString())) {
         java.util.Date now = new java.util.Date();
-        String dateNow = DateUtil.formatDate(now);
+        String dateNow = formatDate(now);
         String hourNow = DateUtil.formatTime(now);
 
         prepStmt.setString(1, fatherPK.getComponentName());
@@ -279,7 +234,7 @@ public class PublicationDAO {
 
     try (PreparedStatement prepStmt = con.prepareStatement(selectStatement.toString())) {
       java.util.Date now = new java.util.Date();
-      String dateNow = DateUtil.formatDate(now);
+      String dateNow = formatDate(now);
       String hourNow = DateUtil.formatTime(now);
 
       prepStmt.setString(1, instanceId);
@@ -312,8 +267,7 @@ public class PublicationDAO {
     }
   }
 
-  public static void insertRow(Connection con, PublicationDetail detail)
-      throws SQLException {
+  public static void insertRow(Connection con, PublicationDetail detail) {
     StringBuilder insertStatement = new StringBuilder(128);
     insertStatement.append("insert into ").append(detail.getPK().getTableName());
     insertStatement.append(" (pubId, infoId, pubName, pubDescription, pubCreationDate,");
@@ -343,7 +297,7 @@ public class PublicationDAO {
       prepStmt.setString(12, detail.getContentPagePath());
       prepStmt.setString(13, detail.getStatus());
       if (detail.isUpdateDateMustBeSet() && detail.getUpdateDate() != null) {
-        prepStmt.setString(14, DateUtil.formatDate(detail.getUpdateDate()));
+        prepStmt.setString(14, formatDate(detail.getUpdateDate()));
       } else {
         setDateParameter(prepStmt, 14, detail.getCreationDate(), DateUtil.today2SQLDate());
       }
@@ -373,13 +327,12 @@ public class PublicationDAO {
         prepStmt.setString(25, detail.getLanguage());
       }
 
-      prepStmt.setString(26, DateUtil.formatDate(detail.getDraftOutDate()));
+      prepStmt.setString(26, formatDate(detail.getDraftOutDate()));
 
       prepStmt.executeUpdate();
     } catch (Exception e) {
       SilverLogger.getLogger(PublicationDAO.class).error(e);
     }
-    invalidateLastPublis(detail.getPK().getComponentName());
   }
 
   private static boolean isUndefined(String object) {
@@ -404,8 +357,6 @@ public class PublicationDAO {
     try (Statement stmt = con.createStatement()) {
       stmt.executeUpdate(deleteStatement.toString());
     }
-
-    invalidateLastPublis(pk.getComponentName());
   }
 
   public static PublicationDetail selectByPrimaryKey(Connection con,
@@ -447,22 +398,8 @@ public class PublicationDAO {
       String name = rs.getString("pubname");
       String description = defaultStringIfNotDefined(rs.getString("pubDescription"));
       Date creationDate = DateUtil.parseDate(rs.getString("pubCreationDate"));
-      Date beginDate;
-      String d = rs.getString("pubBeginDate");
-
-      if (d.equals(NULL_BEGIN_DATE)) {
-        beginDate = null;
-      } else {
-        beginDate = DateUtil.parseDate(d);
-      }
-      Date endDate;
-
-      d = rs.getString("pubEndDate");
-      if (d.equals(NULL_END_DATE)) {
-        endDate = null;
-      } else {
-        endDate = DateUtil.parseDate(d);
-      }
+      final Date beginDate = asDate(rs.getString("pubBeginDate"), NULL_BEGIN_DATE);
+      final Date endDate = asDate(rs.getString("pubEndDate"), NULL_END_DATE);
       String creatorId = rs.getString("pubCreatorId");
       int importance = rs.getInt("pubImportance");
       String version = rs.getString("pubVersion");
@@ -520,6 +457,17 @@ public class PublicationDAO {
     return pub;
   }
 
+  private static Date asDate(final String dateAsSqlString, final String nullValue)
+      throws ParseException {
+    final Date date;
+    if (nullValue.equals(dateAsSqlString)) {
+      date = null;
+    } else {
+      date = DateUtil.parseDate(dateAsSqlString);
+    }
+    return date;
+  }
+
   /**
    * Method declaration
    * @param con
@@ -531,11 +479,6 @@ public class PublicationDAO {
   public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
     return selectByFatherPK(con, fatherPK, null);
-  }
-
-  public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
-      boolean filterOnVisibilityPeriod) throws SQLException {
-    return selectByFatherPK(con, fatherPK, null, filterOnVisibilityPeriod);
   }
 
   public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
@@ -563,7 +506,7 @@ public class PublicationDAO {
       }
       if (filterOnVisibilityPeriod) {
         java.util.Date now = new java.util.Date();
-        String dateNow = DateUtil.formatDate(now);
+        String dateNow = formatDate(now);
 
         String hourNow;
         hourNow = DateUtil.formatTime(now);
@@ -610,7 +553,7 @@ public class PublicationDAO {
 
     try (PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
       java.util.Date now = new java.util.Date();
-      String dateNow = DateUtil.formatDate(now);
+      String dateNow = formatDate(now);
       String hourNow = DateUtil.formatTime(now);
 
       prepStmt.setString(1, pubPK.getComponentName());
@@ -708,7 +651,7 @@ public class PublicationDAO {
 
     try (PreparedStatement prepStmt = con.prepareStatement(selectStatement.toString())) {
       java.util.Date now = new java.util.Date();
-      String dateNow = DateUtil.formatDate(now);
+      String dateNow = formatDate(now);
       String hourNow = DateUtil.formatTime(now);
 
       if (filterOnVisibilityPeriod) {
@@ -737,18 +680,19 @@ public class PublicationDAO {
     return list;
   }
 
-  public static List<PublicationDetail> getByIds(Connection con,
-      Collection<String> publicationIds) {
-    final String tableName = new PublicationPK(null).getTableName();
+  public static List<PublicationDetail> getByIds(final Connection con,
+      final Collection<String> publicationIds, final Set<PublicationPK> indexedPks) {
     try {
       final Map<String, PublicationDetail> result = new HashMap<>(publicationIds.size());
       JdbcSqlQuery.executeBySplittingOn(publicationIds, (idBatch, ignore) -> JdbcSqlQuery
         .createSelect(QueryStringFactory.getLoadRowFields())
-        .from(tableName)
+        .from(SB_PUBLICATION_PUBLI_TABLE)
         .where(PUB_ID).in(idBatch.stream().map(Integer::parseInt).collect(Collectors.toList()))
         .executeWith(con, r -> {
           final PublicationDetail publicationDetail = resultSet2PublicationDetail(r);
-          result.put(publicationDetail.getId(), publicationDetail);
+          if (indexedPks == null || indexedPks.contains(publicationDetail.getPK())) {
+            result.put(publicationDetail.getId(), publicationDetail);
+          }
           return null;
         }));
       return publicationIds.stream()
@@ -762,147 +706,195 @@ public class PublicationDAO {
     return new ArrayList<>();
   }
 
-  public static Collection<PublicationDetail> selectByStatus(Connection con, String instanceId,
-      String status) throws SQLException {
-    StringBuilder selectStatement = new StringBuilder(128);
-    selectStatement.append(SELECT_FROM).append(PUBLICATION_TABLE_NAME);
-    selectStatement.append(" where pubStatus like '").append(status).append(
-        "' ");
-    selectStatement.append(" and instanceId ='").append(instanceId).append(
-        "' order by pubUpdateDate desc, pubId desc");
-    try (Statement stmt = con.createStatement();
-         ResultSet rs = stmt.executeQuery(selectStatement.toString())) {
-      PublicationDetail pub;
-      List<PublicationDetail> list = new ArrayList<>();
-      while (rs.next()) {
-        pub = resultSet2PublicationDetail(rs);
-        list.add(pub);
-      }
-      return list;
-    }
-  }
-
-  public static Collection<PublicationDetail> selectByStatus(Connection con,
-      List<String> componentIds,
-      String status) throws SQLException {
-    List<PublicationDetail> list = new ArrayList<>();
-    if (componentIds != null && !componentIds.isEmpty()) {
-      StringBuilder selectStatement = new StringBuilder(128);
-      selectStatement
-          .append(
-          "select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
-      selectStatement
-          .append(
-          "         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
-      selectStatement
-          .append(
-          "		 P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubdraftoutdate ");
-      selectStatement.append("from ")
-          .append(PUBLICATION_TABLE_NAME)
-          .append(" P, ")
-          .append(PUBLICATION_TABLE_NAME)
-          .append(FATHER_F);
-      selectStatement.append("where P.pubStatus = '").append(status).append("'");
-      selectStatement.append(" and F.nodeId <> 1 ");
-      selectStatement.append(AND);
-      selectStatement.append(P_PUB_BEGIN_DATE_AND_P_PUB_END_DATE_OR);
-      selectStatement.append(P_PUB_BEGIN_DATE_AND_P_PUB_END_DATE_AND_P_PUB_BEGIN_HOUR_OR);
-      selectStatement.append(P_PUB_BEGIN_DATE_AND_P_PUB_END_DATE_AND_P_PUB_END_HOUR_OR);
-      selectStatement.append(
-          "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P" +
-              ".pubEndHour )");
-      selectStatement.append(" ) ");
-      selectStatement.append(AND_F_PUB_ID_EQUAL_P_PUB_ID);
-      selectStatement.append(AND);
-
-      String componentId;
-      for (int c = 0; c < componentIds.size(); c++) {
-        componentId = componentIds.get(c);
-        if (c != 0) {
-          selectStatement.append(" OR ");
-        }
-        selectStatement.append("P.instanceId ='").append(componentId).append(
-            "'");
-      }
-      selectStatement.append(")");
-      selectStatement.append(" order by P.pubUpdateDate desc, P.pubId desc");
-
-      try (PreparedStatement prepStmt = con.prepareStatement(selectStatement.toString())) {
-        java.util.Date now = new java.util.Date();
-        String dateNow = DateUtil.formatDate(now);
-        String hourNow = DateUtil.formatTime(now);
-
-        prepStmt.setString(1, dateNow);
-        prepStmt.setString(2, dateNow);
-        prepStmt.setString(3, dateNow);
-        prepStmt.setString(4, dateNow);
-        prepStmt.setString(5, hourNow);
-        prepStmt.setString(6, dateNow);
-        prepStmt.setString(7, dateNow);
-        prepStmt.setString(8, hourNow);
-        prepStmt.setString(9, dateNow);
-        prepStmt.setString(10, dateNow);
-        prepStmt.setString(11, hourNow);
-        prepStmt.setString(12, hourNow);
-
-        try (ResultSet rs = prepStmt.executeQuery()) {
-          PublicationPK pubPK = new PublicationPK(UNDEFINED_ID, UNDEFINED_ID);
-          PublicationDetail pub;
-          while (rs.next()) {
-            componentId = rs.getString(17);
-            pubPK.setComponentName(componentId);
-
-            pub = resultSet2PublicationDetail(rs);
-            list.add(pub);
+  /**
+   * Selects massively simple data about publications.
+   * <p>
+   * For now, only the following data are retrieved:
+   *   <ul>
+   *     <li>pubId</li>
+   *     <li>pubStatus</li>
+   *     <li>pubCloneId</li>
+   *     <li>pubCloneStatus</li>
+   *     <li>instanceId</li>
+   *     <li>pubBeginDate</li>
+   *     <li>pubEndDate</li>
+   *     <li>pubBeginHour</li>
+   *     <li>pubEndHour</li>
+   *     <li>pubcreatorid</li>
+   *     <li>pubupdaterid</li>
+   *   </ul>
+   *   This method is designed for process performance needs.<br/>
+   *   The result is not necessarily into same ordering as the one of given parameter.
+   * </p>
+   * @param con the database connection.
+   * @param ids the instance ids aimed.
+   * @return a list of {@link PublicationDetail} instances.
+   * @throws SQLException on database error.
+   */
+  public static List<PublicationDetail> getMinimalDataByIds(Connection con,
+      Collection<PublicationPK> ids) throws SQLException {
+    final Map<PublicationPK, Integer> indexedPubPks = ids.stream()
+        .collect(toMap(p -> p, p -> Integer.parseInt(p.getId())));
+    final List<PublicationDetail> result = new ArrayList<>(ids.size());
+    JdbcSqlQuery.executeBySplittingOn(indexedPubPks.values(), (idBatch, ignore) ->
+        JdbcSqlQuery.createSelect("pubId, instanceId, pubStatus, pubCloneId, pubCloneStatus,")
+        .addSqlPart("pubBeginDate, pubEndDate, pubBeginHour, pubEndHour,")
+        .addSqlPart("pubcreatorid, pubupdaterid")
+        .from(SB_PUBLICATION_PUBLI_TABLE)
+        .where(PUB_ID).in(idBatch)
+        .executeWith(con, r -> {
+          final PublicationPK pk = new PublicationPK(Integer.toString(r.getInt(1)), r.getString(2));
+          if (indexedPubPks.containsKey(pk)) {
+            final PublicationDetail pubDetail = new PublicationDetail();
+            pubDetail.setPk(pk);
+            pubDetail.setStatus(r.getString(3));
+            pubDetail.setCloneId(Integer.toString(r.getInt(4)));
+            pubDetail.setCloneStatus(r.getString(5));
+            try {
+              pubDetail.setBeginDate(asDate(r.getString(6), NULL_BEGIN_DATE));
+              pubDetail.setEndDate(asDate(r.getString(7), NULL_END_DATE));
+            } catch (ParseException e) {
+              throw new SQLException(e);
+            }
+            pubDetail.setBeginHour(r.getString(8));
+            pubDetail.setEndHour(r.getString(9));
+            pubDetail.setCreatorId(r.getString(10));
+            pubDetail.setUpdaterId(r.getString(11));
+            result.add(pubDetail);
           }
-        }
-      }
+          return null;
+        }));
+    return result;
+  }
+
+  public static SilverpeasList<PublicationPK> selectPksByCriteria(final Connection con,
+      final PublicationCriteria criteria) throws SQLException {
+    if (criteria.emptyResultWhenNoFilteringOnComponentInstances()) {
+      return new SilverpeasArrayList<>(0);
     }
-    return list;
+    final JdbcSqlQuery query = prepareSelectPksByCriteria(criteria);
+    configureFromByCriteria(query, criteria);
+    configureClausesByCriteria(query, criteria);
+    configureOrderingByCriteria(query, criteria);
+    configureExecution(query, criteria);
+    return query.executeWith(con, r -> new PublicationPK(r.getString(1), r.getString(2)));
   }
 
-  public static SilverpeasList<PublicationPK> selectPKsByStatus(final Connection con,
-      final List<String> componentIds, final String status, final PaginationCriterion pagination)
-      throws SQLException {
-    return selectPKsByStatusAndUpdatedSince(con, componentIds, status, null, pagination);
-  }
-
-  public static SilverpeasList<PublicationPK> selectPKsByStatusAndUpdatedSince(Connection con,
-      List<String> componentIds, String status, Date since, PaginationCriterion pagination) throws
-      SQLException {
-    if (componentIds != null && !componentIds.isEmpty()) {
-      final JdbcSqlQuery sqlQuery = JdbcSqlQuery
-          .createSelect("DISTINCT(P.pubId), P.instanceId, P.pubUpdateDate")
-          .from("SB_Publication_Publi P")
-          .join("SB_Publication_PubliFather F").on("F.pubId = P.pubId")
-          .where("F.nodeId <> 1")
-          .and("P.pubStatus = ?", status);
-      if (since != null) {
-        sqlQuery.and("P.pubupdatedate > ?", DateUtil.date2SQLDate(since));
-      }
-      return dateFilters(sqlQuery)
-          .and("P.instanceId").in(componentIds)
-          .orderBy("P.pubUpdateDate desc, P.pubId desc")
-          .withPagination(pagination)
-          .executeWith(con, r -> new PublicationPK(r.getString(1), r.getString(2)));
+  public static SilverpeasList<PublicationDetail> selectPublicationsByCriteria(final Connection con,
+      final PublicationCriteria criteria) throws SQLException {
+    if (criteria.emptyResultWhenNoFilteringOnComponentInstances()) {
+      return new SilverpeasArrayList<>(0);
     }
-    return new SilverpeasArrayList<>(0);
+    final JdbcSqlQuery query = prepareSelectPublicationsByCriteria(criteria);
+    configureFromByCriteria(query, criteria);
+    configureClausesByCriteria(query, criteria);
+    configureOrderingByCriteria(query, criteria);
+    configureExecution(query, criteria);
+    return query.executeWith(con, PublicationDAO::resultSet2PublicationDetail);
   }
 
-  private static JdbcSqlQuery dateFilters(final JdbcSqlQuery sqlQuery) {
-    final java.util.Date now = new java.util.Date();
-    final String dateNow = DateUtil.formatDate(now);
-    final String hourNow = DateUtil.formatTime(now);
-    return sqlQuery
-      .and("((? > P.pubBeginDate", dateNow).and("? < P.pubEndDate)", dateNow)
+  private static JdbcSqlQuery prepareSelectPublicationsByCriteria(final PublicationCriteria criteria) {
+    if (criteria.mustJoinOnNodeFatherTable()) {
+      return JdbcSqlQuery.createSelect("DISTINCT P.*");
+    } else {
+      return JdbcSqlQuery.createSelect("P.*");
+    }
+  }
+
+  private static JdbcSqlQuery prepareSelectPksByCriteria(final PublicationCriteria criteria) {
+    final JdbcSqlQuery query;
+    if (criteria.mustJoinOnNodeFatherTable()) {
+      query = JdbcSqlQuery.createSelect("DISTINCT(P.pubId)");
+    } else {
+      query = JdbcSqlQuery.createSelect("P.pubId");
+    }
+    if (!criteria.getComponentInstanceIds().isEmpty()) {
+      query.addSqlPart(", P.instanceId");
+    }
+    criteria.getOrderByList().stream()
+        .filter(o -> o != QUERY_ORDER_BY.CREATION_DATE_ASC && o != QUERY_ORDER_BY.CREATION_DATE_DESC)
+        .forEach(o -> query.addSqlPart(", P." + o.getPropertyName()));
+    return query;
+  }
+
+  private static void configureFromByCriteria(final JdbcSqlQuery query,
+      final PublicationCriteria criteria) {
+    query.from(PUBLICATION_TABLE_NAME + " P");
+    if (criteria.mustJoinOnNodeFatherTable()) {
+      query.join(PUBLICATION_FATHER_TABLE_NAME + " F").on("F.pubId = P.pubId");
+    }
+    if (!criteria.getComponentInstanceIds().isEmpty()) {
+      query.join("ST_ComponentInstance I").on("P.instanceid = CONCAT(I.componentname , CAST(I.id AS VARCHAR(20)))");
+    }
+  }
+
+  private static void configureClausesByCriteria(final JdbcSqlQuery query,
+      final PublicationCriteria criteria) {
+    final List<Integer> componentIds = criteria.getComponentInstanceIds().stream()
+        .map(ComponentInst::getComponentLocalId)
+        .collect(Collectors.toList());
+    final Set<Integer> includedNodeIds = criteria.getIncludedNodeIds();
+    final Set<Integer> excludedNodeIds = criteria.getExcludedNodeIds();
+    final OffsetDateTime visibilityDate = criteria.getVisibilityDate();
+    final OffsetDateTime updatedSince = criteria.getLastUpdatedSince();
+    String conjunction = WHERE_CONJUNCTION;
+    if (!criteria.getStatuses().isEmpty()) {
+      query.addSqlPart(conjunction + "P.pubStatus").in(criteria.getStatuses());
+      conjunction = AND_CONJUNCTION;
+    }
+    if (!includedNodeIds.isEmpty()) {
+      query.addSqlPart(conjunction + "F.nodeId").in(includedNodeIds);
+      conjunction = AND_CONJUNCTION;
+    }
+    if (!excludedNodeIds.isEmpty()) {
+      query.addSqlPart(conjunction + "F.nodeId").notIn(excludedNodeIds);
+      conjunction = AND_CONJUNCTION;
+    }
+    if (updatedSince != null) {
+      query.addSqlPart(conjunction + "P.pubupdatedate > ?", formatDate(updatedSince.toLocalDate()));
+      conjunction = AND_CONJUNCTION;
+    }
+    if (!componentIds.isEmpty()) {
+      query.addSqlPart(conjunction + "I.id").in(componentIds);
+      conjunction = AND_CONJUNCTION;
+    }
+    if (visibilityDate != null) {
+      dateFilters(query, conjunction, visibilityDate);
+    }
+  }
+
+  private static void dateFilters(final JdbcSqlQuery sqlQuery, final String conjunction,
+    final OffsetDateTime visibilityDate) {
+    final java.util.Date asDateType = TemporalConverter.asDate(visibilityDate);
+    final String dateNow =  formatDate(asDateType);
+    final String hourNow = DateUtil.formatTime(asDateType);
+    sqlQuery
+      .addSqlPart(conjunction + "((? > P.pubBeginDate", dateNow).and("? < P.pubEndDate)", dateNow)
       .or("(? = P.pubBeginDate", dateNow).and("? < P.pubEndDate", dateNow).and("? > P.pubBeginHour)", hourNow)
       .or("(? > P.pubBeginDate", dateNow).and("? = P.pubEndDate", dateNow).and("? < P.pubEndHour)", hourNow)
       .or("(? = P.pubBeginDate", dateNow).and("? = P.pubEndDate", dateNow).and("? > P.pubBeginHour", hourNow).and("? < P.pubEndHour))", hourNow);
   }
 
-  public static Collection<PublicationDetail> selectAllPublications(Connection con,
-      String instanceId) throws SQLException {
-    return selectAllPublications(con, instanceId, null);
+  private static void configureOrderingByCriteria(final JdbcSqlQuery query,
+      final PublicationCriteria criteria) {
+    final List<QUERY_ORDER_BY> orderBies = criteria.getOrderByList();
+    if (!orderBies.isEmpty()) {
+      query.orderBy(orderBies.stream()
+          .map(o -> "P." + o.getPropertyName() + " " + (o.isAsc() ? "asc" : "desc"))
+          .collect(Collectors.joining(",")));
+    }
+  }
+
+  private static void configureExecution(final JdbcSqlQuery query,
+      final PublicationCriteria criteria) {
+    final PaginationPage pagination = criteria.getPagination();
+    if (pagination != null) {
+      if (criteria.getOrderByList().isEmpty()) {
+        throw new IllegalArgumentException(
+            "it is not possible to paginate without order by clauses : " + criteria);
+      }
+      query.withPagination(pagination.asCriterion());
+    }
   }
 
   public static Collection<PublicationDetail> selectAllPublications(Connection con,
@@ -953,7 +945,7 @@ public class PublicationDAO {
 
     try (PreparedStatement prepStmt = con.prepareStatement(selectStatement.toString())) {
       java.util.Date now = new java.util.Date();
-      String dateNow = DateUtil.formatDate(now);
+      String dateNow = formatDate(now);
       String hourNow = DateUtil.formatTime(now);
 
       prepStmt.setString(1, pubPK.getComponentName());
@@ -981,106 +973,6 @@ public class PublicationDAO {
       return list;
     }
   }
-
-  public static Collection<PublicationDetail> selectByBeginDateDescAndStatusAndNotLinkedToFatherId(
-      Connection con, NodePK fatherPK, String status, int fetchSize) throws SQLException {
-
-    Collection<PublicationDetail> thisLastPublis = getLastPublis(fatherPK.getInstanceId());
-    if (thisLastPublis != null) {
-      return thisLastPublis;
-    } else {
-      String selectStatement = QueryStringFactory.
-          getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(PUBLICATION_TABLE_NAME);
-
-      try (PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
-        java.util.Date now = new java.util.Date();
-        String dateNow = DateUtil.formatDate(now);
-        String hourNow = DateUtil.formatTime(now);
-
-        prepStmt.setString(1, fatherPK.getInstanceId());
-        prepStmt.setInt(2, Integer.parseInt(fatherPK.getId()));
-        prepStmt.setString(3, status);
-        prepStmt.setString(4, dateNow);
-        prepStmt.setString(5, dateNow);
-        prepStmt.setString(6, dateNow);
-        prepStmt.setString(7, dateNow);
-        prepStmt.setString(8, hourNow);
-        prepStmt.setString(9, dateNow);
-        prepStmt.setString(10, dateNow);
-        prepStmt.setString(11, hourNow);
-        prepStmt.setString(12, dateNow);
-        prepStmt.setString(13, dateNow);
-        prepStmt.setString(14, hourNow);
-        prepStmt.setString(15, hourNow);
-
-        List<PublicationDetail> list = new ArrayList<>();
-        try (ResultSet rs = prepStmt.executeQuery()) {
-          int nbFetch = 0;
-          PublicationDetail pub;
-          while (rs.next() && nbFetch < fetchSize) {
-            pub = resultSet2PublicationDetail(rs);
-            list.add(pub);
-            nbFetch++;
-          }
-          cacheLastPublis(fatherPK.getInstanceId(), list);
-        }
-        return list;
-      }
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param con
-   * @param pubPK
-   * @return
-   * @throws SQLException
-   *
-   */
-  public static Collection<PublicationDetail> selectByBeginDateDesc(Connection con,
-      PublicationPK pubPK) throws SQLException {
-    StringBuilder selectStatement = new StringBuilder(128);
-    selectStatement.append("select * from SB_Publication_Publi where instanceId = ? ");
-    selectStatement.append(AND);
-    selectStatement.append("( ? > pubBeginDate AND ? < pubEndDate ) OR ");
-    selectStatement.append("( ? = pubBeginDate AND ? < pubEndDate AND ? > pubBeginHour ) OR ");
-    selectStatement.append("( ? > pubBeginDate AND ? = pubEndDate AND ? < pubEndHour ) OR ");
-    selectStatement.append(
-        "( ? = pubBeginDate AND ? = pubEndDate AND ? > pubBeginHour AND ? < pubEndHour )");
-    selectStatement.append(" ) ");
-    selectStatement.append(" order by pubCreationDate DESC, pubBeginDate DESC");
-
-    try (PreparedStatement prepStmt = con.prepareStatement(selectStatement.toString())) {
-      java.util.Date now = new java.util.Date();
-      String dateNow = DateUtil.formatDate(now);
-      String hourNow = DateUtil.formatTime(now);
-
-      prepStmt.setString(1, pubPK.getComponentName());
-      prepStmt.setString(2, dateNow);
-      prepStmt.setString(3, dateNow);
-      prepStmt.setString(4, dateNow);
-      prepStmt.setString(5, dateNow);
-      prepStmt.setString(6, hourNow);
-      prepStmt.setString(7, dateNow);
-      prepStmt.setString(8, dateNow);
-      prepStmt.setString(9, hourNow);
-      prepStmt.setString(10, dateNow);
-      prepStmt.setString(11, dateNow);
-      prepStmt.setString(12, hourNow);
-      prepStmt.setString(13, hourNow);
-
-      List<PublicationDetail> list = new ArrayList<>();
-      try (ResultSet rs = prepStmt.executeQuery()) {
-        PublicationDetail pub;
-        while (rs.next()) {
-          pub = resultSet2PublicationDetail(rs);
-          list.add(pub);
-        }
-      }
-      return list;
-    }
-  }
-
 
   public static Collection<PublicationDetail> getOrphanPublications(Connection con,
       final String componentId) throws SQLException {
@@ -1135,7 +1027,7 @@ public class PublicationDAO {
     try (PreparedStatement prepStmt = con.prepareStatement(selectStatement.toString())) {
       prepStmt.setString(1, pubPK.getComponentName());
       java.util.Date now = new java.util.Date();
-      String formattedDate = DateUtil.formatDate(now);
+      String formattedDate = formatDate(now);
       String formattedHour = DateUtil.formatTime(now);
       prepStmt.setString(2, formattedDate);
       prepStmt.setString(3, formattedDate);
@@ -1202,9 +1094,6 @@ public class PublicationDAO {
       rowCount = prepStmt.executeUpdate();
     }
 
-    invalidateLastPublis(pubPK.getInstanceId());
-    invalidateLastPublis(newInstanceId);
-
     if (rowCount == 0) {
       throw new PublicationRuntimeException(
           "The update of the publication with id = " + pubPK.getId() + " failed!");
@@ -1225,7 +1114,7 @@ public class PublicationDAO {
     if (date == null) {
       statement.setString(idx, defaultDate);
     } else {
-      statement.setString(idx, DateUtil.formatDate(date));
+      statement.setString(idx, formatDate(date));
     }
   }
 
@@ -1236,7 +1125,7 @@ public class PublicationDAO {
       prepStmt.setString(1, detail.getInfoId());
       prepStmt.setString(2, detail.getName());
       prepStmt.setString(3, detail.getDescription());
-      prepStmt.setString(4, DateUtil.formatDate(detail.getCreationDate()));
+      prepStmt.setString(4, formatDate(detail.getCreationDate()));
       setDateParameter(prepStmt, 5, detail.getBeginDate(), NULL_BEGIN_DATE);
       setDateParameter(prepStmt, 6, detail.getEndDate(), NULL_END_DATE);
       prepStmt.setString(7, detail.getCreatorId());
@@ -1245,7 +1134,7 @@ public class PublicationDAO {
       prepStmt.setString(10, detail.getKeywords());
       prepStmt.setString(11, detail.getContentPagePath());
       prepStmt.setString(12, detail.getStatus());
-      setDateParameter(prepStmt, 13, detail.getUpdateDate(), DateUtil.formatDate(detail.getCreationDate()));
+      setDateParameter(prepStmt, 13, detail.getUpdateDate(), formatDate(detail.getCreationDate()));
       if (detail.getUpdaterId() == null) {
         prepStmt.setString(14, detail.getCreatorId());
       } else {
@@ -1255,7 +1144,7 @@ public class PublicationDAO {
 
       prepStmt.setString(16, detail.getValidatorId());
       if (detail.getValidateDate() != null) {
-        prepStmt.setString(17, DateUtil.formatDate(detail.getValidateDate()));
+        prepStmt.setString(17, formatDate(detail.getValidateDate()));
       } else {
         prepStmt.setString(17, null);
       }
@@ -1289,13 +1178,12 @@ public class PublicationDAO {
       prepStmt.setString(23, detail.getCloneStatus());
 
       prepStmt.setString(24, detail.getLanguage());
-      prepStmt.setString(25, DateUtil.formatDate(detail.getDraftOutDate()));
+      prepStmt.setString(25, formatDate(detail.getDraftOutDate()));
 
       prepStmt.setInt(26, Integer.parseInt(detail.getPK().getId()));
 
       rowCount = prepStmt.executeUpdate();
     }
-    invalidateLastPublis(detail.getPK().getComponentName());
 
     if (rowCount == 0) {
       throw new PublicationRuntimeException(
@@ -1411,7 +1299,7 @@ public class PublicationDAO {
       final Connection con, final List<String> pubIds,
       final Map<String, List<Boolean>> statusMapping) {
     final Map<String, PublicationDetail> publications = new HashMap<>(pubIds.size());
-    getByIds(con, pubIds).forEach(p -> publications.put(p.getId(), p));
+    getByIds(con, pubIds, null).forEach(p -> publications.put(p.getId(), p));
     return pubIds
         .stream()
         .map(i -> {

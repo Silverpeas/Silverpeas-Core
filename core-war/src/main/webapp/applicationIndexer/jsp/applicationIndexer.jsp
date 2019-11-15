@@ -24,9 +24,9 @@
 
 --%>
 <%@page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
+<%@page import="org.silverpeas.core.admin.component.model.SilverpeasComponentInstance"%>
 <%@page import="org.silverpeas.core.admin.service.OrganizationController"%>
 <%@page import="org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents"%>
-<%@page import="org.silverpeas.core.admin.space.SpaceInstLight"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -35,15 +35,16 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
+<%@ page import="org.silverpeas.core.admin.space.SpaceInstLight"%>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel"%>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 
+<%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
-<%@ page import="org.silverpeas.core.web.index.IndexationProcessExecutor"%>
 
+<%@ page import="org.silverpeas.core.web.index.IndexationProcessExecutor"%>
 <%@ page import="org.silverpeas.core.web.index.components.ApplicationIndexer"%>
-<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
+<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
 <%@ page import="org.silverpeas.core.web.mvc.webcomponent.WebMessager" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
@@ -66,13 +67,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       result.append("<td class=\"txttitrecol\">&#149; <a href=\"javaScript:index('Index','', '")
           .append(spaceInst.getLocalId()).append("');\">").append(spaceInst.getName())
           .append("</a></td></tr>\n").append("<tr><td class=\"txtnote\">\n");
-      for (final ComponentInstLight compoInst : space.getComponents()) {
+      for (final SilverpeasComponentInstance compoInst : space.getComponents()) {
         final String compoName = compoInst.getName();
         final String compoId = compoInst.getId();
         final String label = StringUtil.defaultStringIfNotDefined(compoInst.getLabel(), compoName);
-        result.append("&nbsp;<img src=").append(appContext).append("/util/icons/component/")
-            .append(compoName).append(
-            "Small.gif border=0 width=15 align=absmiddle>&nbsp;<a href=\"javaScript:index('Index','")
+        result.append("&nbsp;<img src=\"").append(ComponentInstLight.getIcon(compoInst, false)).append(
+            "\" border=0 width=15 align=absmiddle>&nbsp;<a href=\"javaScript:index('Index','")
             .append(compoId).append("','").append(space.getSpace().getId()).append("');\">")
             .append(label).append("</a>\n");
       }

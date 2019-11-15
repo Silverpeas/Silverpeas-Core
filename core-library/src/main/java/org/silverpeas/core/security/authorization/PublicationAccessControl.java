@@ -23,8 +23,12 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.util.ServiceProvider;
+
+import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * This interface extends access controller for a Publication resource.
@@ -33,6 +37,31 @@ import org.silverpeas.core.util.ServiceProvider;
 public interface PublicationAccessControl extends AccessController<PublicationPK> {
 
   static PublicationAccessControl get() {
-    return ServiceProvider.getService(PublicationAccessControl.class);
+    return ServiceProvider.getSingleton(PublicationAccessControl.class);
   }
+
+  /**
+   * Using this method avoid to use perform database request in order to retrieve publication data.
+   */
+  default Stream<PublicationDetail> filterAuthorizedByUser(final String userId,
+      final Collection<PublicationDetail> pubs) {
+    return filterAuthorizedByUser(userId, pubs, AccessControlContext.init());
+  }
+
+  /**
+   * Using this method avoid to use perform database request in order to retrieve publication data.
+   */
+  Stream<PublicationDetail> filterAuthorizedByUser(final String userId,
+      final Collection<PublicationDetail> pubs, final AccessControlContext context);
+
+  /**
+   * Using this method avoid to use perform database request in order to retrieve publication data.
+   */
+  boolean isUserAuthorized(final String userId, final PublicationDetail pubDetail);
+
+  /**
+   * Using this method avoid to use perform database request in order to retrieve publication data.
+   */
+  boolean isUserAuthorized(final String userId, final PublicationDetail pubDetail,
+      final AccessControlContext context);
 }

@@ -31,6 +31,8 @@ import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.List;
 
+import static java.util.Collections.singleton;
+
 /**
  * @author Yohann Chastagnier
  */
@@ -40,9 +42,14 @@ public class DefaultCalendarRepository extends SilverpeasJpaEntityRepository<Cal
 
   @Override
   public List<Calendar> getByComponentInstanceId(final String componentInstanceId) {
+    return getByComponentInstanceIds(singleton(componentInstanceId));
+  }
+
+  @Override
+  public List<Calendar> getByComponentInstanceIds(final Collection<String> componentInstanceIds) {
     NamedParameters parameters = newNamedParameters();
-    return findByNamedQuery("calendarsByComponentInstanceId",
-        parameters.add("componentInstanceId", componentInstanceId));
+    return findByNamedQuery("calendarsByComponentInstanceIds",
+        parameters.add("componentInstanceIds", componentInstanceIds));
   }
 
   @Override

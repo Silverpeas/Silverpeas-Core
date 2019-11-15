@@ -32,6 +32,6 @@ public class PersonalizationServiceProvider {
    * @return a PersonalizationService instance.
    */
   public static PersonalizationService getPersonalizationService() {
-    return ServiceProvider.getService(PersonalizationService.class);
+    return ServiceProvider.getSingleton(PersonalizationService.class);
   }
 }

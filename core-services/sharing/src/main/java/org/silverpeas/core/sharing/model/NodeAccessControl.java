@@ -32,7 +32,6 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.sharing.security.AbstractShareableAccessControl;
-import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 
@@ -94,7 +93,7 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
   }
 
   private PublicationService getPublicationService() {
-    return ServiceProvider.getService(PublicationService.class);
+    return PublicationService.get();
   }
 
   private NodeService getNodeService() {

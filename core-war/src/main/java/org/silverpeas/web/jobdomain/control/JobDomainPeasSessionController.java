@@ -2215,10 +2215,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     for (String profileId : profileIds) {
       ProfileInst currentProfile = adminCtrl.getProfileInst(profileId);
       Objects.requireNonNull(currentProfile);
-      ComponentProfiles componentProfiles = allProfiles.get(currentProfile.getComponentFatherId());
+      ComponentProfiles componentProfiles = allProfiles.getByLocalComponentInstanceId(currentProfile.getComponentFatherId());
       if (componentProfiles == null) {
         ComponentInstLight currentComponent =
-            adminCtrl.getComponentInstLight(currentProfile.getComponentFatherId());
+            adminCtrl.getComponentInstLight(String.valueOf(currentProfile.getComponentFatherId()));
         if (currentComponent.getStatus() == null && !currentComponent.isPersonal()) {
           LocalizedComponent localizedComponent = getLocalizedComponent(currentComponent.getName());
           componentProfiles = new ComponentProfiles(currentComponent, localizedComponent);
@@ -2227,7 +2227,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           allProfiles.add(componentProfiles);
         }
       }
-      componentProfiles.addProfile(currentProfile);
+      if (componentProfiles != null) {
+        componentProfiles.addProfile(currentProfile);
+      }
     }
     allProfiles.sort(new AbstractComplexComparator<ComponentProfiles>() {
       private static final long serialVersionUID = 6776408278128213038L;

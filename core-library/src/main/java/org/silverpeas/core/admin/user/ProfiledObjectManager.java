@@ -24,22 +24,32 @@
 package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectIds;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.dao.RoleDAO;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.Pair;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.*;
 
 @Singleton
 @Transactional(Transactional.TxType.MANDATORY)
@@ -82,46 +92,43 @@ public class ProfiledObjectManager {
     return profiles;
   }
 
-  public String[] getUserProfileNames(ProfiledObjectId objectRef, int componentId, int userId,
-      List<String> groupIds) throws AdminException {
+  public String[] getUserProfileNames(final ProfiledObjectId objectRef, final int componentId,
+      final int userId, final List<String> groupIds) throws AdminException {
     if (objectRef.isNotDefined()) {
       return new String[0];
     }
-
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-      int objectId = Integer.parseInt(objectRef.getId());
-      String objectType = objectRef.getType().getCode();
-      List<UserRoleRow> roles =
-          roleDAO.getRoles(con, objectId, objectType, componentId, groupIds, userId);
-      List<String> roleNames = new ArrayList<>();
-
-      for (UserRoleRow role : roles) {
-        roleNames.add(role.getRoleName());
-      }
-
-      return roleNames.toArray(new String[0]);
-
+    try (final Connection con = DBUtil.openConnection()) {
+      return roleDAO.getRoles(con, ProfiledObjectIds.fromProfileObjectId(objectRef), singleton(componentId), groupIds, userId).stream()
+          .map(UserRoleRow::getRoleName)
+          .distinct()
+          .toArray(String[]::new);
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
-  public Map<Integer, List<String>> getUserProfileNames(String objectType, int componentId,
-      int userId, List<String> groupIds) throws AdminException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
+  public Map<Pair<Integer, Integer>, Set<String>> getUserProfileNames(
+      final ProfiledObjectIds profiledObjectIds, final Collection<Integer> componentIds,
+      final int userId, final List<String> groupIds) throws AdminException {
+    if (profiledObjectIds.isEmpty() || profiledObjectIds.stream().anyMatch(NodePK.UNDEFINED_NODE_ID::equals)) {
+      return emptyMap();
+    }
+    try (final Connection con = DBUtil.openConnection()) {
+      return roleDAO.getRoles(con, profiledObjectIds, componentIds, groupIds, userId).stream()
+          .collect(groupingBy(r -> Pair.of(r.getInstanceId(), r.getObjectId()),
+                   mapping(UserRoleRow::getRoleName, toSet())));
+    } catch (Exception e) {
+      throw new AdminException(e.getMessage(), e);
+    }
+  }
 
-      List<UserRoleRow> roles =
-          roleDAO.getRoles(con, -1, objectType, componentId, groupIds, userId);
-      Map<Integer, List<String>> objectProfiles = new HashMap<>(roles.size());
-
+  public Map<Integer, List<String>> getUserProfileNames(ProfiledObjectType profiledObjectType,
+      int componentId, int userId, List<String> groupIds) throws AdminException {
+    try (final Connection con = DBUtil.openConnection()) {
+      final List<UserRoleRow> roles =
+          roleDAO.getRoles(con, ProfiledObjectIds.ofType(profiledObjectType), singleton(componentId), groupIds, userId);
+      final Map<Integer, List<String>> objectProfiles = new HashMap<>(roles.size());
       roles.sort(Comparator.comparingInt(UserRoleRow::getObjectId));
-
       int currentObjectId = -1;
       List<String> roleNames = new ArrayList<>();
       for (UserRoleRow role : roles) {
@@ -132,13 +139,9 @@ public class ProfiledObjectManager {
         }
         roleNames.add(role.getRoleName());
       }
-
       return objectProfiles;
-
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 

@@ -55,7 +55,7 @@ import java.util.List;
 public interface PdcClassificationService {
 
   static PdcClassificationService get() {
-    return ServiceProvider.getService(PdcClassificationService.class);
+    return ServiceProvider.getSingleton(PdcClassificationService.class);
   }
 
   /**

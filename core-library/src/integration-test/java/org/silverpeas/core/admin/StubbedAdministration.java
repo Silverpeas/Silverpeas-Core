@@ -50,12 +50,15 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.SilverpeasList;
 
 import javax.inject.Singleton;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Yohann Chastagnier
@@ -210,6 +213,12 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
+  public Map<String, Map<String, String>> getParameterValuesByComponentIdThenByParamName(
+      final Collection<String> componentIds, final Collection<String> paramNames) {
+    return null;
+  }
+
+  @Override
   public List<ComponentInstLight> getComponentsWithParameter(final String paramName,
       final String paramValue) {
     return null;
@@ -323,15 +332,21 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public boolean isComponentAvailableToGroup(final String componentId, final String groupId)
-      throws AdminException {
-    return false;
+  public Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
+      final ProfiledObjectIds profiledObjectIds, final Collection<String> componentIds, final String userId) throws AdminException {
+    return Collections.emptyMap();
   }
 
   @Override
-  public Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(final String objectType,
+  public Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(final ProfiledObjectType profiledObjectType,
       final String componentId, final String userId) {
     return null;
+  }
+
+  @Override
+  public boolean isComponentAvailableToGroup(final String componentId, final String groupId)
+      throws AdminException {
+    return false;
   }
 
   @Override
@@ -820,6 +835,11 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
+  public List<String> getAvailableComponentsByUser(final String userId) throws AdminException {
+    return Collections.emptyList();
+  }
+
+  @Override
   public boolean isComponentAvailableToUser(final String componentId, final String userId) {
     return false;
   }
@@ -900,6 +920,12 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
+  public Map<String, Set<String>> getUserProfilesByComponentId(final String userId,
+      final Collection<String> componentIds) throws AdminException {
+    return Collections.emptyMap();
+  }
+
+  @Override
   public UserDetail[] getUsers(final boolean bAllProfiles, final String sProfile,
       final String sClientSpaceId, final String sClientComponentId) {
     return new UserDetail[0];
@@ -973,12 +999,6 @@ public class StubbedAdministration implements Administration {
 
   @Override
   public String[] getAllComponentIdsRecur(final String sSpaceId) {
-    return new String[0];
-  }
-
-  @Override
-  public String[] getAllComponentIdsRecur(final String sSpaceId, final String sUserId,
-      final String componentNameRoot, final boolean inCurrentSpace, final boolean inAllSpaces) {
     return new String[0];
   }
 
@@ -1129,6 +1149,12 @@ public class StubbedAdministration implements Administration {
 
   @Override
   public SpaceWithSubSpacesAndComponents getAllowedFullTreeview(final String userId) {
+    return null;
+  }
+
+  @Override
+  public SpaceWithSubSpacesAndComponents getAllowedFullTreeviewOnComponentName(final String userId,
+      final String componentName) throws AdminException {
     return null;
   }
 

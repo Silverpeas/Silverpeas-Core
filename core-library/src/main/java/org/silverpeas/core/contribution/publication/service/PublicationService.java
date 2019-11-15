@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.publication.service;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -54,7 +54,7 @@ public interface PublicationService {
    * @return a {@link PublicationService} object.
    */
   static PublicationService get() {
-    return ServiceProvider.getService(PublicationService.class);
+    return ServiceProvider.getSingleton(PublicationService.class);
   }
 
   /**
@@ -173,6 +173,16 @@ public interface PublicationService {
   List<NodePK> getAllFatherPKInSamePublicationComponentInstance(PublicationPK pubPK);
 
   /**
+   * Selects massively simple data about all locations (main or aliases).
+   * <p>
+   *   This method is designed for process performance needs.
+   * </p>
+   * @param ids the instance ids aimed.
+   * @return a list of {@link Location} instances.
+   */
+  Map<String, List<Location>> getAllLocationsByPublicationIds(Collection<PublicationPK> ids);
+
+  /**
    * Gets all the locations of the specified publication whatever the component instance in which
    * they are. By default, the original location of the publication is returned along with all of
    * its aliases.
@@ -180,7 +190,7 @@ public interface PublicationService {
    * @return a collection of the locations of the publication.
    * @see org.silverpeas.core.contribution.publication.model.Location
    */
-  Collection<Location> getAllLocations(PublicationPK pubPK);
+  List<Location> getAllLocations(PublicationPK pubPK);
 
   /**
    * Gets the locations of the specified publication in the given component instance.
@@ -301,17 +311,6 @@ public interface PublicationService {
   Collection<PublicationDetail> getDetailsNotInFatherPK(NodePK fatherPK, String sorting);
 
   /**
-   * Gets the publications that aren't attached to the specified father, ordered by their
-   * visibility begin date and that have the specified status.
-   * @param fatherPK the identifying key of the father.
-   * @param status the status of the publications to get.
-   * @param nbPubs the number of publication to return.
-   * @return a collection of {@link PublicationDetail} instances.
-   */
-  Collection<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
-      NodePK fatherPK, String status, int nbPubs);
-
-  /**
    * Deletes the specified link between two publications.
    * @param id the unique identifier of a link between two publications.
    */
@@ -339,49 +338,20 @@ public interface PublicationService {
   List<PublicationDetail> getByIds(Collection<String> publicationIds);
 
   /**
-   * Gets all the publications with the specified status and that are managed by the specified
-   * component instance.
-   * @param status the status of the publications to get.
-   * @param instanceId the unique identifier of the component instance.
-   * @return a collection of {@link PublicationDetail} instances
+   * Gets all the publications according to given criteria.
+   * @param criteria the criteria to process.
+   * @return a list of {@link PublicationDetail} instances
    */
-  Collection<PublicationDetail> getPublicationsByStatus(String status, String instanceId);
+  SilverpeasList<PublicationDetail> getPublicationsByCriteria(final PublicationCriteria criteria);
 
   /**
-   * Gets all the identifying key of the publications having the specified status and that are
-   * managed by the given component instances.
-   * @param status the status of the publications to get.
-   * @param componentIds a list of component instance identifiers
-   * @param pagination the pagination to apply onto the result.
-   * @return a paginated list of {@link PublicationPK} instances.
+   * Gets a list of authorized publications by applying given criteria.
+   * @param userId the identifier of the user for which access control MUST be verified.
+   * @param criteria the criteria.
+   * @return a list of publications
    */
-  SilverpeasList<PublicationPK> getPublicationPKsByStatus(String status, List<String> componentIds,
-      final PaginationPage pagination);
-
-  /**
-   * Gets the list of publications with a maxSize as specified, each publication has the specified
-   * status and has been updated since the specified date
-   *
-   * @param status the publications status.
-   * @param since the last update of the publication
-   * @param componentIds a list of component instance identifiers.
-   * @param pagination the maximum size of the list. If 0 is specified, the limit is not used.
-   * @return a list of publications with the specified maxSize or none if 0 or less is specified.
-   * @
-   */
-  SilverpeasList<PublicationPK> getUpdatedPublicationPKsByStatus(String status, Date since,
-      List<String> componentIds, PaginationPage pagination);
-
-  /**
-   * Gets all the publications with the specified status and managed by the given component
-   * instances.
-   * @param status the status of the publications to get.
-   * @param componentIds a list of component instance identifiers.
-   * @return a collection of {@link PublicationDetail} instances.
-   */
-  Collection<PublicationDetail> getPublicationsByStatus(String status,
-      List<String> componentIds);
-
+  SilverpeasList<PublicationDetail> getAuthorizedPublicationsForUserByCriteria(final String userId,
+      final PublicationCriteria criteria);
 
   int getNbPubByFatherPath(NodePK fatherPK, String fatherPath);
 
@@ -416,6 +386,32 @@ public interface PublicationService {
   void createIndex(PublicationDetail pubDetail);
 
   void deleteIndex(PublicationPK pubPK);
+
+
+  /**
+   * Selects massively simple data about publications.
+   * <p>
+   * For now, only the following data are retrieved:
+   *   <ul>
+   *     <li>pubId</li>
+   *     <li>pubStatus</li>
+   *     <li>pubCloneId</li>
+   *     <li>pubCloneStatus</li>
+   *     <li>instanceId</li>
+   *     <li>pubBeginDate</li>
+   *     <li>pubEndDate</li>
+   *     <li>pubBeginHour</li>
+   *     <li>pubEndHour</li>
+   *     <li>pubcreatorid</li>
+   *     <li>pubupdaterid</li>
+   *   </ul>
+   *   This method is designed for process performance needs.<br/>
+   *   The result is not necessarily into same ordering as the one of given parameter.
+   * </p>
+   * @param ids the instance ids aimed.
+   * @return a list of {@link PublicationDetail} instances.
+   */
+  List<PublicationDetail> getMinimalDataByIds(Collection<PublicationPK> ids);
 
   Collection<PublicationDetail> getAllPublications(String instanceId);
 

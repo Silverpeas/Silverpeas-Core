@@ -21,28 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.initialization;
+package org.silverpeas.core.contribution.contentcontainer.content;
 
-/**
- * Extension of {@link Initialization} interface dedicated to objects (tool, helpers, etc.) which
- * are singleton registered into CDI context.<br/>
- * The aim is to initialize a static reference at server startup in order to avoid to use
- * {@link org.silverpeas.core.util.ServiceProvider} mechanism at each supply request.<br/>
- * By this way, there is no memory overload as the references of the services exist into CDI
- * containers, and performances are super amazing!!!
- * @author silveryocha
- */
-public interface RootSingletonInitialization extends ServiceProviderSingletonInitialization {
+import java.util.List;
+import java.util.stream.Stream;
+
+public interface GlobalSilverContentProcessor {
+
+  class Constants {
+
+    public static final String PROCESSOR_NAME_SUFFIX = "GlobalSilverContentProcessor";
+
+    private Constants() {
+    }
+  }
 
   /**
-   * Gets the priority level of the execution of {@link #init()} method.
-   * <p>
-   * The less is the value of the priority the more the priority is high.
-   * </p>
-   * @return an integer priority.
+   * Indicates the name of component the processor is related to.
+   * @return name of component.
    */
-  @Override
-  default int getPriority() {
-    return -1000000;
-  }
+  String relatedToComponent();
+
+  /**
+   * Converts given {@link SilverContentInterface} instances into {@link GlobalSilverContent}.
+   * @param silverContents a {@link SilverContentInterface} instance list.
+   * @return the converted instances.
+   */
+  Stream<GlobalSilverContent> asGlobalSilverContent(List<SilverContentInterface> silverContents);
 }

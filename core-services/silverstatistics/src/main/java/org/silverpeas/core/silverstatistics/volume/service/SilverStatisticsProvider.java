@@ -35,7 +35,7 @@ public class SilverStatisticsProvider {
    * @return a SilverStatistics implementation instance.
    */
   public static SilverStatistics getSilverStatistics() {
-    return ServiceProvider.getService(SilverStatistics.class);
+    return ServiceProvider.getSingleton(SilverStatistics.class);
   }
 
   private SilverStatisticsProvider() {

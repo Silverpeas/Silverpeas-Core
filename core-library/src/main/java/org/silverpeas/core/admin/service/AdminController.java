@@ -550,15 +550,6 @@ public class AdminController implements java.io.Serializable {
     }
   }
 
-  public boolean isObjectAvailable(ProfiledObjectId objectRef, String componentId, String userId) {
-    try {
-      return admin.isObjectAvailableToUser(componentId, objectRef, userId);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return false;
-    }
-  }
-
   /** Add the given Profile Instance */
   public String addProfileInst(ProfileInst profileInst) {
     return addProfileInst(profileInst, null);

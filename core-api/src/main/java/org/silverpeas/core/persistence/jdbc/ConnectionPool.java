@@ -50,7 +50,7 @@ public class ConnectionPool {
    * @throws java.sql.SQLException if an error occurs while getting an available connection.
    */
   public static Connection getConnection() throws SQLException {
-    ConnectionPool connectionPool = ServiceProvider.getService(ConnectionPool.class);
+    ConnectionPool connectionPool = ServiceProvider.getSingleton(ConnectionPool.class);
     return connectionPool.getDataSourceConnection();
   }
 

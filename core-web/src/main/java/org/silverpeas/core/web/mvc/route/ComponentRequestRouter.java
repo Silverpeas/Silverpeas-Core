@@ -376,7 +376,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   @SuppressWarnings("UnusedParameters")
   public static String[] getComponentId(HttpServletRequest request,
       MainSessionController mainSessionCtrl) {
-    SilverpeasWebUtil webUtil = ServiceProvider.getService(SilverpeasWebUtil.class);
+    SilverpeasWebUtil webUtil = ServiceProvider.getSingleton(SilverpeasWebUtil.class);
     return webUtil.getComponentId(request);
   }
 

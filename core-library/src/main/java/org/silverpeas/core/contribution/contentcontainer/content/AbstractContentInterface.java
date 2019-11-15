@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.contribution.contentcontainer.content;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -54,15 +55,11 @@ public abstract class AbstractContentInterface implements ContentInterface {
   }
 
   @Override
-  public final List<SilverContentInterface> getSilverContentById(
-      final List<Integer> silverpeasContentIds, final String instanceId,
-      final String currentUserId) {
-    List<String> resourceIds =
-        getContentManager().getResourcesMatchingContents(silverpeasContentIds);
+  public final List<SilverContentInterface> getSilverContentByReference(
+      final List<ResourceReference> resourceReferences, final String currentUserId) {
     List<Contribution> contributions =
-        getAccessibleContributions(resourceIds, instanceId, currentUserId);
-    return contributions.stream().map(instance -> convert(instance, instanceId))
-        .collect(Collectors.toList());
+        getAccessibleContributions(resourceReferences, currentUserId);
+    return contributions.stream().map(this::convert).collect(Collectors.toList());
   }
 
   @Override
@@ -111,13 +108,12 @@ public abstract class AbstractContentInterface implements ContentInterface {
    * <p>
    * Implementations of this method must handle the user rights on the resource.
    * </p>
-   * @param resourceIds a list of resource identifier.
-   * @param componentInstanceId a component instance identifier.
+   * @param resourceReferences a list of resource identifier.
    * @param currentUserId the identifier of the user accessing the content.
    * @return an optional {@link Contribution} instance.
    */
   protected abstract List<Contribution> getAccessibleContributions(
-      final List<String> resourceIds, final String componentInstanceId, final String currentUserId);
+      final List<ResourceReference> resourceReferences, final String currentUserId);
 
   /**
    * Same as {@link #getSilverContentId(Contribution)}, but giving resource identifier and component
@@ -269,12 +265,10 @@ public abstract class AbstractContentInterface implements ContentInterface {
    * </p>
    * @param <T> the type of the instance.
    * @param instance an instance, a {@link Contribution} for the best.
-   * @param componentInstanceId the component instance identifier for performance. It avoids to take
-   * it from the instance.
    * @return a {@link SilverContentInterface} instance.
    */
-  private <T extends Contribution> SilverContentInterface convert(T instance,
-      final String componentInstanceId) {
+  private <T extends Contribution> SilverContentInterface convert(T instance) {
+    final String componentInstanceId = instance.getContributionId().getComponentInstanceId();
     return new ContributionWrapper(instance, getContentIconFileName(componentInstanceId));
   }
 

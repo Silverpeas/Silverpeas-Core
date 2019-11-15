@@ -23,18 +23,19 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.viewer.service.PreviewService;
 import org.silverpeas.core.viewer.service.ViewerContext;
 import org.silverpeas.core.viewer.service.ViewerException;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -82,6 +83,8 @@ public class PreviewResource extends RESTWebService {
   static final String PATH = "preview";
 
   @Inject
+  private UserPrivilegeValidation validation;
+  @Inject
   private AttachmentService attachmentService;
   @Inject
   private PreviewService previewService;
@@ -114,6 +117,9 @@ public class PreviewResource extends RESTWebService {
       if (attachment == null) {
         throw new ViewerException("ATTACHMENT DOESN'T EXIST");
       }
+
+      // Verifying authorizations
+      validation.validateUserAuthorizationOnAttachment(getHttpServletRequest(), getUser(), attachment);
 
       // Computing the preview entity
       return asWebEntity(previewService.getPreview(ViewerContext.from(attachment)));
@@ -150,5 +156,10 @@ public class PreviewResource extends RESTWebService {
   @Override
   public String getComponentId() {
     return componentId;
+  }
+
+  @Override
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
+    // authorization verifications MUST be done directly into each signatures
   }
 }

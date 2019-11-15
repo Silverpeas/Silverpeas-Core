@@ -23,20 +23,30 @@
  */
 package org.silverpeas.core.index.search;
 
-import java.util.Set;
-
 import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.security.authorization.ComponentAuthorization;
+
+import java.util.Set;
 
 /**
  * A SearchEngine search the web'activ index and give access to the retrieved index entries.
  */
 public interface SearchEngine {
+
   /**
    * Search the index for the required documents.
-   * @param query
-   * @return
-   * @throws ParseException
+   * <p>
+   * If {@link QueryDescription#setAdminScope(boolean)} as been called with a true value (it MUST
+   * be only set by administration features), no filtering is performed on index search result.
+   * </p>
+   * <p>
+   * In other context than the one of administration scope, a filtering is performed on the index
+   * search result. The filtering is using {@link ComponentAuthorization} API which permits each
+   * component to apply theirs access security rules.
+   * </p>
+   * @param query the search query.
+   * @return the results.
    */
   PlainSearchResult search(QueryDescription query) throws ParseException;
 
@@ -46,5 +56,4 @@ public interface SearchEngine {
    * @return a set of result sorted by alphabetic order
    */
   Set<String> suggestKeywords(String keywordFragment);
-
 }

@@ -23,20 +23,21 @@
  */
 package org.silverpeas.core.contribution.publication.service;
 
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.publication.model.PublicationWithStatus;
-import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
+import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationWithStatus;
+import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
 import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.DateUtil;
@@ -381,11 +382,16 @@ public class PublicationDAOIT {
   public void testSelectByStatus_3args_1() throws Exception {
     try (Connection con = getSafeConnection()) {
       String status = "Valid";
-      Collection<PublicationDetail> result = PublicationDAO.selectByStatus(con, "kmelia200", status);
+      Collection<PublicationDetail> result = PublicationDAO.selectPublicationsByCriteria(con,
+          PublicationCriteria
+              .excludingTrashNodeOnComponentInstanceIds("kmelia200")
+              .ofStatus(status));
       assertEquals(result.size(), 2);
 
       status = "Draft";
-      result = PublicationDAO.selectByStatus(con, "kmelia200", status);
+      result = PublicationDAO.selectPublicationsByCriteria(con, PublicationCriteria
+          .excludingTrashNodeOnComponentInstanceIds("kmelia200")
+          .ofStatus(status));
       assertEquals(result.size(), 0);
     }
   }
@@ -400,17 +406,23 @@ public class PublicationDAOIT {
       componentIds.add("kmelia200");
       componentIds.add("kmelia201");
       String status = "Valid";
-      Collection<PublicationDetail> result = PublicationDAO.
-          selectByStatus(con, componentIds, status);
+      Collection<PublicationDetail> result = PublicationDAO.selectPublicationsByCriteria(con,
+              PublicationCriteria
+                  .excludingTrashNodeOnComponentInstanceIds(componentIds)
+                  .ofStatus(status));
       assertEquals(result.size(), 2);
 
       status = "Draft";
-      result = PublicationDAO.selectByStatus(con, componentIds, status);
+      result = PublicationDAO.selectPublicationsByCriteria(con, PublicationCriteria
+          .excludingTrashNodeOnComponentInstanceIds(componentIds)
+          .ofStatus(status));
       assertEquals(result.size(), 0);
 
       status = "Valid";
       componentIds.remove("kmelia200");
-      result = PublicationDAO.selectByStatus(con, componentIds, status);
+      result = PublicationDAO.selectPublicationsByCriteria(con, PublicationCriteria
+          .excludingTrashNodeOnComponentInstanceIds(componentIds)
+          .ofStatus(status));
       assertEquals(result.size(), 0);
     }
   }

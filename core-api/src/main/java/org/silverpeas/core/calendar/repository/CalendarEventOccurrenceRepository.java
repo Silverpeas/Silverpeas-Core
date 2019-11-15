@@ -45,7 +45,7 @@ public interface CalendarEventOccurrenceRepository
    * @return a persistence repository of event occurrences.
    */
   static CalendarEventOccurrenceRepository get() {
-    return ServiceProvider.getService(CalendarEventOccurrenceRepository.class);
+    return ServiceProvider.getSingleton(CalendarEventOccurrenceRepository.class);
   }
 
   /**

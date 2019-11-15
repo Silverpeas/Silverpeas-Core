@@ -23,26 +23,36 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.model;
 
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+
 import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Singleton
 public class ThumbnailDAO {
 
-  private static final String INSERT_THUMBNAIL = "INSERT INTO sb_thumbnail_thumbnail " + "(instanceid, objectid, objecttype, originalattachmentname, modifiedattachmentname," + "mimetype, xstart, ystart, xlength, ylength) " + "VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)";
-  private static final String UPDATE_THUMBNAIL = "UPDATE sb_thumbnail_thumbnail " +
+  private static final String THUMBNAIL_TABLE = "sb_thumbnail_thumbnail";
+  private static final String ALL_FIELDS = "instanceid, objectid, objecttype, " +
+      "originalattachmentname, modifiedattachmentname, mimetype, xstart, ystart, xlength, ylength";
+  private static final String INSERT_THUMBNAIL = "INSERT INTO " + THUMBNAIL_TABLE + " (" + ALL_FIELDS + ") " + "VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)";
+  private static final String UPDATE_THUMBNAIL = "UPDATE " + THUMBNAIL_TABLE + " " +
       "SET xstart = ?, ystart = ?, xlength = ?, ylength = ?, originalattachmentname = ?, " +
       "modifiedattachmentname = ? WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
-  private static final String DELETE_THUMBNAIL = "DELETE FROM sb_thumbnail_thumbnail " +
+  private static final String DELETE_THUMBNAIL = "DELETE FROM " + THUMBNAIL_TABLE + " " +
       "WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
   private static final String DELETE_COMPONENT_THUMBNAILS =
-      "DELETE FROM sb_thumbnail_thumbnail WHERE instanceId = ?";
-  private static final String SELECT_THUMBNAIL_BY_PK = "SELECT instanceid, objectid, objecttype, " + "originalattachmentname, modifiedattachmentname, mimetype, xstart, ystart, xlength, " + "ylength FROM sb_thumbnail_thumbnail WHERE objectId = ? AND objectType = ? AND instanceId = ?";
-  private static final String MOVE_THUMBNAIL = "UPDATE sb_thumbnail_thumbnail " +
+      "DELETE FROM " + THUMBNAIL_TABLE + " WHERE instanceId = ?";
+  private static final String SELECT_THUMBNAIL_BY_PK = "SELECT " + ALL_FIELDS + " FROM " +
+      THUMBNAIL_TABLE + " WHERE objectId = ? AND objectType = ? AND instanceId = ?";
+  private static final String MOVE_THUMBNAIL = "UPDATE " + THUMBNAIL_TABLE + " " +
       " SET instanceId = ? WHERE objectId = ? AND objectType = ? AND instanceId = ? ";
 
   protected ThumbnailDAO() {
@@ -154,7 +164,37 @@ public class ThumbnailDAO {
     return thumbnailDetail;
   }
 
-  static ThumbnailDetail resultSet2ThumbDetail(ResultSet rs) throws SQLException {
+  public List<ThumbnailDetail> selectByReference(Connection con,
+      Set<ThumbnailReference> references) throws SQLException {
+    final List<ThumbnailDetail> result = new ArrayList<>(references.size());
+    final Set<String> instanceIds = references.stream()
+        .map(ThumbnailReference::getComponentInstanceId)
+        .collect(Collectors.toSet());
+    final Set<Integer> objectIds = references.stream()
+        .map(ThumbnailReference::getId)
+        .map(Integer::parseInt)
+        .collect(Collectors.toSet());
+    final Set<Integer> objectTypes = references.stream()
+        .map(ThumbnailReference::getObjectType)
+        .collect(Collectors.toSet());
+    JdbcSqlQuery.executeBySplittingOn(instanceIds, (instanceIdBatch, ignore) ->
+        JdbcSqlQuery.executeBySplittingOn(objectIds, (objectIdBatch, ignoreToo) ->
+            JdbcSqlQuery.createSelect(ALL_FIELDS)
+                .from(THUMBNAIL_TABLE)
+                .where("instanceId").in(instanceIdBatch)
+                .and("objectId").in(objectIdBatch)
+                .and("objectType").in(objectTypes)
+                .executeWith(con, rs -> {
+                  final ThumbnailDetail thumbnailDetail = resultSet2ThumbDetail(rs);
+                  if (references.contains(thumbnailDetail.getReference())) {
+                    result.add(thumbnailDetail);
+                  }
+                  return null;
+                })));
+    return result;
+  }
+
+  private static ThumbnailDetail resultSet2ThumbDetail(ResultSet rs) throws SQLException {
     ThumbnailDetail thumbnailDetail = new ThumbnailDetail(rs.getString("instanceid"), rs.getInt(
         "objectid"), rs.getInt("objecttype"));
     thumbnailDetail.setOriginalFileName(rs.getString("originalattachmentname"));

@@ -31,16 +31,24 @@ import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchEngineException;
 import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.index.search.qualifiers.TaxonomySearch;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
+import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 
 @Singleton
 public class SearchService {
@@ -55,35 +63,38 @@ public class SearchService {
 
   public List<SearchResult> search(QueryDescription queryDescription)
       throws SearchEngineException {
-
-    boolean taxonomySearch = queryDescription.isTaxonomyUsed();
-    boolean fullTextSearch = !queryDescription.isEmpty();
-
-    List<SearchResult> fullTextResults = Collections.emptyList();
-    List<SearchResult> taxonomyResults;
-    if (taxonomySearch) {
-      taxonomyResults = taxonomySearchProcessor.process(queryDescription, null);
-    } else {
-      taxonomyResults = Collections.emptyList();
-    }
-
-    if (fullTextSearch) {
-      if (!taxonomyResults.isEmpty()) {
-        // restrains full-text search to components of taxonomy search
-        Set<String> componentIds = extractComponentIds(taxonomyResults);
-        queryDescription.getWhereToSearch().clear();
-        queryDescription.getWhereToSearch().addAll(componentIds);
+    final long startTime = System.currentTimeMillis();
+    try {
+      final boolean taxonomySearch = queryDescription.isTaxonomyUsed();
+      final boolean fullTextSearch = !queryDescription.isEmpty();
+      List<SearchResult> fullTextResults = Collections.emptyList();
+      List<SearchResult> taxonomyResults;
+      if (taxonomySearch) {
+        taxonomyResults = taxonomySearchProcessor.process(queryDescription, null);
+      } else {
+        taxonomyResults = Collections.emptyList();
       }
-      fullTextResults = searchOnIndexes(queryDescription);
-    }
-
-    if (fullTextSearch && taxonomySearch) {
-      // mixed search : retains only common results
-      return getResultsFromMixedSearch(taxonomyResults, fullTextResults);
-    } else if (fullTextSearch) {
-      return fullTextResults;
-    } else {
-      return taxonomyResults;
+      if (fullTextSearch) {
+        if (!taxonomyResults.isEmpty()) {
+          // restrains full-text search to components of taxonomy search
+          Set<String> componentIds = extractComponentIds(taxonomyResults);
+          queryDescription.getWhereToSearch().clear();
+          queryDescription.getWhereToSearch().addAll(componentIds);
+        }
+        fullTextResults = searchOnIndexes(queryDescription);
+      }
+      if (fullTextSearch && taxonomySearch) {
+        // mixed search : retains only common results
+        return getResultsFromMixedSearch(taxonomyResults, fullTextResults);
+      } else if (fullTextSearch) {
+        return fullTextResults;
+      } else {
+        return taxonomyResults;
+      }
+    } finally {
+      final long endTime = System.currentTimeMillis();
+      SilverLogger.getLogger(this).debug(() -> MessageFormat
+          .format(" search service duration of {0}", formatDurationHMS(endTime - startTime)));
     }
   }
 
@@ -96,15 +107,16 @@ public class SearchService {
    */
   private List<SearchResult> getResultsFromMixedSearch(List<SearchResult> taxonomyResults,
       List<SearchResult> fullTextResults) {
-    List<SearchResult> results = new ArrayList<>();
-    if (!CollectionUtil.isEmpty(fullTextResults)) {
-      for (SearchResult taxonomyResult : taxonomyResults) {
-        int index = fullTextResults.indexOf(taxonomyResult);
-        if (index != -1) {
-          SearchResult result = fullTextResults.get(index);
-          results.add(result);
-        }
-      }
+    final List<SearchResult> results;
+    if (isNotEmpty(fullTextResults)) {
+      final Map<SearchResult, SearchResult> indexedSearchResult = new HashMap<>(fullTextResults.size());
+      fullTextResults.forEach(f -> indexedSearchResult.put(f, f));
+      results = taxonomyResults.stream()
+          .map(indexedSearchResult::get)
+          .filter(Objects::nonNull)
+          .collect(Collectors.toList());
+    } else {
+      results = new ArrayList<>();
     }
     return results;
   }

@@ -37,12 +37,15 @@ import org.silverpeas.core.util.ServiceProvider;
 public class ResultDisplayerProvider {
   private static final String BEAN_NAME_POSTFIX = "ResultDisplayer";
 
+  private ResultDisplayerProvider() {
+    throw new IllegalStateException("ResultDisplayerProvider can not be instantiated");
+  }
+
   /**
    * @param name the component name
    * @return a component ResultDisplayer using dependency injection
    */
   public static ResultDisplayer getResultDisplayer(String name) {
-    return ServiceProvider.getService(name + BEAN_NAME_POSTFIX);
+    return ServiceProvider.getSingleton(name + BEAN_NAME_POSTFIX);
   }
-
 }

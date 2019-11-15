@@ -299,7 +299,7 @@ public class ComponentDAO {
     componentsSet.addAll(getAvailableComponentsInSpace(con, userId, spaceId, componentName));
 
     // sort components according to ordernum
-    List<ComponentInstLight> components = new ArrayList<>(componentsSet);
+    final List<ComponentInstLight> components = new ArrayList<>(componentsSet);
     components.sort(new ComponentInstLightSorter());
     List<String> componentIds = new ArrayList<>();
     for (ComponentInstLight component : components) {

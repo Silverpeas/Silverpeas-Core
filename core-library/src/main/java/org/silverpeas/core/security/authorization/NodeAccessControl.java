@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -33,7 +34,17 @@ import org.silverpeas.core.util.ServiceProvider;
 public interface NodeAccessControl extends AccessController<NodePK>{
 
   static NodeAccessControl get() {
-    return ServiceProvider.getService(NodeAccessControl.class);
+    return ServiceProvider.getSingleton(NodeAccessControl.class);
   }
 
+  /**
+   * Using this method avoid to use perform database request in order to retrieve publication data.
+   */
+  boolean isUserAuthorized(final String userId, final NodeDetail nodeDetail);
+
+  /**
+   * Using this method avoid to use perform database request in order to retrieve publication data.
+   */
+  boolean isUserAuthorized(final String userId, final NodeDetail nodeDetail,
+      final AccessControlContext context);
 }

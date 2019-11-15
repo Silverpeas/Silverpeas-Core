@@ -24,11 +24,10 @@
 package org.silverpeas.web.pdc.servlets;
 
 import org.silverpeas.core.pdc.interests.model.Interests;
-import org.silverpeas.web.pdc.control.PdcSearchSessionController;
-import org.silverpeas.core.security.authorization.ComponentAccessController;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,9 +58,7 @@ public class InterestCentersHelper {
       ic.setWorkSpaceID(request.getParameter("spaces"));
       String componentId = request.getParameter("componentSearch");
       if (StringUtil.isDefined(componentId)) {
-        ComponentAccessController componentAccessController =
-            ServiceProvider.getService(ComponentAccessController.class);
-        if (componentAccessController.isUserAuthorized(pdcSC.getUserId(), componentId)) {
+        if (ComponentAccessControl.get().isUserAuthorized(pdcSC.getUserId(), componentId)) {
           ic.setPeasID(componentId);
         }
       }

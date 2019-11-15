@@ -38,9 +38,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import static org.silverpeas.core.contribution.publication.dao.QueryStringFactory.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.silverpeas.core.contribution.publication.dao.QueryStringFactory.*;
 import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 
 /**
@@ -64,15 +64,6 @@ public class QueryStringFactoryIT {
   public static Archive<?> createTestArchive() {
     return WarBuilder4Publication.onWarForTestClass(QueryStringFactoryIT.class)
         .build();
-  }
-
-  @Test
-  public void testGetSelectByBeginDateDescAndStatusAndNotLinkedToFatherId() throws Exception {
-    for (int i = 0; i < NB_EXECUTIONS; i++) {
-
-      assertQuery(getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(TABLE_NAME),
-          "testGetSelectByBeginDateDescAndStatusAndNotLinkedToFatherId");
-    }
   }
 
   @Test

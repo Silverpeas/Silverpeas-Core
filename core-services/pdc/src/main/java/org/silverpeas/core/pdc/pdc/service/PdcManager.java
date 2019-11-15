@@ -52,7 +52,7 @@ public interface PdcManager {
   String SECONDARY_AXIS = "S";
 
   static PdcManager get() {
-    return ServiceProvider.getService(PdcManager.class);
+    return ServiceProvider.getSingleton(PdcManager.class);
   }
 
   List<GlobalSilverContent> findGlobalSilverContents(
@@ -452,4 +452,6 @@ public interface PdcManager {
 
   SearchContext getSilverContentIdSearchContext(int nSilverContentId,
       String sComponentId) throws PdcException;
+
+  List<GlobalSilverContent> getSilverContentsByIds(List<Integer> silverContentIds, String userId);
 }

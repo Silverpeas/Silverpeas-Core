@@ -39,7 +39,7 @@ public class JdbcSqlExecutorProvider {
   private JdbcSqlExecutor jdbcSqlExecutor;
 
   private static JdbcSqlExecutorProvider getProvider() {
-    return ServiceProvider.getService(JdbcSqlExecutorProvider.class);
+    return ServiceProvider.getSingleton(JdbcSqlExecutorProvider.class);
   }
 
   /**

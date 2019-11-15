@@ -27,6 +27,7 @@ import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -41,7 +42,7 @@ public interface CalendarRepository extends EntityRepository<Calendar> {
    * @return a persistence repository of calendars.
    */
   static CalendarRepository get() {
-    return ServiceProvider.getService(CalendarRepository.class);
+    return ServiceProvider.getSingleton(CalendarRepository.class);
   }
 
   /**
@@ -51,6 +52,14 @@ public interface CalendarRepository extends EntityRepository<Calendar> {
    * @return a list containing the calendar instances which matched if any, empty list otherwise.
    */
   List<Calendar> getByComponentInstanceId(String componentInstanceId);
+
+  /**
+   * Gets the calendars represented by the specified component instances.
+   * @param componentInstanceIds the unique identifiers identifying instances of a Silverpeas
+   * component. For instance, a component can be a collaborative application or a personal one.
+   * @return a list containing the calendar instances which matched if any, empty list otherwise.
+   */
+  List<Calendar> getByComponentInstanceIds(Collection<String> componentInstanceIds);
 
   /**
    * Gets all the calendars in Silverpeas synchronized with an external one.

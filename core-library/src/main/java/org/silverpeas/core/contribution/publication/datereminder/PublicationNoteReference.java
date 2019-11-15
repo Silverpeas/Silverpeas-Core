@@ -28,7 +28,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.persistence.EntityReference;
-import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * An entity, which references a publication in Silverpeas, such publication being represented by a
@@ -59,7 +58,7 @@ public class PublicationNoteReference extends EntityReference<PublicationDetail>
    */
   private PublicationService getPublicationService() {
     try {
-      return ServiceProvider.getService(PublicationService.class);
+      return PublicationService.get();
     } catch (Exception e) {
       throw new PublicationRuntimeException(e);
     }

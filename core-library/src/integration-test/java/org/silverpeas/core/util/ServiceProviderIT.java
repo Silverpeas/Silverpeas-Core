@@ -31,6 +31,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 import javax.enterprise.util.AnnotationLiteral;
 
@@ -49,6 +50,8 @@ public class ServiceProviderIT {
   public static Archive<?> createTestArchive() {
     return ShrinkWrap.create(JavaArchive.class, "test.jar")
         .addClass(ServiceProvider.class)
+        .addPackages(true, "org.silverpeas.core.cache")
+        .addClass(SilverpeasRuntimeException.class)
         .addClass(BeanContainer.class)
         .addClass(CDIContainer.class)
         .addClass(TestQualifier.class)

@@ -28,7 +28,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.Base;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.writer;
@@ -41,27 +40,27 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.writer;
 public class DefaultInstancePublicationAccessControlExtension
     implements ComponentInstancePublicationAccessControlExtension {
 
-  @Inject
-  private ComponentAccessControl componentAccessController;
-
   @Override
-  public boolean canPublicationBePersistedOrDeletedBy(
-      final PublicationDetail publication, final String instanceId,
-      final String userId, final SilverpeasRole userRole) {
+  public boolean canPublicationBePersistedOrDeletedBy(final PublicationDetail publication,
+      final String instanceId, final String userId, final SilverpeasRole userRole,
+      final AccessControlContext context) {
     final boolean authorized;
     if (userRole.isGreaterThan(SilverpeasRole.writer)) {
-      authorized = true;
+      authorized = publication == null
+                   || !publication.isDraft()
+                   || publication.isPublicationEditor(userId)
+                   || isCoWritingEnabled(instanceId, context) && isDraftVisibleWithCoWriting();
     } else if (writer == userRole) {
       if (publication != null) {
         if (publication.isPublicationEditor(userId)) {
           authorized = true;
         } else if (publication.isDraft()) {
-          authorized = isCoWritingEnabled(instanceId) && isDraftVisibleWithCoWriting();
+          authorized = isCoWritingEnabled(instanceId, context) && isDraftVisibleWithCoWriting();
         } else {
-          authorized = isCoWritingEnabled(instanceId);
+          authorized = isCoWritingEnabled(instanceId, context);
         }
       } else {
-        authorized = isCoWritingEnabled(instanceId);
+        authorized = isCoWritingEnabled(instanceId, context);
       }
     } else {
       authorized = false;
@@ -69,8 +68,9 @@ public class DefaultInstancePublicationAccessControlExtension
     return authorized;
   }
 
-  protected boolean isCoWritingEnabled( final String instanceId) {
-    return componentAccessController.isCoWritingEnabled(instanceId);
+  private boolean isCoWritingEnabled(final String instanceId, final AccessControlContext context) {
+    final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+    return componentDataManager.isCoWritingEnabled(instanceId);
   }
 
   protected boolean isDraftVisibleWithCoWriting() {

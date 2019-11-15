@@ -23,12 +23,11 @@
  */
 package org.silverpeas.core.node.model;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.util.URLUtil;
 
@@ -48,7 +47,8 @@ import java.util.Collection;
  */
 @XmlRootElement(name = "xmlField")
 @XmlAccessorType(XmlAccessType.NONE)
-public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Serializable {
+public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Serializable,
+    Securable {
 
   private static final long serialVersionUID = -1401884517616404337L;
   private static final String UNKNOWN = "unknown";
@@ -467,16 +467,19 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
    * @param user a user in Silverpeas.
    * @return true if the user can access this node, false otherwise.
    */
-  public boolean canBeAccessedBy(final UserDetail user) {
-    AccessController<NodePK> accessController =
-        AccessControllerProvider.getAccessController(NodeAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), this.getNodePK());
+  @Override
+  public boolean canBeAccessedBy(final User user) {
+    return NodeAccessControl.get().isUserAuthorized(user.getId(), this);
   }
 
-  public boolean canBeSharedBy(final UserDetail user) {
-    AccessController<NodePK> accessController =
-        AccessControllerProvider.getAccessController(NodeAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), this.getNodePK(),
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
+  @Override
+  public boolean canBeModifiedBy(final User user) {
+    return NodeAccessControl.get().isUserAuthorized(user.getId(), this,
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+  }
+
+  public boolean canBeSharedBy(final User user) {
+    final AccessControlContext context = AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing);
+    return NodeAccessControl.get().isUserAuthorized(user.getId(), this, context);
   }
 }

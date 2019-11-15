@@ -25,19 +25,28 @@ package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.StringUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 
 /**
  * A InstanceData object manages component parameters
  */
 public class InstanceDataTable extends Table<InstanceDataRow> {
 
+  private static final String INSTANCE_DATA_TABLE = "ST_Instance_Data";
   private static final String INSTANCEDATA_COLUMNS = "id,componentId,name,label,value";
   private static final String INSERT_INSTANCEDATA = "insert into ST_Instance_Data("
       + INSTANCEDATA_COLUMNS + ") values (?,?,?,?,?)";
@@ -52,7 +61,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
       + " where componentid = ?";
 
   public InstanceDataTable() {
-    super("ST_Instance_Data");
+    super(INSTANCE_DATA_TABLE);
   }
 
   /**
@@ -85,18 +94,77 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
    */
   public List<Parameter> getAllParametersInComponent(int componentId) throws
       SQLException {
-    List<InstanceDataRow> rows = getRows(SELECT_ALL_COMPONENT_PARAMETERS, componentId);
-    List<Parameter> params = new ArrayList<>();
-    for (InstanceDataRow row : rows) {
-      Parameter param = new Parameter();
-      param.setName(row.name);
-      param.setValue(row.value);
-      HashMap<String, String> multilang = new HashMap<>();
-      multilang.put(I18NHelper.defaultLanguage, row.label);
-      param.setLabel(multilang);
-      params.add(param);
+    return getRows(SELECT_ALL_COMPONENT_PARAMETERS, componentId).stream()
+        .map(this::asParameter)
+        .collect(Collectors.toList());
+  }
+
+  private Parameter asParameter(final InstanceDataRow row) {
+    Parameter param = new Parameter();
+    param.setName(row.name);
+    param.setValue(row.value);
+    HashMap<String, String> multilang = new HashMap<>();
+    multilang.put(I18NHelper.defaultLanguage, row.label);
+    param.setLabel(multilang);
+    return param;
+  }
+
+  /**
+   * Get the value of given parameter and about given component.
+   * @param componentId component identifier.
+   * @param paramName parameter name.
+   * @param ignoreCase true to ignore case on parameter name.
+   * @return return the value as string, or {@link StringUtil#EMPTY} if parameter has not been
+   * found.
+   * @throws SQLException on database error.
+   */
+  public String getParameterValueByComponentAndParamName(final Integer componentId,
+      final String paramName, final boolean ignoreCase) throws SQLException {
+    final Mutable<String> result = Mutable.empty();
+    final JdbcSqlQuery query = JdbcSqlQuery.createSelect("value")
+        .from(INSTANCE_DATA_TABLE)
+        .where("componentId = ?", componentId);
+    if (ignoreCase) {
+      query.and("lower(name) = ?", paramName.toLowerCase());
+    } else {
+      query.and("name = ?", paramName);
     }
-    return params;
+    query.execute(r -> {
+      result.set(r.getString(1));
+      return null;
+    });
+    return result.orElse(StringUtil.EMPTY);
+  }
+
+  /**
+   * Gets all parameters values by component and by parameter name.
+   * @param componentIds list of component identifier.
+   * @param paramNames optional list of parameter name. All parameters are retrieved if it is not
+   * filled or null
+   * @throws SQLException on database error.
+   */
+  public Map<Integer, Map<String, String>> getParameterValuesByComponentAndByParamName(
+      final Collection<Integer> componentIds, final Collection<String> paramNames) throws SQLException {
+    final Map<Integer, Map<String, String>> result = new HashMap<>(componentIds.size());
+    JdbcSqlQuery.executeBySplittingOn(componentIds, (idBatch, ignore) -> {
+      final JdbcSqlQuery query = JdbcSqlQuery
+          .createSelect("componentId,name,value")
+          .from(INSTANCE_DATA_TABLE)
+          .where("componentId").in(idBatch);
+      if (isNotEmpty(paramNames)) {
+        query.and("name").in(paramNames);
+      }
+      query.execute(r -> {
+        final int componentId = r.getInt(1);
+        final String name = r.getString(2);
+        final String value = r.getString(3);
+        final Map<String, String> parameters = result
+            .computeIfAbsent(componentId, i -> new HashMap<>());
+        parameters.put(name, value);
+        return null;
+      });
+    });
+    return result;
   }
 
   /**

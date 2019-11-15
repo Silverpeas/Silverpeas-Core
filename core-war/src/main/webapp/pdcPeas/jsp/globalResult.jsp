@@ -71,15 +71,16 @@ void displayFacet(Facet facet, MultiSilverpeasBundle resource, JspWriter out) th
 		out.println("<ul>");
 		String selectedEntryId = "";
 		String entryClass = "mainEntry";
-		boolean displayToggle = facet.getEntries().size() > nbDefaultFacetEntries;
-	for(int cpt=0; cpt < facet.getEntries().size(); cpt++){
-			FacetEntryVO entry = facet.getEntries().get(cpt);
+		List<FacetEntryVO> entries = facet.getSortedEntries();
+		boolean displayToggle = entries.size() > nbDefaultFacetEntries;
+	for(int cpt=0; cpt < entries.size(); cpt++){
+			FacetEntryVO entry = entries.get(cpt);
 		    String entryName = entry.getName();
 		    String entryId = entry.getId();
 		    String displayComp = StringUtil.abbreviate(entryName, facetResultLength);
 		    displayComp += "&nbsp;(" + entry.getNbElt() + ")";
 		    String lastClass = "";
-		    if (cpt == facet.getEntries().size() - 1) {
+		    if (cpt == entries.size() - 1) {
 		      lastClass = "last";
 		    }
 		    if (cpt >= nbDefaultFacetEntries) {

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.node.dao;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodeI18NDetail;
@@ -42,12 +43,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 
 /**
  * This is the Node Data Access Object.
@@ -56,6 +63,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public class NodeDAO {
 
+  private static final String NODE_TABLE = "SB_Node_Node";
   private static final String SELECT_NODE_BY_ID = "SELECT nodeid, nodename, nodedescription, " +
       "nodecreationdate, nodecreatorid, nodepath, nodelevelnumber, nodefatherid, modelid, " +
       "nodestatus, instanceid, type, ordernumber, lang, rightsdependson FROM sb_node_node WHERE " +
@@ -353,18 +361,23 @@ public class NodeDAO {
 
   private List<NodeDetail> findSubNodeDetails(final Connection con, final String selectQuery,
       final NodePK nodePK) throws SQLException {
+    long startTime = System.currentTimeMillis();
     final List<NodeDetail> details = new ArrayList<>();
     try (final Statement stmt = con.createStatement()) {
       try (final ResultSet rs = stmt.executeQuery(selectQuery)) {
         while (rs.next()) {
-          final NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
-          setTranslations(con, nd);
-          details.add(nd);
+          details.add(resultSet2NodeDetail(rs, nodePK));
         }
+        setTranslations(con, details);
       }
     } catch (SQLException e) {
       SilverLogger.getLogger(this).error(NODE_STATEMENT + selectQuery, e);
       throw e;
+    } finally {
+      long endTime = System.currentTimeMillis();
+      SilverLogger.getLogger(NodeDAO.class).debug(() -> MessageFormat
+          .format(" search nodes in {0} from node {1}",
+              formatDurationHMS(endTime - startTime), nodePK));
     }
     return details;
   }
@@ -382,6 +395,73 @@ public class NodeDAO {
         node.addTranslation(anotherNodeI18NDetail);
       }
     }
+  }
+
+  private void setTranslations(Connection con, Collection<NodeDetail> nodes) {
+    if (nodes != null && !nodes.isEmpty()) {
+      long startTime = System.currentTimeMillis();
+      final List<Integer> nodeIds = I18NHelper.isI18nContentActivated
+          ? nodes.stream().map(NodeDetail::getId).collect(Collectors.toList())
+          : emptyList();
+      try {
+        final Map<Integer, List<NodeI18NDetail>> translations = I18NHelper.isI18nContentActivated
+            ? NodeI18NDAO.getIndexedTranslations(con, nodeIds)
+            : emptyMap();
+        nodes.forEach(n -> {
+          NodeI18NDetail translation = new NodeI18NDetail(n.getLanguage(), n.getName(),
+              n.getDescription());
+          n.addTranslation(translation);
+          if (I18NHelper.isI18nContentActivated) {
+            n.setTranslations(translations.get(n.getId()));
+          }
+        });
+      } catch (SQLException e) {
+        throw new NodeRuntimeException(e);
+      } finally {
+        long endTime = System.currentTimeMillis();
+        SilverLogger.getLogger(NodeDAO.class).debug(() -> MessageFormat
+            .format(" search node translations in {0} with {1} nodes",
+                formatDurationHMS(endTime - startTime), nodeIds.size()));
+      }
+    }
+  }
+
+  /**
+   * Selects massively simple data about nodes.
+   * <p>
+   * For now, only the following data are retrieved:
+   *   <ul>
+   *     <li>nodeId</li>
+   *     <li>instanceId</li>
+   *     <li>rightsDependsOn</li>
+   *   </ul>
+   *   This method is designed for process performance needs.
+   * </p>
+   * @param con the database connection.
+   * @param instanceIds the instance ids aimed.
+   * @return a list of {@link NodeDetail} instances.
+   * @throws SQLException on database error.
+   */
+  public List<NodeDetail> getMinimalDataByInstances(final Connection con,
+      final Collection<String> instanceIds) throws SQLException {
+    final List<NodeDetail> entities = new ArrayList<>();
+    final List<Integer> instanceIdsAsInt = instanceIds.stream()
+        .map(ComponentInst::getComponentLocalId).collect(Collectors.toList());
+    JdbcSqlQuery.executeBySplittingOn(instanceIdsAsInt, (idBatch, ignore) -> {
+      JdbcSqlQuery.createSelect("nodeid, instanceid, rightsdependson")
+          .from(NODE_TABLE + " N")
+          .join("ST_ComponentInstance I").on("N.instanceid = CONCAT(I.componentname , CAST(I.id AS VARCHAR(20)))")
+          .where("I.id").in(idBatch)
+          .executeWith(con, r -> {
+        final NodePK nodePK = new NodePK(Integer.toString(r.getInt(1)), r.getString(2));
+        final NodeDetail nodeDetail = new NodeDetail();
+        nodeDetail.setNodePK(nodePK);
+        nodeDetail.setRightsDependsOn(r.getInt(3));
+        entities.add(nodeDetail);
+        return null;
+      });
+    });
+    return entities;
   }
 
   /**
@@ -488,6 +568,7 @@ public class NodeDAO {
       nd = getAnotherHeader(con, nd.getFatherPK());
       nodePath.add(nd);
     }
+    setTranslations(con, nodePath);
     return nodePath;
   }
 
@@ -547,7 +628,7 @@ public class NodeDAO {
    * @see NodeDetail
    * @since 1.0
    */
-  public NodeDetail getAnotherHeader(Connection con, NodePK nodePK) throws SQLException {
+  private NodeDetail getAnotherHeader(Connection con, NodePK nodePK) throws SQLException {
     final String nodeId = nodePK.getId();
     final String selectQuery =
         SELECT_FROM + nodePK.getTableName() + " where nodeId = " + nodeId + " and instanceId = '" +
@@ -555,9 +636,7 @@ public class NodeDAO {
     try (final Statement stmt = con.createStatement()) {
       try (final ResultSet rs = stmt.executeQuery(selectQuery)) {
         if (rs.next()) {
-          final NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
-          setTranslations(con, nd);
-          return nd;
+          return resultSet2NodeDetail(rs, nodePK);
         } else {
           throw new NoSuchEntityException("Row for id " + nodeId + " not found in database.");
         }
@@ -588,10 +667,9 @@ public class NodeDAO {
       try (final ResultSet rs = prepStmt.executeQuery()) {
         final List<NodeDetail> nodeDetails = new ArrayList<>();
         while (rs.next()) {
-          final NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
-          setTranslations(con, nd);
-          nodeDetails.add(nd);
+          nodeDetails.add(resultSet2NodeDetail(rs, nodePK));
         }
+        setTranslations(con, nodeDetails);
         return nodeDetails;
       }
     } catch (SQLException e) {

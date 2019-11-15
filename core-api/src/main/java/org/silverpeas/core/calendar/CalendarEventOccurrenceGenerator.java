@@ -41,7 +41,7 @@ public interface CalendarEventOccurrenceGenerator {
    * @return a generator of event occurrences.
    */
   static CalendarEventOccurrenceGenerator get() {
-    return ServiceProvider.getService(CalendarEventOccurrenceGenerator.class);
+    return ServiceProvider.getSingleton(CalendarEventOccurrenceGenerator.class);
   }
 
   /**

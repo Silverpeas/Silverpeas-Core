@@ -42,7 +42,7 @@ import java.util.Optional;
 public interface ContributionManager {
 
   static ContributionManager get() {
-    return ServiceProvider.getService(ContributionManager.class);
+    return ServiceProvider.getSingleton(ContributionManager.class);
   }
 
   /**

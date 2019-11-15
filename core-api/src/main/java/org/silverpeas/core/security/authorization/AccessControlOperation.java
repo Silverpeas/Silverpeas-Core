@@ -39,7 +39,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
  * Date: 30/12/13
  */
 public enum AccessControlOperation {
-  unknown, creation, modification, deletion, download, sharing;
+  unknown, creation, modification, deletion, download, sharing, search;
 
   public static final Set<AccessControlOperation> PERSIST_ACTIONS =
       EnumSet.of(creation, modification, deletion);
@@ -91,5 +91,20 @@ public enum AccessControlOperation {
       Collection<AccessControlOperation> accessControlOperations) {
     return CollectionUtil.isNotEmpty(accessControlOperations) &&
         accessControlOperations.contains(download);
+  }
+
+  /**
+   * Indicates if it exists a search action from the given collection.
+   * <p>
+   * A search action means that all the specific details of resources have been already processed
+   * (e.g. visibility of publication) before using the {@link AccessController}.
+   * </p>
+   * @param accessControlOperations actions.
+   * @return true if it exists a search action, false otherwise.
+   */
+  public static boolean isSearchActionFrom(
+      Collection<AccessControlOperation> accessControlOperations) {
+    return CollectionUtil.isNotEmpty(accessControlOperations) &&
+        accessControlOperations.contains(search);
   }
 }

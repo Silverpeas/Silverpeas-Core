@@ -27,9 +27,6 @@
  */
 package org.silverpeas.core.contribution.publication.service;
 
-import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -37,11 +34,17 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
+import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
-import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 
 import java.sql.Connection;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -72,19 +75,14 @@ public class LastPublicationDAOIT {
   }
 
   @Test
-  public void selectPksByStatus() throws Exception {
+  public void selectLatestPksByStatus() throws Exception {
     try (Connection con = getSafeConnection()) {
       List<String> componentIds = Arrays.asList("kmelia100", "kmelia200");
-      Calendar calend = Calendar.getInstance();
-      calend.set(YEAR, 2009);
-      calend.set(MONTH, NOVEMBER);
-      calend.set(DAY_OF_MONTH, 15);
-      calend.set(HOUR_OF_DAY, 10);
-      calend.set(MINUTE, 15);
-      calend.set(SECOND, 0);
-      calend.set(MILLISECOND, 0);
-      Collection<PublicationPK> keys = PublicationDAO
-          .selectPKsByStatus(con, componentIds, PublicationDetail.VALID_STATUS, null);
+      Collection<PublicationPK> keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+          .onComponentInstanceIds(componentIds)
+          .ofStatus(PublicationDetail.VALID_STATUS)
+          .mustHaveAtLeastOneNodeFather()
+          .orderByDescendingLastUpdateDate());
       assertNotNull(keys);
       assertEquals(4, keys.size());
       assertThat(keys, IsIterableContainingInOrder
@@ -94,19 +92,46 @@ public class LastPublicationDAOIT {
   }
 
   @Test
-  public void selectPksByStatusWithSmallPaginationFirstPageResult() throws Exception {
+  public void selectLatestPksByStatusExcludingTrashNode() throws Exception {
     try (Connection con = getSafeConnection()) {
       List<String> componentIds = Arrays.asList("kmelia100", "kmelia200");
-      Calendar calend = Calendar.getInstance();
-      calend.set(YEAR, 2009);
-      calend.set(MONTH, NOVEMBER);
-      calend.set(DAY_OF_MONTH, 15);
-      calend.set(HOUR_OF_DAY, 10);
-      calend.set(MINUTE, 15);
-      calend.set(SECOND, 0);
-      calend.set(MILLISECOND, 0);
-      Collection<PublicationPK> keys = PublicationDAO
-          .selectPKsByStatus(con, componentIds, PublicationDetail.VALID_STATUS, new PaginationCriterion(1, 2));
+      Collection<PublicationPK> keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+          .excludingTrashNodeOnComponentInstanceIds(componentIds)
+          .ofStatus(PublicationDetail.VALID_STATUS)
+          .orderByDescendingLastUpdateDate());
+      assertNotNull(keys);
+      assertEquals(4, keys.size());
+      assertThat(keys, IsIterableContainingInOrder
+          .contains(new PublicationPK("200", "kmelia200"), new PublicationPK("101", "kmelia100"),
+              new PublicationPK("100", "kmelia100"), new PublicationPK("202", "kmelia200")));
+    }
+  }
+
+  @Test
+  public void selectLatestPksByStatusWithoutCheckingNodeFathers() throws Exception {
+    try (Connection con = getSafeConnection()) {
+      List<String> componentIds = Arrays.asList("kmelia100", "kmelia200");
+      Collection<PublicationPK> keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+          .onComponentInstanceIds(componentIds)
+          .ofStatus(PublicationDetail.VALID_STATUS)
+          .orderByDescendingLastUpdateDate());
+      assertNotNull(keys);
+      assertEquals(5, keys.size());
+      assertThat(keys, IsIterableContainingInOrder
+          .contains(new PublicationPK("200", "kmelia200"), new PublicationPK("103", "kmelia100"), new PublicationPK("101", "kmelia100"),
+              new PublicationPK("100", "kmelia100"), new PublicationPK("202", "kmelia200")));
+    }
+  }
+
+  @Test
+  public void selectLatestPksByStatusWithSmallPaginationFirstPageResult() throws Exception {
+    try (Connection con = getSafeConnection()) {
+      List<String> componentIds = Arrays.asList("kmelia100", "kmelia200");
+      Collection<PublicationPK> keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+          .excludingTrashNodeOnComponentInstanceIds(componentIds)
+          .ofStatus(PublicationDetail.VALID_STATUS)
+          .orderByDescendingLastUpdateDate()
+          .paginateBy(new PaginationPage(1, 2)));
       assertNotNull(keys);
       assertEquals(2, keys.size());
       assertThat(keys, IsIterableContainingInOrder
@@ -115,19 +140,14 @@ public class LastPublicationDAOIT {
   }
 
   @Test
-  public void selectPksByStatusWithSmallPaginationSecondPageResult() throws Exception {
+  public void selectLatestPksByStatusWithSmallPaginationSecondPageResult() throws Exception {
     try (Connection con = getSafeConnection()) {
       List<String> componentIds = Arrays.asList("kmelia100", "kmelia200");
-      Calendar calend = Calendar.getInstance();
-      calend.set(YEAR, 2009);
-      calend.set(MONTH, NOVEMBER);
-      calend.set(DAY_OF_MONTH, 15);
-      calend.set(HOUR_OF_DAY, 10);
-      calend.set(MINUTE, 15);
-      calend.set(SECOND, 0);
-      calend.set(MILLISECOND, 0);
-      Collection<PublicationPK> keys = PublicationDAO
-          .selectPKsByStatus(con, componentIds, PublicationDetail.VALID_STATUS, new PaginationCriterion(2, 3));
+      Collection<PublicationPK> keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+          .excludingTrashNodeOnComponentInstanceIds(componentIds)
+          .ofStatus(PublicationDetail.VALID_STATUS)
+          .orderByDescendingLastUpdateDate()
+          .paginateBy(new PaginationPage(2, 3)));
       assertNotNull(keys);
       assertEquals(1, keys.size());
       assertThat(keys, IsIterableContainingInOrder.contains(new PublicationPK("202", "kmelia200")));
@@ -146,24 +166,33 @@ public class LastPublicationDAOIT {
       calend.set(MINUTE, 15);
       calend.set(SECOND, 0);
       calend.set(MILLISECOND, 0);
-      Collection<PublicationPK> keys = PublicationDAO
-          .selectPKsByStatusAndUpdatedSince(con, componentIds, PublicationDetail.VALID_STATUS,
-              calend.getTime(), null);
+      OffsetDateTime since = OffsetDateTime.ofInstant(calend.getTime().toInstant(), ZoneId.systemDefault());
+      Collection<PublicationPK> keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+          .excludingTrashNodeOnComponentInstanceIds(componentIds)
+          .ofStatus(PublicationDetail.VALID_STATUS)
+          .lastUpdatedSince(since)
+          .orderByDescendingLastUpdateDate());
       assertNotNull(keys);
       assertEquals(3, keys.size());
       assertThat(keys, IsIterableContainingInOrder
           .contains(new PublicationPK("200", "kmelia200"), new PublicationPK("101", "kmelia100"),
               new PublicationPK("100", "kmelia100")));
-      keys = PublicationDAO
-          .selectPKsByStatusAndUpdatedSince(con, componentIds, PublicationDetail.VALID_STATUS,
-              calend.getTime(), new PaginationCriterion(1, 2));
+      keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+          .excludingTrashNodeOnComponentInstanceIds(componentIds)
+          .ofStatus(PublicationDetail.VALID_STATUS)
+          .lastUpdatedSince(since)
+          .orderByDescendingLastUpdateDate()
+          .paginateBy(new PaginationPage(1, 2)));
       assertNotNull(keys);
       assertEquals(2, keys.size());
       assertThat(keys, IsIterableContainingInOrder
           .contains(new PublicationPK("200", "kmelia200"), new PublicationPK("101", "kmelia100")));
-      keys = PublicationDAO
-          .selectPKsByStatusAndUpdatedSince(con, componentIds, PublicationDetail.VALID_STATUS,
-              calend.getTime(), new PaginationCriterion(3, 1));
+      keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
+          .excludingTrashNodeOnComponentInstanceIds(componentIds)
+          .ofStatus(PublicationDetail.VALID_STATUS)
+          .lastUpdatedSince(since)
+          .orderByDescendingLastUpdateDate()
+          .paginateBy(new PaginationPage(3, 1)));
       assertNotNull(keys);
       assertEquals(1, keys.size());
       assertThat(keys, IsIterableContainingInOrder

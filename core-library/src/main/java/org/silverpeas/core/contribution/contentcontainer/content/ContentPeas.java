@@ -97,7 +97,7 @@ public class ContentPeas {
       try {
         Class<ContentInterface> contentInterfaceClass =
             (Class<ContentInterface>) Class.forName(this.getContentInterfaceClass());
-        this.contentInterface = ServiceProvider.getService(contentInterfaceClass);
+        this.contentInterface = ServiceProvider.getSingleton(contentInterfaceClass);
       } catch (ClassNotFoundException e) {
         throw new SilverpeasException(e);
       }

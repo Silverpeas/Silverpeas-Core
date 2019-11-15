@@ -31,7 +31,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
 import javax.ws.rs.WebApplicationException;
@@ -113,7 +112,7 @@ public abstract class AbstractPublicationResource extends RESTWebService {
 
   protected PublicationService getPublicationService() {
     try {
-      return ServiceProvider.getService(PublicationService.class);
+      return PublicationService.get();
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }

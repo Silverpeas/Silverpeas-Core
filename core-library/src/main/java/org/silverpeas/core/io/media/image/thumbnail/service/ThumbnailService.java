@@ -25,8 +25,11 @@ package org.silverpeas.core.io.media.image.thumbnail.service;
 
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailReference;
 
 import javax.ejb.Local;
+import java.util.List;
+import java.util.Set;
 
 @Local
 public interface ThumbnailService {
@@ -38,6 +41,8 @@ public interface ThumbnailService {
 
   ThumbnailDetail getCompleteThumbnail(ThumbnailDetail thumbDetail)
       throws ThumbnailException;
+
+  List<ThumbnailDetail> getByReference(Set<ThumbnailReference> references);
 
   void deleteAllThumbnail(String componentId) throws ThumbnailException;
 

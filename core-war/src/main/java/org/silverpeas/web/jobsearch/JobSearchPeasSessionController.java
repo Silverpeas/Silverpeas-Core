@@ -66,7 +66,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
 
   private static final String JSP_DOMAIN_MIXT = "JSP.domainMixt";
   private AdminController myAdminController = ServiceProvider.getService(AdminController.class);
-  private PublicationService publicationService = ServiceProvider.getService(PublicationService.class);
+  private PublicationService publicationService = PublicationService.get();
   private NodeService nodeService = NodeService.get();
   private String searchField = null;
   private String category = null;

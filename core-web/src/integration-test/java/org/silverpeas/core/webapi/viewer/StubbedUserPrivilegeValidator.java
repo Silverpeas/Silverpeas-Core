@@ -21,28 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.initialization;
+
+package org.silverpeas.core.webapi.viewer;
+
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidator;
+
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
+import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
+
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
- * Extension of {@link Initialization} interface dedicated to Service Providers which are
- * providing a singleton from CDI.<br/>
- * The aim is to initialize a static reference at server startup in order to avoid to use
- * {@link org.silverpeas.core.util.ServiceProvider} mechanism at each supply request.<br/>
- * By this way, there is no memory overload as the references of the services exist into CDI
- * containers, and performances are super amazing!!!
  * @author silveryocha
  */
-public interface ServiceProviderSingletonInitialization extends Initialization {
 
-  /**
-   * Gets the priority level of the execution of {@link #init()} method.
-   * <p>
-   * The less is the value of the priority the more the priority is high.
-   * </p>
-   * @return an integer priority.
-   */
+@Singleton
+@Alternative
+@Priority(APPLICATION + 10)
+public class StubbedUserPrivilegeValidator extends UserPrivilegeValidator {
+
   @Override
-  default int getPriority() {
-    return -1000;
+  public void validateUserAuthorizationOnAttachment(final HttpServletRequest request,
+      final User user, final SimpleDocument doc) {
+    // Nothing is checked
   }
 }

@@ -43,6 +43,6 @@ public class ContentManagerProvider {
    * @return a ContentManager instance (managed by the IoC container).
    */
   public static ContentManager getContentManager() {
-    return ServiceProvider.getService(ContentManager.class);
+    return ServiceProvider.getSingleton(ContentManager.class);
   }
 }

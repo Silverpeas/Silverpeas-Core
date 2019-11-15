@@ -37,7 +37,7 @@ public interface SilverpeasTrace {
 
   @Deprecated
   static SilverpeasTrace get() {
-    return ServiceProvider.getService(SilverpeasTrace.class);
+    return ServiceProvider.getSingleton(SilverpeasTrace.class);
   }
 
   @Deprecated

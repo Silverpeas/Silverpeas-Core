@@ -39,7 +39,7 @@ import java.util.Properties;
 public interface NotificationManager {
 
   static NotificationManager get() {
-    return ServiceProvider.getService(NotificationManager.class);
+    return ServiceProvider.getSingleton(NotificationManager.class);
   }
 
   NotificationManager forLanguage(final String language);

@@ -32,5 +32,5 @@ public interface ResultDisplayer {
    * @return an HTML string representation of the result with additional informations about current
    * search result content
    */
-  public String getResultContent(SearchResultContentVO searchResult);
+  String getResultContent(SearchResultContentVO searchResult);
 }

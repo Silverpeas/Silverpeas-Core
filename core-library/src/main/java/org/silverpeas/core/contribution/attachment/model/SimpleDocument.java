@@ -32,8 +32,6 @@ import org.silverpeas.core.persistence.jcr.JcrDataConverter;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
@@ -822,9 +820,7 @@ public class SimpleDocument implements Serializable {
     }
 
     // Access is verified for sharing context
-    AccessController<SimpleDocument> accessController = AccessControllerProvider
-        .getAccessController(SimpleDocumentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getVersionMaster(),
+    return SimpleDocumentAccessControl.get().isUserAuthorized(user.getId(), getVersionMaster(),
         AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
   }
 
@@ -834,9 +830,7 @@ public class SimpleDocument implements Serializable {
    * @return true if the user can access this document, false otherwise.
    */
   public boolean canBeAccessedBy(final User user) {
-    AccessController<SimpleDocument> accessController =
-        AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), this);
+    return SimpleDocumentAccessControl.get().isUserAuthorized(user.getId(), this);
   }
 
   /**
@@ -845,9 +839,7 @@ public class SimpleDocument implements Serializable {
    * @return true if the user can access this document, false otherwise.
    */
   public boolean canBeModifiedBy(final User user) {
-    AccessController<SimpleDocument> accessController =
-        AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), this,
+    return SimpleDocumentAccessControl.get().isUserAuthorized(user.getId(), this,
         AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
   }
 
@@ -872,9 +864,7 @@ public class SimpleDocument implements Serializable {
     }
 
     // Otherwise access is verified for download context
-    AccessController<SimpleDocument> accessController = AccessControllerProvider
-        .getAccessController(SimpleDocumentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getVersionMaster(),
+    return SimpleDocumentAccessControl.get().isUserAuthorized(user.getId(), getVersionMaster(),
         AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
   }
 

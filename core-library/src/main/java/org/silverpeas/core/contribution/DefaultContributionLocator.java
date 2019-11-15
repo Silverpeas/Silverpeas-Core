@@ -55,7 +55,7 @@ public class DefaultContributionLocator implements ContributionLocator {
         getPotentialLocators(type);
 
     for (Class<? extends ContributionLocatorByLocalIdAndType> locatorClass : potentialLocators) {
-      ContributionLocatorByLocalIdAndType locator = ServiceProvider.getService(locatorClass);
+      ContributionLocatorByLocalIdAndType locator = ServiceProvider.getSingleton(locatorClass);
       Optional<ContributionIdentifier> contributionIdentifier =
           locator.getContributionIdentifierFromLocalIdAndType(localId, type);
       if (contributionIdentifier.isPresent()) {

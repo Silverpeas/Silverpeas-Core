@@ -132,7 +132,7 @@ public class GroupDAO {
 
   private void checkUserExistence(final Connection connection, final String userId)
       throws SQLException {
-    UserDAO userDAO = ServiceProvider.getService(UserDAO.class);
+    UserDAO userDAO = ServiceProvider.getSingleton(UserDAO.class);
     if (!userDAO.isUserByIdExists(connection, userId)) {
       throw new SQLException(unknown("user", userId));
     }

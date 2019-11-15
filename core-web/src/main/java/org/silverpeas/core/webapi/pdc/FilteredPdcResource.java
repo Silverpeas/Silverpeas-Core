@@ -24,13 +24,13 @@
 package org.silverpeas.core.webapi.pdc;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
+import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.pdc.pdc.model.UsedAxis;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -42,8 +42,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
+import static org.silverpeas.core.util.logging.SilverLogger.getLogger;
 import static org.silverpeas.core.webapi.pdc.PdcEntity.*;
-import static org.silverpeas.core.util.logging.SilverLogger.*;
 
 /**
  * A REST Web resource that represents the classification plan (named PdC) filtered by some

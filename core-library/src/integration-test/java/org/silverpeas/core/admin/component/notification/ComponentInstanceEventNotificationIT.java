@@ -77,7 +77,10 @@ public class ComponentInstanceEventNotificationIT {
             SilverpeasComponentInstance.class, SilverpeasSharedComponentInstance.class,
             ComponentInst.class, ComponentInstanceEvent.class, ComponentInstanceEventNotifier.class,
             TestComponentInstanceEventObserver.class)
+        .addPackages(true, "org.silverpeas.core.cache")
+        .addClass(SilverpeasRuntimeException.class)
         .addPackage("org.silverpeas.core.notification.system")
+        .addPackages(true, "org.silverpeas.core.cache")
         .addAsManifestResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
             "services/org.silverpeas.core.util.BeanContainer")
         .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");

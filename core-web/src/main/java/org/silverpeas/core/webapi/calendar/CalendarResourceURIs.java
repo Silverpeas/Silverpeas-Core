@@ -54,7 +54,7 @@ public final class CalendarResourceURIs {
   private ComponentInstanceRoutingMapProviderByInstance routingMapProvider;
 
   public static CalendarResourceURIs get() {
-    return ServiceProvider.getService(CalendarResourceURIs.class);
+    return ServiceProvider.getSingleton(CalendarResourceURIs.class);
   }
 
   /**

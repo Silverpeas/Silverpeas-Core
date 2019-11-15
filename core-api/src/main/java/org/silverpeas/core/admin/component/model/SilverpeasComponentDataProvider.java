@@ -34,7 +34,7 @@ import org.silverpeas.core.util.ServiceProvider;
 public interface SilverpeasComponentDataProvider {
 
   static SilverpeasComponentDataProvider get() {
-    return ServiceProvider.getService(SilverpeasComponentDataProvider.class);
+    return ServiceProvider.getSingleton(SilverpeasComponentDataProvider.class);
   }
 
   /**
