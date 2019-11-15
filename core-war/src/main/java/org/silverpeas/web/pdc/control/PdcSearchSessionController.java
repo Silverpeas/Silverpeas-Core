@@ -118,8 +118,10 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
@@ -1512,7 +1514,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @param component an optional component identifier.
    */
   public void buildComponentListWhereToSearch(String space, String component) {
-    buildCustomComponentListWhereToSearch(space, singletonList(component));
+    buildCustomComponentListWhereToSearch(space,
+        isDefined(component) ? singletonList(component) : emptyList());
   }
 
   /**
