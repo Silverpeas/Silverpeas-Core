@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.look;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
@@ -37,8 +38,9 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.UserNotificationServerEvent;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.sharing.services.SharingTicketService;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec.JSONArray;
+import org.silverpeas.core.util.JSONCodec.JSONObject;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
@@ -59,11 +61,13 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.MissingResourceException;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 8565616592829678418L;
+  private static final String DESCRIPTION = "description";
+  private static final String LABEL = "label";
 
   @Inject
   private OrganizationController organizationController;
@@ -110,8 +114,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
         writer.write(getResult(componentName, componentId, null, helper));
       } catch (Exception e) {
         writer.write(getResult(componentName, null, e, helper));
-        SilverTrace.error("admin", "PersonalSpaceJSONServlet.doPost.AddComponent",
-            "root.EX_NO_MESSAGE", e);
+        SilverLogger.getLogger(this).error(e);
       }
     } else if ("RemoveComponent".equals(action)) {
       String componentId = req.getParameter("ComponentId");
@@ -120,8 +123,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
         writer.write(getResult(componentName, componentId, null, helper));
       } catch (AdminException e) {
         writer.write(getResult(null, componentId, e, helper));
-        SilverTrace.error("admin", "PersonalSpaceJSONServlet.doPost.RemoveComponent",
-            "root.EX_NO_MESSAGE", e);
+        SilverLogger.getLogger(this).error(e);
       }
     } else if ("GetTools".equals(action)) {
       writer.write(getToolsAsJSONArray(helper));
@@ -130,7 +132,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
 
   private Collection<WAComponent> getNotUsedComponents(Collection<WAComponent> components,
       SpaceInst space) {
-    Collection<WAComponent> availables = new ArrayList<WAComponent>();
+    Collection<WAComponent> availables = new ArrayList<>();
     Collection<ComponentInst> used = space.getAllComponentsInst();
     for (WAComponent component : components) {
       if (!isComponentUsed(component, used)) {
@@ -168,18 +170,18 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
     });
   }
 
-  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> getWAComponentAsJSONObject(
+  private UnaryOperator<JSONObject> getWAComponentAsJSONObject(
       WAComponent component, LookHelper helper) {
     return (jsonObject -> jsonObject.put("name", component.getName())
-        .put("description", component.getDescription().get(helper.getLanguage()))
-        .put("label", getComponentLabel(component.getName(), helper)));
+        .put(DESCRIPTION, component.getDescription().get(helper.getLanguage()))
+        .put(LABEL, getComponentLabel(component.getName(), helper)));
   }
 
-  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> getComponentAsJSONObject(
+  private UnaryOperator<JSONObject> getComponentAsJSONObject(
       SilverpeasComponentInstance component, LookHelper helper) {
     return (jsonObject -> jsonObject.put("name", component.getName())
-        .put("description", component.getDescription())
-        .put("label", getComponentLabel(component.getName(), helper))
+        .put(DESCRIPTION, component.getDescription())
+        .put(LABEL, getComponentLabel(component.getName(), helper))
         .put("id", component.getId())
         .put("url", URLUtil.getURL(component.getName(), "useless",
             component.getId()) + "Main"));
@@ -188,8 +190,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
   private String getResult(String componentName,
       String componentId, Exception e, LookHelper helper) {
     return JSONCodec.encodeObject(jsonObject -> {
-      jsonObject.put("name", componentName)
-          .put("label", getComponentLabel(componentName, helper))
+      jsonObject.put("name", componentName).put(LABEL, getComponentLabel(componentName, helper))
           .put("successfull", e == null);
       if (componentId != null) {
         jsonObject.put("id", componentId)
@@ -208,8 +209,10 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
       label = helper.getString("lookSilverpeasV5.personalSpace." + componentName);
     } catch (MissingResourceException e) {
       SilverLogger.getLogger(this).silent(e);
-      label = PersonalComponentInstance
-          .from(User.getCurrentRequester(), PersonalComponent.getByName(componentName).get())
+      label = PersonalComponentInstance.from(User.getCurrentRequester(),
+          PersonalComponent.getByName(componentName)
+              .orElseThrow(() -> new SilverpeasRuntimeException(
+                  "No personnal component with such name " + componentName)))
           .getLabel(helper.getLanguage());
     }
     if (!StringUtil.isDefined(label)) {
@@ -218,11 +221,9 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
     return label;
   }
 
-  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> getToolAsJSONObject(String id,
+  private UnaryOperator<JSONObject> getToolAsJSONObject(String id,
       String label, String url, int nb) {
-    return (jsonObject -> jsonObject.put("name", "")
-        .put("description", "")
-        .put("label", label)
+    return (jsonObject -> jsonObject.put("name", "").put(DESCRIPTION, "").put(LABEL, label)
         .put("id", id)
         .put("url", url)
         .put("nb", nb));
@@ -265,19 +266,19 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
     return json;
   }
 
-  private void addTool(JSONCodec.JSONArray jsonArray, LookHelper helper, String property, String id,
+  private void addTool(JSONArray jsonArray, LookHelper helper, String property, String id,
       String label, String url) {
     addTool(jsonArray, helper, property, id, label, url, 0);
   }
 
-  private void addTool(JSONCodec.JSONArray jsonArray, LookHelper helper, String property, String id,
+  private void addTool(JSONArray jsonArray, LookHelper helper, String property, String id,
       String label, String url, int nbElements) {
     if (helper.getSettings(property, true)) {
       jsonArray.addJSONObject(getToolAsJSONObject(id, label, url, nbElements));
     }
   }
 
-  private void addNotificationsAsTool(JSONCodec.JSONArray jsonArray, LookHelper helper,
+  private void addNotificationsAsTool(JSONArray jsonArray, LookHelper helper,
       LocalizationBundle message) {
     if (helper.getSettings("notificationVisible", true)) {
 
@@ -289,7 +290,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
     }
   }
 
-  private void addFileSharingAsTool(JSONCodec.JSONArray jsonArray, LookHelper helper,
+  private void addFileSharingAsTool(JSONArray jsonArray, LookHelper helper,
       LocalizationBundle message) {
     // mes tickets
     if (helper.getSettings("fileSharingVisible", true)) {
@@ -302,13 +303,12 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
               + "Main");
         }
       } catch (Exception e) {
-        SilverTrace.error("admin", "PersonalSpaceJSONServlet.getToolsAsJSONArray",
-            "root.CANT_GET_TICKETS", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
   }
 
-  private void addWebConnectionsAsTool(JSONCodec.JSONArray jsonArray, LookHelper helper,
+  private void addWebConnectionsAsTool(JSONArray jsonArray, LookHelper helper,
       LocalizationBundle message) {
     // mes connexions
     if (helper.getSettings("webconnectionsVisible", true)) {
@@ -320,8 +320,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
               URLUtil.getURL(URLUtil.CMP_WEBCONNECTIONS) + "Main");
         }
       } catch (RemoteException e) {
-        SilverTrace.error("admin", "PersonalSpaceJSONServlet.getToolsAsJSONArray",
-            "root.CANT_GET_CONNECTIONS", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
   }

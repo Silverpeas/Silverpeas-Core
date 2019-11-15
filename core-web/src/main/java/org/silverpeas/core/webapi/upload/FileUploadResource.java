@@ -31,7 +31,7 @@ import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.io.upload.UploadSessionFile;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec.JSONObject;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
@@ -58,7 +58,7 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Optional;
 import java.util.concurrent.Semaphore;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
 
@@ -125,7 +125,7 @@ public class FileUploadResource extends RESTWebService {
         RequestParameterDecoder.decode(getHttpRequest(), UploadedRequestFile.class);
 
     try {
-      Function<JSONCodec.JSONObject, JSONCodec.JSONObject> builder =
+      UnaryOperator<JSONObject> builder =
           uploadFile(FileUploadData.from(uploadedRequestFile),
               uploadedRequestFile.getRequestFile().getInputStream());
       String jsonFiles = packJSonArrayWithHtmlContainer(a -> a.addJSONObject(builder));
@@ -181,10 +181,13 @@ public class FileUploadResource extends RESTWebService {
    * @param inputStream the input stream to upload
    * @return a builder of the JSON representation of the uploaded file (more information on
    * {@link FileUploadResource#uploadFiles()})
-   * @throws IOException
+   * @throws InterruptedException if the current thread is interrupted while acquiring a semaphore
+   * to upload the file without overloading the server.
+   * @throws WebApplicationException if the upload is forbidden or if the file is already accessed
+   * by another thread.
    */
-  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> uploadFile(
-      FileUploadData fileUploadData, InputStream inputStream) throws Exception {
+  private UnaryOperator<JSONObject> uploadFile(
+      FileUploadData fileUploadData, InputStream inputStream) throws InterruptedException {
 
     if (StringUtil.isNotDefined(fileUploadData.getFullPath())) {
       throw new WebApplicationException(Response.Status.BAD_REQUEST);
@@ -315,7 +318,7 @@ public class FileUploadResource extends RESTWebService {
    * @return a builder of the JSON representation of the uploaded file (more information on
    * {@link FileUploadResource#uploadFiles()})
    */
-  private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> asJSON(
+  private UnaryOperator<JSONObject> asJSON(
       UploadSessionFile uploadSessionFile) {
     return o ->
        o.put("uploadSessionId", uploadSessionFile.getUploadSession().getId())

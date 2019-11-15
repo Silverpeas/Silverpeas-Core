@@ -28,14 +28,14 @@ import org.silverpeas.core.util.JSONCodec.JSONObject;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractChartItem<DATA_TYPE> implements ChartItem {
+public abstract class AbstractChartItem<D> implements ChartItem {
 
   private String title = "";
   private Map<String, String> extra = null;
@@ -54,7 +54,7 @@ public abstract class AbstractChartItem<DATA_TYPE> implements ChartItem {
    * @return the instance of the chart itself.
    */
   @SuppressWarnings("unchecked")
-  public <T extends AbstractChartItem<DATA_TYPE>> T addExtra(final String key, String value) {
+  public <T extends AbstractChartItem<D>> T addExtra(final String key, String value) {
     if (extra == null) {
       extra = new LinkedHashMap<>();
     }
@@ -79,7 +79,7 @@ public abstract class AbstractChartItem<DATA_TYPE> implements ChartItem {
    * @return the instance of the chart itself.
    */
   @SuppressWarnings("unchecked")
-  public <T extends AbstractChartItem<DATA_TYPE>> T withTitle(final String title) {
+  public <T extends AbstractChartItem<D>> T withTitle(final String title) {
     this.title = defaultStringIfNotDefined(title);
     return (T) this;
   }
@@ -97,7 +97,7 @@ public abstract class AbstractChartItem<DATA_TYPE> implements ChartItem {
    * Gets the json representation of the item.
    * @return a string that represents the item as a json array.
    */
-  protected final Function<JSONObject, JSONObject> getJsonProducer() {
+  protected final UnaryOperator<JSONObject> getJsonProducer() {
     return (itemAsJson -> {
       itemAsJson.put("title", getTitle());
       completeJsonData(itemAsJson);
@@ -117,5 +117,5 @@ public abstract class AbstractChartItem<DATA_TYPE> implements ChartItem {
    * Completes the given json object with the data of specific implementations.
    * @param itemAsJson the json object to complete.
    */
-  abstract protected void completeJsonData(JSONObject itemAsJson);
+  protected abstract void completeJsonData(JSONObject itemAsJson);
 }

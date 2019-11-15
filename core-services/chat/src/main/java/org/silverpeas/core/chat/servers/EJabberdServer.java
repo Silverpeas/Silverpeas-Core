@@ -26,12 +26,13 @@ package org.silverpeas.core.chat.servers;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.ChatServerException;
 import org.silverpeas.core.chat.ChatUser;
-import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec.JSONObject;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ws.rs.core.Response;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * Adapter to a remote ejabberd service. It implements the mechanisms to access an ejabberd service
@@ -44,7 +45,7 @@ public class EJabberdServer implements ChatServer {
   private static final String HOST_ATTR = "host";
   private static final String SERVER_ATTR = "server";
   private static final String LOCAL_SERVER_ATTR = "localserver";
-  private static final String PASSWORD_ATTR = "password";
+  private static final String PASS_ATTR = "password";
   private static final String USER_ATTR = "user";
   private static final String LOCAL_USER_ATTR = "localuser";
   private static final String NICK_ATTR = "nick";
@@ -76,7 +77,7 @@ public class EJabberdServer implements ChatServer {
     request("register", o ->
         o.put(USER_ATTR, chatUser.getChatLogin())
             .put(HOST_ATTR, chatUser.getChatDomain())
-            .put(PASSWORD_ATTR, chatUser.getChatPassword()));
+            .put(PASS_ATTR, chatUser.getChatPassword()));
     request("set_vcard", o ->
         o.put(USER_ATTR, chatUser.getChatLogin())
             .put(HOST_ATTR, chatUser.getChatDomain())
@@ -159,13 +160,11 @@ public class EJabberdServer implements ChatServer {
         r -> r.readEntity(Integer.class) == 0);
   }
 
-  private void request(String command,
-      Function<JSONCodec.JSONObject, JSONCodec.JSONObject> argsProvider) {
+  private void request(String command, UnaryOperator<JSONObject> argsProvider) {
     request(command, argsProvider, r -> null);
   }
 
-  private <T> T request(String command,
-      Function<JSONCodec.JSONObject, JSONCodec.JSONObject> argsProvider,
+  private <T> T request(String command, UnaryOperator<JSONObject> argsProvider,
       Function<Response, T> responseProcessor) {
     Response response = null;
     try {

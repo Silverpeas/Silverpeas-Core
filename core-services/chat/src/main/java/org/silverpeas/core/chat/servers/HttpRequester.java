@@ -24,6 +24,7 @@
 package org.silverpeas.core.chat.servers;
 
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec.JSONObject;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -32,7 +33,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * An HTTP requester. It wraps the HTTP mechanism to communicate with a REST resource.
@@ -134,7 +135,7 @@ public class HttpRequester implements AutoCloseable {
    * @param entityBuilder a builder of data encoded in JSON.
    * @return the response to the POST HTTP request.
    */
-  public Response post(Function<JSONCodec.JSONObject, JSONCodec.JSONObject> entityBuilder) {
+  public Response post(UnaryOperator<JSONObject> entityBuilder) {
     return builder.post(
         Entity.entity(JSONCodec.encodeObject(entityBuilder), MediaType.APPLICATION_JSON_TYPE));
   }

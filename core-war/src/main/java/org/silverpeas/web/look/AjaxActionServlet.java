@@ -23,18 +23,19 @@
  */
 package org.silverpeas.web.look;
 
-import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec.JSONArray;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
@@ -47,7 +48,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public class AjaxActionServlet extends HttpServlet {
 
@@ -110,12 +111,13 @@ public class AjaxActionServlet extends HttpServlet {
       ArrayList<String> addedSubSpaceIds = getSubSpaceIdentifiers(userId, spaceId);
       if (!addedSubSpaceIds.isEmpty()) {
         json = JSONCodec.encodeObject(jsonObject -> {
-          jsonObject.put("success", true).put("spaceids", getJSONSpaces(addedSubSpaceIds));
+          jsonObject.put("success", true)
+              .putJSONArray("spaceids", getJSONSpaces(addedSubSpaceIds));
           LookHelper helper = LookHelper.getLookHelper(session);
           if (helper.isEnableUFSContainsState()) {
             // Retrieve all current space path (parent and root space identifier)
             ArrayList<String> parentSpaceIds = getParentSpaceIds(spaceId);
-            jsonObject.put("parentids", getJSONSpaces(parentSpaceIds));
+            jsonObject.putJSONArray("parentids", getJSONSpaces(parentSpaceIds));
           }
           return jsonObject;
         });
@@ -135,7 +137,7 @@ public class AjaxActionServlet extends HttpServlet {
    * @param listSpaces
    * @return JSONArray of list of spaces
    */
-  private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> getJSONSpaces(
+  private UnaryOperator<JSONArray> getJSONSpaces(
       List<String> listSpaces) {
     return (jsonSpaces -> {
       for (String curSpaceId : listSpaces) {
@@ -226,7 +228,7 @@ public class AjaxActionServlet extends HttpServlet {
             // Retrieve father space identifiers
             ArrayList<String> parentSpaceIds = getParentSpaceIds(spaceId);
             jsonRslt.put("spacestate", spaceState)
-                .put("parentids", buildParentJA(userId, listUFS, parentSpaceIds));
+                .putJSONArray("parentids", buildParentJA(userId, listUFS, parentSpaceIds));
           } else {
             jsonRslt.put("spacestate", spaceState);
           }
@@ -249,7 +251,7 @@ public class AjaxActionServlet extends HttpServlet {
    * @param parentSpaceIds
    * @return
    */
-  private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> buildParentJA(String userId,
+  private UnaryOperator<JSONArray> buildParentJA(String userId,
       List<UserFavoriteSpaceVO> listUFS, ArrayList<String> parentSpaceIds) {
     return (resultJA -> {
       for (String curSpaceId : parentSpaceIds) {

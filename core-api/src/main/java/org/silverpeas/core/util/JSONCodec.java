@@ -40,7 +40,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * An encoder of Java bean to a JSON representation and a decoder of JSON stream into the
@@ -52,6 +52,9 @@ import java.util.function.Function;
  */
 public class JSONCodec {
 
+  private JSONCodec() {
+  }
+
   /**
    * Encodes the specified bean into a JSON representation.
    * @param bean the bean to encode.
@@ -59,7 +62,7 @@ public class JSONCodec {
    * @return the JSON representation of the bean in a String.
    * @throws EncodingException if an error occurs while encoding a bean in JSON.
    */
-  public static <T> String encode(T bean) throws EncodingException {
+  public static <T> String encode(T bean) {
     ObjectMapper mapper = getObjectMapper();
     StringWriter writer = new StringWriter();
     try {
@@ -80,7 +83,7 @@ public class JSONCodec {
    * @return the JSON representation of the bean in a String.
    * @throws EncodingException if an error occurs while encoding a bean in JSON.
    */
-  public static String encodeObject(Function<JSONObject, JSONObject> beanBuilder) {
+  public static String encodeObject(UnaryOperator<JSONObject> beanBuilder) {
     ObjectMapper mapper = getObjectMapper();
     StringWriter writer = new StringWriter();
     JsonNode node = mapper.createObjectNode();
@@ -103,13 +106,13 @@ public class JSONCodec {
    * @return the JSON representation of the bean in a String.
    * @throws EncodingException if an error occurs while encoding a bean in JSON.
    */
-  public static String encodeArray(Function<JSONArray, JSONArray> arrayBuilder) {
+  public static String encodeArray(UnaryOperator<JSONArray> arrayBuilder) {
     ObjectMapper mapper = getObjectMapper();
     StringWriter writer = new StringWriter();
     ArrayNode node = mapper.createArrayNode();
     JSONArray array = arrayBuilder.apply(new JSONArray(node));
     try {
-      mapper.writeValue(writer, array.getJsonArray());
+      mapper.writeValue(writer, array.getArrayNode());
     } catch (IOException ex) {
       throw new EncodingException(ex.getMessage(), ex);
     }
@@ -124,8 +127,7 @@ public class JSONCodec {
    * @return the bean decoded from JSON.
    * @throws EncodingException if an error occurs while decoding a JSON String into a bean.
    */
-  public static <T> T decode(String json, Class<T> beanType)
-      throws DecodingException {
+  public static <T> T decode(String json, Class<T> beanType) {
     ObjectMapper mapper = getObjectMapper();
     T bean;
     try {
@@ -144,8 +146,7 @@ public class JSONCodec {
    * @return the bean decoded from JSON.
    * @throws EncodingException if an error occurs while decoding a JSON stream into a bean.
    */
-  public static <T> T decode(InputStream jsonStream, Class<T> beanType)
-      throws DecodingException {
+  public static <T> T decode(InputStream jsonStream, Class<T> beanType) {
     ObjectMapper mapper = getObjectMapper();
     T bean;
     try {
@@ -247,26 +248,13 @@ public class JSONCodec {
       return this;
     }
 
-    /**
-     * Set the specified JSON object attribute with the specified array.
-     * @param fieldName the name of the JSON object field to set
-     * @param arrayBuilder a builder of a JSON array
-     * @return itself
-     * @deprecated use instead {@link #putJSONArray(String, Function)}
-     */
-    @Deprecated
-    public JSONObject put(final String fieldName, Function<JSONArray, JSONArray> arrayBuilder) {
-      return putJSONArray(fieldName, arrayBuilder);
-    }
-
-    public JSONObject putJSONArray(final String fieldName,
-        Function<JSONArray, JSONArray> arrayBuilder) {
+    public JSONObject putJSONArray(final String fieldName, UnaryOperator<JSONArray> arrayBuilder) {
       arrayBuilder.apply(new JSONArray(objectNode.putArray(fieldName)));
       return this;
     }
 
     public JSONObject putJSONObject(final String fieldName,
-        Function<JSONObject, JSONObject> arrayBuilder) {
+        UnaryOperator<JSONObject> arrayBuilder) {
       arrayBuilder.apply(new JSONObject(objectNode.putObject(fieldName)));
       return this;
     }
@@ -274,14 +262,14 @@ public class JSONCodec {
 
   public static class JSONArray {
 
-    private ArrayNode jsonArray;
+    private ArrayNode arrayNode;
 
     protected JSONArray(ArrayNode arrayNode) {
-      this.jsonArray = arrayNode;
+      this.arrayNode = arrayNode;
     }
 
-    protected ArrayNode getJsonArray() {
-      return this.jsonArray;
+    protected ArrayNode getArrayNode() {
+      return this.arrayNode;
     }
 
     public JSONArray add(final Number v) {
@@ -304,65 +292,65 @@ public class JSONCodec {
     }
 
     public JSONArray add(final Short v) {
-      jsonArray.add(v);
+      arrayNode.add(v);
       return this;
     }
 
     public JSONArray add(final Integer v) {
-      jsonArray.add(v);
+      arrayNode.add(v);
       return this;
     }
 
     public JSONArray add(final Long v) {
-      jsonArray.add(v);
+      arrayNode.add(v);
       return this;
     }
 
     public JSONArray add(final Float v) {
-      jsonArray.add(v);
+      arrayNode.add(v);
       return this;
     }
 
     public JSONArray add(final Double v) {
-      jsonArray.add(v);
+      arrayNode.add(v);
       return this;
     }
 
     public JSONArray add(final BigDecimal v) {
-      jsonArray.add(v);
+      arrayNode.add(v);
       return this;
     }
 
     public JSONArray add(final String v) {
-      jsonArray.add(v);
+      arrayNode.add(v);
       return this;
     }
 
     public JSONArray add(final Boolean v) {
-      jsonArray.add(v);
+      arrayNode.add(v);
       return this;
     }
 
     public JSONArray add(final byte[] v) {
-      jsonArray.add(v);
+      arrayNode.add(v);
       return this;
     }
 
-    public JSONArray addJSONObject(Function<JSONObject, JSONObject> beanBuilder) {
-      ObjectNode node = jsonArray.addObject();
+    public JSONArray addJSONObject(UnaryOperator<JSONObject> beanBuilder) {
+      ObjectNode node = arrayNode.addObject();
       beanBuilder.apply(new JSONObject(node));
       return this;
     }
 
-    public JSONArray addJSONArray(Function<JSONArray, JSONArray> arrayBuilder) {
-      ArrayNode node = jsonArray.addArray();
+    public JSONArray addJSONArray(UnaryOperator<JSONArray> arrayBuilder) {
+      ArrayNode node = arrayNode.addArray();
       arrayBuilder.apply(new JSONArray(node));
       return this;
     }
 
     public JSONArray addJSONArray(List<String> elements) {
       for (String element : elements) {
-        jsonArray.add(element);
+        arrayNode.add(element);
       }
       return this;
     }

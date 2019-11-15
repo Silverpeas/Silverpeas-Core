@@ -28,14 +28,16 @@ import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.textarea;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec.JSONArray;
+import org.silverpeas.core.util.JSONCodec.JSONObject;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * This class provides some tools to more effectively use the technique of ajax iframe transport.
@@ -47,6 +49,10 @@ public class IFrameAjaxTransportUtil {
   public static final String X_REQUESTED_WITH = "X-Requested-With";
   public static final String AJAX_IFRAME_TRANSPORT = "IFrame";
 
+  private IFrameAjaxTransportUtil() {
+
+  }
+
   /**
    * Packaging an Web Application Exception as JSon String and then as HTML to be performed by
    * IFrame Ajax Transport Javascript Plugin.
@@ -54,7 +60,7 @@ public class IFrameAjaxTransportUtil {
    * @return
    */
   public static WebApplicationException createWebApplicationExceptionWithJSonErrorInHtmlContainer(
-      WebApplicationException wae) throws IOException {
+      WebApplicationException wae) {
     String messageKey = MessageManager.getRegistredKey();
     final String errorEntity;
     if (StringUtil.isDefined(messageKey)) {
@@ -73,7 +79,7 @@ public class IFrameAjaxTransportUtil {
    * @param object
    * @return
    */
-  public static String packObjectToJSonDataWithHtmlContainer(Object object) throws IOException {
+  public static String packObjectToJSonDataWithHtmlContainer(Object object) {
     String json = StringUtil.EMPTY;
     if (object != null) {
       json = JSONCodec.encode(object);
@@ -87,8 +93,7 @@ public class IFrameAjaxTransportUtil {
    * @param objects
    * @return
    */
-  public static String packObjectToJSonDataWithHtmlContainer(List<Object> objects)
-      throws IOException {
+  public static String packObjectToJSonDataWithHtmlContainer(List<Object> objects) {
     String jsonArray = StringUtil.EMPTY;
     if (objects != null && !objects.isEmpty()) {
       jsonArray = JSONCodec.encode(objects);
@@ -103,12 +108,13 @@ public class IFrameAjaxTransportUtil {
    * @return
    */
   public static String packJSonObjectWithHtmlContainer(
-      Function<JSONCodec.JSONObject, JSONCodec.JSONObject> jsonObjectBuilder) {
+      UnaryOperator<JSONObject> jsonObjectBuilder) {
     String json = StringUtil.EMPTY;
     if (jsonObjectBuilder != null) {
       try {
         json = JSONCodec.encodeObject(jsonObjectBuilder);
       } catch (Exception ex) {
+        SilverLogger.getLogger(IFrameAjaxTransportUtil.class).silent(ex);
       }
     }
     return packJSonDataWithHtmlContainer(json);
@@ -121,7 +127,7 @@ public class IFrameAjaxTransportUtil {
    * @return
    */
   public static String packJSonArrayWithHtmlContainer(
-      Function<JSONCodec.JSONArray, JSONCodec.JSONArray> jsonArrayBuilder) {
+      UnaryOperator<JSONArray> jsonArrayBuilder) {
     String json = StringUtil.EMPTY;
     if (jsonArrayBuilder != null) {
       try {
@@ -130,7 +136,7 @@ public class IFrameAjaxTransportUtil {
           json = StringUtil.EMPTY;
         }
       } catch(Exception ex) {
-
+        SilverLogger.getLogger(IFrameAjaxTransportUtil.class).silent(ex);
       }
     }
     return packJSonDataWithHtmlContainer(json);
