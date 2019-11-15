@@ -27,7 +27,7 @@ import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
 
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * @author Yohann Chastagnier
@@ -36,18 +36,18 @@ import java.util.function.Function;
 public abstract class AbstractPieChartTest {
 
   @SuppressWarnings("unchecked")
-  protected String expJsChart(String title, Function<JSONObject, JSONObject>... expectedData) {
+  protected String expJsChart(String title, UnaryOperator<JSONObject>... expectedData) {
     return expJsChartWithExtra(title, null, expectedData);
   }
 
   @SuppressWarnings("unchecked")
-  protected String expJsChartWithExtra(String title, Function<JSONObject, JSONObject> extra,
-      Function<JSONObject, JSONObject>... expectedData) {
+  protected String expJsChartWithExtra(String title, UnaryOperator<JSONObject> extra,
+      UnaryOperator<JSONObject>... expectedData) {
     return JSONCodec.encodeObject(jsonObject -> {
       jsonObject.put("chartType", "pie");
       jsonObject.put("title", title);
       jsonObject.putJSONArray("items", jsonArray -> {
-        for (Function<JSONObject, JSONObject> data : expectedData) {
+        for (UnaryOperator<JSONObject> data : expectedData) {
           jsonArray.addJSONObject(data);
         }
         return jsonArray;
@@ -59,8 +59,8 @@ public abstract class AbstractPieChartTest {
     });
   }
 
-  protected Function<JSONObject, JSONObject> expItemAsJs(String title, String label,
-      Function<JSONObject, JSONObject> extra, Number value) {
+  protected UnaryOperator<JSONObject> expItemAsJs(String title, String label,
+      UnaryOperator<JSONObject> extra, Number value) {
     return (jsonObject -> {
       jsonObject.put("title", title).put("label", label).put("value", value);
       if (extra != null) {
@@ -70,16 +70,16 @@ public abstract class AbstractPieChartTest {
     });
   }
 
-  protected Function<JSONObject, JSONObject> expItemAsJs(String title, String label, Number value) {
+  protected UnaryOperator<JSONObject> expItemAsJs(String title, String label, Number value) {
     return expItemAsJs(title, label, null, value);
   }
 
-  protected Function<JSONObject, JSONObject> expItemAsJs(String title) {
+  protected UnaryOperator<JSONObject> expItemAsJs(String title) {
     return expItemAsJs(title, "", null, null);
   }
 
-  protected Function<JSONObject, JSONObject> expItemAsJs(String title,
-      Function<JSONObject, JSONObject> extra) {
+  protected UnaryOperator<JSONObject> expItemAsJs(String title,
+      UnaryOperator<JSONObject> extra) {
     return expItemAsJs(title, "", extra, null);
   }
 }

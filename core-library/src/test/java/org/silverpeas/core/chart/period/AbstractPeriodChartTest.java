@@ -27,8 +27,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.test.UnitTest;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec.JSONObject;
 
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * @author Yohann Chastagnier
@@ -44,7 +45,7 @@ public abstract class AbstractPeriodChartTest {
 
   @SuppressWarnings("unchecked")
   protected String expJsChart(String title, String defaultPeriodType, String xLabel, String yLabel,
-      Function<JSONCodec.JSONObject, JSONCodec.JSONObject>... expectedData) {
+      UnaryOperator<JSONObject>... expectedData) {
     return JSONCodec.encodeObject(jsonObject -> {
       jsonObject.put("chartType", "period");
       jsonObject.put("title", title);
@@ -53,7 +54,7 @@ public abstract class AbstractPeriodChartTest {
               .putJSONObject("y", yAxis -> yAxis.put("title", yLabel)));
       jsonObject.put("defaultPeriodType", defaultPeriodType);
       jsonObject.putJSONArray("items", jsonArray -> {
-        for (Function<JSONCodec.JSONObject, JSONCodec.JSONObject> data : expectedData) {
+        for (UnaryOperator<JSONObject> data : expectedData) {
           jsonArray.addJSONObject(data);
         }
         return jsonArray;
@@ -62,7 +63,7 @@ public abstract class AbstractPeriodChartTest {
     });
   }
 
-  protected Function<JSONCodec.JSONObject, JSONCodec.JSONObject> expItemAsJs(String title,
+  protected UnaryOperator<JSONObject> expItemAsJs(String title,
       long expectedTime, long duration, final boolean durationAsPrimitive, String periodType,
       Number... values) {
     return (jsonObject -> {
