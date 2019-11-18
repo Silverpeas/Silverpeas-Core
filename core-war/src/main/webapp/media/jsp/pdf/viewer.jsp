@@ -35,29 +35,74 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="google" content="notranslate">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <view:includePlugin name="polyfills"/>
   <view:script src="/util/javaScript/silverpeas.js" />
-  <view:script src="/util/javaScript/silverpeas-i18n.js" />
   <script type="text/javascript">
     window.SP_PDF_VIEWER_DEFERRED = sp.promise.deferred();
-    window.DEFAULT_URL = '${silfn:escapeJs(contentUrl)}';
-    window.SP_DOWNLOAD_ENABLED = ${downloadEnabled};
-    function configurePDFJS(PDFJS) {
-      PDFJS.imageResourcesPath = PdfViewerSettings.get('p.i.p');
-      PDFJS.workerSrc = PdfViewerSettings.get('p.w.f');
-      PDFJS.cMapUrl = PdfViewerSettings.get('p.c.p');
-      PDFJS.cMapPacked = true;
-      PDFJS.disableTextLayer = !window.SP_DOWNLOAD_ENABLED;
-      PDFJS.disableHistory = true;
-      PDFJS.disableFullscreen = false;
-      PDFJS.locale = '${userLanguage}';
-      window.SP_PDF_VIEWER_DEFERRED.promise.then(function(pdfContext) {
-        if (!window.SP_DOWNLOAD_ENABLED) {
-          document.querySelector('#cursorHandTool').click();
+    document.addEventListener('webviewerloaded', function(e) {
+      ['PDFViewerApplication', 'PDFViewerApplicationOptions'].forEach(function(varName) {
+        if (window[varName]) {
+          delete window[varName];
+        } else {
+          sp.log.warning("PDFJS variables have been changed")
         }
       });
-    }
+      var viewerAppOptions = e.detail.viewerAppOptions;
+      viewerAppOptions.set("cMapPacked", true);
+      viewerAppOptions.set("imageResourcesPath", PdfViewerSettings.get('p.i.p'));
+      viewerAppOptions.set("workerSrc", PdfViewerSettings.get('p.w.f'));
+      viewerAppOptions.set("cMapUrl", PdfViewerSettings.get('p.c.p'));
+      viewerAppOptions.set("defaultUrl", '${silfn:escapeJs(contentUrl)}');
+      viewerAppOptions.set("locale", '${userLanguage}');
+      viewerAppOptions.set("disablePreferences", true);
+      viewerAppOptions.set("disableHistory", true);
+      viewerAppOptions.set("textLayerMode", ${downloadEnabled} ? 1 : 0);
+      viewerAppOptions.set("verbosity", 0);
+      var viewerConfig = e.detail.viewerConfiguration;
+      viewerConfig.toolbar.download.remove();
+      viewerConfig.toolbar.openFile.remove();
+      viewerConfig.toolbar.viewBookmark.remove();
+      viewerConfig.secondaryToolbar.downloadButton.remove();
+      viewerConfig.secondaryToolbar.openFileButton.remove();
+      viewerConfig.secondaryToolbar.viewBookmarkButton.remove();
+      viewerConfig.secondaryToolbar.documentPropertiesButton.remove();
+      var fullscreenMode = function () {
+        if (spFscreen.fullscreenElement()) {
+          spFscreen.exitFullscreen();
+        } else {
+          spFscreen.requestFullscreen(viewerConfig.appContainer);
+          viewerConfig.secondaryToolbar.toggleButton.click();
+        }
+      };
+      spFscreen.addEventListener('fullscreenchange', function() {
+        sp.element.querySelectorAll("[data-l10n-id^='presentation_mode']").forEach(function(el) {
+          var currentKey = el.getAttribute('data-l10n-id');
+          var newKey = spFscreen.fullscreenElement() ? currentKey.replace('presentation_mode', 'presentation_mode_leave') : currentKey;
+          if (StringUtil.isDefined(el.getAttribute('title'))) {
+            el.setAttribute('title', document.webL10n.get(newKey + ".title"));
+          } else {
+            el.innerText = document.webL10n.get(newKey);
+          }
+        })
+      });
+      window.SP_PDF_VIEWER_DEFERRED.promise.then(function() {
+        [viewerConfig.toolbar.presentationModeButton, viewerConfig.secondaryToolbar.presentationModeButton]
+            .forEach(function(fullscreenModeButton) {
+              fullscreenModeButton = sp.element.removeAllEventListenerOfAndGettingClone(fullscreenModeButton);
+              fullscreenModeButton.addEventListener('click', fullscreenMode);
+            });
+      });
+      <c:if test="${not downloadEnabled}">
+      viewerConfig.toolbar.print.remove();
+      viewerConfig.secondaryToolbar.printButton.remove();
+      viewerConfig.secondaryToolbar.cursorSelectToolButton.remove();
+      window.SP_PDF_VIEWER_DEFERRED.promise.then(function() {
+        viewerConfig.secondaryToolbar.cursorHandToolButton.click();
+      });
+      </c:if>
+    });
   </script>
   <view:includePlugin name="pdfviewer"/>
 </head>
@@ -86,6 +131,7 @@
       <div id="attachmentsView" class="hidden">
       </div>
     </div>
+    <div id="sidebarResizer" class="hidden"></div>
   </div>  <!-- sidebarContainer -->
 
   <div id="mainContainer">
@@ -103,13 +149,15 @@
         </div>
       </div>
 
-      <div id="findbarOptionsContainer">
+      <div id="findbarOptionsOneContainer">
         <input type="checkbox" id="findHighlightAll" class="toolbarField" tabindex="94">
-        <label for="findHighlightAll" class="toolbarLabel" data-l10n-id="find_highlight">Highlight
-          all</label>
+        <label for="findHighlightAll" class="toolbarLabel" data-l10n-id="find_highlight">Highlight all</label>
         <input type="checkbox" id="findMatchCase" class="toolbarField" tabindex="95">
-        <label for="findMatchCase" class="toolbarLabel" data-l10n-id="find_match_case_label">Match
-          case</label>
+        <label for="findMatchCase" class="toolbarLabel" data-l10n-id="find_match_case_label">Match case</label>
+      </div>
+      <div id="findbarOptionsTwoContainer">
+        <input type="checkbox" id="findEntireWord" class="toolbarField" tabindex="96">
+        <label for="findEntireWord" class="toolbarLabel" data-l10n-id="find_entire_word_label">Whole words</label>
         <span id="findResultsCount" class="toolbarLabel hidden"></span>
       </div>
 
@@ -124,23 +172,21 @@
           <span data-l10n-id="presentation_mode_label">Presentation Mode</span>
         </button>
 
-        <%--<button id="secondaryOpenFile" class="secondaryToolbarButton openFile visibleLargeView" title="Open File" tabindex="52" data-l10n-id="open_file">--%>
-          <%--<span data-l10n-id="open_file_label">Open</span>--%>
-        <%--</button>--%>
+        <button id="secondaryOpenFile" class="secondaryToolbarButton openFile visibleLargeView" title="Open File" tabindex="52" data-l10n-id="open_file">
+          <span data-l10n-id="open_file_label">Open</span>
+        </button>
 
-        <c:if test="${downloadEnabled}">
-          <button id="secondaryPrint" class="secondaryToolbarButton print visibleMediumView" title="Print" tabindex="53" data-l10n-id="print">
-            <span data-l10n-id="print_label">Print</span>
-          </button>
-        </c:if>
+        <button id="secondaryPrint" class="secondaryToolbarButton print visibleMediumView" title="Print" tabindex="53" data-l10n-id="print">
+          <span data-l10n-id="print_label">Print</span>
+        </button>
 
-        <%--<button id="secondaryDownload" class="secondaryToolbarButton download visibleMediumView" title="Download" tabindex="54" data-l10n-id="download">--%>
-          <%--<span data-l10n-id="download_label">Download</span>--%>
-        <%--</button>--%>
+        <button id="secondaryDownload" class="secondaryToolbarButton download visibleMediumView" title="Download" tabindex="54" data-l10n-id="download">
+          <span data-l10n-id="download_label">Download</span>
+        </button>
 
-        <%--<a href="#" id="secondaryViewBookmark" class="secondaryToolbarButton bookmark visibleSmallView" title="Current view (copy or open in new window)" tabindex="55" data-l10n-id="bookmark">--%>
-          <%--<span data-l10n-id="bookmark_label">Current View</span>--%>
-        <%--</a>--%>
+        <a href="#" id="secondaryViewBookmark" class="secondaryToolbarButton bookmark visibleSmallView" title="Current view (copy or open in new window)" tabindex="55" data-l10n-id="bookmark">
+          <span data-l10n-id="bookmark_label">Current View</span>
+        </a>
 
         <div class="horizontalToolbarSeparator visibleLargeView"></div>
 
@@ -162,20 +208,42 @@
 
         <div class="horizontalToolbarSeparator"></div>
 
-        <c:if test="${downloadEnabled}">
-          <button id="cursorSelectTool" class="secondaryToolbarButton selectTool toggled" title="Enable Text Selection Tool" tabindex="60" data-l10n-id="cursor_text_select_tool">
-            <span data-l10n-id="cursor_text_select_tool_label">Text Selection Tool</span>
-          </button>
-        </c:if>
+        <button id="cursorSelectTool" class="secondaryToolbarButton selectTool toggled" title="Enable Text Selection Tool" tabindex="60" data-l10n-id="cursor_text_select_tool">
+          <span data-l10n-id="cursor_text_select_tool_label">Text Selection Tool</span>
+        </button>
         <button id="cursorHandTool" class="secondaryToolbarButton handTool" title="Enable Hand Tool" tabindex="61" data-l10n-id="cursor_hand_tool">
           <span data-l10n-id="cursor_hand_tool_label">Hand Tool</span>
         </button>
 
-        <%--<div class="horizontalToolbarSeparator"></div>--%>
+        <div class="horizontalToolbarSeparator"></div>
 
-        <%--<button id="documentProperties" class="secondaryToolbarButton documentProperties" title="Document Properties…" tabindex="62" data-l10n-id="document_properties">--%>
-          <%--<span data-l10n-id="document_properties_label">Document Properties…</span>--%>
-        <%--</button>--%>
+        <button id="scrollVertical" class="secondaryToolbarButton scrollModeButtons scrollVertical toggled" title="Use Vertical Scrolling" tabindex="62" data-l10n-id="scroll_vertical">
+          <span data-l10n-id="scroll_vertical_label">Vertical Scrolling</span>
+        </button>
+        <button id="scrollHorizontal" class="secondaryToolbarButton scrollModeButtons scrollHorizontal" title="Use Horizontal Scrolling" tabindex="63" data-l10n-id="scroll_horizontal">
+          <span data-l10n-id="scroll_horizontal_label">Horizontal Scrolling</span>
+        </button>
+        <button id="scrollWrapped" class="secondaryToolbarButton scrollModeButtons scrollWrapped" title="Use Wrapped Scrolling" tabindex="64" data-l10n-id="scroll_wrapped">
+          <span data-l10n-id="scroll_wrapped_label">Wrapped Scrolling</span>
+        </button>
+
+        <div class="horizontalToolbarSeparator scrollModeButtons"></div>
+
+        <button id="spreadNone" class="secondaryToolbarButton spreadModeButtons spreadNone toggled" title="Do not join page spreads" tabindex="65" data-l10n-id="spread_none">
+          <span data-l10n-id="spread_none_label">No Spreads</span>
+        </button>
+        <button id="spreadOdd" class="secondaryToolbarButton spreadModeButtons spreadOdd" title="Join page spreads starting with odd-numbered pages" tabindex="66" data-l10n-id="spread_odd">
+          <span data-l10n-id="spread_odd_label">Odd Spreads</span>
+        </button>
+        <button id="spreadEven" class="secondaryToolbarButton spreadModeButtons spreadEven" title="Join page spreads starting with even-numbered pages" tabindex="67" data-l10n-id="spread_even">
+          <span data-l10n-id="spread_even_label">Even Spreads</span>
+        </button>
+
+        <div class="horizontalToolbarSeparator spreadModeButtons"></div>
+
+        <button id="documentProperties" class="secondaryToolbarButton documentProperties" title="Document Properties…" tabindex="68" data-l10n-id="document_properties">
+          <span data-l10n-id="document_properties_label">Document Properties…</span>
+        </button>
       </div>
     </div>  <!-- secondaryToolbar -->
 
@@ -207,24 +275,22 @@
               <span data-l10n-id="presentation_mode_label">Presentation Mode</span>
             </button>
 
-            <%--<button id="openFile" class="toolbarButton openFile hiddenLargeView" title="Open File" tabindex="32" data-l10n-id="open_file">--%>
-              <%--<span data-l10n-id="open_file_label">Open</span>--%>
-            <%--</button>--%>
+            <button id="openFile" class="toolbarButton openFile hiddenLargeView" title="Open File" tabindex="32" data-l10n-id="open_file">
+              <span data-l10n-id="open_file_label">Open</span>
+            </button>
 
-            <c:if test="${downloadEnabled}">
-              <button id="print" class="toolbarButton print hiddenMediumView" title="Print" tabindex="33" data-l10n-id="print">
-                <span data-l10n-id="print_label">Print</span>
-              </button>
-            </c:if>
+            <button id="print" class="toolbarButton print hiddenMediumView" title="Print" tabindex="33" data-l10n-id="print">
+              <span data-l10n-id="print_label">Print</span>
+            </button>
 
-            <%--<button id="download" class="toolbarButton download hiddenMediumView" title="Download" tabindex="34" data-l10n-id="download">--%>
-              <%--<span data-l10n-id="download_label">Download</span>--%>
-            <%--</button>--%>
-            <%--<a href="#" id="viewBookmark" class="toolbarButton bookmark hiddenSmallView" title="Current view (copy or open in new window)" tabindex="35" data-l10n-id="bookmark">--%>
-              <%--<span data-l10n-id="bookmark_label">Current View</span>--%>
-            <%--</a>--%>
+            <button id="download" class="toolbarButton download hiddenMediumView" title="Download" tabindex="34" data-l10n-id="download">
+              <span data-l10n-id="download_label">Download</span>
+            </button>
+            <a href="#" id="viewBookmark" class="toolbarButton bookmark hiddenSmallView" title="Current view (copy or open in new window)" tabindex="35" data-l10n-id="bookmark">
+              <span data-l10n-id="bookmark_label">Current View</span>
+            </a>
 
-            <%--<div class="verticalToolbarSeparator hiddenSmallView"></div>--%>
+            <div class="verticalToolbarSeparator hiddenSmallView"></div>
 
             <button id="secondaryToolbarToggle" class="toolbarButton" title="Tools" tabindex="36" data-l10n-id="tools">
               <span data-l10n-id="tools_label">Tools</span>
@@ -307,75 +373,66 @@
     <div id="passwordOverlay" class="container hidden">
       <div class="dialog">
         <div class="row">
-          <p id="passwordText" data-l10n-id="password_label">Enter the password to open this PDF
-            file:</p>
+          <p id="passwordText" data-l10n-id="password_label">Enter the password to open this PDF file:</p>
         </div>
         <div class="row">
-          <input type="password" autocomplete="off" id="password" class="toolbarField">
+          <input type="password" id="password" class="toolbarField">
         </div>
         <div class="buttonRow">
-          <button id="passwordCancel" class="overlayButton"><span data-l10n-id="password_cancel">Cancel</span>
-          </button>
-          <button id="passwordSubmit" class="overlayButton">
-            <span data-l10n-id="password_ok">OK</span></button>
+          <button id="passwordCancel" class="overlayButton"><span data-l10n-id="password_cancel">Cancel</span></button>
+          <button id="passwordSubmit" class="overlayButton"><span data-l10n-id="password_ok">OK</span></button>
         </div>
       </div>
     </div>
     <div id="documentPropertiesOverlay" class="container hidden">
       <div class="dialog">
         <div class="row">
-          <span data-l10n-id="document_properties_file_name">File name:</span>
-          <p id="fileNameField">-</p>
+          <span data-l10n-id="document_properties_file_name">File name:</span> <p id="fileNameField">-</p>
         </div>
         <div class="row">
-          <span data-l10n-id="document_properties_file_size">File size:</span>
-          <p id="fileSizeField">-</p>
+          <span data-l10n-id="document_properties_file_size">File size:</span> <p id="fileSizeField">-</p>
         </div>
         <div class="separator"></div>
         <div class="row">
-          <span data-l10n-id="document_properties_title">Title:</span>
-          <p id="titleField">-</p>
+          <span data-l10n-id="document_properties_title">Title:</span> <p id="titleField">-</p>
         </div>
         <div class="row">
-          <span data-l10n-id="document_properties_author">Author:</span>
-          <p id="authorField">-</p>
+          <span data-l10n-id="document_properties_author">Author:</span> <p id="authorField">-</p>
         </div>
         <div class="row">
-          <span data-l10n-id="document_properties_subject">Subject:</span>
-          <p id="subjectField">-</p>
+          <span data-l10n-id="document_properties_subject">Subject:</span> <p id="subjectField">-</p>
         </div>
         <div class="row">
-          <span data-l10n-id="document_properties_keywords">Keywords:</span>
-          <p id="keywordsField">-</p>
+          <span data-l10n-id="document_properties_keywords">Keywords:</span> <p id="keywordsField">-</p>
         </div>
         <div class="row">
-          <span data-l10n-id="document_properties_creation_date">Creation Date:</span>
-          <p id="creationDateField">-</p>
+          <span data-l10n-id="document_properties_creation_date">Creation Date:</span> <p id="creationDateField">-</p>
         </div>
         <div class="row">
-          <span data-l10n-id="document_properties_modification_date">Modification Date:</span>
-          <p id="modificationDateField">-</p>
+          <span data-l10n-id="document_properties_modification_date">Modification Date:</span> <p id="modificationDateField">-</p>
         </div>
         <div class="row">
-          <span data-l10n-id="document_properties_creator">Creator:</span>
-          <p id="creatorField">-</p>
+          <span data-l10n-id="document_properties_creator">Creator:</span> <p id="creatorField">-</p>
         </div>
         <div class="separator"></div>
         <div class="row">
-          <span data-l10n-id="document_properties_producer">PDF Producer:</span>
-          <p id="producerField">-</p>
+          <span data-l10n-id="document_properties_producer">PDF Producer:</span> <p id="producerField">-</p>
         </div>
         <div class="row">
-          <span data-l10n-id="document_properties_version">PDF Version:</span>
-          <p id="versionField">-</p>
+          <span data-l10n-id="document_properties_version">PDF Version:</span> <p id="versionField">-</p>
         </div>
         <div class="row">
-          <span data-l10n-id="document_properties_page_count">Page Count:</span>
-          <p id="pageCountField">-</p>
+          <span data-l10n-id="document_properties_page_count">Page Count:</span> <p id="pageCountField">-</p>
+        </div>
+        <div class="row">
+          <span data-l10n-id="document_properties_page_size">Page Size:</span> <p id="pageSizeField">-</p>
+        </div>
+        <div class="separator"></div>
+        <div class="row">
+          <span data-l10n-id="document_properties_linearized">Fast Web View:</span> <p id="linearizedField">-</p>
         </div>
         <div class="buttonRow">
-          <button id="documentPropertiesClose" class="overlayButton">
-            <span data-l10n-id="document_properties_close">Close</span></button>
+          <button id="documentPropertiesClose" class="overlayButton"><span data-l10n-id="document_properties_close">Close</span></button>
         </div>
       </div>
     </div>
@@ -389,8 +446,7 @@
           <span data-l10n-id="print_progress_percent" data-l10n-args='{ "progress": 0 }' class="relative-progress">0%</span>
         </div>
         <div class="buttonRow">
-          <button id="printCancel" class="overlayButton"><span data-l10n-id="print_progress_close">Cancel</span>
-          </button>
+          <button id="printCancel" class="overlayButton"><span data-l10n-id="print_progress_close">Cancel</span></button>
         </div>
       </div>
     </div>

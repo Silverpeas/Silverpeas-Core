@@ -50,7 +50,6 @@ import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.Operations
 import org.silverpeas.core.web.util.viewgenerator.html.pdc.BaseClassificationPdCTag;
 
 import java.text.MessageFormat;
-import java.util.Set;
 
 import static java.util.Arrays.stream;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicationCacheService;
@@ -618,18 +617,18 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  static ElementContainer includePdfViewer(final ElementContainer xhtml, final String language) {
+  static ElementContainer includePdfViewer(final ElementContainer xhtml) {
+    xhtml.addElement(new link()
+        .setHref(getApplicationURL() + "/services/bundles/org/silverpeas/viewer/multilang/viewerBundle?withoutGeneral=true")
+        .setRel("prefetch")
+        .setType("application/l10n"));
     xhtml.addElement(scriptContent(settingVariableName("PdfViewerSettings")
         .add("p.i.p", PDF_VIEWER_BASE + "/images/")
         .add("p.w.f", PDF_VIEWER_BASE + "/core/pdf.worker.min.js")
         .add("p.c.p", PDF_VIEWER_BASE + "/cmaps/")
         .produce()));
-    final LocalizationBundle viewerBundle = ResourceLocator.getLocalizationBundle("org.silverpeas.viewer.multilang.viewerBundle", language);
-    final JavascriptBundleProducer pdfViewerBundle = bundleVariableName("PdfViewerBundle");
-    final Set<String> keys = viewerBundle.specificKeySet();
-    pdfViewerBundle.add(viewerBundle, keys.toArray(new String[keys.size()]));
-    xhtml.addElement(scriptContent(pdfViewerBundle.produce()));
     xhtml.addElement(link(PDF_VIEWER_BASE + "/viewer.min.css"));
+    xhtml.addElement(link(PDF_VIEWER_BASE + "/sp-viewer.min.css"));
     xhtml.addElement(script(PDF_VIEWER_BASE + "/core/pdf.min.js"));
     xhtml.addElement(script(PDF_VIEWER_BASE + "/viewer.min.js"));
     return xhtml;
