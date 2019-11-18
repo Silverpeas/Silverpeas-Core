@@ -120,7 +120,7 @@ public class FileUploadResource extends RESTWebService {
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces(MediaType.TEXT_HTML)
-  public Response uploadFiles() throws IOException {
+  public Response uploadFiles() {
     UploadedRequestFile uploadedRequestFile =
         RequestParameterDecoder.decode(getHttpRequest(), UploadedRequestFile.class);
 

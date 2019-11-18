@@ -92,6 +92,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
@@ -4882,8 +4883,9 @@ class Admin implements Administration {
         removed = new ArrayList<>();
       }
       try {
-        LDAPSynchroUserItf synchroUser = (LDAPSynchroUserItf) Class.forName(nomClasseSynchro).
-            newInstance();
+        Constructor<LDAPSynchroUserItf> constructor =
+            (Constructor<LDAPSynchroUserItf>) Class.forName(nomClasseSynchro).getConstructor();
+        LDAPSynchroUserItf synchroUser = constructor.newInstance();
         if (synchroUser != null) {
           synchroUser.processUsers(added, updated, removed);
         }
@@ -5189,6 +5191,13 @@ class Admin implements Administration {
       userIds = searchUserByTheirIds(searchCriteria, userIds);
     }
 
+    UserSearchCriteriaForDAO criteria = buildUserSearchCriteriaForDAO(searchCriteria, userIds);
+    return userManager.getUsersMatchingCriteria(criteria);
+  }
+
+  private UserSearchCriteriaForDAO buildUserSearchCriteriaForDAO(
+      final UserDetailsSearchCriteria searchCriteria, final List<String> userIds)
+      throws AdminException {
     SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
     UserSearchCriteriaForDAO criteria = factory.getUserSearchCriteriaDAO();
     if (userIds != null) {
@@ -5222,8 +5231,7 @@ class Admin implements Administration {
     if (searchCriteria.isCriterionOnPaginationSet()) {
       criteria.onPagination(searchCriteria.getCriterionOnPagination());
     }
-
-    return userManager.getUsersMatchingCriteria(criteria);
+    return criteria;
   }
 
   private void setCriteriaWithGroupIds(final UserDetailsSearchCriteria searchCriteria,

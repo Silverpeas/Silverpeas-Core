@@ -64,9 +64,8 @@
           itemValue = SilverpeasCalendarTools.extractComponentInstanceIdFromUri(item['uri']);
           typeOfItemValue = typeof itemValue;
         }
-        if (typeOfItemValue === 'string' && itemValue === componentInstanceId) {
-          filteredItems.push(item);
-        } else if (typeOfItemValue === 'function' && itemValue() === componentInstanceId) {
+        if ((typeOfItemValue === 'string' && itemValue === componentInstanceId) ||
+          (typeOfItemValue === 'function' && itemValue() === componentInstanceId)) {
           filteredItems.push(item);
         }
       });

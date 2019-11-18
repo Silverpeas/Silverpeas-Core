@@ -51,7 +51,7 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
   private PublicationService publicationService;
 
   private List<String> getListResourceType() {
-    List<String> listResourceType = new ArrayList<String>();
+    List<String> listResourceType = new ArrayList<>();
     listResourceType.add(PublicationDetail.getResourceType()); //kmelia and blog components
     return listResourceType;
   }
@@ -113,7 +113,7 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
 
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
-    List<String> instanceIds = new ArrayList<String>();
+    List<String> instanceIds = new ArrayList<>();
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "blog")));
 
@@ -129,15 +129,13 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
       SocialInformationComment socialComment = socialCommentIt.next();
       String instanceId = socialComment.getComment().getComponentInstanceId();
 
-      if (!myId.equals(socialComment.getAuthor()) && instanceId.startsWith("kmelia")) {
+      if (!myId.equals(socialComment.getAuthor()) && instanceId.startsWith("kmelia") &&
+          !PublicationAccessControl.get().isUserAuthorized(myId,
+              new PublicationPK(socialComment.getComment().getForeignKey().getId(), instanceId))) {
 
         // On Kmelia application, if the user has not access right to the publication, then the
         // associated comments are removed from the result
-
-        if (!PublicationAccessControl.get().isUserAuthorized(myId,
-            new PublicationPK(socialComment.getComment().getForeignKey().getId(), instanceId))) {
-          socialCommentIt.remove();
-        }
+        socialCommentIt.remove();
       }
     }
 

@@ -27,8 +27,6 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.notification.user.builder.AbstractUserNotificationBuilder;
-import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
@@ -50,8 +48,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**

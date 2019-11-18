@@ -286,6 +286,16 @@ function loadClassification(uri, onSuccess, onError) {
 
 /**************************************************************************************************/
 
+function __notifyError(jqXHR, errorThrown, onError) {
+  if (typeof onError === 'function')
+    onError({
+      status: jqXHR.status,
+      message: errorThrown
+    });
+  else
+    console.error(errorThrown);
+}
+
 /**
  * Asks fo the deletion of the specified position to the classification on the PdC identified by the
  * specified URI.
@@ -311,9 +321,7 @@ function deletePosition(uri, position, confirmationMsg, onSuccess, onError) {
         url : uri_position, type : "DELETE", success : function() {
           onSuccess();
         }, error : function(jqXHR, textStatus, errorThrown) {
-          if (typeof onError === 'function') onError({
-            status : jqXHR.status, message : errorThrown
-          }); else console.error(errorThrown);
+          __notifyError(jqXHR, errorThrown, onError)
         }
       });
     });
@@ -345,13 +353,7 @@ function postPosition(uri, position, onSuccess, onError) {
       onSuccess(classification);
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      if (typeof onError === 'function')
-        onError({
-          status: jqXHR.status,
-          message: errorThrown
-        });
-      else
-        console.error(errorThrown);
+      __notifyError(jqXHR, errorThrown, onError)
     }
   });
 }
@@ -384,13 +386,7 @@ function updatePosition(uri, position, onSuccess, onError) {
       onSuccess(classification);
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      if (typeof onError === 'function')
-        onError({
-          status: jqXHR.status,
-          message: errorThrown
-        });
-      else
-        console.error(errorThrown);
+      __notifyError(jqXHR, errorThrown, onError)
     }
   });
 }

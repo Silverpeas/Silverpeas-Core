@@ -2138,7 +2138,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     setXmlData(data);
 
     // build the xmlSubQuery according to the dataRecord object
-    String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
+    String templateName = templateFileName.substring(0, templateFileName.lastIndexOf('.'));
     String[] fieldNames = searchTemplate.getFieldNames();
     for (String fieldName : fieldNames) {
       Field field = data.getField(fieldName);

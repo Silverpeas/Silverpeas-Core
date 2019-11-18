@@ -35,7 +35,6 @@ import org.silverpeas.core.viewer.service.ViewerContext;
 import org.silverpeas.core.viewer.service.ViewerException;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidator;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.inject.Inject;

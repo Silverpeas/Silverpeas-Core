@@ -57,10 +57,9 @@ public class InterestCentersHelper {
       ic.setQuery(request.getParameter("query"));
       ic.setWorkSpaceID(request.getParameter("spaces"));
       String componentId = request.getParameter("componentSearch");
-      if (StringUtil.isDefined(componentId)) {
-        if (ComponentAccessControl.get().isUserAuthorized(pdcSC.getUserId(), componentId)) {
-          ic.setPeasID(componentId);
-        }
+      if (StringUtil.isDefined(componentId) &&
+          ComponentAccessControl.get().isUserAuthorized(pdcSC.getUserId(), componentId)) {
+        ic.setPeasID(componentId);
       }
       ic.setAfterDate(getDate(request.getParameter("createafterdate"), pdcSC));
       ic.setBeforeDate(getDate(request.getParameter("createbeforedate"), pdcSC));

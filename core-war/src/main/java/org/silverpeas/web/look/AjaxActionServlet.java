@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.look;
 
+import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -53,6 +54,10 @@ import java.util.function.UnaryOperator;
 public class AjaxActionServlet extends HttpServlet {
 
   private static final long serialVersionUID = -2317530610033349156L;
+  private static final String SUCCESS = "success";
+  private static final String MESSAGE = "message";
+  private static final String SPACEID = "spaceid";
+  private static final String SPACESTATE = "spacestate";
 
   @Inject
   private OrganizationController organisationController;
@@ -111,7 +116,7 @@ public class AjaxActionServlet extends HttpServlet {
       ArrayList<String> addedSubSpaceIds = getSubSpaceIdentifiers(userId, spaceId);
       if (!addedSubSpaceIds.isEmpty()) {
         json = JSONCodec.encodeObject(jsonObject -> {
-          jsonObject.put("success", true)
+          jsonObject.put(SUCCESS, true)
               .putJSONArray("spaceids", getJSONSpaces(addedSubSpaceIds));
           LookHelper helper = LookHelper.getLookHelper(session);
           if (helper.isEnableUFSContainsState()) {
@@ -123,12 +128,12 @@ public class AjaxActionServlet extends HttpServlet {
         });
       } else {
         // TODO bundle this message error
-        json = JSONCodec.encodeObject(jsonObject -> jsonObject.put("success", false)
-            .put("message", "Technical problem in DAO"));
+        json = JSONCodec.encodeObject(
+            jsonObject -> jsonObject.put(SUCCESS, false).put(MESSAGE, "Technical problem in DAO"));
       }
     } else {
       json = JSONCodec.encodeObject(
-          jsonObject -> jsonObject.put("success", false).put("message", "Invalid parameter"));
+          jsonObject -> jsonObject.put(SUCCESS, false).put(MESSAGE, "Invalid parameter"));
     }
     return json;
   }
@@ -141,7 +146,7 @@ public class AjaxActionServlet extends HttpServlet {
       List<String> listSpaces) {
     return (jsonSpaces -> {
       for (String curSpaceId : listSpaces) {
-        jsonSpaces.addJSONObject(jsonObject -> jsonObject.put("spaceid", curSpaceId));
+        jsonSpaces.addJSONObject(jsonObject -> jsonObject.put(SPACEID, curSpaceId));
       }
       return jsonSpaces;
     });
@@ -152,9 +157,8 @@ public class AjaxActionServlet extends HttpServlet {
    * @return
    */
   private ArrayList<String> getParentSpaceIds(String spaceId) {
-    ArrayList<String> parentSpaceIds = new ArrayList<String>();
-    parentSpaceIds = getParentSpaceOfFavoriteSpace(spaceId, parentSpaceIds);
-    return parentSpaceIds;
+    ArrayList<String> parentSpaceIds = new ArrayList<>();
+    return getParentSpaceOfFavoriteSpace(spaceId, parentSpaceIds);
   }
 
   /**
@@ -163,7 +167,7 @@ public class AjaxActionServlet extends HttpServlet {
    * @return sub space identifiers of current space id given in parameter
    */
   private ArrayList<String> getSubSpaceIdentifiers(String userId, String spaceId) {
-    ArrayList<String> addedSubSpaceIds = new ArrayList<String>();
+    ArrayList<String> addedSubSpaceIds = new ArrayList<>();
     addSubSpace(spaceId, userId, addedSubSpaceIds);
     return addedSubSpaceIds;
   }
@@ -183,9 +187,7 @@ public class AjaxActionServlet extends HttpServlet {
     }
     // Retrieve user sub space identifier
     String[] subSpaceIds = organisationController.getAllSubSpaceIds(spaceId, userId);
-    // addedSpaceIds.addAll(Arrays.asList(subSpaceIds));
     for (String subSpaceId : subSpaceIds) {
-      // addedSpaceIds.addAll(Arrays.asList(subSpaceIds));
       addSubSpace(subSpaceId, userId, addedSpaceIds);
     }
     return addedSpaceIds;
@@ -198,11 +200,11 @@ public class AjaxActionServlet extends HttpServlet {
   private String removeSpace(HttpServletRequest req) {
     // Get current session
     HttpSession session = req.getSession(true);
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
+    MainSessionController mainSessionController = (MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
     // Retrieve user identifier from session
-    String userId = m_MainSessionCtrl.getUserId();
+    String userId = mainSessionController.getUserId();
 
     // Retrieve space identifier parameter
     String spaceId = req.getParameter("SpaceId");
@@ -213,36 +215,41 @@ public class AjaxActionServlet extends HttpServlet {
       if (userFavoriteSpaceService.removeUserFavoriteSpace(
           new UserFavoriteSpaceVO(Integer.parseInt(userId), spaceInst.getLocalId()))) {
         // Remove has been done successfully
-        json = JSONCodec.encodeObject(jsonRslt -> {
-          jsonRslt.put("success", true).put("spaceid", spaceId);
-          List<UserFavoriteSpaceVO> listUFS =
-              userFavoriteSpaceService.getListUserFavoriteSpace(userId);
-          // Check user favorite space state (enable contains state)
-          LookHelper helper = LookHelper.getLookHelper(session);
-          String spaceState = "empty";
-          if (helper.isEnableUFSContainsState()) {
-            if (userFavoriteSpaceService.containsFavoriteSubSpace(spaceInst, listUFS, userId)) {
-              spaceState = "contains";
-              jsonRslt.put("spacestate", spaceState);
-            }
-            // Retrieve father space identifiers
-            ArrayList<String> parentSpaceIds = getParentSpaceIds(spaceId);
-            jsonRslt.put("spacestate", spaceState)
-                .putJSONArray("parentids", buildParentJA(userId, listUFS, parentSpaceIds));
-          } else {
-            jsonRslt.put("spacestate", spaceState);
-          }
-          return jsonRslt;
-        });
+        json = JSONCodec.encodeObject(
+            jsonRslt -> putSpaceStateJSON(session, userId, spaceId, spaceInst, jsonRslt));
       } else {
         json = JSONCodec.encodeObject(
-            jsonRslt -> jsonRslt.put("success", false).put("message", "Technical problem in DAO"));
+            jsonRslt -> jsonRslt.put(SUCCESS, false).put(MESSAGE, "Technical problem in DAO"));
       }
     } else {
-      json = JSONCodec.encodeObject(jsonRslt -> jsonRslt.put("success", false)
-          .put("message", "Invalid parameter call in Ajax method"));
+      json = JSONCodec.encodeObject(jsonRslt -> jsonRslt.put(SUCCESS, false)
+          .put(MESSAGE, "Invalid parameter call in Ajax method"));
     }
     return json;
+  }
+
+  @NotNull
+  private JSONCodec.JSONObject putSpaceStateJSON(final HttpSession session,
+      final String userId, final String spaceId, final SpaceInstLight spaceInst,
+      final JSONCodec.JSONObject jsonRslt) {
+    jsonRslt.put(SUCCESS, true).put(SPACEID, spaceId);
+    List<UserFavoriteSpaceVO> listUFS = userFavoriteSpaceService.getListUserFavoriteSpace(userId);
+    // Check user favorite space state (enable contains state)
+    LookHelper helper = LookHelper.getLookHelper(session);
+    String spaceState = "empty";
+    if (helper.isEnableUFSContainsState()) {
+      if (userFavoriteSpaceService.containsFavoriteSubSpace(spaceInst, listUFS, userId)) {
+        spaceState = "contains";
+        jsonRslt.put(SPACESTATE, spaceState);
+      }
+      // Retrieve father space identifiers
+      ArrayList<String> parentSpaceIds = getParentSpaceIds(spaceId);
+      jsonRslt.put(SPACESTATE, spaceState)
+          .putJSONArray("parentids", buildParentJA(userId, listUFS, parentSpaceIds));
+    } else {
+      jsonRslt.put(SPACESTATE, spaceState);
+    }
+    return jsonRslt;
   }
 
   /**
@@ -256,17 +263,17 @@ public class AjaxActionServlet extends HttpServlet {
     return (resultJA -> {
       for (String curSpaceId : parentSpaceIds) {
         resultJA.addJSONObject(curParentState -> {
-          curParentState.put("spaceid", curSpaceId);
+          curParentState.put(SPACEID, curSpaceId);
           SpaceInstLight spaceInst = organisationController.getSpaceInstLightById(curSpaceId);
 
           // Retrieve current space state identifier
           if (userFavoriteSpaceService.isUserFavoriteSpace(listUFS, spaceInst)) {
-            curParentState.put("spacestate", "favorite");
+            curParentState.put(SPACESTATE, "favorite");
           } else {
             if (userFavoriteSpaceService.containsFavoriteSubSpace(spaceInst, listUFS, userId)) {
-              curParentState.put("spacestate", "contains");
+              curParentState.put(SPACESTATE, "contains");
             } else {
-              curParentState.put("spacestate", "empty");
+              curParentState.put(SPACESTATE, "empty");
             }
           }
           return curParentState;
@@ -321,7 +328,6 @@ public class AjaxActionServlet extends HttpServlet {
     final String mainFrame = specificSettings.getString("FrameJSP", DEFAULT_JSP_FRAM);
 
     // Declare JSon result object
-    return JSONCodec
-        .encodeObject(jsonRslt -> jsonRslt.put("frame", mainFrame).put("success", true));
+    return JSONCodec.encodeObject(jsonRslt -> jsonRslt.put("frame", mainFrame).put(SUCCESS, true));
   }
 }

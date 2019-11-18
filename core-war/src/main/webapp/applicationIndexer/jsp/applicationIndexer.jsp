@@ -195,7 +195,7 @@ if (action != null) {
 <jsp:useBean id="fullTreeview" type="org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="${_userLanguage}">
 <head>
 <title>Navigation</title>
 <view:looknfeel/>
@@ -260,9 +260,10 @@ function index(action, compo, space) {
     <div class="inlineMessage-ok"><%=indexMessage%></div>
     <br/>
     <% } %>
-    <table border="0" cellspacing="0" cellpadding="3" width="100%">
+    <table style="padding: 3px; width: 100%">
+      <th id="space-list"></th>
       <tr>
-        <td nowrap>
+        <td style="white-space: nowrap">
           <img src="../../admin/jsp/icons/accueil/esp_collabo.gif" alt=""> <span class="txtnav">${spaceCollaborationLabel}</span>
         </td>
       </tr>

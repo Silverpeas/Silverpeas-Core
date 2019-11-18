@@ -56,7 +56,7 @@ public class ApplicationIndexer extends AbstractIndexer {
     }
   }
 
-  private void indexComponent(String spaceId, SilverpeasComponentInstance compoInst) {
+  private void indexComponent(SilverpeasComponentInstance compoInst) {
 
     SilverLogger.getLogger(this)
         .info("starting indexation of component ''{0}'' with id ''{1}''", compoInst.getLabel(),
@@ -110,7 +110,7 @@ public class ApplicationIndexer extends AbstractIndexer {
     try {
       OrganizationController.get()
           .getComponentInstance(componentId)
-          .ifPresent(i -> indexComponent(spaceId, i));
+          .ifPresent(this::indexComponent);
     } catch (Exception e) {
       SilverLogger.getLogger(this)
           .error("failure while indexing component with id ''{0}''", new String[]{componentId}, e);

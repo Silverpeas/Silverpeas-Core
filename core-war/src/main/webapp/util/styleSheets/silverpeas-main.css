@@ -6232,10 +6232,6 @@ iframe.embed {
 
 }
 
-.silverpeas-user-notifications .unread-user-notification-inbox {
-  color: #000;
-}
-
 .silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-list-item,
 #infoConnection .silverpeas-user-notifications .silverpeas-attached-popin .silverpeas-list-item {
   padding: 0.75em;
@@ -6256,7 +6252,13 @@ iframe.embed {
   margin-right: 2.25em;
 }
 
+.silverpeas-user-notifications .unread-user-notification-inbox {
+  color: #000;
+  font-weight: normal;
+}
+
 .silverpeas-user-notifications .unread-user-notification-inbox .user-notification-subject {
+  font-weight: bold;
   color: #000;
 }
 
@@ -6422,14 +6424,6 @@ iframe.embed {
   padding-top: 82px;
   text-align: center;
   font-size: 2em;
-}
-
-.silverpeas-user-notifications .unread-user-notification-inbox {
-  font-weight: normal;
-}
-
-.silverpeas-user-notifications .unread-user-notification-inbox .user-notification-subject {
-  font-weight: bold;
 }
 
 .popup-read-notification {

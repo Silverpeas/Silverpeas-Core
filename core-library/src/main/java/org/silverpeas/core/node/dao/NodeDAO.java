@@ -447,7 +447,7 @@ public class NodeDAO {
     final List<NodeDetail> entities = new ArrayList<>();
     final List<Integer> instanceIdsAsInt = instanceIds.stream()
         .map(ComponentInst::getComponentLocalId).collect(Collectors.toList());
-    JdbcSqlQuery.executeBySplittingOn(instanceIdsAsInt, (idBatch, ignore) -> {
+    JdbcSqlQuery.executeBySplittingOn(instanceIdsAsInt, (idBatch, ignore) ->
       JdbcSqlQuery.createSelect("nodeid, instanceid, rightsdependson")
           .from(NODE_TABLE + " N")
           .join("ST_ComponentInstance I").on("N.instanceid = CONCAT(I.componentname , CAST(I.id AS VARCHAR(20)))")
@@ -459,8 +459,7 @@ public class NodeDAO {
         nodeDetail.setRightsDependsOn(r.getInt(3));
         entities.add(nodeDetail);
         return null;
-      });
-    });
+      }));
     return entities;
   }
 
