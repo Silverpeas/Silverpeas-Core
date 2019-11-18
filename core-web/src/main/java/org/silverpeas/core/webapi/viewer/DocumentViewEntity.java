@@ -94,6 +94,7 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
       }
       viewerUri += "fp";
     }
+    viewerUri += "?documentId=" + documentId + "&language=" + language;
   }
 
   protected DocumentViewEntity() {

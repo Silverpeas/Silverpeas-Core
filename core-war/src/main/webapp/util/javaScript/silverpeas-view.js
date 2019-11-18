@@ -155,10 +155,7 @@
 
     // Player
     $documentViewer.embedPlayer({
-      url : sp.ajaxRequest(view.viewerUri)
-              .withParam('documentId', view.documentId)
-              .withParam('language', view.language)
-              .getUrl(),
+      url : view.viewerUri,
       width : view.width,
       height : view.height
     });
@@ -202,10 +199,7 @@
 
     // Player
     $documentViewer.embedPlayer({
-      url : sp.ajaxRequest(view.viewerUri)
-              .withParam('documentId', view.documentId)
-              .withParam('language', view.language)
-              .getUrl(),
+      url : view.viewerUri,
       width : view.width,
       height : view.height
     });

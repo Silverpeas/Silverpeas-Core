@@ -30,8 +30,12 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.viewer.model.DocumentView;
+import org.silverpeas.core.viewer.service.ViewService;
+import org.silverpeas.core.viewer.service.ViewerContext;
 import org.silverpeas.core.web.util.ClientBrowserUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
+import org.silverpeas.core.webapi.viewer.DocumentViewEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,7 +50,7 @@ public class GoToFile extends GoTo {
 
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
+      HttpServletResponse res) {
     SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
         searchDocumentById(new SimpleDocumentPK(objectId), getContentLanguage(req));
     if (attachment == null) {
@@ -56,11 +60,16 @@ public class GoToFile extends GoTo {
     String foreignId = attachment.getForeignId();
 
     if (isUserLogin(req) && attachment.canBeAccessedBy(UserDetail.getCurrentRequester())) {
-      res.setCharacterEncoding(CharEncoding.UTF_8);
-      res.setContentType(format("{0}; charset=utf-8", attachment.getContentType()));
-      String fileName = ClientBrowserUtil.rfc2047EncodeFilename(req, attachment.getFilename());
-      res.setHeader("Content-Disposition", format("inline; filename=\"{0}\"", fileName));
-      return URLUtil.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
+      if (attachment.isContentPdf()) {
+        final DocumentView view = ViewService.get().getDocumentView(ViewerContext.from(attachment));
+        return URLUtil.getServerURL(req) + DocumentViewEntity.createFrom(view).getViewerUri();
+      } else {
+        res.setCharacterEncoding(CharEncoding.UTF_8);
+        res.setContentType(format("{0}; charset=utf-8", attachment.getContentType()));
+        String fileName = ClientBrowserUtil.rfc2047EncodeFilename(req, attachment.getFilename());
+        res.setHeader("Content-Disposition", format("inline; filename=\"{0}\"", fileName));
+        return URLUtil.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
+      }
     }
 
     if (StringUtil.isDefined(req.getParameter("ComponentId"))) {
