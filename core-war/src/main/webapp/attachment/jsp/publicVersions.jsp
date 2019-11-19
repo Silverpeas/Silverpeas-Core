@@ -54,6 +54,7 @@
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
+<%@ page import="javax.ws.rs.core.UriBuilder" %>
 
 <%
   GraphicElementFactory gef =
@@ -78,12 +79,12 @@
 
   SimpleDocument document = (SimpleDocument) request.getAttribute("Document");
   List<SimpleDocument> vVersions = (List<SimpleDocument>) request.getAttribute("Versions");
-  boolean fromAlias = StringUtil.getBooleanValue((String) request.getAttribute("Alias"));
 
   String componentId = document.getPk().getInstanceId();
   String id = document.getPk().getId();
   boolean spinfireViewerEnable = attachmentSettings.getBoolean("SpinfireViewerEnable", false);
   String contentLanguage = (String) request.getAttribute("ContentLanguage");
+  boolean fromAlias = (boolean) request.getAttribute("fromAlias");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -98,9 +99,13 @@
   <view:browseBar extraInformations="${requestScope.Document.title}" clickable="false"/>
 
   <%
-    ArrayPane arrayPane = gef.getArrayPane("List",
-        "ViewAllVersions?DocId=" + id + "&Alias=null&ComponentId=" + componentId, request,
-        session);// declare an array
+    final String arrayUrl = UriBuilder.fromPath("ViewAllVersions")
+        .queryParam("DocId", id)
+        .queryParam("ComponentId", componentId)
+        .queryParam("fromAlias", fromAlias)
+        .queryParam("Language", contentLanguage)
+        .build().toString();
+    ArrayPane arrayPane = gef.getArrayPane("List", arrayUrl, request, session);
 
 // header of the array
     ArrayColumn arrayColumn_version = arrayPane.addArrayColumn(messages.getString("version"));
@@ -127,9 +132,6 @@
 
       arrayLine = arrayPane.addArrayLine(); // set a new line
       String url = URLUtil.getApplicationURL() + publicVersion.getAttachmentURL();
-      if (fromAlias) {
-        url = publicVersion.getAliasURL();
-      }
 
       String spinFire = "";
       if (publicVersion.isContentSpinfire() && spinfireViewerEnable &&

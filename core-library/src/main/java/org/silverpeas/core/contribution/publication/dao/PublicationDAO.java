@@ -769,28 +769,30 @@ public class PublicationDAO {
 
   public static SilverpeasList<PublicationPK> selectPksByCriteria(final Connection con,
       final PublicationCriteria criteria) throws SQLException {
-    if (criteria.emptyResultWhenNoFilteringOnComponentInstances()) {
-      return new SilverpeasArrayList<>(0);
+    if (!criteria.emptyResultWhenNoFilteringOnComponentInstances()) {
+      final JdbcSqlQuery query = prepareSelectPksByCriteria(criteria);
+      configureSelectByCriteria(query, criteria);
+      configureFromByCriteria(query, criteria);
+      configureClausesByCriteria(query, criteria);
+      configureOrderingByCriteria(query, criteria);
+      configureExecution(query, criteria);
+      return query.executeWith(con, r -> new PublicationPK(r.getString(1), r.getString(2)));
     }
-    final JdbcSqlQuery query = prepareSelectPksByCriteria(criteria);
-    configureFromByCriteria(query, criteria);
-    configureClausesByCriteria(query, criteria);
-    configureOrderingByCriteria(query, criteria);
-    configureExecution(query, criteria);
-    return query.executeWith(con, r -> new PublicationPK(r.getString(1), r.getString(2)));
+    return new SilverpeasArrayList<>(0);
   }
 
   public static SilverpeasList<PublicationDetail> selectPublicationsByCriteria(final Connection con,
       final PublicationCriteria criteria) throws SQLException {
-    if (criteria.emptyResultWhenNoFilteringOnComponentInstances()) {
-      return new SilverpeasArrayList<>(0);
+    if (!criteria.emptyResultWhenNoFilteringOnComponentInstances()) {
+      final JdbcSqlQuery query = prepareSelectPublicationsByCriteria(criteria);
+      configureSelectByCriteria(query, criteria);
+      configureFromByCriteria(query, criteria);
+      configureClausesByCriteria(query, criteria);
+      configureOrderingByCriteria(query, criteria);
+      configureExecution(query, criteria);
+      return query.executeWith(con, PublicationDAO::resultSet2PublicationDetail);
     }
-    final JdbcSqlQuery query = prepareSelectPublicationsByCriteria(criteria);
-    configureFromByCriteria(query, criteria);
-    configureClausesByCriteria(query, criteria);
-    configureOrderingByCriteria(query, criteria);
-    configureExecution(query, criteria);
-    return query.executeWith(con, PublicationDAO::resultSet2PublicationDetail);
+    return new SilverpeasArrayList<>(0);
   }
 
   private static JdbcSqlQuery prepareSelectPublicationsByCriteria(final PublicationCriteria criteria) {
@@ -812,9 +814,20 @@ public class PublicationDAO {
       query.addSqlPart(", P.instanceId");
     }
     criteria.getOrderByList().stream()
+        .filter(o -> o != QUERY_ORDER_BY.BEGIN_VISIBILITY_DATE_ASC && o != QUERY_ORDER_BY.BEGIN_VISIBILITY_DATE_DESC)
         .filter(o -> o != QUERY_ORDER_BY.CREATION_DATE_ASC && o != QUERY_ORDER_BY.CREATION_DATE_DESC)
         .forEach(o -> query.addSqlPart(", P." + o.getPropertyName()));
     return query;
+  }
+
+  private static void configureSelectByCriteria(final JdbcSqlQuery query,
+      final PublicationCriteria criteria) {
+    criteria.getOrderByList().stream()
+        .filter(o -> o == QUERY_ORDER_BY.BEGIN_VISIBILITY_DATE_ASC || o == QUERY_ORDER_BY.BEGIN_VISIBILITY_DATE_DESC)
+        .findFirst()
+        .ifPresent(o -> query.addSqlPart(
+          ", CASE WHEN P.pubUpdateDate > P.pubBeginDate THEN P.pubUpdateDate ELSE P.pubBeginDate END AS " + o.getPropertyName())
+        );
   }
 
   private static void configureFromByCriteria(final JdbcSqlQuery query,
@@ -880,7 +893,7 @@ public class PublicationDAO {
     final List<QUERY_ORDER_BY> orderBies = criteria.getOrderByList();
     if (!orderBies.isEmpty()) {
       query.orderBy(orderBies.stream()
-          .map(o -> "P." + o.getPropertyName() + " " + (o.isAsc() ? "asc" : "desc"))
+          .map(o -> (o.isComplex() ? "" : "P.") + o.getPropertyName() + " " + (o.isAsc() ? "asc" : "desc"))
           .collect(Collectors.joining(",")));
     }
   }

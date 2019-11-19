@@ -292,7 +292,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
         for (final Location location : locations) {
           final Set<SilverpeasRole> nodeUserRoles = nodeAccessController.getUserRoles(userId, location, context);
           if (nodeAccessController.isUserAuthorized(nodeUserRoles)) {
-            userRoles.addAll(nodeUserRoles);
+            // In case of alias, only user role is taken into account
+            userRoles.add(SilverpeasRole.user);
             break;
           }
         }

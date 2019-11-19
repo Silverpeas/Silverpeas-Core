@@ -23,18 +23,12 @@
  */
 package org.silverpeas.web.attachment;
 
-import org.silverpeas.core.admin.ProfiledObjectId;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.contribution.attachment.repository.HistoryDocumentSorter;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -46,23 +40,13 @@ import java.util.List;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
-/**
- * @author Michael Nikolaenko
- * @version 1.0
- */
 public class VersioningSessionController extends AbstractComponentSessionController {
+  private static final long serialVersionUID = -6068845833609838967L;
 
   private String contentLanguage;
-  private AdminController adminController = ServiceProvider.getService(AdminController.class);
   private String currentProfile = null;
   public static final String ADMIN = SilverpeasRole.admin.toString();
   public static final String PUBLISHER = SilverpeasRole.publisher.toString();
-  public static final String READER = SilverpeasRole.user.toString();
-  public static final String WRITER = SilverpeasRole.writer.toString();
-
-  public void setComponentId(String compomentId) {
-    this.context.setCurrentComponentId(compomentId);
-  }
 
   public String getProfile() {
     if (!StringUtil.isDefined(this.currentProfile)) {
@@ -77,12 +61,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     }
   }
 
-  /**
-   * Constructor
-   *
-   * @param mainSessionCtrl
-   * @param componentContext
-   */
   public VersioningSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, "org.silverpeas.versioningPeas.multilang.versioning",
@@ -90,35 +68,34 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     setComponentRootName(URLUtil.CMP_VERSIONINGPEAS);
   }
 
-  /**
-   * to get document from DB
-   *
-   * @param documentPK
-   * @return SimpleDocument
-   */
   public SimpleDocument getDocument(SimpleDocumentPK documentPK) {
     return AttachmentServiceProvider.getAttachmentService()
         .searchDocumentById(documentPK, getContentLanguage());
   }
 
-  /**
-   * To get all versions of document.
-   *
-   * @param documentPK
-   * @return List<SimpleDocument>
-   */
-  public List<SimpleDocument> getDocumentVersions(SimpleDocumentPK documentPK) {
+  List<SimpleDocument> getAccessibleDocumentVersions(final SimpleDocument document,
+      final boolean fromAlias) {
+    List<SimpleDocument> versions;
+    if (fromAlias || !document.canBeModifiedBy(getUserDetail())) {
+      versions = getPublicDocumentVersions(document.getPk());
+      if (document.isPublic() && !versions.contains(document)) {
+        versions.add(document);
+      }
+    } else {
+      versions = getDocumentVersions(document.getPk());
+      versions.add(document);
+    }
+    HistoryDocumentSorter.sortHistory(versions);
+    return versions;
+  }
+
+  @SuppressWarnings("unchecked")
+  private List<SimpleDocument> getDocumentVersions(SimpleDocumentPK documentPK) {
     return (List)((HistorisedDocument) AttachmentServiceProvider.getAttachmentService()
         .searchDocumentById(documentPK, getContentLanguage())).getFunctionalHistory();
   }
 
-  /**
-   * To get only public versions of document (according to the content language).
-   *
-   * @param documentPK
-   * @return List<SimpleDocument>
-   */
-  public List<SimpleDocument> getPublicDocumentVersions(SimpleDocumentPK documentPK) {
+  private List<SimpleDocument> getPublicDocumentVersions(SimpleDocumentPK documentPK) {
     SimpleDocument currentDoc = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
         documentPK, getContentLanguage());
     if (currentDoc.isVersioned()) {
@@ -133,154 +110,5 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   public void setContentLanguage(final String contentLanguage) {
     this.contentLanguage = defaultStringIfNotDefined(contentLanguage, this.contentLanguage);
-  }
-
-  /**
-   * @param document
-   * @param userId
-   * @return
-   */
-  public boolean isReader(SimpleDocument document, String userId) {
-    if (!useRights()) {
-      return true;
-    }
-    setComponentId(document.getInstanceId());
-    if (isWriter(document, userId)) {
-      return true;
-    }
-
-    // check if user have access to this component
-    return isComponentAvailable(userId);
-  }
-
-  private boolean isComponentAvailable(String userId) {
-    return getOrganisationController().isComponentAvailableToUser(getComponentId(), userId);
-  }
-
-  /**
-   * Checks if the specified userId is admin for the current component.
-   *
-   * @param userId the unique id of the user checked for admin role.
-   * @return true if the user has admin role - false otherwise.
-   */
-  public boolean isAdmin(String userId) {
-    return isUserInRole(userId, SilverpeasRole.admin);
-  }
-
-  public boolean isUserInRole(String userId, SilverpeasRole role) {
-    ProfileInst profile = getComponentProfile(role.toString());
-    return isUserInRole(userId, profile);
-  }
-
-  private boolean useRights() {
-    return getComponentId() == null || getComponentId().startsWith("kmelia");
-  }
-
-  /**
-   * @param document
-   * @param userId
-   * @return
-   */
-  public boolean isWriter(SimpleDocument document, String userId) {
-    setComponentId(document.getInstanceId());
-    // check document profiles
-    boolean isWriter = isUserInRole(userId, getCurrentProfile(WRITER));
-    if (!isWriter) {
-      isWriter = isUserInRole(userId, getCurrentProfile(PUBLISHER));
-      if (!isWriter) {
-        isWriter = isUserInRole(userId, getCurrentProfile(ADMIN));
-      }
-    }
-    return isWriter;
-  }
-
-  private boolean isUserInRole(String userId, ProfileInst profile) {
-    boolean userInRole = false;
-    if (profile.getAllUsers() != null) {
-      userInRole = profile.getAllUsers().contains(userId);
-    }
-    if (!userInRole) {
-      // check in groups
-      List<String> groupsIds = profile.getAllGroups();
-      for (String groupId : groupsIds) {
-        UserDetail[] users = getOrganisationController().getAllUsersOfGroup(groupId);
-        for (UserDetail user : users) {
-          if (user != null && user.getId().equals(userId)) {
-            return true;
-          }
-        }
-      }
-    }
-    return userInRole;
-  }
-
-  /**
-   * @return
-   */
-  public NodeService getNodeBm() {
-    return NodeService.get();
-  }
-
-  /**
-   * @param role
-   * @return
-   */
-  public ProfileInst getComponentProfile(String role) {
-    ComponentInst componentInst = getAdmin().getComponentInst(getComponentId());
-    ProfileInst profile = componentInst.getProfileInst(role);
-    ProfileInst inheritedProfile = componentInst.getInheritedProfileInst(role);
-    if (inheritedProfile == null) {
-      if (profile == null) {
-        profile = new ProfileInst();
-        profile.setName(role);
-      }
-    } else {
-      if (profile == null) {
-        profile = inheritedProfile;
-      } else {
-        profile.addGroups(inheritedProfile.getAllGroups());
-        profile.addUsers(inheritedProfile.getAllUsers());
-      }
-    }
-    return profile;
-  }
-
-  /**
-   * @return
-   */
-  private AdminController getAdmin() {
-    return adminController;
-  }
-
-  /**
-   * @param role
-   * @return
-   */
-  public ProfileInst getCurrentProfile(String role) {
-    // Rights of the component
-    return getComponentProfile(role);
-  }
-
-  public ProfileInst getInheritedProfile(String role) {
-    // Rights of the component
-    return getComponentProfile(role);
-  }
-
-  /**
-   * @param role
-   * @param topicId
-   * @return
-   */
-  public ProfileInst getTopicProfile(String role, String topicId) {
-    List<ProfileInst> profiles =
-        getAdmin().getProfilesByObject(ProfiledObjectId.fromNode(topicId), getComponentId());
-    for (ProfileInst profile : profiles) {
-      if (profile.getName().equals(role)) {
-        return profile;
-      }
-    }
-    ProfileInst profile = new ProfileInst();
-    profile.setName(role);
-    return profile;
   }
 }

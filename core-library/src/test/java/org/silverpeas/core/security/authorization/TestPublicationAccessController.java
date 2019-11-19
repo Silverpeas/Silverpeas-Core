@@ -1052,7 +1052,7 @@ public class TestPublicationAccessController {
         .verifyCallOfPublicationBmGetDetailAndGetAllAliases()
         .verifyCallOfNodeAccessControllerGetUserRoles()
         .verifyCallOfPublicationBmGetMainLocation();
-    assertIsUserAuthorized(true);
+    assertIsUserAuthorized(false);
 
     // User has USER role on component
     testContext.clear();

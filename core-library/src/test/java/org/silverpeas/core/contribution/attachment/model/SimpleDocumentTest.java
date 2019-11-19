@@ -353,28 +353,6 @@ public class SimpleDocumentTest {
   }
 
   /**
-   * Test of getAliasURL method, of class SimpleDocument.
-   */
-  @Test
-  public void testGetAliasURL() {
-    SimpleDocument instance = new SimpleDocument();
-    instance.setAttachment(new SimpleAttachment());
-    instance.setFilename("myFile.odt");
-    String id = UUID.randomUUID().toString();
-    SimpleDocumentPK pk = new SimpleDocumentPK(id, instanceId);
-    instance.setPK(pk);
-    String expResult =
-        "/silverpeas/AliasFileServer/myFile.odt?ComponentId=kmelia36&AttachmentId=" + id;
-    String result = instance.getAliasURL();
-    assertThat(result, is(expResult));
-    instance.setLanguage("en");
-    expResult = "/silverpeas/AliasFileServer/myFile.odt?ComponentId=kmelia36&AttachmentId=" + id +
-        "&lang=en";
-    result = instance.getAliasURL();
-    assertThat(result, is(expResult));
-  }
-
-  /**
    * Test of getWebdavUrl method, of class SimpleDocument.
    */
   @Test
