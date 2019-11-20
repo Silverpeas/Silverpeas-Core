@@ -44,7 +44,7 @@ class NotificationResourceDataDetailsTest {
 
   @Test
   void decodeNotDefined() {
-    assertThrows(NullPointerException.class,() -> decode(null));
+    assertThrows(IllegalArgumentException.class,() -> decode(null));
     assertThrows(DecodingException.class,() -> decode(""));
   }
 
