@@ -39,8 +39,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
-import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings
-    .isDisplayableAsContentForComponentInstanceId;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.isDisplayableAsContentForComponentInstanceId;
 import static org.silverpeas.core.util.StringUtil.NEWLINE;
 
 /**
@@ -53,6 +52,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   private boolean useXMLForm;
   private boolean useWebDAV;
   private boolean showMenuNotif;
+  private boolean fromAlias;
 
   private static final String TEMPLATE = "oMenu%s.getItem(%s).cfg.setProperty(\"disabled\", %s);";
 
@@ -76,6 +76,10 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     this.showMenuNotif = showMenuNotif;
   }
 
+  public void setFromAlias(final boolean fromAlias) {
+    this.fromAlias = fromAlias;
+  }
+
   @Override
   public int doStartTag() throws JspException {
     try {
@@ -85,7 +89,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
           "org.silverpeas.util.attachment.multilang.attachment", favoriteLanguage);
       UserDetail user = mainSessionController.getCurrentUserDetail();
-      if (attachment.canBeModifiedBy(user)) {
+      if (!fromAlias && attachment.canBeModifiedBy(user)) {
         pageContext.getOut().print(
             prepareActions(attachment, useXMLForm, useWebDAV, user,
                 favoriteLanguage, messages, showMenuNotif));
@@ -120,7 +124,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
   String prepareActions(SimpleDocument attachment, boolean useXMLForm, boolean useWebDAV,
       UserDetail user, final String userLanguage, LocalizationBundle resources,
-      boolean showMenuNotif) throws UnsupportedEncodingException {
+      boolean showMenuNotif) {
     String userId = user.getId();
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();

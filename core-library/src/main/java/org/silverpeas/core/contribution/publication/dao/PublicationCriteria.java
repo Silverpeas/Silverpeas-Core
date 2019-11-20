@@ -48,16 +48,18 @@ public class PublicationCriteria {
 
   public enum QUERY_ORDER_BY {
 
-    BEGIN_VISIBILITY_DATE_ASC("pubBeginDate", true), BEGIN_VISIBILITY_DATE_DESC("pubBeginDate", false),
-    LAST_UPDATE_DATE_ASC("pubUpdateDate", true), LAST_UPDATE_DATE_DESC("pubUpdateDate", false),
-    CREATION_DATE_ASC("pubId", true), CREATION_DATE_DESC("pubId", false);
+    BEGIN_VISIBILITY_DATE_ASC("maxBeginOrUpdateDate", true, true), BEGIN_VISIBILITY_DATE_DESC("maxBeginOrUpdateDate", false, true),
+    LAST_UPDATE_DATE_ASC("pubUpdateDate", true, false), LAST_UPDATE_DATE_DESC("pubUpdateDate", false, false),
+    CREATION_DATE_ASC("pubId", true, false), CREATION_DATE_DESC("pubId", false, false);
 
     private final String propertyName;
     private final boolean asc;
+    private final boolean complex;
 
-    QUERY_ORDER_BY(final String propertyName, final boolean asc) {
+    QUERY_ORDER_BY(final String propertyName, final boolean asc, final boolean complex) {
       this.propertyName = propertyName;
       this.asc = asc;
+      this.complex = complex;
     }
 
     public String getPropertyName() {
@@ -66,6 +68,10 @@ public class PublicationCriteria {
 
     public boolean isAsc() {
       return asc;
+    }
+
+    public boolean isComplex() {
+      return complex;
     }
   }
 
@@ -240,7 +246,7 @@ public class PublicationCriteria {
    * @return itself.
    */
   public PublicationCriteria orderByDescendingBeginDate() {
-    return orderBy(BEGIN_VISIBILITY_DATE_DESC).orderByDescendingLastUpdateDate();
+    return orderBy(BEGIN_VISIBILITY_DATE_DESC, CREATION_DATE_DESC);
   }
 
   /**

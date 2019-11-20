@@ -27,9 +27,9 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.WebdavServiceProvider;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jcr.JcrDataConverter;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
@@ -62,7 +62,7 @@ import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
  *
  * @author ehugonnet
  */
-public class SimpleDocument implements Serializable {
+public class SimpleDocument implements Serializable, Securable {
 
   private static final long serialVersionUID = 8778738762037114180L;
   private static final SettingBundle settings =
@@ -707,19 +707,6 @@ public class SimpleDocument implements Serializable {
     return onlineUrl;
   }
 
-  public String getAliasURL() {
-    String aliasUrl =
-        FileServerUtils.getAliasURL(getPk().getInstanceId(), getFilename(), getPk().getId());
-    if (I18NHelper.isI18nContentActivated && !I18NHelper.isDefaultLanguage(getLanguage())) {
-      aliasUrl += "&lang=" + getLanguage();
-    }
-    String extension = FileRepositoryManager.getFileExtension(getFilename());
-    if ("exe".equalsIgnoreCase(extension) || "pdf".equalsIgnoreCase(extension)) {
-      aliasUrl += "&logicalName=" + URLEncoder.encodePathParamValue(getFilename());
-    }
-    return aliasUrl;
-  }
-
   public String getWebdavUrl() {
     StringBuilder url = new StringBuilder(CAPACITY);
     String webAppContext = URLUtil.getApplicationURL();
@@ -829,6 +816,7 @@ public class SimpleDocument implements Serializable {
    * @param user a user in Silverpeas.
    * @return true if the user can access this document, false otherwise.
    */
+  @Override
   public boolean canBeAccessedBy(final User user) {
     return SimpleDocumentAccessControl.get().isUserAuthorized(user.getId(), this);
   }
@@ -838,6 +826,7 @@ public class SimpleDocument implements Serializable {
    * @param user a user in Silverpeas.
    * @return true if the user can access this document, false otherwise.
    */
+  @Override
   public boolean canBeModifiedBy(final User user) {
     return SimpleDocumentAccessControl.get().isUserAuthorized(user.getId(), this,
         AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));

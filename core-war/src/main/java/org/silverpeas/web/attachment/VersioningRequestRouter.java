@@ -25,7 +25,6 @@ package org.silverpeas.web.attachment;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.repository.HistoryDocumentSorter;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -33,14 +32,12 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSessionController> {
 
   private static final long serialVersionUID = 4808952397898736028L;
-  private static final String ALIAS_ATTR = "Alias";
-  private static final String PUBLIC_VERSIONS_ATTR = "PublicVersions";
+  private static final String FROM_ALIAS_ATTR = "fromAlias";
   private static final String DOCUMENT_ATTR = "Document";
   private static final String DOC_ID_ATTR = "DocId";
   private static final String VERSIONS_ATTR = "Versions";
@@ -61,11 +58,11 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
   public String getDestination(String function, VersioningSessionController versioningSC,
       HttpRequest request) {
     String destination;
-
     String rootDestination = "/versioningPeas/jsp/";
     try {
-      String flag = versioningSC.getProfile();
-
+      // Handle alias
+      final boolean fromAlias = request.getParameterAsBoolean(FROM_ALIAS_ATTR);
+      request.setAttribute(FROM_ALIAS_ATTR, fromAlias);
       // Handle the content language.
       String contentLanguage = request.getParameter(LANGUAGE_ATTR);
       if (!StringUtil.isDefined(contentLanguage)) {
@@ -73,21 +70,11 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
       }
       request.setAttribute("ContentLanguage", contentLanguage);
       versioningSC.setContentLanguage(contentLanguage);
-
+      // Handle profile
+      String flag = versioningSC.getProfile();
       request.setAttribute("Profile", flag);
-      if ("ListPublicVersionsOfDocument".equals(function)) {
-        String documentId = request.getParameter(DOC_ID_ATTR);
-        String isAlias = request.getParameter(ALIAS_ATTR);
-        SimpleDocumentPK documentPK =
-            new SimpleDocumentPK(documentId, versioningSC.getComponentId());
-        SimpleDocument document = versioningSC.getDocument(documentPK);
-        List<SimpleDocument> publicVersions = versioningSC.getPublicDocumentVersions(documentPK);
-        request.setAttribute(DOCUMENT_ATTR, document);
-        request.setAttribute(PUBLIC_VERSIONS_ATTR, publicVersions);
-        request.setAttribute(ALIAS_ATTR, isAlias);
-        destination = "/versioningPeas/jsp/publicVersions.jsp";
-      } else if ("ViewAllVersions".equals(function)) {
-        return viewVersions(request, versioningSC);
+      if ("ViewAllVersions".equals(function)) {
+        destination = viewVersions(request, versioningSC, fromAlias);
       } else {
         destination = rootDestination + function;
       }
@@ -100,28 +87,14 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
     return destination;
   }
 
-  private String viewVersions(HttpServletRequest request,
-      VersioningSessionController versioningSC) {
-    String documentId = request.getParameter(DOC_ID_ATTR);
-    String isAlias = request.getParameter(ALIAS_ATTR);
-    SimpleDocumentPK documentPK = new SimpleDocumentPK(documentId, versioningSC.getComponentId());
-
-    SimpleDocument document = versioningSC.getDocument(documentPK);
-
-    List<SimpleDocument> versions;
-    if (!versioningSC.isWriter(document, versioningSC.getUserId())) {
-      versions = versioningSC.getPublicDocumentVersions(documentPK);
-      if (document.isPublic() && !versions.contains(document)) {
-        versions.add(document);
-      }
-    } else {
-      versions = versioningSC.getDocumentVersions(documentPK);
-      versions.add(document);
-    }
-    HistoryDocumentSorter.sortHistory(versions);
+  private String viewVersions(HttpRequest request, VersioningSessionController versioningSC,
+      final boolean fromAlias) {
+    final String documentId = request.getParameter(DOC_ID_ATTR);
+    final SimpleDocumentPK documentPK = new SimpleDocumentPK(documentId, versioningSC.getComponentId());
+    final SimpleDocument document = versioningSC.getDocument(documentPK);
+    final List<SimpleDocument> versions = versioningSC.getAccessibleDocumentVersions(document, fromAlias);
     request.setAttribute(DOCUMENT_ATTR, document);
     request.setAttribute(VERSIONS_ATTR, versions);
-    request.setAttribute(ALIAS_ATTR, isAlias);
     return "/attachment/jsp/publicVersions.jsp";
   }
 }
