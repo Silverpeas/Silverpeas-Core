@@ -5179,10 +5179,8 @@ class Admin implements Administration {
       AdminException {
     List<String> userIds = null;
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
-      userIds = searchUsersInComponentInstance(searchCriteria, userIds);
-      if (CollectionUtil.isEmpty(userIds)) {
-        // no users in component instance or component instance role
-        // no additional filtering is needed
+      userIds = searchUsersInComponentInstance(searchCriteria);
+      if (userIds == null) {
         return new ListSlice<>(0, 0, 0);
       }
     }
@@ -5267,18 +5265,23 @@ class Admin implements Administration {
     return userIds;
   }
 
-  @Nullable
+  /**
+   * Search user ids according to given criteria.
+   * @param searchCriteria the criteria to apply.
+   * @return a list (empty or filled) of matching user ids. If a null value is returned, then the
+   * search has to be stopped.
+   * @throws AdminException on technical error.
+   */
   private List<String> searchUsersInComponentInstance(
-      final UserDetailsSearchCriteria searchCriteria, final List<String> userIds) throws AdminException {
+      final UserDetailsSearchCriteria searchCriteria) throws AdminException {
     List<String> listOfRoleNames = Collections.emptyList();
-    List<String> result = userIds == null ? new ArrayList<>() : userIds;
     if (searchCriteria.isCriterionOnRoleNamesSet()) {
       listOfRoleNames = Arrays.asList(searchCriteria.getCriterionOnRoleNames());
     }
-    SilverpeasComponentInstance instance =
+    final SilverpeasComponentInstance instance =
         getComponentInstance(searchCriteria.getCriterionOnComponentInstanceId());
+    List<String> result = new ArrayList<>();
     if (!listOfRoleNames.isEmpty() || !instance.isPublic()) {
-      result = new ArrayList<>();
       if (!instance.isPersonal()) {
         addUserIdsByCriteria(instance, searchCriteria, listOfRoleNames, result);
       } else {
@@ -5291,6 +5294,8 @@ class Admin implements Administration {
         }
       }
       if (result.isEmpty()) {
+        // no users in component instance or component instance role
+        // no additional filtering is needed
         result = null;
       }
     }
