@@ -166,8 +166,9 @@ public class ScimUserAdminService extends AbstractScimAdminService implements Pr
     logger().debug(() -> "finding user by filter " + filter);
     validateDomainExists();
     try {
-      final UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder
-          .aSearchCriteria().withDomainIds(new String[]{scimRequestContext.getDomainId()});
+      final UserProfilesSearchCriteriaBuilder criteriaBuilder =
+          UserProfilesSearchCriteriaBuilder.aSearchCriteria()
+              .withDomainIds(scimRequestContext.getDomainId());
 
       final int startIndex = pageRequest.getStartIndex() != null ? pageRequest.getStartIndex() : 0;
       final int itemPerPage = pageRequest.getCount() != null ? pageRequest.getCount() : 10;

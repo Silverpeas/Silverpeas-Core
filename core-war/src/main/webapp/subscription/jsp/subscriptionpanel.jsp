@@ -232,7 +232,8 @@
         if (userIds.length > 0) {
           termination = termination.then(function() {
             return User.get({
-              id : userIds
+              id : userIds,
+              includeRemoved: true
             }).then(function(users) {
               $(users).each(function(index, user) {
                 context.users[user.id] = user;

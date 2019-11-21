@@ -135,6 +135,7 @@ public class UserProfileResource extends RESTWebService {
    * @param domainIds the identifier of the domains the users have to be related.
    * @param accessLevels filters the users by the access level in Silverpeas.
    * @param userStatesToExclude the user states that users taken into account must not be in.
+   * @param includeRemovedUsers the removed users should be also sent back.
    * @return the JSON serialization of the array with the user profiles that matches the query.
    */
   @GET
@@ -145,7 +146,8 @@ public class UserProfileResource extends RESTWebService {
       @QueryParam("page") String page,
       @QueryParam("domain") List<String> domainIds,
       @QueryParam("accessLevel") Set<UserAccessLevel> accessLevels,
-      @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
+      @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude,
+      @QueryParam("includeRemoved") boolean includeRemovedUsers) {
     List<String> effectiveDomainIds = new ArrayList<>(domainIds);
     if (CollectionUtil.isNotEmpty(domainIds) && domainIds.size() == 1 &&
         domainIds.get(0).equals(Domain.MIXED_DOMAIN_ID)) {
@@ -181,16 +183,25 @@ public class UserProfileResource extends RESTWebService {
     }
 
     // Users to exclude by their state
-    if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-      final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
-      statesToExclude.add(UserState.REMOVED);
-      criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
-    }
+    setCriterionOnUserStates(criteriaBuilder, userStatesToExclude, includeRemovedUsers);
+
     ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     return Response.ok(
         asWebEntity(users, locatedAt(getUri().getAbsolutePath()))).
         header(RESPONSE_HEADER_USERSIZE, users.originalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, users.originalListSize()).build();
+  }
+
+  private void setCriterionOnUserStates(final UserProfilesSearchCriteriaBuilder criteriaBuilder,
+      @QueryParam("userStatesToExclude") final Set<UserState> userStatesToExclude,
+      @QueryParam("includeRemoved") final boolean includeRemovedUsers) {
+    if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
+      final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
+      criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
+    }
+    if (includeRemovedUsers) {
+      criteriaBuilder.includeAlsoRemovedUsers();
+    }
   }
 
   /**
@@ -245,6 +256,7 @@ public class UserProfileResource extends RESTWebService {
    * item count in the page) and ((page number - 1) * item count in the page + item count in the
    * page).
    * @param userStatesToExclude the user states that users taken into account must not be in.
+   * @param includeRemovedUsers the removed users should be also sent back.
    * @return the JSON serialization of the array with the user profiles that can access the
    * Silverpeas component and that matches the query.
    */
@@ -257,7 +269,8 @@ public class UserProfileResource extends RESTWebService {
       @QueryParam("resource") String resource,
       @QueryParam("name") String name,
       @QueryParam("page") String page,
-      @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
+      @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude,
+      @QueryParam("includeRemoved") boolean includeRemovedUsers) {
     String[] roleNames = isDefined(roles) ? roles.split(",") : null;
     List<String> domainIds = new ArrayList<>();
     if (isDefined(groupId) && !QUERY_ALL_GROUPS.equals(groupId)) {
@@ -282,11 +295,7 @@ public class UserProfileResource extends RESTWebService {
         .withPaginationPage(fromPage(page));
 
     // Users to exclude by their state
-    if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-      final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
-      statesToExclude.add(UserState.REMOVED);
-      criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
-    }
+    setCriterionOnUserStates(criteriaBuilder, userStatesToExclude, includeRemovedUsers);
 
     ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     URI usersUri = getUri().getBaseUriBuilder().path(USERS_BASE_URI).build();
@@ -351,7 +360,6 @@ public class UserProfileResource extends RESTWebService {
       // Users to exclude by their state
       if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
         final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
-        statesToExclude.add(UserState.REMOVED);
         criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
       }
 

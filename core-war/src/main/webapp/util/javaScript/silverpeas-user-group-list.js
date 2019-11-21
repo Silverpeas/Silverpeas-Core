@@ -83,8 +83,9 @@
       if (typeof _params === 'object') {
         if (!_params.id && !_params.ids) {
           _params.withChildren = true;
+          _params.userStatesToExclude = [];
           if (this.options.hideDeactivatedState) {
-            _params.userStatesToExclude = ['DEACTIVATED'];
+            _params.userStatesToExclude.push('DEACTIVATED');
           }
           if (this.options.domainIdFilter) {
             _params.domain = this.options.domainIdFilter;

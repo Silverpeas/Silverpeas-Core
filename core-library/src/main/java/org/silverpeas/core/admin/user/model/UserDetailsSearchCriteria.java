@@ -41,7 +41,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class UserDetailsSearchCriteria implements SearchCriteria {
 
-  public static final String[] ANY_GROUPS = ANY;
+  public static final String[] ANY_GROUPS = Constants.ANY;
   private static final String USER_ACCESS_LEVELS = "userAccessLevels";
   private static final String USER_STATES_TO_EXCLUDE = "userStatesToExclude";
 

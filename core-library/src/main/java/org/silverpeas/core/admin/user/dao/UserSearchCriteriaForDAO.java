@@ -30,7 +30,6 @@ import org.silverpeas.core.admin.user.model.SearchCriteria;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -42,7 +41,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * An implementation of the search criteria for user details stored in a SQL data source and used by
- * the DAOs. By default, the criterion are linked together by a conjonction operator. Nevertheless,
+ * the DAOs. By default, the criteria are linked together by a conjunction operator. Nevertheless,
  * you can explicitly specify it by using the UserSearchCriteriaForDAO#and() method.
  */
 public class UserSearchCriteriaForDAO implements SearchCriteria {
@@ -58,12 +57,27 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     tables.add(ST_USER);
   }
 
+  /**
+   * Constructs new criteria on the users to search in the data source. Automatically, all the
+   * deleted users are always excluded from the search scope, but not the removed users (the users
+   * that in a deletion awaiting). To exclude the removed users, simply pass the state
+   * {@link UserState#REMOVED} in the
+   * {@link UserSearchCriteriaForDAO#onUserStatesToExclude(UserState...)} method invocation.
+   * @return new search criteria for DAOs.
+   */
   public static UserSearchCriteriaForDAO newCriteria() {
-    final UserSearchCriteriaForDAO newCriteria = newCriteriaFrom(new UserDetailsSearchCriteria());
-    newCriteria.onUserStatesToExclude(UserState.REMOVED);
-    return newCriteria;
+    return newCriteriaFrom(new UserDetailsSearchCriteria());
   }
 
+  /**
+   * Constructs new criteria on the users to search in the data source from the specified criteria
+   * on the users' properties. Automatically, all the deleted users are always excluded from the
+   * search scope, but not the removed users (the users that in a deletion awaiting). To exclude the
+   * removed users, simply indicate the state {@link UserState#REMOVED} as to be excluded either in
+   * the specified criteria or in the
+   * {@link UserSearchCriteriaForDAO#onUserStatesToExclude(UserState...)} method invocation.
+   * @return new search criteria for DAOs.
+   */
   public static UserSearchCriteriaForDAO newCriteriaFrom(final UserDetailsSearchCriteria criteria) {
     return new UserSearchCriteriaForDAO(criteria);
   }
@@ -116,7 +130,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public UserSearchCriteriaForDAO onGroupIds(String... groupIds) {
-    if (groupIds != ANY) {
+    if (groupIds != Constants.ANY) {
       tables.add("st_group_user_rel");
       criteria.onGroupIds(groupIds);
     }
@@ -140,7 +154,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public UserSearchCriteriaForDAO onUserIds(String... userIds) {
-    if (userIds != ANY) {
+    if (userIds != Constants.ANY) {
       criteria.onUserIds(userIds);
     }
     return this;
@@ -148,7 +162,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public SearchCriteria onUserSpecificIds(final String... userSpecificIds) {
-    if (userSpecificIds != ANY) {
+    if (userSpecificIds != Constants.ANY) {
       criteria.onUserSpecificIds(userSpecificIds);
     }
     return this;

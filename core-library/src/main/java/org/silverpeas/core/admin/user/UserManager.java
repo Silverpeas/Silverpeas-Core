@@ -142,7 +142,8 @@ public class UserManager {
       AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       return userDAO.getUserCountByCriteria(connection,
-          UserSearchCriteriaForDAO.newCriteria().onDomainIds(domainId));
+          UserSearchCriteriaForDAO.newCriteria().onDomainIds(domainId)
+              .onUserStatesToExclude(UserState.REMOVED));
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("user count in domain", domainId), e);
     }
@@ -155,7 +156,8 @@ public class UserManager {
    */
   public int getUserCount() throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
-      return userDAO.getUserCountByCriteria(connection, UserSearchCriteriaForDAO.newCriteria());
+      return userDAO.getUserCountByCriteria(connection, UserSearchCriteriaForDAO.newCriteria()
+          .onUserStatesToExclude(UserState.REMOVED));
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("total user count", ""), e);
     }
@@ -174,7 +176,7 @@ public class UserManager {
     }
     try (Connection connection = DBUtil.openConnection()) {
       List<UserDetail> users = userDAO.getUsersInGroups(connection, groupIds);
-      return users.toArray(new UserDetail[users.size()]);
+      return users.toArray(new UserDetail[0]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("users in groups", String.join(", ", groupIds)), e);
     }

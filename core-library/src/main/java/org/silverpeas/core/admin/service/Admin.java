@@ -5236,7 +5236,7 @@ class Admin implements Administration {
       final UserSearchCriteriaForDAO criteria) throws AdminException {
     String[] theGroupIds = searchCriteria.getCriterionOnGroupIds();
     if (theGroupIds == UserDetailsSearchCriteria.ANY_GROUPS) {
-      criteria.and().onGroupIds(SearchCriteria.ANY);
+      criteria.and().onGroupIds(SearchCriteria.Constants.ANY);
     } else {
       Set<String> groupIds = new HashSet<>();
       for (String aGroupId : theGroupIds) {
