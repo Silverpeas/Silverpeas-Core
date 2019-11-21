@@ -48,6 +48,7 @@ import org.silverpeas.core.web.subscription.SubscriptionContext;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.List;
 
@@ -159,6 +160,11 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   @Override
   public String getLanguage() {
     return controller.getFavoriteLanguage();
+  }
+
+  @Override
+  public ZoneId getZoneId() {
+    return controller.getFavoriteZoneId();
   }
 
   /**

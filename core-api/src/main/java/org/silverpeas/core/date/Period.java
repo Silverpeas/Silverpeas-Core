@@ -28,8 +28,10 @@ import org.silverpeas.core.annotation.constraint.DateRange;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.Temporal;
 import java.util.Objects;
@@ -46,7 +48,8 @@ import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
  */
 @Embeddable
 @DateRange(start = "startDate", end = "endDate")
-public class Period {
+public class Period implements Serializable {
+  private static final long serialVersionUID = -4679172808271849961L;
 
   @Column(name = "startDate", nullable = false)
   private OffsetDateTime startDateTime;
@@ -231,6 +234,15 @@ public class Period {
   }
 
   /**
+   * Gets the inclusive local start date of this period even if the date handles time.
+   * @param zoneId the zoneId to manage offsets.
+   * @return a {@link LocalDate} instance.
+   */
+  public LocalDate getLocalStartDate(final ZoneId zoneId) {
+    return isInDays() ? startDateTime.toLocalDate() : startDateTime.atZoneSameInstant(zoneId).toLocalDate();
+  }
+
+  /**
    * Gets the exclusive temporal end date of this period of time.
    *
    * If the period is in days, then the returned temporal is a {@link LocalDate} which represents
@@ -242,6 +254,15 @@ public class Period {
    */
   public Temporal getEndDate() {
     return isInDays() ? endDateTime.toLocalDate() : endDateTime;
+  }
+
+  /**
+   * Gets the inclusive local end date of this period even if the date handles time.
+   * @param zoneId the zoneId to manage offsets.
+   * @return a {@link LocalDate} instance.
+   */
+  public LocalDate getLocalEndDate(final ZoneId zoneId) {
+    return isInDays() ? endDateTime.toLocalDate() : endDateTime.atZoneSameInstant(zoneId).toLocalDate();
   }
 
   /**

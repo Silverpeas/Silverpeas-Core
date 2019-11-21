@@ -23,19 +23,20 @@
  */
 package org.silverpeas.web.portlets;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.portlets.FormNames;
 
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequestDispatcher;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
@@ -44,17 +45,23 @@ import java.util.Collection;
 
 public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames {
 
+  private static final String NB_PUBLIS_PARAM = "nbPublis";
+  private static final String DEFAULT_NB_PUBLIS = "5";
+
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
-    Collection<PublicationDetail> listPubli = new ArrayList<PublicationDetail>();
+    PortletSession session = request.getPortletSession();
+    MainSessionController mainSessionController = (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT, PortletSession.APPLICATION_SCOPE);
+    Collection<PublicationDetail> listPubli = new ArrayList<>();
     PortletPreferences pref = request.getPreferences();
-    int nbPublis = 5;
-    if (StringUtil.isInteger(pref.getValue("nbPublis", "5"))) {
-      nbPublis = Integer.parseInt(pref.getValue("nbPublis", "5"));
+    int nbPublis = Integer.parseInt(DEFAULT_NB_PUBLIS);
+    if (StringUtil.isInteger(pref.getValue(NB_PUBLIS_PARAM, DEFAULT_NB_PUBLIS))) {
+      nbPublis = Integer.parseInt(pref.getValue(NB_PUBLIS_PARAM, DEFAULT_NB_PUBLIS));
     }
     Collection<HistoryObjectDetail> listObject =
-        getStatisticBm().getLastHistoryOfObjectsForUser(UserDetail.getCurrentRequester().getId(), 1,
+        getStatisticBm().getLastHistoryOfObjectsForUser(mainSessionController.getUserId(), 1,
             "Publication", nbPublis);
     for (HistoryObjectDetail object : listObject) {
       PublicationPK pubPk = new PublicationPK(object.getResourceReference().getId(),
@@ -65,9 +72,8 @@ public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames 
         listPubli.add(pubDetail);
       }
     }
-
     request.setAttribute("Publications", listPubli);
-
+    request.setAttribute("ZoneId", mainSessionController.getFavoriteZoneId());
     include(request, response, "portlet.jsp");
   }
 

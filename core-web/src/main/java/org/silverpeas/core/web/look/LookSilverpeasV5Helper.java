@@ -54,6 +54,7 @@ import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -346,6 +347,11 @@ public class LookSilverpeasV5Helper extends LookHelper {
   @Override
   public String getLanguage() {
     return getMainSessionController().getFavoriteLanguage();
+  }
+
+  @Override
+  public ZoneId getZoneId() {
+    return getMainSessionController().getFavoriteZoneId();
   }
 
   /*

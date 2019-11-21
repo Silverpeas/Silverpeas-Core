@@ -27,9 +27,11 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
+import java.util.TimeZone;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,7 +51,9 @@ public class PeriodTest {
     assertThat(period.startsAtMinDate(), is(false));
     assertThat(period.endsAtMaxDate(), is(false));
     assertThat(period.getStartDate(), is(yesterday));
+    assertThat(period.getLocalStartDate(ZoneId.systemDefault()), is(yesterday));
     assertThat(period.getEndDate(), is(tomorrow));
+    assertThat(period.getLocalEndDate(ZoneId.systemDefault()), is(tomorrow));
     assertThat(period.isInDays(), is(true));
   }
 
@@ -61,7 +65,27 @@ public class PeriodTest {
     assertThat(period.startsAtMinDate(), is(false));
     assertThat(period.endsAtMaxDate(), is(false));
     assertThat(period.getStartDate(), is(yesterday.withOffsetSameInstant(ZoneOffset.UTC)));
+    assertThat(period.getLocalStartDate(ZoneId.systemDefault()),
+        is(yesterday.withOffsetSameInstant(ZoneOffset.UTC).toLocalDate()));
     assertThat(period.getEndDate(), is(tomorrow.withOffsetSameInstant(ZoneOffset.UTC)));
+    assertThat(period.getLocalEndDate(ZoneId.systemDefault()),
+        is(tomorrow.withOffsetSameInstant(ZoneOffset.UTC).toLocalDate()));
+    assertThat(period.isInDays(), is(false));
+  }
+
+  @Test
+  public void periodBetweenTwoDayDateTimes() {
+    OffsetDateTime start = LocalDate.now().minusDays(1).atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime();
+    OffsetDateTime end = LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime();
+    Period period = Period.between(start, end);
+    assertThat(period.startsAtMinDate(), is(false));
+    assertThat(period.endsAtMaxDate(), is(false));
+    assertThat(period.getStartDate(), is(start.withOffsetSameInstant(ZoneOffset.UTC)));
+    assertThat(period.getLocalStartDate(ZoneId.systemDefault()),
+        is(start.withOffsetSameInstant(ZoneOffset.UTC).toLocalDate().plusDays(1)));
+    assertThat(period.getEndDate(), is(end.withOffsetSameInstant(ZoneOffset.UTC)));
+    assertThat(period.getLocalEndDate(ZoneId.systemDefault()),
+        is(end.withOffsetSameInstant(ZoneOffset.UTC).toLocalDate().plusDays(1)));
     assertThat(period.isInDays(), is(false));
   }
 
@@ -357,6 +381,12 @@ public class PeriodTest {
       Temporal end = ZonedDateTime.now().plusDays(1);
       Period.between(start, end);
     });
+  }
+
+  static {
+    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
+    // TimeZone.
+    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
   }
 }
   
