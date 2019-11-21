@@ -25,6 +25,7 @@ package org.silverpeas.core.contribution.publication.model;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.ContributionWithVisibility;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -101,8 +102,8 @@ import static org.silverpeas.core.util.StringUtil.split;
 @XmlRootElement(namespace = "http://www.silverpeas.org/exchange")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
-    implements I18nContribution, SilverContentInterface, Rateable, Serializable,
-    WithAttachment, WithThumbnail, WithReminder {
+    implements I18nContribution, ContributionWithVisibility, SilverContentInterface, Rateable,
+    Serializable, WithAttachment, WithThumbnail, WithReminder {
   private static final long serialVersionUID = 9199848912262605680L;
 
   public static final String DELAYED_VISIBILITY_AT_MODEL_PROPERTY = "DELAYED_VISIBILITY_AT";
@@ -1160,9 +1161,10 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     return getVisibility().getEndDateAndHour();
   }
 
-  private Visibility getVisibility() {
+  @Override
+  public Visibility getVisibility() {
     if (visibility == null) {
-      visibility = new Visibility(beginDate, beginHour, endDate, endHour);
+      visibility = Visibility.from(this, beginDate, beginHour, endDate, endHour);
     }
     return visibility;
   }

@@ -27,9 +27,9 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail" %>
+<%@ page import="org.silverpeas.core.date.TemporalFormatter" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
-<%@ page import="org.silverpeas.core.util.DateUtil" %>
+<%@ page import="java.time.ZoneId" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
@@ -40,7 +40,7 @@
 <%
 RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
 List<PublicationDetail> publications = (List<PublicationDetail>) pReq.getAttribute("Publications");
-
+ZoneId userZoneId = (ZoneId) pReq.getAttribute("ZoneId");
 if (publications.isEmpty()) { %>
 	<%=portletsBundle.getString("portlets.portlet.myLastPubliRead.none") %>
 <% } else {
@@ -59,15 +59,9 @@ if (publications.isEmpty()) { %>
 			first = false;
 		}
 %>
-	<a class="sp-link" href="<%=url %>"><b><%=WebEncodeHelper.convertHTMLEntities(pub.getName(language))%></b></a>
-    <% if (pubUpdater != null && pub.getUpdateDate() != null) { %>
-      <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=DateUtil
-    .getOutputDate(pub.getUpdateDate(), language)%>
-    <% } else if (pubUpdater != null && pub.getUpdateDate() == null) { %>
-      <br/><view:username userId="<%=pubUpdater.getId() %>"/>
-    <% } %>
-    <% if (pubUpdater == null && pub.getUpdateDate() != null) { %>
-      <br/><%=DateUtil.getOutputDate(pub.getUpdateDate(), language) %>
+	<a class="sp-link" href="<%=url %>"><strong><%=WebEncodeHelper.convertHTMLEntities(pub.getName(language))%></strong></a>
+    <% if (pubUpdater != null) { %>
+      <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=TemporalFormatter.toLocalized(pub.getVisibility().getPeriod().getLocalStartDate(userZoneId), language)%>
     <% } %>
 <%  }
   }

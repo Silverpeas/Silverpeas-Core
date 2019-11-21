@@ -23,17 +23,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.admin.user.model.UserDetail"%>
+<%@page import="org.silverpeas.core.admin.user.model.User"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail" %>
+<%@ page import="org.silverpeas.core.date.TemporalFormatter" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="java.time.ZoneId" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <portlet:defineObjects/>
 
@@ -43,6 +47,7 @@
 %>
 <%
 List<PublicationDetail> publications = (List<PublicationDetail>) pReq.getAttribute("Publications");
+ZoneId userZoneId = (ZoneId) pReq.getAttribute("ZoneId");
 boolean first = true;
 for (PublicationDetail pub : publications) {
   UserDetail pubUpdater = UserDetail.getById(pub.getUpdaterId());
@@ -53,12 +58,9 @@ for (PublicationDetail pub : publications) {
 <% } else {
     first = false;
   }%>
-  <a class="sp-link" href="<%=url %>"><b><%=WebEncodeHelper.javaStringToHtmlString(pub.getName(language))%></b></a>
-    <% if (pubUpdater != null && pub.getUpdateDate() != null) { %>
-      <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=DateUtil
-    .getOutputDate(pub.getUpdateDate(), language)%>
-    <% } else if (pubUpdater != null && pub.getUpdateDate() == null) { %>
-      <br/><view:username userId="<%=pubUpdater.getId() %>"/>
+  <a class="sp-link" href="<%=url %>"><strong><%=WebEncodeHelper.javaStringToHtmlString(pub.getName(language))%></strong></a>
+    <% if (pubUpdater != null) { %>
+      <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=TemporalFormatter.toLocalized(pub.getVisibility().getPeriod().getLocalStartDate(userZoneId), language)%>
     <% } %>
     <% if (pubUpdater == null && pub.getUpdateDate() != null) { %>
       <br/><%=DateUtil.getOutputDate(pub.getUpdateDate(), language) %>
