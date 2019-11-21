@@ -60,8 +60,13 @@ import java.io.Writer;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+
+import static java.util.Comparator.comparing;
 
 public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet {
 
@@ -104,9 +109,18 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
       }
     } else if ("GetComponents".equals(action)) {
       SpaceInst space = personalSpaceManager.getPersonalSpace(userId);
-      if (space != null) {
-        writer.write(getComponentsAsJSONArray(space.getAllComponentInstances(), helper));
+      if (space == null) {
+        // Creating a dummy personal space instance which does not exist in database
+        space = new SpaceInst();
+        space.setPersonalSpace(true);
+        space.setCreatorUserId(userId);
       }
+      final List<SilverpeasComponentInstance> allComponentInstances = space.getAllComponentInstances().stream()
+          .filter(i -> !i.isPersonal() || PersonalComponent.getByName(i.getName()).filter(PersonalComponent::isVisible).isPresent())
+          .sorted(comparing((SilverpeasComponentInstance i) -> !i.isPersonal())
+                  .thenComparing(SilverpeasComponentInstance::getId))
+          .collect(Collectors.toList());
+      writer.write(getComponentsAsJSONArray(allComponentInstances, helper));
     } else if ("AddComponent".equals(action)) {
       String componentName = req.getParameter("ComponentName");
       try {
