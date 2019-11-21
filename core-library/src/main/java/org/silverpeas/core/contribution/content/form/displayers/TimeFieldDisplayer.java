@@ -74,19 +74,16 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
    * @throws java.io.IOException
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
-      throws java.io.IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext) {
     String language = PagesContext.getLanguage();
-    if (!TextField.TYPE.equals(template.getTypeName())) {
-
-    }
+    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
 
     out.println("var " + template.getFieldName()
         + "Empty = isWhitespace(stripInitialWhitespace(field.value));");
 
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("	if (" + template.getFieldName() + "Empty) {");
-      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
+      out.println("		errorMsg+=\"  - '" + label + "' "
           + Util.getString("GML.MustBeFilled", language) + "\\n\";");
       out.println("		errorNb++;");
       out.println("	}");
@@ -95,7 +92,7 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     out.println(" if (!" + template.getFieldName() + "Empty) {");
     out.println("var reg=new RegExp(\"^([01][0-9]|2[0-3]):([0-5][0-9])$\",\"g\");");
     out.println("if (!reg.test(field.value)) {");
-    out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " + Util.getString(
+    out.println("		errorMsg+=\"  - '" + label + "' " + Util.getString(
         "GML.MustContainsCorrectHour", language) + "\\n \";");
     out.println("		errorNb++;");
     out.println("}");
@@ -115,19 +112,13 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
    */
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
-      PagesContext pageContext)
-      throws FormException {
+      PagesContext pageContext) throws FormException {
     String value;
     String html = "";
-
-    String fieldName = template.getFieldName();
 
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
     if (field == null) {
       return;
-    }
-    if (!field.getTypeName().equals(TextField.TYPE)) {
-
     }
 
     String defaultParam = (parameters.containsKey("default") ? parameters.get("default") : "");

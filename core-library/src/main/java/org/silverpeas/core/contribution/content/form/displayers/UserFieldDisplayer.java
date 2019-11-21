@@ -67,10 +67,11 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
   static void produceMandatoryCheck(final PrintWriter out, final FieldTemplate template,
       final PagesContext pagesContext) {
     final String language = pagesContext.getLanguage();
+    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("      errorMsg+=\"  - '"
-          + WebEncodeHelper.javaStringToJsString(template.getLabel(language))
+          + label
           + "' " + Util.getString("GML.MustBeFilled", language)
           + "\\n\";");
       out.println("      errorNb++;");
