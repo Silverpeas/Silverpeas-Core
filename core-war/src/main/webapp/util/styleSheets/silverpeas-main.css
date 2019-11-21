@@ -4640,13 +4640,13 @@ input.search:focus {
 
 .userzoom-tooltip-profilPhoto {
   float:left;
-  height:77px;
-  margin:7px;
-  width:60px;
+  height:77px !important;
+  margin:7px !important;
+  width:60px !important;
 }
 
 .userzoom-tooltip-profilPhoto img {
-  height:77px;
+  height:77px !important;
   width: 100%;
 }
 
