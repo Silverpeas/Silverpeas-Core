@@ -2203,13 +2203,18 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    */
   public ComponentProfilesList getCurrentProfiles() {
     ComponentProfilesList allProfiles = new ComponentProfilesList();
-    String[] profileIds = new String[0];
+    List<String> profileIds = new ArrayList<>();
     if (StringUtil.isDefined(targetUserId)) {
-      profileIds = adminCtrl.getProfileIds(targetUserId);
+      profileIds = Arrays.asList(adminCtrl.getProfileIds(targetUserId));
     } else if (getTargetGroup() != null) {
-      profileIds = adminCtrl.getProfileIdsOfGroup(getTargetGroup().getId());
+      // get profiles associated to group and its parents
+      Group group = getTargetGroup();
+      while (group != null) {
+        profileIds.addAll(Arrays.asList(adminCtrl.getProfileIdsOfGroup(group.getId())));
+        group = group.isRoot() ? null : Group.getById(group.getSuperGroupId());
+      }
     }
-    if (ArrayUtil.isEmpty(profileIds)) {
+    if (CollectionUtil.isEmpty(profileIds)) {
       return allProfiles;
     }
     for (String profileId : profileIds) {
