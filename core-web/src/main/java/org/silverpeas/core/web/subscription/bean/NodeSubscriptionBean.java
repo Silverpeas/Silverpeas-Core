@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.subscription.bean;
 
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.subscription.Subscription;
 
@@ -36,7 +36,7 @@ public class NodeSubscriptionBean extends AbstractSubscriptionBean {
   private final NodePath path;
 
   public NodeSubscriptionBean(final Subscription subscription, final NodePath path,
-      final ComponentInstLight component, final String language) {
+      final SilverpeasComponentInstance component, final String language) {
     super(subscription, component, language);
     this.path = path;
   }

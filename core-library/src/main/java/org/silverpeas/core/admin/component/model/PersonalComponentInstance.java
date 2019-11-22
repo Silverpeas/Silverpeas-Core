@@ -39,6 +39,7 @@ import static org.silverpeas.core.util.StringUtil.isNotDefined;
  * @author Yohann Chastagnier
  */
 public class PersonalComponentInstance implements SilverpeasPersonalComponentInstance {
+  private static final long serialVersionUID = -2622307102886492318L;
 
   private static final String INSTANCE_SUFFIX = "_PCI";
   private static final Pattern INSTANCE_IDENTIFIER_PATTERN =
@@ -47,7 +48,7 @@ public class PersonalComponentInstance implements SilverpeasPersonalComponentIns
   private static final int COMPONENT_NAME_INDEX = 1;
 
   private final User user;
-  private final PersonalComponent personalComponent;
+  private final transient PersonalComponent personalComponent;
 
   /**
    * Hidden constructor.
@@ -160,4 +161,8 @@ public class PersonalComponentInstance implements SilverpeasPersonalComponentIns
     return personalComponent.getDescription(language);
   }
 
+  @Override
+  public int getOrderPosition() {
+    return 0;
+  }
 }
