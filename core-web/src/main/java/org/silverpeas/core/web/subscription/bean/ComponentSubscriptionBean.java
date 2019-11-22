@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.web.subscription.bean;
 
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.subscription.Subscription;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 
 /**
  * User: Yohann Chastagnier
@@ -33,7 +33,7 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 public class ComponentSubscriptionBean extends AbstractSubscriptionBean {
 
   public ComponentSubscriptionBean(final Subscription subscription,
-      final ComponentInstLight component, final String language) {
+      final SilverpeasComponentInstance component, final String language) {
     super(subscription, component, language);
   }
 }

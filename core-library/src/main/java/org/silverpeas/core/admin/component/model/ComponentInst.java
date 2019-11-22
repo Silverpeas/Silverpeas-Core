@@ -214,6 +214,11 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return order;
   }
 
+  @Override
+  public int getOrderPosition() {
+    return getOrderNum();
+  }
+
   public Date getCreateDate() {
     return createDate;
   }

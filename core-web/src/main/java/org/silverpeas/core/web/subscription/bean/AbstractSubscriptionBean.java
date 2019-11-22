@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.subscription.bean;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.Group;
@@ -55,10 +56,10 @@ public abstract class AbstractSubscriptionBean implements Subscription {
   private UserDetail user = null;
   private Group group = null;
   private SpaceInstLight space = null;
-  private ComponentInstLight component;
+  private SilverpeasComponentInstance component;
 
   protected AbstractSubscriptionBean(final Subscription subscription,
-      final ComponentInstLight component, final String language) {
+      final SilverpeasComponentInstance component, final String language) {
     this.subscription = subscription;
     this.component = component;
     this.language = language;
@@ -116,7 +117,6 @@ public abstract class AbstractSubscriptionBean implements Subscription {
     } else if (subscriber.getType() == SubscriberType.GROUP) {
       return isGroupCanAccess(subscriber.getId(), resource);
     }
-
     return true;
   }
 
@@ -208,16 +208,14 @@ public abstract class AbstractSubscriptionBean implements Subscription {
 
   /**
    * Gets the component data.
-   * @return
+   * @return a {@link SilverpeasComponentInstance} instance.
    */
-  public ComponentInstLight getComponent() {
+  public SilverpeasComponentInstance getComponent() {
     if (component == null) {
       component = OrganizationControllerProvider.getOrganisationController()
-          .getComponentInstLight(subscription.getResource().getInstanceId());
-      if (component == null) {
-        // Prevents from NullPointerException
-        component = new ComponentInstLight();
-      }
+          .getComponentInstance(subscription.getResource().getInstanceId())
+          // Prevents from NullPointerException
+          .orElseGet(ComponentInstLight::new);
     }
     return component;
   }
@@ -229,7 +227,7 @@ public abstract class AbstractSubscriptionBean implements Subscription {
   public SpaceInstLight getSpace() {
     if (space == null) {
       space = OrganizationControllerProvider.getOrganisationController()
-          .getSpaceInstLightById(component.getDomainFatherId());
+          .getSpaceInstLightById(component.getSpaceId());
       if (space == null) {
         // Prevents from NullPointerException
         space = new SpaceInstLight();

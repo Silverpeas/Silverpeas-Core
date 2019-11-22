@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.pdcsubscription.control;
 
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
@@ -53,7 +52,6 @@ import org.silverpeas.core.web.subscription.bean.NodeSubscriptionBean;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
@@ -91,7 +89,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
 
   public Collection<NodeSubscriptionBean> getNodeUserSubscriptions(String userId) {
     String currentUserId = userId;
-    List<NodeSubscriptionBean> subscribes = new ArrayList<NodeSubscriptionBean>();
+    final List<NodeSubscriptionBean> subscribes = new ArrayList<>();
     if (!StringUtil.isDefined(currentUserId)) {
       currentUserId = getUserId();
     }
@@ -100,27 +98,24 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
       try {
         // Subscriptions managed at this level are only those of node subscription.
         if (SubscriptionResourceType.NODE.equals(subscription.getResource().getType())) {
-          ComponentInstLight componentInstLight = getOrganisationController()
-              .getComponentInstLight(subscription.getResource().getInstanceId());
-          if (componentInstLight != null) {
-            NodePath path =
-                getNodeBm().getPath((NodePK) subscription.getResource().getPK());
-            subscribes.add(
-                new NodeSubscriptionBean(subscription, path, componentInstLight, getLanguage()));
-          }
+          getOrganisationController().getComponentInstance(subscription.getResource().getInstanceId())
+              .ifPresent(i -> {
+                NodePath path = getNodeBm().getPath((NodePK) subscription.getResource().getPK());
+                subscribes.add(new NodeSubscriptionBean(subscription, path, i, getLanguage()));
+              });
         }
       } catch (Exception e) {
         // User subscribed to a non existing component or topic .Do nothing. Process next
         // subscription.
       }
     }
-    Collections.sort(subscribes, new SubscriptionComparator());
+    subscribes.sort(new SubscriptionComparator());
     return subscribes;
   }
 
   public Collection<ComponentSubscriptionBean> getComponentUserSubscriptions(String userId) {
     String currentUserId = userId;
-    List<ComponentSubscriptionBean> subscribes = new ArrayList<ComponentSubscriptionBean>();
+    final List<ComponentSubscriptionBean> subscribes = new ArrayList<>();
     if (!StringUtil.isDefined(currentUserId)) {
       currentUserId = getUserId();
     }
@@ -128,15 +123,10 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     for (Subscription subscription : list) {
       // Subscriptions managed at this level are only those of node subscription.
       if (SubscriptionResourceType.COMPONENT.equals(subscription.getResource().getType())) {
-        ComponentInstLight componentInstLight = getOrganisationController()
-            .getComponentInstLight(subscription.getResource().getInstanceId());
-        if (componentInstLight != null) {
-          subscribes
-              .add(new ComponentSubscriptionBean(subscription, componentInstLight, getLanguage()));
-        }
-      }
+        getOrganisationController().getComponentInstance(subscription.getResource().getInstanceId())
+            .ifPresent(i -> subscribes.add(new ComponentSubscriptionBean(subscription, i, getLanguage()))); }
     }
-    Collections.sort(subscribes, new SubscriptionComparator());
+    subscribes.sort(new SubscriptionComparator());
     return subscribes;
   }
 
@@ -219,7 +209,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
 
   public List<List<Value>> getPathCriterias(List<? extends Criteria> searchCriterias) throws
       Exception {
-    List<List<Value>> pathCriteria = new ArrayList<List<Value>>();
+    List<List<Value>> pathCriteria = new ArrayList<>();
 
     if (searchCriterias.size() > 0) {
       for (Criteria sc : searchCriterias) {
@@ -232,7 +222,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
           treeId = Integer.toString(axis.getRootId());
         }
 
-        List<Value> fullPath = new ArrayList<Value>();
+        List<Value> fullPath = new ArrayList<>();
         if (searchValue != null && treeId != null) {
           fullPath = getFullPath(searchValue, treeId);
         }

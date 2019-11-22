@@ -43,5 +43,10 @@ public class SubscriptionNodeEventListener
   protected SubscriptionResource getSubscriptionResource(final NodeDetail resource) {
     return NodeSubscriptionResource.from(resource.getNodePK());
   }
+
+  @Override
+  protected boolean isSubscriptionEnabled(final NodeDetail resource) {
+    return true;
+  }
 }
   

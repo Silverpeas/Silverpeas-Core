@@ -294,6 +294,11 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
     return orderNum;
   }
 
+  @Override
+  public int getOrderPosition() {
+    return getOrderNum();
+  }
+
   public boolean isInheritanceBlocked() {
     return isInheritanceBlocked;
   }

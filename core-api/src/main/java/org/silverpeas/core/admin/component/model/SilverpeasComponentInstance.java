@@ -148,6 +148,12 @@ public interface SilverpeasComponentInstance extends Serializable {
   }
 
   /**
+   * Gets the position index of the component against the others into a space.
+   * @return a position as int.
+   */
+  int getOrderPosition();
+
+  /**
    * Gets the silverpeas role the given user has on the component instance.<br>
    * BE CAREFUL, the manager role is never returned as it corresponds to a space role.
    * @param user the user for which the roles are retrieved.
