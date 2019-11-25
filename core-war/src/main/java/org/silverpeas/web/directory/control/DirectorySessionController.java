@@ -817,6 +817,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   public QueryDescription buildSimpleQuery(String query) {
     QueryDescription queryDescription = new QueryDescription(query);
+    queryDescription.setSearchingUser(getUserId());
     queryDescription.addComponent("users");
     for (String appId : getContactComponentIds()) {
       queryDescription.addComponent(appId);
