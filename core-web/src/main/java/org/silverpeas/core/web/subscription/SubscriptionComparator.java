@@ -31,13 +31,14 @@ import org.silverpeas.core.web.subscription.bean.AbstractSubscriptionBean;
  * Date: 13/03/13
  */
 public class SubscriptionComparator extends AbstractComplexComparator<AbstractSubscriptionBean> {
+  private static final long serialVersionUID = -6495926353223079742L;
 
   @Override
   protected ValueBuffer getValuesToCompare(final AbstractSubscriptionBean subscription) {
     ValueBuffer valuesToCompare = new ValueBuffer();
     valuesToCompare.append(subscription.getSpace().getOrderNum());
     valuesToCompare.append(subscription.getSpace().getName());
-    valuesToCompare.append(subscription.getComponent().getOrderNum());
+    valuesToCompare.append(subscription.getComponent().getOrderPosition());
     valuesToCompare.append(subscription.getComponent().getName());
     valuesToCompare.append(subscription.getPath());
     return valuesToCompare;

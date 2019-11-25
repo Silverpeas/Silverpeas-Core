@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.admin.component.model.Parameter;
-
 import java.util.Comparator;
 
 /**

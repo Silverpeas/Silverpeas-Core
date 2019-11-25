@@ -1307,4 +1307,12 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   public ContributionModel getModel() {
     return new PublicationDetailModel(this);
   }
+
+  public String getMostRecentUpdater() {
+    String userId = getUpdaterId();
+    if (!isDefined(userId)) {
+      userId = getCreatorId();
+    }
+    return userId;
+  }
 }

@@ -51,7 +51,6 @@ import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -60,8 +59,12 @@ import java.io.Writer;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+
+import static java.util.Comparator.comparing;
 
 public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet {
 
@@ -75,15 +78,12 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
   private PersonalSpaceManager personalSpaceManager;
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-      IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-      IOException {
-
+  public void doPost(HttpServletRequest req, HttpServletResponse res) {
     HttpSession session = req.getSession(true);
     LookHelper helper = LookHelper.getLookHelper(session);
     User user = UserDetail.getCurrentRequester();
@@ -93,40 +93,67 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
 
     String action = req.getParameter("Action");
 
-    Writer writer = res.getWriter();
-    if ("GetAvailableComponents".equals(action)) {
-      Collection<WAComponent> components = personalSpaceManager.getVisibleComponents();
-      SpaceInst space = personalSpaceManager.getPersonalSpace(userId);
-      if (space != null) {
-        writer.write(getWAComponentsAsJSONArray(getNotUsedComponents(components, space), helper));
-      } else {
-        writer.write(getWAComponentsAsJSONArray(components, helper));
+    try {
+      Writer writer = res.getWriter();
+      if ("GetAvailableComponents".equals(action)) {
+        Collection<WAComponent> components = personalSpaceManager.getVisibleComponents();
+        SpaceInst space = personalSpaceManager.getPersonalSpace(userId);
+        if (space != null) {
+          writer.write(getWAComponentsAsJSONArray(getNotUsedComponents(components, space), helper));
+        } else {
+          writer.write(getWAComponentsAsJSONArray(components, helper));
+        }
+      } else if ("GetComponents".equals(action)) {
+        SpaceInst space = personalSpaceManager.getPersonalSpace(userId);
+        if (space == null) {
+          // Creating a dummy personal space instance which does not exist in database
+          space = new SpaceInst();
+          space.setPersonalSpace(true);
+          space.setCreatorUserId(userId);
+        }
+        final List<SilverpeasComponentInstance> allComponentInstances = space.getAllComponentInstances()
+            .stream()
+            .filter(i -> !i.isPersonal() || PersonalComponent.getByName(i.getName())
+                .filter(PersonalComponent::isVisible)
+                .isPresent())
+            .sorted(comparing((SilverpeasComponentInstance i) -> !i.isPersonal()).thenComparing(
+                SilverpeasComponentInstance::getId))
+            .collect(Collectors.toList());
+        writer.write(getComponentsAsJSONArray(allComponentInstances, helper));
+      } else if ("AddComponent".equals(action)) {
+        addComponent(req, writer, helper, user);
+      } else if ("RemoveComponent".equals(action)) {
+        removeComponent(req, writer, helper, userId);
+      } else if ("GetTools".equals(action)) {
+        writer.write(getToolsAsJSONArray(helper));
       }
-    } else if ("GetComponents".equals(action)) {
-      SpaceInst space = personalSpaceManager.getPersonalSpace(userId);
-      if (space != null) {
-        writer.write(getComponentsAsJSONArray(space.getAllComponentInstances(), helper));
-      }
-    } else if ("AddComponent".equals(action)) {
-      String componentName = req.getParameter("ComponentName");
-      try {
-        String componentId = personalSpaceManager.addComponent(user, componentName);
-        writer.write(getResult(componentName, componentId, null, helper));
-      } catch (Exception e) {
-        writer.write(getResult(componentName, null, e, helper));
-        SilverLogger.getLogger(this).error(e);
-      }
-    } else if ("RemoveComponent".equals(action)) {
-      String componentId = req.getParameter("ComponentId");
-      try {
-        String componentName = personalSpaceManager.removeComponent(userId, componentId);
-        writer.write(getResult(componentName, componentId, null, helper));
-      } catch (AdminException e) {
-        writer.write(getResult(null, componentId, e, helper));
-        SilverLogger.getLogger(this).error(e);
-      }
-    } else if ("GetTools".equals(action)) {
-      writer.write(getToolsAsJSONArray(helper));
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  private void removeComponent(final HttpServletRequest req, final Writer writer,
+      final LookHelper helper, final String userId) throws IOException {
+    String componentId = req.getParameter("ComponentId");
+    try {
+      String componentName = personalSpaceManager.removeComponent(userId, componentId);
+      writer.write(getResult(componentName, componentId, null, helper));
+    } catch (AdminException e) {
+      writer.write(getResult(null, componentId, e, helper));
+      SilverLogger.getLogger(this).error(e);
+    }
+  }
+
+  private void addComponent(final HttpServletRequest req, final Writer writer,
+      final LookHelper helper, final User user) throws IOException {
+    String componentName = req.getParameter("ComponentName");
+    try {
+      String componentId = personalSpaceManager.addComponent(user, componentName);
+      writer.write(getResult(componentName, componentId, null, helper));
+    } catch (Exception e) {
+      writer.write(getResult(componentName, null, e, helper));
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
