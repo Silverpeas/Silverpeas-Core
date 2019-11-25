@@ -37,6 +37,7 @@ import org.silverpeas.core.index.search.model.SearchCompletion;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.security.authorization.ComponentAuthorization.ComponentResourceReference;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -187,10 +188,12 @@ public class SimpleSearchEngine implements SearchEngine {
             return !relatedTo;
           })
           .collect(Collectors.toList());
-      final AccessControlContext context = AccessControlContext.init().onOperationsOf(search);
-      componentAuthorization
-          .filter(componentItems, itemAsContributionIdentifier, userId, context)
-          .forEach(FilterMatchingIndexEntryItem::keep);
+      if (CollectionUtil.isNotEmpty(componentItems)) {
+        final AccessControlContext context = AccessControlContext.init().onOperationsOf(search);
+        componentAuthorization
+            .filter(componentItems, itemAsContributionIdentifier, userId, context)
+            .forEach(FilterMatchingIndexEntryItem::keep);
+      }
     }
     // Finalizing the filtering
     return filterItems.stream()
