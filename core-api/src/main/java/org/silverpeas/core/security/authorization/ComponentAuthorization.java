@@ -62,11 +62,11 @@ public interface ComponentAuthorization {
    * @param converter the converter which permits to get the {@link ComponentResourceReference} instance
    * from a {@code T} resource.
    * @param userId the identifier of the user.
-   * @param context the context of filtering.
+   * @param operations the operations to give to AccessControlContext.
    * @return a filtered stream of {@code T} resource, ordered as the given resources are.
    */
   <T> Stream<T> filter(Collection<T> resources, Function<T, ComponentResourceReference> converter,
-      String userId, final AccessControlContext context);
+      String userId, final AccessControlOperation... operations);
 
   /**
    * Representation of a resource in order to filtered by the API implementations.
