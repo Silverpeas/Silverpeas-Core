@@ -91,7 +91,6 @@ public interface MimeTypes {
   String JAR_EXTENSION = "jar";
   String WAR_EXTENSION = "war";
   String EAR_EXTENSION = "ear";
-  String RTF_EXTENSION = "rtf";
   String JSP_EXTENSION = "jsp";
   String PHP_EXTENSION = "php";
   // Extension .odt (Texte)
@@ -112,18 +111,16 @@ public interface MimeTypes {
   String MIME_TYPE_OO_IMAGE = "application/vnd.oasis.opendocument.image";
   // Extension .odm (Document principal)
   String MIME_TYPE_OO_MASTER = "application/vnd.oasis.opendocument.text-master";
-  Set<String> MS_OFFICE_MIME_TYPES = new HashSet<String>(Arrays
-      .asList(
-          new String[]{WORD_MIME_TYPE, EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, POWERPOINT_MIME_TYPE1,
-            POWERPOINT_MIME_TYPE2}));
-  Set<String> OPEN_OFFICE_MIME_TYPES = new HashSet<String>(Arrays.asList(
+  //Extension .mpp and .mpt
+  String MSPROJECT_MIME_TYPE = "application/vnd.ms-project";
+  Set<String> OPEN_OFFICE_MIME_TYPES = new HashSet<>(Arrays.asList(
       new String[]{WORD_MIME_TYPE, WORD_2007_MIME_TYPE, WORD_2007_TEMPLATE_MIME_TYPE,
         EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, EXCEL_2007_MIME_TYPE, EXCEL_2007_TEMPLATE_MIME_TYPE,
         POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2, POWERPOINT_2007_MIME_TYPE,
         POWERPOINT_2007_TEMPLATE_MIME_TYPE, MIME_TYPE_OO_FORMATTED_TEXT, MIME_TYPE_OO_SPREADSHEET,
         MIME_TYPE_OO_PRESENTATION, MIME_TYPE_OO_GRAPHICS, MIME_TYPE_OO_DIAGRAM, MIME_TYPE_OO_FORMULA,
         MIME_TYPE_OO_DB, MIME_TYPE_OO_IMAGE, MIME_TYPE_OO_MASTER}));
-  Set<String> ARCHIVE_MIME_TYPES = new HashSet<String>(Arrays.asList(
+  Set<String> ARCHIVE_MIME_TYPES = new HashSet<>(Arrays.asList(
       new String[]{BZ2_ARCHIVE_MIME_TYPE, GZ_ARCHIVE_MIME_TYPE, GUNZIP_ARCHIVE_MIME_TYPE,
         TARGZ_ARCHIVE_MIME_TYPE, ARCHIVE_MIME_TYPE, SHORT_ARCHIVE_MIME_TYPE, JAVA_ARCHIVE_MIME_TYPE}));
 }
