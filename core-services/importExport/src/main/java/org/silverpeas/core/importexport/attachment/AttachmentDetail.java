@@ -23,13 +23,12 @@
  */
 package org.silverpeas.core.importexport.attachment;
 
+import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -42,7 +41,7 @@ import java.util.Date;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public final class AttachmentDetail implements Serializable, MimeTypes, Cloneable {
+public final class AttachmentDetail implements Serializable {
 
   private static final long serialVersionUID = 5441809463555598057L;
 

@@ -122,11 +122,11 @@ public class FileUtilTest {
   @Test
   public void testGetMimeType() {
     String fileName = "";
-    String expResult = FileUtil.DEFAULT_MIME_TYPE;
+    String expResult = MimeTypes.DEFAULT_MIME_TYPE;
     String result = FileUtil.getMimeType(fileName);
     assertEquals(expResult, result);
     fileName = "toto.DOc";
-    expResult = FileUtil.WORD_MIME_TYPE;
+    expResult = MimeTypes.WORD_MIME_TYPE;
     result = FileUtil.getMimeType(fileName);
     assertEquals(expResult, result);
   }

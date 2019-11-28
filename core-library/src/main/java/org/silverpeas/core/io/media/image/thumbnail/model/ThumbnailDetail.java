@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.model;
 
-import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -34,7 +33,7 @@ import java.io.Serializable;
 /**
  * Representation of a thumbnail of an object.
  */
-public class ThumbnailDetail implements Serializable, MimeTypes {
+public class ThumbnailDetail implements Serializable {
 
   private static final SettingBundle publicationSettings = ResourceLocator.getSettingBundle(
       "org.silverpeas.publication.publicationSettings");
