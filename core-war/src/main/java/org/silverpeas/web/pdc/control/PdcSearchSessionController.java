@@ -32,7 +32,6 @@ import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -108,15 +107,7 @@ import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -143,7 +134,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public static final int SHOWRESULTS_ONLY_PDC = 1;
   // Component search type
   public static final String ALL_DATA_TYPE = "0";
-  private static final int DEFAULT_NBRESULTS_PERPAGE = 10;
+  private static final int DEFAULT_NBRESULTS_PERPAGE = 25;
   private static final String LOCATION_SEPARATOR = ">";
   private static final int QUOTE_CHAR = (int) '"';
   private static final String USER_PREFIX = "user@";
@@ -425,11 +416,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
-  public List<GlobalSilverResult> getResultsToDisplay() {
-    return getSortedResultsToDisplay(getSortValue(), getSortOrder(), getXmlFormSortValue(),
-        getSortImplemtor(), getSelectedFacetEntries());
-  }
-
   /**
    * Build the list of result group filter from current global search result
    *
@@ -706,30 +692,34 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return false;
   }
 
-  public List<GlobalSilverResult> getSortedResultsToDisplay(int sortValue, String sortOrder,
-      String xmlFormSortValue, String sortType, ResultFilterVO filter) {
+  public List<GlobalSilverResult> getSortedResultsToDisplay(boolean reallySortResults) {
 
     // Tous les résultats
-    List<GlobalSilverResult> results = getGlobalSR();
+    List<GlobalSilverResult> sortedResults = getGlobalSR();
 
-    // Tri de tous les résultats
-    // Gets a SortResult implementation to realize the sorting and/or filtering results
-    SortResults sortResults = SortResultsFactory.getSortResults(sortType);
-    sortResults.setPdcSearchSessionController(this);
-    String sortValString;
-    // determines which value used for sort value
-    if (StringUtil.isDefined(xmlFormSortValue)) {
-      sortValString = xmlFormSortValue;
-    } else {
-      sortValString = Integer.toString(sortValue);
+    if (reallySortResults) {
+      // Tri de tous les résultats
+      // Gets a SortResult implementation to realize the sorting and/or filtering results
+      SortResults sortResults = SortResultsFactory.getSortResults(getSortImplemtor());
+      sortResults.setPdcSearchSessionController(this);
+      String sortValString;
+      // determines which value used for sort value
+      if (StringUtil.isDefined(getXmlFormSortValue())) {
+        sortValString = getXmlFormSortValue();
+      } else {
+        sortValString = Integer.toString(getSortValue());
+      }
+      // realizes the sort
+      if (getSortValue() == 7) {
+        setPopularityToResults();
+      } else if (getSortValue() == 6) {
+        setLocationToResults();
+      }
+      sortedResults = sortResults.execute(sortedResults, getSortOrder(), sortValString, getLanguage());
     }
-    // realizes the sort
-    if (sortValue == 7) {
-      setPopularityToResults();
-    }
-    List<GlobalSilverResult> sortedResults = sortResults.execute(results, sortOrder, sortValString,
-        getLanguage());
+
     List<GlobalSilverResult> resultsToDisplay;
+    ResultFilterVO filter = getSelectedFacetEntries();
     if (filter != null && !filter.isEmpty()) {
       // Check Author filter
       resultsToDisplay = filterResult(filter, sortedResults);
@@ -1031,28 +1021,43 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           getSelectedSilverContents().contains(result);
       result.setSelected(isSelected);
 
-      // Check if it's an external search before searching components information
-      String place;
-      if (result.isExternalResult()) {
-        place = getString("pdcPeas.external.search.label") + " ";
-        place += getExternalServerLabel(result.getServerName());
-      } else {
-        // preparation sur l'emplacement du document
-        if (componentId.startsWith(USER_PREFIX)) {
-          UserDetail user = getOrganisationController().getUserDetail(
-              componentId.substring(5, componentId.indexOf('_')));
-          String component = componentId.substring(componentId.indexOf('_') + 1);
-          place = user.getDisplayedName() + " " + LOCATION_SEPARATOR + " " + component;
-        } else if (PDC_SERVICE.equals(componentId)) {
-          place = getString("pdcPeas.pdc");
-        } else if (DIRECTORY_SERVICE.equals(componentId)) {
-          place = "";
-        } else {
-          place = getLocation(componentId);
-        }
-      }
-      result.setLocation(place);
+      setLocationToResult(result);
     }
+  }
+
+  private void setLocationToResults() {
+    List<GlobalSilverResult> results = getGlobalSR();
+    for (GlobalSilverResult result : results) {
+      setLocationToResult(result);
+    }
+  }
+
+  private void setLocationToResult(GlobalSilverResult result) {
+    // Check if it's an external search before searching components information
+    String place;
+    if (result.isExternalResult()) {
+      place = getString("pdcPeas.external.search.label") + " ";
+      place += getExternalServerLabel(result.getServerName());
+    } else {
+      String componentId = result.getInstanceId();
+      // preparation sur l'emplacement du document
+      if (componentId.startsWith(USER_PREFIX)) {
+        User user = User.getById(componentId.substring(5, componentId.indexOf('_')));
+        String component = componentId.substring(componentId.indexOf('_') + 1);
+        place = user.getDisplayedName() + " " + LOCATION_SEPARATOR + " " + component;
+      } else if (PDC_SERVICE.equals(componentId)) {
+        place = getString("pdcPeas.pdc");
+      } else if (DIRECTORY_SERVICE.equals(componentId)) {
+        place = "";
+      } else if (SPACES_INDEX.equals(componentId)) {
+        place = getSpaceLocation(result.getId());
+      } else if (COMPONENTS_INDEX.equals(componentId)) {
+        place = getLocation(result.getId());
+      } else {
+        place = getLocation(componentId);
+      }
+    }
+    result.setLocation(place);
   }
 
   /**
@@ -1129,15 +1134,29 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @param instanceId - application id
    * @return location as a String
    */
-  public String getLocation(String instanceId) {
+  private String getLocation(String instanceId) {
+    StringBuilder location = new StringBuilder();
     ComponentInstLight componentInst =
         getOrganisationController().getComponentInstLight(instanceId);
     if (componentInst != null) {
-      String spaceId = componentInst.getDomainFatherId();
-      return getSpaceLabel(spaceId) + " " + LOCATION_SEPARATOR + " " +
-          getComponentLabel(spaceId, instanceId);
+      location.append(getSpaceLocation(componentInst.getSpaceId()));
+      location.append(" ").append(LOCATION_SEPARATOR).append(" ");
+      location.append(componentInst.getLabel(getLanguage()));
     }
-    return "";
+    return location.toString();
+  }
+
+  private String getSpaceLocation(String id) {
+    StringBuilder location = new StringBuilder();
+    Iterator<SpaceInstLight> spaces = getOrganisationController().getPathToSpace(id).iterator();
+    while (spaces.hasNext()) {
+      SpaceInstLight space = spaces.next();
+      location.append(space.getName(getLanguage()));
+      if (spaces.hasNext()) {
+        location.append(" ").append(LOCATION_SEPARATOR).append(" ");
+      }
+    }
+    return location.toString();
   }
 
   /**

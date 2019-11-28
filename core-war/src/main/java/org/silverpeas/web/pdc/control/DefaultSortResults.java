@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Named;
 
@@ -54,12 +55,9 @@ public class DefaultSortResults implements SortResults {
 
       @Override
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        String string1 = o1.getName(language);
-        String string2 = o2.getName(language);
-        if (string1 != null && string2 != null) {
-          return string1.compareToIgnoreCase(string2);
-        }
-        return -1;
+        String string1 = StringUtil.defaultStringIfNotDefined(o1.getName(language));
+        String string2 = StringUtil.defaultStringIfNotDefined(o2.getName(language));
+        return string1.compareToIgnoreCase(string2);
       }
     };
 
@@ -131,14 +129,11 @@ public class DefaultSortResults implements SortResults {
 
       @Override
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        String string1 = o1.getLocation();
-        String string2 = o2.getLocation();
-        if (string1 != null && string2 != null) {
-          int result = string1.compareToIgnoreCase(string2);
-          // Add comparison on title if we have the same emplacement
-          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        }
-        return -1;
+        String string1 = StringUtil.defaultStringIfNotDefined(o1.getLocation());
+        String string2 = StringUtil.defaultStringIfNotDefined(o2.getLocation());
+        int result = string1.compareToIgnoreCase(string2);
+        // Add comparison on title if we have the same emplacement
+        return (result != 0) ? result : cTitreAsc.compare(o1, o2);
       }
     };
 
