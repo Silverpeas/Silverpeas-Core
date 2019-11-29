@@ -49,7 +49,6 @@ import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
-import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -96,6 +95,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static java.util.Collections.synchronizedList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
@@ -2203,22 +2203,28 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    */
   public ComponentProfilesList getCurrentProfiles() {
     ComponentProfilesList allProfiles = new ComponentProfilesList();
-    String[] profileIds = new String[0];
+    Stream<String> profileIds = Stream.empty();
     if (StringUtil.isDefined(targetUserId)) {
-      profileIds = adminCtrl.getProfileIds(targetUserId);
+      profileIds = Stream.concat(profileIds, Stream.of(adminCtrl.getProfileIds(targetUserId)));
     } else if (getTargetGroup() != null) {
-      profileIds = adminCtrl.getProfileIdsOfGroup(getTargetGroup().getId());
+      // get profiles associated to group and its parents
+      Optional<Group> group = Optional.of(getTargetGroup());
+      while (group.isPresent()) {
+        profileIds = Stream
+            .concat(profileIds, Stream.of(adminCtrl.getProfileIdsOfGroup(group.get().getId())));
+        group = group
+            .filter(g -> !g.isRoot())
+            .flatMap(g -> Optional.ofNullable(Group.getById(g.getSuperGroupId())));
+      }
     }
-    if (ArrayUtil.isEmpty(profileIds)) {
-      return allProfiles;
-    }
-    for (String profileId : profileIds) {
-      ProfileInst currentProfile = adminCtrl.getProfileInst(profileId);
-      Objects.requireNonNull(currentProfile);
-      ComponentProfiles componentProfiles = allProfiles.getByLocalComponentInstanceId(currentProfile.getComponentFatherId());
+    profileIds
+        .map(i -> adminCtrl.getProfileInst(i))
+        .forEach(p -> {
+      Objects.requireNonNull(p);
+      ComponentProfiles componentProfiles = allProfiles.getByLocalComponentInstanceId(p.getComponentFatherId());
       if (componentProfiles == null) {
         ComponentInstLight currentComponent =
-            adminCtrl.getComponentInstLight(String.valueOf(currentProfile.getComponentFatherId()));
+            adminCtrl.getComponentInstLight(String.valueOf(p.getComponentFatherId()));
         if (currentComponent.getStatus() == null && !currentComponent.isPersonal()) {
           LocalizedComponent localizedComponent = getLocalizedComponent(currentComponent.getName());
           componentProfiles = new ComponentProfiles(currentComponent, localizedComponent);
@@ -2228,9 +2234,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         }
       }
       if (componentProfiles != null) {
-        componentProfiles.addProfile(currentProfile);
+        componentProfiles.addProfile(p);
       }
-    }
+    });
     allProfiles.sort(new AbstractComplexComparator<ComponentProfiles>() {
       private static final long serialVersionUID = 6776408278128213038L;
       @Override
