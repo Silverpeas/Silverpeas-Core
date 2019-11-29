@@ -39,7 +39,6 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -81,13 +80,13 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
    * </UL>
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-      throws IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     String language = pagesContext.getLanguage();
+    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("		if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("			errorMsg+=\"  - '"
-          + WebEncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
+          + label + "' "
           + Util.getString("GML.MustBeFilled", language) + "\\n\";");
       out.println("			errorNb++;");
       out.println("		}");
@@ -97,13 +96,13 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
         + "'), extractMonth(field.value, '" + language + "'), extractDay(field.value, '" + language
         + "'))) {");
     out.println("				errorMsg+=\"  - '"
-        + WebEncodeHelper.javaStringToJsString(template.getLabel(language)) + "' "
+        + label + "' "
         + Util.getString("GML.MustContainsCorrectDate", language) + "\\n\";");
     out.println("				errorNb++;");
     out.println("		}}");
 
     out.println("		if (! isValidText(field, " + Util.getSetting("nbMaxCar") + ")) {");
-    out.println("			errorMsg+=\"  - '" + template.getLabel(language) + "' "
+    out.println("			errorMsg+=\"  - '" + label + "' "
         + Util.getString("ContainsTooLargeText", language) + Util.getSetting("nbMaxCar") + " "
         + Util.getString("Characters", language) + "\\n\";");
     out.println("			errorNb++;");

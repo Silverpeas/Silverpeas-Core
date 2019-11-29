@@ -76,7 +76,7 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
     String language = pageContext.getLanguage();
-
+    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
     if (!ExplorerField.TYPE.equals(template.getTypeName())) {
       SilverLogger.getLogger(this).warn("The expected type of the explorer field is invalid: "
         + template.getTypeName());
@@ -84,7 +84,7 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
     if (template.isMandatory() && pageContext.useMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("      errorMsg+=\"  - '" +
-          WebEncodeHelper.javaStringToJsString(template.getLabel(language)) + "' " +
+          label + "' " +
           Util.getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("      errorNb++;");
       out.println("   }");

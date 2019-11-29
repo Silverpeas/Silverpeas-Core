@@ -83,12 +83,12 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
    * @throws java.io.IOException
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-      throws java.io.IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     String language = pagesContext.getLanguage();
+    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
+      out.println("		errorMsg+=\"  - '" + label + "' "
           + Util.getString("GML.MustBeFilled", language) + "\\n\";");
       out.println("		errorNb++;");
       out.println("	}");
