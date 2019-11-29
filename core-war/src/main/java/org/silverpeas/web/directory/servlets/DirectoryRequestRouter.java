@@ -143,10 +143,8 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         boolean globalSearch = request.getParameterAsBoolean("Global");
 
         if (query != null && !query.isEmpty()) {
-          if (!lDomainIds.isEmpty()) {
-            // case of direct search limited to domain(s) - used in some specific looks
-            directorySC.initSources(true);
-          }
+          // case of direct search
+          directorySC.initSources(!lDomainIds.isEmpty());
 
           users = directorySC.getUsersByQuery(query, globalSearch);
           destination = doPagination(request, users, directorySC);
