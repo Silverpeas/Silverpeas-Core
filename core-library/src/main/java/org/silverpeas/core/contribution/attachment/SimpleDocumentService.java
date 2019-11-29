@@ -93,6 +93,7 @@ public class SimpleDocumentService
 
   private static final int STEP = 5;
   private static final String ATTACHMENT_TYPE = "Attachment";
+  private static final String COMMENT_TYPE = "Comment";
   @Inject
   private WebdavRepository webdavRepository;
   @Inject
@@ -933,7 +934,8 @@ public class SimpleDocumentService
   @Override
   public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
     if (settings.getBoolean("attachment.index.incorporated", true) &&
-        !indexEntry.getObjectType().startsWith(ATTACHMENT_TYPE)) {
+        !indexEntry.getObjectType().startsWith(ATTACHMENT_TYPE) &&
+        !indexEntry.getObjectType().startsWith(COMMENT_TYPE)) {
       ResourceReference pk =
           new ResourceReference(indexEntry.getObjectId(), indexEntry.getComponent());
       List<SimpleDocument> documents = listDocumentsByForeignKey(pk, indexEntry.getLang());

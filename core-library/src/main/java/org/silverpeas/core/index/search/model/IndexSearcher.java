@@ -414,7 +414,6 @@ public class IndexSearcher {
 
   private void setIndexEntryCommonData(final MatchingIndexEntry indexEntry, final Document doc,
       final ScoreDoc scoreDoc) {
-    indexEntry.setKeywords(doc.get(IndexManager.KEYWORDS));
     indexEntry.setCreationUser(doc.get(IndexManager.CREATIONUSER));
     indexEntry.setCreationDate(parseDate(doc.get(IndexManager.CREATIONDATE)));
     indexEntry.setLastModificationUser(doc.get(IndexManager.LASTUPDATEUSER));
@@ -425,7 +424,6 @@ public class IndexSearcher {
     indexEntry.setStartDate(parseDate(doc.get(IndexManager.STARTDATE)));
     indexEntry.setEndDate(parseDate(doc.get(IndexManager.ENDDATE)));
     indexEntry.setEmbeddedFileIds(doc.getValues(IndexManager.EMBEDDED_FILE_IDS));
-    indexEntry.setFilename(doc.get(IndexManager.FILENAME));
     indexEntry.setAlias(getBooleanValue(doc.get(IndexManager.ALIAS)));
     indexEntry.setScore(scoreDoc.score);
     final String[] paths = doc.getValues(IndexManager.PATH);
@@ -439,6 +437,11 @@ public class IndexSearcher {
     for (final String language: languages) {
       indexEntry.setTitle(doc.get(getFieldName(IndexManager.TITLE, language)), language);
       indexEntry.setPreview(doc.get(getFieldName(IndexManager.PREVIEW, language)), language);
+      indexEntry.setKeywords(doc.get(getFieldName(IndexManager.KEYWORDS, language)), language);
+      String filename = doc.get(getFieldName(IndexManager.FILENAME, language));
+      if (StringUtil.isDefined(filename)) {
+        indexEntry.setFilename(filename);
+      }
     }
   }
 
