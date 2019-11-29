@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.override;
 import org.apache.ecs.xhtml.a;
 import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.web.util.security.SecuritySettings;
+import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 
 import javax.servlet.http.HttpServletRequest;

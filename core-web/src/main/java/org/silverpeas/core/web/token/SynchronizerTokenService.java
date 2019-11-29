@@ -36,7 +36,7 @@ import org.silverpeas.core.security.token.synchronizer.SynchronizerToken;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.util.security.SecuritySettings;
+import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 
 import javax.inject.Singleton;

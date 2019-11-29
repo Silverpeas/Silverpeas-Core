@@ -25,9 +25,7 @@ package org.silverpeas.core.chat.servers;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.ChatServerException;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.chat.ChatSettings;
 
 /**
  * This interface represents a Chat server. An implementation of this interface has to implement
@@ -44,8 +42,8 @@ public interface ChatServer {
    * all the required parameters to communicate correctly with the remote chat server.
    * @return a bundle of settings on the chat service.
    */
-  static SettingBundle getChatSettings() {
-    return ResourceLocator.getSettingBundle("org.silverpeas.chat.settings.chat");
+  static ChatSettings getChatSettings() {
+    return new ChatSettings();
   }
 
   /**
@@ -57,9 +55,7 @@ public interface ChatServer {
    * Silverpeas configuration. False otherwise.
    */
   static boolean isEnabled() {
-    return getChatSettings().getBoolean("chat.enable", false) &&
-        StringUtil.isDefined(getChatSettings().getString("chat.xmpp.httpBindUrl", null)) &&
-        StringUtil.isDefined(getChatSettings().getString("chat.xmpp.restUrl", null));
+    return getChatSettings().isChatEnabled();
   }
 
   /**
