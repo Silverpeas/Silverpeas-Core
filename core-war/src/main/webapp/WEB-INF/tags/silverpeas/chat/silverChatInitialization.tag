@@ -34,13 +34,13 @@
 <c:set var="chatUser" value="<%=ChatUser.getCurrentRequester()%>"/>
 <jsp:useBean id="chatUser" type="org.silverpeas.core.chat.ChatUser"/>
 <c:set var="chatSettings" value="<%=ChatServer.getChatSettings()%>"/>
-<jsp:useBean id="chatSettings" type="org.silverpeas.core.util.SettingBundle"/>
+<jsp:useBean id="chatSettings" type="org.silverpeas.core.chat.ChatSettings"/>
 <c:set var="chatBundle" value="<%=ChatLocalizationProvider.getLocalizationBundle(
           User.getCurrentRequester().getUserPreferences().getLanguage())%>"/>
 <jsp:useBean id="chatBundle" type="org.silverpeas.core.util.LocalizationBundle"/>
 
-<c:set var="chatUrl" value="${chatSettings.getString('chat.xmpp.httpBindUrl', '')}"/>
-<c:set var="chatIceServer" value="${chatSettings.getString('chat.servers.ice', '')}"/>
+<c:set var="chatUrl" value="${chatSettings.BOSHServiceUrl}"/>
+<c:set var="chatIceServer" value="${chatSettings.ICEServer}"/>
 
 <script type="text/javascript">
   (function() {

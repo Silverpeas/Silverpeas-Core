@@ -26,8 +26,8 @@ package org.silverpeas.core.chat.servers;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.ChatServerException;
+import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.chat.ChatUser;
-import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -60,9 +60,9 @@ public class OpenfireServer implements ChatServer {
   private final HttpRequester theRequester;
 
   public OpenfireServer() {
-    SettingBundle settings = ChatServer.getChatSettings();
-    this.url = settings.getString("chat.xmpp.restUrl") + "/users";
-    String key = settings.getString("chat.xmpp.restKey");
+    ChatSettings settings = ChatServer.getChatSettings();
+    this.url = settings.getRestApiUrl() + "/users";
+    String key = settings.getRestApiAuthToken();
     this.theRequester = new HttpRequester(key);
   }
 

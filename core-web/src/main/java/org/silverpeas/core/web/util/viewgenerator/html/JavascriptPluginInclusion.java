@@ -45,7 +45,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.look.LayoutConfiguration;
 import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.core.web.util.security.SecuritySettings;
+import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
 import org.silverpeas.core.web.util.viewgenerator.html.pdc.BaseClassificationPdCTag;
 
