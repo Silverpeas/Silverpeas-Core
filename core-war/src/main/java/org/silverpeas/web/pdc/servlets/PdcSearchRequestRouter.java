@@ -134,7 +134,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           pdcSC.setNbResToDisplay(Integer.parseInt(nbItemsPerPage));
         }
 
-        setDefaultDataToNavigation(request, pdcSC);
+        setDefaultDataToNavigation(false, request, pdcSC);
 
         destination = getDestinationForResults(pdcSC);
       } else if ("SortResults".equals(function)) {
@@ -154,7 +154,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           pdcSC.setSortOrder(paramSortOrder);
         }
 
-        setDefaultDataToNavigation(request, pdcSC);
+        setDefaultDataToNavigation(true, request, pdcSC);
 
         destination = getDestinationForResults(pdcSC);
       } else if (function.startsWith("AdvancedSearch")) {
@@ -210,12 +210,12 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
             && !"globalResult".equals(pdcSC.getResultPage())) {
           PdcSearchRequestRouterHelper.processItemsPagination(pdcSC, request);
         } else {
-          setDefaultDataToNavigation(request, pdcSC);
+          setDefaultDataToNavigation(true, request, pdcSC);
         }
         destination = getDestinationForResults(pdcSC);
       } else if ("LastResults".equals(function)) {
 
-        setDefaultDataToNavigation(request, pdcSC);
+        setDefaultDataToNavigation(false, request, pdcSC);
 
         destination = "/pdcPeas/jsp/globalResult.jsp";
       } else if ("XMLSearchViewTemplate".equals(function)) {
@@ -249,7 +249,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         // launch the search
         pdcSC.search(null, false);
         pdcSC.setSearchScope(PdcSearchSessionController.SEARCH_XML);
-        setDefaultDataToNavigation(request, pdcSC);
+        setDefaultDataToNavigation(true, request, pdcSC);
 
         destination = "/pdcPeas/jsp/globalResult.jsp";
       } else if ("XMLSearch".equals(function)) {
@@ -258,7 +258,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         // launch the search
         pdcSC.search(null, isOnlyInPdcSearch(request));
         pdcSC.setSearchScope(PdcSearchSessionController.SEARCH_XML);
-        setDefaultDataToNavigation(request, pdcSC);
+        setDefaultDataToNavigation(true, request, pdcSC);
 
         destination = "/pdcPeas/jsp/globalResult.jsp";
       } else if (function.startsWith("ToUserPanel")) {
@@ -362,14 +362,14 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
             && !pdcSC.getResultPage().equals("globalResult")) {
           PdcSearchRequestRouterHelper.processItemsPagination(pdcSC, request);
         } else {
-          setDefaultDataToNavigation(request, pdcSC);
+          setDefaultDataToNavigation(true, request, pdcSC);
         }
         destination = getDestinationForResults(pdcSC);
       } else if (function.startsWith("FilterSearchResult")) {// This function allow group filtering
         // result on globalResult page
         // Retrieve filter parameter
         initSearchFilter(request, pdcSC);
-        setDefaultDataToNavigation(request, pdcSC);
+        setDefaultDataToNavigation(false, request, pdcSC);
         destination = getDestinationForResults(pdcSC);
       } else {
         destination = "/pdcPeas/jsp/" + function;
@@ -524,10 +524,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
    *
    * @param request - HttpServletRequest pour donner l'information à la globalResult.jsp
    */
-  private void setDefaultDataToNavigation(HttpServletRequest request,
-      PdcSearchSessionController pdcSC) throws Exception {
-
-    ResultFilterVO filter = pdcSC.getSelectedFacetEntries();
+  private void setDefaultDataToNavigation(boolean sortResults, HttpServletRequest request,
+      PdcSearchSessionController pdcSC) {
 
     request.setAttribute("Keywords", pdcSC.getQueryParameters().getKeywords());
 
@@ -536,8 +534,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     request.setAttribute("RefreshEnabled", Boolean.valueOf(pdcSC.isRefreshEnabled()));
     request.setAttribute("ExternalSearchEnabled", Boolean.valueOf(pdcSC.isEnableExternalSearch()));
 
-    request.setAttribute("Results", pdcSC.getSortedResultsToDisplay(pdcSC.getSortValue(), pdcSC.
-        getSortOrder(), pdcSC.getXmlFormSortValue(), pdcSC.getSortImplemtor(), filter));
+    request.setAttribute("Results", pdcSC.getSortedResultsToDisplay(sortResults));
     request.setAttribute("UserId", pdcSC.getUserId());
 
     // Add result group filter data
@@ -568,15 +565,14 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     String selectedObjectIds = request.getParameter("selectedIds");
 
     // extract the selected objects from the results
-    List<GlobalSilverResult> silverContents = pdcSC.getResultsToDisplay();
-    String objectId = null;
+    List<GlobalSilverResult> silverContents = pdcSC.getGlobalSR();
     List<GlobalSilverResult> selectedSilverContents = pdcSC.getSelectedSilverContents();
     if (selectedSilverContents == null) {
       selectedSilverContents = new ArrayList<>();
     }
     for (int i = 0; i < silverContents.size(); i++) {
       GlobalSilverResult gsr = silverContents.get(i);
-      objectId = gsr.getId() + "-" + gsr.getInstanceId();
+      String objectId = gsr.getId() + "-" + gsr.getInstanceId();
       if (selectedObjectIds.indexOf(objectId) != -1 && !selectedSilverContents.contains(gsr)) {
         // the silverContent is in the selected objects list
         selectedSilverContents.add(gsr);
@@ -594,7 +590,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     if (selectedObjectIds != null && selectedObjectIds.length() != 0) {
       for (int i = 0; i < silverContents.size(); i++) {
         GlobalSilverResult gsr = silverContents.get(i);
-        objectId = gsr.getId() + "-" + gsr.getInstanceId();
+        String objectId = gsr.getId() + "-" + gsr.getInstanceId();
         if (selectedObjectIds.indexOf(objectId) != -1) {
           // the silverContent is in the selected objects list
           gsr.setSelected(true);

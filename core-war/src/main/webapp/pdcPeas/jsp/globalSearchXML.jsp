@@ -25,11 +25,12 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ page import="org.silverpeas.core.admin.component.model.SilverpeasComponentInstance"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 <%@ page import="org.silverpeas.core.contribution.template.publication.PublicationTemplate"%>
-<%@ page import="org.silverpeas.core.util.StringUtil"%>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
 
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%
@@ -50,7 +51,7 @@ if (template != null) {
 	form 				= template.getSearchForm();
 }
 
-List<ComponentInstLight>	allComponents		= (List) request.getAttribute("ComponentList");
+List<SilverpeasComponentInstance>	allComponents		= (List) request.getAttribute("ComponentList");
 List<SpaceInstLight>	allSpaces	= (List) request.getAttribute("SpaceList");
 QueryParameters query	= (QueryParameters) request.getAttribute("QueryParameters");
 String			spaceSelected		= null;
@@ -175,7 +176,7 @@ function viewXmlSearch(){
 			<select name="componentSearch" size="1" onchange="javascript:viewXmlSearch()">
 			<option value=""><%=resource.getString("pdcPeas.AllAuthors")%></option>
 			<%
-				for(ComponentInstLight component : allComponents) {
+				for(SilverpeasComponentInstance component : allComponents) {
 						selected	= "";
 						if (component.getId().equals(componentSelected)){
 							selected = " selected";
