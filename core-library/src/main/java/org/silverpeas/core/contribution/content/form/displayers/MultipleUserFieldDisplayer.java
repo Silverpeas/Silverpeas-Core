@@ -42,6 +42,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.silverpeas.core.contribution.content.form.displayers.UserFieldDisplayer
     .produceMandatoryCheck;
@@ -101,7 +102,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
     final String selectUsersLab = Util.getString("usersPanel", language);
     final String deleteUsersLab = Util.getString("clearUser", language);
     final String fieldName = template.getFieldName();
-    final String rootContainerId = "select-user-group-" + fieldName;
+    final String rootContainerId = "select-user-group-" + fieldName + UUID.randomUUID();
     final String userIds =
         field.getTypeName().equals(MultipleUserField.TYPE) ? field.getStringValue() : "";
 
