@@ -23,13 +23,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.util.URLUtil"%>
-<%@ page import="org.apache.lucene.queryparser.classic.QueryParser"%>
+<%@page import="org.apache.lucene.queryparser.classic.QueryParser"%>
+<%@ page import="org.silverpeas.core.admin.component.model.SilverpeasComponentInstance"%>
 <%@page import="org.silverpeas.core.index.search.model.IndexSearcher"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
-<%@ page import="org.silverpeas.core.pdc.interests.model.Interests" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
 
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -59,7 +59,7 @@ String showNotOnlyPertinentAxisAndValues = (String) request.getAttribute("showAl
 boolean showAllAxis = ("true".equals(showNotOnlyPertinentAxisAndValues));
 showNotOnlyPertinentAxisAndValues = showAllAxis ? showNotOnlyPertinentAxisAndValues : "";
 
-List<ComponentInstLight> allComponents		= (List<ComponentInstLight>) request.getAttribute("ComponentList");
+List<SilverpeasComponentInstance> allComponents		= (List) request.getAttribute("ComponentList");
 List			allSpaces			= (List) request.getAttribute("SpaceList");
 QueryParameters query				= (QueryParameters) request.getAttribute("QueryParameters");
 String			spaceSelected		= null;
@@ -469,7 +469,7 @@ out.println(window.printBefore());
 				out.println("<select id=\"componentSearch\" name=\"componentSearch\" size=\"1\" onchange=\"javascript:viewAdvancedSearch()\">");
 				out.println("<option value=\"\">"+resource.getString("pdcPeas.AllAuthors")+"</option>");
 				if (allComponents != null) {
-					for(ComponentInstLight component : allComponents) {
+					for(SilverpeasComponentInstance component : allComponents) {
 							selected = "";
 							if (component.getId().equals(componentSelected)){
 								selected = " selected=\"selected\"";

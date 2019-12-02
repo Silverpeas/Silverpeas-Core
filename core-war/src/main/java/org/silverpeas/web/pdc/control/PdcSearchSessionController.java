@@ -27,8 +27,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.model.User;
@@ -74,7 +74,6 @@ import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
@@ -108,9 +107,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
+import static java.util.Collections.*;
+import static java.util.Optional.empty;
+import static java.util.stream.Collectors.toSet;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString;
@@ -292,7 +293,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    */
   public int getNbItemsPerPage() {
     if (nbItemsPerPage == -1) {
-      nbItemsPerPage = new Integer(getSettings().getString("NbItemsParPage", "20"));
+      nbItemsPerPage = Integer.parseInt(getSettings().getString("NbItemsParPage", "20"));
     }
     return nbItemsPerPage;
   }
@@ -302,7 +303,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public void setIndexOfFirstItemToDisplay(String index) {
-    this.indexOfFirstItemToDisplay = new Integer(index);
+    this.indexOfFirstItemToDisplay = Integer.parseInt(index);
   }
 
   public int getIndexOfFirstResultToDisplay() {
@@ -440,7 +441,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (results != null) {
       // Retrieve the black list component (we don't need to filter data on it)
       List<String> blackList = getFacetBlackList();
-      Map<String, ComponentInstLight> components = new HashMap<>();
+      Map<String, Optional<SilverpeasComponentInstance>> components = new HashMap<>();
       Map<String, String> userNames = new HashMap<>();
 
       // Loop on each result
@@ -505,7 +506,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private void processFacetDatatype(Facet facet, GlobalSilverResult result,
-      Map<String, ComponentInstLight> components) {
+      Map<String, Optional<SilverpeasComponentInstance>> components) {
     String instanceId = result.getInstanceId();
     String type = result.getType();
     if (StringUtil.isDefined(type)) {
@@ -530,30 +531,38 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private void processFacetComponent(Facet facet, GlobalSilverResult result, List<String> blackList,
-      Map<String, ComponentInstLight> components) {
+      Map<String, Optional<SilverpeasComponentInstance>> components) {
     String instanceId = result.getInstanceId();
-
     if (blackList.contains(result.getType())) {
       return;
     }
-
     FacetEntryVO facetEntry = facet.getEntryById(instanceId);
     if (facetEntry == null) {
-      Mutable<String> appLabel = Mutable.empty();
-      ComponentInstLight component = components.computeIfAbsent(instanceId,
-          k -> getOrganisationController().getComponentInstLight(instanceId));
-      if (component != null) {
-        appLabel.set(component.getLabel(getLanguage()));
-      }
-      String appLocation = appLabel.orElse("");
-      if (StringUtil.isNotDefined(appLocation) && DIRECTORY_SERVICE.equals(instanceId)) {
-        appLocation = getString("pdcPeas.facet.service.directory");
-      }
-      if (StringUtil.isDefined(appLocation)) {
-        facetEntry = new FacetEntryVO(appLocation, instanceId);
-      }
+      facetEntry = getComponentInstanceLabel(instanceId, components)
+          .map(l -> new FacetEntryVO(l, instanceId))
+          .orElse(null);
     }
     facet.addEntry(facetEntry);
+  }
+
+  private Optional<String> getComponentInstanceLabel(final String id) {
+    return getComponentInstanceLabel(id, null);
+  }
+
+  private Optional<String> getComponentInstanceLabel(final String id,
+      Map<String, Optional<SilverpeasComponentInstance>> componentInstanceCache) {
+    final Optional<SilverpeasComponentInstance> componentInstance = componentInstanceCache != null
+        ? componentInstanceCache.computeIfAbsent(id, k -> getComponentInstance(id))
+        : getComponentInstance(id);
+    return Optional.ofNullable(componentInstance
+        .map(i -> i.getLabel(getLanguage()))
+        .filter(StringUtil::isDefined)
+        .orElseGet(() -> {
+          if (DIRECTORY_SERVICE.equals(id)) {
+            return getString("pdcPeas.facet.service.directory");
+          }
+          return null;
+        }));
   }
 
   private void processFacetsFormField(Map<String, Facet> fieldFacetsMap, GlobalSilverResult result) {
@@ -637,11 +646,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
       StringWriter sw = new StringWriter();
       PrintWriter out = new PrintWriter(sw);
-      PagesContext pageContext = new PagesContext();
-      pageContext.setLanguage(getLanguage());
+      final PagesContext context = new PagesContext();
+      context.setLanguage(getLanguage());
       Field field = new TextFieldImpl();
       field.setValue(fieldValue);
-      fieldDisplayer.display(out, field, fieldTemplate, pageContext);
+      fieldDisplayer.display(out, field, fieldTemplate, context);
       return sw.toString();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
@@ -656,14 +665,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       FieldTemplate fieldTemplate = getFieldTemplate(formName, fieldName);
       FieldDisplayer fieldDisplayer =
           TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
-      PagesContext pageContext = new PagesContext();
-      pageContext.setLanguage(getLanguage());
+      final PagesContext context = new PagesContext();
+      context.setLanguage(getLanguage());
       Field field = new TextFieldImpl();
       for (String key : keys) {
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
         field.setValue(key);
-        fieldDisplayer.display(out, field, fieldTemplate, pageContext);
+        fieldDisplayer.display(out, field, fieldTemplate, context);
         values.put(key, sw.toString());
       }
     } catch (Exception e) {
@@ -793,7 +802,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     boolean filterFormFields = !filter.isSelectedFormFieldFacetsEmpty();
 
     List<String> blackList = getFacetBlackList();
-    Map<String, ComponentInstLight> components = new HashMap<>();
+    Map<String, Optional<SilverpeasComponentInstance>> components = new HashMap<>();
 
     for (GlobalSilverResult gsResult : listGSR) {
       if (!blackList.contains(gsResult.getType())) {
@@ -964,9 +973,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
                 javaStringToJsString(downloadLink) + "');spWindow.loadLink('" +
                 javaStringToJsString(underLink) + "');";
           } else {
-            ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(componentId);
-            if (componentInst != null) {
-              String title = componentInst.getLabel(getLanguage());
+            final String title = getComponentInstanceLabel(componentId).orElse(null);
+            if (title != null) {
               result.setName(title);
               titleLink = JAVASCRIPT_PREFIX + markAsReadJS + " spWindow.loadComponent('" + componentId + "');";
             }
@@ -1047,8 +1055,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         place = user.getDisplayedName() + " " + LOCATION_SEPARATOR + " " + component;
       } else if (PDC_SERVICE.equals(componentId)) {
         place = getString("pdcPeas.pdc");
-      } else if (DIRECTORY_SERVICE.equals(componentId)) {
-        place = "";
       } else if (SPACES_INDEX.equals(componentId)) {
         place = getSpaceLocation(result.getId());
       } else if (COMPONENTS_INDEX.equals(componentId)) {
@@ -1135,15 +1141,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @return location as a String
    */
   private String getLocation(String instanceId) {
-    StringBuilder location = new StringBuilder();
-    ComponentInstLight componentInst =
-        getOrganisationController().getComponentInstLight(instanceId);
-    if (componentInst != null) {
-      location.append(getSpaceLocation(componentInst.getSpaceId()));
-      location.append(" ").append(LOCATION_SEPARATOR).append(" ");
-      location.append(componentInst.getLabel(getLanguage()));
-    }
-    return location.toString();
+    return getComponentInstance(instanceId)
+        .map(i -> getSpaceLocation(i.getSpaceId()) + " " + LOCATION_SEPARATOR + " " + i.getLabel(getLanguage()))
+        .orElseGet(() -> getComponentInstanceLabel(instanceId).orElse(StringUtil.EMPTY));
   }
 
   private String getSpaceLocation(String id) {
@@ -1162,9 +1162,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * @return list of current object type filter if exists, null else if
    */
-  private List<String> getListObjectTypeFilter() {
+  private Set<String> getSetOfObjectTypeFilter() {
     // Retrieve object type filter
-    List<String> objectTypeFilter = null;
     if (!PdcSearchSessionController.ALL_DATA_TYPE.equals(this.dataType)) {
       for (SearchTypeConfigurationVO configVO : this.dataSearchTypes) {
         if (configVO.getConfigId() == Integer.parseInt(getDataType())) {
@@ -1172,7 +1171,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         }
       }
     }
-    return objectTypeFilter;
+    return emptySet();
   }
 
   /**
@@ -1180,10 +1179,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @param objectTypeFilter the list of objectTypeFilter string
    * @return true if we process this result and add the GlobalSilverResult to the result list
    */
-  private boolean processResult(SearchResult result, List<String> objectTypeFilter) {
+  private boolean processResult(SearchResult result, Set<String> objectTypeFilter) {
     // Default loop variable
     boolean processThisResult = true;
-
     // Check if we filter this object type or not before doing any data processing
     if (objectTypeFilter != null && !objectTypeFilter.isEmpty()) {
       // If object type filter is defined, change processThisResult default value.
@@ -1191,6 +1189,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       for (String objType : objectTypeFilter) {
         if (result.getType().equalsIgnoreCase(objType)) {
           processThisResult = true;
+          break;
         }
       }
     }
@@ -1564,21 +1563,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * Returns the list of allowed components for the current user in the given space/domain.
    */
-  public List<ComponentInstLight> getAllowedComponents(String space) {
-    List<ComponentInstLight> allowedList = new ArrayList<>();
+  public List<SilverpeasComponentInstance> getAllowedComponents(String space) {
+    final List<SilverpeasComponentInstance> allowedList = new ArrayList<>();
     if (space != null) {
-      String[] asAvailCompoForCurUser =
-          getOrganisationController().getAvailCompoIdsAtRoot(space, getUserId());
-      for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
-        ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(
-            asAvailCompoForCurUser[nI]);
-
-        if (componentInst != null) {
-          allowedList.add(componentInst);
-        }
-      }
+      Stream.of(getOrganisationController().getAvailCompoIdsAtRoot(space, getUserId()))
+            .forEach(i -> getComponentInstance(i).ifPresent(allowedList::add));
     }
     return allowedList;
+  }
+
+  private Optional<SilverpeasComponentInstance> getComponentInstance(final String instanceId) {
+    return getOrganisationController().getComponentInstance(instanceId);
   }
 
   /**
@@ -1597,26 +1592,19 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * Returns the label of the given component
    */
   public String getComponentLabel(String spaceId, String componentId) {
-    ComponentInstLight componentInst = null;
-    try {
-      if (!spaceId.startsWith(USER_PREFIX) && !"transverse".equals(spaceId)) {
-        componentInst = getOrganisationController().getComponentInstLight(
-            componentId);
-      }
-    } catch (Exception e) {
-      SilverLogger.getLogger(this)
-          .warn("Error while getting component label: {0}", e.getMessage(), e);
+    Optional<SilverpeasComponentInstance> componentInst = empty();
+    if (!spaceId.startsWith(USER_PREFIX) && !"transverse".equals(spaceId)) {
+      componentInst = getComponentInstance(componentId);
     }
-
-    if (componentInst != null) {
-      if (componentInst.getLabel(getLanguage()).length() > 0) {
-        return componentInst.getLabel(getLanguage());
-      } else {
-        return componentInst.getName();
-      }
-    } else {
-      return componentId;
-    }
+    return componentInst
+        .map(i -> {
+          if (i.getLabel(getLanguage()).length() > 0) {
+            return i.getLabel(getLanguage());
+          } else {
+            return i.getName();
+          }
+        })
+        .orElse(componentId);
   }
 
   // searchEngine
@@ -1892,14 +1880,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       while (StringUtil.isDefined(componentsValue)) {
         String typesValue = getSettings().getString(postConfigKey + cpt + ".types", "");
         String nameValue = getString(postConfigKey + cpt + ".label");
-
-        List<String> listComponents = Arrays.asList(componentsValue.split(","));
-        List<String> listTypes = new ArrayList<>();
-        if (StringUtil.isDefined(typesValue)) {
-          listTypes = Arrays.asList(typesValue.split(","));
-        }
+        final Set<String> listComponents = Stream.of(componentsValue.split(",")).collect(toSet());
+        final Set<String> listTypes = StringUtil.isDefined(typesValue)
+            ? Stream.of(typesValue.split(",")).collect(toSet())
+            : emptySet();
         configs.add(new SearchTypeConfigurationVO(cpt, nameValue, listComponents, listTypes));
-
         // Loop variable update
         cpt++;
         componentsValue = getSettings().getString(postConfigKey + cpt + ".components", "");
@@ -1910,24 +1895,24 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private SearchTypeConfigurationVO getSearchType(String componentId, String type,
-      Map<String, ComponentInstLight> components) {
+      Map<String, Optional<SilverpeasComponentInstance>> components) {
     if (isNotAContributionFromAComponent(componentId)) {
       return null;
     }
-    ComponentInstLight component = components.computeIfAbsent(componentId,
-        k -> getOrganisationController().getComponentInstLight(componentId));
-    if (component != null) {
-      for (SearchTypeConfigurationVO aSearchType : getSearchTypeConfig()) {
-        if (aSearchType.getComponents().contains(component.getName())) {
-          final boolean isSearchedType =
-              aSearchType.getTypes().isEmpty() || aSearchType.getTypes().contains(type);
-          if (isSearchedType) {
-            return aSearchType;
+    return components.computeIfAbsent(componentId, this::getComponentInstance)
+        .map(i -> {
+          for (SearchTypeConfigurationVO aSearchType : getSearchTypeConfig()) {
+            if (aSearchType.getComponents().contains(i.getName())) {
+              final boolean isSearchedType =
+                  aSearchType.getTypes().isEmpty() || aSearchType.getTypes().contains(type);
+              if (isSearchedType) {
+                return aSearchType;
+              }
+            }
           }
-        }
-      }
-    }
-    return null;
+          return null;
+        })
+        .orElse(null);
   }
 
   private boolean isNotAContributionFromAComponent(String componentId) {
@@ -2095,16 +2080,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     List<GlobalSilverResult> resultsToDisplay = new ArrayList<>();
 
     // Retrieve list of object type filter
-    List<String> objectTypeFilter = getListObjectTypeFilter();
+    Set<String> objectTypeFilter = getSetOfObjectTypeFilter();
 
     for (int i = 0; i < results.size(); i++) {
       SearchResult result = results.get(i);
       boolean processThisResult = processResult(result, objectTypeFilter);
-
       if (processThisResult) {
         GlobalSilverResult gsr = new GlobalSilverResult(result);
         gsr.setResultId(i);
-
         resultsToDisplay.add(gsr);
       }
     }
