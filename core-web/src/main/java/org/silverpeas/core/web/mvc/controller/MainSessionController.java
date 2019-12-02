@@ -440,10 +440,8 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
       if (componentInstanceId != null) {
         final SilverpeasComponentInstance componentInst =
             getAdminService().getComponentInstance(componentInstanceId);
-        String sCurCompoLabel = componentInst.getLabel(getFavoriteLanguage());
         componentContext.setCurrentComponentId(componentInstanceId);
         componentContext.setCurrentComponentName(componentInst.getName());
-        componentContext.setCurrentComponentLabel(sCurCompoLabel);
         if (componentInst.isPersonal()) {
           Collection<SilverpeasRole> silverpeasRolesFor =
               componentInst.getSilverpeasRolesFor(getCurrentUserDetail());

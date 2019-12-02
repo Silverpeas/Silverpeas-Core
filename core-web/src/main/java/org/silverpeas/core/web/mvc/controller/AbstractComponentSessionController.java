@@ -50,6 +50,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -220,7 +221,12 @@ public abstract class AbstractComponentSessionController implements ComponentSes
    */
   @Override
   public final String getComponentLabel() {
-    return context.getCurrentComponentLabel();
+    Optional<SilverpeasComponentInstance> component =
+        OrganizationController.get().getComponentInstance(getComponentId());
+    if (component.isPresent()) {
+      return component.get().getLabel(getLanguage());
+    }
+    return "";
   }
 
   /**

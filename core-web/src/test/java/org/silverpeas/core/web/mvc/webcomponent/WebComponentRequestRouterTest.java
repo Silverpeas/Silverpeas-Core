@@ -151,7 +151,6 @@ public abstract class WebComponentRequestRouterTest {
         .thenReturn(highestUserRole != null ? new String[]{highestUserRole.name()} : null);
     when(componentContext.getCurrentComponentName()).thenReturn("componentName");
     when(componentContext.getCurrentSpaceName()).thenReturn("spaceName");
-    when(componentContext.getCurrentComponentLabel()).thenReturn("componentLabel");
     when(componentContext.getCurrentComponentId()).thenReturn("componentName26");
     when(mainSessionController.createComponentContext(any(), anyString()))
         .then(new Returns(componentContext));
