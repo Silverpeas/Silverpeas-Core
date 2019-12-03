@@ -1013,32 +1013,51 @@ if (!window.SilverpeasContributionIdentifier) {
 }
 
 if(typeof window.whenSilverpeasReady === 'undefined') {
-  var whenSilverpeasReadyPromise = false;
+
+  /**
+   * The given callback is called after the document has finished loading and the document has been
+   * parsed but sub-resources such as images, stylesheets and frames are still loading.
+   * @param callback an optional callback
+   * @returns {*|Promise} a promise including if any the execution of given callback on promise resolving.
+   */
   window.whenSilverpeasReady = function(callback) {
-    if (!whenSilverpeasReadyPromise) {
-      whenSilverpeasReadyPromise = Promise.resolve();
+    var deferred = sp.promise.deferred();
+    if (typeof callback === 'function') {
+      deferred.promise.then(callback);
     }
-    if (window.bindPolyfillDone) {
-      jQuery(document).ready(function() {
-        whenSilverpeasReadyPromise.then(function() {
-          callback.call(this)
-        }.bind(this));
-      }.bind(this));
+    if (document.readyState !== 'interactive' &&
+        document.readyState !== 'loaded' &&
+        document.readyState !== 'complete') {
+      document.addEventListener('DOMContentLoaded', function() {
+        deferred.resolve();
+      });
     } else {
-      if (document.readyState !== 'interactive' &&
-          document.readyState !== 'loaded' &&
-          document.readyState !== 'complete') {
-        document.addEventListener('DOMContentLoaded', function() {
-          whenSilverpeasReadyPromise.then(function() {
-            callback.call(this)
-          }.bind(this));
-        }.bind(this));
-      } else {
-        whenSilverpeasReadyPromise.then(function() {
-          callback.call(this)
-        }.bind(this));
-      }
+      deferred.resolve();
     }
+    return deferred.promise;
+  };
+
+  /**
+   * The given callback is called after the document and all sub-resources have finished loading.
+   * The state indicates that the load event is about to fire.
+   * @param callback an optional callback
+   * @returns {*|Promise} a promise including if any the execution of given callback on promise resolving.
+   */
+  window.whenSilverpeasEntirelyLoaded = function(callback) {
+    var deferred = sp.promise.deferred();
+    if (typeof callback === 'function') {
+      deferred.promise.then(callback);
+    }
+    if (document.readyState !== 'complete') {
+      document.addEventListener('readystatechange', function() {
+        if (document.readyState === 'complete') {
+          deferred.resolve();
+        }
+      });
+    } else {
+      deferred.resolve();
+    }
+    return deferred.promise;
   };
 
   /**
