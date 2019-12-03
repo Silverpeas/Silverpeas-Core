@@ -220,7 +220,9 @@ public abstract class AbstractComponentSessionController implements ComponentSes
    */
   @Override
   public final String getComponentLabel() {
-    return context.getCurrentComponentLabel();
+    return OrganizationController.get().getComponentInstance(getComponentId())
+        .map(i -> i.getLabel(getLanguage()))
+        .orElse(StringUtil.EMPTY);
   }
 
   /**

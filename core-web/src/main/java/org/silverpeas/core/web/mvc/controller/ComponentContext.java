@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.mvc.controller;
 
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * Built by the main session controller the ComponentContext objects store the context of a component
@@ -36,7 +37,6 @@ public class ComponentContext {
   private String m_sCurSpaceId;
   private String m_sCurCompoId;
   private String m_sCurCompoName;
-  private String m_sCurCompoLabel;
   private String[] m_asCurProfile;
 
   ComponentContext() {
@@ -44,68 +44,39 @@ public class ComponentContext {
     m_sCurSpaceId = "";
     m_sCurCompoId = "";
     m_sCurCompoName = "";
-    m_sCurCompoLabel = "";
     m_asCurProfile = ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
-  public void setCurrentSpaceName(String CurrentSpaceName) {
-    if (CurrentSpaceName != null) {
-      m_sCurSpaceName = CurrentSpaceName;
-    } else {
-      m_sCurSpaceName = "";
-    }
+  public void setCurrentSpaceName(String currentSpaceName) {
+    m_sCurSpaceName = StringUtil.defaultStringIfNotDefined(currentSpaceName);
   }
 
   public String getCurrentSpaceName() {
     return m_sCurSpaceName;
   }
 
-  public void setCurrentSpaceId(String CurrentSpaceId) {
-    if (CurrentSpaceId != null) {
-      m_sCurSpaceId = CurrentSpaceId;
-    } else {
-      m_sCurSpaceId = "";
-    }
+  public void setCurrentSpaceId(String currentSpaceId) {
+    m_sCurSpaceId = StringUtil.defaultStringIfNotDefined(currentSpaceId);
   }
 
   public String getCurrentSpaceId() {
     return m_sCurSpaceId;
   }
 
-  public void setCurrentComponentId(String sClientComponentId) {
-    if (sClientComponentId != null) {
-      m_sCurCompoId = sClientComponentId;
-    } else {
-      m_sCurCompoId = "";
-    }
+  public void setCurrentComponentId(String clientComponentId) {
+    m_sCurCompoId = StringUtil.defaultStringIfNotDefined(clientComponentId);
   }
 
   public String getCurrentComponentId() {
     return m_sCurCompoId;
   }
 
-  public void setCurrentComponentName(String sCurrentComponentName) {
-    if (sCurrentComponentName != null) {
-      m_sCurCompoName = sCurrentComponentName;
-    } else {
-      m_sCurCompoName = "";
-    }
+  public void setCurrentComponentName(String currentComponentName) {
+    m_sCurCompoName = StringUtil.defaultStringIfNotDefined(currentComponentName);
   }
 
   public String getCurrentComponentName() {
     return m_sCurCompoName;
-  }
-
-  public void setCurrentComponentLabel(String sCurrentComponentLabel) {
-    if (sCurrentComponentLabel != null) {
-      m_sCurCompoLabel = sCurrentComponentLabel;
-    } else {
-      m_sCurCompoLabel = "";
-    }
-  }
-
-  public String getCurrentComponentLabel() {
-    return m_sCurCompoLabel;
   }
 
   public String[] getCurrentProfile() {

@@ -103,7 +103,6 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
     String currentSpaceId = componentInst.getDomainFatherId();
     SpaceInst spaceInst = orga.getSpaceInstById(currentSpaceId);
     this.context.setCurrentComponentId(componentId);
-    this.context.setCurrentComponentLabel(componentInst.getLabel());
     this.context.setCurrentComponentName(componentInst.getName());
     this.context.setCurrentSpaceName(spaceInst.getName());
   }
