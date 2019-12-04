@@ -83,8 +83,6 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   private boolean connected = false;
   @XmlElement(defaultValue = "false")
   private boolean anonymous = false;
-  @XmlElement
-  private String apiToken;
 
   protected UserProfileEntity() {
     user = new UserDetail();
@@ -108,7 +106,6 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
     this.connected = this.user.isConnected();
     this.webPage = getUserProfileWebPageURI();
     this.anonymous = user.isAnonymous();
-    this.apiToken = user.getToken();
   }
 
   /**
@@ -306,10 +303,6 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
 
   public void setStatus(String newStatus) {
     // nothing to do. This method is required for the decoding from JSON
-  }
-
-  public String getApiToken() {
-    return this.apiToken;
   }
 
   public String getDomainName() {

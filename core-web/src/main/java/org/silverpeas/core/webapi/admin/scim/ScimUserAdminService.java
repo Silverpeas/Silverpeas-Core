@@ -163,12 +163,12 @@ public class ScimUserAdminService extends AbstractScimAdminService implements Pr
   @Override
   public FilterResponse<ScimUser> find(final Filter filter, final PageRequest pageRequest,
       final SortRequest sortRequest) throws UnableToRetrieveResourceException {
-    logger().debug(() -> "finding user by filter " + filter);
+    final String domainId = scimRequestContext.getDomainId();
+    logger().debug(() -> "looking for users into domain " + domainId + " by filtering on " + filter);
     validateDomainExists();
     try {
       final UserProfilesSearchCriteriaBuilder criteriaBuilder =
-          UserProfilesSearchCriteriaBuilder.aSearchCriteria()
-              .withDomainIds(scimRequestContext.getDomainId());
+          UserProfilesSearchCriteriaBuilder.aSearchCriteria().withDomainIds(domainId);
 
       final int startIndex = pageRequest.getStartIndex() != null ? pageRequest.getStartIndex() : 0;
       final int itemPerPage = pageRequest.getCount() != null ? pageRequest.getCount() : 10;
@@ -192,6 +192,7 @@ public class ScimUserAdminService extends AbstractScimAdminService implements Pr
       }
 
       response.setTotalResults((int) users.originalListSize());
+      logger().debug(() -> "finding " + users.originalListSize() + " user(s)");
       return response;
     } catch (Exception e) {
       throw new UnableToRetrieveResourceException(NOT_FOUND, e.getMessage());

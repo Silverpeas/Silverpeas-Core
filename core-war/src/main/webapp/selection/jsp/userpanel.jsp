@@ -42,7 +42,6 @@
 <view:setBundle basename="org.silverpeas.notificationManager.multilang.notificationManagerBundle" var="notificationBundle" />
 
 <view:setConstant var="DEACTIVATED_USER_STATE" constant="org.silverpeas.core.admin.user.constant.UserState.DEACTIVATED"/>
-<view:setConstant var="REMOVED_USER_STATE"     constant="org.silverpeas.core.admin.user.constant.UserState.REMOVED"/>
 <fmt:message var="DEACTIVATED_SHORT_LABEL" key="GML.user.account.state.DEACTIVATED.short"/>
 <c:set var="DEACTIVATED_SHORT_LABEL" value="${fn:toLowerCase(DEACTIVATED_SHORT_LABEL)}"/>
 
@@ -317,9 +316,7 @@
             }
             if (typeof params === 'object') {
               if (context.hidingDeactivatedState) {
-                params.userStatesToExclude = ['${DEACTIVATED_USER_STATE}', '${REMOVED_USER_STATE}'];
-              } else {
-                params.userStatesToExclude = ['${REMOVED_USER_STATE}'];
+                params.userStatesToExclude = ['${DEACTIVATED_USER_STATE}'];
               }
             }
             return params;

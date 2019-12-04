@@ -49,14 +49,12 @@ import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
@@ -802,8 +800,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
           UserSearchCriteriaForDAO.newCriteria().onDomainIds(domainId).onUserIds(ids));
       return users.stream().map(UserDetail::getSpecificId).toArray(String[]::new);
     } catch (SQLException e) {
-      throw new AdminException(
-          failureOnGetting("users", Arrays.stream(ids).collect(Collectors.joining(","))), e);
+      throw new AdminException(failureOnGetting("users", String.join(",", ids)), e);
     }
   }
 
