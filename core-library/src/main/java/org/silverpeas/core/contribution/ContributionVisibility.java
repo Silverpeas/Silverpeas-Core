@@ -35,21 +35,24 @@ import static java.time.OffsetDateTime.now;
 import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 /**
- * Represents a contribution visibility.
+ * Represents the visibility state of a given contribution.
  * @author silveryocha
  */
 public interface ContributionVisibility extends Serializable {
 
   /**
    * Gets the period of visibility which has been specifically set.
-   * @return an optional {@link Period}, filled if a period has been specifically set.
+   * @return an optional {@link Period}, filled if a period has been specifically set. If no
+   * specific period has been set, otherwise if it is default visibility period of the contribution
+   * that is taken, then returns nothing (empty optional).
    */
   Optional<Period> getSpecificPeriod();
 
   /**
-   * Gets the period of visibility of a contribution.
+   * Gets the actual period of visibility of a contribution.
    * <p>
-   * If no specific period is set, date of last update and no ending date are taken into account.
+   * If no specific period is set, by default the period taken into account is the never ending
+   * duration starting at the date of the last contribution update.
    * </p>
    * <p>
    * If a period has been specifically set, so {@link #getSpecificPeriod()} returns a not empty

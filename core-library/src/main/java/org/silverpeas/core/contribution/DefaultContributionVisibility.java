@@ -36,6 +36,8 @@ import static java.time.OffsetDateTime.ofInstant;
 import static java.util.Optional.ofNullable;
 
 /**
+ * The default contribution visibility is a smart one that wraps the contribution in order to know
+ * dynamically the date of the last contribution update as it can be change in the time.
  * @author silveryocha
  */
 public class DefaultContributionVisibility implements ContributionVisibility {
