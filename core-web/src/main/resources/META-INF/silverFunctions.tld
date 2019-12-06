@@ -255,6 +255,15 @@
     </example>
   </function>
   <function>
+    <description>Function to format a temporal into a local date.</description>
+    <name>formatAsLocalDate</name>
+    <function-class>org.silverpeas.core.date.TemporalFormatter</function-class>
+    <function-signature>java.lang.String toLocalizedDate(java.time.temporal.Temporal,java.time.ZoneId,java.lang.String)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatAsLocalDate(temporal, userZoneId, "fr")}">
+    </example>
+  </function>
+  <function>
     <description>Function to format a date.</description>
     <name>formatDate</name>
     <function-class>org.silverpeas.core.util.DateUtil</function-class>

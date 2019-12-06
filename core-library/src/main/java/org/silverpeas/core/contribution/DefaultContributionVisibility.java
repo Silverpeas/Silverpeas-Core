@@ -45,7 +45,7 @@ public class DefaultContributionVisibility implements ContributionVisibility {
   private final Period specificPeriod;
   private transient MemoizedSupplier<Period> period;
 
-  public DefaultContributionVisibility(final Contribution contribution,
+  protected DefaultContributionVisibility(final Contribution contribution,
       final Period specificPeriod) {
     this.contribution = contribution;
     this.specificPeriod = specificPeriod;

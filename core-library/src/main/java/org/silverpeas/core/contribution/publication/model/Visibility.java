@@ -27,7 +27,6 @@ import org.silverpeas.core.contribution.DefaultContributionVisibility;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.DateUtil;
 
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -38,8 +37,6 @@ public class Visibility extends DefaultContributionVisibility {
 
   private final Date beginDateAndHour;
   private final Date endDateAndHour;
-  private boolean notYetVisible = false;
-  private boolean noMoreVisible = false;
 
   public static Visibility from(final PublicationDetail pub, Date beginDate, String beginHour, Date endDate, String endHour) {
     final Date dBegin = DateUtil.getDate(beginDate, beginHour);
@@ -55,24 +52,18 @@ public class Visibility extends DefaultContributionVisibility {
     ));
     this.beginDateAndHour = beginDateAndHour;
     this.endDateAndHour = endDateAndHour;
-    OffsetDateTime now = OffsetDateTime.now();
-    if (getPeriod().startsAfter(now)) {
-      this.notYetVisible = true;
-    } else if (getPeriod().endsBefore(now)) {
-      this.noMoreVisible = true;
-    }
   }
 
   public boolean isVisible() {
-    return !(notYetVisible || noMoreVisible);
+    return isActive();
   }
 
   boolean isNoMoreVisible() {
-    return noMoreVisible;
+    return hasBeenActive();
   }
 
   boolean isNotYetVisible() {
-    return notYetVisible;
+    return willBeActive();
   }
 
   Date getBeginDateAndHour() {

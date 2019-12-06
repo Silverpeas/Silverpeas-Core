@@ -31,7 +31,6 @@ import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.Temporal;
 import java.util.Objects;
@@ -136,10 +135,10 @@ public class Period implements Serializable {
 
   /**
    * Creates a new period of time between the two specified date or datetime.
-   * If date parameters are instances of {@link LocalDate}, take a look at method
-   * {@link #betweenNullable(Temporal, Temporal)} (LocalDate, LocalDate)}.
-   * If date parameters are instances of {@link OffsetDateTime}, take a look at method
-   * {@link #betweenNullable(Temporal, Temporal)} (OffsetDateTime, OffsetDateTime)}.
+   * If date parameters are instances of {@link LocalDate}, take a look at the method
+   * {@link Period#betweenNullable(LocalDate, LocalDate)}.
+   * If date parameters are instances of {@link OffsetDateTime}, take a look at the method
+   * {@link Period#betweenNullable(OffsetDateTime, OffsetDateTime)}.
    * If both date parameters are null, then a period between {@link LocalDate#MIN} and
    * {@link LocalDate#MAX} is returned unless those parameters are explicitly typed; for example:
    * {@code Period.betweenNullable((OffsetDateTime) null, null)}
@@ -234,15 +233,6 @@ public class Period implements Serializable {
   }
 
   /**
-   * Gets the inclusive local start date of this period even if the date handles time.
-   * @param zoneId the zoneId to manage offsets.
-   * @return a {@link LocalDate} instance.
-   */
-  public LocalDate getLocalStartDate(final ZoneId zoneId) {
-    return isInDays() ? startDateTime.toLocalDate() : startDateTime.atZoneSameInstant(zoneId).toLocalDate();
-  }
-
-  /**
    * Gets the exclusive temporal end date of this period of time.
    *
    * If the period is in days, then the returned temporal is a {@link LocalDate} which represents
@@ -254,15 +244,6 @@ public class Period implements Serializable {
    */
   public Temporal getEndDate() {
     return isInDays() ? endDateTime.toLocalDate() : endDateTime;
-  }
-
-  /**
-   * Gets the inclusive local end date of this period even if the date handles time.
-   * @param zoneId the zoneId to manage offsets.
-   * @return a {@link LocalDate} instance.
-   */
-  public LocalDate getLocalEndDate(final ZoneId zoneId) {
-    return isInDays() ? endDateTime.toLocalDate() : endDateTime.atZoneSameInstant(zoneId).toLocalDate();
   }
 
   /**

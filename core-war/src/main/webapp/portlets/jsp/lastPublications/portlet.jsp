@@ -31,6 +31,7 @@
 <%@ page import="org.silverpeas.core.date.TemporalFormatter" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="java.time.ZoneId" %>
+<%@ page import="org.silverpeas.core.date.TemporalConverter" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -60,7 +61,7 @@ for (PublicationDetail pub : publications) {
   }%>
   <a class="sp-link" href="<%=url %>"><strong><%=WebEncodeHelper.javaStringToHtmlString(pub.getName(language))%></strong></a>
     <% if (pubUpdater != null) { %>
-      <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=TemporalFormatter.toLocalized(pub.getVisibility().getPeriod().getLocalStartDate(userZoneId), language)%>
+      <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=TemporalFormatter.toLocalizedDate(pub.getVisibility().getPeriod().getStartDate(), userZoneId, language)%>
     <% } %>
     <% if (pubUpdater == null && pub.getUpdateDate() != null) { %>
       <br/><%=DateUtil.getOutputDate(pub.getUpdateDate(), language) %>

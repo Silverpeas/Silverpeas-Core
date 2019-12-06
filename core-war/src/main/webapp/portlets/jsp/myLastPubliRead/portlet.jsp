@@ -61,7 +61,7 @@ if (publications.isEmpty()) { %>
 %>
 	<a class="sp-link" href="<%=url %>"><strong><%=WebEncodeHelper.convertHTMLEntities(pub.getName(language))%></strong></a>
     <% if (pubUpdater != null) { %>
-      <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=TemporalFormatter.toLocalized(pub.getVisibility().getPeriod().getLocalStartDate(userZoneId), language)%>
+      <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=TemporalFormatter.toLocalizedDate(pub.getVisibility().getPeriod().getStartDate(), userZoneId, language)%>
     <% } %>
 <%  }
   }

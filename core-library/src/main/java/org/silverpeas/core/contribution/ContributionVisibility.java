@@ -28,7 +28,11 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.date.Period;
 
 import java.io.Serializable;
+import java.time.OffsetDateTime;
 import java.util.Optional;
+
+import static java.time.OffsetDateTime.now;
+import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 /**
  * Represents a contribution visibility.
@@ -57,4 +61,28 @@ public interface ContributionVisibility extends Serializable {
    * @return a period instance.
    */
   Period getPeriod();
+
+  /**
+   * Indicates if the visibility is active at {@link OffsetDateTime#now()}.
+   * @return true if active, false otherwise
+   */
+  default boolean isActive() {
+    return getPeriod().includes(now());
+  }
+
+  /**
+   * Indicates if the visibility will be active after {@link OffsetDateTime#now()}.
+   * @return true if it will be active, false otherwise
+   */
+  default boolean willBeActive() {
+    return now().isBefore(asOffsetDateTime(getPeriod().getStartDate()));
+  }
+
+  /**
+   * Indicates if the visibility has been active before {@link OffsetDateTime#now()}.
+   * @return true if it has been active, false otherwise
+   */
+  default boolean hasBeenActive() {
+    return now().isAfter(asOffsetDateTime(getPeriod().getEndDate()));
+  }
 }

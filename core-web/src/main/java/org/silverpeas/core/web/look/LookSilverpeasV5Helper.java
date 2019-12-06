@@ -40,6 +40,7 @@ import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -52,12 +53,13 @@ import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -66,6 +68,7 @@ import java.util.StringTokenizer;
 
 public class LookSilverpeasV5Helper extends LookHelper {
 
+  private static final String TO_BE_DEFINED = "toBeDefined";
   private OrganizationController organizationController;
   private SettingBundle resources = null;
   private LocalizationBundle messages = null;
@@ -77,7 +80,6 @@ public class LookSilverpeasV5Helper extends LookHelper {
   private boolean shouldDisplaySpaceIcons = true;
   private boolean shouldDisplayConnectedUsers = true;
   private boolean displayPDCInHomePage = true;
-  private List<TopItem> topItems = null;
   private List<String> topSpaceIds = null; // sublist of topItems
   private String mainFrame = "silverpeas-main.jsp";
   private String spaceId = null;
@@ -298,9 +300,8 @@ public class LookSilverpeasV5Helper extends LookHelper {
 
   protected GraphicElementFactory getGraphicElementFactory() {
     if (session != null) {
-      GraphicElementFactory gef = (GraphicElementFactory) session
+      return (GraphicElementFactory) session
           .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-      return gef;
     }
     return null;
   }
@@ -506,8 +507,8 @@ public class LookSilverpeasV5Helper extends LookHelper {
    */
   @Override
   public List<TopItem> getTopItems() {
-    topItems = new ArrayList<TopItem>();
-    topSpaceIds = new ArrayList<String>();
+    final List<TopItem> topItems = new ArrayList<>();
+    topSpaceIds = new ArrayList<>();
     StringTokenizer tokenizer = new StringTokenizer(resources.getString("componentsTop", ""), ",");
     while (tokenizer.hasMoreTokens()) {
       String itemId = tokenizer.nextToken();
@@ -584,19 +585,17 @@ public class LookSilverpeasV5Helper extends LookHelper {
 
   @Override
   public String getSpaceWithCSSToApply() {
-    String spaceId = getCurrentDeepestSpaceId();
-    if (StringUtil.isDefined(spaceId)) {
-      return SilverpeasLook.getSilverpeasLook().getSpaceWithCSS(spaceId);
+    String theSpaceId = getCurrentDeepestSpaceId();
+    if (StringUtil.isDefined(theSpaceId)) {
+      return SilverpeasLook.getSilverpeasLook().getSpaceWithCSS(theSpaceId);
     }
     return null;
   }
 
   private String getCurrentDeepestSpaceId() {
     String theSpaceId = getSpaceId();
-    if (StringUtil.isDefined(theSpaceId)) {
-      if (StringUtil.isDefined(getSubSpaceId())) {
-        theSpaceId = getSubSpaceId();
-      }
+    if (StringUtil.isDefined(theSpaceId) && StringUtil.isDefined(getSubSpaceId())) {
+      theSpaceId = getSubSpaceId();
     }
     return theSpaceId;
   }
@@ -634,13 +633,20 @@ public class LookSilverpeasV5Helper extends LookHelper {
     return defaultSpaceId;
   }
 
+  @SuppressWarnings("unchecked")
   protected PublicationHelper getPublicationHelper() throws ClassNotFoundException,
       InstantiationException, IllegalAccessException {
     if (kmeliaTransversal == null) {
       String helperClassName = getSettings("publicationHelper",
           "org.silverpeas.components.kmelia.KmeliaTransversal");
       Class<?> helperClass = Class.forName(helperClassName);
-      kmeliaTransversal = (PublicationHelper) helperClass.newInstance();
+      try {
+        Constructor<PublicationHelper> constructor =
+            (Constructor<PublicationHelper>) helperClass.getConstructor();
+        kmeliaTransversal = constructor.newInstance();
+      } catch (NoSuchMethodException | IllegalArgumentException | InvocationTargetException e) {
+        throw new InstantiationException(e.getMessage());
+      }
       kmeliaTransversal.setMainSessionController(getMainSessionController());
     }
     return kmeliaTransversal;
@@ -652,7 +658,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
       return getPublicationHelper().getPublications(spaceId, nbPublis);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex);
-      return new ArrayList<PublicationDetail>();
+      return new ArrayList<>();
     }
   }
 
@@ -663,7 +669,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
       return getPublicationHelper().getPublications(spaceId, excludedComponents, nbPublis);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex);
-      return new ArrayList<PublicationDetail>();
+      return new ArrayList<>();
     }
   }
 
@@ -671,7 +677,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
   public List<PublicationDetail> getValidPublications(NodePK nodePK) {
     List<PublicationDetail> publis = (List<PublicationDetail>) getPublicationService().
         getDetailsByFatherPK(nodePK, null, true);
-    List<PublicationDetail> filteredPublis = new ArrayList<PublicationDetail>();
+    List<PublicationDetail> filteredPublis = new ArrayList<>();
     PublicationDetail publi;
     for (int i = 0; publis != null && i < publis.size(); i++) {
       publi = publis.get(i);
@@ -690,15 +696,11 @@ public class LookSilverpeasV5Helper extends LookHelper {
       throws UnsupportedEncodingException {
     SpaceInst spaceStruct = getOrganisationController().getSpaceInstById(spaceId);
     // Page d'accueil de l'espace = Composant
-    if (spaceStruct != null
-        && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST)
-        && spaceStruct.getFirstPageExtraParam() != null
-        && spaceStruct.getFirstPageExtraParam().length() > 0) {
-      if (getOrganisationController().isComponentAvailableToUser(
-          spaceStruct.getFirstPageExtraParam(), getUserId())) {
+    if (isComponentAsSpaceHome(spaceStruct) &&
+        getOrganisationController().isComponentAvailableToUser(spaceStruct.getFirstPageExtraParam(),
+            getUserId())) {
         return URLUtil.getSimpleURL(URLUtil.URL_COMPONENT,
             spaceStruct.getFirstPageExtraParam());
-      }
     }
 
     // Page d'accueil de l'espace = URL
@@ -711,19 +713,26 @@ public class LookSilverpeasV5Helper extends LookHelper {
           getMainSessionController().getCurrentUserDetail().getLogin());
       destination = getParsedDestination(destination, "%ST_USER_FULLNAME%",
           URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName(),
-              "UTF-8"));
+              Charsets.UTF_8.name()));
       destination = getParsedDestination(destination, "%ST_USER_ID%",
-          URLEncoder.encode(getMainSessionController().getUserId(), "UTF-8"));
+          URLEncoder.encode(getMainSessionController().getUserId(), Charsets.UTF_8.name()));
       destination = getParsedDestination(destination, "%ST_SESSION_ID%",
-          URLEncoder.encode(request.getSession().getId(), "UTF-8"));
+          URLEncoder.encode(request.getSession().getId(), Charsets.UTF_8.name()));
 
       // !!!! Add the password : this is an uggly patch that use a session
       // variable set in the "AuthenticationServlet" servlet
-      HttpSession session = request.getSession();
+    HttpSession theSession = request.getSession();
       return getParsedDestination(destination, "%ST_USER_PASSWORD%",
-          (String) session.getAttribute("Silverpeas_pwdForHyperlink"));
+          (String) theSession.getAttribute("Silverpeas_pwdForHyperlink"));
     }
     return null;
+  }
+
+  private boolean isComponentAsSpaceHome(final SpaceInst spaceStruct) {
+    return spaceStruct != null &&
+        (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST) &&
+        spaceStruct.getFirstPageExtraParam() != null &&
+        spaceStruct.getFirstPageExtraParam().length() > 0;
   }
 
   private String getParsedDestination(String sDestination, String sKeyword, String sValue) {
@@ -773,13 +782,13 @@ public class LookSilverpeasV5Helper extends LookHelper {
    * @return a List of Shorcut
    */
   public List<Shortcut> getShortcuts(String id, int nb) {
-    List<Shortcut> shortcuts = new ArrayList<Shortcut>();
+    List<Shortcut> shortcuts = new ArrayList<>();
     for (int i = 1; i <= nb; i++) {
       String prefix = "Shortcut." + id + "." + i;
-      String url = getSettings(prefix + ".Url", "toBeDefined");
-      String target = getSettings(prefix + ".Target", "toBeDefined");
-      String altText = getSettings(prefix + ".AltText", "toBeDefined");
-      String iconUrl = getSettings(prefix + ".IconUrl", "toBeDefined");
+      String url = getSettings(prefix + ".Url", TO_BE_DEFINED);
+      String target = getSettings(prefix + ".Target", TO_BE_DEFINED);
+      String altText = getSettings(prefix + ".AltText", TO_BE_DEFINED);
+      String iconUrl = getSettings(prefix + ".IconUrl", TO_BE_DEFINED);
       Shortcut shortcut = new Shortcut(iconUrl, target, url, altText);
       shortcuts.add(shortcut);
     }
@@ -806,12 +815,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
 
     // get latest publications
     if (resources.getBoolean("space.homepage.latestpublications", true)) {
-      try {
-        homepage.setPublications(getPublicationHelper().getUpdatedPublications(currentSpaceId, 0,
-            resources.getInteger("space.homepage.latestpublications.nb", 5)));
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
-      }
+      setLatestPublicationsInHomePage(currentSpaceId, homepage);
     }
 
     if (resources.getBoolean("space.homepage.news", true)) {
@@ -823,7 +827,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
       // get allowed subspaces
       String[] subspaceIds =
           getOrganisationController().getAllowedSubSpaceIds(getUserId(), currentSpaceId);
-      List<SpaceInstLight> subspaces = new ArrayList<SpaceInstLight>();
+      List<SpaceInstLight> subspaces = new ArrayList<>();
       for (String subspaceId : subspaceIds) {
         subspaces.add(getOrganisationController().getSpaceInstLightById(subspaceId));
       }
@@ -833,20 +837,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
     boolean displayApps = resources.getBoolean("space.homepage.apps", true);
     boolean displayEvents = resources.getBoolean("space.homepage.events", true);
     if (displayApps || displayEvents) {
-      // get allowed apps
-      String[] appIds = getOrganisationController().getAvailCompoIdsAtRoot(currentSpaceId, getUserId());
-      List<ComponentInstLight> apps = new ArrayList<ComponentInstLight>();
-      for (String appId : appIds) {
-        ComponentInstLight app = getOrganisationController().getComponentInstLight(appId);
-        if (displayApps && !app.isHidden()) {
-          apps.add(app);
-        }
-        if (displayEvents && app.getName().equals("almanach") &&
-            !StringUtil.isDefined(homepage.getNextEventsURL())) {
-          homepage.setNextEventsURL(URLUtil.getApplicationURL()+URLUtil.getURL(null, appId)+"portlet");
-        }
-      }
-      homepage.setApps(apps);
+      setApplicationsInHomePage(currentSpaceId, homepage, displayApps, displayEvents);
     }
 
     if (resources.getBoolean("space.homepage.admins", true)) {
@@ -857,8 +848,38 @@ public class LookSilverpeasV5Helper extends LookHelper {
     return homepage;
   }
 
+  private void setApplicationsInHomePage(final String currentSpaceId,
+      final DefaultSpaceHomePage homepage, final boolean displayApps, final boolean displayEvents) {
+    // get allowed apps
+    String[] appIds =
+        getOrganisationController().getAvailCompoIdsAtRoot(currentSpaceId, getUserId());
+    List<ComponentInstLight> apps = new ArrayList<>();
+    for (String appId : appIds) {
+      ComponentInstLight app = getOrganisationController().getComponentInstLight(appId);
+      if (displayApps && !app.isHidden()) {
+        apps.add(app);
+      }
+      if (displayEvents && app.getName().equals("almanach") &&
+          !StringUtil.isDefined(homepage.getNextEventsURL())) {
+        homepage.setNextEventsURL(
+            URLUtil.getApplicationURL() + URLUtil.getURL(null, appId) + "portlet");
+      }
+    }
+    homepage.setApps(apps);
+  }
+
+  private void setLatestPublicationsInHomePage(final String currentSpaceId,
+      final DefaultSpaceHomePage homepage) {
+    try {
+      homepage.setPublications(getPublicationHelper().getUpdatedPublications(currentSpaceId, 0,
+          resources.getInteger("space.homepage.latestpublications.nb", 5)));
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+  }
+
   public List<UserDetail> getSpaceAdmins(String spaceId) {
-    List<UserDetail> admins = new ArrayList<UserDetail>();
+    List<UserDetail> admins = new ArrayList<>();
       SpaceProfile spaceProfile =
           getOrganisationController().getSpaceProfile(spaceId, SilverpeasRole.Manager);
       Set<String> userIds = spaceProfile.getAllUserIdsIncludingAllGroups();
@@ -888,13 +909,13 @@ public class LookSilverpeasV5Helper extends LookHelper {
       }
     }
 
-    Collections.sort(news, PublicationUpdateDateComparator.comparator);
+    news.sort(PublicationUpdateDateComparator.comparator);
 
     return news;
   }
 
   private boolean isVisibleNews(PublicationDetail news) {
-    return news.isValid() && news.getVisibilityPeriod().contains(new Date());
+    return news.isValid() && news.getVisibility().isActive();
   }
 
   @Override
@@ -909,12 +930,12 @@ public class LookSilverpeasV5Helper extends LookHelper {
 
   @Override
   public String getURLOfLastVisitedCollaborativeSpace() {
-    String spaceId = getSpaceId();
+    String theSpaceId = getSpaceId();
     if (StringUtil.isDefined(getSubSpaceId())) {
-      spaceId = getSubSpaceId();
+      theSpaceId = getSubSpaceId();
     }
-    if (StringUtil.isDefined(spaceId)) {
-      return URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceId)+"?Fallback=true";
+    if (StringUtil.isDefined(theSpaceId)) {
+      return URLUtil.getSimpleURL(URLUtil.URL_SPACE, theSpaceId) + "?Fallback=true";
     }
     return null;
   }

@@ -51,9 +51,7 @@ public class PeriodTest {
     assertThat(period.startsAtMinDate(), is(false));
     assertThat(period.endsAtMaxDate(), is(false));
     assertThat(period.getStartDate(), is(yesterday));
-    assertThat(period.getLocalStartDate(ZoneId.systemDefault()), is(yesterday));
     assertThat(period.getEndDate(), is(tomorrow));
-    assertThat(period.getLocalEndDate(ZoneId.systemDefault()), is(tomorrow));
     assertThat(period.isInDays(), is(true));
   }
 
@@ -65,11 +63,7 @@ public class PeriodTest {
     assertThat(period.startsAtMinDate(), is(false));
     assertThat(period.endsAtMaxDate(), is(false));
     assertThat(period.getStartDate(), is(yesterday.withOffsetSameInstant(ZoneOffset.UTC)));
-    assertThat(period.getLocalStartDate(ZoneId.systemDefault()),
-        is(yesterday.withOffsetSameInstant(ZoneOffset.UTC).toLocalDate()));
     assertThat(period.getEndDate(), is(tomorrow.withOffsetSameInstant(ZoneOffset.UTC)));
-    assertThat(period.getLocalEndDate(ZoneId.systemDefault()),
-        is(tomorrow.withOffsetSameInstant(ZoneOffset.UTC).toLocalDate()));
     assertThat(period.isInDays(), is(false));
   }
 
@@ -81,11 +75,7 @@ public class PeriodTest {
     assertThat(period.startsAtMinDate(), is(false));
     assertThat(period.endsAtMaxDate(), is(false));
     assertThat(period.getStartDate(), is(start.withOffsetSameInstant(ZoneOffset.UTC)));
-    assertThat(period.getLocalStartDate(ZoneId.systemDefault()),
-        is(start.withOffsetSameInstant(ZoneOffset.UTC).toLocalDate().plusDays(1)));
     assertThat(period.getEndDate(), is(end.withOffsetSameInstant(ZoneOffset.UTC)));
-    assertThat(period.getLocalEndDate(ZoneId.systemDefault()),
-        is(end.withOffsetSameInstant(ZoneOffset.UTC).toLocalDate().plusDays(1)));
     assertThat(period.isInDays(), is(false));
   }
 
