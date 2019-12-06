@@ -33,7 +33,6 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
@@ -60,16 +59,19 @@ class SilverpeasScimServerConverter {
 
   static void applyTo(ScimUser scimUser, UserFull user) {
     user.setSpecificId(scimUser.getExternalId());
-    if (scimUser.getName() != null) {
-      user.setLastName(scimUser.getName().getFamilyName());
-      user.setFirstName(scimUser.getName().getGivenName());
+    final Name name = scimUser.getName();
+    if (name != null) {
+      user.setLastName(name.getFamilyName());
+      user.setFirstName(name.getGivenName());
+    } else {
+      user.setLastName(null);
+      user.setFirstName(null);
     }
     user.setLogin(scimUser.getUserName());
-    final Optional<Email> primaryEmailAddress = scimUser.getPrimaryEmailAddress();
     // if no email, then the user name account is taken into account
-    final String email = primaryEmailAddress.isPresent()
-        ? primaryEmailAddress.get().getValue()
-        : scimUser.getUserName();
+    final String email = scimUser.getPrimaryEmailAddress()
+        .map(Email::getValue)
+        .orElse(scimUser.getUserName());
     user.seteMail(email);
     user.setPassword(scimUser.getPassword());
     if (!user.isRemovedState()) {
@@ -106,12 +108,15 @@ class SilverpeasScimServerConverter {
         email.setPrimary(true);
         scimUser.getEmails().add(email);
       }
+      final Name name = new Name();
+      name.setGivenName(user.getFirstName());
       if (!user.getLogin().equals(user.getLastName())) {
-        scimUser.setName(new Name());
-        scimUser.getName().setGivenName(user.getFirstName());
-        scimUser.getName().setFamilyName(user.getLastName());
-        scimUser.getName().setFormatted(user.getDisplayedName());
+        name.setFamilyName(user.getLastName());
+        name.setFormatted(user.getDisplayedName());
+      } else {
+        name.setFormatted(user.getFirstName());
       }
+      scimUser.setName(name);
       scimUser.setActive(user.isValidState());
     }
   }

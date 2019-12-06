@@ -448,7 +448,7 @@ if (!window.currentPopupResize) {
     var log = function(message) {
       //console.log("POPUP RESIZE - " + message);
     };
-    var resize = function(context) {
+    return whenSilverpeasEntirelyLoaded().then(function() {
       var $document = jQuery(document.body);
       $document.removeClass("popup-compute-finally");
       $document.addClass("popup-compute-settings");
@@ -468,41 +468,19 @@ if (!window.currentPopupResize) {
       var wHeightBefore = window.outerHeight;
       var wWidth = Math.min((screen.width - 250), (widthOffset + 10 + $document.width() + limitH));
       var wHeight = Math.min((screen.height - 100), (heightOffset + 10 + $document.height()));
-
       // Setting if necessary new sizes and new position
-      context.attempt += 1;
-      if (context.attempt <= 1 &&
-          (wWidthBefore !== wWidth || wHeightBefore !== wHeight || wHeight <= 200)) {
-        log("modify attempt " + context.attempt);
-        if (wHeight > 200) {
-          log("resizeTo width = " + wWidth + ', height = ' + wHeight);
-          context.effectiveResize += 1;
-          window.resizeTo(wWidth, wHeight);
-          var top = (screen.height - window.outerHeight) / 2;
-          var left = (screen.width - window.outerWidth) / 2;
-          if (!context.moveDone) {
-            log("moveTo left = " + left + ', height = ' + top);
-            context.moveDone = true;
-            window.moveTo(left, top);
-          }
-        }
-        window.setTimeout(function() {
-          resize(context);
-        }, 100);
+      if ((wWidthBefore !== wWidth || wHeightBefore !== wHeight) && wHeight > 200) {
+        log("resizeTo width = " + wWidth + ', height = ' + wHeight);
+        window.resizeTo(wWidth, wHeight);
+        var top = (screen.height - window.outerHeight) / 2;
+        var left = (screen.width - window.outerWidth) / 2;
+        log("moveTo left = " + left + ', height = ' + top);
+        window.moveTo(left, top);
       } else {
-        if (context.effectiveResize > 1) {
-          log("resize done");
-        } else {
-          log('wWidthBefore = ' + wWidthBefore + ", wWidth = " + wWidth + ', wHeightBefore = ' +
-              wHeightBefore + ', wHeight = ' + wHeight);
-          log("no resize performed");
-        }
+        log('wWidthBefore = ' + wWidthBefore + ", wWidth = " + wWidth + ', wHeightBefore = ' +
+            wHeightBefore + ', wHeight = ' + wHeight);
+        log("no resize performed");
       }
-    };
-    whenSilverpeasReady(function() {
-      window.setTimeout(function() {
-        resize({attempt : 0, effectiveResize : 0});
-      }, 0);
     });
   };
 }

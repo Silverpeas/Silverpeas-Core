@@ -271,12 +271,13 @@ public class UserGroupProfileResource extends RESTWebService {
   }
 
   private void userStateFilter(final UserGroupsSearchCriteriaBuilder criteriaBuilder,
-      @QueryParam("userStatesToExclude") final Set<UserState> userStatesToExclude) {
+      final Set<UserState> userStatesToExclude) {
+    final Set<UserState> statesToExclude = new HashSet<>();
+    statesToExclude.add(UserState.REMOVED);
     if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
-      final Set<UserState> statesToExclude = new HashSet<>(userStatesToExclude);
-      statesToExclude.add(UserState.REMOVED);
-      criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
+      statesToExclude.addAll(userStatesToExclude);
     }
+    criteriaBuilder.withUserStatesToExclude(statesToExclude.toArray(new UserState[0]));
   }
 
   @Override

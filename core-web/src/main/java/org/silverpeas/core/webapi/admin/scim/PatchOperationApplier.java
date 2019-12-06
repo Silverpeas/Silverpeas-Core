@@ -26,6 +26,7 @@ package org.silverpeas.core.webapi.admin.scim;
 
 import edu.psu.swe.scim.spec.protocol.data.PatchOperation;
 import edu.psu.swe.scim.spec.resources.Email;
+import edu.psu.swe.scim.spec.resources.Name;
 import edu.psu.swe.scim.spec.resources.ScimUser;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.Mutable;
@@ -105,18 +106,23 @@ public class PatchOperationApplier {
 
   private void applyNameData(final PatchOperation operation, final String attrName) {
     final PatchOperation.Type o = operation.getOperation();
+    Name name = scimUser.getName();
+    if (name == null) {
+      name = new Name();
+      scimUser.setName(name);
+    }
     if (o == PatchOperation.Type.ADD || o == PatchOperation.Type.REPLACE) {
       final String value = getValue(operation, VALUE_ATTR_NAME, String.class);
       if (attrName.endsWith(".givenName")) {
-        scimUser.getName().setGivenName(value);
+        name.setGivenName(value);
       } else if (attrName.endsWith(".familyName")) {
-        scimUser.getName().setFamilyName(value);
+        name.setFamilyName(value);
       }
     } else if (o == PatchOperation.Type.REMOVE) {
       if (attrName.endsWith(".givenName")) {
-        scimUser.getName().setGivenName(null);
+        name.setGivenName(null);
       } else if (attrName.endsWith(".familyName")) {
-        scimUser.getName().setFamilyName(null);
+        name.setFamilyName(null);
       }
     }
   }
@@ -129,14 +135,14 @@ public class PatchOperationApplier {
         emails = new ArrayList<>();
         scimUser.setEmails(emails);
       }
-      scimUser.getEmails().clear();
+      emails.clear();
       final PatchOperation.Type o = operation.getOperation();
       if (o == PatchOperation.Type.ADD || o == PatchOperation.Type.REPLACE) {
         final String value = getValue(operation, VALUE_ATTR_NAME, String.class);
         final Email email = new Email();
         email.setValue(value);
         email.setPrimary(true);
-        scimUser.getEmails().add(email);
+        emails.add(email);
       }
     }
   }

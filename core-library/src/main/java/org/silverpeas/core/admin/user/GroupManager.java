@@ -153,7 +153,8 @@ public class GroupManager {
       UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
       return userDao.getUserCountByCriteria(connection, criteriaOnUsers.
           onDomainIds(domainId).
-          onGroupIds(groupIds.toArray(new String[groupIds.size()])));
+          onGroupIds(groupIds.toArray(new String[0])).
+          onUserStatesToExclude(UserState.REMOVED));
     } catch (SQLException e) {
       throw new AdminException(e.getMessage(), e);
     } finally {
