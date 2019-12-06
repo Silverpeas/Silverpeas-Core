@@ -21,49 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util;
 
-import java.io.Serializable;
+package org.silverpeas.core.contribution;
 
 /**
- * Created by Nicolas on 08/02/2017.
+ * A contribution with visibility is an object that represents a contribution which handles a
+ * period of visibility.
+ * This interface defines all methods that must be implemented in order to obtain different
+ * contribution types that can be handled by a same mechanism.
+ * @author silveryocha
  */
-public class ListIndex implements Serializable {
+public interface ContributionWithVisibility {
 
-  private int nbItems;
-  private int currentIndex = 0;
-
-  public ListIndex(final int nbItems) {
-    this.nbItems = nbItems;
-  }
-
-  public int getNbItems() {
-    return nbItems;
-  }
-
-  public void setNbItems(final int nbItems) {
-    this.nbItems = nbItems;
-  }
-
-  public int getCurrentIndex() {
-    return currentIndex;
-  }
-
-  public void setCurrentIndex(final int currentIndex) {
-    this.currentIndex = currentIndex;
-  }
-
-  public int getPreviousIndex() {
-    if (currentIndex > 0) {
-      currentIndex--;
-    }
-    return currentIndex;
-  }
-
-  public int getNextIndex() {
-    if (currentIndex < nbItems-1) {
-      currentIndex++;
-    }
-    return currentIndex;
-  }
+  /**
+   * Gets the visibility details about the contribution.
+   * @return a {@link ContributionVisibility} instance.
+   */
+  ContributionVisibility getVisibility();
 }

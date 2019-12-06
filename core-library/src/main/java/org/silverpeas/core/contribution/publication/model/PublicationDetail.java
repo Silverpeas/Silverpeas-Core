@@ -25,6 +25,7 @@ package org.silverpeas.core.contribution.publication.model;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.ContributionWithVisibility;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -57,7 +58,7 @@ import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.contribution.template.form.service.FormTemplateService;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.IndexManager;
@@ -84,6 +85,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.MessageFormat;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -92,6 +94,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
+import static org.silverpeas.core.date.TemporalConverter.asDate;
+import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.StringUtil.split;
 
@@ -101,8 +105,8 @@ import static org.silverpeas.core.util.StringUtil.split;
 @XmlRootElement(namespace = "http://www.silverpeas.org/exchange")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
-    implements I18nContribution, SilverContentInterface, Rateable, Serializable,
-    WithAttachment, WithThumbnail, WithReminder {
+    implements I18nContribution, ContributionWithVisibility, SilverContentInterface, Rateable,
+    Serializable, WithAttachment, WithThumbnail, WithReminder {
   private static final long serialVersionUID = 9199848912262605680L;
 
   public static final String DELAYED_VISIBILITY_AT_MODEL_PROPERTY = "DELAYED_VISIBILITY_AT";
@@ -223,7 +227,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     this.beginDate = beginDate;
     this.endDate = endDate;
     this.creatorId = creatorId;
-    this.importance = new Integer(importance);
+    this.importance = Integer.parseInt(importance);
     this.version = version;
     this.keywords = keywords;
     this.content = content;
@@ -280,6 +284,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * @param updaterId
    * @deprecated @param pk
    */
+  @Deprecated
   public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
       Date beginDate, Date endDate, String creatorId, int importance, String version,
       String keywords, String content, String status, Date updateDate, String updaterId) {
@@ -334,6 +339,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * @param status
    * @deprecated @param id
    */
+  @Deprecated
   public PublicationDetail(String id, String name, String description, Date creationDate,
       Date beginDate, Date endDate, String creatorId, String importance, String version,
       String keywords, String content, String status) {
@@ -449,6 +455,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * @param validatorId
    * @deprecated
    */
+  @Deprecated
   public PublicationDetail(PublicationPK pk, String name, String description, Date creationDate,
       Date beginDate, Date endDate, String creatorId, int importance, String version,
       String keywords, String content, String status, Date updateDate, String updaterId,
@@ -530,36 +537,24 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public void setVisibilityPeriod(Period period) {
-    if (period.isBeginNotDefined()) {
+    if (period == null || period.startsAtMinDate()) {
       setBeginDate(null);
       setBeginHour(null);
     } else {
-      setBeginDate(period.getBeginDate());
-      setBeginHour(DateUtil.formatTime(period.getBeginDate()));
+      final Date periodStart = asDate(asOffsetDateTime(period.getStartDate())
+              .atZoneSameInstant(ZoneOffset.systemDefault()));
+      setBeginDate(periodStart);
+      setBeginHour(DateUtil.formatTime(periodStart));
     }
-    if (period.isEndNotDefined()) {
+    if (period == null || period.endsAtMaxDate()) {
       setEndDate(null);
       setEndHour(null);
     } else {
-      setEndDate(period.getEndDate());
-      setEndHour(DateUtil.formatTime(period.getEndDate()));
+      final Date periodEnd = asDate(asOffsetDateTime(period.getEndDate())
+          .atZoneSameInstant(ZoneOffset.systemDefault()));
+      setEndDate(periodEnd);
+      setEndHour(DateUtil.formatTime(periodEnd));
     }
-  }
-
-  public Period getVisibilityPeriod() {
-    Date begin = getBeginDate();
-    if (begin == null) {
-      begin = DateUtil.MINIMUM_DATE;
-    } else {
-      begin = DateUtil.getDate(begin, getBeginHour());
-    }
-    Date end = getEndDate();
-    if (end == null) {
-      end = DateUtil.MAXIMUM_DATE;
-    } else {
-      end = DateUtil.getDate(end, getEndHour());
-    }
-    return Period.from(begin, end);
   }
 
   public void setCreatorId(String creatorId) {
@@ -929,28 +924,37 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     } else {
       if (fieldValue.startsWith("image_") || fieldValue.startsWith("file_")) {
         String attachmentId =
-            fieldValue.substring(fieldValue.indexOf("_") + 1, fieldValue.length());
-        if (isDefined(attachmentId)) {
-          if (attachmentId.startsWith("/")) {
-            // case of an image provided by a gallery
-            fieldValue = attachmentId;
-          } else {
-            SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService()
-                .searchDocumentById(new SimpleDocumentPK(attachmentId, getPK().getInstanceId()),
-                    language);
-            if (attachment != null) {
-              fieldValue = attachment.getAttachmentURL();
-            }
-          }
-        } else {
-          fieldValue = "";
-        }
+            fieldValue.substring(fieldValue.indexOf('_') + 1);
+        fieldValue = getFieldValueFromAttachment(attachmentId, language, fieldValue);
       } else if (fieldValue.startsWith(WysiwygFCKFieldDisplayer.DB_KEY)) {
         fieldValue = WysiwygFCKFieldDisplayer.getContentFromFile(getPK().getInstanceId(), getPK().
             getId(), xmlField.getName(), language);
       } else {
         fieldValue = WebEncodeHelper.javaStringToHtmlParagraphe(fieldValue);
       }
+    }
+    return fieldValue;
+  }
+
+  private String getFieldValueFromAttachment(final String attachmentId, final String language,
+      final String defaultValue) {
+    final String fieldValue;
+    if (isDefined(attachmentId)) {
+      if (attachmentId.startsWith("/")) {
+        // case of an image provided by a gallery
+        fieldValue = attachmentId;
+      } else {
+        SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService()
+            .searchDocumentById(new SimpleDocumentPK(attachmentId, getPK().getInstanceId()),
+                language);
+        if (attachment != null) {
+          fieldValue = attachment.getAttachmentURL();
+        } else {
+          fieldValue = defaultValue;
+        }
+      }
+    } else {
+      fieldValue = "";
     }
     return fieldValue;
   }
@@ -1160,9 +1164,10 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     return getVisibility().getEndDateAndHour();
   }
 
-  private Visibility getVisibility() {
+  @Override
+  public Visibility getVisibility() {
     if (visibility == null) {
-      visibility = new Visibility(beginDate, beginHour, endDate, endHour);
+      visibility = Visibility.from(this, beginDate, beginHour, endDate, endHour);
     }
     return visibility;
   }

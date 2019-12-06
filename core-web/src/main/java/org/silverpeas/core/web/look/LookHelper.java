@@ -23,14 +23,15 @@
  */
 package org.silverpeas.core.web.look;
 
-import org.silverpeas.core.personalization.UserMenuDisplay;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.http.HttpSession;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -97,6 +98,8 @@ public abstract class LookHelper {
   public abstract String getUserId();
 
   public abstract String getLanguage();
+
+  public abstract ZoneId getZoneId();
 
   public abstract boolean isAnonymousUser();
 
