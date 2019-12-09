@@ -27,6 +27,7 @@ import org.silverpeas.core.contribution.DefaultContributionVisibility;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.DateUtil;
 
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -46,12 +47,22 @@ public class Visibility extends DefaultContributionVisibility {
 
   private Visibility(final PublicationDetail pub, final Date beginDateAndHour,
       final Date endDateAndHour) {
-    super(pub, Period.betweenNullable(
-        beginDateAndHour != null ? ofInstant(beginDateAndHour.toInstant(), ZoneId.systemDefault()) : null,
-        endDateAndHour != null ? ofInstant(endDateAndHour.toInstant(), ZoneId.systemDefault()) : null
-    ));
+    super(pub, initializeSpecificPeriod(beginDateAndHour, endDateAndHour));
     this.beginDateAndHour = beginDateAndHour;
     this.endDateAndHour = endDateAndHour;
+  }
+
+  private static Period initializeSpecificPeriod(final Date beginDateAndHour, final Date endDateAndHour) {
+    final OffsetDateTime startDateTime = beginDateAndHour != null
+        ? ofInstant(beginDateAndHour.toInstant(), ZoneId.systemDefault())
+        : null;
+    OffsetDateTime endDateTime = endDateAndHour != null
+        ? ofInstant(endDateAndHour.toInstant(), ZoneId.systemDefault())
+        : null;
+    if (startDateTime != null && startDateTime.equals(endDateTime)) {
+      endDateTime = endDateTime.plusSeconds(1);
+    }
+    return Period.betweenNullable(startDateTime, endDateTime);
   }
 
   public boolean isVisible() {
