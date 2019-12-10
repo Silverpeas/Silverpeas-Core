@@ -49,6 +49,7 @@
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
   <script type="text/javascript">var webContext = '<%=m_context%>';</script>
+  <view:includePlugin name="polyfills"/>
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
   <view:script src="/util/javaScript/silverpeas.js" />
