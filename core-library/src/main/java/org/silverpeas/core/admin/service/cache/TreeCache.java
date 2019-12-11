@@ -92,7 +92,8 @@ public class TreeCache {
     final Space space = map.get(spaceId);
     if (space != null) {
       // remove the subspace(s) from the removed space
-      for (SpaceInstLight subspace : space.getSubspaces()) {
+      final List<SpaceInstLight> subspaces = new ArrayList<>(space.getSubspaces());
+      for (SpaceInstLight subspace : subspaces) {
         removeSpace(subspace.getLocalId());
       }
 
@@ -100,8 +101,8 @@ public class TreeCache {
       final SpaceInstLight spaceInstLight = space.getSpaceInstLight();
       if (!spaceInstLight.isRoot()) {
         final Space parent = getSpace(Integer.parseInt(spaceInstLight.getFatherId()));
-        final List<SpaceInstLight> subspaces = parent.getSubspaces();
-        subspaces.remove(spaceInstLight);
+        final List<SpaceInstLight> children = parent.getSubspaces();
+        children.remove(spaceInstLight);
       }
       map.remove(spaceId);
     }
