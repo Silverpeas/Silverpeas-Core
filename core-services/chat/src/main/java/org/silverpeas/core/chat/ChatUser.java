@@ -29,7 +29,6 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.util.SettingBundle;
 
 import java.util.Date;
 
@@ -116,12 +115,8 @@ public class ChatUser extends UserDetail {
    * @return the chat domain of the user.
    */
   public String getChatDomain() {
-    SettingBundle settings = ChatServer.getChatSettings();
-    String domain = settings.getString("chat.xmpp.domain." + getDomainId(), "");
-    if (domain.isEmpty()) {
-      domain = settings.getString("chat.xmpp.domain.0");
-    }
-    return domain;
+    ChatSettings settings = ChatServer.getChatSettings();
+    return settings.getMappedXmppDomain(getDomainId());
   }
 
   @Override

@@ -36,7 +36,7 @@ import org.silverpeas.core.web.filter.exception.WebSecurityException;
 import org.silverpeas.core.web.filter.exception.WebSqlInjectionSecurityException;
 import org.silverpeas.core.web.filter.exception.WebXssInjectionSecurityException;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.web.util.security.SecuritySettings;
+import org.silverpeas.core.util.security.SecuritySettings;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -156,35 +156,47 @@ public class MassiveWebSecurityFilter implements Filter {
             httpRequest.isContentInMultipart();
     boolean isWebPageMultiPart = httpRequest.getRequestURI().startsWith(WEB_PAGES_URI_PREFIX) &&
         httpRequest.isContentInMultipart();
-    boolean isWebSqlInjectionSecurityEnabled = SecuritySettings.isWebSqlInjectionSecurityEnabled();
-    boolean isWebXssInjectionSecurityEnabled = SecuritySettings.isWebXssInjectionSecurityEnabled();
-    boolean isCTPEnabled = SecuritySettings.isWebContentInjectionSecurityEnabled();
 
     // Verifying security only if all the prerequisite are satisfied
     if (!(isWebServiceMultipart || isWebPageMultiPart)) {
-      if (isWebSqlInjectionSecurityEnabled || isWebXssInjectionSecurityEnabled) {
-        if (isWebXssInjectionSecurityEnabled) {
-          // this header isn't taken in charge by all web browsers.
-          httpResponse.setHeader("X-XSS-Protection", "1");
-        }
-        checkRequestParametersForInjection(httpRequest, isWebSqlInjectionSecurityEnabled,
-            isWebXssInjectionSecurityEnabled);
+      checkWebInjection(httpRequest, httpResponse);
+      setUpSecurityContentPolicy(httpRequest, httpResponse);
+    }
+  }
+
+  private void setUpSecurityContentPolicy(final HttpRequest httpRequest,
+      final HttpServletResponse httpResponse) {
+    boolean isCSPEnabled = SecuritySettings.isWebContentInjectionSecurityEnabled();
+    if (isCSPEnabled) {
+      final User currentUser = User.getCurrentRequester();
+      final String secure = " https: " +
+          (httpRequest.isSecure() ? WebDavProtocol.SECURED_WEBDAV_SCHEME + ": " :
+              WebDavProtocol.WEBDAV_SCHEME + ": ");
+      final String font = currentUser == null ? "" : "; font-src * data:";
+      final String img = currentUser == null ? "" : "; img-src * data: blob:";
+      httpResponse.setHeader("Content-Security-Policy",
+          "default-src 'self' blob: mailto: " + secure +
+              SecuritySettings.getAllowedDefaultSourcesInCSP() +
+              font + img +
+              "; script-src 'self' blob:  'unsafe-inline' 'unsafe-eval' " + secure +
+              SecuritySettings.getAllowedScriptSourcesInCSP() +
+              "; style-src 'self' 'unsafe-inline' " + secure +
+              SecuritySettings.getAllowedStyleSourcesInCSP());
+    }
+  }
+
+  private void checkWebInjection(final HttpRequest httpRequest,
+      final HttpServletResponse httpResponse)
+      throws WebSqlInjectionSecurityException, WebXssInjectionSecurityException {
+    boolean isWebSqlInjectionSecurityEnabled = SecuritySettings.isWebSqlInjectionSecurityEnabled();
+    boolean isWebXssInjectionSecurityEnabled = SecuritySettings.isWebXssInjectionSecurityEnabled();
+    if (isWebSqlInjectionSecurityEnabled || isWebXssInjectionSecurityEnabled) {
+      if (isWebXssInjectionSecurityEnabled) {
+        // this header isn't taken in charge by all web browsers.
+        httpResponse.setHeader("X-XSS-Protection", "1");
       }
-      if (isCTPEnabled) {
-        final User currentUser = User.getCurrentRequester();
-        final String secure = " https: " +
-            (httpRequest.isSecure() ? WebDavProtocol.SECURED_WEBDAV_SCHEME + ": " :
-                WebDavProtocol.WEBDAV_SCHEME + ": ");
-        final String font = currentUser == null ? "" : "; font-src * data:";
-        final String img = currentUser == null ? "" : "; img-src * data: blob:";
-        httpResponse.setHeader("Content-Security-Policy",
-            "default-src 'self' blob: mailto: " + secure +
-                font + img +
-                "; script-src 'self' blob:  'unsafe-inline' 'unsafe-eval' " + secure +
-                SecuritySettings.getAllowedScriptSourcesInCSP() +
-                "; style-src 'self' 'unsafe-inline' " + secure +
-                SecuritySettings.getAllowedStyleSourcesInCSP());
-      }
+      checkRequestParametersForInjection(httpRequest, isWebSqlInjectionSecurityEnabled,
+          isWebXssInjectionSecurityEnabled);
     }
   }
 
