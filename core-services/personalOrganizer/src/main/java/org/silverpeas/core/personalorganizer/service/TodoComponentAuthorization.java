@@ -32,9 +32,16 @@ import org.silverpeas.core.util.Pair;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Collections.emptyList;
 
 /**
  * Processor of authorization to access a given personal user task. Usually a task is always related
@@ -45,22 +52,37 @@ import java.util.stream.Stream;
 @Named
 public class TodoComponentAuthorization implements ComponentAuthorization {
 
+  private static final Pattern PATTERN = Pattern.compile("user@\\d+_todo");
+
   @Inject
   private SilverpeasCalendar calendar;
 
   @Override
   public boolean isRelatedTo(final String instanceId) {
-    return instanceId.matches("user@\\d+_todo");
+    return PATTERN.matcher(instanceId).matches();
   }
 
   @Override
   public <T> Stream<T> filter(final Collection<T> resources,
       final Function<T, ComponentResourceReference> converter, final String userId,
       final AccessControlOperation... operations) {
-    return resources.stream()
-        .map(r -> convert(r, converter))
-        .filter(p -> p.getSecond().getType().equals("todo"))
-        .filter(p -> isAuthorized(userId, p.getSecond()))
+    final Set<String> todoIds = new HashSet<>(resources.size());
+    final Set<ComponentResourceReference> authorized = new HashSet<>(resources.size());
+    final List<Pair<T, ComponentResourceReference>> convertedResources = resources.stream()
+        .map(r -> {
+          final Pair<T, ComponentResourceReference> convertedResource = convert(r, converter);
+          final ComponentResourceReference resourceRef = convertedResource.getSecond();
+          if ("todo".equals(resourceRef.getType())) {
+            todoIds.add(resourceRef.getLocalId());
+          } else {
+            authorized.add(resourceRef);
+          }
+          return convertedResource;
+        })
+        .collect(Collectors.toList());
+    final Map<String, List<Attendee>> involvedUsers = getInvolvedUsers(todoIds);
+    return convertedResources.stream()
+        .filter(p -> authorized.contains(p.getSecond()) || isAuthorized(userId, p.getSecond(), involvedUsers))
         .map(Pair::getFirst);
   }
 
@@ -79,13 +101,13 @@ public class TodoComponentAuthorization implements ComponentAuthorization {
   }
 
   /**
-   * Gets a list of all the users involved in the specified personal task.
-   * @param id the unique identifier of a personal user task.
-   * @return a list of {@link Attendee} instances, each of them representing a user involved in
-   * the task.
+   * Gets list of all the users involved in the specified personal tasks.
+   * @param ids the unique identifiers of personal user tasks.
+   * @return a map of list of {@link Attendee} instances each of them representing a user
+   * involved in the task.
    */
-  private List<Attendee> getInvolvedUsers(final String id) {
-    return calendar.getToDoAttendees(id);
+  private Map<String, List<Attendee>> getInvolvedUsers(final Collection<String> ids) {
+    return calendar.getToDoAttendees(ids);
   }
 
   /**
@@ -93,12 +115,13 @@ public class TodoComponentAuthorization implements ComponentAuthorization {
    * task's realization.
    * @param userId the unique identifier of a user in Silverpeas.
    * @param todoRef a reference to the personal user task.
+   * @param allInvolvedUsers all involved users of all tasks.
    * @return true if the specified user is authorized to access the personal task.
    */
-  private boolean isAuthorized(final String userId, final ComponentResourceReference todoRef) {
-    final List<Attendee> involvedUsers = getInvolvedUsers(todoRef.getLocalId());
-    return involvedUsers.stream()
-        .anyMatch(a -> a.getUserId().equals(userId));
+  private boolean isAuthorized(final String userId, final ComponentResourceReference todoRef,
+      final Map<String, List<Attendee>> allInvolvedUsers) {
+    final List<Attendee> involvedUsers = allInvolvedUsers.getOrDefault(todoRef.getLocalId(), emptyList());
+    return involvedUsers.stream().anyMatch(a -> a.getUserId().equals(userId));
   }
 }
   
