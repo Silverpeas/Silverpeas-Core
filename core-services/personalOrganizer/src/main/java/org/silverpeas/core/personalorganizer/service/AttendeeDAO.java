@@ -76,12 +76,12 @@ public class AttendeeDAO {
     return getToDoAttendees(singletonList(todoId)).getOrDefault(todoId, emptyList());
   }
 
-  static Map<String, List<Attendee>> getToDoAttendees(List<String> todoIds) throws SQLException {
+  static Map<String, List<Attendee>> getToDoAttendees(Collection<String> todoIds) throws SQLException {
     return getAttendees(todoIds, AttendeeDAO.TODOCOLUMNNAMES,
         AttendeeDAO.TODOTABLENAME, AttendeeDAO.TODOIDNAME);
   }
 
-  private static Map<String, List<Attendee>> getAttendees(List<String> ids, String columns,
+  private static Map<String, List<Attendee>> getAttendees(Collection<String> ids, String columns,
       String table, String idLabel) throws SQLException {
     return JdbcSqlQuery.executeBySplittingOn(ids, (idBatch, result)-> JdbcSqlQuery
         .createSelect(columns)

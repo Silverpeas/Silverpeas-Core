@@ -741,7 +741,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   }
 
   @Override
-  public Map<String, List<Attendee>> getToDoAttendees(final List<String> todoIds) {
+  public Map<String, List<Attendee>> getToDoAttendees(final Collection<String> todoIds) {
     try {
       return AttendeeDAO.getToDoAttendees(todoIds);
     } catch (Exception e) {

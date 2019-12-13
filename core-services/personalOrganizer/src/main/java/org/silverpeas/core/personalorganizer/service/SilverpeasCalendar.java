@@ -205,7 +205,7 @@ public interface SilverpeasCalendar {
 
   List<Attendee> getToDoAttendees(String todoId);
 
-  Map<String, List<Attendee>> getToDoAttendees(List<String> todoIds);
+  Map<String, List<Attendee>> getToDoAttendees(Collection<String> todoIds);
 
   void setToDoAttendees(String todoId, String[] userIds);
 
