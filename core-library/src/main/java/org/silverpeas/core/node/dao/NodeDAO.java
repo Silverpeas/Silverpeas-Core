@@ -86,7 +86,9 @@ public class NodeDAO {
   private static final String ID_EQUALS = " id = ";
   private static final String NODE_ID_AND_INSTANCE_ID_CLAUSE =
       " where nodeId = ? and instanceId = ?";
-  private static final String SELECT_FROM = "select * from ";
+  private static final String SELECT_FROM = "SELECT nodeid, nodename, nodedescription, " +
+      "nodecreationdate, nodecreatorid, nodepath, nodelevelnumber, nodefatherid, modelid, " +
+      "nodestatus, instanceid, type, ordernumber, lang, rightsdependson FROM ";
   private static final String NODE_STATEMENT = "nodeStatement = ";
   private static final String NODE_ID = "NodeId = ";
   private static final String UPDATE = "update ";
@@ -628,12 +630,12 @@ public class NodeDAO {
    * @since 1.0
    */
   private NodeDetail getAnotherHeader(Connection con, NodePK nodePK) throws SQLException {
-    final String nodeId = nodePK.getId();
-    final String selectQuery =
-        SELECT_FROM + nodePK.getTableName() + " where nodeId = " + nodeId + " and instanceId = '" +
-            nodePK.getComponentName() + "'";
-    try (final Statement stmt = con.createStatement()) {
-      try (final ResultSet rs = stmt.executeQuery(selectQuery)) {
+    final int nodeId = Integer.parseInt(nodePK.getId());
+    final String selectQuery = SELECT_FROM + NODE_TABLE + " WHERE nodeId = ? and instanceId = ?";
+    try (final PreparedStatement stmt = con.prepareStatement(selectQuery)) {
+      stmt.setInt(1, nodeId);
+      stmt.setString(2, nodePK.getComponentName());
+      try (final ResultSet rs = stmt.executeQuery()) {
         if (rs.next()) {
           return resultSet2NodeDetail(rs, nodePK);
         } else {
