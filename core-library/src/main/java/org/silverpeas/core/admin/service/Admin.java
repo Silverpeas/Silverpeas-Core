@@ -1481,7 +1481,10 @@ class Admin implements Administration {
     spaceManager.moveSpace(shortSpaceId, shortFatherId);
 
     // set space in last rank
-    spaceManager.updateSpaceOrder(shortSpaceId, getAllSubSpaceIdsWithoutCache(fatherId).length);
+    int position = moveOnTop
+        ? getAllRootSpaceIds().length
+        : getAllSubSpaceIdsWithoutCache(fatherId).length;
+    spaceManager.updateSpaceOrder(shortSpaceId, position);
 
     if (useProfileInheritance) {
       processProfileInstsOnSpaceMove(shortSpaceId, shortFatherId, moveOnTop);
