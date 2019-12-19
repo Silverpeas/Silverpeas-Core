@@ -40,7 +40,6 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import java.time.ZoneId;
 
 import static org.silverpeas.core.util.URLUtil.getMinifiedWebResourceUrl;
@@ -237,16 +236,6 @@ class WebCommonLookAndFeel {
           .append(getJavaScriptTag(contextPath + "/silverkeyboard/vendor/js/layouts/english.min.js"))
           .append(getJavaScriptTag(contextPath + "/silverkeyboard/vendor/js/layouts/german.min.js"))
           .append(getJavaScriptTagWithVersion(contextPath + "/silverkeyboard/js/silverkeyboard.js"));
-
-      code.append("<script type=\"text/javascript\">").append(STR_NEW_LINE)
-          .append("whenSilverpeasReady(function() {").append(STR_NEW_LINE)
-          .append("    console.log('Initialize the virtual keyboard');").append(STR_NEW_LINE)
-          .append("    window.top.SilverKeyboard")
-          .append("                 .init('").append(language).append("')").append(STR_NEW_LINE)
-          .append("                 .enableFor(window.document);").append(STR_NEW_LINE)
-          .append("});").append(STR_NEW_LINE)
-          .append("</script>")
-          .append(STR_NEW_LINE);
     }
 
     return code.toString();

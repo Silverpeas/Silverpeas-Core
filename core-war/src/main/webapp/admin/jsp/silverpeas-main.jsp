@@ -187,7 +187,6 @@
 
 <div id="sp-layout-main">
   <div id="sp-layout-header-part"></div>
-  <div id="virtual-keyboard" class="simple-keyboard"></div>
   <div id="sp-layout-body-part"></div>
   <div id="sp-layout-footer-part" style="display: none"></div>
 </div>

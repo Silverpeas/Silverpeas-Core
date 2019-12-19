@@ -24,15 +24,21 @@
 
 (function() {
 
+  let silverKeyboardDebug = true;
+
   /**
    * SilverKeyboard version 1.0.0.
    * It is currently based upon <a href="https://virtual-keyboard.js.org/">Simple Keyboard</a>
    */
   if (window.top.SilverKeyboard) {
+    whenSilverpeasReady(function() {
+      __logDebug('Enabling the virtual keyboard on ' + window.name);
+      window.top.SilverKeyboard.enableFor(window.document);
+    });
     return;
   }
 
-  window.top.SilverKeyboard = new function() {
+  let SilverKeyboard = function(silverKeyboardLayoutAdapter) {
 
     const inputTypes = ['date', 'datetime-local', 'email', 'month', 'number', 'password', 'search',
       'tel', 'text', 'time', 'url', 'week'];
@@ -56,23 +62,21 @@
      * the virtual keyboard.
      * @return {Window.SilverKeyboard} instance.
      */
-    this.init = function(locale, selectors = []) {
+    this.init = function(locale, selectors) {
       if (_initialized) {
-        console.log('[Virtual Keyboard] Already initialized!');
+        __logDebug('Already initialized!');
         return this;
       }
 
       if (!('ontouchstart' in window) || (navigator.maxTouchPoints > 0) ||
           (navigator.msMaxTouchPoints > 0)) {
-        console.log(
-            "[Virtual Keyboard] The screen isn't a touch one. Disable the virtual keyboard!");
+        __logDebug("The screen isn't a touch one. Disable the virtual keyboard!");
         //return;
       }
 
-      console.log("[Virtual Keyboard] The screen is a touch one. Enable the virtual keyboard");
+      __logDebug("The screen is a touch one. Enable the virtual keyboard");
 
-      let kbdWidget = window.top.document.querySelector('#virtual-keyboard');
-      if (kbdWidget === null) {
+      if (typeof silverKeyboardLayoutAdapter === 'undefined') {
         throw new Error("No virtual keyboard widget's location defined in the DOM!");
       }
 
@@ -82,7 +86,7 @@
         _inputs = selectors;
       }
 
-      console.log('[Virtual Keyboard] Inputs to support:', _inputs);
+      __logDebug('Inputs to support:', _inputs);
 
       let layout = '';
       let display;
@@ -103,9 +107,6 @@
       _keyboard = new window.SimpleKeyboard.default({
         onChange : onChange,
         onKeyPress : onKeyPress,
-        onInit : function() {
-          window.top.document.querySelector('#virtual-keyboard').style.display = 'none';
-        },
         newLineOnEnter : true,
         tabCharOnTab : false,
         preventMouseDownDefault : true,
@@ -135,7 +136,7 @@
       }
 
       if (!window.MutationObserver) {
-        console.log(
+        __logDebug(
             "The web browser doesn't support MutationObserver. The virtual keyboard cannot be enabled");
         return this;
       }
@@ -162,7 +163,7 @@
     function processTextualInput($input) {
       if (isATextualInput($input)) {
         if (!$input.classList.contains(kbdClassName)) {
-          console.log('[Virtual Keyboard] Input found: ', $input);
+          __logDebug('Input found: ', $input);
           $input.classList.add(kbdClassName);
           attachEventsListening($input);
         }
@@ -177,7 +178,7 @@
 
     function attachEventsListening($input) {
       $input.addEventListener("focus", function(event) {
-        window.top.document.querySelector('#virtual-keyboard').style.display = '';
+        silverKeyboardLayoutAdapter.show();
         _keyboard.setInput(event.target.value, event.target.name);
         if (event.target.setSelectionRange) {
           event.target.setSelectionRange(event.target.value.length, event.target.value.length);
@@ -187,7 +188,7 @@
       });
       $input.addEventListener("focusout", function(event) {
         event.target.style.border = '';
-        window.top.document.querySelector('#virtual-keyboard').style.display = 'none';
+        silverKeyboardLayoutAdapter.hide();
       });
       $input.addEventListener("input", function(event) {
         _keyboard.setInput(event.target.value, event.target.name);
@@ -249,7 +250,7 @@
         let $input = _keyboard.focusedInput;
         let doc = $input.ownerDocument;
         if (doc) {
-          let $allInputs = doc.querySelectorAll(`.${kbdClassName}`);
+          let $allInputs = doc.querySelectorAll('.' + kbdClassName);
           let $nextInput = nextValidInput($allInputs, $input);
           if ($nextInput)
             $nextInput.focus();
@@ -269,4 +270,42 @@
       }
     }
   };
+
+  let SilverKeyboardLayoutAdapter = function() {
+    __logDebug("Installing DOM keyboard container");
+    let keyBoardAnchor = document.createElement('div');
+    keyBoardAnchor.id = 'virtual-keyboard';
+    keyBoardAnchor.classList.add('simple-keyboard');
+    let keyboardLayoutPart = spLayout.getCustomFooter().newCustomPart('virtual-keyboard');
+    keyboardLayoutPart.getContainer().appendChild(keyBoardAnchor);
+    this.show = function() {
+      keyboardLayoutPart.show();
+    };
+    this.hide = function() {
+      keyboardLayoutPart.hide();
+    };
+  };
+
+  /**
+   * Logs debug messages.
+   * @private
+   */
+  function __logDebug() {
+    if (silverKeyboardDebug) {
+      let mainDebugStatus = sp.log.debugActivated;
+      sp.log.debugActivated = true;
+      let messages = [];
+      Array.prototype.push.apply(messages, arguments);
+      messages.splice(0, 0, "[Virtual Keyboard]");
+      sp.log.debug.apply(this, messages);
+      sp.log.debugActivated = mainDebugStatus;
+    }
+  }
+
+  whenSilverpeasReady(function() {
+    __logDebug('Initialize the virtual keyboard');
+    window.top.SilverKeyboard = new SilverKeyboard(new SilverKeyboardLayoutAdapter())
+        .init(currentUser.language)
+        .enableFor(window.document);
+  });
 })();
