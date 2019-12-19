@@ -167,6 +167,11 @@
     function attachEventsListening($input) {
       $input.addEventListener("focus", function(event) {
         window.top.document.querySelector('#virtual-keyboard').style.display = '';
+        _keyboard.setInput(event.target.value, event.target.name);
+        if (event.target.setSelectionRange) {
+          event.target.setSelectionRange(event.target.value.length, event.target.value.length);
+          _keyboard.caretPosition = event.target.value.length;
+        }
         switchToInput(event.target);
       });
       $input.addEventListener("focusout", function(event) {
@@ -174,7 +179,7 @@
         window.top.document.querySelector('#virtual-keyboard').style.display = 'none';
       });
       $input.addEventListener("input", function(event) {
-        _keyboard.setInput(event.target.value, event.target.id);
+        _keyboard.setInput(event.target.value, event.target.name);
       });
     }
 
