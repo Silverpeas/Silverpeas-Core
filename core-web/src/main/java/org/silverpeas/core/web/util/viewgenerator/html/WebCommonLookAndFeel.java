@@ -231,7 +231,7 @@ class WebCommonLookAndFeel {
     final SettingBundle generalSettings = ResourceLocator.getGeneralSettingBundle();
     if (generalSettings.getBoolean("web.tool.virtualKeyboard", false)) {
       code.append(getCSSLinkTag(contextPath + "/silverkeyboard/vendor/css/simple-keyboard-2.27.1.min.css"))
-          .append(getCSSLinkTag(contextPath + "/silverkeyboard/css/silverleyboard.css"))
+          .append(getCSSLinkTag(contextPath + "/silverkeyboard/css/silverkeyboard.css"))
           .append(getJavaScriptTag(contextPath + "/silverkeyboard/vendor/js/simple-keyboard-2.27.1.min.js"))
           .append(getJavaScriptTag(contextPath + "/silverkeyboard/vendor/js/layouts/french.min.js"))
           .append(getJavaScriptTag(contextPath + "/silverkeyboard/vendor/js/layouts/english.min.js"))

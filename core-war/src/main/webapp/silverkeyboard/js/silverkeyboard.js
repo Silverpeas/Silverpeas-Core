@@ -34,10 +34,10 @@
 
   window.top.SilverKeyboard = new function() {
 
-    var inputTypes = ['date', 'datetime-local', 'email', 'month', 'number', 'password', 'search',
+    const inputTypes = ['date', 'datetime-local', 'email', 'month', 'number', 'password', 'search',
       'tel', 'text', 'time', 'url', 'week'];
 
-    var kbdClassName = 'kbd-textual-input';
+    const kbdClassName = 'kbd-textual-input';
 
     var _keyboard = undefined;
 
@@ -85,12 +85,20 @@
       console.log('[Virtual Keyboard] Inputs to support:', _inputs);
 
       let layout = '';
-      if (locale === 'fr')
+      let display;
+      if (locale === 'fr') {
         layout = french;
-      else if (locale === 'en')
+        display = {
+          '{bksp}': 'Suppr arri&egrave;re',
+          '{enter}': 'Entrer',
+          '{shift}': 'Maj',
+          '{lock}': 'Verr. Maj'
+        };
+      } else if (locale === 'en') {
         layout = english;
-      else if (locale === 'de')
+      } else if (locale === 'de') {
         layout = german;
+      }
 
       _keyboard = new window.SimpleKeyboard.default({
         onChange : onChange,
@@ -101,7 +109,10 @@
         newLineOnEnter : true,
         tabCharOnTab : false,
         preventMouseDownDefault : true,
-        layout : layout
+        layout : layout,
+        maxLength : {},
+        mergeDisplay: true,
+        display: display
       });
 
       _initialized = true;
@@ -188,7 +199,10 @@
         _keyboard.focusedInput.style.border = '';
       }
       $input.style.border = 'thin solid green';
+      let maxLength = _keyboard.options.maxLength;
+      if ($input.maxLength > 0) maxLength[$input.name] = $input.maxLength;
       _keyboard.setOptions({
+        maxLength : maxLength,
         inputName : $input.name
       });
       _keyboard.focusedInput = $input;
