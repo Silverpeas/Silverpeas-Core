@@ -228,6 +228,26 @@ class WebCommonLookAndFeel {
       code.append(includeMylinks(new ElementContainer()).toString()).append(STR_NEW_LINE);
     }
 
+    final SettingBundle generalSettings = ResourceLocator.getGeneralSettingBundle();
+    if (generalSettings.getBoolean("web.tool.virtualKeyboard", false)) {
+      code.append(getCSSLinkTag(contextPath + "/silverkeyboard/vendor/css/simple-keyboard-2.27.1.min.css"))
+          .append(getCSSLinkTag(contextPath + "/silverkeyboard/css/silverleyboard.css"))
+          .append(getJavaScriptTag(contextPath + "/silverkeyboard/vendor/js/simple-keyboard-2.27.1.min.js"))
+          .append(getJavaScriptTag(contextPath + "/silverkeyboard/vendor/js/layouts/french.min.js"))
+          .append(getJavaScriptTag(contextPath + "/silverkeyboard/vendor/js/layouts/english.min.js"))
+          .append(getJavaScriptTag(contextPath + "/silverkeyboard/vendor/js/layouts/german.min.js"))
+          .append(getJavaScriptTagWithVersion(contextPath + "/silverkeyboard/js/silverkeyboard.js"));
+
+      code.append("<script type=\"text/javascript\">").append(STR_NEW_LINE)
+          .append("whenSilverpeasReady(function() {").append(STR_NEW_LINE)
+          .append("    console.log('Initialize the virtual keyboard');").append(STR_NEW_LINE)
+          .append("    window.top.SilverKeyboard")
+          .append("                 .init('").append(language).append("')").append(STR_NEW_LINE)
+          .append("                 .enableFor(window.document);").append(STR_NEW_LINE)
+          .append("});").append(STR_NEW_LINE)
+          .append("</script>")
+          .append(STR_NEW_LINE);
+    }
 
     return code.toString();
   }
