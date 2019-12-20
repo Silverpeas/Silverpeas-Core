@@ -32,7 +32,7 @@
    */
   if (window.top.SilverKeyboard) {
     whenSilverpeasReady(function() {
-      __logDebug('Enabling the virtual keyboard on ' + window.name);
+      __logDebug("Enabling the virtual keyboard on " + window.name);
       window.top.SilverKeyboard.enableFor(window.document);
     });
     return;
@@ -64,7 +64,7 @@
      */
     this.init = function(locale, selectors) {
       if (_initialized) {
-        __logDebug('Already initialized!');
+        __logDebug("Already initialized!");
         return this;
       }
 
@@ -81,12 +81,12 @@
       }
 
       if (selectors === undefined || selectors === null || selectors.length === 0) {
-        _inputs = ["input", "textarea"];
+        _inputs = ['input', 'textarea'];
       } else {
         _inputs = selectors;
       }
 
-      __logDebug('Inputs to support:', _inputs);
+      __logDebug("Inputs to support:", _inputs);
 
       let layout = '';
       let display;
@@ -128,11 +128,11 @@
      */
     this.enableFor = function(node) {
       if (!_initialized) {
-        throw new Error('SilverKeyboard not initialized!');
+        throw new Error("SilverKeyboard isn't initialized!");
       }
 
       if (!node) {
-        throw new Error('No HTML node specified for which SilverKeyboard is enabled!');
+        throw new Error("No HTML node specified for which SilverKeyboard is enabled!");
       }
 
       if (!window.MutationObserver) {
@@ -163,7 +163,7 @@
     function processTextualInput($input) {
       if (isATextualInput($input)) {
         if (!$input.classList.contains(kbdClassName)) {
-          __logDebug('Input found: ', $input);
+          __logDebug("Input found: ", $input);
           $input.classList.add(kbdClassName);
           attachEventsListening($input);
         }
@@ -177,7 +177,10 @@
     }
 
     function attachEventsListening($input) {
-      $input.addEventListener("focus", function(event) {
+      $input.addEventListener('click', function(event) {
+        _keyboard.caretPosition = getCaretPosition(event.target);
+      });
+      $input.addEventListener('focus', function(event) {
         silverKeyboardLayoutAdapter.show();
         _keyboard.setInput(event.target.value, event.target.name);
         if (event.target.setSelectionRange) {
@@ -186,27 +189,37 @@
         }
         switchToInput(event.target);
       });
-      $input.addEventListener("focusout", function(event) {
-        event.target.style.border = '';
+      $input.addEventListener('focusout', function(event) {
         silverKeyboardLayoutAdapter.hide();
       });
-      $input.addEventListener("input", function(event) {
+      $input.addEventListener('input', function(event) {
         _keyboard.setInput(event.target.value, event.target.name);
       });
     }
 
     function switchToInput($input) {
-      if (_keyboard.options.inputName && _keyboard.options.inputName !== 'default') {
-        _keyboard.focusedInput.style.border = '';
-      }
-      $input.style.border = 'thin solid green';
       let maxLength = _keyboard.options.maxLength;
-      if ($input.maxLength > 0) maxLength[$input.name] = $input.maxLength;
+      if ($input.maxLength > 0) {
+        maxLength[$input.name] = $input.maxLength;
+      }
       _keyboard.setOptions({
-        maxLength : maxLength,
-        inputName : $input.name
+        maxLength : maxLength, inputName : $input.name
       });
       _keyboard.focusedInput = $input;
+    }
+
+    function getCaretPosition($input) {
+      if ($input.createTextRange) {
+        console.log('coucou');
+        var range = document.selection.createRange().duplicate();
+        range.moveEnd('character', $input.value.length);
+        if (range.text === '') {
+          return $input.value.length;
+        }
+        return $input.value.lastIndexOf(range.text);
+      } else {
+        return $input.selectionStart;
+      }
     }
 
     function isVisible($input) {
@@ -235,7 +248,7 @@
       let caretPosition = _keyboard.caretPosition;
       if (caretPosition !== null) {
         if ($input.setSelectionRange) {
-          $input.focus();
+          //$input.focus();
           $input.setSelectionRange(caretPosition, caretPosition);
         }
       }
@@ -246,23 +259,24 @@
       /**
        * Cycle the keyboard focus over the different inputs
        */
-      if (button === "{tab}") {
+      if (button === '{tab}') {
         let $input = _keyboard.focusedInput;
         let doc = $input.ownerDocument;
         if (doc) {
           let $allInputs = doc.querySelectorAll('.' + kbdClassName);
           let $nextInput = nextValidInput($allInputs, $input);
-          if ($nextInput)
+          if ($nextInput) {
             $nextInput.focus();
+          }
         }
       }
 
       /**
        * If you want to handle the shift and caps lock buttons
        */
-      if (button === "{shift}" || button === "{lock}") {
+      if (button === '{shift}' || button === '{lock}') {
         let currentLayout = _keyboard.options.layoutName;
-        let shiftToggle = currentLayout === "default" ? "shift" : "default";
+        let shiftToggle = currentLayout === 'default' ? 'shift' : 'default';
 
         _keyboard.setOptions({
           layoutName : shiftToggle
@@ -273,6 +287,7 @@
 
   let SilverKeyboardLayoutAdapter = function() {
     __logDebug("Installing DOM keyboard container");
+    __checkIsDefined('Silverpeas Layout', spLayout);
     let keyBoardAnchor = document.createElement('div');
     keyBoardAnchor.id = 'virtual-keyboard';
     keyBoardAnchor.classList.add('simple-keyboard');
@@ -302,8 +317,15 @@
     }
   }
 
+  function __checkIsDefined(objName, obj) {
+    if (!obj) {
+      throw new Error(objName + " should be defined to use the virtual keyboard!");
+    }
+  }
+
   whenSilverpeasReady(function() {
     __logDebug('Initialize the virtual keyboard');
+    __checkIsDefined('current user', currentUser);
     window.top.SilverKeyboard = new SilverKeyboard(new SilverKeyboardLayoutAdapter())
         .init(currentUser.language)
         .enableFor(window.document);
