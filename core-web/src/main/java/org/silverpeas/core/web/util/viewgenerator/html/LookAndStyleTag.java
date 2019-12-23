@@ -23,13 +23,15 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.core.util.URLUtil;
 import org.apache.ecs.ElementContainer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-import java.io.IOException;
+
+import static org.silverpeas.core.util.URLUtil.getApplicationURL;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.link;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.script;
 
 public class LookAndStyleTag extends TagSupport {
 
@@ -48,24 +50,20 @@ public class LookAndStyleTag extends TagSupport {
 
   @Override
   public int doStartTag() throws JspException {
-    try {
-      pageContext.getOut().println(WebCommonLookAndFeel.getInstance()
-          .getCommonHeader((HttpServletRequest) pageContext.getRequest()));
-
-
-      ElementContainer elements = new ElementContainer();
-      if (withFieldsetStyle) {
-        elements.addElement(JavascriptPluginInclusion
-            .link(URLUtil.getApplicationURL() + "/util/styleSheets/fieldset.css"));
-      }
-      if (withCheckFormScript) {
-        elements.addElement(JavascriptPluginInclusion
-            .script(URLUtil.getApplicationURL() + "/util/javaScript/checkForm.js"));
-      }
-      elements.output(pageContext.getOut());
-    } catch (IOException e) {
-      throw new JspException("LookAndStyle Tag", e);
-    }
+    getContent().output(pageContext.getOut());
     return SKIP_BODY;
+  }
+
+  public ElementContainer getContent() {
+    final ElementContainer elements = new ElementContainer();
+    final HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+    elements.addElement(WebCommonLookAndFeel.getInstance().getCommonHeader(request));
+    if (withFieldsetStyle) {
+      elements.addElement(link(getApplicationURL() + "/util/styleSheets/fieldset.css"));
+    }
+    if (withCheckFormScript) {
+      elements.addElement(script(getApplicationURL() + "/util/javaScript/checkForm.js"));
+    }
+    return elements;
   }
 }
