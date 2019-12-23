@@ -34,19 +34,14 @@
   UserDetail userDetail = (UserDetail) request.getAttribute("userDetail");
   LocalizationBundle authenticationBundle =
       ResourceLocator.getLocalizationBundle("org.silverpeas.authentication.multilang.authentication",
-          userDetail.getUserPreferences().getLanguage());
+          userLanguage);
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title><%=generalMultilang.getString("GML.popupTitle")%></title>
+<view:sp-page>
+<view:sp-head-part minimalSilverpeasScriptEnv="true">
   <link rel="icon" href="<%=favicon%>" />
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
-  <script type="text/javascript">var webContext = '<%=m_context%>';</script>
-  <view:includePlugin name="jquery"/>
-  <view:includePlugin name="tkn"/>
-  <view:script src="/util/javaScript/silverpeas.js" />
-  <view:script src="/util/javaScript/silverpeas-i18n.js" />
+  <view:includePlugin name="virtualkeyboard"/>
   <view:includePlugin name="popup"/>
   <!--[if lt IE 8]>
   <style type="text/css">
@@ -79,8 +74,8 @@
       $('#answer').focus();
     });
   </script>
-</head>
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
 <form id="questionForm" action="#" method="post">
   <div id="top"></div>
   <div class="page">
@@ -115,6 +110,5 @@
     <input type="hidden" name="DomainId" value="<%=userDetail.getDomainId()%>"/>
   </div>
 </form>
-</body>
-
-</html>
+</view:sp-body-part>
+</view:sp-page>

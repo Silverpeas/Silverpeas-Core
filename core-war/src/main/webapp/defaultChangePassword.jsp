@@ -26,14 +26,10 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<fmt:setLocale value="${pageContext.request.locale.language}"/>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <%@ include file="headLog.jsp" %>
 
-<fmt:setLocale value="${requestScope.locale}"/>
+<fmt:setLocale value="<%=userLanguage%>"/>
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
 <view:setBundle basename="org.silverpeas.authentication.multilang.authentication" var="authenticationBundle"/>
 
@@ -42,18 +38,12 @@
 <c:set var="isEmailAddress" value="${requestScope.isThatUserMustFillEmailAddressOnFirstLogin}"/>
 <c:set var="emailAddress" value="${isEmailAddress ? requestScope.emailAddress : ''}"/>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title><fmt:message key="GML.popupTitle"/></title>
+<view:sp-page>
+<view:sp-head-part minimalSilverpeasScriptEnv="true">
   <link rel="icon" href="<%=favicon%>" />
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
-  <script type="text/javascript">var webContext = '<%=m_context%>';</script>
-  <view:includePlugin name="polyfills"/>
-  <view:includePlugin name="jquery"/>
-  <view:includePlugin name="tkn"/>
-  <view:script src="/util/javaScript/silverpeas.js" />
-  <view:script src="/util/javaScript/silverpeas-i18n.js" />
+  <view:includePlugin name="virtualkeyboard"/>
   <view:includePlugin name="popup"/>
   <view:script src="/password.js"/>
   <c:if test="${isEmailAddress}">
@@ -74,9 +64,8 @@
     }
   </style>
   <![endif]-->
-</head>
-
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
 <form id="changePwdForm" action="#" method="post">
   <div class="page">
     <div class="titre">
@@ -186,8 +175,9 @@
       passwordInputId : 'newPassword',
       extraValidations : extraValidations
     });
+    document.querySelector("input").focus();
   }, 0);
 </script>
 <view:script src="/util/javaScript/silverpeas-password.js"/>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

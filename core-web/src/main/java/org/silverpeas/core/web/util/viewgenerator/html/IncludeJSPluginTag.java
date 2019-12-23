@@ -26,18 +26,22 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 import org.apache.ecs.ElementContainer;
 import org.silverpeas.core.html.SupportedWebPlugins;
 import org.silverpeas.core.html.WebPlugin;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 import java.io.IOException;
 
-import static org.silverpeas.core.html.SupportedWebPlugins.*;
-import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
+import static org.silverpeas.core.html.SupportedWebPlugins.LAYOUT;
+import static org.silverpeas.core.html.SupportedWebPlugins.USERSESSION;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.includeLayout;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.includeUserSession;
 
 /**
  * This tag is for including javascript plugins with their stylesheets.
@@ -77,10 +81,20 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
   }
 
   protected String getLanguage() {
-    String language = I18NHelper.defaultLanguage;
+    final String language;
     MainSessionController controller = getSessionAttribute(MAIN_SESSION_CONTROLLER);
     if (controller != null) {
       language = controller.getFavoriteLanguage();
+    } else if (StringUtil.isDefined(getRequestAttribute("userLanguage"))) {
+      language = getRequestAttribute("userLanguage");
+    } else {
+      final PageContext pageContext = (PageContext) getJspContext();
+      final HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+      if (request.getLocale() != null) {
+        language = DisplayI18NHelper.verifyLanguage(request.getLocale().getLanguage());
+      } else {
+        language = DisplayI18NHelper.getDefaultLanguage();
+      }
     }
     return language;
   }

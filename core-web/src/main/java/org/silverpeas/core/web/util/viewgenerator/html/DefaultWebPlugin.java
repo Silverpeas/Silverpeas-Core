@@ -48,6 +48,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
    */
   @Override
   public void init() {
+    add(MINIMALSILVERPEAS, (x, l) -> includeMinimalSilverpeas(x));
     add(POLYFILLS, (x, l) -> includePolyfills(x));
     add(EMBEDPLAYER, (x, l) -> includeEmbedPlayer(x));
     add(MEDIAPLAYER, (x, l) -> includeMediaPlayer(x));
@@ -91,6 +92,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(CRUD, (x, l) -> includeCrud(x));
     add(PANES, (x, l) -> includePanes(x));
     add(CONTRIBUTIONREMINDER, JavascriptPluginInclusion::includeContributionReminder);
+    add(VIRTUALKEYBOARD, JavascriptPluginInclusion::includeVirtualKeyboard);
   }
 
   @Override

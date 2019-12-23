@@ -23,18 +23,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.web.authentication.credentials.RegistrationSettings"%>
-<%@page import="org.silverpeas.core.socialnetwork.model.SocialNetworkID" %>
+<%@page import="org.silverpeas.core.admin.domain.model.Domain"%>
+<%@page import="org.silverpeas.core.admin.user.model.User" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ page import="org.silverpeas.core.security.authentication.AuthenticationService" %>
-<%@ page import="org.silverpeas.core.admin.domain.model.Domain" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
-<%@ page import="java.util.Hashtable" %>
-<%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.core.security.authentication.AuthenticationServiceProvider" %>
+<%@ page import="org.silverpeas.core.socialnetwork.model.SocialNetworkID" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.web.authentication.credentials.RegistrationSettings" %>
+<%@ page import="java.util.List" %>
 
 <%
   response.setDateHeader("Expires", -1);
@@ -54,10 +55,17 @@
           request.getLocale().getLanguage());
 
 // Get the logo to print
+  String userLanguage = (String) request.getAttribute("userLanguage");
+  if (StringUtil.isNotDefined(userLanguage) && User.getCurrentRequester() != null) {
+    userLanguage = User.getCurrentRequester().getUserPreferences().getLanguage();
+  }
+  if (StringUtil.isNotDefined(userLanguage)) {
+    userLanguage = request.getLocale().getLanguage();
+  }
   SettingBundle general =
       ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
    LocalizationBundle generalMultilang =
-      ResourceLocator.getGeneralLocalizationBundle(request.getLocale().getLanguage());
+      ResourceLocator.getGeneralLocalizationBundle(userLanguage);
 
   String logo = general.getString("logo", m_context + "/images/logo.jpg");
   String styleSheet = general.getString("defaultLoginStyleSheet", m_context + "/style.css");

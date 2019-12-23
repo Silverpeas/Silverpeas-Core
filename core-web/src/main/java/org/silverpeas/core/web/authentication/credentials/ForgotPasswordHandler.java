@@ -50,7 +50,7 @@ public class ForgotPasswordHandler extends FunctionHandler {
     String userId;
     try {
       userId = getAdminService().getUserIdByLoginAndDomain(login, domainId);
-      request.setAttribute("UserLanguage", User.getById(userId).getUserPreferences().getLanguage());
+      request.setAttribute("userLanguage", User.getById(userId).getUserPreferences().getLanguage());
     } catch (AdminException e) {
       // Login incorrect.
       request.setAttribute("login", login);

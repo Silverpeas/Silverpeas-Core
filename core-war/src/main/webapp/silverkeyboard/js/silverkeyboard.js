@@ -110,7 +110,8 @@
       }
 
       try {
-        _keyboard = new window.SimpleKeyboard.default({
+        let Keyboard = window.SimpleKeyboard['default'];
+        _keyboard = new Keyboard({
           onChange : onChange,
           onKeyPress : onKeyPress,
           newLineOnEnter : true,
@@ -169,8 +170,22 @@
         childList : true, subtree : true
       });
 
+      focusCurrentElementIfHandled(node);
+
       return this;
     };
+
+    function focusCurrentElementIfHandled(node) {
+      let activeElement = node.activeElement;
+      if (activeElement) {
+        _inputs.filter(function(inputType) {
+          return inputType.toLowerCase() === activeElement.tagName.toLowerCase()
+        }).forEach(function() {
+          activeElement.blur();
+          activeElement.focus();
+        })
+      }
+    }
 
     function isATextualInput(node) {
       let nodeName = node.nodeName.toLowerCase();
@@ -290,7 +305,7 @@
       /**
        * If you want to handle the shift and caps lock buttons
        */
-      if (button === '{shift}' || button === '{lock}') {
+      else if (button === '{shift}' || button === '{lock}') {
         let currentLayout = _keyboard.options.layoutName;
         let shiftToggle = currentLayout === 'default' ? 'shift' : 'default';
 
@@ -302,19 +317,33 @@
   };
 
   let SilverKeyboardLayoutAdapter = function() {
-    __logDebug("Installing DOM keyboard container");
-    __checkIsDefined('Silverpeas Layout', spLayout);
     let keyBoardAnchor = document.createElement('div');
     keyBoardAnchor.id = 'virtual-keyboard';
     keyBoardAnchor.classList.add('simple-keyboard');
-    let keyboardLayoutPart = spLayout.getCustomFooter().newCustomPart('virtual-keyboard');
-    keyboardLayoutPart.getContainer().appendChild(keyBoardAnchor);
-    this.show = function() {
-      keyboardLayoutPart.show();
-    };
-    this.hide = function() {
-      keyboardLayoutPart.hide();
-    };
+    if (typeof spLayout === 'undefined') {
+      __logDebug("Installing DOM keyboard container");
+      let keyBoardContainer = document.createElement('div');
+      keyBoardContainer.classList.add('virtual-keyboard-without-silverpeas-layout');
+      keyBoardContainer.style.display = 'none';
+      keyBoardContainer.appendChild(keyBoardAnchor);
+      document.body.appendChild(keyBoardContainer);
+      this.show = function() {
+        keyBoardContainer.style.display = '';
+      };
+      this.hide = function() {
+        keyBoardContainer.style.display = 'none';
+      };
+    } else {
+      __logDebug("Installing DOM keyboard container into Silverpeas's Layout");
+      let keyboardLayoutPart = spLayout.getCustomFooter().newCustomPart('virtual-keyboard');
+      keyboardLayoutPart.getContainer().appendChild(keyBoardAnchor);
+      this.show = function() {
+        keyboardLayoutPart.show();
+      };
+      this.hide = function() {
+        keyboardLayoutPart.hide();
+      };
+    }
   };
 
   /**
@@ -364,9 +393,9 @@
   window.top.SilverKeyboard = true;
   whenSilverpeasReady(function() {
     __logDebug("Initialize the virtual keyboard");
-    __checkIsDefined('current user', currentUser);
+    __checkIsDefined('Virtual keyboard setting', VirtualKeyboardSettings);
     window.top.SilverKeyboard = new SilverKeyboard(new SilverKeyboardLayoutAdapter())
-        .init(currentUser.language)
+        .init(VirtualKeyboardSettings.get('u.l'))
         .enableFor(window.document);
   });
 })();

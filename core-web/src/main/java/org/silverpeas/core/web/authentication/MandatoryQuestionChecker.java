@@ -58,6 +58,7 @@ public class MandatoryQuestionChecker {
         if (userDetail != null && !userDetail.isAnonymous() && !StringUtil.isDefined(userDetail.
             getLoginQuestion())) {
           req.setAttribute("userDetail", userDetail);
+          req.setAttribute("userLanguage", userDetail.getUserPreferences().getLanguage());
           destination = "/CredentialsServlet/ChangeQuestion";
         }
       } catch (AdminException e) {

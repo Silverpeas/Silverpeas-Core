@@ -22,3 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.virtual-keyboard-without-silverpeas-layout {
+  z-index: 1;
+  position: absolute;
+  top: calc( 100% - 230px );
+  width: 100%;
+}

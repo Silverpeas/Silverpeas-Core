@@ -62,7 +62,7 @@ public class ResetPasswordHandler extends FunctionHandler {
         UserFull user;
         try {
           user = getAdminService().getUserFull(userId);
-          request.setAttribute("UserLanguage", user.getUserPreferences().getLanguage());
+          request.setAttribute("userLanguage", user.getUserPreferences().getLanguage());
         } catch (AdminException e) {
           throw new ForgottenPasswordException(
               "CredentialsServlet.resetPasswordHandler.doAction()",

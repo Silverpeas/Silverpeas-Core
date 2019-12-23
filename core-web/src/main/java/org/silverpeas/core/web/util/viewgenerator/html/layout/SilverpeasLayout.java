@@ -24,12 +24,21 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.layout;
 
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+import java.util.Optional;
 import java.util.ResourceBundle;
+
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * Centralizing common data providing.
@@ -38,16 +47,37 @@ import java.util.ResourceBundle;
 class SilverpeasLayout extends BodyTagSupport {
   private static final long serialVersionUID = -8485442477706985045L;
 
-  MainSessionController getMainSessionController() {
-    return (MainSessionController) ((HttpServletRequest) pageContext.getRequest())
-        .getSession(false).getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+  private Optional<MainSessionController> getMainSessionController() {
+    final HttpSession session = ((HttpServletRequest) pageContext.getRequest()).getSession(false);
+    return session != null
+        ? ofNullable((MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT))
+        : empty();
+  }
+
+  String getUserLanguage() {
+    return getMainSessionController()
+        .map(MainSessionController::getFavoriteLanguage)
+        .orElseGet(() -> {
+          String userLanguage = (String) pageContext.getRequest().getAttribute("language");
+          if (isNotDefined(userLanguage)) {
+            userLanguage = (String) pageContext.getRequest().getAttribute("userLanguage");
+          }
+          if (isNotDefined(userLanguage) && pageContext.getRequest().getLocale() != null) {
+            userLanguage = pageContext.getRequest().getLocale().getLanguage();
+          }
+          return DisplayI18NHelper.verifyLanguage(userLanguage);
+        });
   }
 
   String getComponentId() {
-    return ((String[]) pageContext.getRequest().getAttribute("browseContext"))[3];
+    final String[] context = (String[]) pageContext.getRequest().getAttribute("browseContext");
+    return context != null ? context[3] : null;
   }
 
   ResourceBundle getBundle() {
-    return ((MultiSilverpeasBundle) pageContext.getRequest().getAttribute("resources")).getMultilangBundle();
+    final MultiSilverpeasBundle resources = (MultiSilverpeasBundle) pageContext.getRequest().getAttribute("resources");
+    return resources != null
+        ? resources.getMultilangBundle()
+        : getGeneralLocalizationBundle(getUserLanguage());
   }
 }
