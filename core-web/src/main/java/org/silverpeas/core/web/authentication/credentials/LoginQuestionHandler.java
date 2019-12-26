@@ -45,6 +45,7 @@ public class LoginQuestionHandler extends FunctionHandler {
       UserDetail userDetail = UserDetail.getById(userId);
       if (StringUtil.isDefined(userDetail.getLoginQuestion())) {
         request.setAttribute("userDetail", userDetail);
+        request.setAttribute("userLanguage", userDetail.getUserPreferences().getLanguage());
         return getGeneral().getString("userLoginQuestionPage");
       } else {
         // page d'erreur : veuillez contacter votre admin

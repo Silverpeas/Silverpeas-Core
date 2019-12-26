@@ -1141,42 +1141,45 @@ if (typeof window.sp === 'undefined') {
       warningActivated : true,
       errorActivated : true,
       debugActivated : false,
-      formatMessage : function() {
-        var message = "";
-        for (var i = 0; i < arguments.length; i++) {
-          var item = arguments[i];
-          if (typeof item === 'object') {
-            item = JSON.stringify(item);
+      formatMessage : function(levelPrefix, messages) {
+        try {
+          var message = levelPrefix + " -";
+          for (var i = 0; i < messages.length; i++) {
+            var item = messages[i];
+            if (typeof item === 'object') {
+              item = JSON.stringify(item);
+            }
+            message += ' ' + item;
           }
-          if (i > 0) {
-            message += " ";
-          }
-          message += item;
+          return message;
+        } catch (ignore) {
         }
-        return message;
+        var safeMessage = [levelPrefix];
+        Array.prototype.push.apply(safeMessage, messages);
+        return safeMessage;
       },
       info : function() {
         if (sp.log.infoActivated) {
           console &&
-          console.info('SP - INFO - ' + sp.log.formatMessage.apply(sp.log, arguments));
+          console.info(sp.log.formatMessage('SP - INFO', arguments));
         }
       },
       warning : function() {
         if (sp.log.warningActivated) {
           console &&
-          console.warn('SP - WARNING - ' + sp.log.formatMessage.apply(sp.log, arguments));
+          console.warn(sp.log.formatMessage('SP - WARNING', arguments));
         }
       },
       error : function() {
         if (sp.log.errorActivated) {
           console &&
-          console.error('SP - ERROR - ' + sp.log.formatMessage.apply(sp.log, arguments));
+          console.error(sp.log.formatMessage('SP - ERROR', arguments));
         }
       },
       debug : function() {
         if (sp.log.debugActivated) {
           console &&
-          console.log('SP - DEBUG - ' + sp.log.formatMessage.apply(sp.log, arguments));
+          console.log(sp.log.formatMessage('SP - DEBUG', arguments));
         }
       }
     },

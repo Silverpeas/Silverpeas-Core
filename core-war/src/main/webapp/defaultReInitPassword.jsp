@@ -23,18 +23,16 @@
   --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@ include file="headLog.jsp" %>
 <%
-  String lang = (String) request.getAttribute("UserLanguage");
   LocalizationBundle reinitPasswordBundle = ResourceLocator.getLocalizationBundle(
       "org.silverpeas.authentication.multilang.forgottenPasswordMail",
-      lang);
+      userLanguage);
   LocalizationBundle authenticationBundle = ResourceLocator.getLocalizationBundle(
       "org.silverpeas.authentication.multilang.authentication",
-      lang);
+      userLanguage);
 
   String action = request.getParameter("Action");
   String actionLabel = "";
@@ -56,12 +54,10 @@
   }
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title><%=generalMultilang.getString("GML.popupTitle")%>
-  </title>
+<view:sp-page>
+<view:sp-head-part noLookAndFeel="true">
   <link rel="icon" href="<%=favicon%>" />
-  <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"></link>
+  <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <!--[if lt IE 8]>
   <style>
     input {
@@ -72,14 +68,13 @@
       margin-left: -10px;
       height: 26px;
       line-height: 24px;
-      padding: 0px 60px;
       display: block;
-      padding: 0px;
+      padding: 0;
     }
   </style>
   <![endif]-->
-</head>
-<body id="reinit-password">
+</view:sp-head-part>
+<view:sp-body-part>
 <div id="top"></div>
 <div class="page">
   <div class="titre"><%=authenticationBundle.getString("authentication.logon.title") %>
@@ -87,7 +82,7 @@
   <div id="background">
     <div class="cadre">
       <div id="header">
-        <img src="<%=logo%>" class="logo"/>
+        <img src="<%=logo%>" class="logo" alt=""/>
 
         <p class="information"><%=actionTitle %>
         </p>
@@ -105,5 +100,5 @@
     </div>
   </div>
 </div>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.webapi.password;
 
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
 import org.silverpeas.core.security.authentication.password.service.PasswordCheck;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.webapi.base.RESTWebService;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
@@ -81,9 +81,13 @@ public abstract class AbstractPasswordResource extends RESTWebService {
    * @return the language code
    */
   protected String getLanguage() {
-    String language = I18NHelper.defaultLanguage;
+    final String language;
     if (getUser() != null) {
       language = getUserPreferences().getLanguage();
+    } else if (getHttpRequest().getLocale() != null) {
+      language = DisplayI18NHelper.verifyLanguage(getHttpRequest().getLocale().getLanguage());
+    } else {
+      language = DisplayI18NHelper.getDefaultLanguage();
     }
     return language;
   }

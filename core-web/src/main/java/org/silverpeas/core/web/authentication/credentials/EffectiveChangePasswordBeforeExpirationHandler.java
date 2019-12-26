@@ -51,13 +51,7 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends ChangePasswo
     if (controller == null) {
       return "/Login";
     }
-
-    SettingBundle settings = ResourceLocator.getSettingBundle(
-        "org.silverpeas.authentication.settings.passwordExpiration");
-    String passwordChangeURL =
-        settings.getString("passwordChangeURL", "/defaultPasswordAboutToExpire.jsp");
-
-    UserDetail ud = controller.getCurrentUserDetail();
+    final UserDetail ud = controller.getCurrentUserDetail();
     try {
       String login = ud.getLogin();
       String domainId = ud.getDomainId();
@@ -75,6 +69,10 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends ChangePasswo
 
       return "/Main/" + favoriteFrame;
     } catch (AuthenticationException e) {
+      SettingBundle settings = ResourceLocator.getSettingBundle(
+          "org.silverpeas.authentication.settings.passwordExpiration");
+      String passwordChangeURL =
+          settings.getString("passwordChangeURL", "/defaultPasswordAboutToExpire.jsp");
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return performUrlChangePasswordError(request, passwordChangeURL, ud);
     }

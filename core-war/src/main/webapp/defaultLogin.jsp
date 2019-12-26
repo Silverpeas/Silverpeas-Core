@@ -51,15 +51,11 @@
   }
 %>
 <view:setBundle basename="org.silverpeas.authentication.multilang.authentication"/>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title><fmt:message key="GML.popupTitle"/></title>
+<view:sp-page>
+<view:sp-head-part minimalSilverpeasScriptEnv="true">
   <link rel="icon" href="<%=favicon%>" />
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
-  <view:includePlugin name="jquery"/>
-  <view:includePlugin name="tkn"/>
+  <view:includePlugin name="virtualkeyboard"/>
   <script type="text/javascript">
     // Public domain cookie code written by:
     // Bill Dortch, hIdaho Design
@@ -137,8 +133,8 @@
     });
   </script>
   <meta name="viewport" content="initial-scale=1.0"/>
-</head>
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
 <form id="formLogin" action="<c:url value="/AuthenticationServlet" />" method="post" accept-charset="UTF-8">
   <% if (newRegistrationActive || facebookEnabled || linkedInEnabled) { %>
   <div id="top">
@@ -289,5 +285,5 @@
   document.getElementById("formLogin").Login.focus();
 </script>
 
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

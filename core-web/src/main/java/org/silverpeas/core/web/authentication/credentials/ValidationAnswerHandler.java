@@ -47,6 +47,7 @@ public class ValidationAnswerHandler extends ChangeQuestionAnswerFunctionHandler
       String userId = getAdminService().getUserIdByLoginAndDomain(login, domainId);
       UserDetail userDetail = getAdminService().getUserDetail(userId);
       request.setAttribute("userDetail", userDetail);
+      request.setAttribute("userLanguage", userDetail.getUserPreferences().getLanguage());
 
       // encrypt answer if needed
       if (answerCrypted) {

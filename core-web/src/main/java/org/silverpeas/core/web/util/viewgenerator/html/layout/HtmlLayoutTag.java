@@ -66,7 +66,7 @@ public class HtmlLayoutTag extends SilverpeasLayout {
     response.setHeader("Cache-Control", "no-store");
     response.setHeader("Pragma", "no-cache");
     response.setDateHeader("Expires", -1);
-    pageContext.setAttribute("userLanguage", getMainSessionController().getFavoriteLanguage());
+    pageContext.setAttribute("userLanguage", getUserLanguage());
     pageContext.setAttribute("componentId", getComponentId());
     return super.doStartTag();
   }
@@ -76,7 +76,7 @@ public class HtmlLayoutTag extends SilverpeasLayout {
     final ElementContainer elements = new ElementContainer();
     elements.addElement(DOCTYPE);
     final html html = new html();
-    html.addAttribute("xml:lang", getMainSessionController().getFavoriteLanguage());
+    html.addAttribute("xml:lang", getUserLanguage());
     renderAngularJs(html);
     html.addElement(getBodyContent().getString());
     elements.addElement(html);

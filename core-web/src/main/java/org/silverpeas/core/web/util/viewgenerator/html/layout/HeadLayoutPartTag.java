@@ -23,12 +23,15 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.layout;
 
+import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.head;
 import org.apache.ecs.xhtml.title;
 import org.silverpeas.core.web.util.viewgenerator.html.LookAndStyleTag;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
+
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.includeMinimalSilverpeas;
 
 /**
  * This tag MUST be the first included into a {@link HtmlLayoutTag}.
@@ -45,9 +48,14 @@ import javax.servlet.jsp.tagext.BodyContent;
 public class HeadLayoutPartTag extends SilverpeasLayout {
   private static final long serialVersionUID = 6334425081267420038L;
 
+  private boolean minimalSilverpeasScriptEnv;
   private boolean noLookAndFeel;
   private boolean withFieldsetStyle;
   private boolean withCheckFormScript;
+
+  public void setMinimalSilverpeasScriptEnv(final boolean minimalSilverpeasScriptEnv) {
+    this.minimalSilverpeasScriptEnv = minimalSilverpeasScriptEnv;
+  }
 
   public void setNoLookAndFeel(final boolean noLookAndFeel) {
     this.noLookAndFeel = noLookAndFeel;
@@ -65,6 +73,7 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
   public int doEndTag() throws JspException {
     final head head = new head();
     head.addElement(new title(getBundle().getString("GML.popupTitle")));
+    renderMinimalSilverpeas(head);
     renderLookAndFeel(head);
     final BodyContent bodyContent = getBodyContent();
     if (bodyContent != null) {
@@ -74,8 +83,14 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
     return EVAL_PAGE;
   }
 
+  private void renderMinimalSilverpeas(final head head) {
+    if (minimalSilverpeasScriptEnv) {
+      head.addElement(includeMinimalSilverpeas(new ElementContainer()));
+    }
+  }
+
   private void renderLookAndFeel(final head head) {
-    if (!noLookAndFeel) {
+    if (!minimalSilverpeasScriptEnv && !noLookAndFeel) {
       final LookAndStyleTag lookAndFeel = new LookAndStyleTag();
       lookAndFeel.setPageContext(pageContext);
       lookAndFeel.setParent(this);
