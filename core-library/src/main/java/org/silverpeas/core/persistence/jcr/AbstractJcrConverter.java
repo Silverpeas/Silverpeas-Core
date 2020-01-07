@@ -216,8 +216,8 @@ public abstract class AbstractJcrConverter {
    * @return the boolean value of the property - false if the property doesn't exist.
    * @throws RepositoryException on error
    */
-  protected boolean getBooleanProperty(Node node, String propertyName,
-      final boolean defaultValueIfNull) throws RepositoryException {
+  protected Boolean getBooleanProperty(Node node, String propertyName,
+      final Boolean defaultValueIfNull) throws RepositoryException {
     if (node.hasProperty(propertyName)) {
       return node.getProperty(propertyName).getBoolean();
     }

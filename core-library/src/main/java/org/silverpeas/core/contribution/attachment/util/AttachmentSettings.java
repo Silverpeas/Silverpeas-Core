@@ -49,6 +49,15 @@ public class AttachmentSettings {
   }
 
   /**
+   * Gets the delay in percent after which an alert MUST be sent to the owner in order to remind
+   * it to release the reserved file.
+   * @return an integer representing a percentage, -1 means no value.
+   */
+  public static int getDelayInPercentAfterWhichReservedFileAlertMustBeSent() {
+    return settings.getInteger("DelayReservedFile", -1);
+  }
+
+  /**
    * Indicates the order the methods in charge of returning list of documents must apply.
    * @return false to list from oldest to youngest, true to list from the youngest to the oldest.
    */
@@ -74,6 +83,14 @@ public class AttachmentSettings {
     return Stream
         .of(settings.getString("attachmentsAsContent.component.names", StringUtil.EMPTY).split("[ ,;]"))
         .map(String::trim);
+  }
+
+  /**
+   * Gets the default value of the JCR flag which indicates if a document is displayable as content.
+   * @return true of displayable as content, false otherwise.
+   */
+  public static boolean defaultValueOfDisplayableAsContentBehavior() {
+    return settings.getBoolean("attachmentsAsContent.default.value", true);
   }
 
   /**

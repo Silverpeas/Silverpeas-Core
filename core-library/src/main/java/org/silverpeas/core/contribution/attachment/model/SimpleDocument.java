@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.WebdavServiceProvider;
@@ -36,7 +36,6 @@ import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLEncoder;
 import org.silverpeas.core.util.URLUtil;
@@ -56,6 +55,8 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import static java.io.File.separatorChar;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfDisplayableAsContentBehavior;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.getDelayInPercentAfterWhichReservedFileAlertMustBeSent;
 import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
 
 /**
@@ -65,8 +66,6 @@ import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
 public class SimpleDocument implements Serializable, Securable {
 
   private static final long serialVersionUID = 8778738762037114180L;
-  private static final SettingBundle settings =
-      ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
   public static final String WEBDAV_FOLDER = "webdav";
   public static final String ATTACHMENT_PREFIX = "attach_";
   public static final String VERSION_PREFIX = "version_";
@@ -96,7 +95,7 @@ public class SimpleDocument implements Serializable, Securable {
   private DocumentType documentType = DocumentType.attachment;
   private Set<SilverpeasRole> forbiddenDownloadForRoles = null;
   private SimpleAttachment attachment;
-  private boolean displayableAsContent = true;
+  private Boolean displayableAsContent;
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
       SimpleAttachment attachment) {
@@ -428,18 +427,16 @@ public class SimpleDocument implements Serializable, Securable {
     resetWebdavContentEditionContext();
     this.editedBy = currentEditor;
     setReservation(new Date());
-    String day =
-        OrganizationControllerProvider.getOrganisationController()
-            .getComponentParameterValue(getInstanceId(), "nbDayForReservation");
-
+    final String day = OrganizationController.get()
+        .getComponentParameterValue(getInstanceId(), "nbDayForReservation");
     if (StringUtil.isInteger(day)) {
-      int nbDay = Integer.parseInt(day);
+      final int nbDay = Integer.parseInt(day);
       Calendar calendar = Calendar.getInstance();
       DateUtil.addDaysExceptWeekEnds(calendar, nbDay);
       setExpiry(calendar.getTime());
       final int maxDelay = 100;
       final int minResult = 2;
-      int delayReservedFile = settings.getInteger("DelayReservedFile", -1);
+      final int delayReservedFile = getDelayInPercentAfterWhichReservedFileAlertMustBeSent();
       if ((delayReservedFile >= 0) && (delayReservedFile <= maxDelay)) {
         int result = (nbDay * delayReservedFile) / maxDelay;
         if (result > minResult) {
@@ -988,7 +985,9 @@ public class SimpleDocument implements Serializable, Securable {
    * @return true to display as content, false otherwise.
    */
   public boolean isDisplayableAsContent() {
-    return getVersionMaster().displayableAsContent;
+    return getVersionMaster().displayableAsContent != null
+        ? getVersionMaster().displayableAsContent
+        : defaultValueOfDisplayableAsContentBehavior();
   }
 
   public void setDisplayableAsContent(final boolean displayableAsContent) {
