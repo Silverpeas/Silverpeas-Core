@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.webapi.admin;
 
-import static org.silverpeas.core.webapi.admin.AdminResourceURIs.COMPONENTS_BASE_URI;
-import static org.silverpeas.core.webapi.admin.AdminResourceURIs.SPACES_BASE_URI;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -33,8 +33,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import static org.silverpeas.core.web.SilverpeasWebResource.getBasePathBuilder;
+import static org.silverpeas.core.webapi.admin.AdminResourceURIs.COMPONENTS_BASE_URI;
+import static org.silverpeas.core.webapi.admin.AdminResourceURIs.SPACES_BASE_URI;
 
 /**
  * The component instance light entity is a ComponentInstLight object that is exposed in the web as
@@ -109,7 +110,7 @@ public class ComponentEntity extends StructureElementEntity<ComponentEntity> {
    */
   @Override
   protected String getStringBaseURI() {
-    return getURI().toString().replaceFirst(COMPONENTS_BASE_URI + "/[0-9]+", COMPONENTS_BASE_URI);
+    return getBasePathBuilder().path(COMPONENTS_BASE_URI).build().toString();
   }
 
   /*
@@ -118,6 +119,6 @@ public class ComponentEntity extends StructureElementEntity<ComponentEntity> {
    */
   @Override
   protected String getStringParentBaseURI() {
-    return getURI().toString().replaceFirst(COMPONENTS_BASE_URI + "/[0-9]+", SPACES_BASE_URI);
+    return getBasePathBuilder().path(SPACES_BASE_URI).build().toString();
   }
 }

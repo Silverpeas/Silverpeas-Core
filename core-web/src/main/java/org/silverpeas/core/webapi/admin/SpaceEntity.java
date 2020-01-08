@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 
+import static org.silverpeas.core.web.SilverpeasWebResource.getBasePathBuilder;
 import static org.silverpeas.core.webapi.admin.AdminResourceURIs.*;
 
 /**
@@ -184,7 +185,7 @@ public class SpaceEntity extends StructureElementEntity<SpaceEntity> {
    */
   @Override
   protected String getStringBaseURI() {
-    return getURI().toString().replaceFirst(SPACES_BASE_URI + "/[0-9]+", SPACES_BASE_URI);
+    return getBasePathBuilder().path(SPACES_BASE_URI).build().toString();
   }
 
   /*
