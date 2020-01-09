@@ -114,7 +114,6 @@ if (mainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(mainSession
 <fmt:message var="reindexGroupsLabel" key="admin.reindex.op.groups" />
 <fmt:message var="reindexPdcLabel" key="admin.reindex.op.pdc" />
 <fmt:message var="reindexTodosLabel" key="admin.reindex.op.todos" />
-<fmt:message var="reindexAgendaLabel" key="admin.reindex.op.agendas" />
 <fmt:message var="reindexHelpLabel" key="admin.reindex.help" />
 <fmt:message var="spaceCollaborationLabel" key="SpaceCollaboration" />
 <fmt:message var="prefixConfirmMessage" key="admin.reindex.js.warn" />
@@ -250,7 +249,6 @@ function index(action, compo, space) {
   <view:operation action="javaScript:index('IndexGroups','','')" altText="${reindexGroupsLabel}"/>
   <view:operation action="javaScript:index('IndexPdc','','')" altText="${reindexPdcLabel}"/>
   <view:operation action="javaScript:index('IndexPerso','Todo','')" altText="${reindexTodosLabel}"/>
-  <view:operation action="javaScript:index('IndexPerso','Agenda','')" altText="${reindexAgendaLabel}"/>
 </view:operationPane>
 <view:window>
   <view:frame>
