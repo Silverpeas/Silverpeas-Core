@@ -66,8 +66,8 @@ public class HtmlLayoutTag extends SilverpeasLayout {
     response.setHeader("Cache-Control", "no-store");
     response.setHeader("Pragma", "no-cache");
     response.setDateHeader("Expires", -1);
-    pageContext.setAttribute("userLanguage", getUserLanguage());
-    pageContext.setAttribute("componentId", getComponentId());
+    pageContext.getRequest().setAttribute("userLanguage", getUserLanguage());
+    pageContext.getRequest().setAttribute("componentId", getComponentId());
     return super.doStartTag();
   }
 

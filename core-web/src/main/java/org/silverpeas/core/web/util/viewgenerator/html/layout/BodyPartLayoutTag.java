@@ -39,7 +39,10 @@ public class BodyPartLayoutTag extends SilverpeasLayout {
 
   @Override
   public int doEndTag() throws JspException {
-    body body = new body();
+    final body body = new body();
+    if (isDefined(getId())) {
+      body.setID(getId());
+    }
     body.addElement(getBodyContent().getString());
     renderAngularJs(body);
     body.output(pageContext.getOut());
