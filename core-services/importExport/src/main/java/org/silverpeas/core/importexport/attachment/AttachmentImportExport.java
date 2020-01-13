@@ -24,17 +24,15 @@
 package org.silverpeas.core.importexport.attachment;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.importexport.form.FormTemplateImportExport;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -42,6 +40,7 @@ import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,6 +50,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
+import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.normalize;
 
 /**
  * A non-versioned attachment importer/exporter. Import and export are performed by a user and then
@@ -95,10 +98,8 @@ public class AttachmentImportExport {
       if (xmlContent != null) {
         attDetail.setXmlForm(xmlContent.getName());
       }
-      InputStream input = null;
       // Store xml content
-      try {
-        input = getAttachmentContent(attDetail);
+      try (final InputStream input = getAttachmentContent(attDetail)) {
         this.addAttachmentToPublication(pubId, componentId, attDetail, input, indexIt);
         if (xmlContent != null) {
           if (xmlIE == null) {
@@ -108,18 +109,15 @@ public class AttachmentImportExport {
           xmlIE.importXMLModelContentType(pk, "Attachment", xmlContent, attDetail.getAuthor());
         }
       } catch (Exception e) {
-        SilverTrace.error("attachment", "AttachmentImportExport.importAttachments()",
-            "root.MSG_GEN_PARAM_VALUE", e);
+        SilverLogger.getLogger(this).error(e);
         SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(e, null);
-      } finally {
-        IOUtils.closeQuietly(input);
       }
 
       if (attDetail.isRemoveAfterImport()) {
         boolean removed = FileUtils.deleteQuietly(getAttachmentFile(attDetail));
         if (!removed) {
-          SilverTrace.error("attachment", "AttachmentImportExport.importAttachments()",
-              "root.MSG_GEN_PARAM_VALUE", "Can't remove file " + getAttachmentFile(attDetail));
+          SilverLogger.getLogger(this)
+              .error("Can''t remove file {0}", getAttachmentFile(attDetail).toString());
         }
       }
     }
@@ -140,7 +138,7 @@ public class AttachmentImportExport {
       AttachmentDetail attachment, InputStream input, boolean indexIt) {
     SimpleDocumentPK attachmentPk = new SimpleDocumentPK(null, componentId);
     ResourceReference foreignKey = new ResourceReference(pubId, componentId);
-    List<SimpleDocument> existingAttachments = AttachmentServiceProvider.getAttachmentService().
+    List<SimpleDocument> existingAttachments = getAttachmentService().
         listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
 
     String logicalName = attachment.getLogicalName();
@@ -163,42 +161,38 @@ public class AttachmentImportExport {
     if (creationDate == null) {
       creationDate = new Date();
     }
-    SimpleDocument ad_toCreate = new SimpleDocument(attachmentPk, pubId, -1, false,
+    final SimpleDocument documentToCreate = new SimpleDocument(attachmentPk, pubId, -1, false,
         new SimpleAttachment(attachment.getLogicalName(), null, attachment.
         getTitle(), attachment.getDescription(), attachment.getSize(),
         FileUtil.getMimeType(attachment.getPhysicalName()), userId, creationDate, attachment.
         getXmlForm()));
-    return AttachmentServiceProvider.getAttachmentService().createAttachment(ad_toCreate, input,
-        indexIt);
+    return getAttachmentService()
+        .createAttachment(documentToCreate, input, indexIt);
   }
 
   private String computeUniqueName(AttachmentDetail attachment, int increment,
       List<SimpleDocument> existingAttachments, String logicalName, String updateRule) {
-    String uniqueName = logicalName;
-    int incrementSuffixe = increment;
-    for (SimpleDocument ad_toCreate : existingAttachments) {
-      if (ad_toCreate.getFilename().equals(uniqueName)) {
-        if (ad_toCreate.getSize() != attachment.getSize()
-            && AttachmentDetail.IMPORT_UPDATE_RULE_ADD.equalsIgnoreCase(updateRule)) {
-          uniqueName = attachment.getLogicalName();
-          int extPosition = logicalName.lastIndexOf('.');
-          if (extPosition != -1) {
-            uniqueName = uniqueName.substring(0, extPosition) + '_' + (++incrementSuffixe)
-                + uniqueName.substring(extPosition, uniqueName.length());
-          } else {
-            uniqueName += '_' + (++incrementSuffixe);
-          }
-          // On reprend la boucle au debut pour verifier que le nom
-          // genere n est pas lui meme un autre nom d'attachment de la publication
-          return computeUniqueName(attachment, incrementSuffixe, existingAttachments, uniqueName,
-              updateRule);
-        } else {// on efface l'ancien fichier joint et on stoppe la boucle
-          AttachmentServiceProvider.getAttachmentService().deleteAttachment(ad_toCreate);
-          return uniqueName;
+    final String normalizedUniqueName = normalize(logicalName);
+    final int incrementSuffix = increment + 1;
+    for (SimpleDocument existingDocument : existingAttachments) {
+      if (existingDocument.getFilename().equals(normalizedUniqueName)) {
+        if (existingDocument.getSize() != attachment.getSize() &&
+            AttachmentDetail.IMPORT_UPDATE_RULE_ADD.equalsIgnoreCase(updateRule)) {
+          final String baseName = FilenameUtils.getBaseName(attachment.getLogicalName());
+          final String extension = FilenameUtils.getExtension(attachment.getLogicalName());
+          final String incrementedLogicalName =
+              baseName + '_' + incrementSuffix + (isDefined(extension) ? "." + extension : "");
+          // Continuing to verify if duplication are not already existing
+          return computeUniqueName(attachment, incrementSuffix, existingAttachments,
+              incrementedLogicalName, updateRule);
+        } else {
+          // Deleting old file and stopping the loop
+          getAttachmentService().deleteAttachment(existingDocument);
+          return normalizedUniqueName;
         }
       }
     }
-    return logicalName;
+    return normalizedUniqueName;
   }
 
   /**
@@ -214,23 +208,25 @@ public class AttachmentImportExport {
       String relativeExportPath, String extensionFilter) {
 
     // Recuperation des attachments
-    Collection<SimpleDocument> listAttachment = AttachmentServiceProvider.getAttachmentService()
+    Collection<SimpleDocument> listAttachment = getAttachmentService()
         .listDocumentsByForeignKey(pk, null);
     List<AttachmentDetail> listToReturn = new ArrayList<>(listAttachment.size());
     if (!listAttachment.isEmpty()) {
       // Pour chaque attachment trouve, on copie le fichier dans le dossier
       // d'exportation
       for (SimpleDocument attachment : listAttachment) {
-        if (attachment.getDocumentType() != DocumentType.attachment) {
-          // ce n est pas un fichier joint mais un fichier appartenant surement
-          // au wysiwyg si le context
-          // est different de images et ce quelque soit le type du fichier
-          continue;// on ne copie pas le fichier
-        }
+        if (attachment.getDocumentType() != DocumentType.attachment
+            || !attachment.isDownloadAllowedForRolesFrom(user)) {
 
-        if (!attachment.isDownloadAllowedForRolesFrom(user)) {
-          // The user is not allowed to download this document. No error is thrown but the
-          // document is not exported.
+          //It is not a document of type 'attachment' but maybe a wysiwyg file if document type
+          //is not 'images'
+
+          //or
+
+          //The user is not allowed to download this document. No error is thrown but the
+          //document is not exported.
+
+          //File is not copied
           continue;
         }
 
@@ -251,7 +247,7 @@ public class AttachmentImportExport {
   private void copyAttachment(SimpleDocument attDetail, String exportPath) {
     String fichierJointExport = exportPath + File.separatorChar + FileServerUtils.
         replaceAccentChars(attDetail.getFilename());
-    AttachmentServiceProvider.getAttachmentService().getBinaryContent(new File(fichierJointExport),
+    getAttachmentService().getBinaryContent(new File(fichierJointExport),
         attDetail.getPk(), null);
   }
 
@@ -259,9 +255,9 @@ public class AttachmentImportExport {
     return new FileInputStream(getAttachmentFile(attachment));
   }
 
-  public File getAttachmentFile(AttachmentDetail attachment) throws FileNotFoundException {
+  public File getAttachmentFile(AttachmentDetail attachment) {
     File file = new File(FileUtil.convertPathToServerOS(attachment.getAttachmentPath()));
-    if (file == null || !file.exists() || !file.isFile()) {
+    if (!file.exists() || !file.isFile()) {
       String baseDir = settings.getString("importRepository", "");
       file = new File(FileUtil.convertPathToServerOS(baseDir + File.separatorChar + attachment.
           getPhysicalName()));

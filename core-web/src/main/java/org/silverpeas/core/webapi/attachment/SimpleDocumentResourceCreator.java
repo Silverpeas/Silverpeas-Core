@@ -94,8 +94,8 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
     try {
 
       // Create the attachment
-      String normalizedFileName = StringUtil.normalize(filename);
-      SimpleDocumentEntity entity = createSimpleDocument(uploadData, normalizedFileName);
+      final String normalizedFileName = StringUtil.normalize(filename);
+      final SimpleDocumentEntity entity = createSimpleDocument(uploadData, normalizedFileName);
 
       if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {
 
@@ -175,7 +175,7 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
                   new ResourceReference(uploadData.getForeignId(), getComponentId()), lang);
           publicDocument = uploadData.getVersionType() == DocumentVersion.TYPE_PUBLIC_VERSION;
           needCreation = document == null;
-          if (document == null) {
+          if (needCreation) {
             document = new HistorisedDocument(pk, uploadData.getForeignId(), 0, userId,
                 new SimpleAttachment(uploadedFilename, lang, title, description,
                     uploadData.getRequestFile().getSize(), FileUtil.getMimeType(tempFile.getPath()),
