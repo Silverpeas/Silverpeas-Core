@@ -818,9 +818,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public QueryDescription buildSimpleQuery(String query) {
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.setSearchingUser(getUserId());
-    queryDescription.addComponent("users");
-    for (String appId : getContactComponentIds()) {
-      queryDescription.addComponent(appId);
+    if (getCurrentDirectory() == DIRECTORY_COMPONENT) {
+      queryDescription.addComponent(getCurrentComponent().getId());
+    } else {
+      queryDescription.addComponent("users");
+      for (String appId : getContactComponentIds()) {
+        queryDescription.addComponent(appId);
+      }
     }
     setCurrentQuery(query);
     return queryDescription;
