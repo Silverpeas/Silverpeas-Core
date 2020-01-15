@@ -154,7 +154,11 @@ public interface AttachmentService extends DocumentIndexing {
 
   /**
    * Create file attached to an object who is identified by the foreignId.
-   *
+   * <p>
+   * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
+   * only single character encoding and no more combined characters. The normalized filename is
+   * set to given document.
+   * </p>
    * @param document the document to be created.
    * @param content the binary content of the document.
    * @return the stored document.
@@ -165,7 +169,11 @@ public interface AttachmentService extends DocumentIndexing {
 
   /**
    * Create file attached to an object who is identified by the foreignId.
-   *
+   * <p>
+   * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
+   * only single character encoding and no more combined characters. The normalized filename is
+   * set to given document.
+   * </p>
    * @param document the document to be created.
    * @param content the binary content of the document.
    * @param indexIt true if the document is to be indexed - false otherwhise.
@@ -175,7 +183,11 @@ public interface AttachmentService extends DocumentIndexing {
 
   /**
    * Create file attached to an object who is identified by the foreignId.
-   *
+   * <p>
+   * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
+   * only single character encoding and no more combined characters. The normalized filename is
+   * set to given document.
+   * </p>
    * @param document the document to be created.
    * @param content the binary content of the document.
    * @param indexIt true if the document is to be indexed - false otherwise.
@@ -188,7 +200,11 @@ public interface AttachmentService extends DocumentIndexing {
 
   /**
    * Create file attached to an object who is identified by the foreignId.
-   *
+   * <p>
+   * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
+   * only single character encoding and no more combined characters. The normalized filename is
+   * set to given document.
+   * </p>
    * @param document the document to be created.
    * @param content the binary content of the document.
    * @return the stored document.
@@ -199,7 +215,11 @@ public interface AttachmentService extends DocumentIndexing {
 
   /**
    * Create file attached to an object who is identified by the foreignId.
-   *
+   * <p>
+   * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
+   * only single character encoding and no more combined characters. The normalized filename is
+   * set to given document.
+   * </p>
    * @param document the document to be created.
    * @param content the binary content of the document.
    * @param indexIt true if the document is to be indexed, false otherwhise.
@@ -209,7 +229,11 @@ public interface AttachmentService extends DocumentIndexing {
 
   /**
    * Create file attached to an object who is identified by the foreignId.
-   *
+   * <p>
+   * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
+   * only single character encoding and no more combined characters. The normalized filename is
+   * set to given document.
+   * </p>
    * @param document the document to be created.
    * @param content the binary content of the document.
    * @param indexIt true if the document is to be indexed, false otherwhise.
@@ -339,7 +363,11 @@ public interface AttachmentService extends DocumentIndexing {
 
   /**
    * To update the document : status, metadata but not its content.
-   *
+   * <p>
+   * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
+   * only single character encoding and no more combined characters. The normalized filename is
+   * set to given document.
+   * </p>
    * @param document
    * @param indexIt
    * @param invokeCallback
@@ -348,7 +376,11 @@ public interface AttachmentService extends DocumentIndexing {
 
   /**
    * To update a document content by updating or adding some content.
-   *
+   * <p>
+   * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
+   * only single character encoding and no more combined characters. The normalized filename is
+   * set to given document.
+   * </p>
    * @param document
    * @param content
    * @param indexIt
@@ -359,7 +391,11 @@ public interface AttachmentService extends DocumentIndexing {
 
   /**
    * To update a document content by updating or adding some content.
-   *
+   * <p>
+   * The filename returned by {@link SimpleDocument#getFilename()} is normalized in order to get
+   * only single character encoding and no more combined characters. The normalized filename is
+   * set to given document.
+   * </p>
    * @param document
    * @param content
    * @param indexIt
