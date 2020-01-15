@@ -77,10 +77,12 @@
   boolean changePwdFromLoginPageActive =
       authenticationSettings.getBoolean("changePwdFromLoginPageActive", false);
   boolean newRegistrationActive = registrationSettings.isUserSelfRegistrationEnabled();
+  boolean virtualKeyboardActive = ResourceLocator.getGeneralSettingBundle().getBoolean("web.tool.virtualKeyboard", false);
 
 // active social networks
   boolean facebookEnabled = SocialNetworkID.FACEBOOK.isEnabled();
   boolean linkedInEnabled = SocialNetworkID.LINKEDIN.isEnabled();
+  boolean registrationPartActive = newRegistrationActive || facebookEnabled || linkedInEnabled;
 // Get a AuthenticationService object
 AuthenticationService lpAuth = AuthenticationServiceProvider.getService();
 // list of domains

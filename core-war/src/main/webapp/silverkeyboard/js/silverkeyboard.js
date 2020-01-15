@@ -41,7 +41,17 @@
     return;
   }
 
-  let SilverKeyboard = function(silverKeyboardLayoutAdapter) {
+  /**
+   * @param locale an ISO 639-1 code of a locale (currently only 'en', 'de' and 'fr' are
+   * supported)
+   * @param silverKeyboardLayoutAdapter the adapter to deals with for UI.
+   * @constructor
+   */
+  let SilverKeyboard = function(locale, silverKeyboardLayoutAdapter) {
+
+    if (typeof silverKeyboardLayoutAdapter === 'undefined') {
+      throw new Error("No virtual keyboard widget's location defined in the DOM!");
+    }
 
     const inputTypes = ['date', 'datetime-local', 'email', 'month', 'number', 'password', 'search',
       'tel', 'text', 'time', 'url', 'week'];
@@ -56,34 +66,56 @@
 
     var _inputs = [];
 
+    let __cache = new SilverpeasCache("SilverpeasVirtualKeyboard");
+
+    /**
+     * Indicates if the keyboard is activated.
+     * @returns {*}
+     */
+    this.isActivated = function() {
+      return __cache.get('activated');
+    };
+
+    /**
+     * Updates the activation state of the keyboard.
+     * @returns {boolean}
+     */
+    this.switchActivation = function() {
+      let newActivationState = !this.isActivated();
+      __cache.put("activated", newActivationState);
+      silverKeyboardLayoutAdapter.refreshActivationDock(this);
+      if (newActivationState) {
+        if (_initialized) {
+          __logInfo("Enable the virtual keyboard");
+        }
+        this.init().enableFor(window.document);
+      } else {
+        __logInfo("Disable the virtual keyboard");
+      }
+      return newActivationState;
+    };
+
     /**
      * Initializes the virtual keyboard with the specified locale and for the specified selectors of
      * input HTML element.
-     * @param locale an ISO 639-1 code of a locale (currently only 'en', 'de' and 'fr' are
-     * supported)
      * @param selectors a list of selectors of HTML elements for which the keyboard has to be used.
      * If not set, by default selects all the inputs and the textarea: ["input", "textarea"].
      * Nevertheless, among all the scanned HTML inputs, only textual ones are taken in charge by
      * the virtual keyboard.
      * @return {Window.SilverKeyboard} instance.
      */
-    this.init = function(locale, selectors) {
+    this.init = function(selectors) {
       if (_initialized) {
         __logDebug("Already initialized!");
         return this;
       }
 
-      if (!('ontouchstart' in window) || (navigator.maxTouchPoints > 0) ||
-          (navigator.msMaxTouchPoints > 0)) {
-        __logInfo("The screen isn't a touch one. Disable the virtual keyboard!");
+      if (!this.isActivated()) {
+        __logDebug("It is not activated");
         return this;
       }
 
-      __logInfo("The screen is a touch one. Enable the virtual keyboard");
-
-      if (typeof silverKeyboardLayoutAdapter === 'undefined') {
-        throw new Error("No virtual keyboard widget's location defined in the DOM!");
-      }
+      __logInfo("Enable the virtual keyboard");
 
       if (selectors === undefined || selectors === null || selectors.length === 0) {
         _inputs = ['input', 'textarea'];
@@ -157,6 +189,11 @@
         return this;
       }
 
+      if (window.__silverpeas_virtualkeyboard_observer_initialized) {
+        __logDebug("Observers already initialized");
+        return this;
+      }
+
       scanInputs(node.body);
 
       let observer = new MutationObserver(function(mutations) {
@@ -171,6 +208,8 @@
       });
 
       focusCurrentElementIfHandled(node);
+
+      window.__silverpeas_virtualkeyboard_observer_initialized = true;
 
       return this;
     };
@@ -208,11 +247,15 @@
       });
     }
 
-    function attachEventsListening($input) {
+    let attachEventsListening = function($input) {
       $input.addEventListener('click', function() {
         _keyboard.caretPosition = getCaretPosition($input);
       });
       $input.addEventListener('focus', function() {
+        if (!this.isActivated()) {
+          __logDebug("It is no more activated, so not displayed");
+          return;
+        }
         silverKeyboardLayoutAdapter.show();
         _keyboard.setInput($input.value, $input.name);
         if ($input.setSelectionRange) {
@@ -220,14 +263,14 @@
           _keyboard.caretPosition = $input.value.length;
         }
         switchToInput($input);
-      });
+      }.bind(this));
       $input.addEventListener('focusout', function() {
         silverKeyboardLayoutAdapter.hide();
       });
       $input.addEventListener('input', function() {
         _keyboard.setInput($input.value, $input.name);
       });
-    }
+    }.bind(this);
 
     function switchToInput($input) {
       let maxLength = _keyboard.options.maxLength;
@@ -314,6 +357,9 @@
         });
       }
     }
+
+    // UI activation initialization
+    silverKeyboardLayoutAdapter.refreshActivationDock(this);
   };
 
   let SilverKeyboardLayoutAdapter = function() {
@@ -344,6 +390,12 @@
         keyboardLayoutPart.hide();
       };
     }
+    this.refreshActivationDock = function(spKeyboard) {
+      let message = VirtualKeyboardBundle.get(spKeyboard.isActivated() ? 'vk.d' : 'vk.a');
+      document.querySelectorAll(".silverpeas-keyboard-activation-dock").forEach(function(dock) {
+        dock.innerHTML = message;
+      })
+    };
   };
 
   /**
@@ -394,8 +446,8 @@
   whenSilverpeasReady(function() {
     __logDebug("Initialize the virtual keyboard");
     __checkIsDefined('Virtual keyboard setting', VirtualKeyboardSettings);
-    window.top.SilverKeyboard = new SilverKeyboard(new SilverKeyboardLayoutAdapter())
-        .init(VirtualKeyboardSettings.get('u.l'))
+    window.top.SilverKeyboard = new SilverKeyboard(VirtualKeyboardSettings.get('u.l'), new SilverKeyboardLayoutAdapter())
+        .init()
         .enableFor(window.document);
   });
 })();

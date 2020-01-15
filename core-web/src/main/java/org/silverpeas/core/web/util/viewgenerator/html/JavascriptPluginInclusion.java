@@ -1099,6 +1099,11 @@ public class JavascriptPluginInclusion {
       final String language) {
     final SettingBundle generalSettings = ResourceLocator.getGeneralSettingBundle();
     if (generalSettings.getBoolean("web.tool.virtualKeyboard", false)) {
+      final LocalizationBundle bundle = ResourceLocator.getGeneralLocalizationBundle(language);
+      xhtml.addElement(scriptContent(bundleVariableName("VirtualKeyboardBundle")
+          .add("vk.a", bundle.getString("GML.virtual.keyboard.activate"))
+          .add("vk.d", bundle.getString("GML.virtual.keyboard.deactivate"))
+          .produce()));
       xhtml.addElement(scriptContent(settingVariableName("VirtualKeyboardSettings")
           .add("u.l", language)
           .produce()));
