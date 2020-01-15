@@ -33,6 +33,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverCon
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.classification.ObjectValuePair;
 import org.silverpeas.core.pdc.classification.PertinentAxis;
@@ -2098,14 +2099,14 @@ public class GlobalPdcManager implements PdcManager {
 
   @Override
   public void indexAllAxis() throws PdcException {
-    Iterator<AxisHeader> axis = getAxis().iterator();
-    AxisHeader a = null;
+
+    // starting by remove all indexed data relative to pdc
+    IndexEngineProxy.removeScopedIndexEntries("pdc");
+
     Connection con = openConnection();
     try {
-      while (axis.hasNext()) {
-        a = axis.next();
-        int rootId = a.getRootId();
-        treeService.indexTree(con, rootId);
+      for (AxisHeader a : getAxis()) {
+        treeService.indexTree(con, a.getRootId());
       }
     } catch (Exception e) {
       throw new PdcException(e);

@@ -64,6 +64,7 @@ import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.ProfileInstManager;
 import org.silverpeas.core.admin.user.ProfiledObjectManager;
+import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -2354,6 +2355,10 @@ class Admin implements Administration {
 
   @Override
   public void indexAllGroups() throws AdminException {
+
+    // starting by remove all indexed data relative to groups
+    IndexEngineProxy.removeScopedIndexEntries("groups");
+
     Domain[] domains = getAllDomains(); //All domains except Mixt Domain (id -1)
     for (Domain domain : domains) {
       try {
@@ -5411,6 +5416,10 @@ class Admin implements Administration {
   // -------------------------------------------------------------------------
   @Override
   public void indexAllUsers() throws AdminException {
+
+    // starting by remove all indexed data relative to users
+    IndexEngineProxy.removeScopedIndexEntries(UserIndexation.COMPONENT_ID);
+
     Domain[] domains = getAllDomains();
     for (Domain domain : domains) {
       try {
@@ -6093,4 +6102,5 @@ class Admin implements Administration {
       return this;
     }
   }
+
 }
