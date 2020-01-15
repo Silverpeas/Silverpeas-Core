@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.UserAlreadyExistsAdminException;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
 import org.silverpeas.core.admin.space.dao.SpaceDAO;
@@ -546,7 +547,7 @@ public class UserManager {
         SynchroDomainReport.error(USERMANAGER_SYNCHRO_REPORT + addUser,
             "Utilisateur " + userDetail.getLogin() +
                 " déjà présent dans la base avec ce login. Il n'a pas été rajouté", null);
-        throw new AdminException(failureOnAdding("user", userDetail.getLogin()));
+        throw new UserAlreadyExistsAdminException(userDetail);
       }
 
       if (!addOnlyInSilverpeas) {

@@ -2181,11 +2181,7 @@ class Admin implements Administration {
 
   @Override
   public String addGroup(GroupDetail group) throws AdminException {
-    try {
-      return addGroup(group, false);
-    } catch (Exception e) {
-      throw new AdminException(failureOnAdding(GROUP, group.getName()), e);
-    }
+    return addGroup(group, false);
   }
 
   @Override
@@ -2198,6 +2194,8 @@ class Admin implements Administration {
       }
       cache.opAddGroup(group);
       return sGroupId;
+    } catch (AdminException e) {
+      throw e;
     } catch (Exception e) {
       throw new AdminException(failureOnAdding(GROUP, group.getName()), e);
     }
@@ -4284,14 +4282,7 @@ class Admin implements Administration {
     }
     if (parentId == null && (parentSpecificIds.length > 0 || (askedParentId != null
         && askedParentId.length() > 0))) {// We
-      // can't
-      // add
-      // the
-      // group
-      // (just
-      // the
-      // same
-      // restriction as for the directories...)
+      // can't add the group (just the same restriction as for the directories...)
       throw new AdminException("Fail to synchronize imported group " + groupKey
           + " in domain " + domainId);
     }
@@ -4408,7 +4399,7 @@ class Admin implements Administration {
     UserDetail ud = synchroDomain.importUser(userLogin);
     ud.setDomainId(domainId);
     String userId = addUser(ud, true);
-    // Synchronizes the user to add it to the groups and recursivaly add the groups
+    // Synchronizes the user to add it to the groups and recursively add the groups
     synchronizeUser(userId, recurs);
     return userId;
   }
@@ -4418,10 +4409,9 @@ class Admin implements Administration {
       AdminException {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     UserDetail ud = synchroDomain.getUser(specificId);
-
     ud.setDomainId(domainId);
     String userId = addUser(ud, true);
-    // Synchronizes the user to add it to the groups and recursivaly add the groups
+    // Synchronizes the user to add it to the groups and recursively add the groups
     synchronizeUser(userId, recurs);
     return userId;
   }

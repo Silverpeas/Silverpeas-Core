@@ -28,20 +28,16 @@
 package org.silverpeas.core.admin.service;
 
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 
-public class AdminException extends SilverpeasException {
-  private static final long serialVersionUID = 2131319112058819021L;
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnAdding;
 
-  public AdminException(final String message, final String... parameters) {
-    super(message, parameters);
-  }
+public class GroupAlreadyExistsAdminException extends AdminException {
+  private static final long serialVersionUID = -768011721788564784L;
 
-  public AdminException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
-  public AdminException(final Throwable cause) {
-    super(cause);
+  public GroupAlreadyExistsAdminException(final GroupDetail group) {
+    super(failureOnAdding("group",
+        "with specificId " + group.getSpecificId() + " and domainId " + group.getDomainId()),
+        (String) null);
   }
 }
