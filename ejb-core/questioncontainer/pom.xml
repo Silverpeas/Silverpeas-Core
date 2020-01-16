@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.silverpeas.core</groupId>
     <artifactId>ejb-core</artifactId>
-    <version>5.15.12-SNAPSHOT</version>
+    <version>5.15.12</version>
   </parent>
   
   <groupId>com.silverpeas.core.ejb-core</groupId>
