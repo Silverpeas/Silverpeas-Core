@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2019 Silverpeas
+ * Copyright (C) 2000 - 2020 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,26 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
-* Copyright (C) 2000 - 2019 Silverpeas
-*
-* This program is free software: you can redistribute it and/or modify it under the terms of the
-* GNU Affero General Public License as published by the Free Software Foundation, either version 3
-* of the License, or (at your option) any later version.
-*
-* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
-* redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
-* applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
-* text describing the FLOSS exception, and it is also available here:
-* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
-* even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-* Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License along with this program.
-* If not, see <http://www.gnu.org/licenses/>.
-*/
 package org.silverpeas.core.util;
 
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -56,6 +36,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 
 import static java.io.File.separatorChar;
@@ -63,8 +44,8 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
-* @author ehugonnet
-*/
+ * @author ehugonnet
+ */
 @EnableSilverTestEnv
 public class ZipUtilTest {
 
@@ -82,10 +63,9 @@ public class ZipUtilTest {
   }
 
   /**
-* Test of compressPathToZip method, of class ZipManager.
-*
-* @throws Exception
-*/
+   * Test of compressPathToZip method, of class ZipManager.
+   * @throws Exception
+   */
   @Test
   public void testCompressPathToZip(MavenTestEnv mavenTestEnv) throws Exception {
     File path = new File(mavenTestEnv.getResourceTestDirFile(), "ZipSample");
@@ -106,10 +86,11 @@ public class ZipUtilTest {
       assertThat(zipFile.getEntry("ZipSample/level1/level2b/simple.txt"), is(notNullValue()));
       assertThat(zipFile.getEntry("ZipSample/level1/level2a/simple.txt"), is(notNullValue()));
 
-      ZipEntry accentuatedEntry = zipFile.getEntry("ZipSample/level1/level2a/s\u00efmplifi\u00e9.txt") ;
-      if(accentuatedEntry == null) {
-       accentuatedEntry = zipFile.getEntry("ZipSample/level1/level2a/" + new String(
-           "sïmplifié.txt".getBytes("UTF-8"), Charset.defaultCharset()));
+      ZipEntry accentuatedEntry = zipFile
+          .getEntry("ZipSample/level1/level2a/s\u00efmplifi\u00e9.txt");
+      if (accentuatedEntry == null) {
+        accentuatedEntry = zipFile.getEntry("ZipSample/level1/level2a/" +
+            new String("sïmplifié.txt".getBytes("UTF-8"), Charset.defaultCharset()));
       }
       assertThat(accentuatedEntry, is(notNullValue()));
       assertThat(zipFile.getEntry("ZipSample/level1/level2c/"), is(nullValue()));
@@ -119,15 +100,15 @@ public class ZipUtilTest {
   }
 
   /**
-* Test of compressStreamToZip method, of class ZipManager.
-*
-* @throws Exception
-*/
+   * Test of compressStreamToZip method, of class ZipManager.
+   * @throws Exception
+   */
   @Test
   public void testCompressStreamToZip() throws Exception {
-    InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("FrenchScrum.odp");
-    String filePathNameToCreate = separatorChar + "dir1" + separatorChar + "dir2" + separatorChar
-        + "FrenchScrum.odp";
+    InputStream inputStream = this.getClass().getClassLoader()
+        .getResourceAsStream("FrenchScrum.odp");
+    String filePathNameToCreate =
+        separatorChar + "dir1" + separatorChar + "dir2" + separatorChar + "FrenchScrum.odp";
     File outfile = new File(tempDir, "testCompressStreamToZip.zip");
     ZipUtil.compressStreamToZip(inputStream, filePathNameToCreate, outfile.getPath());
     inputStream.close();
@@ -142,24 +123,80 @@ public class ZipUtilTest {
   }
 
   /**
-* Test of extract method, of class ZipManager.
-*
-* @throws Exception
-*/
+   * Test of extract method, of class ZipManager.
+   */
   @Test
-  public void testExtract(MavenTestEnv mavenTestEnv) throws Exception {
-    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtract.zip");
+  public void testExtractZipFromLinux(MavenTestEnv mavenTestEnv) {
+    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtractZipFromLinux.zip");
     File dest = new File(tempDir, "extract");
     dest.mkdirs();
-    ZipUtil.extract(source, dest);
-    assertThat(dest, is(notNullValue()));
+    final Optional<String> encodingUsed = ZipUtil.extract(source, dest);
+    assertThat(encodingUsed.isPresent(), is(true));
+    assertThat(dest.list(), notNullValue());
+    assertThat(dest.list().length, not(is(0)));
   }
 
   /**
-* Test of extract method, of class ZipManager.
-*
-* @throws Exception
-*/
+   * Test of extract method, of class ZipManager.
+   */
+  @Test
+  public void testExtractZipFrom7ZipWithoutAccent(MavenTestEnv mavenTestEnv) {
+    File source = new File(mavenTestEnv.getResourceTestDirFile(),
+        "testExtractZipFrom7ZipWithoutAccent.zip");
+    File dest = new File(tempDir, "extract");
+    dest.mkdirs();
+    final Optional<String> encodingUsed = ZipUtil.extract(source, dest);
+    assertThat(encodingUsed.isPresent(), is(true));
+    assertThat(dest.list(), notNullValue());
+    assertThat(dest.list().length, not(is(0)));
+  }
+
+  /**
+   * Test of extract method, of class ZipManager.
+   */
+  @Test
+  public void testExtractZipFrom7Zip(MavenTestEnv mavenTestEnv) {
+    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtractZipFrom7Zip.zip");
+    File dest = new File(tempDir, "extract");
+    dest.mkdirs();
+    final Optional<String> encodingUsed = ZipUtil.extract(source, dest);
+    assertThat(encodingUsed.isPresent(), is(true));
+    assertThat(dest.list(), notNullValue());
+    assertThat(dest.list().length, not(is(0)));
+  }
+
+  /**
+   * Test of extract method, of class ZipManager.
+   */
+  @Test
+  public void testExtractZipFromWindows(MavenTestEnv mavenTestEnv) {
+    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtractZipFromWindows.zip");
+    File dest = new File(tempDir, "extract");
+    dest.mkdirs();
+    final Optional<String> encodingUsed = ZipUtil.extract(source, dest);
+    assertThat(encodingUsed.isPresent(), is(true));
+    assertThat(dest.list(), notNullValue());
+    assertThat(dest.list().length, not(is(0)));
+  }
+
+  /**
+   * Test of extract method, of class ZipManager.
+   */
+  @Test
+  public void testExtractZipFromMacos(MavenTestEnv mavenTestEnv) {
+    File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtractZipFromMacos.zip");
+    File dest = new File(tempDir, "extract");
+    dest.mkdirs();
+    final Optional<String> encodingUsed = ZipUtil.extract(source, dest);
+    assertThat(encodingUsed.isPresent(), is(true));
+    assertThat(dest.list(), notNullValue());
+    assertThat(dest.list().length, not(is(0)));
+  }
+
+  /**
+   * Test of extract method, of class ZipManager.
+   * @throws Exception
+   */
   @Test
   public void testExtractTarGz(MavenTestEnv mavenTestEnv) throws Exception {
     File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtract.tar.gz");
@@ -174,10 +211,9 @@ public class ZipUtilTest {
   }
 
   /**
-* Test of extract method, of class ZipManager.
-*
-* @throws Exception
-*/
+   * Test of extract method, of class ZipManager.
+   * @throws Exception
+   */
   @Test
   public void testExtractTarBz2(MavenTestEnv mavenTestEnv) throws Exception {
     File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtract.tar.bz2");
@@ -192,10 +228,9 @@ public class ZipUtilTest {
   }
 
   /**
-* Test of getNbFiles method, of class ZipManager.
-*
-* @throws Exception
-*/
+   * Test of getNbFiles method, of class ZipManager.
+   * @throws Exception
+   */
   @Test
   public void testGetNbFiles(MavenTestEnv mavenTestEnv) throws Exception {
     File path = new File(mavenTestEnv.getResourceTestDirFile(), "ZipSample");
