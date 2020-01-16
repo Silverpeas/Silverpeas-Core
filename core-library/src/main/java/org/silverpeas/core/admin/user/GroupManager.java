@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.persistence.SpaceUserRoleTable;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.persistence.UserRoleTable;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.GroupAlreadyExistsAdminException;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.dao.GroupDAO;
 import org.silverpeas.core.admin.user.dao.GroupSearchCriteriaForDAO;
@@ -559,12 +560,12 @@ public class GroupManager {
     }
 
     try (Connection connection = DBUtil.openConnection()) {
-      // Create group in specific domain (if onlyInSilverpeas is not true)
-      // if domainId=-1 then group is a silverpeas organization
-      if (!onlyInSilverpeas) {
-        String specificId;
-        if (group.getDomainId() != null) {
-          specificId = domainDriverManager.createGroup(group);
+      if (group.getDomainId() != null) {
+        checkGroupNotExists(group, connection);
+        if (!onlyInSilverpeas) {
+          // Create group in specific domain (if onlyInSilverpeas is not true)
+          // if domainId=-1 then group is a silverpeas organization
+          final String specificId = domainDriverManager.createGroup(group);
           group.setSpecificId(specificId);
         }
       }
@@ -604,6 +605,18 @@ public class GroupManager {
       SynchroDomainReport.error(GROUP_MANAGER_ADD_GROUP, "problème lors de l'ajout du groupe "
               + group.getName() + " - " + e.getMessage(), null);
       throw new AdminException(failureOnAdding(GROUP, group.getName()), e);
+    }
+  }
+
+  private void checkGroupNotExists(final GroupDetail group, final Connection connection)
+      throws SQLException, GroupAlreadyExistsAdminException {
+    if (isDefined(group.getSpecificId()) &&
+        groupDao.getGroupBySpecificId(connection, group.getDomainId(), group.getSpecificId()) != null) {
+      // Checking the group is not already existing
+      SynchroDomainReport.debug(GROUP_MANAGER_ADD_GROUP,
+          "Le groupe (specificid=" + group.getSpecificId() + ", domainId=" +
+              group.getDomainId() + ") existe déjà dans la table ST_Group...");
+      throw new GroupAlreadyExistsAdminException(group);
     }
   }
 

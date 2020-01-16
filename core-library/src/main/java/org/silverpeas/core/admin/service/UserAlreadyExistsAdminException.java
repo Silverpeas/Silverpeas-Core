@@ -28,20 +28,14 @@
 package org.silverpeas.core.admin.service;
 
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.admin.user.model.User;
 
-public class AdminException extends SilverpeasException {
-  private static final long serialVersionUID = 2131319112058819021L;
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnAdding;
 
-  public AdminException(final String message, final String... parameters) {
-    super(message, parameters);
-  }
+public class UserAlreadyExistsAdminException extends AdminException {
+  private static final long serialVersionUID = -6839556115336923293L;
 
-  public AdminException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
-  public AdminException(final Throwable cause) {
-    super(cause);
+  public UserAlreadyExistsAdminException(final User user) {
+    super(failureOnAdding("user", user.getLogin()), (String) null);
   }
 }

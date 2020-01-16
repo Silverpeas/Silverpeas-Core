@@ -80,6 +80,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * This object is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
@@ -1379,7 +1380,6 @@ public class AdminController implements java.io.Serializable {
   }
 
   public String synchronizeUser(String userId) {
-
     try {
       return admin.synchronizeUser(userId, true);
     } catch (Exception e) {
@@ -1389,7 +1389,6 @@ public class AdminController implements java.io.Serializable {
   }
 
   public String synchronizeImportUser(String domainId, String userLogin) {
-
     try {
       return admin.synchronizeImportUser(domainId, userLogin, true);
     } catch (Exception e) {
@@ -1409,7 +1408,6 @@ public class AdminController implements java.io.Serializable {
   }
 
   public List<UserDetail> searchUsers(String domainId, Map<String, String> query) {
-
     try {
       return Arrays.asList(admin.searchUsers(domainId, query));
     } catch (Exception e) {
@@ -1419,7 +1417,6 @@ public class AdminController implements java.io.Serializable {
   }
 
   public String synchronizeRemoveUser(String userId) {
-
     try {
       return admin.synchronizeRemoveUser(userId);
     } catch (Exception e) {
@@ -1447,7 +1444,6 @@ public class AdminController implements java.io.Serializable {
    * value otherwise</li></ul>
    */
   public String synchronizeGroup(String groupId) {
-
     try {
       return admin.synchronizeGroup(groupId, true);
     } catch (AdminException e) {
@@ -1467,18 +1463,16 @@ public class AdminController implements java.io.Serializable {
     }
   }
 
-  public String synchronizeImportGroup(String domainId, String groupName) {
-
+  public Result<String> synchronizeImportGroup(String domainId, String groupName) {
     try {
-      return admin.synchronizeImportGroup(domainId, groupName, null, true, false);
+      return new Result<>(admin.synchronizeImportGroup(domainId, groupName, null, true, false));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return "";
+      return new Result<>("").withError(e);
     }
   }
 
   public String synchronizeRemoveGroup(String groupId) {
-
     try {
       return admin.synchronizeRemoveGroup(groupId);
     } catch (Exception e) {
@@ -1489,7 +1483,6 @@ public class AdminController implements java.io.Serializable {
 
   /** Removes the given user from the given group */
   public void removeUserFromGroup(String sUserId, String sGroupId) {
-
     try {
       admin.removeUserFromGroup(sUserId, sGroupId);
     } catch (Exception e) {
@@ -1538,5 +1531,27 @@ public class AdminController implements java.io.Serializable {
   public void blankDeletedUsers(final String targetDomainId, final List<String> userIds)
       throws AdminException {
     admin.blankDeletedUsers(targetDomainId, userIds);
+  }
+
+  public static class Result<T> {
+    private final T value;
+    private Exception exception;
+
+    Result(final T value) {
+      this.value = value;
+    }
+
+    public Optional<T> getValue() {
+      return Optional.ofNullable(value);
+    }
+
+    public Optional<Exception> getException() {
+      return Optional.ofNullable(exception);
+    }
+
+    Result<T> withError(final Exception error) {
+      exception = error;
+      return this;
+    }
   }
 }

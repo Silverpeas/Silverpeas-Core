@@ -26,6 +26,7 @@ package org.silverpeas.core.admin.persistence;
 import org.silverpeas.core.admin.service.AdminException;
 
 public class AdminPersistenceException extends AdminException {
+  private static final long serialVersionUID = -7409092404370163151L;
 
   public AdminPersistenceException(final String message, final String... parameters) {
     super(message, parameters);
