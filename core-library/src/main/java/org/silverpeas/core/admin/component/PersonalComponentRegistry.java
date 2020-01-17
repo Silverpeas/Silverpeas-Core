@@ -64,7 +64,7 @@ import java.util.stream.Stream;
 public class PersonalComponentRegistry implements Initialization {
 
   private static final int MAX_DEPTH = 2;
-  private static Map<String, PersonalComponent> componentsByName = new HashMap<>();
+  private Map<String, PersonalComponent> componentsByName = new HashMap<>();
 
   PersonalComponentRegistry() {
   }
