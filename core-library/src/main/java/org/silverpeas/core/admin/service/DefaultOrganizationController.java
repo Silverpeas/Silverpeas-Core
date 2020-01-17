@@ -37,6 +37,7 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.model.ToolInstance;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -60,7 +61,15 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -83,7 +92,6 @@ import static org.silverpeas.core.util.ArrayUtil.EMPTY_STRING_ARRAY;
 public class DefaultOrganizationController implements OrganizationController {
 
   private static final long serialVersionUID = 3435241972671610107L;
-  private static final Set<String> toolIds = new LinkedHashSet<>(5);
 
   @Inject
   private Administration admin;
@@ -763,21 +771,13 @@ public class DefaultOrganizationController implements OrganizationController {
    */
   @Override
   public boolean isToolAvailable(String toolId) {
-    boolean isToolAvailable;
-    try {
-      isToolAvailable = getAvailableToolIds().contains(toolId);
-    } catch (Exception e) {
-      isToolAvailable = false;
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
-    return isToolAvailable;
+    return ToolInstance.from(toolId).isPresent();
   }
 
   @Override
   public boolean isComponentAvailable(final String componentId, final String userId) {
     return isComponentAvailableToUser(componentId, userId);
   }
-
 
   @Override
   public List<String> getAvailableComponentsByUser(final String userId) {
@@ -1081,21 +1081,6 @@ public class DefaultOrganizationController implements OrganizationController {
 
   private Administration getAdminService() {
     return admin;
-  }
-
-  private static Set<String> getAvailableToolIds() {
-    if (toolIds.isEmpty()) {
-      final String availableToolIds =
-          ResourceLocator.getGeneralSettingBundle().getString("availableToolIds", "");
-      if (!availableToolIds.isEmpty()) {
-        for (String aToolId : availableToolIds.split("[ ,;]")) {
-          if (aToolId != null && !aToolId.trim().isEmpty()) {
-            toolIds.add(aToolId.trim());
-          }
-        }
-      }
-    }
-    return toolIds;
   }
 
   @Override

@@ -65,7 +65,7 @@ import java.util.stream.Stream;
 @Singleton
 public class WAComponentRegistry implements Initialization {
 
-  private static Map<String, WAComponent> componentsByName = new HashMap<>();
+  private Map<String, WAComponent> componentsByName = new HashMap<>();
 
   /**
    * Gets an instance of this WAComponentRegistry registry.

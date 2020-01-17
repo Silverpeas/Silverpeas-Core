@@ -807,14 +807,20 @@ class Admin implements Administration {
       throws AdminException {
     final SilverpeasComponentInstance instance;
     try {
-      Optional<PersonalComponentInstance> personalComponentInstance =
-          PersonalComponentInstance.from(componentInstanceIdentifier);
+      final Optional<PersonalComponentInstance> personalComponentInstance =
+          PersonalComponentInstance
+          .from(componentInstanceIdentifier);
       if (personalComponentInstance.isPresent()) {
         instance = personalComponentInstance.get();
       } else {
-        final SilverpeasComponentInstance componentInstance = getComponentInst(
-            componentInstanceIdentifier);
-        instance = "-1".equals(componentInstance.getId()) ? null : componentInstance;
+        final Optional<ToolInstance> toolInstance = ToolInstance.from(componentInstanceIdentifier);
+        if (toolInstance.isPresent()) {
+          instance = toolInstance.get();
+        } else {
+          final SilverpeasComponentInstance componentInstance = getComponentInst(
+              componentInstanceIdentifier);
+          instance = "-1".equals(componentInstance.getId()) ? null : componentInstance;
+        }
       }
       return instance;
     } catch (Exception e) {
