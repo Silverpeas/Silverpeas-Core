@@ -43,7 +43,7 @@ public class UserIndexation {
 
   @Inject
   private IndexSearcher searcher;
-  static final String COMPONENT_ID = "users";
+  public static final String COMPONENT_ID = "users";
   public static final String OBJECT_TYPE = "UserFull";
 
   private UserIndexation() {
