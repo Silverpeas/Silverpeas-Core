@@ -29,6 +29,7 @@ import org.silverpeas.core.contribution.converter.option.SinglePageSelection;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.ImageToolDirective;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
+import org.silverpeas.core.io.media.image.option.OrientationOption;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.PdfUtil;
@@ -43,6 +44,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.apache.commons.io.FileUtils.deleteQuietly;
+import static org.silverpeas.core.util.CollectionUtil.asSet;
 import static org.silverpeas.core.util.ImageUtil.*;
 import static org.silverpeas.core.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
 import static org.silverpeas.core.viewer.model.ViewerSettings.*;
@@ -169,7 +171,8 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
       deleteSource = !source.equals(destination);
     }
     imageTool.convert(source, destination,
-        DimensionOption.widthAndHeight(getPreviewMaxWidth(), getPreviewMaxHeight()),
+        asSet(DimensionOption.widthAndHeight(getPreviewMaxWidth(), getPreviewMaxHeight()),
+              OrientationOption.auto()),
         ImageToolDirective.PREVIEW_WORK, ImageToolDirective.GEOMETRY_SHRINK,
         ImageToolDirective.FIRST_PAGE_ONLY);
     if (deleteSource) {
