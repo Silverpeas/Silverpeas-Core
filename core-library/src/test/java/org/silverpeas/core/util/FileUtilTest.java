@@ -152,9 +152,11 @@ public class FileUtilTest {
   public void testIsArchive() {
     assertTrue(FileUtil.isArchive("toto.zip"));
     assertTrue(FileUtil.isArchive("toto.tar.gz"));
+    // with Apache Chemistry, all the Java archives (jar, war, sar, ear, ...)
+    // are now taken into account as a Java archive and no more as a simple zip archive.
     assertTrue(FileUtil.isArchive("toto.jar"));
-    assertFalse(FileUtil.isArchive("toto.war"));
-    assertFalse(FileUtil.isArchive("toto.ear"));
+    assertTrue(FileUtil.isArchive("toto.war"));
+    assertTrue(FileUtil.isArchive("toto.ear"));
     assertFalse(FileUtil.isArchive("toto.txt"));
     assertTrue(FileUtil.isArchive("toto.tgz"));
   }

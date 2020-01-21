@@ -151,7 +151,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
    * returns an empty string.
    */
   public String getDomainFatherId() {
-    return domainFatherId;
+    return getSpaceId();
   }
 
   /**

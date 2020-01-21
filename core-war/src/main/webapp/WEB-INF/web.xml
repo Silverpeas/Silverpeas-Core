@@ -97,7 +97,7 @@
   </filter>
   <filter>
     <description>
-      To handle the logging of all exception throw from Silverpeas application.
+      To handle the logging of all exception thrown from Silverpeas application.
     </description>
     <filter-name>SilverpeasExceptionLoggingFilter</filter-name>
     <filter-class>org.silverpeas.web.filter.SilverpeasExceptionLoggingFilter</filter-class>
@@ -242,6 +242,12 @@
   <listener>
     <listener-class>org.apache.commons.fileupload.servlet.FileCleanerCleanup</listener-class>
   </listener>
+
+  <!-- Context listener for CMIS -->
+  <listener>
+    <listener-class>org.apache.chemistry.opencmis.server.impl.CmisRepositoryContextListener</listener-class>
+  </listener>
+  <!-- End context listener for CMIS -->
 
   <servlet>
     <servlet-name>LoginDispatcher</servlet-name>
@@ -699,6 +705,65 @@
       <param-value>org.silverpeas.web.wopi.WopiWebController</param-value>
     </init-param>
   </servlet>
+
+  <!-- CMIS endpoints -->
+
+  <servlet>
+    <description>Endpoint of the Web Services binding of the Silverpeas CMIS 1.1 implementation</description>
+    <display-name>CMIS 1.1 Web Services Binding</display-name>
+    <servlet-name>cmisws</servlet-name>
+    <servlet-class>org.apache.chemistry.opencmis.server.impl.webservices.CmisWebServicesServlet</servlet-class>
+    <init-param>
+      <description>CMIS version of this endpoint</description>
+      <param-name>cmisVersion</param-name>
+      <param-value>1.1</param-value>
+    </init-param>
+    <!--
+    <init-param>
+        <description>Name of the CSRF header</description>
+        <param-name>csrfHeader</param-name>
+        <param-value>X-CSRF-Token</param-value>
+    </init-param>
+    -->
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet>
+    <description>Endpoint of the AtomPub binding of the Silverpeas CMIS 1.1 implementation</description>
+    <display-name>CMIS 1.1 PubAtom Binding</display-name>
+    <servlet-name>cmisatompub</servlet-name>
+    <servlet-class>org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet</servlet-class>
+    <init-param>
+      <description>Call Context Handler implementation</description>
+      <param-name>callContextHandler</param-name>
+      <param-value>org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler</param-value>
+      <!-- <param-value>org.apache.chemistry.opencmis.server.shared.UserPrincipalCallContextHandler</param-value> -->
+      <!-- <param-value>org.apache.chemistry.opencmis.server.shared.AttributeCallContextHandler</param-value> -->
+    </init-param>
+    <init-param>
+      <description>CMIS version of this endpoint</description>
+      <param-name>cmisVersion</param-name>
+      <param-value>1.1</param-value>
+    </init-param>
+    <!--
+    <init-param>
+        <description>Name of the CSRF header</description>
+        <param-name>csrfHeader</param-name>
+        <param-value>X-CSRF-Token</param-value>
+    </init-param>
+    -->
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>cmisws</servlet-name>
+    <url-pattern>/cmis/ws/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>cmisatompub</servlet-name>
+    <url-pattern>/cmis/atompub/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- End CMIS endpoints -->
 
   <servlet-mapping>
     <servlet-name>LoginDispatcher</servlet-name>

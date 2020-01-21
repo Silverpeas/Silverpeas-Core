@@ -273,10 +273,12 @@ public class HttpRequest extends HttpServletRequestWrapper {
   @Override
   public String[] getParameterValues(String name) {
     String[] values = super.getParameterValues(name);
-    if (values == null && isContentInMultipart()) {
+    if (values == null && isContentInMultipart() && !isSOAPRequest()) {
+      // in some circumstances (like SOAP) we don't have to consume the request input stream as it
+      // later requires to be directly read
       List<String> listOfValues =
           FileUploadUtil.getParameterValues(getFileItems(), name, getCharacterEncoding());
-      values = listOfValues.toArray(new String[listOfValues.size()]);
+      values = listOfValues.toArray(new String[0]);
     }
     return values;
   }
@@ -293,7 +295,9 @@ public class HttpRequest extends HttpServletRequestWrapper {
   @Override
   public Enumeration<String> getParameterNames() {
     Enumeration<String> names = super.getParameterNames();
-    if (!names.hasMoreElements() && isContentInMultipart()) {
+    if (!names.hasMoreElements() && isContentInMultipart() && !isSOAPRequest()) {
+      // in some circumstances (like SOAP) we don't have to consume the request input stream as it
+      // later requires to be directly read
       List<FileItem> items = getFileItems();
       List<String> itemNames = new ArrayList<>(items.size());
       for (FileItem item : items) {
@@ -321,7 +325,9 @@ public class HttpRequest extends HttpServletRequestWrapper {
   @Override
   public Map<String, String[]> getParameterMap() {
     Map<String, String[]> map = super.getParameterMap();
-    if (map.isEmpty() && isContentInMultipart()) {
+    if (map.isEmpty() && isContentInMultipart() && !isSOAPRequest()) {
+      // in some circumstances (like SOAP) we don't have to consume the request input stream as it
+      // later requires to be directly read
       List<FileItem> items = getFileItems();
       map = new HashMap<>(items.size());
       for (FileItem item : items) {
@@ -399,7 +405,9 @@ public class HttpRequest extends HttpServletRequestWrapper {
   @Override
   public String getParameter(String name) {
     String value = super.getParameter(name);
-    if (value == null && isContentInMultipart()) {
+    if (value == null && isContentInMultipart() && !isSOAPRequest()) {
+      // in some circumstances (like SOAP) we don't have to consume the request input stream as it
+      // later requires to be directly read
       value = FileUploadUtil.getParameter(getFileItems(), name, null, getCharacterEncoding());
     }
     return value;
@@ -599,5 +607,9 @@ public class HttpRequest extends HttpServletRequestWrapper {
       encoding = FileUploadUtil.DEFAULT_ENCODING;
     }
     return encoding;
+  }
+
+  private boolean isSOAPRequest() {
+    return getHeader("SOAPAction") != null || getContentType().contains("soap");
   }
 }

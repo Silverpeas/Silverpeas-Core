@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.contribution.model;
 
+import org.silverpeas.core.Identifiable;
+
 /**
  * A content managed in the Silverpeas collaborative portal. A content in Silverpeas is resource
  * with a content (that can be empty); for example, a publication in Silverpeas is a content. This
@@ -31,7 +33,7 @@ package org.silverpeas.core.contribution.model;
  * @deprecated please use instead {@code org.silverpeas.core.contribution.model.Contribution} interface.
  */
 @Deprecated
-public interface SilverpeasContent extends Contribution {
+public interface SilverpeasContent extends Identifiable, Contribution {
 
   /**
    * Gets the identifier of this content in the Silverpeas component providing it. This identifier

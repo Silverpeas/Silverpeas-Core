@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
+import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -65,7 +66,7 @@ import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
  *
  * @author ehugonnet
  */
-public class SimpleDocument implements Serializable, Securable {
+public class SimpleDocument implements Identifiable, Serializable, Securable {
 
   private static final long serialVersionUID = 8778738762037114180L;
   public static final String WEBDAV_FOLDER = "webdav";

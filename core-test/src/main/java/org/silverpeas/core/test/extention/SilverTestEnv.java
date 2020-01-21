@@ -206,17 +206,26 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
   @Override
   public void beforeEach(final ExtensionContext context) throws Exception {
     CacheServiceProvider.clearAllThreadCaches();
-    Method[] methods = context.getRequiredTestClass().getDeclaredMethods();
-    for(Method method: methods) {
-      RequesterProvider requesterProvider = method.getAnnotation(RequesterProvider.class);
-      if (requesterProvider != null && User.class.isAssignableFrom(method.getReturnType())) {
-        method.setAccessible(true);
-        User requester = (User) method.invoke(context.getRequiredTestInstance());
-        UserProvider mock = TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class);
-        when(mock.getCurrentRequester()).thenReturn(requester);
-        break;
-      }
+    Class<?> test = context.getRequiredTestClass();
+    UserProvider mock = TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class);
+    Method requesterProvider = recursivelyFindRequesterProvider(test);
+    if (requesterProvider != null) {
+      requesterProvider.setAccessible(true);
+      User requester = (User) requesterProvider.invoke(context.getRequiredTestInstance());
+      when(mock.getCurrentRequester()).thenReturn(requester);
     }
+  }
+
+  private Method recursivelyFindRequesterProvider(final Class<?> testClass) {
+    Method[] methods = testClass.getDeclaredMethods();
+    return  Stream.of(methods)
+        .filter(m -> m.getAnnotation(RequesterProvider.class) != null)
+        .filter(m -> User.class.isAssignableFrom(m.getReturnType()))
+        .findFirst()
+        .orElseGet(() -> {
+          Class<?> superclass = testClass.getSuperclass();
+          return superclass == null ? null : recursivelyFindRequesterProvider(superclass);
+        });
   }
 
   private void processTestManagedBeanAnnotation(final Field field, final Object testInstance)

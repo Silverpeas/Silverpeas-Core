@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.admin.space;
 
-import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.apache.commons.lang3.ObjectUtils;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.Identifiable;
+import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -36,7 +37,7 @@ import java.util.List;
  * @author neysseri
  */
 public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
-    implements Serializable, Comparable<SpaceInstLight> {
+    implements Identifiable, Serializable, Comparable<SpaceInstLight> {
 
   private static final long serialVersionUID = 8772050454345960478L;
   private String id = null;

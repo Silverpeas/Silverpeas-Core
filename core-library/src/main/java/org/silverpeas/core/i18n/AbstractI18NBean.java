@@ -56,7 +56,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   protected AbstractI18NBean() {
   }
 
-  protected AbstractI18NBean(final AbstractI18NBean other) {
+  protected AbstractI18NBean(final AbstractI18NBean<T> other) {
     this.name = other.name;
     this.description = other.description;
     this.language = other.language;

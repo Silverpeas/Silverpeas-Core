@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.space;
 
+import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
@@ -64,7 +65,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * The class SpaceInst is the representation in memory of a space
  */
 public class SpaceInst extends AbstractI18NBean<SpaceI18N>
-    implements Serializable {
+    implements Identifiable, Serializable {
 
   public static final String SPACE_KEY_PREFIX = "WA";
   public static final String PERSONAL_SPACE_ID = "-10";
