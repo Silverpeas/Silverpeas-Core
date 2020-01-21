@@ -56,22 +56,42 @@ public class RestFileResponse extends FileResponse {
 
   /**
    * Centralization of getting of silverpeas file content.
+   * <p>
+   * A download context flag is verified from parameters and attributes of the request.
+   * </p>
    * @param file the silverpeas file to send.
    * @return the response builder.
    */
   public Response.ResponseBuilder silverpeasFile(final SilverpeasFile file) {
+    return silverpeasFile(file, isDownloadContext());
+  }
+
+  /**
+   * Centralization of getting of silverpeas file content.
+   * <p>
+   * Using directly this method means that the request downloadContext flag is ignored.
+   * </p>
+   * @param file the silverpeas file to send.
+   * @param downloadContext indicating a download context in order to specify rightly response
+   * headers.
+   * @return the response builder.
+   */
+  public Response.ResponseBuilder silverpeasFile(final SilverpeasFile file,
+      final boolean downloadContext) {
     if (isNotDefined(forcedMimeType)) {
       forceMimeType(file.getMimeType());
     }
-    return path(Paths.get(file.toURI()));
+    return path(Paths.get(file.toURI()), downloadContext);
   }
 
   /**
    * Centralization of getting of a file content.
    * @param path the file to send.
+   * @param downloadContext indicating a download context in order to specify rightly response
+   * headers.
    * @return the response.
    */
-  private Response.ResponseBuilder path(final Path path) {
+  private Response.ResponseBuilder path(final Path path, final boolean downloadContext) {
     try {
       Path absoluteFilePath = path.toAbsolutePath();
       String fileMimeType = getMimeType(absoluteFilePath);
@@ -90,8 +110,9 @@ public class RestFileResponse extends FileResponse {
         responseBuilder = getFullResponseBuilder(absoluteFilePath, fullContentLength);
       }
 
-      final String filename =
-          encodeInlineFilenameAsUtf8(absoluteFilePath.getFileName().toString());
+      final String filename = downloadContext
+          ? encodeAttachmentFilenameAsUtf8(absoluteFilePath.getFileName().toString())
+          : encodeInlineFilenameAsUtf8(absoluteFilePath.getFileName().toString());
       return responseBuilder.type(fileMimeType).header("Content-Disposition", filename);
     } catch (final WebApplicationException ex) {
       throw ex;
