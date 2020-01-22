@@ -25,6 +25,7 @@ package org.silverpeas.core.io.file;
 
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
+import org.silverpeas.core.io.media.image.option.OrientationOption;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
@@ -35,6 +36,7 @@ import java.io.File;
 import java.util.List;
 
 import static org.silverpeas.core.io.media.image.ImageToolDirective.GEOMETRY_SHRINK;
+import static org.silverpeas.core.util.CollectionUtil.asSet;
 
 /**
  * A processor dedicated to resize an image on the demand. If the image is already resized, then
@@ -118,10 +120,10 @@ public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
             if (!resizedImage.getParentFile().exists()) {
               resizedImage.getParentFile().mkdirs();
             }
-            DimensionOption dimension =
+            final DimensionOption dimension =
                 DimensionOption.widthAndHeight(parameters.getWidth(), parameters.getHeight());
-            imageTool
-                .convert(sourceImage, resizedImage, dimension, GEOMETRY_SHRINK);
+            final OrientationOption auto = OrientationOption.auto();
+            imageTool.convert(sourceImage, resizedImage, asSet(dimension, auto), GEOMETRY_SHRINK);
             ImageCache.putImage(sourceImage.getAbsolutePath(), resizedImage.getAbsolutePath());
           }
         }

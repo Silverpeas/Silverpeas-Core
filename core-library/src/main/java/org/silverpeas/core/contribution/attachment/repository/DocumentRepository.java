@@ -34,6 +34,8 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentVersion;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.io.media.image.ImageTool;
+import org.silverpeas.core.io.media.image.option.OrientationOption;
 import org.silverpeas.core.persistence.jcr.JcrRepositoryConnector;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.persistence.jcr.util.NodeIterable;
@@ -1285,6 +1287,9 @@ public class DocumentRepository {
       }
     }
     FileUtils.copyInputStreamToFile(in, file);
+    if (document.isContentImage()) {
+      ImageTool.get().convert(file, null, OrientationOption.auto().modifyImageOnlyIfNecessary());
+    }
     return file.length();
   }
 

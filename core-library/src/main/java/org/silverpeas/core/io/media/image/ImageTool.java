@@ -36,7 +36,7 @@ import java.util.Set;
 public interface ImageTool {
 
   static ImageTool get() {
-    return ServiceProvider.getService(ImageTool.class);
+    return ServiceProvider.getSingleton(ImageTool.class);
   }
 
   /**

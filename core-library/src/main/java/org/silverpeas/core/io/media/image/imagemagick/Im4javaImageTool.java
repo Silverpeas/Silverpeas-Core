@@ -23,21 +23,28 @@
  */
 package org.silverpeas.core.io.media.image.imagemagick;
 
+import org.apache.commons.io.FileUtils;
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
 import org.im4java.core.IdentifyCmd;
+import org.im4java.core.MogrifyCmd;
 import org.im4java.process.ArrayListOutputConsumer;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.io.media.image.AbstractImageTool;
 import org.silverpeas.core.io.media.image.ImageInfoType;
+import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.ImageToolDirective;
 import org.silverpeas.core.io.media.image.option.*;
+import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -92,27 +99,42 @@ public class Im4javaImageTool extends AbstractImageTool {
   protected void convert(final File source, final File destination,
       final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options,
       final Set<ImageToolDirective> directives) throws SilverpeasException {
+    final boolean sourceIsDestination = source.equals(destination);
 
     // Create the operation, add images and operators/options
     final IMOperation op = new IMOperation();
 
     // Source file
-    setSource(op, source, directives);
+    if (!sourceIsDestination) {
+      setSource(op, source, directives);
+    }
 
-    // Additional options
-    orientation(op, options);
-    transparencyColor(op, options);
-    background(op, options);
-    resize(op, options, directives);
-    watermarkText(op, source, options);
-    watermarkImage(op, source, options);
-
-    // Destination file
-    setDestination(op, destination);
-
-    // Executing command
     try {
-      new ConvertCmd().run(op);
+      // Additional options
+      orientation(op, source, options, directives);
+      transparencyColor(op, options);
+      background(op, options);
+      resize(op, options, directives);
+      watermarkText(op, source, options);
+      watermarkImage(op, source, options);
+
+      // Destination file
+      setDestination(op, destination);
+
+      // Executing command
+      if (sourceIsDestination) {
+        new MogrifyCmd().run(op);
+      } else {
+        new ConvertCmd().run(op);
+      }
+    } catch (NoWorkToDo e) {
+      if (!sourceIsDestination) {
+        try {
+          FileUtils.copyFile(source, destination);
+        } catch (IOException ex) {
+          throw new SilverpeasException(ex);
+        }
+      }
     } catch (Exception e) {
       throw new SilverpeasException(e);
     }
@@ -161,16 +183,40 @@ public class Im4javaImageTool extends AbstractImageTool {
    * @param op
    * @param options
    */
-  private void orientation(final IMOperation op,
-      final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options) {
+  private void orientation(final IMOperation op, final File source,
+      final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options,
+      final Set<ImageToolDirective> directives) throws NoWorkToDo {
 
     // Getting orientation option
     final OrientationOption option = getOption(options, OrientationOption.class);
     if (option != null) {
+      checkIftImageMustBeProcessed(source, option, options, directives);
       if (option.getOrientation() == Orientation.AUTO) {
         op.autoOrient();
       } else {
         op.orient(option.getOrientation().getToolName());
+      }
+    }
+  }
+
+  private void checkIftImageMustBeProcessed(final File source, final OrientationOption option,
+      final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options,
+      final Set<ImageToolDirective> directives) throws NoWorkToDo {
+    if (option.isModifyingImageOnlyIfNecessary() && options.size() == 1 && directives.isEmpty()) {
+      final Mutable<Orientation> currentOrientation = Mutable.empty();
+      try {
+        Stream.of(ImageTool.get().getImageInfo(source, ORIENTATION))
+            .map(Orientation::decode)
+            .filter(Objects::nonNull)
+            .findFirst()
+            .ifPresent(currentOrientation::set);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+      if (!currentOrientation.isPresent()
+          || (option.getOrientation() == Orientation.AUTO && currentOrientation.get() == Orientation.TOP_LEFT)
+          || option.getOrientation() == currentOrientation.get()) {
+        throw new NoWorkToDo();
       }
     }
   }
@@ -371,5 +417,12 @@ public class Im4javaImageTool extends AbstractImageTool {
       imageInfo[1] = height;
     }
     return imageInfo;
+  }
+
+  /**
+   * Indicates the processing can be skipped as there is no work to perform on the image.
+   */
+  private static class NoWorkToDo extends Exception {
+    private static final long serialVersionUID = -3695880835319345867L;
   }
 }

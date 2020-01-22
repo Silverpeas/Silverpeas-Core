@@ -427,6 +427,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addFileRepositoryFeatures();
     addSynchAndAsynchResourceEventFeatures();
     addPublicationTemplateFeatures();
+    addImageToolFeatures();
     addMavenDependencies("org.silverpeas.jcr:access-control");
     addMavenDependencies("commons-beanutils:commons-beanutils");
     if (!contains(JcrRepositoryProvider.class)) {
