@@ -250,7 +250,6 @@
 		// Tableau
           ArrayPane arrayPane = gef.getArrayPane("List", "", request,session);
           arrayPane.setExportData(true);
-          //arrayPane.setExportDataURL(m_context + "/RsilverStatisticsPeas/jsp/ExportViewConnection");
 
           arrayPane.addArrayColumn(resources.getString("GML.name"));
           arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.connectionNumber"));

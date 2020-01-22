@@ -23,9 +23,10 @@
  */
 package org.silverpeas.core.web.export;
 
-import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.html.HtmlCleaner;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine;
 
@@ -34,75 +35,63 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
+import java.util.Optional;
 
 public class ExportServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1717365114830659355L;
 
   private static final String TYPE_ARRAYPANE = "ArrayPane";
-  private static final String FIELD_SEPARATOR = ";";
-  private static final String EXPORT_ENCODING_DEFAULT = "UTF8";
-
-  private static final String EXPORT_ENCODING = ResourceLocator.getSettingBundle(
-      "org.silverpeas.util.viewGenerator.settings.graphicElementFactorySettings")
-      .getString("gef.arraypane.export.encoding", EXPORT_ENCODING_DEFAULT);
 
   private final HtmlCleaner cleaner = new HtmlCleaner();
 
   @Override
   public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Prepare response
-    response.setContentType("text/csv");
-    response.setCharacterEncoding(EXPORT_ENCODING);
 
-    response.setHeader("Content-Disposition", "attachment; fileName=export_data_" +
-        System.currentTimeMillis() + ".csv");
-    final PrintWriter out = response.getWriter();
+    Optional<ExportCSVBuilder> csvBuilder = ExportCSVBuilder.getFrom(HttpRequest.decorate(request));
+    if (!csvBuilder.isPresent()) {
+      // Get the session
+      final HttpSession session = request.getSession(true);
+      final String type = request.getParameter("type");
+      final String name = request.getParameter("name");
 
-    // Get the session
-    final HttpSession session = request.getSession(true);
-    final String type = request.getParameter("type");
-    final String name = request.getParameter("name");
-
-    if (TYPE_ARRAYPANE.equals(type)) {
-      exportArrayPane(name, session, out);
+      if (TYPE_ARRAYPANE.equals(type)) {
+        csvBuilder = exportArrayPane(name, session);
+      }
+    }
+    if (csvBuilder.isPresent()) {
+      csvBuilder.get().sendTo(response);
     }
   }
 
   @SuppressWarnings("unchecked")
-  private void exportArrayPane(final String name, final HttpSession session, final PrintWriter out)
+  private Optional<ExportCSVBuilder> exportArrayPane(final String name, final HttpSession session)
       throws IOException {
+    ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
     if (StringUtil.isDefined(name)) {
       // Retrieve ArrayPane data in session
       final List<ArrayColumn> columns = (List<ArrayColumn>) session.getAttribute(name + "_columns");
 
-      StringBuilder listColumns = new StringBuilder();
-      final int lastIndex = columns.size() - 1;
+      CSVRow header = new CSVRow();
       for (ArrayColumn curCol : columns) {
-        listColumns.append("\"").append(formatCSVCell(curCol.getTitle())).append("\"");
-        if (columns.indexOf(curCol) != lastIndex) {
-          listColumns.append(FIELD_SEPARATOR);
-        }
+        header.addCell(curCol.getTitle());
       }
-      out.println(listColumns.toString());
+      csvBuilder.setHeader(header);
 
       final List<ArrayLine> lines = (List<ArrayLine>) session.getAttribute(name + "_lines");
       for (ArrayLine curLine : lines) {
-        listColumns = new StringBuilder();
+        CSVRow row = new CSVRow();
         for (ArrayColumn curCol : columns) {
           final String fullCell = curLine.getCellAt(curCol.getColumnNumber()).print();
           String cleanCell = cleanHtmlCode(fullCell);
           cleanCell = cleanCell.replaceAll("[\\r\\n]", "");
-          listColumns.append("\"").append(formatCSVCell(cleanCell)).append("\"");
-          if (columns.indexOf(curCol) != lastIndex) {
-            listColumns.append(FIELD_SEPARATOR);
-          }
+          row.addCell(cleanCell);
         }
-        out.println(listColumns.toString());
+        csvBuilder.addLine(row);
       }
     }
+    return Optional.of(csvBuilder);
   }
 
   /**
@@ -115,15 +104,4 @@ public class ExportServlet extends HttpServlet {
     return cleaner.cleanHtmlFragment(html);
   }
 
-  /**
-   * Escape double quote
-   * @param cell
-   * @return CSV cell
-   */
-  private String formatCSVCell(String cell) {
-    if (StringUtil.isNotDefined(cell)) {
-      return "";
-    }
-    return cell.replaceAll("\"", "\"\"");
-  }
 }

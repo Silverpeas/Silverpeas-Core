@@ -247,50 +247,6 @@ public class SilverStatisticsPeasRequestRouter extends
 
         restoreConnectionParam(request, statsSC);
         destination = "/silverStatisticsPeas/jsp/viewConnection.jsp";
-      } else if (function.startsWith("ExportViewConnection")) {
-        String hostMonthBegin = statsSC.getMonthBegin();
-        String hostYearBegin = statsSC.getYearBegin();
-        String hostMonthEnd = statsSC.getMonthEnd();
-        String hostYearEnd = statsSC.getYearEnd();
-        String hostDateBegin = getRequestDate(hostYearBegin, hostMonthBegin);
-        String hostDateEnd = getRequestDate(hostYearEnd, hostMonthEnd);
-        String hostStatDetail = statsSC.getActorDetail();
-        String filterType = statsSC.getFilterType();
-        String filterId = statsSC.getFilterId();
-
-        // compute result
-        if ("0".equals(hostStatDetail))// All
-        {
-          if ("".equals(filterType)) { // no filter
-            request.setAttribute("ResultData", statsSC.getStatsConnexionAllAll(hostDateBegin,
-                hostDateEnd));
-          } else if ("0".equals(filterType)) { // filter group
-            request.setAttribute("ResultData", statsSC.getStatsConnexionAllGroup(hostDateBegin,
-                hostDateEnd, filterId));
-
-          } else if ("1".equals(filterType)) { // filter user
-            request.setAttribute("ResultData", statsSC.getStatsConnexionUser(hostDateBegin,
-                hostDateEnd, filterId));
-          }
-        } else if ("1".equals(hostStatDetail)) { // Groups
-          if ("".equals(filterType)) { // no filter
-            request.setAttribute("ResultData", statsSC
-                .getStatsConnexionGroupAll(hostDateBegin, hostDateEnd));
-          } else if ("0".equals(filterType)) { // filter group
-            request.setAttribute("ResultData", statsSC
-                .getStatsConnexionGroupUser(hostDateBegin, hostDateEnd, filterId));
-          }
-        } else if (hostStatDetail.equals("2")) { // Users
-          if ("".equals(filterType)) { // no filter
-            request.setAttribute("ResultData", statsSC
-                .getStatsConnexionUserAll(hostDateBegin, hostDateEnd));
-          } else if ("1".equals(filterType)) { // filter user
-            request.setAttribute("ResultData",
-                statsSC.getStatsConnexionUser(hostDateBegin, hostDateEnd, filterId));
-          }
-        }
-
-        destination = "/silverStatisticsPeas/jsp/exportViewConnection.jsp";
       } else if (function.startsWith("CallUserPanel")) {
         // save request param
         saveConnectionParam(request, statsSC);
