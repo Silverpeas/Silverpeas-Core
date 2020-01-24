@@ -45,6 +45,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,10 +59,11 @@ import static org.silverpeas.core.util.StringUtil.*;
  */
 public abstract class FileResponse {
 
+  public static final String DOWNLOAD_CONTEXT_PARAM = "downloadContext";
   private static final int MAX_PATH_LENGTH_IN_LOGS = 100;
   private static final int BUFFER_LENGTH = 1024 * 16;
   private static final Pattern RANGE_PATTERN = Pattern.compile("bytes=(?<start>\\d*)-(?<end>\\d*)");
-  private static final long EXPIRE_TIME = 1000 * 60 * 60 * 24l;
+  private static final long EXPIRE_TIME = 1000 * 60 * 60 * 24L;
 
   final HttpServletResponse response;
   private final HttpServletRequest request;
@@ -124,6 +126,20 @@ public abstract class FileResponse {
   }
 
   /**
+   * Indicates a download context if any set into request.
+   * @return true if download context, false otherwise.
+   */
+  boolean isDownloadContext() {
+    final String parameter = Optional.ofNullable(request.getParameter(DOWNLOAD_CONTEXT_PARAM))
+        .filter(StringUtil::isDefined)
+        .orElseGet(() -> {
+          final Object attribute = request.getAttribute(DOWNLOAD_CONTEXT_PARAM);
+          return attribute == null ? "false" : attribute.toString();
+        });
+    return StringUtil.getBooleanValue(parameter);
+  }
+
+  /**
    * Gets mime type.
    * @param absoluteFilePath the absolute file path.
    * @return the mime type.
@@ -172,7 +188,7 @@ public abstract class FileResponse {
    * @param output the output stream to write into.
    */
   void partialOutputStream(final Path path, final ContentRangeData partialData,
-      final OutputStream output) throws IOException {
+      final OutputStream output) {
     SilverLogger.getLogger(this).debug("{0} - start at {1} - end at {2} - partLength {3}",
         StringUtil.abbreviate(path.toString(), path.toString().length(), MAX_PATH_LENGTH_IN_LOGS),
         partialData.start, partialData.end, partialData.partContentLength);
