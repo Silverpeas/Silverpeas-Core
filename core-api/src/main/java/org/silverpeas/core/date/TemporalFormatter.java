@@ -342,7 +342,7 @@ public class TemporalFormatter {
   private static String toZonedFormat(final String pattern, final Temporal temporal,
       final ZoneId actualZoneId) {
     return new DateTimeFormatterBuilder().appendPattern(pattern).appendLiteral(" (")
-        .parseCaseSensitive().appendZoneRegionId().appendLiteral(")").toFormatter()
+        .parseCaseSensitive().appendZoneOrOffsetId().appendLiteral(")").toFormatter()
         .withZone(actualZoneId).format(temporal);
   }
 

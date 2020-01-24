@@ -48,7 +48,6 @@ public class ExportServlet extends HttpServlet {
 
   @Override
   public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
     Optional<ExportCSVBuilder> csvBuilder = ExportCSVBuilder.getFrom(HttpRequest.decorate(request));
     if (!csvBuilder.isPresent()) {
       // Get the session
@@ -61,7 +60,7 @@ public class ExportServlet extends HttpServlet {
       }
     }
     if (csvBuilder.isPresent()) {
-      csvBuilder.get().sendTo(response);
+      csvBuilder.get().sendTo(request, response);
     }
   }
 

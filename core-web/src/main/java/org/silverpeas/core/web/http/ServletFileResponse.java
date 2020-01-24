@@ -88,19 +88,20 @@ public class ServletFileResponse extends FileResponse {
    * @param downloadContext indicating a download context in order to specify rightly response
    * headers.
    */
-  private void sendPath(final Path path, final boolean downloadContext) {
+  void sendPath(final Path path, final boolean downloadContext) {
     try {
-      Path absoluteFilePath = path.toAbsolutePath();
-      String fileMimeType = getMimeType(absoluteFilePath);
+      final Path absoluteFilePath = path.toAbsolutePath();
+      final String fileName = getFileName(absoluteFilePath);
+      final String fileMimeType = getMimeType(absoluteFilePath);
 
-      int fullContentLength = (int) Files.size(absoluteFilePath);
-      Matcher partialMatcher = getPartialMatcher();
-      boolean isPartialRequest = partialMatcher.matches();
+      final int fullContentLength = (int) Files.size(absoluteFilePath);
+      final Matcher partialMatcher = getPartialMatcher();
+      final boolean isPartialRequest = partialMatcher.matches();
 
       response.setContentType(fileMimeType);
       final String filename = downloadContext
-          ? encodeAttachmentFilenameAsUtf8(absoluteFilePath.getFileName().toString())
-          : encodeInlineFilenameAsUtf8(absoluteFilePath.getFileName().toString());
+          ? encodeAttachmentFilenameAsUtf8(fileName)
+          : encodeInlineFilenameAsUtf8(fileName);
       response.setHeader("Content-Disposition", filename);
       if (isPartialRequest) {
         // Handling here a partial response (pseudo streaming)
@@ -135,6 +136,24 @@ public class ServletFileResponse extends FileResponse {
   @Override
   public ServletFileResponse forceMimeType(final String mimeType) {
     super.forceMimeType(mimeType);
+    return this;
+  }
+
+  @Override
+  public ServletFileResponse forceCharacterEncoding(final String forcedCharacterEncoding) {
+    super.forceCharacterEncoding(forcedCharacterEncoding);
+    return this;
+  }
+
+  @Override
+  public ServletFileResponse forceFileName(final String fileName) {
+    super.forceFileName(fileName);
+    return this;
+  }
+
+  @Override
+  public ServletFileResponse noCache() {
+    super.noCache();
     return this;
   }
 }
