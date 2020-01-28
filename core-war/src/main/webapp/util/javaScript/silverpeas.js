@@ -22,8 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* some web navigators (like IE < 9) doesn't support completely the javascript standard (ECMA) */
-
 if (!Array.prototype.indexOf) {
   Object.defineProperty(Array.prototype, 'indexOf', {
     enumerable : false, value : function(elt /*, from*/) {
@@ -647,7 +645,7 @@ if (!window.SilverpeasCache) {
 if (!window.SilverpeasAjaxConfig) {
   window.SilverpeasRequestConfig = SilverpeasClass.extend({
     initialize : function(url) {
-      var explodedUrl = sp.url.explode(url);
+      let explodedUrl = sp.url.explode(url);
       this.url = explodedUrl.base;
       this.parameters = explodedUrl.parameters;
       this.method = 'GET';
@@ -667,7 +665,7 @@ if (!window.SilverpeasAjaxConfig) {
       return this;
     },
     addParam : function(name, value) {
-      var currentValue = this.parameters[name];
+      let currentValue = this.parameters[name];
       if (!currentValue) {
         this.withParam(name, value);
       } else {
@@ -793,6 +791,16 @@ if (!window.SilverpeasAjaxConfig) {
       });
     }
   });
+  window.SilverpeasPreparedDownloadConfig = SilverpeasAjaxConfig.extend({
+    initialize : function(url) {
+      this._super(url);
+      this.target = '';
+    },
+    download : function() {
+      this.withParam('preparedDownload', true);
+      return silverpeasPreparedDownload(this);
+    }
+  });
 }
 
 if (typeof window.silverpeasAjax === 'undefined') {
@@ -837,7 +845,7 @@ if (typeof window.silverpeasAjax === 'undefined') {
     return new Promise(function(resolve, reject) {
 
       if (Object.getOwnPropertyNames) {
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
         xhr.onload = function() {
           if (typeof notySetupRequestComplete === 'function') {
             notySetupRequestComplete.call(this, xhr);
@@ -859,9 +867,9 @@ if (typeof window.silverpeasAjax === 'undefined') {
         }
 
         xhr.open(params.method, params.url);
-        var headerKeys = Object.getOwnPropertyNames(params.headers);
-        for (var i = 0; i < headerKeys.length; i++) {
-          var headerKey = headerKeys[i];
+        let headerKeys = Object.getOwnPropertyNames(params.headers);
+        for (let i = 0; i < headerKeys.length; i++) {
+          let headerKey = headerKeys[i];
           xhr.setRequestHeader(headerKey, params.headers[headerKey]);
         }
         xhr.send(params.data);
@@ -869,7 +877,7 @@ if (typeof window.silverpeasAjax === 'undefined') {
       } else {
 
         // little trick for old browsers
-        var jqOptions = {
+        let jqOptions = {
           url : params.url,
           type : params.method,
           cache : false,
@@ -950,12 +958,42 @@ if (typeof window.silverpeasAjax === 'undefined') {
         window.jQuery.progressMessage();
       }
     }
-    var navLink = document.createElement('a');
+    let navLink = document.createElement('a');
     navLink.setAttribute('href', silverpeasNavConfig.getUrl());
     navLink.setAttribute('target', silverpeasNavConfig.getTarget());
     navLink.style.display = 'none';
     document.body.appendChild(navLink);
     navLink.click();
+  };
+
+  window.silverpeasPreparedDownload = function(silverpeasPreparedDownloadConfig) {
+    if (!(silverpeasPreparedDownloadConfig instanceof SilverpeasPreparedDownloadConfig)) {
+      sp.log.error("silverpeasPreparedDownload function need an instance of SilverpeasPreparedDownloadConfig as first parameter.");
+      return;
+    }
+    let $window;
+    if (window.top.jQuery && window.top.jQuery.progressMessage) {
+      window.top.jQuery.progressMessage();
+      $window = window.top;
+    } else if (window.jQuery && window.jQuery.progressMessage) {
+      window.jQuery.progressMessage();
+      $window = window;
+    }
+    return silverpeasPreparedDownloadConfig.sendAndPromiseJsonResponse().then(function(response) {
+      try {
+        let preparedDownloadUrl = response.preparedDownloadUrl;
+        if (!preparedDownloadUrl) {
+          sp.log.error("Prepared Download", "no prepared download has been processed");
+        }
+        sp.navRequest(preparedDownloadUrl).go();
+      } finally {
+        if ($window) {
+          setTimeout(function() {
+            $window.jQuery.closeProgressMessage();
+          }, 250)
+        }
+      }
+    });
   };
 }
 
@@ -996,7 +1034,8 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
    * The given callback is called after the document has finished loading and the document has been
    * parsed but sub-resources such as images, stylesheets and frames are still loading.
    * @param callback an optional callback
-   * @returns {*|Promise} a promise including if any the execution of given callback on promise resolving.
+   * @returns {*|Promise} a promise including if any the execution of given callback on promise
+   *     resolving.
    */
   window.whenSilverpeasReady = function(callback) {
     var deferred = sp.promise.deferred();
@@ -1019,7 +1058,8 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
    * The given callback is called after the document and all sub-resources have finished loading.
    * The state indicates that the load event is about to fire.
    * @param callback an optional callback
-   * @returns {*|Promise} a promise including if any the execution of given callback on promise resolving.
+   * @returns {*|Promise} a promise including if any the execution of given callback on promise
+   *     resolving.
    */
   window.whenSilverpeasEntirelyLoaded = function(callback) {
     var deferred = sp.promise.deferred();
@@ -1475,6 +1515,9 @@ if (typeof window.sp === 'undefined') {
     },
     navRequest : function(url) {
       return new SilverpeasNavConfig(url);
+    },
+    preparedDownloadRequest : function(url) {
+      return new SilverpeasPreparedDownloadConfig(url);
     },
     ajaxRequest : function(url) {
       return new SilverpeasAjaxConfig(url);
@@ -1961,8 +2004,7 @@ if (typeof window.sp === 'undefined') {
               explodedUrl.parameters['ArrayPaneAjaxExport'] = true;
               __ajaxRequest(sp.url.formatFromExploded(explodedUrl), {
                 success : function() {
-                  sp.navRequest(url).go();
-                  window.top.spProgressMessage.hide();
+                  sp.preparedDownloadRequest(url).download();
                 }
               });
             }, false);

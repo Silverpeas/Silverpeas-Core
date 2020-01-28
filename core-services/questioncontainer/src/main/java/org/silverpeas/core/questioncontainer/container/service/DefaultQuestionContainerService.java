@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -55,19 +56,18 @@ import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
 import org.silverpeas.core.questioncontainer.score.model.ScorePK;
 import org.silverpeas.core.questioncontainer.score.service.ScoreService;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -894,27 +894,24 @@ public class DefaultQuestionContainerService
   }
 
   @Override
-  public String exportCSV(QuestionContainerDetail questionContainer, boolean addScore) {
-    List<StringBuilder> csvRows = new ArrayList<>();
-    StringBuilder csvRow = new StringBuilder();
-    OrganizationController orga = getOrganisationController();
+  public List<CSVRow> exportCSV(QuestionContainerDetail questionContainer, boolean addScore) {
     try {
       if (questionContainer.getHeader().isAnonymous()) {
         // anonymes
-        exportCSVForAnonymous(questionContainer, addScore, csvRow);
+        return exportCSVForAnonymous(questionContainer, addScore);
       } else {
         // pour les enquêtes non anonymes
-        exportCSVForAuthorized(questionContainer, addScore, csvRow, orga);
+        return exportCSVForAuthorized(questionContainer, addScore);
       }
-      csvRows.add(csvRow);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
+      return Collections.emptyList();
     }
-    return writeCSVFile(csvRows);
   }
 
-  private void exportCSVForAuthorized(final QuestionContainerDetail questionContainer,
-      final boolean addScore, final StringBuilder csvRow, final OrganizationController orga) {
+  private List<CSVRow> exportCSVForAuthorized(final QuestionContainerDetail questionContainer,
+      final boolean addScore) {
+    List<CSVRow> csvRows = new ArrayList<>();
     Collection<Question> questions = questionContainer.getQuestions();
     for (Question question : questions) {
       if (question.isOpenStyle()) {
@@ -924,39 +921,45 @@ public class DefaultQuestionContainerService
             question.getPK().getInstanceId());
         Collection<QuestionResult> openAnswers = getSuggestions(qcPK);
         for (QuestionResult qR : openAnswers) {
-          addCSVValue(csvRow, question.getLabel(), qR.getOpenedAnswer(),
-              orga.getUserDetail(qR.getUserId()).getDisplayedName(), false, 0);
+          csvRows.add(getCSVRow(question.getLabel(), qR.getOpenedAnswer(),
+              User.getById(qR.getUserId()).getDisplayedName(), false, 0));
         }
       } else {
         // question fermée
         Collection<Answer> answers = question.getAnswers();
         for (Answer answer : answers) {
-          exportCSVAnswerPartForAuthorized(addScore, csvRow, question, answer, orga);
+          csvRows.addAll(exportCSVAnswerPartForAuthorized(addScore, question, answer));
         }
       }
     }
+    return csvRows;
   }
 
-  private void exportCSVAnswerPartForAuthorized(final boolean addScore, final StringBuilder csvRow,
-      final Question question, final Answer answer, final OrganizationController orga) {
+  private List<CSVRow> exportCSVAnswerPartForAuthorized(final boolean addScore,
+      final Question question, final Answer answer) {
+    List<CSVRow> csvRows = new ArrayList<>();
     Collection<String> users =
         questionResultService.getUsersByAnswer(answer.getPK().getId());
     for (String user : users) {
       // suggestion
       if (answer.isOpened()) {
         QuestionResult openAnswer = getSuggestion(user, question.getPK(), answer.getPK());
-        addCSVValue(csvRow, question.getLabel(),
-            answer.getLabel() + " : " + openAnswer.getOpenedAnswer(),
-            orga.getUserDetail(user).getDisplayedName(), addScore, answer.getNbPoints());
+        CSVRow csvRow =
+            getCSVRow(question.getLabel(), answer.getLabel() + " : " + openAnswer.getOpenedAnswer(),
+                User.getById(user).getDisplayedName(), addScore, answer.getNbPoints());
+        csvRows.add(csvRow);
       } else {
-        addCSVValue(csvRow, question.getLabel(), answer.getLabel(),
-            orga.getUserDetail(user).getDisplayedName(), addScore, answer.getNbPoints());
+        CSVRow csvRow = getCSVRow(question.getLabel(), answer.getLabel(),
+            User.getById(user).getDisplayedName(), addScore, answer.getNbPoints());
+        csvRows.add(csvRow);
       }
     }
+    return csvRows;
   }
 
-  private void exportCSVForAnonymous(final QuestionContainerDetail questionContainer,
-      final boolean addScore, final StringBuilder csvRow) {
+  private List<CSVRow> exportCSVForAnonymous(final QuestionContainerDetail questionContainer,
+      final boolean addScore) {
+    List<CSVRow> csvRows = new ArrayList<>();
     Collection<Question> questions = questionContainer.getQuestions();
     for (Question question : questions) {
       if (question.isOpenStyle()) {
@@ -966,7 +969,8 @@ public class DefaultQuestionContainerService
             question.getPK().getInstanceId());
         Collection<QuestionResult> openAnswers = getSuggestions(qcPK);
         for (QuestionResult qR : openAnswers) {
-          addCSVValue(csvRow, question.getLabel(), qR.getOpenedAnswer(), "", false, 0);
+          CSVRow csvRow = getCSVRow(question.getLabel(), qR.getOpenedAnswer(), "", false, 0);
+          csvRows.add(csvRow);
         }
       } else {
         // question fermée
@@ -976,45 +980,31 @@ public class DefaultQuestionContainerService
               .getQuestionResultToQuestion(new ResourceReference(question.getPK())).size();
           String percent =
               Math.round((answer.getNbVoters() * PERCENT_MULTIPLICATOR) / nbUsers) + "%";
-          addCSVValue(csvRow, question.getLabel(), answer.getLabel(), percent, addScore,
+          CSVRow csvRow = getCSVRow(question.getLabel(), answer.getLabel(), percent, addScore,
               answer.getNbPoints());
+          csvRows.add(csvRow);
         }
       }
     }
+    return csvRows;
   }
 
-  private void addCSVValue(StringBuilder row, String questionLabel, String answerLabel, String value,
+  private CSVRow getCSVRow(String questionLabel, String answerLabel, String value,
       boolean addScore, int nbPoints) {
-    row.append("\"");
+    CSVRow row = new CSVRow();
     if (questionLabel != null) {
-      row.append(questionLabel.replaceAll("\"", "\"\"")).append("\"").append(";");
+      row.addCell(questionLabel);
     }
     if (answerLabel != null) {
-      row.append("\"").append(answerLabel.replaceAll("\"", "\"\"")).append("\"").append(";");
+      row.addCell(answerLabel);
     }
     if (value != null) {
-      row.append("\"").append(value.replaceAll("\"", "\"\"")).append("\"");
+      row.addCell(value);
     }
     if (addScore) {
-      row.append(";");
-      row.append("\"").append(nbPoints).append("\"");
+      row.addCell(nbPoints);
     }
-    row.append(System.getProperty("line.separator"));
-  }
-
-  private String writeCSVFile(List<StringBuilder> csvRows) {
-    String csvFilename = new Date().getTime() + ".csv";
-    try (FileOutputStream fileOutput = new FileOutputStream(
-        FileRepositoryManager.getTemporaryPath() + csvFilename)) {
-      for (StringBuilder csvRow : csvRows) {
-        fileOutput.write(csvRow.toString().getBytes());
-        fileOutput.write("\n".getBytes());
-      }
-    } catch (Exception e) {
-      csvFilename = null;
-      SilverLogger.getLogger(this).error(e);
-    }
-    return csvFilename;
+    return row;
   }
 
   private Connection getConnection() {

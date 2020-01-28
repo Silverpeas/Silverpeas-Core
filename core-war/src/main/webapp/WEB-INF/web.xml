@@ -611,6 +611,10 @@
     <servlet-class>org.silverpeas.core.web.export.ExportServlet</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>PreparedDownloadServlet</servlet-name>
+    <servlet-class>org.silverpeas.core.web.http.PreparedDownloadServlet</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>AjaxServletRSS</servlet-name>
     <servlet-class>org.silverpeas.web.look.AjaxServletRSS</servlet-class>
   </servlet>
@@ -1016,6 +1020,10 @@
   <servlet-mapping>
     <servlet-name>ExportServlet</servlet-name>
     <url-pattern>/Export/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>PreparedDownloadServlet</servlet-name>
+    <url-pattern>/PreparedDownload/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>AjaxServletRSS</servlet-name>

@@ -69,6 +69,9 @@ public abstract class FileResponse {
   private final HttpServletRequest request;
 
   String forcedMimeType;
+  private String forcedCharacterEncoding;
+  private String forcedFileName;
+  private boolean noCache = false;
   private String forcedFileId;
 
   /**
@@ -157,6 +160,23 @@ public abstract class FileResponse {
   }
 
   /**
+   * Gets file name.
+   * @param absoluteFilePath the absolute file path.
+   * @return the file name.
+   */
+  String getFileName(final Path absoluteFilePath) {
+    String fileName = request.getParameter("forceFileName");
+    if (isNotDefined(fileName)) {
+      if (isDefined(forcedFileName)) {
+        fileName = forcedFileName;
+      } else {
+        fileName = absoluteFilePath.getFileName().toString();
+      }
+    }
+    return fileName;
+  }
+
+  /**
    * Forces the file identifier.<br>
    * If not forced, the absolute path of the file into Base64 is
    * computed.
@@ -165,6 +185,19 @@ public abstract class FileResponse {
    */
   public FileResponse forceFileId(final String fileId) {
     this.forcedFileId = fileId;
+    return this;
+  }
+
+  /**
+   * Forces the file name into the response.<br>
+   * If not forced, the file name is computed from the file itself.<br>
+   * Even if a file name has been forced, if the request contains into headers a valuated
+   * {@code forceFileName} parameter, the file name from the request is taken into account.
+   * @param fileName the file name to set.
+   * @return itself.
+   */
+  public FileResponse forceFileName(final String fileName) {
+    this.forcedFileName = fileName;
     return this;
   }
 
@@ -178,6 +211,25 @@ public abstract class FileResponse {
    */
   public FileResponse forceMimeType(final String mimeType) {
     this.forcedMimeType = mimeType;
+    return this;
+  }
+
+  /**
+   * Forces the character encoding of the response.
+   * @param forcedCharacterEncoding the character encoding to set.
+   * @return itself.
+   */
+  public FileResponse forceCharacterEncoding(final String forcedCharacterEncoding) {
+    this.forcedCharacterEncoding = forcedCharacterEncoding;
+    return this;
+  }
+
+  /**
+   * Sets into response that no cache MUST be handled.
+   * @return itself.
+   */
+  public FileResponse noCache() {
+    this.noCache = true;
     return this;
   }
 
@@ -219,6 +271,14 @@ public abstract class FileResponse {
    * @param output the output stream to write into.
    */
   void fullOutputStream(final Path path, final OutputStream output) {
+    if (noCache) {
+      response.setHeader("Cache-Control", "no-store");
+      response.setHeader("Pragma", "no-cache");
+      response.setDateHeader("Expires", -1);
+    }
+    if (isDefined(forcedCharacterEncoding)) {
+      response.setCharacterEncoding(forcedCharacterEncoding);
+    }
     try (final InputStream stream = FileUtils.openInputStream(path.toFile())) {
       IOUtils.copy(stream, output);
     } catch (IOException e) {
