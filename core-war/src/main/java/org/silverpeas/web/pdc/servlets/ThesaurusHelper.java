@@ -23,11 +23,11 @@
  */
 package org.silverpeas.web.pdc.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class ThesaurusHelper {
 
@@ -37,19 +37,17 @@ public class ThesaurusHelper {
   }
 
   public static void setJargonInfoInRequest(PdcSearchSessionController pdcSC,
-      HttpServletRequest request) throws PdcException {
+      HttpServletRequest request) {
     setJargonInfoInRequest(pdcSC, request, pdcSC.getActiveThesaurus());
-
   }
 
   public static void setJargonInfoInRequest(PdcSearchSessionController pdcSC,
       HttpServletRequest request, boolean isThesaurusActive) {
-    Jargon jargon = pdcSC.getJargon();
+    final Jargon jargon = pdcSC.getJargon();
     request.setAttribute("Jargon", jargon);
-    request.setAttribute("ActiveThesaurus", Boolean.valueOf(isThesaurusActive));
+    request.setAttribute("ActiveThesaurus", isThesaurusActive);
   }
 
   private ThesaurusHelper() {
   }
-
 }
