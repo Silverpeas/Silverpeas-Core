@@ -23,16 +23,19 @@
  */
 package org.silverpeas.core.contribution.converter.openoffice;
 
-import static org.silverpeas.core.contribution.converter.DocumentFormat.pdf;
-
-import java.io.File;
+import org.silverpeas.core.contribution.converter.DocumentFormat;
+import org.silverpeas.core.contribution.converter.ToPDFConverter;
+import org.silverpeas.core.util.MimeTypes.MimeTypeRegistry;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.File;
 
-import org.silverpeas.core.contribution.converter.DocumentFormat;
-import org.silverpeas.core.contribution.converter.ToPDFConverter;
-import org.silverpeas.core.util.file.FileUtil;
+import static org.silverpeas.core.contribution.converter.DocumentFormat.pdf;
+import static org.silverpeas.core.util.MimeTypes.OPEN_OFFICE_MIME_TYPES;
+import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
+import static org.silverpeas.core.util.file.FileUtil.getMimeType;
 
 /**
  * Implementation of the ToPDFConverter interface by using the OpenOffice API to perform its job.
@@ -42,6 +45,12 @@ import org.silverpeas.core.util.file.FileUtil;
 @Named("toPDFConverter")
 public class OpenOfficeToPDFConverter extends OpenOfficeConverter implements ToPDFConverter {
 
+  private final SettingBundle settings = getSettingBundle("org.silverpeas.converter.openoffice");
+
+  private MimeTypeRegistry compatibleDocumentMimeTypes = new MimeTypeRegistry(
+      () -> settings.getString("openoffice.compatible.document.extensions", ""),
+      OPEN_OFFICE_MIME_TYPES);
+
   @Override
   public DocumentFormat[] getSupportedFormats() {
     return new DocumentFormat[] { pdf };
@@ -49,6 +58,12 @@ public class OpenOfficeToPDFConverter extends OpenOfficeConverter implements ToP
 
   @Override
   public boolean isDocumentSupported(final File document) {
-    return FileUtil.isOpenOfficeCompatible(document.getName());
+    return isDocumentSupported(document.getPath());
+  }
+
+  @Override
+  public boolean isDocumentSupported(final String fileName) {
+    final String mimeType = getMimeType(fileName);
+    return compatibleDocumentMimeTypes.contains(mimeType);
   }
 }

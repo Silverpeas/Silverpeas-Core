@@ -25,7 +25,7 @@ package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
-import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
+import org.silverpeas.core.contribution.converter.ToPDFConverter;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.DocumentInfo;
 import org.silverpeas.core.util.PdfUtil;
@@ -37,6 +37,7 @@ import org.silverpeas.core.viewer.model.TemporaryPdfView;
 import org.silverpeas.core.viewer.util.JsonPdfUtil;
 import org.silverpeas.core.viewer.util.SwfUtil;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
@@ -53,16 +54,23 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
 
   private static final String PROCESS_NAME = "VIEW";
 
+  @Inject
+  private ToPDFConverter toPDFConverter;
+
+  private static boolean isSwfNeeded() {
+    return isDefined(getLicenceKey()) || !pdfViewerEnabled();
+  }
+
   /*
    * (non-Javadoc)
    * @see org.silverpeas.core.viewer.service.ViewService#isViewable(java.io.File)
    */
   @Override
   public boolean isViewable(final File file) {
-    final String fileName = file.getPath();
+    final String filePath = file.getPath();
     final boolean toolsAvailable = !isSwfNeeded() || SwfUtil.isPdfToSwfActivated();
     return (toolsAvailable && file.exists() &&
-        (FileUtil.isPdf(fileName) || FileUtil.isOpenOfficeCompatible(fileName)));
+        (FileUtil.isPdf(filePath) || toPDFConverter.isDocumentSupported(filePath)));
   }
 
   /*
@@ -87,7 +95,7 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
          */
 
         // If the document is an Open Office one
-        if (FileUtil.isOpenOfficeCompatible(viewerContext.getOriginalSourceFile().getName())) {
+        if (toPDFConverter.isDocumentSupported(viewerContext.getOriginalSourceFile().getPath())) {
           pdfFile = toPdf(viewerContext.getOriginalSourceFile(),
               generateTmpFile(viewerContext, PDF_DOCUMENT_EXTENSION));
         }
@@ -133,18 +141,13 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
     }).execute(viewerContext);
   }
 
-  private static boolean isSwfNeeded() {
-    return isDefined(getLicenceKey()) || !pdfViewerEnabled();
-  }
-
   /**
    * Convert into PDF
    * @param source the file source.
    * @return a {@link File} instance referencing a PDF file.
    */
   private File toPdf(final File source, final File destination) {
-    DocumentFormatConverterProvider.getToPDFConverter()
-        .convert(source, destination, DocumentFormat.pdf);
+    toPDFConverter.convert(source, destination, DocumentFormat.pdf);
     return destination;
   }
 
