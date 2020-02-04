@@ -27,12 +27,13 @@ package org.silverpeas.core.contribution.converter.openoffice;
 import org.jodconverter.office.LocalOfficeManager;
 import org.jodconverter.office.OfficeManager;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
 import java.util.stream.Stream;
+
+import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
 
 /**
  * The OpenOffice service gives access to an open office process.
@@ -41,8 +42,7 @@ import java.util.stream.Stream;
 @Singleton
 public class OpenOfficeService implements Initialization {
 
-  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
-      "org.silverpeas.converter.openoffice");
+  private static final SettingBundle settings = getSettingBundle("org.silverpeas.converter.openoffice");
   private static final String OPENOFFICE_PORT = "openoffice.port";
   private static final String OPENOFFICE_HOME = "openoffice.home";
   private static final String OPENOFFICE_TASK_TIMEOUT = "openoffice.taskTimeout";
@@ -58,12 +58,12 @@ public class OpenOfficeService implements Initialization {
         .map(String::trim)
         .mapToInt(Integer::parseInt)
         .toArray();
-    LocalOfficeManager.Builder builder = LocalOfficeManager.builder().portNumbers(portNumbers)
+    LocalOfficeManager.Builder builder = LocalOfficeManager.builder()
+        .portNumbers(portNumbers)
         .taskQueueTimeout(taskTimeout);
     if (StringUtil.isDefined(home)) {
       builder = builder.officeHome(home);
     }
-
     officeManager = builder.install().build();
     officeManager.start();
   }

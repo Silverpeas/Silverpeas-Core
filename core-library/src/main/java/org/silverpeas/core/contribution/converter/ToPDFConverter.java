@@ -32,4 +32,10 @@ package org.silverpeas.core.contribution.converter;
  */
 public interface ToPDFConverter extends DocumentFormatConversion {
 
+  /**
+   * Is the specified document in the format on which the converter works?
+   * @param fileName the fileName or path to check its format is supported.
+   * @return true if the format of the document is supported by this converter, false otherwise.
+   */
+  boolean isDocumentSupported(final String fileName);
 }

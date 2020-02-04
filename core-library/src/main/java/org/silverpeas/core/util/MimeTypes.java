@@ -23,14 +23,17 @@
  */
 package org.silverpeas.core.util;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import org.silverpeas.core.util.file.FileUtil;
+
+import java.util.Collections;
 import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.silverpeas.core.util.file.FileUtil.getMimeType;
 
 public class MimeTypes {
-
-  private MimeTypes() {
-  }
 
   public static final String SERVLET_HTML_CONTENT_TYPE = "text/html;charset=UTF-8";
   public static final String DEFAULT_MIME_TYPE = "application/octet-stream";
@@ -99,15 +102,89 @@ public class MimeTypes {
   public static final String MIME_TYPE_OO_MASTER = "application/vnd.oasis.opendocument.text-master";
   //Extension .mpp and .mpt
   public static final String MSPROJECT_MIME_TYPE = "application/vnd.ms-project";
-  public static final Set<String> OPEN_OFFICE_MIME_TYPES = new HashSet<>(
-      Arrays.asList(WORD_MIME_TYPE, WORD_2007_MIME_TYPE, WORD_2007_TEMPLATE_MIME_TYPE,
-          EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, EXCEL_2007_MIME_TYPE, EXCEL_2007_TEMPLATE_MIME_TYPE,
-          POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2, POWERPOINT_2007_MIME_TYPE,
-          POWERPOINT_2007_TEMPLATE_MIME_TYPE, MIME_TYPE_OO_FORMATTED_TEXT, MIME_TYPE_OO_SPREADSHEET,
-          MIME_TYPE_OO_PRESENTATION, MIME_TYPE_OO_GRAPHICS, MIME_TYPE_OO_DIAGRAM,
-          MIME_TYPE_OO_FORMULA, MIME_TYPE_OO_DB, MIME_TYPE_OO_IMAGE, MIME_TYPE_OO_MASTER));
-  public static final Set<String> ARCHIVE_MIME_TYPES = new HashSet<>(
-      Arrays.asList(BZ2_ARCHIVE_MIME_TYPE, GZ_ARCHIVE_MIME_TYPE, GUNZIP_ARCHIVE_MIME_TYPE,
-          TARGZ_ARCHIVE_MIME_TYPE, ARCHIVE_MIME_TYPE, SHORT_ARCHIVE_MIME_TYPE,
-          JAVA_ARCHIVE_MIME_TYPE));
+  public static final Set<String> OPEN_OFFICE_MIME_TYPES = Collections.unmodifiableSet(Stream.of(
+        WORD_MIME_TYPE, WORD_2007_MIME_TYPE, WORD_2007_TEMPLATE_MIME_TYPE,
+        EXCEL_MIME_TYPE1, EXCEL_MIME_TYPE2, EXCEL_2007_MIME_TYPE, EXCEL_2007_TEMPLATE_MIME_TYPE,
+        POWERPOINT_MIME_TYPE1, POWERPOINT_MIME_TYPE2, POWERPOINT_2007_MIME_TYPE,
+        POWERPOINT_2007_TEMPLATE_MIME_TYPE, MIME_TYPE_OO_FORMATTED_TEXT, MIME_TYPE_OO_SPREADSHEET,
+        MIME_TYPE_OO_PRESENTATION, MIME_TYPE_OO_GRAPHICS, MIME_TYPE_OO_DIAGRAM,
+        MIME_TYPE_OO_FORMULA, MIME_TYPE_OO_DB, MIME_TYPE_OO_IMAGE, MIME_TYPE_OO_MASTER,
+        getMimeType(".ott"), getMimeType(".ots"), getMimeType(".otp"))
+      .collect(Collectors.toSet()));
+  public static final Set<String> ARCHIVE_MIME_TYPES = Collections.unmodifiableSet(Stream.of(
+        BZ2_ARCHIVE_MIME_TYPE, GZ_ARCHIVE_MIME_TYPE, GUNZIP_ARCHIVE_MIME_TYPE,
+        TARGZ_ARCHIVE_MIME_TYPE, ARCHIVE_MIME_TYPE, SHORT_ARCHIVE_MIME_TYPE,
+        JAVA_ARCHIVE_MIME_TYPE)
+      .collect(Collectors.toSet()));
+  private MimeTypes() {
+  }
+
+  /**
+   * Handles registry of mime type which is provided by different kind of sources.
+   * <p>
+   * To initialize the registry, a supplier of document extensions and default mime types are
+   * required.
+   * <ul>
+   *   <li>If the supplier provides the value {@code deactivated}, then the registry is
+   *   purged and contains no mime-type,</li>
+   *   <li>If the supplier provides an empty value (or a not defined value), then the registry is
+   *   loaded with the default given mime types,</li>
+   *   <li>If the supplier provides a list of document extensions, then the registry is loaded
+   *   with them and default given mime types are ignored,</li>
+   *   <li>If the supplier provides a list with the prefix {@code (+)}, then the registry is
+   *   loaded with them and also with the given default mime types.</li>
+   * </ul>
+   * </p>
+   */
+  public static class MimeTypeRegistry {
+    static final String ADDITIONAL_PREFIX_CLAUSE = "(+)";
+    private static final String DEACTIVATED = "deactivated";
+    private static final Object OFFICE_MUTEX = new Object();
+    private final Supplier<String> extensionProvider;
+    private final Set<String> defaultMimeTypes;
+    protected Set<String> currentMimeTypes = Collections.emptySet();
+    private String currentExtensions = null;
+
+    public MimeTypeRegistry(final Supplier<String> extensionProvider,
+        final Set<String> defaultMimeTypes) {
+      this.extensionProvider = extensionProvider;
+      this.defaultMimeTypes = defaultMimeTypes;
+    }
+
+    public boolean contains(final String mimeType) {
+      verifyAvailableMimeTypes();
+      return currentMimeTypes.contains(mimeType.toLowerCase());
+    }
+
+    private void verifyAvailableMimeTypes() {
+      final String extensions = extensionProvider.get().trim();
+      if (currentExtensions == null || !currentExtensions.equals(extensions)) {
+        synchronized (OFFICE_MUTEX) {
+          if (DEACTIVATED.equals(extensions)) {
+            currentMimeTypes = Collections.emptySet();
+          } else {
+            final boolean addToDefaults = extensions.startsWith(ADDITIONAL_PREFIX_CLAUSE);
+            final String values = addToDefaults
+                ? extensions.substring(ADDITIONAL_PREFIX_CLAUSE.length())
+                : extensions;
+            currentMimeTypes = Stream.of(values.replace(" ", "").split("[,;]"))
+                .filter(e -> !e.isEmpty())
+                .map(FileUtil::getMimeType)
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+            if (currentMimeTypes.isEmpty()) {
+              currentMimeTypes = defaultMimeTypes.stream()
+                  .map(String::toLowerCase)
+                  .collect(Collectors.toSet());
+            } else if (values.length() != extensions.length()) {
+              currentMimeTypes = Stream
+                  .concat(currentMimeTypes.stream(), defaultMimeTypes.stream().map(String::toLowerCase))
+                  .collect(Collectors.toSet());
+            }
+          }
+        }
+        currentExtensions = extensions;
+      }
+    }
+  }
 }
