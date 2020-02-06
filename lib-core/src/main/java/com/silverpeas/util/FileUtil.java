@@ -362,7 +362,10 @@ public class FileUtil implements MimeTypes {
   }
 
   static boolean isMsOfficeExtension(final String mimeType) {
-    return MS_OFFICE_MIME_TYPES.contains(mimeType);
+    return mimeType.startsWith("application/vnd.ms-word") ||
+        mimeType.startsWith("application/vnd.ms-excel") ||
+        mimeType.startsWith("application/vnd.ms-powerpoint") ||
+        mimeType.startsWith("application/vnd.ms-project");
   }
 
   /**
