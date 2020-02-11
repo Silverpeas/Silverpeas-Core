@@ -199,8 +199,9 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
       Optional<SilverpeasComponentInstance> instance =
           SilverpeasComponentInstance.getById(getComponentInstanceId());
       if (this instanceof FallbackToCoreTemplatePathBehavior) {
-        instance.map(i -> i.getName() + "/" + templatePath.get()).filter(
-            p -> SilverpeasStringTemplateUtil.isComponentTemplateExist(p, getTemplateFileName()))
+        instance
+            .map(i -> i.getName() + "/" + templatePath.get())
+            .filter(p -> SilverpeasStringTemplateUtil.isComponentTemplateExist(p, getTemplateFileName()))
             .ifPresent(p -> {
               componentRoot.set(true);
               templatePath.set(p);
