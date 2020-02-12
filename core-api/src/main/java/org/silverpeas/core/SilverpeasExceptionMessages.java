@@ -24,6 +24,9 @@
 package org.silverpeas.core;
 
 import java.text.MessageFormat;
+import java.util.stream.Stream;
+
+import static java.text.MessageFormat.format;
 
 /**
  * It defines the patterns of the common messages to pass with Silverpeas exceptions when an error
@@ -357,6 +360,36 @@ public class SilverpeasExceptionMessages {
    */
   public static String undefined(String resource) {
     return UNDEFINED_RESOURCE.format(new Object[]{resource});
+  }
+
+  /**
+   * In charge to produce lighter error messages but with a bit of contextualization.
+   */
+  public static class LightExceptionMessage {
+    private final Class<?> source;
+    private final Exception exception;
+
+    public LightExceptionMessage(final Object source, final Exception exception) {
+      this(source.getClass(), exception);
+    }
+
+    public LightExceptionMessage(final Class<?> source, final Exception exception) {
+      this.source = source;
+      this.exception = exception;
+    }
+
+    /**
+     * Merges the given message with the context in order to produce an error on a single line.
+     * @param message a functional error message to merge with the context.
+     * @return a string representing the merged message.
+     */
+    public String singleLineWith(final String message) {
+      final String currentClass = source.getName();
+      return format("{0} -> {1}", message, Stream.of(exception.getStackTrace())
+          .filter(s -> s.getClassName().equals(currentClass))
+          .findFirst()
+          .orElseGet(() -> exception.getStackTrace()[0]));
+    }
   }
 }
   

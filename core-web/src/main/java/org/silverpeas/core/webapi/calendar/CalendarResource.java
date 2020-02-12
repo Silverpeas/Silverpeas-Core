@@ -293,7 +293,11 @@ public class CalendarResource extends AbstractCalendarResource {
     try {
       getCalendarWebManager().synchronizeCalendar(calendar);
     } catch (ImportException e) {
-      SilverLogger.getLogger(this).error(e);
+      if (e.getCause() != null) {
+        SilverLogger.getLogger(this).error(e);
+      } else {
+        SilverLogger.getLogger(this).error(e.getMessage());
+      }
       getMessager().addError(getBundle()
           .getStringWithParams("calendar.message.calendar.synchronize.error", calendar.getTitle()));
       return Response.serverError().entity(asWebEntity(calendar)).build();

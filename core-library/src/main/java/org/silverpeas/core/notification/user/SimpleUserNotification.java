@@ -31,18 +31,27 @@ import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.Link;
+import org.silverpeas.core.util.Pair;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
+import static org.silverpeas.core.util.StringUtil.isDefined;
+
 /**
  * This implementation of {@link UserNotification} permits to send a simple user notification,
  * basically a title and a message.
+ * <p>
+ * It is also possible to deal with the {@link SilverpeasTemplate} API.
+ * </p>
  * <p>This is useful when user notification must be performed into a simple functional context.</p>
  * <p>This implementation is designed in order to handle the messages into all the handled user
  * languages</p>
@@ -52,8 +61,12 @@ public class SimpleUserNotification implements UserNotification {
 
   private User sender = null;
   private NotifAction notifAction = NotifAction.REPORT;
-  private UnaryOperator<String> title = s -> "";
-  private UnaryOperator<String> message = m -> "";
+  private String componentInstanceId = null;
+  private UnaryOperator<String> title = l -> "";
+  private UnaryOperator<String> message = l -> "";
+  private Pair<String, String> templatePath = Pair.of("notification/user", "simple");
+  private BiConsumer<SilverpeasTemplate, String> templateConsumer = null;
+  private Function<String, Link> link = null;
   private Set<String> userIds = new HashSet<>();
   private Set<String> groupIds = new HashSet<>();
   private Set<String> externalMails = new HashSet<>();
@@ -84,8 +97,18 @@ public class SimpleUserNotification implements UserNotification {
   }
 
   /**
-   * Sets the {@link Function} which provides a title from a language.
-   * @param title a {@link Function} which provides a title by applying a language.
+   * Sets the instance id of the component from wich the notification is sent.
+   * @param componentInstanceId a component instance identifier as string.
+   * @return itself.
+   */
+  public SimpleUserNotification andComponentInstanceId(String componentInstanceId) {
+    this.componentInstanceId = componentInstanceId;
+    return this;
+  }
+
+  /**
+   * Sets the {@link UnaryOperator} which provides a title from a language.
+   * @param title a {@link UnaryOperator} which provides a title by applying a language.
    * @return itself.
    */
   public SimpleUserNotification withTitle(UnaryOperator<String> title) {
@@ -94,12 +117,43 @@ public class SimpleUserNotification implements UserNotification {
   }
 
   /**
-   * Sets the {@link Function} which provides a message from a language.
-   * @param message a {@link Function} which provides a message by applying a language.
+   * Sets the {@link UnaryOperator} which provides a message from a language.
+   * @param message a {@link UnaryOperator} which provides a message by applying a language.
    * @return itself.
    */
   public SimpleUserNotification andMessage(UnaryOperator<String> message) {
     this.message = message;
+    return this;
+  }
+
+  /**
+   * Sets the {@link BiConsumer} which is filling the {@link SilverpeasTemplate} data according
+   * to given language.</br>
+   * {@link SilverpeasTemplate} is initialized from given template path represented by a
+   * {@link Pair}.
+   * <p>
+   * Messages supplied by {@link #andMessage(UnaryOperator)} are provided to the
+   * {@link SilverpeasTemplate} by {@code ${message}} variable.
+   * </p>
+   * @param path a {@link Pair} defining on the left the path and on the right the
+   * name of the aimed template.
+   * @param template a {@link Consumer} which is filling the {@link SilverpeasTemplate} data.
+   * @return itself.
+   */
+  public SimpleUserNotification fillTemplate(Pair<String, String> path,
+      BiConsumer<SilverpeasTemplate, String> template) {
+    this.templatePath = path;
+    this.templateConsumer = template;
+    return this;
+  }
+
+  /**
+   * Sets the {@link Function} which provides a link from a language.
+   * @param link a {@link Function} which provides a message by applying a language.
+   * @return itself.
+   */
+  public SimpleUserNotification withLink(Function<String, Link> link) {
+    this.link = link;
     return this;
   }
 
@@ -209,7 +263,8 @@ public class SimpleUserNotification implements UserNotification {
   }
 
   private static class SimpleUserNotificationBuilder
-      extends AbstractTemplateUserNotificationBuilder<Object> {
+      extends AbstractTemplateUserNotificationBuilder<Object>
+      implements FallbackToCoreTemplatePathBehavior {
 
     private static final Object NO_RESOURCE = new Object();
     private SimpleUserNotification source;
@@ -228,6 +283,12 @@ public class SimpleUserNotification implements UserNotification {
       super.getNotificationMetaData().addLanguage(language, title, "");
       template.setAttribute("message", message);
       template.setAttribute("sender", senderName);
+      if (source.link != null) {
+        super.getNotificationMetaData().setLink(source.link.apply(language), language);
+      }
+      if (source.templateConsumer != null) {
+        source.templateConsumer.accept(template, language);
+      }
     }
 
     @Override
@@ -243,7 +304,7 @@ public class SimpleUserNotification implements UserNotification {
 
     @Override
     protected String getTemplateFileName() {
-      return "simple";
+      return source.templatePath.getSecond();
     }
 
     @Override
@@ -253,7 +314,7 @@ public class SimpleUserNotification implements UserNotification {
 
     @Override
     protected String getTemplatePath() {
-      return "notification/user";
+      return source.templatePath.getFirst();
     }
 
     @Override
@@ -263,7 +324,7 @@ public class SimpleUserNotification implements UserNotification {
 
     @Override
     protected String getComponentInstanceId() {
-      return null;
+      return isDefined(source.componentInstanceId) ? source.componentInstanceId : null;
     }
 
     @Override
