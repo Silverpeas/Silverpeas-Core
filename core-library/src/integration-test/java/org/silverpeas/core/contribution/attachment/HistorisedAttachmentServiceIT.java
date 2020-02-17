@@ -65,8 +65,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
 
@@ -723,7 +723,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
   }
 
   /**
-   * Test of switchAllowingDownloadForReaders method, of class AttachmentService.
+   * Test of switchDisplayableAsContent method, of class AttachmentService.
    *
    * @throws LoginException
    * @throws RepositoryException
@@ -779,6 +779,72 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
       documentOfResult = instance.searchDocumentById(documentPK, "fr");
       assertThat(documentOfResult, notNullValue());
       assertThat(documentOfResult.isDisplayableAsContent(), is(false));
+
+    }
+  }
+
+  /**
+   * Test of switchAllowingDownloadForReaders method, of class AttachmentService.
+   *
+   * @throws LoginException
+   * @throws RepositoryException
+   * @throws IOException
+   */
+  @Test
+  public void testSwitchEditableSimultaneously() throws RepositoryException, IOException {
+    ResourceReference foreignKey = new ResourceReference("node36", instanceId);
+    SimpleDocumentPK documentPK;
+    try (JcrSession session = openSystemSession()) {
+      Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      String foreignId = foreignKey.getId();
+      SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10,
+          new SimpleAttachment("test.odp", "fr", "Mon document de test 1",
+              "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+              MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+      documentPK = instance.createAttachment(document, content).getPk();
+      session.save();
+
+    }
+    // Simulate an other call ... closing old session and opening a new one
+    try (JcrSession session = openSystemSession()) {
+
+      // Verifying document is created.
+      List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+      assertThat(result, notNullValue());
+      assertThat(result, hasSize(1));
+      SimpleDocument documentOfResult = result.get(0);
+      assertThat(documentOfResult.editableSimultaneously().isPresent(), is(true));
+      assertThat(documentOfResult.editableSimultaneously().get(), is(true));
+
+      // Disable
+      instance.switchEnableEditSimultaneously(documentPK, false);
+      documentOfResult = instance.searchDocumentById(documentPK, "fr");
+      assertThat(documentOfResult, notNullValue());
+      assertThat(documentOfResult.editableSimultaneously().isPresent(), is(true));
+      assertThat(documentOfResult.editableSimultaneously().get(), is(false));
+
+      // Enable
+      instance.switchEnableEditSimultaneously(documentPK, true);
+      documentOfResult = instance.searchDocumentById(documentPK, "fr");
+      assertThat(documentOfResult, notNullValue());
+      assertThat(documentOfResult.editableSimultaneously().isPresent(), is(true));
+      assertThat(documentOfResult.editableSimultaneously().get(), is(true));
+
+      // Enable again
+      instance.switchEnableEditSimultaneously(documentPK, true);
+      documentOfResult = instance.searchDocumentById(documentPK, "fr");
+      assertThat(documentOfResult, notNullValue());
+      assertThat(documentOfResult.editableSimultaneously().isPresent(), is(true));
+      assertThat(documentOfResult.editableSimultaneously().get(), is(true));
+
+      // Disable
+      instance.switchEnableEditSimultaneously(documentPK, false);
+      documentOfResult = instance.searchDocumentById(documentPK, "fr");
+      assertThat(documentOfResult, notNullValue());
+      assertThat(documentOfResult.editableSimultaneously().isPresent(), is(true));
+      assertThat(documentOfResult.editableSimultaneously().get(), is(false));
 
     }
   }

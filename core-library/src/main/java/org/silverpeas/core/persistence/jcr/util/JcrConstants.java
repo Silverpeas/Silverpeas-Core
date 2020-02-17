@@ -204,6 +204,11 @@ public interface JcrConstants extends Property {
   String SLV_VIEWABLE_MIXIN = "slv:viewable";
 
   /**
+   * Silverpeas Mixin to add viewable data to the node.
+   */
+  String SLV_EDITABLE_MIXIN = "slv:editable";
+
+  /**
    * Translation node 's name prefix. A translation's name should be TRANSLATION_NAME_PREFIX+ lang.
    */
   String TRANSLATION_NAME_PREFIX = "traduction_";
@@ -262,4 +267,5 @@ public interface JcrConstants extends Property {
   String SLV_PROPERTY_COMMENT = "slv:comment";
   String SLV_PROPERTY_FORBIDDEN_DOWNLOAD_FOR_ROLES = "slv:forbiddenDownloadForRoles";
   String SLV_PROPERTY_DISPLAYABLE_AS_CONTENT = "slv:displayableAsContent";
+  String SLV_PROPERTY_EDITABLE_SIMULTANEOUSLY = "slv:editableSimultaneously";
 }

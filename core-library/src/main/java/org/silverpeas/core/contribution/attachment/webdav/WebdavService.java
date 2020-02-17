@@ -24,6 +24,12 @@
 package org.silverpeas.core.contribution.attachment.webdav;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.webdav.impl.WebdavContentDescriptor;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Optional;
 
 public interface WebdavService {
 
@@ -55,4 +61,38 @@ public interface WebdavService {
    * @throws javax.jcr.RepositoryException
    */
   long getContentEditionSize(SimpleDocument document);
+
+  /**
+   * Gets the current webdav descriptor of the specified attachment.
+   * If several webdav document exists (several content languages), then the one which has the
+   * highest modified date is taken into account.
+   * @param document the attachment.
+   * @return the optional content edition webdav descriptor if the specified attachment exists in
+   * the webdav repository.
+   */
+  Optional<WebdavContentDescriptor> getDescriptor(SimpleDocument document);
+
+  /**
+   * Updates a document content into the WEBDAV repository.
+   * <p>
+   *  If several webdav document exists (several content languages), then the one which has the
+   *  highest modified date is taken into account.
+   * </p>
+   * @param document the aimed document.
+   * @param input the data to write.
+   * @throws IOException when it is not possible to write physically the data.
+   */
+  void updateContentFrom(final SimpleDocument document, final InputStream input) throws IOException;
+
+  /**
+   * Loads a document content from the WEBDAV repository and writes it into given output.
+   * <p>
+   *  If several webdav document exists (several content languages), then the one which has the
+   *  highest modified date is taken into account.
+   * </p>
+   * @param document the aimed document.
+   * @param output the stream to write into.
+   * @throws IOException when it is not possible to write physically the data.
+   */
+  void loadContentInto(final SimpleDocument document, final OutputStream output) throws IOException;
 }

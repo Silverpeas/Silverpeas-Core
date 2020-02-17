@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.chat.servers;
 
+import com.google.api.client.util.SslUtils;
+import org.silverpeas.core.chat.ChatServerException;
+import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
 
@@ -33,6 +36,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.security.GeneralSecurityException;
 import java.util.function.UnaryOperator;
 
 /**
@@ -75,7 +79,7 @@ public class HttpRequester implements AutoCloseable {
    */
   public static final int STATUS_CREATED = 201;
 
-  private Client client = ClientBuilder.newClient();
+  private final Client client;
   private Invocation.Builder builder;
   private final String token;
 
@@ -86,6 +90,13 @@ public class HttpRequester implements AutoCloseable {
    * access its API.
    */
   public HttpRequester(final String authenticationToken) {
+    try {
+      this.client = ChatSettings.get().isChatServerSafeUrl()
+          ? ClientBuilder.newBuilder().sslContext(SslUtils.trustAllSSLContext()).build()
+          : ClientBuilder.newClient();
+    } catch (GeneralSecurityException e) {
+      throw new ChatServerException(e);
+    }
     this.token = authenticationToken;
   }
 

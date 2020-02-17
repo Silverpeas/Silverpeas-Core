@@ -479,13 +479,19 @@
   <c:if test="${contextualMenuEnabled}" >
     var pageMustBeReloadingAfterSorting = false;
 
-    function checkout(id, oldId, webdav, edit, download, lang) {
+    function checkout(id, oldId, webdav, wopi, edit, download, lang) {
       if (id.length > 0) {
         pageMustBeReloadingAfterSorting = true;
         $.post('<c:url value="/Attachment" />', {Id:id, FileLanguage:'<c:out value="${contentLanguage}" />', Action:'Checkout'}, function(formattedDateTimeData) {
+          let openWebBrowserEdition = function() {
+            sp.formRequest(getOnlineEditionLauncherURL(id, lang))
+                .withParam('wbe', true)
+                .toTarget('_blank')
+                .submit();
+          };
           if (formattedDateTimeData !== 'nok') {
-            var oMenu = eval("oMenu" + oldId);
-            oMenu.getItem(3).cfg.setProperty("disabled", false); // checkin
+            let oMenu = eval("oMenu" + oldId);
+            oMenu.getItem(oMenu._getItemGroup().length - 1).cfg.setProperty("disabled", false); // checkin
             oMenu.getItem(0).cfg.setProperty("disabled", true); // checkout
             oMenu.getItem(1).cfg.setProperty("disabled", true);	// checkout and download
             if (!webdav) {
@@ -494,24 +500,32 @@
             //disable delete
             oMenu.getItem(3, 1).cfg.setProperty("disabled", true); // delete
             oMenu.getItem(2, 1).cfg.setProperty("disabled", true); // switch
-            var $worker = $('#worker' + oldId);
+            let $worker = $('#worker' + oldId);
             $worker.html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> " + formattedDateTimeData);
             $worker.css({'visibility':'visible'});
             if (edit) {
-              <c:if test="${onlineEditingWithCustomProtocol}">
+              if (!wopi) {
+                <c:if test="${onlineEditingWithCustomProtocol}">
                 // display alert popin
                 showInformationAboutOnlineEditingWithCustomProtocol(id, lang);
-              </c:if>
-              <c:if test="${not onlineEditingWithCustomProtocol}">
+                </c:if>
+                <c:if test="${not onlineEditingWithCustomProtocol}">
                 window.open(getOnlineEditionLauncherURL(id, lang), '_self');
-              </c:if>
+                </c:if>
+              } else {
+                openWebBrowserEdition();
+              }
             } else if (download) {
-              var url = $('#url_' + oldId).attr('href');
+              let url = $('#url_' + oldId).attr('href');
               window.open(url);
             }
+          } else if(wopi) {
+            openWebBrowserEdition();
           } else {
-            alert('<fmt:message key="attachment.dialog.checkout.nok"/>');
-            window.location.href = window.location.href;
+            SilverpeasError.add('<fmt:message key="attachment.dialog.checkout.nok"/>').show().then(function() {
+              $.progressMessage();
+              window.location.href = window.location.href;
+            });
           }
         }, 'text');
         pageMustBeReloadingAfterSorting = true;
@@ -519,11 +533,11 @@
     }
 
     function checkoutAndDownload(id, oldId, webdav) {
-      checkout(id, oldId, webdav, false, true);
+      checkout(id, oldId, webdav, false, false, true);
     }
 
-    function checkoutAndEdit(id, oldId, lang) {
-      checkout(id, oldId, true, true, false, lang);
+    function checkoutAndEdit(id, oldId, lang, wopi) {
+      checkout(id, oldId, true, wopi, true, false, lang);
     }
 
     function switchState(id, isVersioned, isLastPublicVersion) {
@@ -655,30 +669,29 @@
     }
 
     function switchDownloadAllowedForReaders(attachmentId, allowed) {
-      $.progressMessage();
-      $.ajax({
-        url : '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
-            attachmentId + '/switchDownloadAllowedForReaders',
-        type : "POST",
-        cache : false,
-        dataType : "json",
-        data : {"allowed" : (allowed) ? allowed : false},
-        success : function(data) {
-          reloadIncludingPage();
-        }
-      });
+      __switchActionEnabled(attachmentId, "switchDownloadAllowedForReaders", "allowed", allowed);
     }
 
     function switchDisplayAsContentEnabled(attachmentId, enabled) {
+      __switchActionEnabled(attachmentId, "switchDisplayAsContentEnabled", "enabled", enabled);
+    }
+
+    function switchEditSimultaneouslyEnabled(attachmentId, enabled) {
+      __switchActionEnabled(attachmentId, "switchEditSimultaneouslyEnabled", "enabled", enabled);
+    }
+
+    function __switchActionEnabled(attachmentId, action, parameter, enabled) {
+      let data = {};
+      data[parameter] = enabled ? enabled : false;
       $.progressMessage();
       $.ajax({
         url : '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
-            attachmentId + '/switchDisplayAsContentEnabled',
+            attachmentId + '/' + action,
         type : "POST",
         cache : false,
         dataType : "json",
-        data : {"enabled" : (enabled) ? enabled : false},
-        success : function(data) {
+        data : data,
+        success : function() {
           reloadIncludingPage();
         }
       });

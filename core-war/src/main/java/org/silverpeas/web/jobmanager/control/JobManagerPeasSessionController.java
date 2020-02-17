@@ -30,6 +30,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.wopi.WopiSettings;
 import org.silverpeas.web.jobmanager.JobManagerService;
 import org.silverpeas.web.jobmanager.JobManagerSettings;
 
@@ -122,6 +123,8 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         + "/silverpeasinfos.jsp", null, false);
     JobManagerService variables = new JobManagerService("51", "JDV", LEVEL_OPERATION, webContext
         + "/Rvariables/jsp/Main", null, false);
+    JobManagerService wopi = new JobManagerService("52", "JWO", LEVEL_OPERATION, webContext
+        + "/Rwopi/jsp/Main", null, false);
 
     // initialisation des opérations du service jKM
     JobManagerService jKM1 = new JobManagerService("21", "JKM1", LEVEL_OPERATION, webContext
@@ -183,6 +186,10 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         if (jobManagerSettings.isPortletDeployerVisible()) {
           ids.add(portletDeployer.getId());
           services.put(portletDeployer.getId(), portletDeployer);
+        }
+        if (WopiSettings.isEnabled()) {
+          ids.add(wopi.getId());
+          services.put(wopi.getId(), wopi);
         }
         ids.add(jst.getId());
         services.put(jst.getId(), jst);

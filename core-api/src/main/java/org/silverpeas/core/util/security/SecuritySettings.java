@@ -199,11 +199,18 @@ public class SecuritySettings {
     private Map<String, List<String>> settings = new ConcurrentHashMap<>();
 
     public void registerDefaultSourceInCSP(final String sourceURL) {
-      settings.computeIfAbsent(DEFAULT_SRC, k -> new ArrayList<>()).add(sourceURL);
+      register(sourceURL, DEFAULT_SRC);
     }
 
     public void registerDomainInCORS(final String domain) {
-      settings.computeIfAbsent(CORS, k -> new ArrayList<>()).add(domain);
+      register(domain, CORS);
+    }
+
+    private void register(final String domain, final String cors) {
+      final List<String> list = settings.computeIfAbsent(cors, k -> new ArrayList<>());
+      if (!list.contains(domain)) {
+        list.add(domain);
+      }
     }
 
     List<String> getDefaultSourcesInCSP() {

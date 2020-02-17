@@ -49,12 +49,14 @@ import javax.jcr.version.VersionManager;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static javax.jcr.Property.JCR_FROZEN_PRIMARY_TYPE;
 import static javax.jcr.Property.JCR_LAST_MODIFIED_BY;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfDisplayableAsContentBehavior;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfEditableSimultaneously;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
@@ -219,6 +221,10 @@ class DocumentConverter extends AbstractJcrConverter {
     }
     // Displayable as content
     ofNullable(getBooleanProperty(node, SLV_PROPERTY_DISPLAYABLE_AS_CONTENT, null)).ifPresent(doc::setDisplayableAsContent);
+
+    // Editable simultaneously
+    ofNullable(getBooleanProperty(node, SLV_PROPERTY_EDITABLE_SIMULTANEOUSLY, null))
+        .ifPresent(doc::setEditableSimultaneously);
     return doc;
   }
 
@@ -301,6 +307,30 @@ class DocumentConverter extends AbstractJcrConverter {
       // Removing the mixin
       if (documentNode.hasProperty(SLV_PROPERTY_DISPLAYABLE_AS_CONTENT)) {
         documentNode.removeMixin(SLV_VIEWABLE_MIXIN);
+      }
+    }
+  }
+
+  /**
+   * Adding or removing the [slv:editableSimultaneously] optional property.
+   * @param document
+   * @param documentNode
+   * @throws RepositoryException
+   */
+  void setEditableSimultaneouslyOptionalNodeProperty(SimpleDocument document, Node
+      documentNode) throws RepositoryException {
+    final Optional<Boolean> editableSimultaneously = document.editableSimultaneously();
+    if (editableSimultaneously.isPresent()) {
+      final boolean enabled = editableSimultaneously.get();
+      if (enabled != defaultValueOfEditableSimultaneously()) {
+        // Adding the mixin (no impact when it is already existing)
+        documentNode.addMixin(SLV_EDITABLE_MIXIN);
+        documentNode.setProperty(SLV_PROPERTY_EDITABLE_SIMULTANEOUSLY, enabled);
+      } else {
+        // Removing the mixin
+        if (documentNode.hasProperty(SLV_PROPERTY_EDITABLE_SIMULTANEOUSLY)) {
+          documentNode.removeMixin(SLV_EDITABLE_MIXIN);
+        }
       }
     }
   }

@@ -520,6 +520,26 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   }
 
   /**
+   * Enable or not the simultaneous edition of an attachment.
+   * @return JSON simultaneous edition state. editableSimultaneously = true or false.
+   */
+  @POST
+  @Path("switchEditSimultaneouslyEnabled")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String switchEditSimultaneouslyEnabled(@FormParam("enabled") final boolean enabled) {
+
+    // Performing the request
+    SimpleDocument document = getSimpleDocument(null);
+    AttachmentServiceProvider.getAttachmentService()
+        .switchEnableEditSimultaneously(document.getPk(), enabled);
+
+    // JSON Response.
+    return MessageFormat.format(
+        "'{'\"editableSimultaneously\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
+        enabled, document.getOldSilverpeasId(), document.getId());
+  }
+
+  /**
    * Return the current document
    * @param lang
    * @return SimpleDocument

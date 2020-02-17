@@ -135,6 +135,7 @@ import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.LogAnnotationProcessor;
 import org.silverpeas.core.util.logging.LogsAccessor;
+import org.silverpeas.core.wopi.StubbedWopiFileEditionManager;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the definition of common
@@ -432,6 +433,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addSynchAndAsynchResourceEventFeatures();
     addPublicationTemplateFeatures();
     addImageToolFeatures();
+    addWopiManagementFeatures();
     addMavenDependencies("org.silverpeas.jcr:access-control");
     addMavenDependencies("commons-beanutils:commons-beanutils");
     if (!contains(JcrRepositoryProvider.class)) {
@@ -801,6 +803,15 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addApacheFileUploadFeatures() {
     addMavenDependencies("commons-fileupload:commons-fileupload");
+    return this;
+  }
+
+  /**
+   * Add WOPI management services in web archive (war)
+   * @return the instance of the war builder with WOPI management
+   */
+  public WarBuilder4LibCore addWopiManagementFeatures() {
+    addClasses(StubbedWopiFileEditionManager.class);
     return this;
   }
 
