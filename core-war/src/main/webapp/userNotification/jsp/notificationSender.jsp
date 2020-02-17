@@ -43,6 +43,7 @@
 <c:set var="users" value="${requestScope.recipientUsers}"/>
 <c:set var="groups" value="${requestScope.recipientGroups}"/>
 <c:set var="recipientsEditable" value="${requestScope.recipientEdition}"/>
+<c:set var="simpleDetailsWhenRecipientTotalExceed" value="${requestScope.simpleDetailsWhenRecipientTotalExceed}"/>
 <c:set var="componentId" value="${requestScope.componentId}"/>
 <c:set var="resourceId" value="${requestScope.resourceId}"/>
 <c:set var="subject" value="${requestScope.title}"/>
@@ -109,6 +110,7 @@
                                          resourceIdFilter="${resourceId}"
                                          multiple="true"
                                          mandatory="${recipientsEditable}"
+                                         simpleDetailsWhenRecipientTotalExceed="${simpleDetailsWhenRecipientTotalExceed}"
                                          userManualNotificationUserReceiverLimit="${recipientsEditable}"
                                          userPanelButtonLabel="${chooseReceiverLabel}"
                                          users="${users}"

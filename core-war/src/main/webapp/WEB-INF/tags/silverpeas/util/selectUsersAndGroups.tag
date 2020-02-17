@@ -128,6 +128,9 @@
 <%@ attribute name="onChangeJsCallback" required="false" type="java.lang.String"
               description="JS callback performed after the selection has changed" %>
 
+<%@ attribute name="simpleDetailsWhenRecipientTotalExceed" required="false" type="java.lang.Integer"
+              description="Hide the recipent box when the number of recipent is over the indicated value (less or equal to ZERO means no hiding)" %>
+
 <c:if test="${hideDeactivatedState == null}">
   <c:set var="hideDeactivatedState" value="${true}"/>
 </c:if>
@@ -180,6 +183,10 @@
   <c:set var="userManualNotificationUserReceiverLimit" value="${false}"/>
 </c:if>
 
+<c:if test="${simpleDetailsWhenRecipientTotalExceed == null}">
+  <c:set var="simpleDetailsWhenRecipientTotalExceed" value="${0}"/>
+</c:if>
+
 <c:set var="currentUserId" value="${sessionScope['SilverSessionController'].userId}"/>
 <view:includePlugin name="listOfUsersAndGroups"/>
 
@@ -207,6 +214,7 @@
     var groupFilter = [<c:forEach items="${groupsFilter}" var="group" varStatus="status"><c:if test="${not status.first}">, </c:if>'${group.id}'</c:forEach>];
     var instance = new UserGroupSelect({
       rootContainerId : "select-user-group-${id}",
+      simpleDetailsWhenRecipientTotalExceed : ${simpleDetailsWhenRecipientTotalExceed},
       hideDeactivatedState : ${hideDeactivatedState},
       domainIdFilter : domainFilter,
       componentIdFilter : '${componentIdFilter}',

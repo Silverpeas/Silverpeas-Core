@@ -91,6 +91,9 @@
 <%@ attribute name="readOnly" required="false" type="java.lang.Boolean"
               description="Indicates if the readOnly mode is required" %>
 
+<%@ attribute name="simpleDetailsWhenRecipientTotalExceed" required="false" type="java.lang.Integer"
+              description="Hide the recipent box when the number of recipent is over the indicated value (less or equal to ZERO means no hiding)" %>
+
 <c:if test="${displayUserZoom == null}">
   <c:set var="displayUserZoom" value="${true}"/>
 </c:if>
@@ -125,6 +128,10 @@
 
 <c:if test="${readOnly == null}">
   <c:set var="readOnly" value="${empty updateCallback}"/>
+</c:if>
+
+<c:if test="${simpleDetailsWhenRecipientTotalExceed == null}">
+  <c:set var="simpleDetailsWhenRecipientTotalExceed" value="${0}"/>
 </c:if>
 
 <c:set var="currentUserId" value="${sessionScope['SilverSessionController'].userId}"/>
@@ -163,6 +170,7 @@
       groupIds = [<c:forEach items="${groupIds}" var="groupId" varStatus="status"><c:if test="${not status.first}">, </c:if>${groupId}</c:forEach>];
     }
     new ListOfUsersAndGroups({
+      simpleDetailsWhenRecipientTotalExceed : ${simpleDetailsWhenRecipientTotalExceed},
       readOnly : ${readOnly},
       domainIdFilter : '${domainIdFilter}',
       componentIdFilter : '${componentIdFilter}',
