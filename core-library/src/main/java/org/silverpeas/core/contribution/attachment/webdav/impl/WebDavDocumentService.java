@@ -33,6 +33,9 @@ import org.silverpeas.core.persistence.jcr.JcrSession;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Optional;
 
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 
@@ -65,6 +68,35 @@ public class WebDavDocumentService implements WebdavService {
   public long getContentEditionSize(final SimpleDocument document) {
     try(JcrSession session = openSystemSession()) {
       return webdavRepository.getContentEditionSize(session, document);
+    } catch (RepositoryException ex) {
+      throw new AttachmentException("Document not found", ex);
+    }
+  }
+
+  @Override
+  public Optional<WebdavContentDescriptor> getDescriptor(final SimpleDocument document) {
+    try(JcrSession session = openSystemSession()) {
+      return webdavRepository.getDescriptor(session, document);
+    } catch (RepositoryException ex) {
+      throw new AttachmentException("Document not found", ex);
+    }
+  }
+
+  @Override
+  public void updateContentFrom(final SimpleDocument document, final InputStream input)
+      throws IOException {
+    try(JcrSession session = openSystemSession()) {
+      webdavRepository.updateContentFrom(session, document, input);
+    } catch (RepositoryException ex) {
+      throw new AttachmentException("Document not found", ex);
+    }
+  }
+
+  @Override
+  public void loadContentInto(final SimpleDocument document, final OutputStream output)
+      throws IOException {
+    try(JcrSession session = openSystemSession()) {
+      webdavRepository.loadContentInto(session, document, output);
     } catch (RepositoryException ex) {
       throw new AttachmentException("Document not found", ex);
     }

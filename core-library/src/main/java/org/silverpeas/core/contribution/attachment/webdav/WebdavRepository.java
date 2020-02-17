@@ -24,10 +24,14 @@
 package org.silverpeas.core.contribution.attachment.webdav;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.webdav.impl.WebdavContentDescriptor;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Optional;
 
 public interface WebdavRepository {
   /**
@@ -130,4 +134,45 @@ public interface WebdavRepository {
    */
   long getContentEditionSize(Session session, SimpleDocument attachment)
       throws RepositoryException;
+
+  /**
+   * Gets the current webdav descriptor of the specified attachment.
+   * If several webdav document exists (several content languages), then the one which has the
+   * highest modified date is taken into account.
+   * @param session the JCR session.
+   * @param attachment the attachment.
+   * @return the optional content edition webdav descriptor if the specified attachment exists in
+   * the webdav repository.
+   * @throws RepositoryException on JCR access error.
+   */
+  Optional<WebdavContentDescriptor> getDescriptor(Session session, SimpleDocument attachment)
+      throws RepositoryException;
+
+  /**
+   * Updates a document content into the WEBDAV repository.
+   * <p>
+   *  If several webdav document exists (several content languages), then the one which has the
+   *  highest modified date is taken into account.
+   * </p>
+   * @param session the JCR session.
+   * @param document the aimed document.
+   * @param input the data to write.
+   * @throws RepositoryException
+   */
+  void updateContentFrom(Session session, SimpleDocument document, InputStream input)
+      throws RepositoryException, IOException;
+
+  /**
+   * Reads a document content from the WEBDAV repository and writes it into given output.
+   * <p>
+   *  If several webdav document exists (several content languages), then the one which has the
+   *  highest modified date is taken into account.
+   * </p>
+   * @param session the JCR session.
+   * @param document the aimed document.
+   * @param output the stream to write into.
+   * @throws RepositoryException
+   */
+  void loadContentInto(Session session, SimpleDocument document, OutputStream output)
+      throws RepositoryException, IOException;
 }

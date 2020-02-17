@@ -68,19 +68,14 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
    */
   public AbstractResourceEvent(Type type, @NotNull T... resource) {
     this.type = type;
-    switch (type) {
-      case CREATION:
-        this.transition = StateTransition.transitionBetween(null, resource[0]);
-        break;
-      case UPDATE:
-        this.transition = StateTransition.transitionBetween(resource[0], resource[1]);
-        break;
-      case REMOVING:
-        this.transition = StateTransition.transitionBetween(resource[0], resource[0]);
-        break;
-      case DELETION:
-        this.transition = StateTransition.transitionBetween(resource[0], null);
-        break;
+    if (type == Type.CREATION) {
+      this.transition = StateTransition.transitionBetween(null, resource[0]);
+    } else if (type == Type.UNLOCK || type == Type.UPDATE) {
+      this.transition = StateTransition.transitionBetween(resource[0], resource[1]);
+    } else if (type == Type.REMOVING) {
+      this.transition = StateTransition.transitionBetween(resource[0], resource[0]);
+    } else if (type == Type.DELETION) {
+      this.transition = StateTransition.transitionBetween(resource[0], null);
     }
   }
 

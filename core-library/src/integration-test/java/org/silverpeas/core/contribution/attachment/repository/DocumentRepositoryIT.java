@@ -28,6 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +47,9 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.wopi.StubbedWopiFileEditionManager;
 
+import javax.inject.Inject;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import java.io.ByteArrayInputStream;
@@ -62,8 +65,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.YOUNGEST_TO_OLDEST_MANUAL_REORDER_START;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
@@ -73,6 +76,9 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
 
   private static final String instanceId = "kmelia73";
   private final DocumentRepository documentRepository = new DocumentRepository();
+
+  @Inject
+  private StubbedWopiFileEditionManager wopiManager;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -89,6 +95,11 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       }
       session.save();
     }
+  }
+
+  @After
+  public void clear() {
+    wopiManager.handled = true;
   }
 
   /**
@@ -590,6 +601,93 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       session.save();
       SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
       assertThat(doc.isDisplayableAsContent(), is(false));
+    }
+  }
+
+  /**
+   * Test of saveEditableSimultaneously method, of class DocumentRepository.
+   */
+  @Test
+  public void testSaveEditableSimultaneouslyOtherDocumentThanAnOpenOfficeCompatible()
+      throws Exception {
+    try (JcrSession session = openSystemSession()) {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+          Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      String foreignId = "node18";
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      SimpleDocumentPK result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      assertThat(document.editableSimultaneously().isPresent(), is(false));
+      attachment = createEnglishSimpleAttachment();
+      document = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
+      document.setEditableSimultaneously(true);
+      documentRepository.saveEditableSimultaneously(session, document);
+      session.save();
+      SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc.editableSimultaneously().isPresent(), is(false));
+    }
+  }
+
+  /**
+   * Test of saveEditableSimultaneously method, of class DocumentRepository.
+   */
+  @Test
+  public void testSaveEditableSimultaneouslyOpenOfficeCompatibleDocument()
+      throws Exception {
+    try (JcrSession session = openSystemSession()) {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+          Charsets.UTF_8));
+      SimpleAttachment attachment = createFrenchSimpleAttachment();
+      String foreignId = "node18";
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      SimpleDocumentPK result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      assertThat(document.editableSimultaneously().isPresent(), is(true));
+      assertThat(document.editableSimultaneously().get(), is(true));
+      attachment = createFrenchSimpleAttachment();
+      document = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
+      document.setEditableSimultaneously(false);
+      documentRepository.saveEditableSimultaneously(session, document);
+      session.save();
+      SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc.editableSimultaneously().isPresent(), is(true));
+      assertThat(doc.editableSimultaneously().get(), is(false));
+    }
+  }
+
+  /**
+   * Test of saveEditableSimultaneously method, of class DocumentRepository.
+   */
+  @Test
+  public void testSaveEditableSimultaneouslyOpenOfficeCompatibleDocumentButWopiNotHandled()
+      throws Exception {
+    wopiManager.handled = false;
+    try (JcrSession session = openSystemSession()) {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+          Charsets.UTF_8));
+      SimpleAttachment attachment = createFrenchSimpleAttachment();
+      String foreignId = "node18";
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      SimpleDocumentPK result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      assertThat(document.editableSimultaneously().isPresent(), is(false));
+      attachment = createFrenchSimpleAttachment();
+      document = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
+      document.setEditableSimultaneously(true);
+      documentRepository.saveEditableSimultaneously(session, document);
+      session.save();
+      SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc.editableSimultaneously().isPresent(), is(false));
     }
   }
 

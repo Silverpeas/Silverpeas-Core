@@ -24,6 +24,11 @@
   mixin
   - slv:displayableAsContent (BOOLEAN) IGNORE
 
+/* Mixin editable */
+[slv:editable]
+  mixin
+  - slv:editableSimultaneously (BOOLEAN) IGNORE
+
 [slv:simpleDocument] >  nt:folder, mix:referenceable, slv:ownable, slv:commentable
   - slv:foreignKey (STRING)
   - slv:instanceId (STRING) MANDATORY

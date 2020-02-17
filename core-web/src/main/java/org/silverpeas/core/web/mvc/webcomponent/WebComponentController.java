@@ -36,6 +36,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
  */
 public abstract class WebComponentController<T extends WebComponentRequestContext>
     extends AbstractComponentSessionController {
+  private static final long serialVersionUID = 3379576329820759648L;
 
   boolean onCreationCalled = false;
 

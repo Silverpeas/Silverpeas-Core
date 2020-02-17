@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.WebdavServiceProvider;
+import org.silverpeas.core.contribution.attachment.webdav.WebdavWopiFile;
 import org.silverpeas.core.persistence.jcr.JcrDataConverter;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.Securable;
@@ -42,6 +43,7 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.wopi.WopiFileEditionManager;
 
 import javax.ws.rs.core.UriBuilder;
 import java.io.Serializable;
@@ -52,11 +54,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.io.File.separatorChar;
-import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfDisplayableAsContentBehavior;
-import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.getDelayInPercentAfterWhichReservedFileAlertMustBeSent;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.*;
 import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
 
 /**
@@ -96,6 +98,7 @@ public class SimpleDocument implements Serializable, Securable {
   private Set<SilverpeasRole> forbiddenDownloadForRoles = null;
   private SimpleAttachment attachment;
   private Boolean displayableAsContent;
+  private Boolean editableSimultaneously;
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
       SimpleAttachment attachment) {
@@ -175,6 +178,7 @@ public class SimpleDocument implements Serializable, Securable {
     this.forbiddenDownloadForRoles = simpleDocument.forbiddenDownloadForRoles;
     this.attachment = simpleDocument.getAttachment();
     this.displayableAsContent = simpleDocument.displayableAsContent;
+    this.editableSimultaneously = simpleDocument.editableSimultaneously;
   }
 
   public void setDocumentType(DocumentType documentType) {
@@ -992,5 +996,24 @@ public class SimpleDocument implements Serializable, Securable {
 
   public void setDisplayableAsContent(final boolean displayableAsContent) {
     this.displayableAsContent = displayableAsContent;
+  }
+
+  /**
+   * Indicates if the attachment can be edited simultaneously into web browser by several users.
+   * @return An optional true if editable, false otherwise. If Optional is empty, it means that
+   * the indicator is not handled.
+   */
+  public Optional<Boolean> editableSimultaneously() {
+    if (getVersionMaster().isOpenOfficeCompatible() &&
+        WopiFileEditionManager.get().isHandled(new WebdavWopiFile(getVersionMaster()))) {
+      return Optional.of(getVersionMaster().editableSimultaneously != null
+          ? getVersionMaster().editableSimultaneously
+          : defaultValueOfEditableSimultaneously());
+    }
+    return Optional.empty();
+  }
+
+  public void setEditableSimultaneously(final boolean editableSimultaneously) {
+    getVersionMaster().editableSimultaneously = editableSimultaneously;
   }
 }

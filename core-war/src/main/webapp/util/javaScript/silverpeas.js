@@ -338,13 +338,18 @@ if (!window.SilverpeasError) {
     };
     this.show = function() {
       if (_self.existsAtLeastOne()) {
-        var errorContainer = jQuery('<div>');
-        for (var i = 0; i < _errors.length; i++) {
-          jQuery('<div>').append(_errors[i]).appendTo(errorContainer);
-        }
-        jQuery.popup.error(errorContainer.html());
-        _self.reset();
-        return true;
+        return new Promise(function(resolve) {
+          let errorContainer = jQuery('<div>');
+          for (let i = 0; i < _errors.length; i++) {
+            jQuery('<div>').append(_errors[i]).appendTo(errorContainer);
+          }
+          jQuery.popup.error(errorContainer.html(), {
+            callback : resolve,
+            alternativeCallback : resolve,
+            callbackOnClose : resolve
+          });
+          _self.reset();
+        });
       }
       return false;
     };
@@ -940,7 +945,9 @@ if (typeof window.silverpeasAjax === 'undefined') {
     form.setAttribute('method', silverpeasFormConfig.getMethod());
     form.setAttribute('target', silverpeasFormConfig.getTarget());
     form.innerHTML = '';
-    applyTokenSecurity(form.parentNode);
+    if(!silverpeasFormConfig.getMethod().startsWith('G')) {
+      applyTokenSecurity(form.parentNode);
+    }
     for (var paramKey in silverpeasFormConfig.getParams()) {
       var paramValue = silverpeasFormConfig.getParams()[paramKey];
       var paramInput = document.createElement("input");

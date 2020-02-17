@@ -110,4 +110,12 @@ public class AttachmentSettings {
         .findFirst()
         .orElse(false);
   }
+
+  /**
+   * Gets the default value of the JCR flag which indicates if a document is editable simultaneously.
+   * @return true if editable simultaneously, false otherwise.
+   */
+  public static boolean defaultValueOfEditableSimultaneously() {
+    return settings.getBoolean("attachment.onlineEditing.simultaneously.default", true);
+  }
 }

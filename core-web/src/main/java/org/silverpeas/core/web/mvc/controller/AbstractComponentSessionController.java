@@ -58,6 +58,7 @@ import java.util.List;
  */
 public abstract class AbstractComponentSessionController implements ComponentSessionController,
     SessionCloseable {
+  private static final long serialVersionUID = -6941005626660183283L;
 
   /**
    * The default character encoded supported by Silverpeas.

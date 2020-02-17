@@ -37,19 +37,25 @@ import org.silverpeas.core.util.ServiceProvider;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static javax.jcr.Property.*;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
-import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 @RunWith(Arquillian.class)
 public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
@@ -183,7 +189,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       assertWebdavContent(session, document, "Updated webdav content.", relativeWebdavJcrPath);
 
       Date dateOfCreateOrUpdate = document.getUpdated();
-      awaitUntil(10, MILLISECONDS);
+      await().atLeast(10, TimeUnit.MILLISECONDS).timeout(1, TimeUnit.SECONDS).until(() -> true);
       webdavRepository.updateAttachmentBinaryContent(session, document);
 
       getJcr().assertContent(document.getId(), "fr", null);
@@ -480,8 +486,96 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
   }
 
   @Test
-  public void testGetContentEditionLanguageAndSize() throws Exception {
+  public void testGetContentEditionLanguageAndSizeAndDescriptor() throws Exception {
     execute((session, webdavRepository) -> {
+      SimpleAttachment enDocumentContent = getJcr().defaultENContent();
+      SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
+      document = getJcr().createAttachmentForTest(document, enDocumentContent, "EN content");
+      getJcr().assertContent(document.getId(), "fr", null);
+      getJcr().assertContent(document.getId(), "en", "EN content");
+
+      /*
+      No WEBDAV data
+       */
+
+      // initialization FR no data
+      SimpleDocument frDocumentFromEnCopy = new SimpleDocument(document);
+      frDocumentFromEnCopy.setLanguage("fr");
+      assertNoWebdavDesc(session, webdavRepository, frDocumentFromEnCopy);
+      // no identifier FR
+      frDocumentFromEnCopy.setPK(frDocumentFromEnCopy.getPk().clone());
+      frDocumentFromEnCopy.setId(null);
+      assertNoWebdavDesc(session, webdavRepository, frDocumentFromEnCopy);
+      // no identifier DE
+      frDocumentFromEnCopy.setLanguage("de");
+      assertNoWebdavDesc(session, webdavRepository, frDocumentFromEnCopy);
+
+      /*
+      Registering into WEBDAV a new EN content (wait 100ms for date checking)
+       */
+
+      final OffsetDateTime beforeDate = OffsetDateTime.now();
+      await().atLeast(100, TimeUnit.MILLISECONDS).until(() -> true);
+      Node webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
+      assertThat(webdavNode, nullValue());
+      document = getJcr().assertContent(document.getId(), "en", "EN content");
+      webdavRepository.createAttachmentNode(session, document);
+      webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
+      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+          "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
+      // content EN exists
+      final WebdavContentDescriptor enDesc =
+          assertWebdavDesc(session, webdavRepository, document, "en", 10L, beforeDate);
+      document.setLanguage("fr");
+      // content FR is indeed the EN
+      assertWebdavDesc(session, webdavRepository, document, "en", 10L, beforeDate, enDesc);
+      // no identifier
+      final String documentId = document.getId();
+      document.setId(null);
+      assertNoWebdavDesc(session, webdavRepository, document);
+      // checking EN content
+      document = getJcr().assertContent(documentId, "en", "EN content");
+      assertWebdavContent(session, document, "EN content", document.getWebdavJcrPath());
+
+      /*
+      Registering into WEBDAV a FR content to the same document (wait 100ms for date checking)
+       */
+
+      OffsetDateTime beforeDate2 = OffsetDateTime.now();
+      await().atLeast(100, TimeUnit.MILLISECONDS).until(() -> true);
+      document.setAttachment(getJcr().defaultFRContent());
+      document = getJcr().updateAttachmentForTest(document, "fr", "FR content");
+      SimpleDocument frDocument = getJcr().assertContent(document.getId(), "fr", "FR content");
+      SimpleDocument enDocument = getJcr().assertContent(document.getId(), "en", "EN content");
+      webdavRepository.createAttachmentNode(session, document);
+      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+          "/webdav/attachments/kmelia26/" + document.getId() + "/fr/test.odp/jcr:content"));
+      // content FR exists
+      final WebdavContentDescriptor frDesc2 =
+          assertWebdavDesc(session, webdavRepository, frDocument, "fr", 10L, beforeDate2);
+      assertWebdavDesc(session, webdavRepository, enDocument, "fr", 10L, beforeDate2, frDesc2);
+
+      /*
+      Updating into WEBDAV the EN content to the same document (wait 100ms for date checking)
+       */
+
+      OffsetDateTime beforeDate3 = OffsetDateTime.now();
+      await().atLeast(100, TimeUnit.MILLISECONDS).until(() -> true);
+      document.setAttachment(getJcr().defaultENContent());
+      getJcr().updateAttachmentForTest(document, "en", "EN content updated");
+      webdavRepository.createAttachmentNode(session, document);
+      assertThat(getJcr().listPathesFrom(webdavNode), contains(
+          "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
+      final WebdavContentDescriptor frDesc3 =
+          assertWebdavDesc(session, webdavRepository, frDocument, "en", 18L, beforeDate3);
+      assertWebdavDesc(session, webdavRepository, enDocument, "en", 18L, beforeDate3, frDesc3);
+    });
+  }
+
+  @Test
+  public void testReadAndWriteContentEdition() throws Exception {
+    execute((session, webdavRepository) -> {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
       SimpleAttachment enDocumentContent = getJcr().defaultENContent();
       SimpleDocument document = getJcr().defaultDocument("kmelia26", "foreignId38");
       document = getJcr().createAttachmentForTest(document, enDocumentContent, "EN content");
@@ -490,20 +584,14 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
 
       SimpleDocument frDocumentFromEnCopy = new SimpleDocument(document);
       frDocumentFromEnCopy.setLanguage("fr");
-      assertThat(webdavRepository.getContentEditionLanguage(session, frDocumentFromEnCopy),
-          nullValue());
-      assertThat(webdavRepository.getContentEditionSize(session, frDocumentFromEnCopy), is(-1L));
-      frDocumentFromEnCopy.setPK(frDocumentFromEnCopy.getPk().clone());
-      frDocumentFromEnCopy.setId(null);
-      assertThat(webdavRepository.getContentEditionLanguage(session, frDocumentFromEnCopy),
-          nullValue());
-      assertThat(webdavRepository.getContentEditionSize(session, frDocumentFromEnCopy), is(-1L));
-      frDocumentFromEnCopy.setLanguage("de");
-      assertThat(webdavRepository.getContentEditionLanguage(session, frDocumentFromEnCopy),
-          nullValue());
-      assertThat(webdavRepository.getContentEditionSize(session, frDocumentFromEnCopy), is(-1L));
+      assertNoWebdavDesc(session, webdavRepository, frDocumentFromEnCopy);
 
+      /*
+      Registering into WEBDAV a new EN content (wait 100ms for date checking)
+       */
 
+      final OffsetDateTime beforeDate = OffsetDateTime.now();
+      await().atLeast(100, TimeUnit.MILLISECONDS).until(() -> true);
       Node webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
       assertThat(webdavNode, nullValue());
       document = getJcr().assertContent(document.getId(), "en", "EN content");
@@ -511,41 +599,100 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
       assertThat(getJcr().listPathesFrom(webdavNode), contains(
           "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
-
-      assertThat(webdavRepository.getContentEditionLanguage(session, document), is("en"));
-      assertThat(webdavRepository.getContentEditionSize(session, document), is(10L));
+      // content EN exists
+      final WebdavContentDescriptor docDesc =
+          assertWebdavDesc(session, webdavRepository, document, "en", 10L, beforeDate);
+      assertStreamedContent(session, webdavRepository, document, baos, "EN content");
+      // content FR is indeed the EN
       document.setLanguage("fr");
-      assertThat(webdavRepository.getContentEditionLanguage(session, document), is("en"));
-      assertThat(webdavRepository.getContentEditionSize(session, document), is(10L));
-      String documentId = document.getId();
+      assertWebdavDesc(session, webdavRepository, document, "en", 10L, beforeDate, docDesc);
+      assertStreamedContent(session, webdavRepository, document, baos, "EN content");
+      // no identifier
+      final String documentId = document.getId();
       document.setId(null);
-      assertThat(webdavRepository.getContentEditionLanguage(session, document), nullValue());
-
+      assertNoWebdavDesc(session, webdavRepository, document);
+      assertStreamedContent(session, webdavRepository, document, baos, "");
+      // checking EN content
       document = getJcr().assertContent(documentId, "en", "EN content");
       assertWebdavContent(session, document, "EN content", document.getWebdavJcrPath());
 
-      document.setAttachment(getJcr().defaultFRContent());
-      document = getJcr().updateAttachmentForTest(document, "fr", "FR content");
-      SimpleDocument frDocument = getJcr().assertContent(document.getId(), "fr", "FR content");
-      SimpleDocument enDocument = getJcr().assertContent(document.getId(), "en", "EN content");
-      webdavRepository.createAttachmentNode(session, document);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
-          "/webdav/attachments/kmelia26/" + document.getId() + "/fr/test.odp/jcr:content"));
-      assertThat(webdavRepository.getContentEditionLanguage(session, frDocument), is("fr"));
-      assertThat(webdavRepository.getContentEditionSize(session, frDocument), is(10L));
-      assertThat(webdavRepository.getContentEditionLanguage(session, enDocument), is("fr"));
-      assertThat(webdavRepository.getContentEditionSize(session, enDocument), is(10L));
+      /*
+      Updating into WEBDAV the EN content to the same document (wait 100ms for date checking)
+       */
 
-      document.setAttachment(getJcr().defaultENContent());
-      getJcr().updateAttachmentForTest(document, "en", "EN content updated");
-      webdavRepository.createAttachmentNode(session, document);
-      assertThat(getJcr().listPathesFrom(webdavNode), contains(
-          "/webdav/attachments/kmelia26/" + document.getId() + "/en/test.pdf/jcr:content"));
-      assertThat(webdavRepository.getContentEditionLanguage(session, frDocument), is("en"));
-      assertThat(webdavRepository.getContentEditionSize(session, frDocument), is(18L));
-      assertThat(webdavRepository.getContentEditionLanguage(session, enDocument), is("en"));
-      assertThat(webdavRepository.getContentEditionSize(session, enDocument), is(18L));
+      await().atLeast(100, TimeUnit.MILLISECONDS).until(() -> true);
+      document.setLanguage("fr");
+      document.setId(documentId);
+      webdavRepository.updateContentFrom(session, document, new ByteArrayInputStream("A new content!!!".getBytes()));
+      document = getJcr().assertContent(documentId, "en", "EN content");
+      assertWebdavContent(session, document, "A new content!!!", document.getWebdavJcrPath());
+      // content EN exists and is updated
+      final WebdavContentDescriptor docDesc2 = assertWebdavDesc(session, webdavRepository, document,
+          "en", 16L, docDesc.getLastModificationDate());
+      assertStreamedContent(session, webdavRepository, document, baos, "A new content!!!");
+      // content FR is indeed the EN (so updated)
+      document.setLanguage("fr");
+      assertWebdavDesc(session, webdavRepository, document, "en", 16L,
+          docDesc.getLastModificationDate(), docDesc2);
+      assertStreamedContent(session, webdavRepository, document, baos, "A new content!!!");
+      // no identifier
+      document.setId(null);
+      assertNoWebdavDesc(session, webdavRepository, document);
+      assertStreamedContent(session, webdavRepository, document, baos, "");
     });
+  }
+
+  private void assertStreamedContent(final Session session,
+      final WebdavDocumentRepository webdavRepository, final SimpleDocument document,
+      final ByteArrayOutputStream baos, final String expContent)
+      throws RepositoryException, IOException {
+    webdavRepository.loadContentInto(session, document, baos);
+    assertThat(baos.toString(), is(expContent));
+    baos.reset();
+  }
+
+  private void assertNoWebdavDesc(final Session session,
+      final WebdavDocumentRepository repo, final SimpleDocument document)
+      throws RepositoryException {
+    final Optional<WebdavContentDescriptor> descriptor = repo.getDescriptor(session, document);
+    final String contentEditionLanguage = repo.getContentEditionLanguage(session, document);
+    final long contentEditionSize = repo.getContentEditionSize(session, document);
+    assertThat(descriptor.isPresent(), is(false));
+    assertThat(contentEditionLanguage, nullValue());
+    assertThat(contentEditionSize, is(-1L));
+  }
+
+  private WebdavContentDescriptor assertWebdavDesc(final Session session,
+      final WebdavDocumentRepository repo, final SimpleDocument document,
+      final String expContentEditionLanguage, final long expContentEditionSize,
+      final OffsetDateTime greaterThan) throws RepositoryException {
+    return assertWebdavDesc(session, repo, document, expContentEditionLanguage,
+        expContentEditionSize, greaterThan, null);
+  }
+
+  private WebdavContentDescriptor assertWebdavDesc(final Session session,
+      final WebdavDocumentRepository repo, final SimpleDocument document,
+      final String expContentEditionLanguage, final long expContentEditionSize,
+      final OffsetDateTime greaterThan, final WebdavContentDescriptor same)
+      throws RepositoryException {
+    final Optional<WebdavContentDescriptor> descriptor = repo.getDescriptor(session, document);
+    final String contentEditionLanguage = repo.getContentEditionLanguage(session, document);
+    final long contentEditionSize = repo.getContentEditionSize(session, document);
+    assertThat(descriptor.isPresent(), is(true));
+    assertThat(contentEditionLanguage, is(expContentEditionLanguage));
+    assertThat(contentEditionSize, is(expContentEditionSize));
+    assertThat(greaterThan, notNullValue());
+    final WebdavContentDescriptor descriptorData = descriptor.orElse(null);
+    assertThat(descriptorData, notNullValue());
+    assertThat(descriptorData.getDocument(), is(document));
+    assertThat(descriptorData.getId(), notNullValue());
+    assertThat(descriptorData.getLanguage(), is(expContentEditionLanguage));
+    assertThat(descriptorData.getSize(), is(expContentEditionSize));
+    assertThat(descriptorData.getLastModificationDate(), greaterThan(greaterThan));
+    if (same != null) {
+      assertThat(descriptorData.getLastModificationDate(), equalTo(same.getLastModificationDate()));
+    }
+    return descriptorData;
   }
 
   @Test

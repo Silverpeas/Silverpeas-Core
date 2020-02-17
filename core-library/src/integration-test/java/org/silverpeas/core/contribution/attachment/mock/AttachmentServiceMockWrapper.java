@@ -315,4 +315,9 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   public void switchEnableDisplayAsContent(final SimpleDocumentPK pk, final boolean enable) {
     mock.switchEnableDisplayAsContent(pk, enable);
   }
+
+  @Override
+  public void switchEnableEditSimultaneously(final SimpleDocumentPK pk, final boolean enable) {
+    mock.switchEnableEditSimultaneously(pk, enable);
+  }
 }

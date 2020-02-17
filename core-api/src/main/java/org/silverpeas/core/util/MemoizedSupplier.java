@@ -54,4 +54,9 @@ public class MemoizedSupplier<T> implements Supplier<T> {
     }
     return value;
   }
+
+  public void clear() {
+    memoized = false;
+    value = null;
+  }
 }

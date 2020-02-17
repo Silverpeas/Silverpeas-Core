@@ -28,16 +28,17 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.webdav.WebdavWopiFile;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.wopi.WopiFileEditionManager;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.isDisplayableAsContentForComponentInstanceId;
@@ -125,18 +126,22 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     return userId.equals(attachment.getEditedBy());
   }
 
-  boolean isEditable(String userId, SimpleDocument attachment, boolean useWebDAV) {
-    return useWebDAV && attachment.isOpenOfficeCompatible() && isWorker(userId, attachment) &&
-        StringUtil.defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
+  boolean isEditable(String userId, SimpleDocument attachment, boolean useWebDAV,
+      final boolean editableSimultaneously) {
+    return useWebDAV && attachment.isOpenOfficeCompatible() &&
+        (isWorker(userId, attachment) || editableSimultaneously) && StringUtil
+        .defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
             attachment.getLanguage()).equals(attachment.getLanguage());
   }
 
   String prepareActions(SimpleDocument attachment, boolean useXMLForm, boolean useWebDAV,
       UserDetail user, final String userLanguage, LocalizationBundle resources,
       boolean showMenuNotif) {
-    String userId = user.getId();
-    String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
-    boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
+    final String userId = user.getId();
+    final String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
+    final boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
+    final boolean webBrowserEdition = useWebDAV && WopiFileEditionManager.get().isHandled(new WebdavWopiFile(attachment));
+    final boolean editableSimultaneously = webBrowserEdition && attachment.editableSimultaneously().orElse(false);
     StringBuilder builder = new StringBuilder(HTML_BUFFER_CAPACITY);
 
     builder.append("<ul class=\"first-of-type\">").append(NEWLINE);
@@ -144,17 +149,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
         + webDavOK + ");", resources.getString("checkOut"));
     prepareMenuItem(builder, "checkoutAndDownload('" + attachment.getId() + "'," + attachmentId
         + ',' + webDavOK + ");", resources.getString("attachment.checkOutAndDownload"));
-    String checkoutAndEditLabel = resources.getString("attachment.checkOutAndEditOnline");
-    String webdavContentEditionLanguageLabel = "";
-    if (I18NHelper.isI18nContentEnabled()) {
-      webdavContentEditionLanguageLabel = I18NHelper.getLanguageLabel(StringUtil
-          .defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
-              attachment.getLanguage()), userLanguage);
-      checkoutAndEditLabel += " (" + webdavContentEditionLanguageLabel + ")";
-    }
-    prepareMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId + ",'" +
-        StringUtil.defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
-            attachment.getLanguage()) + "');", checkoutAndEditLabel);
+    final String webdavContentEditionLanguageLabel = prepareOnlineEditActions(attachment, userLanguage,
+        resources, attachmentId, builder, webBrowserEdition);
     prepareMenuItem(builder, "checkin('" + attachment.getId() + "'," + attachmentId + "," +
         attachment.isOpenOfficeCompatible() + ", false, " + attachment.isVersioned() + ", '" +
         webdavContentEditionLanguageLabel + "');", resources.getString("checkIn"));
@@ -210,9 +206,15 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       configureCheckout(builder, attachmentId, true);
       builder.append(configureCheckoutAndDownload(attachmentId, !isWorker(userId, attachment)));
       builder.append(configureCheckoutAndEdit(attachmentId,
-          !isEditable(userId, attachment, useWebDAV)));
+          !isEditable(userId, attachment, useWebDAV, false)));
+      if (webBrowserEdition) {
+        builder.append(configureCheckoutAndEditWebBrowser(attachmentId,
+            !isEditable(userId, attachment, useWebDAV, editableSimultaneously)));
+        builder.append(configureEditSimultaneously(attachmentId,
+            !isEditable(userId, attachment, useWebDAV, false)));
+      }
       builder.append(configureCheckin(attachmentId,
-          !isWorker(userId, attachment) && !isAdmin(user)));
+          !isWorker(userId, attachment) && !isAdmin(user), webBrowserEdition));
       builder.append(configureUpdate(attachmentId, !isWorker(userId, attachment)));
       builder.append(configureDelete(attachmentId, true));
       builder.append(configureForbidDownloadForReaders(attachmentId, true));
@@ -221,9 +223,13 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       }
     } else {
       builder.append(configureXmlForm(attachmentId, !useXMLForm));
-      builder.append(configureCheckin(attachmentId, true));
-      builder.append(configureCheckoutAndEdit(attachmentId, !useWebDAV || !attachment.
-          isOpenOfficeCompatible()));
+      builder.append(configureCheckin(attachmentId, true, webBrowserEdition));
+      final boolean disableEdition = !useWebDAV || !attachment.isOpenOfficeCompatible();
+      builder.append(configureCheckoutAndEdit(attachmentId, disableEdition));
+      if (webBrowserEdition) {
+        builder.append(configureCheckoutAndEditWebBrowser(attachmentId, disableEdition));
+        builder.append(configureEditSimultaneously(attachmentId, disableEdition));
+      }
     }
     builder.append(configureFileSharing(attachmentId, !attachment.isSharingAllowedForRolesFrom(user)));
     builder.append(configureSwitchState(attachmentId, (!attachment.isVersioned() &&
@@ -236,8 +242,39 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     return getMenu(attachmentId, menuItems, itemsConfig);
   }
 
+  private String prepareOnlineEditActions(final SimpleDocument attachment,
+      final String userLanguage, final LocalizationBundle resources, final String attachmentId,
+      final StringBuilder builder, final boolean webBrowserEditionOK) {
+    String checkoutAndEditLabel = resources.getString("attachment.checkOutAndEditOnline");
+    String checkoutAndEditLabelWebBrowser = resources.getString("attachment.checkOutAndEditOnlineWebBrowner");
+    String webdavContentEditionLanguageLabel = "";
+    if (I18NHelper.isI18nContentEnabled()) {
+      webdavContentEditionLanguageLabel = I18NHelper.getLanguageLabel(StringUtil
+          .defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
+              attachment.getLanguage()), userLanguage);
+      checkoutAndEditLabel += " (" + webdavContentEditionLanguageLabel + ")";
+      checkoutAndEditLabelWebBrowser += " (" + webdavContentEditionLanguageLabel + ")";
+    }
+    prepareMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId + ",'" +
+        StringUtil.defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
+            attachment.getLanguage()) + "', false);", checkoutAndEditLabel);
+    if (webBrowserEditionOK) {
+      prepareMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId + ",'" +
+          StringUtil.defaultStringIfNotDefined(attachment.getWebdavContentEditionLanguage(),
+              attachment.getLanguage()) + "', true);", checkoutAndEditLabelWebBrowser);
+      String editSimultaneouslyLabel = resources.getString("attachment.editSimultaneously.enable");
+      boolean isEditSimultaneouslyEnabled = attachment.editableSimultaneously().orElse(false);
+      if (isEditSimultaneouslyEnabled) {
+        editSimultaneouslyLabel = resources.getString("attachment.editSimultaneously.disable");
+      }
+      prepareMenuItem(builder, "switchEditSimultaneouslyEnabled('" + attachment.getId() + "', " +
+          !isEditSimultaneouslyEnabled + ");", editSimultaneouslyLabel);
+    }
+    return webdavContentEditionLanguageLabel;
+  }
+
   String prepareReadOnlyActions(SimpleDocument attachment, UserDetail user,
-      LocalizationBundle resources, boolean showMenuNotif) throws UnsupportedEncodingException {
+      LocalizationBundle resources, boolean showMenuNotif) {
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     StringBuilder itemsBuilder = new StringBuilder(HTML_BUFFER_CAPACITY);
     itemsBuilder.append("<ul>").append(NEWLINE);
@@ -334,8 +371,16 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     return String.format(TEMPLATE, attachmentId, "2", disable);
   }
 
-  String configureCheckin(String attachmentId, boolean disable) {
+  String configureCheckoutAndEditWebBrowser(String attachmentId, boolean disable) {
     return String.format(TEMPLATE, attachmentId, "3", disable);
+  }
+
+  String configureEditSimultaneously(String attachmentId, boolean disable) {
+      return String.format(TEMPLATE, attachmentId, "4", disable);
+  }
+
+  String configureCheckin(String attachmentId, boolean disable, final boolean webBrowserEditionOK) {
+    return String.format(TEMPLATE, attachmentId, webBrowserEditionOK ? "5" : "3", disable);
   }
 
   String configureUpdate(String attachmentId, boolean disable) {

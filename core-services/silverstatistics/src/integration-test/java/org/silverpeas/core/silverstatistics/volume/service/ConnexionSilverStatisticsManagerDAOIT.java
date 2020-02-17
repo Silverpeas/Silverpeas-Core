@@ -25,10 +25,6 @@ package org.silverpeas.core.silverstatistics.volume.service;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
-import org.silverpeas.core.silverstatistics.volume.dao.SilverStatisticsManagerDAO;
-import org.silverpeas.core.silverstatistics.volume.model.DataStatsCumul;
-import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
-import org.silverpeas.core.silverstatistics.volume.model.StatType;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -36,16 +32,20 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.DataSetTest;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.test.BasicWarBuilder;
+import org.silverpeas.core.silverstatistics.test.WarBuilder4Statistics;
+import org.silverpeas.core.silverstatistics.volume.dao.SilverStatisticsManagerDAO;
+import org.silverpeas.core.silverstatistics.volume.model.DataStatsCumul;
+import org.silverpeas.core.silverstatistics.volume.model.StatType;
+import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
+import org.silverpeas.core.test.DataSetTest;
 
 import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 
 /**
  * @author ehugonnet
@@ -73,9 +73,7 @@ public class ConnexionSilverStatisticsManagerDAOIT extends DataSetTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(ConnexionSilverStatisticsManagerDAOIT.class)
-        .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
-        .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
+    return WarBuilder4Statistics.onWarForTestClass(ConnexionSilverStatisticsManagerDAOIT.class)
         .testFocusedOn(war -> {
           war.addPackages(true, "org.silverpeas.core.silverstatistics");
           war.addAsResource("org/silverpeas/silverstatistics/SilverStatisticsTest.properties");

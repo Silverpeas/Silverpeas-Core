@@ -307,8 +307,16 @@ public class PublicationAccessController extends AbstractAccessController<Public
   }
 
   private static boolean isNotCreationContext(final String pubId, final String instanceId) {
-    return StringUtil.isInteger(pubId) &&
-        !getSessionVolatileResourceCacheService().contains(pubId, instanceId);
+    return StringUtil.isInteger(pubId) && notAVolatileResource(pubId, instanceId);
+  }
+
+  private static boolean notAVolatileResource(final String pubId, final String instanceId) {
+    try {
+      return !getSessionVolatileResourceCacheService().contains(pubId, instanceId);
+    } catch (Exception ignore) {
+      // Case where rights are verified out of a user session (batch, wopi, etc.)
+      return true;
+    }
   }
 
   /**

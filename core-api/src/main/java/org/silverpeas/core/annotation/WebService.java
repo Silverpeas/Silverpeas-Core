@@ -25,7 +25,6 @@ package org.silverpeas.core.annotation;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Stereotype;
-import javax.inject.Named;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

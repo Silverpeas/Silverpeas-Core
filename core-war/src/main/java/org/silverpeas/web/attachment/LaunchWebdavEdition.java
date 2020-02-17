@@ -23,19 +23,23 @@
  */
 package org.silverpeas.web.attachment;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.attachment.WebDavProtocol;
-import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.web.attachment.WebDavTokenProducer;
+import org.silverpeas.core.contribution.attachment.webdav.WebdavWopiFile;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.attachment.WebDavProtocol;
+import org.silverpeas.core.web.attachment.WebDavTokenProducer;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext;
+import org.silverpeas.core.webapi.wopi.WebWopiFileEdition;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,15 +47,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Optional;
 
 import static org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext.createWebdavContext;
 
 /**
- * @deprecated
  * @author ehugonnet
  */
-@Deprecated
 public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
+  private static final long serialVersionUID = 3738081252893759397L;
 
   private static final SettingBundle resources =
       ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
@@ -61,39 +65,51 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
    *
    * @param request servlet request
    * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
    * @throws IOException if an I/O error occurs
    */
-  protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+  protected void processRequest(final HttpServletRequest request, final HttpServletResponse response)
       throws ServletException, IOException {
-
     UserDetail user = getMainSessionController(request).getCurrentUserDetail();
     String id = request.getParameter("id");
     String language = request.getParameter("lang");
+    boolean wbe = StringUtil.getBooleanValue(request.getParameter("wbe"));
     SimpleDocument document =
         AttachmentService.get().searchDocumentById(new SimpleDocumentPK(id), language);
 
-    if (!document.canBeModifiedBy(user)) {
+    if (!document.isReadOnly()
+        || !document.canBeModifiedBy(user)
+        || (!document.getEditedBy().equals(user.getId())
+            && (!wbe || !document.editableSimultaneously().orElse(false)))) {
       throwHttpForbiddenError();
     }
 
-    String documentUrl = URLUtil.getServerURL(request) + document.getWebdavUrl();
-    String token = WebDavTokenProducer.generateToken(user, fetchDocumentId(documentUrl));
-    SilverpeasJcrWebdavContext silverpeasJcrWebdavContext = createWebdavContext(documentUrl, token);
-    if (resources.getBoolean("attachment.onlineEditing.customProtocol", false)) {
-      response.setContentType("application/javascript");
-      response.setHeader("Content-Disposition", "inline; filename=launch.js");
-      String webDavUrl = silverpeasJcrWebdavContext.getWebDavUrl()
-          .replaceFirst("^http", WebDavProtocol.WEBDAV_SCHEME);
-      response.getWriter().append("window.location.href='").append(webDavUrl).append("';");
+    final Optional<String> wopiEditorUrl = Optional.of(wbe).filter(w -> w)
+        .flatMap(w -> WebWopiFileEdition.get().initializeWith(request, new WebdavWopiFile(document)));
+    if (wopiEditorUrl.isPresent()) {
+      final RequestDispatcher requestDispatcher = request.getRequestDispatcher(wopiEditorUrl.get());
+      requestDispatcher.forward(request, response);
     } else {
-      response.setContentType("application/x-java-jnlp-file");
-      response.setHeader("Content-Disposition", "inline; filename=launch.jnlp");
-      prepareJNLP(request, response.getWriter(), user.getLogin(),
-          silverpeasJcrWebdavContext.getWebDavUrl());
+      String documentUrl = URLUtil.getServerURL(request) + document.getWebdavUrl();
+      String token = WebDavTokenProducer.generateToken(user, fetchDocumentId(documentUrl));
+      SilverpeasJcrWebdavContext silverpeasJcrWebdavContext = createWebdavContext(documentUrl, token);
+      if (resources.getBoolean("attachment.onlineEditing.customProtocol", false)) {
+        response.setContentType("application/javascript");
+        response.setHeader("Content-Disposition", "inline; filename=launch.js");
+        String webDavUrl = silverpeasJcrWebdavContext.getWebDavUrl().replaceFirst("^http", WebDavProtocol.WEBDAV_SCHEME);
+        response.getWriter().append("window.location.href='").append(webDavUrl).append("';");
+      } else {
+        response.setContentType("application/x-java-jnlp-file");
+        response.setHeader("Content-Disposition", "inline; filename=launch.jnlp");
+        prepareJNLP(request, response.getWriter(), user.getLogin(), silverpeasJcrWebdavContext.getWebDavUrl());
+      }
     }
   }
 
+  /**
+   * Using old JNLP mechanism.
+   * @deprecated will soon be removed.
+   */
+  @Deprecated(since = "5.15")
   private void prepareJNLP(HttpServletRequest request, PrintWriter out, String login,
       String documentUrl) throws UnsupportedEncodingException {
     out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");

@@ -773,6 +773,7 @@ public class SimpleDocumentService
           notificationService.notifyEventOn(ResourceEvent.Type.UPDATE, docBeforeUpdate, document);
         }
       }
+      notificationService.notifyEventOn(ResourceEvent.Type.UNLOCK, docBeforeUpdate, document);
     } catch (IOException | RepositoryException e) {
       throw new AttachmentException("Check-in failed", e);
     }
@@ -1097,6 +1098,24 @@ public class SimpleDocumentService
         throw new AttachmentException(ex);
       }
     }
+  }
+
+  @Override
+  public void switchEnableEditSimultaneously(final SimpleDocumentPK pk, final boolean enable) {
+    SimpleDocument document = searchDocumentById(pk, null);
+    document.editableSimultaneously().ifPresent(e -> {
+      final boolean documentUpdateRequired = enable != e;
+      // Updating JCR if required
+      if (documentUpdateRequired) {
+        document.setEditableSimultaneously(enable);
+        try (JcrSession session = openSystemSession()) {
+          repository.saveEditableSimultaneously(session, document);
+          session.save();
+        } catch (RepositoryException ex) {
+          throw new AttachmentException(ex);
+        }
+      }
+    });
   }
 
   /**

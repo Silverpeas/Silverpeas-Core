@@ -30,13 +30,13 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.SilverpeasWebResource;
 import org.silverpeas.core.web.attachment.WebDavProtocol;
 import org.silverpeas.core.web.filter.exception.WebSecurityException;
 import org.silverpeas.core.web.filter.exception.WebSqlInjectionSecurityException;
 import org.silverpeas.core.web.filter.exception.WebXssInjectionSecurityException;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.security.SecuritySettings;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
