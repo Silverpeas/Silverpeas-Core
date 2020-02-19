@@ -56,6 +56,9 @@
   var NB_DOMAINS = UserGroupListSettings.get("d.nb");
 
   var USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_MESSAGE = UserGroupListBundle.get("n.m.r.l.m.w");
+  const LABEL_GROUPS = UserGroupListBundle.get("GML.group_s");
+  const LABEL_USERS = UserGroupListBundle.get("GML.user_s");
+  const LABEL_AND = UserGroupListBundle.get("GML.and");
   var LABEL_DELETE = UserGroupListBundle.get("GML.delete");
   var LABEL_DELETE_ALL = UserGroupListBundle.get("GML.deleteAll");
   var LABEL_CONFIRM_DELETE_ALL = UserGroupListBundle.get("GML.confirmation.deleteAll");
@@ -760,6 +763,7 @@
     var __idCounter = __globalIdCounter;
 
     this.options = extendsObject({
+      simpleDetailsWhenRecipientTotalExceed : 0,
       hideDeactivatedState : true,
       domainIdFilter : '',
       resourceIdFilter : '',
@@ -832,7 +836,38 @@
     this.refreshAll = function() {
       this.refreshCommons();
       var promises = [refreshUserData(), refreshGroupData()];
-      return sp.promise.whenAllResolved(promises);
+      return sp.promise.whenAllResolved(promises).then(function() {
+        let simpleDetailsWhenRecipientTotalExceed = this.options.simpleDetailsWhenRecipientTotalExceed;
+        if (simpleDetailsWhenRecipientTotalExceed && simpleDetailsWhenRecipientTotalExceed > 0) {
+          let nbGroups = this.context.currentGroupIds.length;
+          let nbUsers = this.context.currentUserIds.length;
+          let parentElement = this.context.rootContainer;
+          if ((nbGroups + nbUsers) > simpleDetailsWhenRecipientTotalExceed) {
+            sp.element.querySelectorAll('.access-list', parentElement).forEach(function(list) {
+              list.classList.add('hide');
+            });
+            let $simpleDetails = sp.element.querySelector('.simple-details', parentElement);
+            $simpleDetails.classList.remove('hide');
+            let simpleDetails = '';
+            if (nbGroups > 0) {
+              simpleDetails += nbGroups + ' ' + LABEL_GROUPS;
+            }
+            if (nbUsers > 0) {
+              if (nbGroups > 0) {
+                simpleDetails += ' ' + LABEL_AND + ' ';
+              }
+              simpleDetails += nbUsers + ' ' + LABEL_USERS;
+            }
+            $simpleDetails.innerHTML = simpleDetails;
+          } else {
+            sp.element.querySelectorAll('.access-list', parentElement).forEach(function(list) {
+              list.classList.remove('hide');
+            });
+            let $simpleDetails = sp.element.querySelector('.simple-details', parentElement);
+            $simpleDetails.classList.add('hide');
+          }
+        }
+      }.bind(this));
     };
 
     this.removeAll = function() {
@@ -1106,10 +1141,13 @@
       instance.context.messagePanel = messagePanel;
     }
 
+    let simpleDetails = document.createElement('div');
+    simpleDetails.classList.add('simple-details', 'hide');
     var groups = document.createElement('ul');
     groups.classList.add("access-list", "group");
     var users = document.createElement('ul');
     users.classList.add("access-list", "user");
+    lists.appendChild(simpleDetails);
     lists.appendChild(groups);
     lists.appendChild(users);
     rootContainer.appendChild(lists);
