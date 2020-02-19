@@ -81,6 +81,10 @@ public class SimpleDocumentEntity implements WebEntity {
   private Boolean viewable;
   @XmlElement
   private Boolean displayAsContent;
+  @XmlElement
+  private Integer widthInPixel;
+  @XmlElement
+  private Integer heightInPixel;
 
   public static SimpleDocumentEntity fromAttachment(SimpleDocument document) {
     SimpleDocumentEntity entity = new SimpleDocumentEntity();
@@ -219,6 +223,24 @@ public class SimpleDocumentEntity implements WebEntity {
 
   public SimpleDocumentEntity displayAsContent(final boolean displayAsContent) {
     this.displayAsContent = displayAsContent;
+    return this;
+  }
+
+  public Integer getWidthInPixel() {
+    return widthInPixel;
+  }
+
+  public SimpleDocumentEntity widthInPixelOf(final Integer width) {
+    this.widthInPixel = width;
+    return this;
+  }
+
+  public Integer getHeightInPixel() {
+    return heightInPixel;
+  }
+
+  public SimpleDocumentEntity heightInPixelOf(final Integer height) {
+    this.heightInPixel = height;
     return this;
   }
 }

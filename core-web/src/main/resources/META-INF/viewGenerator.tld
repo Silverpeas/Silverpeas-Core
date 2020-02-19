@@ -2475,6 +2475,64 @@
     </attribute>
   </tag>
   <tag>
+    <description>HTML HTML TAG OVERRIDE</description>
+    <name>sp-page</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.layout.HtmlLayoutTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>angularJsAppName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>HEAD HTML TAG OVERRIDE</description>
+    <name>sp-head-part</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.layout.HeadLayoutPartTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Includes minimal Silverpeas's script requirement. Look and Feel stuffs are not returned (noLookAndFeel is ignored)</description>
+      <name>minimalSilverpeasScriptEnv</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
+      <description>Dont include Look and Feel stuffs (like view:looknfeel)</description>
+      <name>noLookAndFeel</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
+      <description>Include fieldset automatically</description>
+      <name>withFieldsetStyle</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
+      <description>Include checkform automatically</description>
+      <name>withCheckFormScript</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>BODY HTML TAG OVERRIDE</description>
+    <name>sp-body-part</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.layout.BodyPartLayoutTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>A HTML TAG OVERRIDE</description>
     <name>a</name>
     <tag-class>org.silverpeas.core.web.util.viewgenerator.html.override.ATag</tag-class>

@@ -223,7 +223,9 @@
 
       $(document).ready(function() {
         <c:if test="${showHelp}">
-          setTimeout(showAutoHelp, 0);
+          whenSilverpeasEntirelyLoaded().then(function() {
+            setTimeout(showAutoHelp, 0);
+          });
         </c:if>
 
         // hide all extra fields by default

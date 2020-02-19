@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,13 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util.security;
+package org.silverpeas.core.util.security;
 
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
@@ -39,6 +43,12 @@ public class SecuritySettings {
 
   private static final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.util.security");
+
+  private static final Registration registration = new Registration();
+
+  private SecuritySettings() {
+
+  }
 
   /**
    * Is web security mechanisms enabled?
@@ -135,7 +145,12 @@ public class SecuritySettings {
    */
   public static List<String> getAllowedDomains() {
     final String domains = settings.getString("security.web.protection.domain.allowed", "");
-    return Arrays.asList(domains.split(", "));
+    final List<String> allowedDomains = new ArrayList<>();
+    if (!domains.trim().isEmpty()) {
+      allowedDomains.addAll(Arrays.asList(domains.split(", ")));
+    }
+    allowedDomains.addAll(registration().getDomainsInCORS());
+    return allowedDomains;
   }
 
   /**
@@ -146,6 +161,10 @@ public class SecuritySettings {
   public static boolean isWebContentInjectionSecurityEnabled() {
     return isWebProtectionEnabled() &&
         settings.getBoolean("security.web.protection.injection.content", false);
+  }
+
+  public static String getAllowedDefaultSourcesInCSP() {
+    return String.join(" ", registration().getDefaultSourcesInCSP());
   }
 
   public static String getAllowedScriptSourcesInCSP() {
@@ -167,5 +186,32 @@ public class SecuritySettings {
       tagAttribute = "sandbox=\"" + defaultStringIfNotDefined(sandbox) + "\"";
     }
     return tagAttribute;
+  }
+
+  public static Registration registration() {
+    return registration;
+  }
+
+  public static class Registration {
+
+    private static final String DEFAULT_SRC = "default-src";
+    private static final String CORS = "cors";
+    private Map<String, List<String>> settings = new ConcurrentHashMap<>();
+
+    public void registerDefaultSourceInCSP(final String sourceURL) {
+      settings.computeIfAbsent(DEFAULT_SRC, k -> new ArrayList<>()).add(sourceURL);
+    }
+
+    public void registerDomainInCORS(final String domain) {
+      settings.computeIfAbsent(CORS, k -> new ArrayList<>()).add(domain);
+    }
+
+    List<String> getDefaultSourcesInCSP() {
+      return settings.getOrDefault(DEFAULT_SRC, Collections.emptyList());
+    }
+
+    List<String> getDomainsInCORS() {
+      return settings.getOrDefault(CORS, Collections.emptyList());
+    }
   }
 }

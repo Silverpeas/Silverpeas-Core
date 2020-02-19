@@ -43,6 +43,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static org.silverpeas.core.web.SilverpeasWebResource.getBasePathBuilder;
+import static org.silverpeas.core.webapi.admin.AdminResourceURIs.*;
+
 /**
  * Centralizations of admin resource processings
  * @author Yohann Chastagnier
@@ -185,9 +188,8 @@ public abstract class AbstractAdminResource extends RESTWebService {
       // accessible. At this level, no user access to Look context is nonblocking
       userFavoriteSpace.append(getLookDelegate().getUserFavorite(space, forceGettingFavorite));
     }
-    return SpaceEntity.createFrom(space, getUserPreferences().getLanguage())
-        .withURI(
-            getUri().getWebResourcePathBuilder().path(String.valueOf(space.getLocalId())).build())
+    return SpaceEntity.createFrom(space, getUserPreferences().getLanguage()).withURI(
+        getBasePathBuilder().path(SPACES_BASE_URI).path(String.valueOf(space.getLocalId())).build())
         .addUserFavorites(userFavoriteSpace.toString());
   }
 
@@ -202,7 +204,8 @@ public abstract class AbstractAdminResource extends RESTWebService {
       final String wallpaper, final String css) {
     checkNotFoundStatus(space);
     return SpaceAppearanceEntity.createFrom(space, look, wallpaper, css).withURI(
-        getUri().getWebResourcePathBuilder().path(String.valueOf(space.getLocalId())).build());
+        getBasePathBuilder().path(SPACES_BASE_URI).path(String.valueOf(space.getLocalId()))
+            .path(SPACES_APPEARANCE_URI_PART).build());
   }
 
   /**
@@ -212,9 +215,8 @@ public abstract class AbstractAdminResource extends RESTWebService {
    */
   protected ComponentEntity asWebEntity(final ComponentInstLight component) {
     checkNotFoundStatus(component);
-    String componentId = getUri().getPathParameters().getFirst("componentId");
-    return ComponentEntity.createFrom(component, getUserPreferences().getLanguage()).withURI(
-        getUri().getWebResourcePathBuilder().path(componentId == null ? "" : componentId).build());
+    return ComponentEntity.createFrom(component, getUserPreferences().getLanguage())
+        .withURI(getBasePathBuilder().path(COMPONENTS_BASE_URI).path(component.getId()).build());
   }
 
   /**
@@ -226,8 +228,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
     checkNotFoundStatus(component);
     return PersonalComponentEntity
         .createFrom(component, getAdminPersonalDelegate().getComponentLabel(component),
-            getUserPreferences().getLanguage())
-        .withUriBase(getUri().getBaseUri());
+            getUserPreferences().getLanguage()).withUriBase(getUri().getBaseUri());
   }
 
   /**
@@ -237,8 +238,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    */
   protected PersonalComponentEntity asWebPersonalEntity(final SilverpeasComponentInstance component) {
     checkNotFoundStatus(component);
-    return PersonalComponentEntity.createFrom(component)
-        .withUriBase(getUri().getBaseUri());
+    return PersonalComponentEntity.createFrom(component).withUriBase(getUri().getBaseUri());
   }
 
   /**
@@ -248,8 +248,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    */
   protected PersonalToolEntity asWebPersonalEntity(final AbstractTool tool) {
     checkNotFoundStatus(tool);
-    return PersonalToolEntity.createFrom(tool)
-        .withUriBase(getUri().getBaseUri());
+    return PersonalToolEntity.createFrom(tool).withUriBase(getUri().getBaseUri());
   }
 
   /**

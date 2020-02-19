@@ -56,10 +56,20 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
     tables.add("st_group");
   }
 
+  /**
+   * Constructs new criteria on the user groups to search in the data source.
+   * @return new search criteria for DAOs.
+   */
   public static GroupSearchCriteriaForDAO newCriteria() {
     return newCriteriaFrom(new GroupsSearchCriteria());
   }
 
+  /**
+   * Constructs new criteria on the user groups to search in the data source from the specified
+   * criteria on the groups' properties.
+   * @param criteria criteria on the groups' properties the search must satisfy.
+   * @return new search criteria for DAOs.
+   */
   public static GroupSearchCriteriaForDAO newCriteriaFrom(final GroupsSearchCriteria criteria) {
     return new GroupSearchCriteriaForDAO(criteria);
   }
@@ -91,7 +101,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public GroupSearchCriteriaForDAO onGroupIds(String... groupIds) {
-    if (groupIds != ANY) {
+    if (groupIds != Constants.ANY) {
       this.criteria.onGroupIds(groupIds);
     }
     return this;
@@ -128,7 +138,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public SearchCriteria onUserIds(String... userIds) {
-    if (userIds != ANY) {
+    if (userIds != Constants.ANY) {
       tables.add("st_group_user_rel");
       this.userIds = Arrays.copyOf(userIds, userIds.length);
     }

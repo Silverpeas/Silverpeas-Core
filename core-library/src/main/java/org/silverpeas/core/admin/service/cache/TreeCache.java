@@ -89,10 +89,20 @@ public class TreeCache {
    * @param spaceId the unique identifier of a space.
    */
   public synchronized void removeSpace(int spaceId) {
-    Space space = map.get(spaceId);
+    final Space space = map.get(spaceId);
     if (space != null) {
-      for (SpaceInstLight subspace : space.getSubspaces()) {
+      // remove the subspace(s) from the removed space
+      final List<SpaceInstLight> subspaces = new ArrayList<>(space.getSubspaces());
+      for (SpaceInstLight subspace : subspaces) {
         removeSpace(subspace.getLocalId());
+      }
+
+      // remove the deleted space from its parent
+      final SpaceInstLight spaceInstLight = space.getSpaceInstLight();
+      if (!spaceInstLight.isRoot()) {
+        final Space parent = getSpace(Integer.parseInt(spaceInstLight.getFatherId()));
+        final List<SpaceInstLight> children = parent.getSubspaces();
+        children.remove(spaceInstLight);
       }
       map.remove(spaceId);
     }

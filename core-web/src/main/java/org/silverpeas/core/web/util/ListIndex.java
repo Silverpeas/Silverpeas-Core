@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.web.util;
 
+import java.io.Serializable;
+
 /**
  * Created by Nicolas on 08/02/2017.
  */
-public class ListIndex {
+public class ListIndex implements Serializable {
 
   private int nbItems;
   private int currentIndex = 0;

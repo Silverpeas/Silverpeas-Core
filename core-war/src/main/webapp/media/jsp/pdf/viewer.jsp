@@ -37,8 +37,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="google" content="notranslate">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <view:includePlugin name="polyfills"/>
-  <view:script src="/util/javaScript/silverpeas.js" />
+  <view:includePlugin name="minimalsilverpeas"/>
   <script type="text/javascript">
     window.SP_PDF_VIEWER_DEFERRED = sp.promise.deferred();
     document.addEventListener('webviewerloaded', function(e) {

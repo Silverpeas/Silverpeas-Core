@@ -22,8 +22,8 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="org.silverpeas.core.viewer.model.ViewerSettings" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ page import="org.silverpeas.core.viewer.model.ViewerSettings" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
@@ -48,9 +48,7 @@
       height: ${param.height}px;
     }
   </style>
-  <view:includePlugin name="jquery" />
-  <view:script src="/util/javaScript/silverpeas.js" />
-  <view:script src="/util/javaScript/silverpeas-i18n.js" />
+  <view:includePlugin name="minimalsilverpeas"/>
   <view:includePlugin name="fpviewer"/>
   <script type="text/javascript">
     whenSilverpeasReady(function() {

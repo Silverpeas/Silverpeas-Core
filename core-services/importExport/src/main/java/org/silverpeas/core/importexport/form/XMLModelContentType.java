@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,7 @@ import java.util.List;
  */
 @XmlRootElement(name = "xmlModel", namespace = "http://www.silverpeas.org/exchange")
 @XmlAccessorType(XmlAccessType.NONE)
-public class XMLModelContentType {
+public class XMLModelContentType implements Serializable {
 
   @XmlAttribute
   private String name;

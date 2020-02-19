@@ -539,7 +539,7 @@ public class UserDetail implements User {
 
   @Override
   public boolean isActivatedState() {
-    return !isAnonymous() && !isDeletedState() && !isDeactivatedState();
+    return !isAnonymous() && !isDeletedState() && !isRemovedState() && !isDeactivatedState();
   }
 
   @Override

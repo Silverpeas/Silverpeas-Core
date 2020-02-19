@@ -1,0 +1,2 @@
+Un problème technique est survenu lors de la synchronisation du calendrier <strong>$calendarTitle$</strong>.<br/>
+Merci de bien vouloir vérifier son <strong>lien de synchronisation</strong> ou de <strong>supprimer</strong> ce calendrier.

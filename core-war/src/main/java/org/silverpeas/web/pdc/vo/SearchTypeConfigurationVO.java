@@ -23,17 +23,17 @@
  */
 package org.silverpeas.web.pdc.vo;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * SearchTypeConfigurationVO is a search type configuration value object representation
  */
 public class SearchTypeConfigurationVO {
 
-  private int configId = -1;
-  private String name = "";
-  private List<String> components = null;
-  private List<String> types = null;
+  private int configId;
+  private String name;
+  private Set<String> components;
+  private Set<String> types;
 
   /**
    * Constructor
@@ -42,8 +42,8 @@ public class SearchTypeConfigurationVO {
    * @param components : list of component name
    * @param types : list of object type name
    */
-  public SearchTypeConfigurationVO(int configId, String name, List<String> components,
-      List<String> types) {
+  public SearchTypeConfigurationVO(int configId, String name, Set<String> components,
+      Set<String> types) {
     super();
     this.configId = configId;
     this.name = name;
@@ -68,28 +68,28 @@ public class SearchTypeConfigurationVO {
   /**
    * @return the components
    */
-  public List<String> getComponents() {
+  public Set<String> getComponents() {
     return components;
   }
 
   /**
    * @param components the components to set
    */
-  public void setComponents(List<String> components) {
+  public void setComponents(Set<String> components) {
     this.components = components;
   }
 
   /**
    * @return the types
    */
-  public List<String> getTypes() {
+  public Set<String> getTypes() {
     return types;
   }
 
   /**
    * @param types the types to set
    */
-  public void setTypes(List<String> types) {
+  public void setTypes(Set<String> types) {
     this.types = types;
   }
 

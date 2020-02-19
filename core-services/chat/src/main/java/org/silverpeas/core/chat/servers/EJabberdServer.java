@@ -25,9 +25,9 @@ package org.silverpeas.core.chat.servers;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.ChatServerException;
+import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.chat.ChatUser;
 import org.silverpeas.core.util.JSONCodec.JSONObject;
-import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ws.rs.core.Response;
@@ -63,9 +63,9 @@ public class EJabberdServer implements ChatServer {
    * Constructs a new instance.
    */
   public EJabberdServer() {
-    SettingBundle settings = ChatServer.getChatSettings();
-    this.url = settings.getString("chat.xmpp.restUrl");
-    String key = settings.getString("chat.xmpp.restKey");
+    ChatSettings settings = ChatServer.getChatSettings();
+    this.url = settings.getRestApiUrl();
+    String key = settings.getRestApiAuthToken();
     this.requester = new HttpRequester("Bearer " + key);
   }
 

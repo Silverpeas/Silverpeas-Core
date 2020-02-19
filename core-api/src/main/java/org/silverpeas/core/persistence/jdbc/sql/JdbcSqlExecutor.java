@@ -35,7 +35,7 @@ import java.util.List;
  * It is possible to call this provided methods into transactions that handles JPA operations too.
  * @author Yohann Chastagnier
  */
-public interface JdbcSqlExecutor {
+interface JdbcSqlExecutor {
 
   /**
    * Select count SQL query executor.

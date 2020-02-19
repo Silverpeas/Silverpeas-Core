@@ -30,6 +30,8 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.io.media.image.ImageTool;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.viewer.service.PreviewService;
 import org.silverpeas.core.viewer.service.ViewService;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
@@ -51,6 +53,8 @@ import java.util.stream.Collectors;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.reader;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.user;
+import static org.silverpeas.core.io.media.image.ImageInfoType.HEIGHT_IN_PIXEL;
+import static org.silverpeas.core.io.media.image.ImageInfoType.WIDTH_IN_PIXEL;
 
 @Service
 @RequestScoped
@@ -66,6 +70,9 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
 
   @QueryParam("viewIndicators")
   private boolean viewIndicators = false;
+
+  @QueryParam("viewWidthAndHeight")
+  private boolean viewWidthAndHeight = false;
 
   @QueryParam("highestUserRole")
   private SilverpeasRole highestUserRole = null;
@@ -137,14 +144,36 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
         })
         .map(d -> {
           final SimpleDocumentEntity entity = SimpleDocumentEntity.fromAttachment(d);
-          if (viewIndicators) {
-            entity.prewiewable(PreviewService.get().isPreviewable(new File(d.getAttachmentPath())))
-                .viewable(ViewService.get().isViewable(new File(d.getAttachmentPath())))
-                .displayAsContent(d.isDisplayableAsContent());
-          }
+          performViewIndicator(d, entity);
+          performWidthAndHeight(d, entity);
           return entity;
         })
         .collect(Collectors.toList());
+  }
+
+  private void performViewIndicator(final SimpleDocument d, final SimpleDocumentEntity entity) {
+    if (viewIndicators) {
+      final File file = new File(d.getAttachmentPath());
+      entity.prewiewable(PreviewService.get().isPreviewable(file))
+          .viewable(ViewService.get().isViewable(file))
+          .displayAsContent(d.isDisplayableAsContent());
+    }
+  }
+
+  private void performWidthAndHeight(final SimpleDocument d, final SimpleDocumentEntity entity) {
+    if (viewWidthAndHeight && d.isContentImage()) {
+      try {
+        final File file = new File(d.getAttachmentPath());
+        final String[] widthAndHeight = ImageTool.get()
+            .getImageInfo(file, WIDTH_IN_PIXEL, HEIGHT_IN_PIXEL);
+        if (widthAndHeight.length == 2) {
+          entity.widthInPixelOf(Integer.parseInt(widthAndHeight[0]))
+                .heightInPixelOf(Integer.parseInt(widthAndHeight[1]));
+        }
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+    }
   }
 
   @Override

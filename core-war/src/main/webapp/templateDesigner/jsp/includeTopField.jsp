@@ -1,4 +1,5 @@
-<%--
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %><%--
 
     Copyright (C) 2000 - 2019 Silverpeas
 
@@ -48,7 +49,7 @@
 	for (String lang : languages) {
 		String label = "";
 		if (field != null) {
-			label = field.getLabel(lang);
+			label = WebEncodeHelper.javaStringToHtmlString(field.getLabel(lang));
 		}
 %>
 		<tr>

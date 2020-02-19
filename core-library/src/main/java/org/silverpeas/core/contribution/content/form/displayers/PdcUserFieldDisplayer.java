@@ -69,22 +69,18 @@ public class PdcUserFieldDisplayer extends AbstractFieldDisplayer<PdcUserField> 
    * </UL>
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template,
-      PagesContext PagesContext) throws java.io.IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext) {
     String language = PagesContext.getLanguage();
 
     String fieldName = template.getFieldName();
+    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
 
-    if (!template.getTypeName().equals(PdcUserField.TYPE)) {
-
-
-    }
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(document.forms['"
           + PagesContext.getFormName() + "'].elements['"
           + fieldName + "$$id'].value))) {");
       out.println("      errorMsg+=\"  - '"
-          + WebEncodeHelper.javaStringToJsString(template.getLabel(language))
+          + label
           + "' " + Util.getString("GML.MustBeFilled", language)
           + "\\n\";");
       out.println("      errorNb++;");

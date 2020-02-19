@@ -118,10 +118,11 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
    */
   @Override
   public void displayScripts(final PrintWriter out, final FieldTemplate template,
-      final PagesContext pageContext) throws IOException {
+      final PagesContext pageContext) {
     checkFieldType(template.getTypeName(), "AbstractFileFieldDisplayer.displayScripts");
     String language = pageContext.getLanguage();
     String fieldName = template.getFieldName();
+    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
     if (template.isMandatory() && pageContext.useMandatory()) {
       out.append("  if (isWhitespace(stripInitialWhitespace(field.value))) {\n")
           .append("   var ").append(fieldName).append("Value = document.getElementById('")
@@ -133,7 +134,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
           .append(fieldName).append("Operation=='").append(Operation.DELETION.name()).append(
               "') {\n")
           .append("     errorMsg+=\"  - '")
-          .append(WebEncodeHelper.javaStringToJsString(template.getLabel(language))).append("' ")
+          .append(label).append("' ")
           .append(Util.getString("GML.MustBeFilled", language)).append("\\n\";\n")
           .append("     errorNb++;\n")
           .append("   }\n")

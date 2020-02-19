@@ -47,6 +47,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -115,18 +116,17 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
    * @throws java.io.IOException
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext)
-      throws IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
     String fieldName = template.getFieldName();
     String language = pageContext.getLanguage();
-
+    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
     if (!template.isReadOnly()) {
       out.println("var oEditor = CKEDITOR.instances." + fieldName + ";");
       out.println("var thecode = oEditor.getData();");
       if (template.isMandatory() && pageContext.useMandatory()) {
         out.println(
             " if (isWhitespace(stripInitialWhitespace(thecode)) || thecode == \"<P>&nbsp;</P>\") {");
-        out.println(" errorMsg+=\" - '" + template.getLabel(language) + "' "
+        out.println(" errorMsg+=\" - '" + label + "' "
             + Util.getString("GML.MustBeFilled", language) + "\\n\";");
         out.println(" errorNb++;");
         out.println(" }");

@@ -27,12 +27,13 @@ import org.apache.commons.exec.util.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.mail.extractor.Mail;
 import org.silverpeas.core.util.ImageUtil;
-import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.OsEnum;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -55,12 +56,13 @@ import java.util.stream.Stream;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.util.MimeTypes.*;
 
 /**
  * Util class to perform file system operations.
  * All file operations wil be removed in the future in profit of the new Files class in the JDK.
  */
-public class FileUtil implements MimeTypes {
+public class FileUtil {
 
   private static final SettingBundle MIME_TYPES_EXTENSIONS =
       ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.mime_types");
@@ -90,40 +92,48 @@ public class FileUtil implements MimeTypes {
       return cachedMimeType;
     }
 
+    String mimeType = computeMimeType(fileName);
+
+    // The computed mime type is put into the request cache (performance)
+    getRequestCacheService().getCache().put(cacheKey, mimeType);
+    return mimeType;
+  }
+
+  @NotNull
+  private static String computeMimeType(final String fileName) {
     String mimeType = null;
     final String fileExtension = FileRepositoryManager.getFileExtension(fileName).toLowerCase();
     File file = new File(fileName);
     if (file.exists()) {
-      try {
-        mimeType = MetadataExtractor.get().detectMimeType(file);
-      } catch (Exception ex) {
-        SilverLogger.getLogger(FileUtil.class)
-            .warn("File exists ({0}), but mime-type has been detected: {1}", file.getName(),
-                ex.getMessage(), ex);
-      }
+      mimeType = getMimeTypeByMetadata(file, mimeType);
     }
     if (!StringUtil.isDefined(mimeType) && MIME_TYPES_EXTENSIONS != null &&
         !fileExtension.isEmpty()) {
-      try {
-        mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
-      } catch (final MissingResourceException e) {
-        SilverLogger.getLogger(FileUtil.class).warn("Unknown mime-type: {0}", e.getMessage(), e);
-      }
+      mimeType = getMimeTypeByFileExtension(fileExtension, mimeType);
     }
     if (!StringUtil.isDefined(mimeType)) {
       mimeType = MIME_TYPES.getContentType(fileName);
     }
+    mimeType = getPeculiarChildMimeType(mimeType, fileExtension);
+    if (mimeType == null) {
+      mimeType = DEFAULT_MIME_TYPE;
+    }
+    return mimeType;
+  }
+
+  @Nullable
+  private static String getPeculiarChildMimeType(String parentMimeType, final String fileExtension) {
+    String mimeType = parentMimeType;
     // if the mime type is application/xhml+xml or text/html whereas the file is a JSP or PHP script
-    if (XHTML_MIME_TYPE.equalsIgnoreCase(mimeType) || HTML_MIME_TYPE.equalsIgnoreCase(mimeType)) {
+    if (XHTML_MIME_TYPE.equalsIgnoreCase(parentMimeType) || HTML_MIME_TYPE.equalsIgnoreCase(parentMimeType)) {
       if (fileExtension.contains(JSP_EXTENSION)) {
         mimeType = JSP_MIME_TYPE;
       } else if (fileExtension.contains(PHP_EXTENSION)) {
         mimeType = PHP_MIME_TYPE;
       }
       // if the mime type refers a ZIP archive, checks if it is an archive of the java platform
-    } else if (ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) || SHORT_ARCHIVE_MIME_TYPE.
-        equalsIgnoreCase(
-            mimeType)) {
+    } else if (ARCHIVE_MIME_TYPE.equalsIgnoreCase(parentMimeType) || SHORT_ARCHIVE_MIME_TYPE.
+        equalsIgnoreCase(parentMimeType)) {
       if (JAR_EXTENSION.equalsIgnoreCase(fileExtension) || WAR_EXTENSION.equalsIgnoreCase(
           fileExtension) || EAR_EXTENSION.equalsIgnoreCase(fileExtension)) {
         mimeType = JAVA_ARCHIVE_MIME_TYPE;
@@ -131,12 +141,28 @@ public class FileUtil implements MimeTypes {
         mimeType = SPINFIRE_MIME_TYPE;
       }
     }
-    if (mimeType == null) {
-      mimeType = DEFAULT_MIME_TYPE;
-    }
+    return mimeType;
+  }
 
-    // The computed mime type is put into the request cache (performance)
-    getRequestCacheService().getCache().put(cacheKey, mimeType);
+  private static String getMimeTypeByFileExtension(final String fileExtension, final String defaultMimeType) {
+    String mimeType = defaultMimeType;
+    try {
+      mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
+    } catch (final MissingResourceException e) {
+      SilverLogger.getLogger(FileUtil.class).warn("Unknown mime-type: {0}", e.getMessage(), e);
+    }
+    return mimeType;
+  }
+
+  private static String getMimeTypeByMetadata(final File file, final String defaultMimeType) {
+    String mimeType = defaultMimeType;
+    try {
+      mimeType = MetadataExtractor.get().detectMimeType(file);
+    } catch (Exception ex) {
+      SilverLogger.getLogger(FileUtil.class)
+          .warn("File exists ({0}), but mime-type has been detected: {1}", file.getName(),
+              ex.getMessage(), ex);
+    }
     return mimeType;
   }
 
@@ -240,9 +266,10 @@ public class FileUtil implements MimeTypes {
     return OPEN_OFFICE_MIME_TYPES.contains(mimeType) || isMsOfficeExtension(mimeType);
   }
 
-  static boolean isMsOfficeExtension(final String mimeType) {
-    return mimeType.startsWith(WORD_2007_EXTENSION) || mimeType.startsWith(EXCEL_2007_EXTENSION)
-        || mimeType.startsWith(POWERPOINT_2007_EXTENSION);
+  private static boolean isMsOfficeExtension(final String mimeType) {
+    return mimeType.startsWith(WORD_2007_EXTENSION) || mimeType.startsWith(EXCEL_2007_EXTENSION) ||
+        mimeType.startsWith(POWERPOINT_2007_EXTENSION) || mimeType.startsWith(MSPROJECT_MIME_TYPE);
+
   }
 
   /**

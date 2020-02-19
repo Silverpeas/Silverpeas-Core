@@ -31,7 +31,10 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * A filter to handle all the exception thrown from the Silverpeas application.
@@ -45,16 +48,26 @@ public class SilverpeasExceptionLoggingFilter implements Filter {
     try {
       chain.doFilter(request, response);
     } catch (Exception t) {
-      SilverLogger.getLogger("silverpeas.exception.unexpected").error(t.getLocalizedMessage(), t);
+      final SilverLogger logger = SilverLogger.getLogger("silverpeas.exception.unexpected");
+      if (request instanceof HttpServletRequest) {
+        final HttpServletRequest httpRequest = (HttpServletRequest) request;
+        logger.error("From request [{0}] getting error [{1}]",
+            new Object[]{httpRequest.getRequestURL(),
+                defaultStringIfNotDefined(t.getLocalizedMessage(), "unknown")}, t);
+      } else {
+        logger.error(t.getLocalizedMessage(), t);
+      }
       throw t;
     }
   }
 
   @Override
-  public void init(final FilterConfig filterConfig) throws ServletException {
+  public void init(final FilterConfig filterConfig) {
+    // Nothing to do here
   }
 
   @Override
   public void destroy() {
+    // Nothing to do here
   }
 }

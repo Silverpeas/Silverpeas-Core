@@ -129,7 +129,7 @@ Icon aspiIcon = null;
 	operationPane.addOperation(resource.getIcon("pdcPeas.icoCreateParamAxis"),resource.getString("pdcPeas.paramChooseAxis"), pdcUtilizationContext+"UtilizationViewAxis");
 	if (axisList != null && axisList.size() != 0) // do not show this icone if no axes
 		operationPane.addOperation(resource.getIcon("pdcPeas.icoDeleteParamAxis"),resource.getString("pdcPeas.deleteAxis"), "javascript:getSelectedItems()");
-
+    window.setPopup(true);
     out.println(window.printBefore());
 %>
 <view:frame>

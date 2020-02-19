@@ -30,6 +30,7 @@ package org.silverpeas.core.io.media.image.option;
 public class OrientationOption extends AbstractImageToolOption {
 
   private Orientation orientation = Orientation.AUTO;
+  private boolean modifyImageOnlyIfNecessary = false;
 
   /**
    * Default constructor
@@ -47,6 +48,20 @@ public class OrientationOption extends AbstractImageToolOption {
 
   public OrientationOption withOrientation(final Orientation orientation) {
     this.orientation = orientation;
+    return this;
+  }
+
+  public boolean isModifyingImageOnlyIfNecessary() {
+    return modifyImageOnlyIfNecessary;
+  }
+
+  /**
+   * Indicates image modification only if there is other option specified of if the orientation
+   * of the image is not the TopLeft one (equivalent to EXIF orientation = 1).
+   * @return true to modify only if necessary, false to modify in any case.
+   */
+  public OrientationOption modifyImageOnlyIfNecessary() {
+    modifyImageOnlyIfNecessary = true;
     return this;
   }
 }

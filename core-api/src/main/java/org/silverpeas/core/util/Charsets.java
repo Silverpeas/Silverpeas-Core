@@ -58,6 +58,10 @@ public class Charsets {
    * UTF-16: UTF-16 byte order identified by an optional byte-order mark.
    */
   public static final Charset UTF_16 = StandardCharsets.UTF_16;
+  /**
+   * IBM437.
+   */
+  public static final Charset IBM437 = toCharset("IBM437");
 
   private Charsets() {
   }

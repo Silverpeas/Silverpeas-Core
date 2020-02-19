@@ -29,6 +29,11 @@ package org.silverpeas.core.html;
 public enum SupportedWebPlugins {
 
   /**
+   * Minimal needed by all Silverpeas Javascript environment.
+   */
+  MINIMALSILVERPEAS,
+
+  /**
    * Polyfills needed by all Silverpeas Javascript environment.
    */
   POLYFILLS,
@@ -232,5 +237,9 @@ public enum SupportedWebPlugins {
   /**
    * Silverpeas plugin to manage reminder linked to contributions.
    */
-  CONTRIBUTIONREMINDER
+  CONTRIBUTIONREMINDER,
+  /**
+   * Silverpeas plugin to manage a virtual keyboard.
+   */
+  VIRTUALKEYBOARD
 }

@@ -114,7 +114,7 @@ public class MassiveAsynchronousNotificationIT {
   }
 
   @Test
-  public void asynchronousWithoutConcurrency() throws InterruptedException {
+  public void asynchronousWithoutConcurrency() {
     int nbSend = 100;
     List<TestResourceEvent> registeredEventsBeforeSend = new ArrayList<>();
     ADDITIONAL_PARAMETER additionalParameter = ADDITIONAL_PARAMETER.NONE;
@@ -230,7 +230,7 @@ public class MassiveAsynchronousNotificationIT {
     private final long base;
 
     WaitDuration(int nbSend) {
-      this.base = 1000 + (nbSend * 10);
+      this.base = 1001 + (nbSend * 10);
     }
 
     private Duration delay() {

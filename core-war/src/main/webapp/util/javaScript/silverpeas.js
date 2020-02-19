@@ -22,8 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* some web navigators (like IE < 9) doesn't support completely the javascript standard (ECMA) */
-
 if (!Array.prototype.indexOf) {
   Object.defineProperty(Array.prototype, 'indexOf', {
     enumerable : false, value : function(elt /*, from*/) {
@@ -448,7 +446,7 @@ if (!window.currentPopupResize) {
     var log = function(message) {
       //console.log("POPUP RESIZE - " + message);
     };
-    var resize = function(context) {
+    return whenSilverpeasEntirelyLoaded().then(function() {
       var $document = jQuery(document.body);
       $document.removeClass("popup-compute-finally");
       $document.addClass("popup-compute-settings");
@@ -468,41 +466,19 @@ if (!window.currentPopupResize) {
       var wHeightBefore = window.outerHeight;
       var wWidth = Math.min((screen.width - 250), (widthOffset + 10 + $document.width() + limitH));
       var wHeight = Math.min((screen.height - 100), (heightOffset + 10 + $document.height()));
-
       // Setting if necessary new sizes and new position
-      context.attempt += 1;
-      if (context.attempt <= 1 &&
-          (wWidthBefore !== wWidth || wHeightBefore !== wHeight || wHeight <= 200)) {
-        log("modify attempt " + context.attempt);
-        if (wHeight > 200) {
-          log("resizeTo width = " + wWidth + ', height = ' + wHeight);
-          context.effectiveResize += 1;
-          window.resizeTo(wWidth, wHeight);
-          var top = (screen.height - window.outerHeight) / 2;
-          var left = (screen.width - window.outerWidth) / 2;
-          if (!context.moveDone) {
-            log("moveTo left = " + left + ', height = ' + top);
-            context.moveDone = true;
-            window.moveTo(left, top);
-          }
-        }
-        window.setTimeout(function() {
-          resize(context);
-        }, 100);
+      if ((wWidthBefore !== wWidth || wHeightBefore !== wHeight) && wHeight > 200) {
+        log("resizeTo width = " + wWidth + ', height = ' + wHeight);
+        window.resizeTo(wWidth, wHeight);
+        var top = (screen.height - window.outerHeight) / 2;
+        var left = (screen.width - window.outerWidth) / 2;
+        log("moveTo left = " + left + ', height = ' + top);
+        window.moveTo(left, top);
       } else {
-        if (context.effectiveResize > 1) {
-          log("resize done");
-        } else {
-          log('wWidthBefore = ' + wWidthBefore + ", wWidth = " + wWidth + ', wHeightBefore = ' +
-              wHeightBefore + ', wHeight = ' + wHeight);
-          log("no resize performed");
-        }
+        log('wWidthBefore = ' + wWidthBefore + ", wWidth = " + wWidth + ', wHeightBefore = ' +
+            wHeightBefore + ', wHeight = ' + wHeight);
+        log("no resize performed");
       }
-    };
-    whenSilverpeasReady(function() {
-      window.setTimeout(function() {
-        resize({attempt : 0, effectiveResize : 0});
-      }, 0);
     });
   };
 }
@@ -669,7 +645,7 @@ if (!window.SilverpeasCache) {
 if (!window.SilverpeasAjaxConfig) {
   window.SilverpeasRequestConfig = SilverpeasClass.extend({
     initialize : function(url) {
-      var explodedUrl = sp.url.explode(url);
+      let explodedUrl = sp.url.explode(url);
       this.url = explodedUrl.base;
       this.parameters = explodedUrl.parameters;
       this.method = 'GET';
@@ -689,7 +665,7 @@ if (!window.SilverpeasAjaxConfig) {
       return this;
     },
     addParam : function(name, value) {
-      var currentValue = this.parameters[name];
+      let currentValue = this.parameters[name];
       if (!currentValue) {
         this.withParam(name, value);
       } else {
@@ -815,6 +791,16 @@ if (!window.SilverpeasAjaxConfig) {
       });
     }
   });
+  window.SilverpeasPreparedDownloadConfig = SilverpeasAjaxConfig.extend({
+    initialize : function(url) {
+      this._super(url);
+      this.target = '';
+    },
+    download : function() {
+      this.withParam('preparedDownload', true);
+      return silverpeasPreparedDownload(this);
+    }
+  });
 }
 
 if (typeof window.silverpeasAjax === 'undefined') {
@@ -859,7 +845,7 @@ if (typeof window.silverpeasAjax === 'undefined') {
     return new Promise(function(resolve, reject) {
 
       if (Object.getOwnPropertyNames) {
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
         xhr.onload = function() {
           if (typeof notySetupRequestComplete === 'function') {
             notySetupRequestComplete.call(this, xhr);
@@ -881,9 +867,9 @@ if (typeof window.silverpeasAjax === 'undefined') {
         }
 
         xhr.open(params.method, params.url);
-        var headerKeys = Object.getOwnPropertyNames(params.headers);
-        for (var i = 0; i < headerKeys.length; i++) {
-          var headerKey = headerKeys[i];
+        let headerKeys = Object.getOwnPropertyNames(params.headers);
+        for (let i = 0; i < headerKeys.length; i++) {
+          let headerKey = headerKeys[i];
           xhr.setRequestHeader(headerKey, params.headers[headerKey]);
         }
         xhr.send(params.data);
@@ -891,7 +877,7 @@ if (typeof window.silverpeasAjax === 'undefined') {
       } else {
 
         // little trick for old browsers
-        var jqOptions = {
+        let jqOptions = {
           url : params.url,
           type : params.method,
           cache : false,
@@ -972,12 +958,42 @@ if (typeof window.silverpeasAjax === 'undefined') {
         window.jQuery.progressMessage();
       }
     }
-    var navLink = document.createElement('a');
+    let navLink = document.createElement('a');
     navLink.setAttribute('href', silverpeasNavConfig.getUrl());
     navLink.setAttribute('target', silverpeasNavConfig.getTarget());
     navLink.style.display = 'none';
     document.body.appendChild(navLink);
     navLink.click();
+  };
+
+  window.silverpeasPreparedDownload = function(silverpeasPreparedDownloadConfig) {
+    if (!(silverpeasPreparedDownloadConfig instanceof SilverpeasPreparedDownloadConfig)) {
+      sp.log.error("silverpeasPreparedDownload function need an instance of SilverpeasPreparedDownloadConfig as first parameter.");
+      return;
+    }
+    let $window;
+    if (window.top.jQuery && window.top.jQuery.progressMessage) {
+      window.top.jQuery.progressMessage();
+      $window = window.top;
+    } else if (window.jQuery && window.jQuery.progressMessage) {
+      window.jQuery.progressMessage();
+      $window = window;
+    }
+    return silverpeasPreparedDownloadConfig.sendAndPromiseJsonResponse().then(function(response) {
+      try {
+        let preparedDownloadUrl = response.preparedDownloadUrl;
+        if (!preparedDownloadUrl) {
+          sp.log.error("Prepared Download", "no prepared download has been processed");
+        }
+        sp.navRequest(preparedDownloadUrl).go();
+      } finally {
+        if ($window) {
+          setTimeout(function() {
+            $window.jQuery.closeProgressMessage();
+          }, 250)
+        }
+      }
+    });
   };
 }
 
@@ -1013,32 +1029,53 @@ if (!window.SilverpeasContributionIdentifier) {
 }
 
 if(typeof window.whenSilverpeasReady === 'undefined') {
-  var whenSilverpeasReadyPromise = false;
+
+  /**
+   * The given callback is called after the document has finished loading and the document has been
+   * parsed but sub-resources such as images, stylesheets and frames are still loading.
+   * @param callback an optional callback
+   * @returns {*|Promise} a promise including if any the execution of given callback on promise
+   *     resolving.
+   */
   window.whenSilverpeasReady = function(callback) {
-    if (!whenSilverpeasReadyPromise) {
-      whenSilverpeasReadyPromise = Promise.resolve();
+    var deferred = sp.promise.deferred();
+    if (typeof callback === 'function') {
+      deferred.promise.then(callback);
     }
-    if (window.bindPolyfillDone) {
-      jQuery(document).ready(function() {
-        whenSilverpeasReadyPromise.then(function() {
-          callback.call(this)
-        }.bind(this));
-      }.bind(this));
+    if (document.readyState !== 'interactive' &&
+        document.readyState !== 'loaded' &&
+        document.readyState !== 'complete') {
+      document.addEventListener('DOMContentLoaded', function() {
+        deferred.resolve();
+      });
     } else {
-      if (document.readyState !== 'interactive' &&
-          document.readyState !== 'loaded' &&
-          document.readyState !== 'complete') {
-        document.addEventListener('DOMContentLoaded', function() {
-          whenSilverpeasReadyPromise.then(function() {
-            callback.call(this)
-          }.bind(this));
-        }.bind(this));
-      } else {
-        whenSilverpeasReadyPromise.then(function() {
-          callback.call(this)
-        }.bind(this));
-      }
+      deferred.resolve();
     }
+    return deferred.promise;
+  };
+
+  /**
+   * The given callback is called after the document and all sub-resources have finished loading.
+   * The state indicates that the load event is about to fire.
+   * @param callback an optional callback
+   * @returns {*|Promise} a promise including if any the execution of given callback on promise
+   *     resolving.
+   */
+  window.whenSilverpeasEntirelyLoaded = function(callback) {
+    var deferred = sp.promise.deferred();
+    if (typeof callback === 'function') {
+      deferred.promise.then(callback);
+    }
+    if (document.readyState !== 'complete') {
+      document.addEventListener('readystatechange', function() {
+        if (document.readyState === 'complete') {
+          deferred.resolve();
+        }
+      });
+    } else {
+      deferred.resolve();
+    }
+    return deferred.promise;
   };
 
   /**
@@ -1144,42 +1181,45 @@ if (typeof window.sp === 'undefined') {
       warningActivated : true,
       errorActivated : true,
       debugActivated : false,
-      formatMessage : function() {
-        var message = "";
-        for (var i = 0; i < arguments.length; i++) {
-          var item = arguments[i];
-          if (typeof item === 'object') {
-            item = JSON.stringify(item);
+      formatMessage : function(levelPrefix, messages) {
+        try {
+          var message = levelPrefix + " -";
+          for (var i = 0; i < messages.length; i++) {
+            var item = messages[i];
+            if (typeof item === 'object') {
+              item = JSON.stringify(item);
+            }
+            message += ' ' + item;
           }
-          if (i > 0) {
-            message += " ";
-          }
-          message += item;
+          return message;
+        } catch (ignore) {
         }
-        return message;
+        var safeMessage = [levelPrefix];
+        Array.prototype.push.apply(safeMessage, messages);
+        return safeMessage;
       },
       info : function() {
         if (sp.log.infoActivated) {
           console &&
-          console.info('SP - INFO - ' + sp.log.formatMessage.apply(sp.log, arguments));
+          console.info(sp.log.formatMessage('SP - INFO', arguments));
         }
       },
       warning : function() {
         if (sp.log.warningActivated) {
           console &&
-          console.warn('SP - WARNING - ' + sp.log.formatMessage.apply(sp.log, arguments));
+          console.warn(sp.log.formatMessage('SP - WARNING', arguments));
         }
       },
       error : function() {
         if (sp.log.errorActivated) {
           console &&
-          console.error('SP - ERROR - ' + sp.log.formatMessage.apply(sp.log, arguments));
+          console.error(sp.log.formatMessage('SP - ERROR', arguments));
         }
       },
       debug : function() {
         if (sp.log.debugActivated) {
           console &&
-          console.log('SP - DEBUG - ' + sp.log.formatMessage.apply(sp.log, arguments));
+          console.log(sp.log.formatMessage('SP - DEBUG', arguments));
         }
       }
     },
@@ -1475,6 +1515,9 @@ if (typeof window.sp === 'undefined') {
     },
     navRequest : function(url) {
       return new SilverpeasNavConfig(url);
+    },
+    preparedDownloadRequest : function(url) {
+      return new SilverpeasPreparedDownloadConfig(url);
     },
     ajaxRequest : function(url) {
       return new SilverpeasAjaxConfig(url);
@@ -1961,8 +2004,7 @@ if (typeof window.sp === 'undefined') {
               explodedUrl.parameters['ArrayPaneAjaxExport'] = true;
               __ajaxRequest(sp.url.formatFromExploded(explodedUrl), {
                 success : function() {
-                  sp.navRequest(url).go();
-                  window.top.spProgressMessage.hide();
+                  sp.preparedDownloadRequest(url).download();
                 }
               });
             }, false);

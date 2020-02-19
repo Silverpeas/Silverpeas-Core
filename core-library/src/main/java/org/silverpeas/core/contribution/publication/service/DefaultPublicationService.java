@@ -93,6 +93,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
+import static java.util.Comparator.comparing;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 
@@ -1049,11 +1050,13 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       final PublicationDetail pubDetail) {
     // set path(s) to publication into the index
     if (!pubDetail.getPK().getInstanceId().startsWith("kmax")) {
-      final List<String> mainLocation = new ArrayList<>();
-      getMainLocation(pubDetail.getPK())
+      final List<String> mainLocations = getAllLocations(pubDetail.getPK()).stream()
+          .filter(l -> !l.isAlias())
+          .sorted(comparing((Location l) -> !l.getInstanceId().equals(pubDetail.getInstanceId()))
+          .thenComparing(Location::getInstanceId))
           .map(l -> nodeService.getDetail(l).getFullPath())
-          .ifPresent(mainLocation::add);
-      indexEntry.setPaths(mainLocation.isEmpty() ? null : mainLocation);
+          .collect(Collectors.toList());
+      indexEntry.setPaths(mainLocations.isEmpty() ? null : mainLocations);
     }
   }
 

@@ -159,7 +159,7 @@ public final class Mutable<T> {
     if (!isPresent()) {
       return this;
     } else {
-      return predicate.test(value) ? this : new Mutable<T>();
+      return predicate.test(value) ? this : new Mutable<>();
     }
   }
 

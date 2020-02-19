@@ -300,15 +300,19 @@ function _spWindow_getSilverpeasMainWindow() {
 
   var __loadContent = function(url, options) {
     if (__spWindowContext.queue.exists()) {
-      __spWindowContext.queue.push(function() {
-        __logDebug("load content with URL " + url);
-        __navigationDisplayManagement(options);
-        spLayout.getBody().getContent().load(url);
+      return new Promise(function(resolve) {
+        __spWindowContext.queue.push(function() {
+          __logDebug("load content with URL " + url);
+          __navigationDisplayManagement(options);
+          spLayout.getBody().getContent().load(url).then(function() {
+            resolve();
+          });
+        });
       });
     } else {
       __logDebug("load content with URL " + url);
       __navigationDisplayManagement(options);
-      spLayout.getBody().getContent().load(url);
+      return spLayout.getBody().getContent().load(url);
     }
   };
 

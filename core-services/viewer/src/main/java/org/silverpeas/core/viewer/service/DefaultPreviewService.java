@@ -24,11 +24,12 @@
 package org.silverpeas.core.viewer.service;
 
 import org.silverpeas.core.contribution.converter.DocumentFormat;
-import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
+import org.silverpeas.core.contribution.converter.ToPDFConverter;
 import org.silverpeas.core.contribution.converter.option.SinglePageSelection;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.ImageToolDirective;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
+import org.silverpeas.core.io.media.image.option.OrientationOption;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.PdfUtil;
@@ -43,6 +44,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.apache.commons.io.FileUtils.deleteQuietly;
+import static org.silverpeas.core.util.CollectionUtil.asSet;
 import static org.silverpeas.core.util.ImageUtil.*;
 import static org.silverpeas.core.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
 import static org.silverpeas.core.viewer.model.ViewerSettings.*;
@@ -57,14 +59,9 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
 
   // Extension of pdf document file
   private static final Set<String> imageMimeTypePreviewable = new HashSet<>();
-  static {
-    for (final String imageExtension : new String[] { BMP_IMAGE_EXTENSION, GIF_IMAGE_EXTENSION,
-        JPG_IMAGE_EXTENSION, PCD_IMAGE_EXTENSION, PNG_IMAGE_EXTENSION, TGA_IMAGE_EXTENSION,
-        TIF_IMAGE_EXTENSION }) {
-      imageMimeTypePreviewable.add(FileUtil.getMimeType("file." + imageExtension));
-    }
-    imageMimeTypePreviewable.remove(MimeTypes.DEFAULT_MIME_TYPE);
-  }
+
+  @Inject
+  private ToPDFConverter toPDFConverter;
 
   @Inject
   private ImageTool imageTool;
@@ -75,11 +72,11 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
    */
   @Override
   public boolean isPreviewable(final File file) {
-    final String fileName = file.getPath();
+    final String filePath = file.getPath();
     if (imageTool.isActivated() && file.exists()) {
-      final String mimeType = FileUtil.getMimeType(fileName);
-      return imageMimeTypePreviewable.contains(mimeType) || FileUtil.isPdf(fileName) ||
-          FileUtil.isOpenOfficeCompatible(fileName) || PLAIN_TEXT_MIME_TYPE.equals(mimeType);
+      final String mimeType = FileUtil.getMimeType(filePath);
+      return imageMimeTypePreviewable.contains(mimeType) || FileUtil.isPdf(filePath) ||
+          toPDFConverter.isDocumentSupported(filePath) || PLAIN_TEXT_MIME_TYPE.equals(mimeType);
     }
     return false;
   }
@@ -105,7 +102,7 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
         // If the document is an Open Office one
         // 1 - converting it into PDF document
         // 2 - converting the previous result into PNG image
-        if (FileUtil.isOpenOfficeCompatible(viewerContext.getOriginalSourceFile().getName())) {
+        if (toPDFConverter.isDocumentSupported(viewerContext.getOriginalSourceFile().getPath())) {
           final File pdfFile = toPdf(viewerContext.getOriginalSourceFile(),
               generateTmpFile(viewerContext, PDF_DOCUMENT_EXTENSION));
           resultFile = toImage(pdfFile, changeFileExtension(pdfFile, PNG_IMAGE_EXTENSION));
@@ -150,8 +147,7 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
    * @return
    */
   private File toPdf(final File source, final File destination) {
-    DocumentFormatConverterProvider.getToPDFConverter()
-        .convert(source, destination, DocumentFormat.pdf, new SinglePageSelection(1));
+    toPDFConverter.convert(source, destination, DocumentFormat.pdf, new SinglePageSelection(1));
     return destination;
   }
 
@@ -169,12 +165,22 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
       deleteSource = !source.equals(destination);
     }
     imageTool.convert(source, destination,
-        DimensionOption.widthAndHeight(getPreviewMaxWidth(), getPreviewMaxHeight()),
+        asSet(DimensionOption.widthAndHeight(getPreviewMaxWidth(), getPreviewMaxHeight()),
+              OrientationOption.auto()),
         ImageToolDirective.PREVIEW_WORK, ImageToolDirective.GEOMETRY_SHRINK,
         ImageToolDirective.FIRST_PAGE_ONLY);
     if (deleteSource) {
       deleteQuietly(source);
     }
     return destination;
+  }
+
+  static {
+    for (final String imageExtension : new String[] { BMP_IMAGE_EXTENSION, GIF_IMAGE_EXTENSION,
+        JPG_IMAGE_EXTENSION, PCD_IMAGE_EXTENSION, PNG_IMAGE_EXTENSION, TGA_IMAGE_EXTENSION,
+        TIF_IMAGE_EXTENSION }) {
+      imageMimeTypePreviewable.add(FileUtil.getMimeType("file." + imageExtension));
+    }
+    imageMimeTypePreviewable.remove(MimeTypes.DEFAULT_MIME_TYPE);
   }
 }

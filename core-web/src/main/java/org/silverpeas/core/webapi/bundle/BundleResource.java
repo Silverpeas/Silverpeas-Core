@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.bundle;
 
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -266,9 +266,13 @@ public class BundleResource extends RESTWebService {
    * @return the language of the user or the default language.
    */
   private String getLanguage() {
-    String language = I18NHelper.defaultLanguage;
+    final String language;
     if (getUser() != null) {
       language = getUserPreferences().getLanguage();
+    } else if (getHttpRequest().getLocale() != null) {
+      language = DisplayI18NHelper.verifyLanguage(getHttpRequest().getLocale().getLanguage());
+    } else {
+      language = DisplayI18NHelper.getDefaultLanguage();
     }
     return language;
   }

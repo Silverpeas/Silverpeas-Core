@@ -23,25 +23,36 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ page isELIgnored="false"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ page isELIgnored="false" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<view:setBundle basename="org.silverpeas.sharing.multilang.fileSharingBundle"/>
-<view:setBundle basename="org.silverpeas.sharing.settings.fileSharingIcons" var="icons" />
-<html>
-<head>
-<style type="text/css">
-td { font-family: "Verdana", "Arial", sans-serif; font-size: 10px}
-</style>
-</head>
-<c:set var="attachment" value="${requestScope.attAttachment}" />
-<body>
-<fieldset style="align:center;">
-   <fmt:message key="sharing.expiredTicket" />
-</fieldset>
-</body>
-</html>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<view:sp-page>
+  <fmt:setLocale value="${requestScope.userLanguage}"/>
+  <view:setBundle basename="org.silverpeas.sharing.multilang.fileSharingBundle"/>
+  <view:setBundle basename="org.silverpeas.sharing.settings.fileSharingIcons" var="icons"/>
+  <view:sp-head-part noLookAndFeel="true">
+    <style type="text/css">
+      td {
+        font-family: "Verdana", "Arial", sans-serif;
+        font-size: 10px
+      }
+      fieldset {
+        vertical-align: middle;
+        text-align: center;
+      }
+      legend {
+        display: none;
+      }
+    </style>
+  </view:sp-head-part>
+  <view:sp-body-part>
+    <fieldset>
+      <fmt:message key="sharing.expiredTicket"/>
+      <legend></legend>
+    </fieldset>
+  </view:sp-body-part>
+</view:sp-page>

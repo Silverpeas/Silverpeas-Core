@@ -175,8 +175,7 @@ public abstract class AbstractWindow implements Window {
     return ArrayUtil.contains(profiles, SilverpeasRole.admin.getName()) ||
         ArrayUtil.contains(profiles, SilverpeasRole.supervisor.getName()) ||
         ArrayUtil.contains(profiles, "Administrator") ||
-        ArrayUtil.contains(profiles, "Admin") ||
-        (componentId.startsWith("webPages") && ArrayUtil.contains(profiles, SilverpeasRole.publisher.getName()));
+        ArrayUtil.contains(profiles, "Admin");
   }
 
   @Override

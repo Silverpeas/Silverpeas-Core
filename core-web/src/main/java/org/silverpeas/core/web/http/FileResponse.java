@@ -45,6 +45,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,15 +59,19 @@ import static org.silverpeas.core.util.StringUtil.*;
  */
 public abstract class FileResponse {
 
+  public static final String DOWNLOAD_CONTEXT_PARAM = "downloadContext";
   private static final int MAX_PATH_LENGTH_IN_LOGS = 100;
   private static final int BUFFER_LENGTH = 1024 * 16;
   private static final Pattern RANGE_PATTERN = Pattern.compile("bytes=(?<start>\\d*)-(?<end>\\d*)");
-  private static final long EXPIRE_TIME = 1000 * 60 * 60 * 24l;
+  private static final long EXPIRE_TIME = 1000 * 60 * 60 * 24L;
 
   final HttpServletResponse response;
   private final HttpServletRequest request;
 
   String forcedMimeType;
+  private String forcedCharacterEncoding;
+  private String forcedFileName;
+  private boolean noCache = false;
   private String forcedFileId;
 
   /**
@@ -124,6 +129,20 @@ public abstract class FileResponse {
   }
 
   /**
+   * Indicates a download context if any set into request.
+   * @return true if download context, false otherwise.
+   */
+  boolean isDownloadContext() {
+    final String parameter = Optional.ofNullable(request.getParameter(DOWNLOAD_CONTEXT_PARAM))
+        .filter(StringUtil::isDefined)
+        .orElseGet(() -> {
+          final Object attribute = request.getAttribute(DOWNLOAD_CONTEXT_PARAM);
+          return attribute == null ? "false" : attribute.toString();
+        });
+    return StringUtil.getBooleanValue(parameter);
+  }
+
+  /**
    * Gets mime type.
    * @param absoluteFilePath the absolute file path.
    * @return the mime type.
@@ -141,6 +160,23 @@ public abstract class FileResponse {
   }
 
   /**
+   * Gets file name.
+   * @param absoluteFilePath the absolute file path.
+   * @return the file name.
+   */
+  String getFileName(final Path absoluteFilePath) {
+    String fileName = request.getParameter("forceFileName");
+    if (isNotDefined(fileName)) {
+      if (isDefined(forcedFileName)) {
+        fileName = forcedFileName;
+      } else {
+        fileName = absoluteFilePath.getFileName().toString();
+      }
+    }
+    return fileName;
+  }
+
+  /**
    * Forces the file identifier.<br>
    * If not forced, the absolute path of the file into Base64 is
    * computed.
@@ -149,6 +185,19 @@ public abstract class FileResponse {
    */
   public FileResponse forceFileId(final String fileId) {
     this.forcedFileId = fileId;
+    return this;
+  }
+
+  /**
+   * Forces the file name into the response.<br>
+   * If not forced, the file name is computed from the file itself.<br>
+   * Even if a file name has been forced, if the request contains into headers a valuated
+   * {@code forceFileName} parameter, the file name from the request is taken into account.
+   * @param fileName the file name to set.
+   * @return itself.
+   */
+  public FileResponse forceFileName(final String fileName) {
+    this.forcedFileName = fileName;
     return this;
   }
 
@@ -166,13 +215,32 @@ public abstract class FileResponse {
   }
 
   /**
+   * Forces the character encoding of the response.
+   * @param forcedCharacterEncoding the character encoding to set.
+   * @return itself.
+   */
+  public FileResponse forceCharacterEncoding(final String forcedCharacterEncoding) {
+    this.forcedCharacterEncoding = forcedCharacterEncoding;
+    return this;
+  }
+
+  /**
+   * Sets into response that no cache MUST be handled.
+   * @return itself.
+   */
+  public FileResponse noCache() {
+    this.noCache = true;
+    return this;
+  }
+
+  /**
    * Fills partially the output response.
    * @param path the path of the file.
    * @param partialData the partial data.
    * @param output the output stream to write into.
    */
   void partialOutputStream(final Path path, final ContentRangeData partialData,
-      final OutputStream output) throws IOException {
+      final OutputStream output) {
     SilverLogger.getLogger(this).debug("{0} - start at {1} - end at {2} - partLength {3}",
         StringUtil.abbreviate(path.toString(), path.toString().length(), MAX_PATH_LENGTH_IN_LOGS),
         partialData.start, partialData.end, partialData.partContentLength);
@@ -203,6 +271,14 @@ public abstract class FileResponse {
    * @param output the output stream to write into.
    */
   void fullOutputStream(final Path path, final OutputStream output) {
+    if (noCache) {
+      response.setHeader("Cache-Control", "no-store");
+      response.setHeader("Pragma", "no-cache");
+      response.setDateHeader("Expires", -1);
+    }
+    if (isDefined(forcedCharacterEncoding)) {
+      response.setCharacterEncoding(forcedCharacterEncoding);
+    }
     try (final InputStream stream = FileUtils.openInputStream(path.toFile())) {
       IOUtils.copy(stream, output);
     } catch (IOException e) {

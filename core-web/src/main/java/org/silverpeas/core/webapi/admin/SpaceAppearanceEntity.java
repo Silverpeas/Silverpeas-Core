@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 
+import static org.silverpeas.core.web.SilverpeasWebResource.getBasePathBuilder;
 import static org.silverpeas.core.webapi.admin.AdminResourceURIs.SPACES_BASE_URI;
 
 /**
@@ -152,9 +153,7 @@ public class SpaceAppearanceEntity extends AbstractTypeEntity {
    * @return
    */
   protected String getStringBaseURI() {
-    return getURI().toString().replaceFirst(
-        SPACES_BASE_URI + "/[0-9]+/" + AdminResourceURIs.SPACES_APPEARANCE_URI_PART,
-        SPACES_BASE_URI);
+    return getBasePathBuilder().path(SPACES_BASE_URI).build().toString();
   }
 
   @Override

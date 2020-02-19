@@ -51,15 +51,11 @@
   }
 %>
 <view:setBundle basename="org.silverpeas.authentication.multilang.authentication"/>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title><fmt:message key="GML.popupTitle"/></title>
+<view:sp-page>
+<view:sp-head-part minimalSilverpeasScriptEnv="true">
   <link rel="icon" href="<%=favicon%>" />
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
-  <view:includePlugin name="jquery"/>
-  <view:includePlugin name="tkn"/>
+  <view:includePlugin name="virtualkeyboard"/>
   <script type="text/javascript">
     // Public domain cookie code written by:
     // Bill Dortch, hIdaho Design
@@ -137,30 +133,38 @@
     });
   </script>
   <meta name="viewport" content="initial-scale=1.0"/>
-</head>
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
 <form id="formLogin" action="<c:url value="/AuthenticationServlet" />" method="post" accept-charset="UTF-8">
-  <% if (newRegistrationActive || facebookEnabled || linkedInEnabled) { %>
+  <% if (registrationPartActive || virtualKeyboardActive) { %>
   <div id="top">
-    <fmt:message key="authentication.logon.newRegistration.tease"/>
-    <% if (newRegistrationActive) { %>
-    <a href="javascript:newRegistration()"><fmt:message key="authentication.logon.newRegistration.create"/></a>
-    <% } %>
-    <% if (facebookEnabled || linkedInEnabled) {
-      if (newRegistrationActive) { %>
-    <fmt:message key="GML.or"/>
-    <% } %>
-    <fmt:message key="authentication.logon.newRegistration.connect"/>
-    <% if (linkedInEnabled) { %>
-    <a title="LinkedIn" href="<c:url value="/SocialNetworkLogin?networkId=LINKEDIN" />">LinkedIn</a>
-    <% } %>
-    <% if (facebookEnabled) { %>
-    <% if (linkedInEnabled) { %>
-    <fmt:message key="GML.or"/>
-    <% } %>
-    <a title="Facebook" href="<c:url value="/SocialNetworkLogin?networkId=FACEBOOK" />">Facebook</a>
-    <% } %>
-    <% } %>
+    <c:if test="<%=registrationPartActive%>">
+      <fmt:message key="authentication.logon.newRegistration.tease"/>
+      <c:if test="<%=newRegistrationActive%>">
+        <a href="javascript:newRegistration()"><fmt:message key="authentication.logon.newRegistration.create"/></a>
+      </c:if>
+      <c:if test="<%=facebookEnabled || linkedInEnabled%>">
+        <c:if test="<%=newRegistrationActive%>">
+          <fmt:message key="GML.or"/>
+        </c:if>
+        <fmt:message key="authentication.logon.newRegistration.connect"/>
+        <c:if test="<%=linkedInEnabled%>">
+          <a title="LinkedIn" href="<c:url value="/SocialNetworkLogin?networkId=LINKEDIN" />">LinkedIn</a>
+        </c:if>
+        <c:if test="<%=facebookEnabled%>">
+          <c:if test="<%=linkedInEnabled%>">
+            <fmt:message key="GML.or"/>
+          </c:if>
+          <a title="Facebook" href="<c:url value="/SocialNetworkLogin?networkId=FACEBOOK" />">Facebook</a>
+        </c:if>
+      </c:if>
+    </c:if>
+    <c:if test="<%=virtualKeyboardActive%>">
+      <c:if test="<%=registrationPartActive%>">
+        <span> | </span>
+      </c:if>
+      <span class="silverpeas-keyboard-activation-dock"></span>
+    </c:if>
   </div>
   <% } %>
   <% if (facebookEnabled || linkedInEnabled) {%>
@@ -289,5 +293,5 @@
   document.getElementById("formLogin").Login.focus();
 </script>
 
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

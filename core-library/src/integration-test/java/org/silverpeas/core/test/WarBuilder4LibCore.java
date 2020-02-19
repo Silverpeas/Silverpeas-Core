@@ -78,6 +78,9 @@ import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.calendar.repository.DefaultCalendarEventOccurrenceRepository;
 import org.silverpeas.core.calendar.repository.DefaultCalendarEventRepository;
 import org.silverpeas.core.calendar.repository.DefaultCalendarRepository;
+import org.silverpeas.core.contribution.ContributionVisibility;
+import org.silverpeas.core.contribution.ContributionWithVisibility;
+import org.silverpeas.core.contribution.DefaultContributionVisibility;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -424,6 +427,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addFileRepositoryFeatures();
     addSynchAndAsynchResourceEventFeatures();
     addPublicationTemplateFeatures();
+    addImageToolFeatures();
     addMavenDependencies("org.silverpeas.jcr:access-control");
     addMavenDependencies("commons-beanutils:commons-beanutils");
     if (!contains(JcrRepositoryProvider.class)) {
@@ -492,6 +496,10 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war builder.
    */
   public WarBuilder4LibCore addSecurityFeatures() {
+    if (!contains(ContributionWithVisibility.class)) {
+      addClasses(ContributionWithVisibility.class, ContributionVisibility.class,
+          DefaultContributionVisibility.class);
+    }
     addPackages(true, "org.silverpeas.core.node");
     addPackages(true, "org.silverpeas.core.contribution.publication.service");
     addPackages(true, "org.silverpeas.core.contribution.publication.model");

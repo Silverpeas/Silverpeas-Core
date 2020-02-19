@@ -815,19 +815,27 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
   }
 
-  public QueryDescription buildSimpleQuery(String query) {
+  public QueryDescription buildSimpleQuery(String query, final boolean globalSearch) {
+    if (globalSearch) {
+      setCurrentDirectory(DIRECTORY_DEFAULT);
+    }
     QueryDescription queryDescription = new QueryDescription(query);
-    queryDescription.addComponent("users");
-    for (String appId : getContactComponentIds()) {
-      queryDescription.addComponent(appId);
+    queryDescription.setSearchingUser(getUserId());
+    if (getCurrentDirectory() == DIRECTORY_COMPONENT) {
+      queryDescription.addComponent(getCurrentComponent().getId());
+    } else {
+      queryDescription.addComponent("users");
+      for (String appId : getContactComponentIds()) {
+        queryDescription.addComponent(appId);
+      }
     }
     setCurrentQuery(query);
     return queryDescription;
   }
 
-  public QueryDescription buildQuery(List<FileItem> items) {
+  public QueryDescription buildQuery(List<FileItem> items, final boolean globalSearch) {
     String query = FileUploadUtil.getParameter(items, "key");
-    QueryDescription queryDescription = buildSimpleQuery(query);
+    QueryDescription queryDescription = buildSimpleQuery(query, globalSearch);
     saveExtraRequest(items);
     buildExtraQuery(queryDescription, items);
     return queryDescription;

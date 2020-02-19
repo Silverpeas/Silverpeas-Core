@@ -39,6 +39,7 @@ import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.SelectionType.USER;
 import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.withContainerId;
@@ -67,10 +68,11 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
   static void produceMandatoryCheck(final PrintWriter out, final FieldTemplate template,
       final PagesContext pagesContext) {
     final String language = pagesContext.getLanguage();
+    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("      errorMsg+=\"  - '"
-          + WebEncodeHelper.javaStringToJsString(template.getLabel(language))
+          + label
           + "' " + Util.getString("GML.MustBeFilled", language)
           + "\\n\";");
       out.println("      errorNb++;");
@@ -119,7 +121,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
     final String selectUserLab = Util.getString("userPanel", language);
     final String deleteUserLab = Util.getString("clearUser", language);
     final String fieldName = template.getFieldName();
-    final String rootContainerId = "select-user-group-" + fieldName;
+    final String rootContainerId = "select-user-group-" + fieldName + UUID.randomUUID();
     final String userId = field.getTypeName().equals(UserField.TYPE) ? field.getUserId() : "";
 
     final UserGroupSelectProducer selectUser = withContainerId(rootContainerId)

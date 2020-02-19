@@ -63,6 +63,7 @@ public class ValidationQuestionHandler extends FunctionHandler {
       getAdminService().updateUser(userDetail);
 
       if (getGeneral().getBoolean("userLoginForcePasswordChange", false)) {
+        request.setAttribute("userLanguage", userDetail.getUserPreferences().getLanguage());
         return getGeneral().getString("userLoginForcePasswordChangePage");
       }
       return sessionOpenener.openSession((HttpRequest) request, key);

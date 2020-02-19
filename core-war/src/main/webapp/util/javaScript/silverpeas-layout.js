@@ -168,6 +168,9 @@
     },
     getLastStartLoadTime : function() {
       return this.lastStartLoadTime;
+    },
+    forceDisplayUpdate : function() {
+      this.getMainLayout().getBody().resize();
     }
   });
 
@@ -203,6 +206,10 @@
           this.getMainLayout().getHeader().getContainer().offsetHeight;
       if (PDC_ACTIVATED) {
         bodyLayoutHeight -= this.getMainLayout().getFooter().getContainer().offsetHeight;
+      }
+      var bottomCustomContainer = this.getMainLayout().getCustomFooter(false);
+      if (bottomCustomContainer) {
+        bodyLayoutHeight -= bottomCustomContainer.getContainer().offsetHeight;
       }
       this.getContainer().style.height = bodyLayoutHeight + 'px';
       if (this.rootLayout) {
@@ -313,7 +320,7 @@
         icon.src = "icons/silverpeasV5/reductTopBar.gif";
       }
       icon.blur();
-      this.getMainLayout().getBody().resize();
+      this.forceDisplayUpdate();
     },
     toggleNavigation : function() {
       var icon = this.navigationToggle.querySelector('img');
@@ -325,7 +332,7 @@
         icon.src = "icons/silverpeasV5/reduct.gif";
       }
       icon.blur();
-      this.getMainLayout().getBody().resize();
+      this.forceDisplayUpdate();
     },
     addEventListener : function(eventName, listener, listenerId) {
       switch (eventName) {
@@ -488,7 +495,7 @@
       if (PDC_ACTIVATED){
         __logDebug("hiding PDC part");
         this.getMainLayout().getFooter().hide();
-        this.getMainLayout().getBody().resize();
+        this.forceDisplayUpdate();
         this.dispatchEvent("pdchide");
       }
     },
@@ -496,7 +503,7 @@
       if (PDC_ACTIVATED){
         __logDebug("showing PDC part");
         this.getMainLayout().getFooter().show();
-        this.getMainLayout().getBody().resize();
+        this.forceDisplayUpdate();
         this.dispatchEvent("pdcshow");
       }
     },
@@ -636,6 +643,80 @@
     }
   });
 
+  // Custom Part Container
+  var CustomPartContainer = Part.extend({
+    initialize : function(mainLayout, partSelector, name) {
+      this.name = name;
+      this.customParts = [];
+      this._super(mainLayout, partSelector);
+    },
+    newCustomPart : function(id) {
+      var customPart = new CustomPart(this.getMainLayout(), this, id);
+      this.customParts.push(customPart);
+      return customPart;
+    },
+    showAll : function(options) {
+      this.customParts.forEach(function(customPart) {
+        customPart.show(options);
+      })
+    },
+    hideAll : function(options) {
+      this.customParts.forEach(function(customPart) {
+        customPart.hide(options);
+      })
+    },
+    show : function(options) {
+      this._super(options);
+    },
+    hide : function(options) {
+      var mustBeHidden = this.customParts.filter(function(customPart) {
+        return customPart.isShown();
+      }).length === 0;
+      if (mustBeHidden) {
+        this._super(options);
+      }
+    }
+  });
+
+  // Custom Footer Part Container
+  var CustomFooterPartContainer = CustomPartContainer.extend({
+    initialize : function(mainLayout) {
+      var customFooter = document.createElement('div');
+      var id = 'sp-layout-custom-footer-part-container';
+      customFooter.id = id;
+      customFooter.style.display = 'none';
+      var referenceNode = mainLayout.getFooter().getContainer();
+      referenceNode.parentNode.insertBefore(customFooter, referenceNode.nextSibling);
+      this._super(mainLayout, '#' + id, 'customFooter');
+    }
+  });
+
+  // Custom Part
+  var CustomPart = Part.extend({
+    initialize : function(mainLayout, mainCustomPart, id) {
+      this.name = id;
+      this.mainCustomPart = mainCustomPart;
+      var customPartContainer = document.createElement('div');
+      var className = 'sp-layout-custom-part';
+      var finalId = className + '-' + id;
+      customPartContainer.id = finalId;
+      customPartContainer.classList.add(className);
+      customPartContainer.style.display = 'none';
+      mainCustomPart.getContainer().appendChild(customPartContainer);
+      this._super(mainLayout, '#' + finalId);
+    },
+    show : function(options) {
+      this.mainCustomPart.show();
+      this._super(options);
+      this.forceDisplayUpdate();
+    },
+    hide : function(options) {
+      this._super(options);
+      this.mainCustomPart.hide();
+      this.forceDisplayUpdate();
+    }
+  });
+
   /**
    * Handling the rendering of the Silverpeas's layout.
    * @constructor
@@ -646,6 +727,7 @@
     var bodyPart = new BodyPart(this, partSelectors);
     var footerPart = new FooterPart(this, partSelectors.footer);
     var splashContentUrlPart = new SplashContentUrlPart(this);
+    var customFooterPartContainer = '';
 
     this.getHeader = function() {
       return headerPart;
@@ -658,6 +740,13 @@
     };
     this.getSplash = function() {
       return splashContentUrlPart;
+    };
+    this.getCustomFooter = function(createIfNotExists) {
+      var __createIfNotExists = typeof createIfNotExists === 'undefined' ? true : createIfNotExists;
+      if (__createIfNotExists && !customFooterPartContainer) {
+        customFooterPartContainer = new CustomFooterPartContainer(this);
+      }
+      return customFooterPartContainer;
     };
     this.isWindowTop = function(win) {
       return this.getWindowTopFrom(win).window === win;

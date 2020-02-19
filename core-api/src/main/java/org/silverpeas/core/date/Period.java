@@ -28,6 +28,7 @@ import org.silverpeas.core.annotation.constraint.DateRange;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -46,7 +47,8 @@ import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
  */
 @Embeddable
 @DateRange(start = "startDate", end = "endDate")
-public class Period {
+public class Period implements Serializable {
+  private static final long serialVersionUID = -4679172808271849961L;
 
   @Column(name = "startDate", nullable = false)
   private OffsetDateTime startDateTime;
@@ -133,10 +135,10 @@ public class Period {
 
   /**
    * Creates a new period of time between the two specified date or datetime.
-   * If date parameters are instances of {@link LocalDate}, take a look at method
-   * {@link #betweenNullable(Temporal, Temporal)} (LocalDate, LocalDate)}.
-   * If date parameters are instances of {@link OffsetDateTime}, take a look at method
-   * {@link #betweenNullable(Temporal, Temporal)} (OffsetDateTime, OffsetDateTime)}.
+   * If date parameters are instances of {@link LocalDate}, take a look at the method
+   * {@link Period#betweenNullable(LocalDate, LocalDate)}.
+   * If date parameters are instances of {@link OffsetDateTime}, take a look at the method
+   * {@link Period#betweenNullable(OffsetDateTime, OffsetDateTime)}.
    * If both date parameters are null, then a period between {@link LocalDate#MIN} and
    * {@link LocalDate#MAX} is returned unless those parameters are explicitly typed; for example:
    * {@code Period.betweenNullable((OffsetDateTime) null, null)}

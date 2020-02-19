@@ -33,7 +33,7 @@ import javax.inject.Singleton;
  * @author Yohann Chastagnier
  */
 @Singleton
-public class JdbcSqlExecutorProvider {
+class JdbcSqlExecutorProvider {
 
   @Inject
   private JdbcSqlExecutor jdbcSqlExecutor;

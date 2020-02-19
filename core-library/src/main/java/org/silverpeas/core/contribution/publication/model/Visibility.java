@@ -23,80 +23,65 @@
  */
 package org.silverpeas.core.contribution.publication.model;
 
+import org.silverpeas.core.contribution.DefaultContributionVisibility;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.DateUtil;
 
-import java.io.Serializable;
-import java.util.Calendar;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
-public class Visibility implements Serializable {
+import static java.time.OffsetDateTime.ofInstant;
 
+public class Visibility extends DefaultContributionVisibility {
   private static final long serialVersionUID = -503979000276518366L;
 
-  private boolean notYetVisible = false;
-  private boolean noMoreVisible = false;
-  private Date beginDateAndHour = null;
-  private Date endDateAndHour = null;
+  private final Date beginDateAndHour;
+  private final Date endDateAndHour;
 
-  public Visibility(Date beginDate, String beginHour, Date endDate, String endHour) {
-    Calendar calendar = Calendar.getInstance();
-    calendar.set(Calendar.SECOND, 0);
-    calendar.set(Calendar.MILLISECOND, 0);
-    Date today = calendar.getTime();
+  public static Visibility from(final PublicationDetail pub, Date beginDate, String beginHour, Date endDate, String endHour) {
+    final Date dBegin = DateUtil.getDate(beginDate, beginHour);
+    final Date dEnd = DateUtil.getDate(endDate, endHour);
+    return new Visibility(pub, dBegin, dEnd);
+  }
 
-    Date dBegin = DateUtil.getDate(beginDate, beginHour);
-    Date dEnd = DateUtil.getDate(endDate, endHour);
+  private Visibility(final PublicationDetail pub, final Date beginDateAndHour,
+      final Date endDateAndHour) {
+    super(pub, initializeSpecificPeriod(beginDateAndHour, endDateAndHour));
+    this.beginDateAndHour = beginDateAndHour;
+    this.endDateAndHour = endDateAndHour;
+  }
 
-    setBeginDateAndHour(dBegin);
-    setEndDateAndHour(dEnd);
-
-    if (dBegin != null && dBegin.after(today)) {
-      this.notYetVisible = true;
-    } else if (dEnd != null && dEnd.before(today)) {
-      this.noMoreVisible = true;
+  private static Period initializeSpecificPeriod(final Date beginDateAndHour, final Date endDateAndHour) {
+    final OffsetDateTime startDateTime = beginDateAndHour != null
+        ? ofInstant(beginDateAndHour.toInstant(), ZoneId.systemDefault())
+        : null;
+    OffsetDateTime endDateTime = endDateAndHour != null
+        ? ofInstant(endDateAndHour.toInstant(), ZoneId.systemDefault())
+        : null;
+    if (startDateTime != null && startDateTime.equals(endDateTime)) {
+      endDateTime = endDateTime.plusSeconds(1);
     }
-  }
-
-  public boolean isNoMoreVisible() {
-    return noMoreVisible;
-  }
-
-  public boolean isNotYetVisible() {
-    return notYetVisible;
+    return Period.betweenNullable(startDateTime, endDateTime);
   }
 
   public boolean isVisible() {
-    return !(notYetVisible || noMoreVisible);
+    return isActive();
   }
 
-  public Date getBeginDateAndHour() {
-    if (beginDateAndHour != null) {
-      return (Date) beginDateAndHour.clone();
-    }
-    return null;
+  boolean isNoMoreVisible() {
+    return hasBeenActive();
   }
 
-  public void setBeginDateAndHour(Date beginDateAndHour) {
-    if (beginDateAndHour != null) {
-      this.beginDateAndHour = (Date) beginDateAndHour.clone();
-    } else {
-      this.beginDateAndHour = null;
-    }
+  boolean isNotYetVisible() {
+    return willBeActive();
   }
 
-  public Date getEndDateAndHour() {
-    if (endDateAndHour != null) {
-      return (Date) endDateAndHour.clone();
-    }
-    return null;
+  Date getBeginDateAndHour() {
+    return beginDateAndHour;
   }
 
-  public void setEndDateAndHour(Date endDateAndHour) {
-    if (endDateAndHour != null) {
-      this.endDateAndHour = (Date) endDateAndHour.clone();
-    } else {
-      this.endDateAndHour = null;
-    }
+  Date getEndDateAndHour() {
+    return endDateAndHour;
   }
-
 }

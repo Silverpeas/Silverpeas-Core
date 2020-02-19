@@ -32,6 +32,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.PrintWriter;
@@ -75,14 +76,13 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer<TextField> {
    * </UL>
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
-      throws java.io.IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext) {
 
     String language = PagesContext.getLanguage();
-
+    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " + Util.getString(
+      out.println("		errorMsg+=\"  - '" + label + "' " + Util.getString(
           "GML.MustBeFilled", language) + "\\n\";");
       out.println("		errorNb++;");
       out.println("	}");

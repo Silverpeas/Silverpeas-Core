@@ -56,30 +56,52 @@ public class ServletFileResponse extends FileResponse {
 
   /**
    * Centralization of getting of silverpeas file content.
+   * <p>
+   * A download context flag is verified from parameters and attributes of the request.
+   * </p>
    * @param file the silverpeas file to send.
    */
   public void sendSilverpeasFile(final SilverpeasFile file) {
+    sendSilverpeasFile(file, isDownloadContext());
+  }
+
+  /**
+   * Centralization of getting of silverpeas file content.
+   * <p>
+   * Using directly this method means that the request downloadContext flag is ignored.
+   * </p>
+   * @param file the silverpeas file to send.
+   * @param downloadContext indicating a download context in order to specify rightly response
+   * headers.
+   */
+  public void sendSilverpeasFile(final SilverpeasFile file,
+      final boolean downloadContext) {
     if (isNotDefined(forcedMimeType)) {
       forceMimeType(file.getMimeType());
     }
-    sendPath(Paths.get(file.toURI()));
+    sendPath(Paths.get(file.toURI()), downloadContext);
   }
 
   /**
    * Centralization of getting of a file content.
    * @param path the file to send.
+   * @param downloadContext indicating a download context in order to specify rightly response
+   * headers.
    */
-  private void sendPath(final Path path) {
+  void sendPath(final Path path, final boolean downloadContext) {
     try {
-      Path absoluteFilePath = path.toAbsolutePath();
-      String fileMimeType = getMimeType(absoluteFilePath);
+      final Path absoluteFilePath = path.toAbsolutePath();
+      final String fileName = getFileName(absoluteFilePath);
+      final String fileMimeType = getMimeType(absoluteFilePath);
 
-      int fullContentLength = (int) Files.size(absoluteFilePath);
-      Matcher partialMatcher = getPartialMatcher();
-      boolean isPartialRequest = partialMatcher.matches();
+      final int fullContentLength = (int) Files.size(absoluteFilePath);
+      final Matcher partialMatcher = getPartialMatcher();
+      final boolean isPartialRequest = partialMatcher.matches();
 
       response.setContentType(fileMimeType);
-      final String filename = encodeInlineFilenameAsUtf8(absoluteFilePath.getFileName().toString());
+      final String filename = downloadContext
+          ? encodeAttachmentFilenameAsUtf8(fileName)
+          : encodeInlineFilenameAsUtf8(fileName);
       response.setHeader("Content-Disposition", filename);
       if (isPartialRequest) {
         // Handling here a partial response (pseudo streaming)
@@ -114,6 +136,24 @@ public class ServletFileResponse extends FileResponse {
   @Override
   public ServletFileResponse forceMimeType(final String mimeType) {
     super.forceMimeType(mimeType);
+    return this;
+  }
+
+  @Override
+  public ServletFileResponse forceCharacterEncoding(final String forcedCharacterEncoding) {
+    super.forceCharacterEncoding(forcedCharacterEncoding);
+    return this;
+  }
+
+  @Override
+  public ServletFileResponse forceFileName(final String fileName) {
+    super.forceFileName(fileName);
+    return this;
+  }
+
+  @Override
+  public ServletFileResponse noCache() {
+    super.noCache();
     return this;
   }
 }

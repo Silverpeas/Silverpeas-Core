@@ -43,9 +43,9 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.look.LayoutConfiguration;
 import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.core.web.util.security.SecuritySettings;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
 import org.silverpeas.core.web.util.viewgenerator.html.pdc.BaseClassificationPdCTag;
 
@@ -173,6 +173,7 @@ public class JavascriptPluginInclusion {
   private static final String TICKER_CSS = "ticker/ticker-style.css";
   private static final String HTML2CANVAS_JS = "html2canvas.min.js";
   private static final String DOWNLOAD_JS = "download.min.js";
+  private static final String VIRTUAL_KEYBOARD_PATH = getApplicationURL() + "/silverkeyboard";
 
   private static final String CHART_JS = "flot/jquery.flot.min.js";
   private static final String CHART_PIE_JS = "flot/jquery.flot.pie.min.js";
@@ -330,6 +331,16 @@ public class JavascriptPluginInclusion {
     } else {
       return new ElementContainer();
     }
+  }
+
+  public static ElementContainer includeMinimalSilverpeas(final ElementContainer xhtml) {
+    xhtml.addElement(scriptContent("window.webContext='" + getApplicationURL() + "';"));
+    includePolyfills(xhtml);
+    includeJQuery(xhtml);
+    xhtml.addElement(script(JAVASCRIPT_PATH + "/silverpeas.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "/silverpeas-i18n.js"));
+    includeSecurityTokenizing(xhtml);
+    return xhtml;
   }
 
   static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml) {
@@ -1081,6 +1092,29 @@ public class JavascriptPluginInclusion {
         .produce()));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "contribution/silverpeas-contribution-reminder.js"));
     xhtml.addElement(script(ANGULARJS_SERVICES_PATH + "contribution/silverpeas-contribution-reminder.js"));
+    return xhtml;
+  }
+
+  static ElementContainer includeVirtualKeyboard(final ElementContainer xhtml,
+      final String language) {
+    final SettingBundle generalSettings = ResourceLocator.getGeneralSettingBundle();
+    if (generalSettings.getBoolean("web.tool.virtualKeyboard", false)) {
+      final LocalizationBundle bundle = ResourceLocator.getGeneralLocalizationBundle(language);
+      xhtml.addElement(scriptContent(bundleVariableName("VirtualKeyboardBundle")
+          .add("vk.a", bundle.getString("GML.virtual.keyboard.activate"))
+          .add("vk.d", bundle.getString("GML.virtual.keyboard.deactivate"))
+          .produce()));
+      xhtml.addElement(scriptContent(settingVariableName("VirtualKeyboardSettings")
+          .add("u.l", language)
+          .produce()));
+      xhtml.addElement(link(VIRTUAL_KEYBOARD_PATH + "/vendor/css/simple-keyboard-2.27.1.min.css"));
+      xhtml.addElement(link(VIRTUAL_KEYBOARD_PATH + "/css/silverkeyboard.css"));
+      xhtml.addElement(script(VIRTUAL_KEYBOARD_PATH + "/vendor/js/simple-keyboard-2.27.1.min.js"));
+      xhtml.addElement(script(VIRTUAL_KEYBOARD_PATH + "/vendor/js/layouts/french.min.js"));
+      xhtml.addElement(script(VIRTUAL_KEYBOARD_PATH + "/vendor/js/layouts/english.min.js"));
+      xhtml.addElement(script(VIRTUAL_KEYBOARD_PATH + "/vendor/js/layouts/german.min.js"));
+      xhtml.addElement(script(VIRTUAL_KEYBOARD_PATH + "/js/silverkeyboard.js"));
+    }
     return xhtml;
   }
 

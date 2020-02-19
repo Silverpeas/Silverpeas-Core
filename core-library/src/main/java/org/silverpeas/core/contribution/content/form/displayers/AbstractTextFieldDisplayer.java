@@ -28,8 +28,8 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
+import org.silverpeas.core.util.WebEncodeHelper;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.Map;
 
 public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
-  private final static String[] MANAGED_TYPES = new String[]{TextField.TYPE};
+  private static final String[] MANAGED_TYPES = new String[]{TextField.TYPE};
 
   /**
    * Returns the name of the managed types.
@@ -49,7 +49,7 @@ public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<
   protected void addMandatoryScript(StringBuilder script, FieldTemplate template, PagesContext pageContext) {
     if (template.isMandatory() && pageContext.useMandatory()) {
       String language = pageContext.getLanguage();
-      String label = template.getLabel(language);
+      String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
       script.append("   if (isWhitespace(stripInitialWhitespace(field.value))) {\n");
       script.append("     errorMsg+=\"  - '").append(label).append("' ").
           append(Util.getString("GML.MustBeFilled", language)).append("\\n\";\n");
@@ -73,14 +73,10 @@ public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<
    * </UL>
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-      throws IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     String language = pagesContext.getLanguage();
-    String label = template.getLabel(language);
+    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
 
-    if (!template.getTypeName().equals(TextField.TYPE)) {
-
-    }
     StringBuilder script = new StringBuilder(10000);
 
     addMandatoryScript(script, template, pagesContext);

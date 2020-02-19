@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.index.search;
 
+import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -34,7 +35,6 @@ import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchCompletion;
-import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.security.authorization.ComponentAuthorization.ComponentResourceReference;
 import org.silverpeas.core.util.CollectionUtil;
@@ -157,49 +157,63 @@ public class SimpleSearchEngine implements SearchEngine {
         .collect(Collectors.toList());
     // Filtering external entries
     final boolean enableExternalSearch = pdcSettings.getBoolean("external.search.enable", false);
-    List<FilterMatchingIndexEntryItem> otherItems = filterItems.stream()
-        .filter(i -> {
-          final MatchingIndexEntry mie = i.getEntry();
-          if (enableExternalSearch && isExternalComponent(mie.getServerName())) {
-            i.processed();
-            mie.setExternalResult(true);
-            // Filter only Publication and Node data
-            final String objectType = mie.getObjectType();
-            if ("Versioning".equals(objectType) || "Publication".equals(objectType) ||
-                "Node".equals(objectType)) {
-              i.keep();
-            }
-          }
-          return !i.isProcessed();
-        })
-        .collect(Collectors.toList());
+    List<FilterMatchingIndexEntryItem> otherItems =
+        removeNonPublicationAndNonNodeExternalEntries(filterItems, enableExternalSearch);
     // Filtering by all existing implementations of ComponentAuthorization interface
     final Iterator<ComponentAuthorization> it = ComponentAuthorization.getAll().iterator();
     while (it.hasNext() && !otherItems.isEmpty()) {
       final ComponentAuthorization componentAuthorization = it.next();
-      final List<FilterMatchingIndexEntryItem> componentItems = new ArrayList<>(otherItems.size());
-      otherItems = otherItems.stream()
-          .filter(i -> {
-            final boolean relatedTo = componentAuthorization.isRelatedTo(i.getEntry().getComponent());
-            if (relatedTo) {
-              i.processed();
-              componentItems.add(i);
-            }
-            return !relatedTo;
-          })
-          .collect(Collectors.toList());
-      if (CollectionUtil.isNotEmpty(componentItems)) {
-        final AccessControlContext context = AccessControlContext.init().onOperationsOf(search);
-        componentAuthorization
-            .filter(componentItems, itemAsContributionIdentifier, userId, context)
-            .forEach(FilterMatchingIndexEntryItem::keep);
-      }
+      otherItems = checkAccessAuthorization(userId, otherItems, componentAuthorization);
     }
     // Finalizing the filtering
     return filterItems.stream()
         .filter(r -> isMatchingIndexEntryAvailable(r, userId, allowedComponentIds))
         .map(FilterMatchingIndexEntryItem::getEntry)
         .collect(Collectors.toList());
+  }
+
+  @NotNull
+  private List<FilterMatchingIndexEntryItem> checkAccessAuthorization(final String userId,
+      List<FilterMatchingIndexEntryItem> otherItems,
+      final ComponentAuthorization componentAuthorization) {
+    final List<FilterMatchingIndexEntryItem> processedItems = new ArrayList<>(otherItems.size());
+    otherItems = otherItems.stream()
+        .filter(i -> {
+          final boolean relatedTo = componentAuthorization.isRelatedTo(i.getEntry().getComponent());
+          if (relatedTo) {
+            i.processed();
+            processedItems.add(i);
+          }
+          return !relatedTo;
+        })
+        .collect(Collectors.toList());
+    if (CollectionUtil.isNotEmpty(processedItems)) {
+      componentAuthorization
+          .filter(processedItems, itemAsContributionIdentifier, userId, search)
+          .forEach(FilterMatchingIndexEntryItem::keep);
+    }
+    return otherItems;
+  }
+
+  @NotNull
+  private List<FilterMatchingIndexEntryItem> removeNonPublicationAndNonNodeExternalEntries(
+      final List<FilterMatchingIndexEntryItem> filterItems, final boolean enableExternalSearch) {
+    return filterItems.stream()
+          .filter(i -> {
+            final MatchingIndexEntry mie = i.getEntry();
+            if (enableExternalSearch && isExternalComponent(mie.getServerName())) {
+              i.processed();
+              mie.setExternalResult(true);
+              // Filter only Publication and Node data
+              final String objectType = mie.getObjectType();
+              if ("Versioning".equals(objectType) || "Publication".equals(objectType) ||
+                  "Node".equals(objectType)) {
+                i.keep();
+              }
+            }
+            return !i.isProcessed();
+          })
+          .collect(Collectors.toList());
   }
 
   private boolean isMatchingIndexEntryAvailable(final FilterMatchingIndexEntryItem item,

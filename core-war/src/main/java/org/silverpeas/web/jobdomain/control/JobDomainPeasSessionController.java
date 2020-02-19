@@ -41,15 +41,16 @@ import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.service.AdminController.Result;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.GroupAlreadyExistsAdminException;
 import org.silverpeas.core.admin.service.RightAssignationContext;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
-import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -82,6 +83,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionException;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
@@ -96,11 +98,13 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static java.util.Collections.synchronizedList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriverManagerProvider.getCurrentDomainDriverManager;
 import static org.silverpeas.core.personalization.service.PersonalizationServiceProvider.getPersonalizationService;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Class declaration
@@ -190,7 +194,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public UserDetail getTargetUserDetail() throws JobDomainPeasException {
     UserDetail valret = null;
 
-    if (StringUtil.isDefined(targetUserId)) {
+    if (isDefined(targetUserId)) {
       valret = UserDetail.getById(targetUserId);
       if (valret == null) {
         throw new JobDomainPeasException(unknown("user", targetUserId));
@@ -202,7 +206,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public UserFull getTargetUserFull() throws JobDomainPeasException {
     UserFull valret = null;
 
-    if (StringUtil.isDefined(targetUserId)) {
+    if (isDefined(targetUserId)) {
       valret = UserFull.getById(targetUserId);
       if (valret == null) {
         throw new JobDomainPeasException(unknown("user", targetUserId));
@@ -233,7 +237,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
 
     theNewUser.setId("-1");
-    if (StringUtil.isDefined(targetDomainId) && !targetDomainId.equals(Domain.MIXED_DOMAIN_ID)) {
+    if (isDefined(targetDomainId) && !targetDomainId.equals(Domain.MIXED_DOMAIN_ID)) {
       theNewUser.setDomainId(targetDomainId);
     }
     userRequestData.applyDataOnNewUser(theNewUser);
@@ -286,7 +290,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     // regroupement de l'utilisateur dans un groupe
     regroupInGroup(properties, null);
     // If group is provided, add newly created user to it
-    if (StringUtil.isDefined(userRequestData.getGroupId())) {
+    if (isDefined(userRequestData.getGroupId())) {
       adminCtrl.addUserInGroup(idRet, userRequestData.getGroupId());
     }
 
@@ -307,8 +311,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     // Add code here in order to send an email notification
     if (userRequestData.isPasswordValid() && userRequestData.isSendEmail() &&
-        StringUtil.isDefined(user.geteMail()) &&
-        StringUtil.isDefined(userRequestData.getPassword())) {
+        isDefined(user.geteMail()) &&
+        isDefined(userRequestData.getPassword())) {
 
       // Send an email notification
       Map<String, SilverpeasTemplate> templates = new HashMap<>();
@@ -347,10 +351,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     SettingBundle general =
         ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
     String loginPage = general.getString("loginPage");
-    if (!StringUtil.isDefined(loginPage)) {
+    if (!isDefined(loginPage)) {
       loginPage = "/defaultLogin.jsp";
       String domainId = user.getDomainId();
-      if (StringUtil.isDefined(domainId) && !Domain.MIXED_DOMAIN_ID.equals(domainId)) {
+      if (isDefined(domainId) && !Domain.MIXED_DOMAIN_ID.equals(domainId)) {
         loginPage += "?DomainId=" + domainId;
       }
     }
@@ -434,7 +438,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         }
       }
 
-      if (StringUtil.isDefined(nomRegroup)) {
+      if (isDefined(nomRegroup)) {
         // Recherche le groupe dans le domaine
         GroupDetail group = adminCtrl.getGroupByNameInDomain(nomRegroup, targetDomainId);
         if (group == null) {
@@ -589,7 +593,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // MotDePasse
       motDePasse = csvValues[i][5].getValueString();
       // password is not mandatory
-      if (StringUtil.isDefined(motDePasse)) {
+      if (isDefined(motDePasse)) {
         // Cheking password
         PasswordCheck passwordCheck = PasswordRulesServiceProvider.getPasswordRulesService().check(motDePasse);
         if (!passwordCheck.isCorrect()) {
@@ -804,7 +808,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       }
 
       // password is not mandatory
-      boolean passwordValid = StringUtil.isDefined(motDePasse);
+      boolean passwordValid = isDefined(motDePasse);
       UserRequestData userRequestData = new UserRequestData();
       userRequestData.setLogin(login);
       userRequestData.setLastName(nom);
@@ -858,7 +862,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         }
       }
 
-      if (StringUtil.isDefined(nomLastGroup)) {
+      if (isDefined(nomLastGroup)) {
         // Recherche le groupe dans le domaine
         Group group = adminCtrl.getGroupByNameInDomain(nomLastGroup, targetDomainId);
         if (group != null) {
@@ -945,7 +949,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       idRet = adminCtrl.updateSynchronizedUser(theModifiedUser);
     }
 
-    if (!StringUtil.isDefined(idRet)) {
+    if (!isDefined(idRet)) {
       throw new JobDomainPeasException(
           failureOnUpdate("synchronized user", userRequestData.getId()));
     }
@@ -973,7 +977,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public void restoreUser(String idUser) throws JobDomainPeasException {
     final String restoreUserId = adminCtrl.restoreUser(idUser);
-    if (!StringUtil.isDefined(restoreUserId)) {
+    if (!isDefined(restoreUserId)) {
       throw new JobDomainPeasException(failureOnRestoring("user", idUser));
     }
     refresh();
@@ -981,7 +985,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public void removeUser(String idUser) throws JobDomainPeasException {
     final String removedUserId = adminCtrl.removeUser(idUser);
-    if (!StringUtil.isDefined(removedUserId)) {
+    if (!isDefined(removedUserId)) {
       throw new JobDomainPeasException(failureOnRemoving("user", idUser));
     }
     if (targetUserId.equals(idUser)) {
@@ -1003,7 +1007,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     if (deleteUser) {
       String idRet = adminCtrl.deleteUser(idUser);
-      if (!StringUtil.isDefined(idRet)) {
+      if (!isDefined(idRet)) {
         throw new JobDomainPeasException(failureOnDeleting("user", idUser));
       }
       if (idUser.equals(targetUserId)) {
@@ -1062,7 +1066,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public void importUser(String userLogin) throws JobDomainPeasException {
     String idRet = adminCtrl.synchronizeImportUser(targetDomainId, userLogin);
-    if (!StringUtil.isDefined(idRet)) {
+    if (!isDefined(idRet)) {
       throw new JobDomainPeasException(failureOnAdding("synchronized user", userLogin));
     }
     refresh();
@@ -1097,7 +1101,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public void synchroUser(String idUser) throws JobDomainPeasException {
 
     String idRet = adminCtrl.synchronizeUser(idUser);
-    if (!StringUtil.isDefined(idRet)) {
+    if (!isDefined(idRet)) {
       throw new JobDomainPeasException(failureOnAdding("synchronize user", idUser));
     }
     refresh();
@@ -1106,7 +1110,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public void unsynchroUser(String idUser) throws JobDomainPeasException {
     String idRet = adminCtrl.synchronizeRemoveUser(idUser);
-    if (!StringUtil.isDefined(idRet)) {
+    if (!isDefined(idRet)) {
       throw new JobDomainPeasException(failureOnDeleting("synchronized user", idUser));
     }
     if (targetUserId.equals(idUser)) {
@@ -1119,7 +1123,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * GROUP functions
    */
   public void returnIntoGroup(String groupId) throws JobDomainPeasException {
-    if (!StringUtil.isDefined(groupId)) {
+    if (!isDefined(groupId)) {
       groupsPath.clear();
     } else {
       int i = groupsPath.size() - 1;
@@ -1132,7 +1136,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   private void removeGroupFromPath(String groupId) {
-    if (StringUtil.isDefined(groupId)) {
+    if (isDefined(groupId)) {
       int i = 0;
       while (i < groupsPath.size() && !groupsPath.get(i).isThisGroup(groupId)) {
         i++;
@@ -1148,7 +1152,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * @throws JobDomainPeasException
    */
   public void goIntoGroup(String groupId) throws JobDomainPeasException {
-    if (StringUtil.isDefined(groupId)) {
+    if (isDefined(groupId)) {
       if (getTargetGroup() == null
           || (getTargetGroup() != null && !getTargetGroup().getId().equals(
               groupId))) {
@@ -1253,7 +1257,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public boolean isGroupRoot(String groupId) {
     Group gr = adminCtrl.getGroupById(groupId);
-    return GroupNavigationStock.isGroupValid(gr) && this.refreshDomain && (!StringUtil.isDefined(gr.
+    return GroupNavigationStock.isGroupValid(gr) && this.refreshDomain && (!isDefined(gr.
         getSuperGroupId()) || "-1".equals(gr.getSuperGroupId()));
   }
 
@@ -1335,13 +1339,13 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     GroupDetail theNewGroup = new GroupDetail();
 
     String rule = groupRule;
-    boolean isSynchronizationToPerform = StringUtil.isDefined(groupRule);
+    boolean isSynchronizationToPerform = isDefined(groupRule);
     if (isSynchronizationToPerform) {
       rule = groupRule.trim();
     }
 
     theNewGroup.setId("-1");
-    if (StringUtil.isDefined(targetDomainId) && !Domain.MIXED_DOMAIN_ID.equals(targetDomainId)) {
+    if (isDefined(targetDomainId) && !Domain.MIXED_DOMAIN_ID.equals(targetDomainId)) {
       theNewGroup.setDomainId(targetDomainId);
     }
     theNewGroup.setSuperGroupId(idParent);
@@ -1349,7 +1353,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     theNewGroup.setDescription(groupDescription);
     theNewGroup.setRule(rule);
     String idRet = adminCtrl.addGroup(theNewGroup);
-    if (!StringUtil.isDefined(idRet)) {
+    if (!isDefined(idRet)) {
       throw new JobDomainPeasException(failureOnAdding("group", groupName));
     }
     refresh();
@@ -1361,14 +1365,12 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public boolean modifyGroup(String idGroup, String groupName,
       String groupDescription, String groupRule) throws JobDomainPeasException {
-
-
     GroupDetail theModifiedGroup = adminCtrl.getGroupById(idGroup);
     if (theModifiedGroup == null) {
       throw new JobDomainPeasException(unknown("group", idGroup));
     }
     boolean isSynchronizationToPerform =
-        StringUtil.isDefined(groupRule) && !groupRule.equalsIgnoreCase(theModifiedGroup.getRule());
+        isDefined(groupRule) && !groupRule.equalsIgnoreCase(theModifiedGroup.getRule());
     String rule = groupRule;
     if (isSynchronizationToPerform) {
       rule = rule.trim();
@@ -1378,7 +1380,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     theModifiedGroup.setRule(rule);
 
     String idRet = adminCtrl.updateGroup(theModifiedGroup);
-    if (!StringUtil.isDefined(idRet)) {
+    if (!isDefined(idRet)) {
       throw new JobDomainPeasException(failureOnUpdate("group", idGroup));
     }
     refresh();
@@ -1387,7 +1389,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public boolean updateGroupSubUsers(String idGroup, String[] userIds)
       throws JobDomainPeasException {
-
     GroupDetail theModifiedGroup = adminCtrl.getGroupById(idGroup);
     if (theModifiedGroup == null) {
       throw new JobDomainPeasException(unknown("group", idGroup));
@@ -1402,10 +1403,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public boolean deleteGroup(String idGroup) throws JobDomainPeasException {
-
-
     String idRet = adminCtrl.deleteGroupById(idGroup);
-    if (!StringUtil.isDefined(idRet)) {
+    if (!isDefined(idRet)) {
       throw new JobDomainPeasException(failureOnDeleting("group", idGroup));
     }
     removeGroupFromPath(idGroup);
@@ -1414,9 +1413,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public boolean synchroGroup(String idGroup) throws JobDomainPeasException {
-
     String synchronizationResult = adminCtrl.synchronizeGroup(idGroup);
-    if (!StringUtil.isDefined(synchronizationResult)) {
+    if (!isDefined(synchronizationResult)) {
       throw new JobDomainPeasException(failureOnAdding("synchronized group", idGroup));
     }
     if (StringUtil.isLong(synchronizationResult)) {
@@ -1440,10 +1438,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public boolean unsynchroGroup(String idGroup) throws JobDomainPeasException {
-
-
-    String idRet = adminCtrl.synchronizeRemoveGroup(idGroup);
-    if (!StringUtil.isDefined(idRet)) {
+    final String idRet = adminCtrl.synchronizeRemoveGroup(idGroup);
+    if (!isDefined(idRet)) {
       throw new JobDomainPeasException(failureOnDeleting("synchronized group", idGroup));
     }
     removeGroupFromPath(idGroup);
@@ -1451,13 +1447,15 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return true;
   }
 
-  public boolean importGroup(String groupName) throws JobDomainPeasException {
-
-
-    String idRet = adminCtrl.synchronizeImportGroup(targetDomainId,
-        groupName);
-    if (!StringUtil.isDefined(idRet)) {
-      throw new JobDomainPeasException(failureOnAdding("synchronized group", groupName));
+  public boolean importGroup(String groupName) {
+    final Result<String> result = adminCtrl.synchronizeImportGroup(targetDomainId, groupName);
+    if (result.getValue().filter(v -> !isDefined(v)).isPresent()) {
+      final String errorMessage = result.getException()
+          .filter(e -> e instanceof GroupAlreadyExistsAdminException)
+          .map(e -> getString("JDP.error.import.group.already.exists"))
+          .orElseGet(() -> getString("JDP.error.import.group.technical"));
+      WebMessager.getInstance().addError(errorMessage);
+      return false;
     }
     refresh();
     return true;
@@ -1468,14 +1466,13 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    */
   public void setDefaultTargetDomain() {
     UserDetail ud = getUserDetail();
-
     if (ud.isDomainAdminRestricted()) {
       setTargetDomain(ud.getDomainId());
     }
   }
 
   public void setTargetDomain(String domainId) {
-    if (!StringUtil.isDefined(domainId)) {
+    if (!isDefined(domainId)) {
       targetDomain = null;
       targetDomainId = "";
     } else {
@@ -1695,7 +1692,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     checkDomainUnicityOnUpdate(theNewDomain.getId(), domain.getName());
 
-    if (!StringUtil.isDefined(targetDomainId) || targetDomainId.equals(Domain.MIXED_DOMAIN_ID)) {
+    if (!isDefined(targetDomainId) || targetDomainId.equals(Domain.MIXED_DOMAIN_ID)) {
       throw new JobDomainPeasException(unknown("domain", domain.getName()));
     }
     theNewDomain.setName(domain.getName());
@@ -1751,7 +1748,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       throws JobDomainPeasException, JobDomainPeasTrappedException {
     try {
 
-      boolean quotaDefined = StringUtil.isDefined(usersInDomainQuotaMaxCount);
+      boolean quotaDefined = isDefined(usersInDomainQuotaMaxCount);
       if (JobDomainSettings.usersInDomainQuotaActivated && quotaDefined) {
         // Getting quota filled
         domain.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
@@ -1849,7 +1846,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   private void setDomainIdOnSelection(Selection selection) {
-    if (StringUtil.isDefined(targetDomainId) && !Domain.MIXED_DOMAIN_ID.equals(targetDomainId)) {
+    if (isDefined(targetDomainId) && !Domain.MIXED_DOMAIN_ID.equals(targetDomainId)) {
       // Add extra params
       SelectionUsersGroups sug = new SelectionUsersGroups();
       sug.setDomainId(targetDomainId);
@@ -1884,7 +1881,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     selection.setGoBackURL(hostUrl);
     selection.setCancelURL(cancelUrl);
 
-    if (!StringUtil.isDefined(targetDomainId) || Domain.MIXED_DOMAIN_ID.equals(targetDomainId)) {
+    if (!isDefined(targetDomainId) || Domain.MIXED_DOMAIN_ID.equals(targetDomainId)) {
       selection.setElementSelectable(false);
     }
 
@@ -2158,7 +2155,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public List<SpaceInstLight> getManageablesSpaces() {
     String[] spaceIds = new String[0];
-    if (StringUtil.isDefined(targetUserId)) {
+    if (isDefined(targetUserId)) {
       if (User.getById(targetUserId).isAccessAdmin()) {
         return Collections.emptyList();
       }
@@ -2203,22 +2200,28 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    */
   public ComponentProfilesList getCurrentProfiles() {
     ComponentProfilesList allProfiles = new ComponentProfilesList();
-    String[] profileIds = new String[0];
-    if (StringUtil.isDefined(targetUserId)) {
-      profileIds = adminCtrl.getProfileIds(targetUserId);
+    Stream<String> profileIds = Stream.empty();
+    if (isDefined(targetUserId)) {
+      profileIds = Stream.concat(profileIds, Stream.of(adminCtrl.getProfileIds(targetUserId)));
     } else if (getTargetGroup() != null) {
-      profileIds = adminCtrl.getProfileIdsOfGroup(getTargetGroup().getId());
+      // get profiles associated to group and its parents
+      Optional<Group> group = Optional.of(getTargetGroup());
+      while (group.isPresent()) {
+        profileIds = Stream
+            .concat(profileIds, Stream.of(adminCtrl.getProfileIdsOfGroup(group.get().getId())));
+        group = group
+            .filter(g -> !g.isRoot())
+            .flatMap(g -> Optional.ofNullable(Group.getById(g.getSuperGroupId())));
+      }
     }
-    if (ArrayUtil.isEmpty(profileIds)) {
-      return allProfiles;
-    }
-    for (String profileId : profileIds) {
-      ProfileInst currentProfile = adminCtrl.getProfileInst(profileId);
-      Objects.requireNonNull(currentProfile);
-      ComponentProfiles componentProfiles = allProfiles.getByLocalComponentInstanceId(currentProfile.getComponentFatherId());
+    profileIds
+        .map(i -> adminCtrl.getProfileInst(i))
+        .forEach(p -> {
+      Objects.requireNonNull(p);
+      ComponentProfiles componentProfiles = allProfiles.getByLocalComponentInstanceId(p.getComponentFatherId());
       if (componentProfiles == null) {
         ComponentInstLight currentComponent =
-            adminCtrl.getComponentInstLight(String.valueOf(currentProfile.getComponentFatherId()));
+            adminCtrl.getComponentInstLight(String.valueOf(p.getComponentFatherId()));
         if (currentComponent.getStatus() == null && !currentComponent.isPersonal()) {
           LocalizedComponent localizedComponent = getLocalizedComponent(currentComponent.getName());
           componentProfiles = new ComponentProfiles(currentComponent, localizedComponent);
@@ -2228,9 +2231,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         }
       }
       if (componentProfiles != null) {
-        componentProfiles.addProfile(currentProfile);
+        componentProfiles.addProfile(p);
       }
-    }
+    });
     allProfiles.sort(new AbstractComplexComparator<ComponentProfiles>() {
       private static final long serialVersionUID = 6776408278128213038L;
       @Override
@@ -2293,7 +2296,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
                 RightAssignationContext.MODE.REPLACE : RightAssignationContext.MODE.COPY;
 
         if (Selection.TYPE_SELECTED_ELEMENT.equals(sourceRightsType)) {
-          if (StringUtil.isDefined(targetUserId)) {
+          if (isDefined(targetUserId)) {
             adminCtrl
                 .assignRightsFromUserToUser(operationMode, sourceRightsId, targetUserId,
                     nodeAssignRights, getUserId());
@@ -2303,7 +2306,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
                     nodeAssignRights, getUserId());
           }
         } else if (Selection.TYPE_SELECTED_SET.equals(sourceRightsType)) {
-          if (StringUtil.isDefined(targetUserId)) {
+          if (isDefined(targetUserId)) {
             adminCtrl
                 .assignRightsFromGroupToUser(operationMode, sourceRightsId, targetUserId,
                     nodeAssignRights, getUserId());

@@ -131,7 +131,7 @@ public class ComponentAccessController extends AbstractAccessController<String>
       return;
     }
     if (Administration.Constants.ADMIN_COMPONENT_ID.equals(componentId)) {
-      if (User.getById(userId).isAccessAdmin()) {
+      if (user.isAccessAdmin()) {
         userRoles.add(SilverpeasRole.admin);
       }
       return;

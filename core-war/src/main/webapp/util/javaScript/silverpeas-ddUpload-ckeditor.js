@@ -24,18 +24,18 @@
 
 (function() {
 
-  var TEN_SECONDS_IN_MILLISECONDS = 10 * 1000;
-  var ckeditorDragAndDropUploadDebug = false;
+  const TEN_SECONDS_IN_MILLISECONDS = 10 * 1000;
+  let ckeditorDragAndDropUploadDebug = false;
 
   // Web Context
   if (!webContext) {
-    var webContext = '/silverpeas';
+    window.webContext = '/silverpeas';
   }
 
-  var __called = false;
-  var __internalQueue = sp.promise.newQueue();
-  var $deferredUploadReady = sp.promise.deferred();
-  var resourceDocumentContext;
+  let __called = false;
+  let __internalQueue = sp.promise.newQueue();
+  let $deferredUploadReady = sp.promise.deferred();
+  let resourceDocumentContext;
 
   /**
    * This method must be called in order to configure properly the drag & drop on WYSIWYG editor.
@@ -50,7 +50,7 @@
 
     __logDebug("Starting the configuration");
 
-    var config = extendsObject({
+    let config = extendsObject({
       componentInstanceId : false,
       resourceId : false,
       indexIt : false,
@@ -62,14 +62,14 @@
       return;
     }
 
-    var $div = document.createElement('div');
+    let $div = document.createElement('div');
     $div.classList.add('ckEditorDdUpload');
     $div.style.display = 'none';
     document.body.appendChild($div);
 
     __logDebug("Hidden DIV attached to body");
 
-    var ddUploadConfig = {
+    let ddUploadConfig = {
       domSelector : '.ckEditorDdUpload',
       componentInstanceId : config.componentInstanceId,
       onCompletedUrl : sp.url.format(webContext + '/DragAndDrop/drop', {
@@ -92,16 +92,16 @@
      */
     resourceDocumentContext = new function() {
 
-      var lastRefresh = 0;
-      var list = [];
+      let lastRefresh = 0;
+      let list = [];
 
       /**
        * Refreshing the list of documents linked to WYSIWYG.
        * @returns {*} the promise of Ajax Request.
        */
       this.refresh = function(force) {
-        var currentTime = new Date().getTime();
-        var timeDiffMs = currentTime -  lastRefresh;
+        let currentTime = new Date().getTime();
+        let timeDiffMs = currentTime -  lastRefresh;
         lastRefresh = new Date().getTime();
         if (!force && timeDiffMs <= TEN_SECONDS_IN_MILLISECONDS) {
           __logDebug("document context - working on cache because of only " + timeDiffMs + "ms between two upload requests");
@@ -109,7 +109,7 @@
           return sp.promise.resolveDirectlyWith();
         }
         return sp.ajaxRequest(webContext + '/services/documents/' + config.componentInstanceId +
-            '/resource/' + config.resourceId + '/types/' + config.documentType + '/fr')
+            '/resource/' + config.resourceId + '/types/' + config.documentType + '/fr?viewWidthAndHeight=true')
             .sendAndPromiseJsonResponse().then(function(json) {
               list = json;
               list.forEach(function(doc) {
@@ -142,9 +142,9 @@
     };
   };
 
-  var ckeditorEvents = [];
+  let ckeditorEvents = [];
 
-  var onCompletedUrlSuccess = function() {
+  let onCompletedUrlSuccess = function() {
     __logDebug("upload terminated");
     resourceDocumentContext.refresh(true).then(function() {
       ckeditorEvents.forEach(activateFileFromCKEditorEvent);
@@ -152,10 +152,10 @@
     });
   };
 
-  var onFileSendError = function(file) {
+  let onFileSendError = function(file) {
     __logDebug("upload error for file " + file.name);
-    var spFileId = resourceDocumentContext.buildSpFileIdFrom(file.name, file.size);
-    var ckeditorEvent = ckeditorEvents.getElement({spFileId : spFileId}, 'spFileId');
+    let spFileId = resourceDocumentContext.buildSpFileIdFrom(file.name, file.size);
+    let ckeditorEvent = ckeditorEvents.getElement({spFileId : spFileId}, 'spFileId');
     if (ckeditorEvent) {
       __updateCKEditorEventInErrorStatus(ckeditorEvent);
       ckeditorEvents.removeElement(ckeditorEvent);
@@ -164,9 +164,9 @@
     }
   };
 
-  var activateFileFromCKEditorEvent = function(ckeditorEvent) {
+  let activateFileFromCKEditorEvent = function(ckeditorEvent) {
     __internalQueue.push(function() {
-      var doc = resourceDocumentContext.getBySpFileId(ckeditorEvent.spFileId);
+      let doc = resourceDocumentContext.getBySpFileId(ckeditorEvent.spFileId);
       if (doc) {
         __updateCKEditorEventInSuccessStatus(ckeditorEvent, doc);
         __finalizeActivation(ckeditorEvent);
@@ -176,47 +176,55 @@
     });
   };
 
-  var __finalizeActivation = function(ckeditorEvent) {
-    var $editable = ckeditorEvent.editor.editable();
-    var $img;
-    [].slice.call($editable.$.querySelectorAll("img"), 0).forEach(function($_img) {
-      if (!$img
-          && !$_img['sp-img-already-in-content']
-          && $_img.getAttribute('data-cke-saved-src') === ckeditorEvent.data.fileLoader.url) {
-        $img = $_img;
-      }
-    });
-    if ($img) {
-      $img['sp-img-already-in-content'] = true;
-      var currentCover = document.querySelector('.cke_dialog_background_cover');
-      if (currentCover && currentCover.style.display !== 'none') {
-        __logDebug("image setting dialog already open");
+  let __finalizeActivation = function(ckeditorEvent) {
+    let $editable = ckeditorEvent.editor.editable();
+    let fileLoader = ckeditorEvent.data.fileLoader;
+    let $images = sp.element.querySelectorAll("img", $editable.$);
+    for (let i = 0 ; i < $images.length ; i++) {
+      let $img = $images[i];
+      if (!$img['sp-img-already-in-content']
+          && $img.getAttribute('data-cke-saved-src') === fileLoader.url) {
+        if (fileLoader.widthInPixel) {
+          $img.width = fileLoader.widthInPixel;
+          $img.height = fileLoader.heightInPixel;
+        }
+        $img['sp-img-already-in-content'] = true;
+        let currentCover = document.querySelector('.cke_dialog_background_cover');
+        if (currentCover && currentCover.style.display !== 'none') {
+          __logDebug("image setting dialog already open");
+          return;
+        }
+        let imgWidth = $img.width;
+        let maxWidth = $editable.$.offsetWidth - 5;
+        if (imgWidth <= maxWidth) {
+          __logDebug("image width is smaller than the width of editor, no image resizing");
+          return;
+        }
+        __logDebug("resizing image");
+        let imgHeight = $img.height;
+        if (imgHeight) {
+          let ratio = imgHeight / imgWidth;
+          $img.height = maxWidth * ratio;
+        }
+        $img.width = maxWidth;
         return;
       }
-      var imgWidth = $img.width;
-      var maxWidth = $editable.$.offsetWidth - 5;
-      if (imgWidth <= maxWidth) {
-        __logDebug("image width is smaller than the width of editor, no image resizing");
-        return;
-      }
-      __logDebug("resizing image");
-      var imgHeight = $img.height;
-      if (imgHeight) {
-        var ratio = imgHeight / imgWidth;
-        $img.height = maxWidth * ratio;
-      }
-      $img.width = maxWidth;
-    } else {
-      __logDebug("cannot open image setting dialog as HTML img element has not been found");
     }
+    __logDebug("cannot open image setting dialog as HTML img element has not been found");
   };
 
-  var __updateCKEditorEventInSuccessStatus = function(ckeditorEvent, doc) {
-    var fileLoader = ckeditorEvent.data.fileLoader;
+  let __updateCKEditorEventInSuccessStatus = function(ckeditorEvent, doc) {
+    let fileLoader = ckeditorEvent.data.fileLoader;
     __logDebug("activating " + doc.fileName);
-    var documentName = doc.fileName;
-    var documentSize = doc.size;
-    var documentUrl = webContext + doc.downloadUrl;
+    let documentName = doc.fileName;
+    let documentSize = doc.size;
+    let documentWidthInPixel = doc.widthInPixel;
+    let documentHeightInPixel = doc.heightInPixel;
+    let documentUrl = webContext + doc.downloadUrl;
+    if (documentWidthInPixel) {
+      fileLoader.widthInPixel = documentWidthInPixel;
+      fileLoader.heightInPixel = documentHeightInPixel;
+    }
     fileLoader.uploadTotal = documentSize;
     fileLoader.uploaded = documentSize;
     fileLoader.url = documentUrl;
@@ -231,8 +239,8 @@
     ckeditorEvent.editor.fire('change');
   };
 
-  var __updateCKEditorEventInErrorStatus = function(ckeditorEvent) {
-    var fileLoader = ckeditorEvent.data.fileLoader;
+  let __updateCKEditorEventInErrorStatus = function(ckeditorEvent) {
+    let fileLoader = ckeditorEvent.data.fileLoader;
     __logDebug("aborting " + ckeditorEvent.spFile.name);
     fileLoader.uploadTotal = 0;
     fileLoader.uploaded = 0;
@@ -251,14 +259,14 @@
   };
 
   CKEDITOR.on('instanceCreated', function(event) {
-    var editor = event.editor;
+    let editor = event.editor;
     $deferredUploadReady.promise.then(function(dragAndDropUploadApi) {
       dragAndDropUploadApi.addEventListener('filesenderror', onFileSendError);
       dragAndDropUploadApi.ready(function() {
-        var __processQueue = sp.promise.newQueue();
+        let __processQueue = sp.promise.newQueue();
 
         editor.on('dataReady', function(event) {
-          var $imgs = [].slice.call(event.editor.editable().$.querySelectorAll("img"), 0);
+          let $imgs = [].slice.call(event.editor.editable().$.querySelectorAll("img"), 0);
           __logDebug("Marking " + $imgs.length + " existing image(s)...");
           $imgs.forEach(function($img) {
             $img['sp-img-already-in-content'] = true;
@@ -274,7 +282,7 @@
         editor.on('fileUploadRequest', function(ckeditorEvent) {
           __processQueue.push(function() {
             return resourceDocumentContext.refresh().then(function() {
-              var file = ckeditorEvent.data.requestData.upload.file;
+              let file = ckeditorEvent.data.requestData.upload.file;
               ckeditorEvent.spFile = file;
               ckeditorEvent.spFileId = resourceDocumentContext.buildSpFileIdFrom(file.name, file.size);
               if (!resourceDocumentContext.getBySpFileId(ckeditorEvent.spFileId)) {
@@ -315,7 +323,7 @@
    */
   function __logDebug(message) {
     if (ckeditorDragAndDropUploadDebug) {
-      var mainDebug = sp.log.debugActivated;
+      let mainDebug = sp.log.debugActivated;
       sp.log.debugActivated = true;
       sp.log.debug("CKEditor D&D File Upload - " + message);
       sp.log.debugActivated = mainDebug;

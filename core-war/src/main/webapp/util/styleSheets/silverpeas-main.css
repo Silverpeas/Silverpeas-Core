@@ -399,7 +399,6 @@ Definition des class de style Silverpeas
   background:    url(../icons/design/degrade20px.jpg) repeat-x;
   white-space: nowrap;
   padding: 5px;
-  white-space: nowrap;
 }
 
 #agenda #rss img {

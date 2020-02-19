@@ -83,6 +83,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
+import static org.silverpeas.core.util.StringUtil.normalize;
 
 /**
  * @author ehugonnet
@@ -93,6 +94,7 @@ public class SimpleDocumentService
 
   private static final int STEP = 5;
   private static final String ATTACHMENT_TYPE = "Attachment";
+  private static final String COMMENT_TYPE = "Comment";
   @Inject
   private WebdavRepository webdavRepository;
   @Inject
@@ -271,6 +273,7 @@ public class SimpleDocumentService
   @Override
   public SimpleDocument createAttachment(@SourceObject @TargetPK SimpleDocument document,
       InputStream content, boolean indexIt, boolean notify) {
+    normalizeFileName(document);
     try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK docPk = repository.createDocument(session, document);
       session.save();
@@ -390,6 +393,7 @@ public class SimpleDocumentService
   @Override
   public void updateAttachment(@SourceObject @TargetPK SimpleDocument document, boolean indexIt,
       boolean notify) {
+    normalizeFileName(document);
     try (JcrSession session = openSystemSession()) {
       SimpleDocument oldAttachment =
           repository.findDocumentById(session, document.getPk(), document.getLanguage());
@@ -424,6 +428,7 @@ public class SimpleDocumentService
   @Override
   public void updateAttachment(@SourceObject @TargetPK SimpleDocument document, InputStream in,
       boolean indexIt, boolean notify) {
+    normalizeFileName(document);
     try (JcrSession session = openSystemSession()) {
       String owner = document.getEditedBy();
       if (!StringUtil.isDefined(owner)) {
@@ -933,7 +938,8 @@ public class SimpleDocumentService
   @Override
   public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
     if (settings.getBoolean("attachment.index.incorporated", true) &&
-        !indexEntry.getObjectType().startsWith(ATTACHMENT_TYPE)) {
+        !indexEntry.getObjectType().startsWith(ATTACHMENT_TYPE) &&
+        !indexEntry.getObjectType().startsWith(COMMENT_TYPE)) {
       ResourceReference pk =
           new ResourceReference(indexEntry.getObjectId(), indexEntry.getComponent());
       List<SimpleDocument> documents = listDocumentsByForeignKey(pk, indexEntry.getLang());
@@ -1090,5 +1096,15 @@ public class SimpleDocumentService
   @Override
   public void delete(final String componentInstanceId) {
     deleteAllAttachments(componentInstanceId);
+  }
+
+  /**
+   * Normalizes the fileName returned by {@link SimpleDocument#getFilename()} and sets the
+   * normalized result by using {@link SimpleDocument#setFilename(String)} method of given document.
+   * @param document the document which the filename MUST be normalized.
+   */
+  private void normalizeFileName(final SimpleDocument document) {
+    final String normalizedFileName = normalize(document.getFilename());
+    document.setFilename(normalizedFileName);
   }
 }

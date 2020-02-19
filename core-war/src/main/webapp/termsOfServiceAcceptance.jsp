@@ -39,11 +39,10 @@
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
 <view:setBundle basename="org.silverpeas.authentication.multilang.authentication" var="authenticationBundle"/>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
+<view:sp-page>
+  <view:sp-head-part minimalSilverpeasScriptEnv="true">
     <title><fmt:message key="GML.refuse"/></title>
     <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
-    <view:includePlugin name="jquery"/>
     <!--[if lt IE 8]>
     <style type="text/css">
       input {
@@ -74,9 +73,8 @@
         submit();
       }
     </script>
-  </head>
-
-  <body>
+  </view:sp-head-part>
+  <view:sp-body-part>
     <form id="termsOfServiceAcceptance" action="#" method="post">
       <div id="top"></div>
       <div class="page">
@@ -101,5 +99,5 @@
         <input type="hidden" id="tosAccepted" name="tosAccepted" value="false"/>
       </div>
     </form>
-  </body>
-</html>
+  </view:sp-body-part>
+</view:sp-page>

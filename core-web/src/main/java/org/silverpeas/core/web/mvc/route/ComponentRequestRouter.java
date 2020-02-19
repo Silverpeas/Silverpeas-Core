@@ -53,7 +53,7 @@ import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.util.SilverpeasTransverseWebErrorUtil;
-import org.silverpeas.core.web.util.security.SecuritySettings;
+import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;

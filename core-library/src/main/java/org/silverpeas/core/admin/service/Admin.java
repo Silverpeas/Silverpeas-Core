@@ -64,6 +64,7 @@ import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.ProfileInstManager;
 import org.silverpeas.core.admin.user.ProfiledObjectManager;
+import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -807,14 +808,20 @@ class Admin implements Administration {
       throws AdminException {
     final SilverpeasComponentInstance instance;
     try {
-      Optional<PersonalComponentInstance> personalComponentInstance =
-          PersonalComponentInstance.from(componentInstanceIdentifier);
+      final Optional<PersonalComponentInstance> personalComponentInstance =
+          PersonalComponentInstance
+          .from(componentInstanceIdentifier);
       if (personalComponentInstance.isPresent()) {
         instance = personalComponentInstance.get();
       } else {
-        final SilverpeasComponentInstance componentInstance = getComponentInst(
-            componentInstanceIdentifier);
-        instance = "-1".equals(componentInstance.getId()) ? null : componentInstance;
+        final Optional<ToolInstance> toolInstance = ToolInstance.from(componentInstanceIdentifier);
+        if (toolInstance.isPresent()) {
+          instance = toolInstance.get();
+        } else {
+          final SilverpeasComponentInstance componentInstance = getComponentInst(
+              componentInstanceIdentifier);
+          instance = "-1".equals(componentInstance.getId()) ? null : componentInstance;
+        }
       }
       return instance;
     } catch (Exception e) {
@@ -1481,7 +1488,10 @@ class Admin implements Administration {
     spaceManager.moveSpace(shortSpaceId, shortFatherId);
 
     // set space in last rank
-    spaceManager.updateSpaceOrder(shortSpaceId, getAllSubSpaceIdsWithoutCache(fatherId).length);
+    int position = moveOnTop
+        ? getAllRootSpaceIds().length
+        : getAllSubSpaceIdsWithoutCache(fatherId).length;
+    spaceManager.updateSpaceOrder(shortSpaceId, position);
 
     if (useProfileInheritance) {
       processProfileInstsOnSpaceMove(shortSpaceId, shortFatherId, moveOnTop);
@@ -2178,11 +2188,7 @@ class Admin implements Administration {
 
   @Override
   public String addGroup(GroupDetail group) throws AdminException {
-    try {
-      return addGroup(group, false);
-    } catch (Exception e) {
-      throw new AdminException(failureOnAdding(GROUP, group.getName()), e);
-    }
+    return addGroup(group, false);
   }
 
   @Override
@@ -2195,6 +2201,8 @@ class Admin implements Administration {
       }
       cache.opAddGroup(group);
       return sGroupId;
+    } catch (AdminException e) {
+      throw e;
     } catch (Exception e) {
       throw new AdminException(failureOnAdding(GROUP, group.getName()), e);
     }
@@ -2353,6 +2361,10 @@ class Admin implements Administration {
 
   @Override
   public void indexAllGroups() throws AdminException {
+
+    // starting by remove all indexed data relative to groups
+    IndexEngineProxy.removeScopedIndexEntries("groups");
+
     Domain[] domains = getAllDomains(); //All domains except Mixt Domain (id -1)
     for (Domain domain : domains) {
       try {
@@ -4281,14 +4293,7 @@ class Admin implements Administration {
     }
     if (parentId == null && (parentSpecificIds.length > 0 || (askedParentId != null
         && askedParentId.length() > 0))) {// We
-      // can't
-      // add
-      // the
-      // group
-      // (just
-      // the
-      // same
-      // restriction as for the directories...)
+      // can't add the group (just the same restriction as for the directories...)
       throw new AdminException("Fail to synchronize imported group " + groupKey
           + " in domain " + domainId);
     }
@@ -4405,7 +4410,7 @@ class Admin implements Administration {
     UserDetail ud = synchroDomain.importUser(userLogin);
     ud.setDomainId(domainId);
     String userId = addUser(ud, true);
-    // Synchronizes the user to add it to the groups and recursivaly add the groups
+    // Synchronizes the user to add it to the groups and recursively add the groups
     synchronizeUser(userId, recurs);
     return userId;
   }
@@ -4415,10 +4420,9 @@ class Admin implements Administration {
       AdminException {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     UserDetail ud = synchroDomain.getUser(specificId);
-
     ud.setDomainId(domainId);
     String userId = addUser(ud, true);
-    // Synchronizes the user to add it to the groups and recursivaly add the groups
+    // Synchronizes the user to add it to the groups and recursively add the groups
     synchronizeUser(userId, recurs);
     return userId;
   }
@@ -5236,7 +5240,7 @@ class Admin implements Administration {
       final UserSearchCriteriaForDAO criteria) throws AdminException {
     String[] theGroupIds = searchCriteria.getCriterionOnGroupIds();
     if (theGroupIds == UserDetailsSearchCriteria.ANY_GROUPS) {
-      criteria.and().onGroupIds(SearchCriteria.ANY);
+      criteria.and().onGroupIds(SearchCriteria.Constants.ANY);
     } else {
       Set<String> groupIds = new HashSet<>();
       for (String aGroupId : theGroupIds) {
@@ -5418,6 +5422,10 @@ class Admin implements Administration {
   // -------------------------------------------------------------------------
   @Override
   public void indexAllUsers() throws AdminException {
+
+    // starting by remove all indexed data relative to users
+    IndexEngineProxy.removeScopedIndexEntries(UserIndexation.COMPONENT_ID);
+
     Domain[] domains = getAllDomains();
     for (Domain domain : domains) {
       try {
@@ -6100,4 +6108,5 @@ class Admin implements Administration {
       return this;
     }
   }
+
 }

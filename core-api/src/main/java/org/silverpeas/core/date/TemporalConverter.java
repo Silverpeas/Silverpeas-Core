@@ -256,6 +256,38 @@ public class TemporalConverter {
   }
 
   /**
+   * <p>
+   * Converts the specified temporal instance to an {@link LocalDate} instance. The temporal
+   * instance must be of one of the following type:</p>
+   * <ul>
+   * <li>{@link LocalDate}</li>
+   * <li>{@link LocalDateTime}</li>
+   * <li>{@link ZonedDateTime}</li>
+   * <li>{@link OffsetDateTime}</li>
+   * </ul>
+   * <p>
+   * Any other types aren't supported and as such an {@link IllegalArgumentException} is thrown.
+   * </p>
+   * <p>
+   * If the temporal is already an {@link LocalDate} instance, then nothing is converted and
+   * the temporal is directly returned. If the temporal is a datetime, then only the date is
+   * returned.
+   * </p>
+   * @param temporal the temporal to convert.
+   * @return an {@link LocalDate} instance.
+   * @throws IllegalArgumentException if the specified temporal is of a type not supported by
+   * this converter.
+   */
+  public static LocalDate asLocalDate(final Temporal temporal, final ZoneId zoneId) {
+    Objects.requireNonNull(temporal);
+    return TemporalConverter.applyByType(temporal,
+        d -> d,
+        l -> l.atZone(ZoneId.of(ZoneOffset.UTC.getId())).withZoneSameInstant(zoneId).toLocalDate(),
+        o -> o.atZoneSameInstant(zoneId).toLocalDate(),
+        z -> z.withZoneSameInstant(zoneId).toLocalDate());
+  }
+
+  /**
    * Converts the specified temporal in a Date instance. If the temporal is a date then it is
    * converted into a datetime in UTC/Greenwich. If the temporal is a local datetime, then the time
    * is set in UTC/Greenwich.

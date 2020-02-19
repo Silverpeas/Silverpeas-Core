@@ -31,6 +31,7 @@ package org.silverpeas.core.admin.service;
 import org.silverpeas.core.SilverpeasException;
 
 public class AdminException extends SilverpeasException {
+  private static final long serialVersionUID = 2131319112058819021L;
 
   public AdminException(final String message, final String... parameters) {
     super(message, parameters);

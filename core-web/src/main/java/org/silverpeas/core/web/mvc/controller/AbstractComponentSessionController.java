@@ -48,6 +48,7 @@ import org.silverpeas.core.web.subscription.SubscriptionContext;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.List;
 
@@ -161,6 +162,11 @@ public abstract class AbstractComponentSessionController implements ComponentSes
     return controller.getFavoriteLanguage();
   }
 
+  @Override
+  public ZoneId getZoneId() {
+    return controller.getFavoriteZoneId();
+  }
+
   /**
    * Gets the identifier of the user website look.
    * @return the user favorite look name.
@@ -220,7 +226,9 @@ public abstract class AbstractComponentSessionController implements ComponentSes
    */
   @Override
   public final String getComponentLabel() {
-    return context.getCurrentComponentLabel();
+    return OrganizationController.get().getComponentInstance(getComponentId())
+        .map(i -> i.getLabel(getLanguage()))
+        .orElse(StringUtil.EMPTY);
   }
 
   /**

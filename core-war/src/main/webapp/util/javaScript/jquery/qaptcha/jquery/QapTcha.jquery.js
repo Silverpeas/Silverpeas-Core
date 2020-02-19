@@ -14,7 +14,7 @@ jQuery.QapTcha = {
         var defaults = {
 			txtLock : 'Veuillez faire glisser le curseur',
 			txtUnlock : 'Merci',
-			alertMsg : 'Veuiller faire glisser le curseur avant de valider',
+			alertMsg : 'Veuillez faire glisser le curseur avant de valider',
 			disabledSubmit : true,
 			autoRevert : true,
 			PHPfile : 'Qaptcha.jquery.php',

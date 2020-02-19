@@ -48,14 +48,6 @@ public class DocumentFormatConverterProvider {
   }
 
   /**
-   * Gets an instance of the ToPDFConverter interface.
-   * @return a ToPDFConverter instance.
-   */
-  public static ToPDFConverter getToPDFConverter() {
-    return ServiceProvider.getService(ToPDFConverter.class);
-  }
-
-  /**
    * Gets an instance of the ToHTMLConverter interface.
    * @return a ToHTMLConverter instance.
    */

@@ -24,6 +24,7 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.SilverpeasExceptionMessages.LightExceptionMessage;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
@@ -44,6 +45,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -55,6 +57,8 @@ import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import static java.text.MessageFormat.format;
 
 /**
  * A processor of synchronization of calendar events from a remote calendar into the Silverpeas
@@ -82,18 +86,29 @@ import java.util.stream.Stream;
 @Singleton
 public class ICalendarEventSynchronization implements Initialization {
 
-  private static final String CALENDAR_SETTINGS = "org.silverpeas.calendar.settings.calendar";
-
   /**
    * The namespace of the logger used to report the synchronization of a calendar.
    */
   public static final String REPORT_NAMESPACE = "silverpeas.core.calendar.synchronization";
+  private static final String CALENDAR_SETTINGS = "org.silverpeas.calendar.settings.calendar";
+  private static final String SYNCHRONIZATION_ERRO_MSG = "Synchronize error on calendar {0} of instance {1} -> {2}";
 
   @Inject
   private ICalendarEventImportProcessor importer;
 
+  @Inject
+  private Event<CalendarBatchSynchronizationErrorEvent> notifier;
+
   private ICalendarEventSynchronization() {
 
+  }
+
+  /**
+   * Gets an instance of a synchronization processor.
+   * @return a calendar synchronization processor.
+   */
+  public static ICalendarEventSynchronization get() {
+    return ServiceProvider.getService(ICalendarEventSynchronization.class);
   }
 
   @Override
@@ -119,14 +134,6 @@ public class ICalendarEventSynchronization implements Initialization {
   public void release() throws Exception {
     Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
     scheduler.unscheduleJob(getClass().getSimpleName());
-  }
-
-  /**
-   * Gets an instance of a synchronization processor.
-   * @return a calendar synchronization processor.
-   */
-  public static ICalendarEventSynchronization get() {
-    return ServiceProvider.getService(ICalendarEventSynchronization.class);
   }
 
   /**
@@ -165,7 +172,13 @@ public class ICalendarEventSynchronization implements Initialization {
         return result;
       });
     } catch (IOException e) {
-      throw new ImportException(e.getMessage(), e);
+      final String message = format(SYNCHRONIZATION_ERRO_MSG, calendar.getId(),
+          calendar.getComponentInstanceId(), "no data found from the synchronization link");
+      throw new ImportException(new LightExceptionMessage(this, e).singleLineWith(message));
+    } catch (Exception e) {
+      final String message = format(SYNCHRONIZATION_ERRO_MSG, calendar.getId(),
+          calendar.getComponentInstanceId(), e.getMessage());
+      throw new ImportException(message, e);
     }
   }
 
@@ -222,9 +235,12 @@ public class ICalendarEventSynchronization implements Initialization {
         String report = generateReport(c, result);
         SilverLogger.getLogger(REPORT_NAMESPACE).info(report);
       } catch (ImportException e) {
-        SilverLogger.getLogger(REPORT_NAMESPACE)
-            .error("Calendar " + c.getId() + " ('" + c.getTitle() + "') synchronization failure",
-                e);
+        if (e.getCause() != null) {
+          SilverLogger.getLogger(REPORT_NAMESPACE).error(e);
+        } else {
+          SilverLogger.getLogger(REPORT_NAMESPACE).error(e.getMessage());
+        }
+        notifier.fire(new CalendarBatchSynchronizationErrorEvent(c));
       }
     });
   }
@@ -268,6 +284,21 @@ public class ICalendarEventSynchronization implements Initialization {
         .append(result.deleted())
         .append("\n")
         .toString();
+  }
+
+  /**
+   * Event notified on a synchronization error by batch.
+   */
+  public static class CalendarBatchSynchronizationErrorEvent {
+    private final Calendar calendar;
+
+    private CalendarBatchSynchronizationErrorEvent(final Calendar calendar) {
+      this.calendar = calendar;
+    }
+
+    public Calendar getCalendar() {
+      return calendar;
+    }
   }
 }
   

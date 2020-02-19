@@ -34,6 +34,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.io.Serializable;
+import java.time.ZoneId;
 import java.util.Collection;
 
 /**
@@ -47,6 +48,9 @@ public interface ComponentSessionController extends Serializable {
 
   /** Return the user language */
   String getLanguage();
+
+  /** Return the user zone id */
+  ZoneId getZoneId();
 
   /** Return the UserDetail of the current user */
   UserDetail getUserDetail();

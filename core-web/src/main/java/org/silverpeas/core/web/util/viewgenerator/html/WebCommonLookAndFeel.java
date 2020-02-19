@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -40,9 +41,9 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import java.time.ZoneId;
 
+import static org.silverpeas.core.util.Mutable.empty;
 import static org.silverpeas.core.util.URLUtil.getMinifiedWebResourceUrl;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
 
@@ -95,7 +96,6 @@ class WebCommonLookAndFeel {
     return StringUtil.isDefined(StringUtil.join(context));
   }
 
-  @SuppressWarnings("StringBufferReplaceableByString")
   private String getCommonHeader(HttpServletRequest request, MainSessionController controller,
       String spaceId, String componentId) {
 
@@ -115,42 +115,20 @@ class WebCommonLookAndFeel {
     code.append(charset);
     code.append("\"/>\n");
 
-    String specificJS = null;
-
     code.append(includeJQueryCss(new ElementContainer()).toString());
 
     // append default global CSS
     code.append(getCSSLinkTag(contextPath + STANDARD_CSS));
 
     // define CSS(default and specific) and JS (specific) dedicated to current component
-    String defaultComponentCSS = null;
-    String specificComponentCSS = null;
-    if (StringUtil.isDefined(componentId)) {
-      SilverpeasComponentInstance component =
-          OrganizationControllerProvider.getOrganisationController()
-              .getComponentInstance(componentId).orElse(null);
-      if (component != null) {
-        String componentName = component.getName();
-        String genericComponentName = getGenericComponentName(componentName);
-        if (component.isWorkflow()) {
-          genericComponentName = "processManager";
-        }
-        defaultComponentCSS = getCSSLinkTag(contextPath + "/" + genericComponentName
-            + "/jsp/styleSheets/" + genericComponentName + ".css");
-
-        String specificStyle = lookSettings.getString("StyleSheet." + componentName, "");
-        if (StringUtil.isDefined(specificStyle)) {
-          specificComponentCSS = getCSSLinkTag(specificStyle);
-        }
-
-        specificJS = lookSettings.getString("JavaScript." + componentName, "");
-      }
-    }
+    final Mutable<String> specificJS = empty();
+    final Mutable<String> defaultComponentCSS = empty();
+    final Mutable<String> specificComponentCSS = empty();
+    computeComponentStuffs(lookSettings, contextPath, componentId, specificJS, defaultComponentCSS,
+        specificComponentCSS);
 
     // append default CSS of current component
-    if (defaultComponentCSS != null) {
-      code.append(defaultComponentCSS);
-    }
+    defaultComponentCSS.ifPresent(code::append);
 
     // append specific look CSS
     String css = lookSettings.getString("StyleSheet", "");
@@ -166,10 +144,8 @@ class WebCommonLookAndFeel {
       }
     }
 
-    // append specific CSS of current component
-    if (specificComponentCSS != null) {
-      code.append(specificComponentCSS);
-    }
+    // append specific CSS of current component*
+    specificComponentCSS.ifPresent(code::append);
     code.append(includePolyfills(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/mousetrap.min.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/mousetrap-global-bind.min.js"));
@@ -217,9 +193,7 @@ class WebCommonLookAndFeel {
         STR_NEW_LINE);
     code.append(includeMessager(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
 
-    if (StringUtil.isDefined(specificJS)) {
-      code.append(getJavaScriptTag(specificJS));
-    }
+    specificJS.ifPresent(code::append);
 
     if (lookSettings.getString("OperationPane").toLowerCase().endsWith("web20")) {
       code.append(getYahooElements());
@@ -228,8 +202,36 @@ class WebCommonLookAndFeel {
       code.append(includeMylinks(new ElementContainer()).toString()).append(STR_NEW_LINE);
     }
 
+    code.append(includeVirtualKeyboard(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
 
     return code.toString();
+  }
+
+  private void computeComponentStuffs(final SettingBundle lookSettings, final String contextPath,
+      final String componentId, final Mutable<String> specificJS,
+      final Mutable<String> defaultComponentCSS, final Mutable<String> specificComponentCSS) {
+    if (StringUtil.isDefined(componentId)) {
+      SilverpeasComponentInstance component =
+          OrganizationControllerProvider.getOrganisationController()
+              .getComponentInstance(componentId).orElse(null);
+      if (component != null) {
+        String componentName = component.getName();
+        String genericComponentName = getGenericComponentName(componentName);
+        if (component.isWorkflow()) {
+          genericComponentName = "processManager";
+        }
+        defaultComponentCSS.set(getCSSLinkTag(contextPath + "/" + genericComponentName
+            + "/jsp/styleSheets/" + genericComponentName + ".css"));
+        String specificStyle = lookSettings.getString("StyleSheet." + componentName, "");
+        if (StringUtil.isDefined(specificStyle)) {
+          specificComponentCSS.set(getCSSLinkTag(specificStyle));
+        }
+        final String specificJs = lookSettings.getString("JavaScript." + componentName, "");
+        if (StringUtil.isDefined(specificJs)) {
+          specificJS.set(getJavaScriptTagWithVersion(specificJs));
+        }
+      }
+    }
   }
 
   /**

@@ -28,17 +28,16 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<fmt:setLocale value="${pageContext.request.locale.language}" />
 <%@ include file="../../headLog.jsp" %>
 
+<fmt:setLocale value="<%=userLanguage%>" />
 <view:setBundle basename="org.silverpeas.authentication.multilang.authentication" />
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><fmt:message key="GML.popupTitle" /></title>
+<view:sp-page>
+<view:sp-head-part minimalSilverpeasScriptEnv="true">
 <link rel="icon" href="<%=favicon%>" />
 <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
+<view:includePlugin name="virtualkeyboard"/>
+<view:includePlugin name="popup"/>
 <style type="text/css">
 .titre {
     left: 375px;
@@ -50,9 +49,6 @@
     border: 0;
 }
 </style>
-
-<view:includePlugin name="jquery"/>
-<view:includePlugin name="tkn"/>
 
 <link rel="stylesheet" type="text/css" href="<c:url value="/util/javaScript/jquery/qaptcha/jquery/QapTcha.jquery.css"/>" media="screen" />
 
@@ -155,14 +151,13 @@ function checkEmailDoesNotExist(email) {
 function checkForm()
 {
     var form = document.getElementById("EDform");
-    var errorMsg = "";
     var lastName = stripInitialWhitespace(form.elements["lastName"].value);
     var firstName = stripInitialWhitespace(form.elements["firstName"].value);
     var email = stripInitialWhitespace(form.elements["email"].value);
 
     function checkResult(result, errorMessage) {
       if (!result) {
-        errorMsg += ' - ' + errorMessage;
+        SilverpeasError.add(errorMessage);
       }
     }
 
@@ -176,7 +171,7 @@ function checkForm()
           return checkIsNotEmpty(email)
         })
         .then(function(result) {
-          checkResult(result, "<fmt:message key='registration.lastNameRequired'/>\n");
+          checkResult(result, "<fmt:message key='registration.emailRequired'/>\n");
           return checkEmailIsCorrectlyFormatted(email);
         })
         .then(function(result) {
@@ -185,9 +180,7 @@ function checkForm()
         })
         .then(function(result) {
           checkResult(result, "<fmt:message key='registration.alreadyRegistered'/>\n");
-          if (errorMsg.length > 0) {
-            window.alert(errorMsg);
-          } else {
+          if (!SilverpeasError.show()) {
             form.action='<c:url value="/CredentialsServlet/Register" />';
             form.submit();
           }
@@ -212,8 +205,8 @@ $(document).ready(function(){
 });
 </script>
 
-</head>
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
       <form id="EDform" action="javascript:checkForm();" method="post" accept-charset="UTF-8">
         <div id="top"></div> <!-- Backgroud fonce -->
         <div class="page"> <!-- Centrage horizontal des elements (960px) -->
@@ -241,11 +234,11 @@ $(document).ready(function(){
             </div>
             <div id="copyright"><fmt:message key="GML.trademark" /></div>
         </div>
-        </form><!-- Fin class="page" -->
+        </form>
 
-		<script type="javascript">
-			document.getElementById("EDform").email.focus();
+		<script type="text/javascript">
+      document.querySelector("input").focus();
 		</script>
 
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

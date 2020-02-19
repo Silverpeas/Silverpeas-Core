@@ -69,7 +69,7 @@
   function __display(userId, isSpace, id) {
     var $display = $('#responsible-popup-content');
     __getResponsibles(isSpace, id).then(function(data) {
-      if (!isSpace && $.isEmptyObject(data.usersAndGroupsRoles)) {
+      if (!isSpace && !__userAndGroupRolesAreDefined(data)) {
         // No responsible founded, so searching on space on which component is attached ...
         __getJSonData(data.parentURI).then(function(spaceOfComponent) {
           if (spaceOfComponent && spaceOfComponent.id) {
@@ -292,6 +292,20 @@
       });
     }
     return sp.promise.resolveDirectlyWith([]);
+  }
+
+  function __userAndGroupRolesAreDefined(data) {
+    let roles = data.usersAndGroupsRoles;
+    if (typeof roles === 'object') {
+      for(let roleName in roles) {
+        let role = roles[roleName];
+        if ((Array.isArray(role.users) && role.users.length > 0) ||
+            (Array.isArray(role.groups) && role.groups.length > 0)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
