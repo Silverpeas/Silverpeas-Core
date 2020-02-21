@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.questioncontainer.container.model;
 
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
@@ -33,6 +35,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 
 public class QuestionContainerHeader extends AbstractBean
     implements java.io.Serializable, SilverContentInterface {
@@ -46,7 +49,6 @@ public class QuestionContainerHeader extends AbstractBean
   private String endDate = null;
   private boolean isClosed = false;
   private int nbVoters = 0;
-  private int nbRegistered = 0;
   private int nbQuestionsPerPage = 0;
   private int nbMaxParticipations = 0;
   private int nbParticipationsBeforeSolution = 0;
@@ -185,7 +187,14 @@ public class QuestionContainerHeader extends AbstractBean
   }
 
   public int getNbRegistered() {
-    return this.nbRegistered;
+    Optional<SilverpeasComponentInstance> component = SilverpeasComponentInstance.getById(getComponentInstanceId());
+    if (component.isPresent()) {
+      if (component.get().isPublic()) {
+        return OrganizationController.get().getAllUsersIds().length;
+      }
+      return OrganizationController.get().getAllUsers(getComponentInstanceId()).length;
+    }
+    return 0;
   }
 
   public int getNbQuestionsPerPage() {
@@ -250,10 +259,6 @@ public class QuestionContainerHeader extends AbstractBean
 
   public void setNbQuestionsPerPage(int nb) {
     this.nbQuestionsPerPage = nb;
-  }
-
-  public void setNbRegistered(int nb) {
-    this.nbRegistered = nb;
   }
 
   public void setNbMaxParticipations(int nb) {
