@@ -1045,6 +1045,8 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(scriptContent(bundleVariableName("UserGroupListBundle")
         .add(ResourceLocator.getGeneralLocalizationBundle(language),
             "GML.user_s",
+            "GML.group_s",
+            "GML.and",
             "GML.delete",
             "GML.deleteAll",
             "GML.action.remove",

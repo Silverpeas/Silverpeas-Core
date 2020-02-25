@@ -25,6 +25,8 @@ package org.silverpeas.web.notificationuser.servlets;
 
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -43,13 +45,13 @@ public class UserNotificationRequestRouter
 
   private static final long serialVersionUID = -5858231857279380747L;
   private static final String RECIPIENT_EDITION_PARAM = "recipientEdition";
+  private static final String SIMPLE_DETAILS_PARAM = "simpleDetailsWhenRecipientTotalExceed";
   private static final String RECIPIENT_USERS = "recipientUsers";
   private static final String RECIPIENT_GROUPS = "recipientGroups";
   private static final String MESSAGE_TITLE = "title";
   private static final String MAIN_FUNCTION = "Main";
   private static final String SENDING_FUNCTION = "SendNotif";
   private static final String RELEASE_FUNCTION = "ClearNotif";
-  private static final String RESOURCE_ID = "resourceId";
 
   @Override
   public UserNotificationSessionController createComponentSessionController(
@@ -96,6 +98,9 @@ public class UserNotificationRequestRouter
         } else {
           areRecipientsEditable = true;
         }
+        SettingBundle settings = ResourceLocator
+            .getSettingBundle("org.silverpeas.notificationManager.settings.notificationManagerSettings");
+        request.setAttribute(SIMPLE_DETAILS_PARAM, settings.getInteger("notif.manual.ui.simpleDetails.whenRecipientTotalExceed", 15));
         request.setAttribute(RECIPIENT_EDITION_PARAM, areRecipientsEditable);
         destination = "/userNotification/jsp/notificationSender.jsp";
       } else if (SENDING_FUNCTION.equals(function)) {
