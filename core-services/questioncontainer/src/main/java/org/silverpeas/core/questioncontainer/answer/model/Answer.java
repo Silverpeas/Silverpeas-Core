@@ -161,8 +161,8 @@ public class Answer implements Serializable {
   }
 
   public double getPercent(int nbParticipants) {
-    return BigDecimal.valueOf((getNbVoters() * 100f) / nbParticipants)
-        .setScale(2, RoundingMode.HALF_DOWN).doubleValue();
+    return new BigDecimal(getNbVoters()).multiply(new BigDecimal(100))
+        .divide(new BigDecimal(nbParticipants), 2, RoundingMode.HALF_DOWN).doubleValue();
   }
 
   @Override

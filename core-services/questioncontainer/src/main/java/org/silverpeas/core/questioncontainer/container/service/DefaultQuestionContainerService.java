@@ -86,7 +86,6 @@ public class DefaultQuestionContainerService
 
   private static final String PENALTY_CLUE = "PC";
   private static final String OPENED_ANSWER = "OA";
-  private static final float PERCENT_MULTIPLICATOR = 100f;
 
   @Inject
   private QuestionService questionService;
