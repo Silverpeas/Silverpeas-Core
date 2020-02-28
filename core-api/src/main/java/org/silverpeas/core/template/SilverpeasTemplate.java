@@ -29,6 +29,18 @@ public interface SilverpeasTemplate {
   String TEMPLATE_ROOT_DIR = "template.root.dir";
   String TEMPLATE_CUSTOM_DIR = "template.customer.dir";
 
+  /**
+   * When the result of string template processing is built from a combination of several
+   * template files, this method MUST be called BEFORE calling {@link #applyFileTemplate(String)}.
+   * <p>
+   * It is in charge of merging the templates given by the product and the one modified by the
+   * customer. By this way, the customer modifies only the necessary templates in case of
+   * customization.
+   * </p>
+   * @return itself.
+   */
+  SilverpeasTemplate mergeRootWithCustom();
+
   void setAttribute(String name, Object value);
 
   String applyFileTemplate(String fileName);
