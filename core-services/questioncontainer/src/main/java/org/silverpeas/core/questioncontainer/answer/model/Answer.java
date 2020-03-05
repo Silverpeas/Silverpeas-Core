@@ -24,6 +24,8 @@
 package org.silverpeas.core.questioncontainer.answer.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.silverpeas.core.ResourceReference;
 
@@ -156,6 +158,11 @@ public class Answer implements Serializable {
 
   public String getQuestionLink() {
     return this.questionLink;
+  }
+
+  public double getPercent(int nbParticipants) {
+    return new BigDecimal(getNbVoters()).multiply(new BigDecimal(100))
+        .divide(new BigDecimal(nbParticipants), 2, RoundingMode.HALF_DOWN).doubleValue();
   }
 
   @Override

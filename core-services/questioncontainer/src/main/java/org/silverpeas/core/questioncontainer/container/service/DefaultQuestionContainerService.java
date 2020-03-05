@@ -56,6 +56,7 @@ import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
 import org.silverpeas.core.questioncontainer.score.model.ScorePK;
 import org.silverpeas.core.questioncontainer.score.service.ScoreService;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -85,7 +86,6 @@ public class DefaultQuestionContainerService
 
   private static final String PENALTY_CLUE = "PC";
   private static final String OPENED_ANSWER = "OA";
-  private static final float PERCENT_MULTIPLICATOR = 100f;
 
   @Inject
   private QuestionService questionService;
@@ -969,17 +969,16 @@ public class DefaultQuestionContainerService
             question.getPK().getInstanceId());
         Collection<QuestionResult> openAnswers = getSuggestions(qcPK);
         for (QuestionResult qR : openAnswers) {
-          CSVRow csvRow = getCSVRow(question.getLabel(), qR.getOpenedAnswer(), "", false, 0);
-          csvRows.add(csvRow);
+          if (StringUtil.isDefined(qR.getOpenedAnswer())) {
+            CSVRow csvRow = getCSVRow(question.getLabel(), qR.getOpenedAnswer(), "", false, 0);
+            csvRows.add(csvRow);
+          }
         }
       } else {
         // question fermée
         Collection<Answer> answers = question.getAnswers();
         for (Answer answer : answers) {
-          int nbUsers = questionResultService
-              .getQuestionResultToQuestion(new ResourceReference(question.getPK())).size();
-          String percent =
-              Math.round((answer.getNbVoters() * PERCENT_MULTIPLICATOR) / nbUsers) + "%";
+          String percent = answer.getPercent(questionContainer.getHeader().getNbVoters())+"%";
           CSVRow csvRow = getCSVRow(question.getLabel(), answer.getLabel(), percent, addScore,
               answer.getNbPoints());
           csvRows.add(csvRow);
