@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.nio.charset.Charset.defaultCharset;
+
 /**
  * It represents a cache of the images that were resized by the
  * {@link ImageResizingProcessor} processor. In fact, it doesn't contain
@@ -43,6 +45,10 @@ import java.util.List;
  * @author mmoquillon
  */
 class ImageCache {
+
+  private ImageCache() {
+    // Not instantiatable
+  }
 
   private static final String IMAGE_CACHE_TABLE =
       ImageResizingProcessor.IMAGE_CACHE_PATH + File.separatorChar + ".data";
@@ -58,7 +64,7 @@ class ImageCache {
     String entryName = hash(originalImagePath);
     File entry = new File(IMAGE_CACHE_TABLE, entryName);
     try {
-      List<String> lines = new ArrayList<String>();
+      List<String> lines = new ArrayList<>();
       if (!entry.exists()) {
         lines.add(originalImagePath);
       }
@@ -67,7 +73,7 @@ class ImageCache {
     } catch (IOException ex) {
       SilverLogger.getLogger(ImageCache.class)
           .error("Cannot write the cache entry {0} with value {1}. Cause: {2}",
-              new String[]{entry.getAbsolutePath(), resizedImagePath, ex.getMessage()});
+              entry.getAbsolutePath(), resizedImagePath, ex.getMessage());
     }
   }
 
@@ -83,15 +89,13 @@ class ImageCache {
       File entry = new File(IMAGE_CACHE_TABLE, entryName);
       if (entry.exists()) {
         try {
-          List<String> lines = FileUtils.readLines(entry);
+          List<String> lines = FileUtils.readLines(entry, defaultCharset());
           for (String resizedImagePath : lines.subList(1, lines.size())) {
             File resizedImage = new File(resizedImagePath);
-            if (resizedImage.exists()) {
-              if (!resizedImage.delete()) {
-                SilverLogger.getLogger(ImageCache.class)
-                    .warn("Cannot remove {0} from the cache entry {1}",
-                        resizedImage.getAbsolutePath(), entry.getAbsolutePath());
-              }
+            if (resizedImage.exists() && !resizedImage.delete()) {
+              SilverLogger.getLogger(ImageCache.class)
+                  .warn("Cannot remove {0} from the cache entry {1}",
+                      resizedImage.getAbsolutePath(), entry.getAbsolutePath());
             }
           }
           if (!entry.delete()) {
@@ -115,7 +119,7 @@ class ImageCache {
     File entry = new File(IMAGE_CACHE_TABLE, entryName);
     if (entry.exists()) {
       try {
-        List<String> lines = FileUtils.readLines(entry);
+        List<String> lines = FileUtils.readLines(entry, defaultCharset());
         if (!lines.isEmpty()) {
           return lines.subList(1, lines.size());
         }
@@ -123,7 +127,7 @@ class ImageCache {
         SilverLogger.getLogger(ImageCache.class).error(ex.getMessage());
       }
     }
-    return Collections.EMPTY_LIST;
+    return Collections.emptyList();
   }
 
   /**
@@ -132,14 +136,17 @@ class ImageCache {
    * @return a list of absolute path of the original images from which a resized image was made.
    */
   protected static List<String> getAllImageEntries() {
-    List<String> originalImagePaths = new ArrayList<String>();
-    File entries = new File(IMAGE_CACHE_TABLE);
-    for (File anEntry : entries.listFiles()) {
-      try {
-        List<String> resizedImagePaths = FileUtils.readLines(anEntry);
-        originalImagePaths.add(resizedImagePaths.get(0));
-      } catch (IOException ex) {
-        SilverLogger.getLogger(ImageCache.class).error(ex.getMessage());
+    final List<String> originalImagePaths = new ArrayList<>();
+    final File entries = new File(IMAGE_CACHE_TABLE);
+    final File[] files = entries.listFiles();
+    if (files != null) {
+      for (final File anEntry : files) {
+        try {
+          List<String> resizedImagePaths = FileUtils.readLines(anEntry, defaultCharset());
+          originalImagePaths.add(resizedImagePaths.get(0));
+        } catch (IOException ex) {
+          SilverLogger.getLogger(ImageCache.class).error(ex.getMessage());
+        }
       }
     }
     return originalImagePaths;
