@@ -26,47 +26,85 @@ package org.silverpeas.core.template;
 import org.antlr.stringtemplate.AutoIndentWriter;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
-import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.template.renderer.DateRenderer;
 import org.silverpeas.core.template.renderer.StringRenderer;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.apache.commons.io.FileUtils.copyDirectory;
+
 public class SilverpeasStringTemplate implements SilverpeasTemplate {
 
+  private static final Object MUTEX = new Object();
+  private static final String MERGED_DIR_NAME = "__merged_delete_me_on_template_modification";
   private Map<String, Object> attributes = new HashMap<>();
   private Properties templateConfig;
+  private List<String> paths = new ArrayList<>(3);
 
   public SilverpeasStringTemplate(Properties templateConfig) {
     this.templateConfig = templateConfig;
+    paths.add(templateConfig.getProperty(TEMPLATE_CUSTOM_DIR));
+    paths.add(templateConfig.getProperty(TEMPLATE_ROOT_DIR));
   }
 
   @Override
-  public String applyFileTemplate(String fileName) {
-    String customersRootDir = templateConfig.getProperty(TEMPLATE_CUSTOM_DIR);
-    StringTemplateGroup group = new StringTemplateGroup(fileName, customersRootDir);
-    String physicalName = group.getFileNameFromTemplateName(fileName);
-    File file = new File(customersRootDir, physicalName);
-    if (!file.exists() || !file.isFile()) {
-      String rootRootDir = templateConfig.getProperty(TEMPLATE_ROOT_DIR);
-      file = new File(rootRootDir, physicalName);
-      group = new StringTemplateGroup(fileName, rootRootDir);
+  public SilverpeasTemplate mergeRootWithCustom() {
+    if (paths.size() == 2) {
+      final File customPath = new File(paths.get(0));
+      if (!customPath.exists()) {
+        return this;
+      }
+      final File rootPath = new File(paths.get(1));
+      final File mergedPath = new File(customPath, MERGED_DIR_NAME);
+      synchronized (MUTEX) {
+        if (!mergedPath.exists()) {
+          if (mergedPath.mkdirs()) {
+            try {
+              copyDirectory(rootPath, mergedPath, true);
+              copyDirectory(customPath, mergedPath, f -> !MERGED_DIR_NAME.equals(f.getName()), true);
+              paths.add(0, mergedPath.getPath());
+            } catch (IOException e) {
+              SilverLogger.getLogger(this).error(e);
+            }
+          }
+        } else {
+          paths.add(0, mergedPath.getPath());
+        }
+      }
     }
-    // In case the file is empty, StringTemplate is in error because the encoding can't be
-    // guessed ...
-    if (file.exists() && file.length() == 0) {
-      return "";
-    }
-    group.setFileCharEncoding(CharEncoding.UTF_8);
-    StringTemplate template = group.getInstanceOf(fileName);
-    return applyAttributes(template);
+    return this;
+  }
+
+  @Override
+  public String applyFileTemplate(final String fileName) {
+    return paths.stream()
+        .map(d -> Pair.of(d, new StringTemplateGroup(fileName, d)))
+        .filter(g -> {
+          final String physicalName = g.getSecond().getFileNameFromTemplateName(fileName);
+          final File file = new File(g.getFirst(), physicalName);
+          return file.exists() && file.isFile();
+        })
+        .map(p -> {
+          final StringTemplateGroup group = p.getSecond();
+          group.setFileCharEncoding(Charsets.UTF_8.name());
+          return group;
+        })
+        .map(g -> g.getInstanceOf(fileName))
+        .map(this::applyAttributes)
+        .findFirst()
+        .orElse("");
   }
 
   @Override

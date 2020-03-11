@@ -526,7 +526,9 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    */
   private SilverpeasTemplate getTemplate() {
     if (template == null) {
-      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification/delayed");
+      template = SilverpeasTemplateFactory
+          .createSilverpeasTemplateOnCore("notification/delayed")
+          .mergeRootWithCustom();
     }
     return template;
   }
