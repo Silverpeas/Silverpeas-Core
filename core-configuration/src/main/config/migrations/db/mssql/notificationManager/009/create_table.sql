@@ -60,7 +60,7 @@ CREATE TABLE st_delayednotifusersetting (
 );
 
 CREATE TABLE st_notificationresource (
-   id 					int8 NOT NULL ,
+   id 					bigint NOT NULL ,
    componentInstanceId	varchar(50) NOT NULL ,
    resourceId			varchar(500) NOT NULL ,
    resourceType			varchar(50) NOT NULL ,
@@ -68,18 +68,18 @@ CREATE TABLE st_notificationresource (
    resourceDescription	varchar(2000) NULL ,
    resourceLocation		varchar(500) NOT NULL ,
    resourceUrl			varchar(1000) NULL,
-	 attachmentTargetId	varchar(500) NULL,
+   attachmentTargetId VARCHAR(500) NULL,
    resourceDetails			varchar(8000) NULL
 );
 
 CREATE TABLE st_delayednotification (
-   id 						int8 NOT NULL ,
+   id 						bigint NOT NULL ,
    userId					int NOT NULL ,
    fromUserId				int NOT NULL ,
    channel					int NOT NULL ,
    action					int NOT NULL ,
-   notificationResourceId	int8 NOT NULL ,
+   notificationResourceId	bigint NOT NULL ,
    language					varchar(2) NOT NULL ,
-   creationDate				timestamp NOT NULL ,
-   message					varchar(2000) NULL
+   creationDate				datetime NOT NULL ,
+   message					varchar(10000) NULL
 );
