@@ -1,0 +1,1 @@
+ALTER TABLE st_delayednotification ALTER COLUMN message VARCHAR(10000);
