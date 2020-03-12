@@ -2,6 +2,7 @@ package org.silverpeas.core.workflow.engine;
 
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.ProcessInstanceManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.GenericEvent;
@@ -55,6 +56,7 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
 
   protected UpdatableHistoryStep createHistoryNewStep(final HistoryStepDescriptor descriptor) {
     ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
+    SilverLogger.getLogger(this).info("createHistoryNewStep() - InstanceId = {0}",descriptor.getProcessInstance().getInstanceId());
     final UpdatableHistoryStep newStep = (UpdatableHistoryStep) instanceManager.createHistoryStep();
     if (event.getUser() != null) {
       newStep.setUserId(event.getUser().getUserId());
@@ -62,6 +64,7 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
     if (event.getSubstitute() != null) {
       newStep.setSubstituteId(event.getSubstitute().getUserId());
     }
+    SilverLogger.getLogger(this).info("createHistoryNewStep() - ActionName = {0}",descriptor.getActionName());
     newStep.setAction(descriptor.getActionName());
     newStep.setActionDate(descriptor.getActionDate());
     newStep.setUserRoleName(descriptor.getUserRoleName());
