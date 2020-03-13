@@ -52,6 +52,7 @@ public class EJabberdServer implements ChatServer {
   private static final String SUBSCRIPTION_ATTR = "subs";
   private static final String NAME_ATTR = "name";
   private static final String CONTENT_ATTR = "content";
+  private static final String GROUP_ATTR = "group";
 
   private SilverLogger logger = SilverLogger.getLogger(this);
 
@@ -108,6 +109,7 @@ public class EJabberdServer implements ChatServer {
             .put(USER_ATTR, chatUser1.getChatLogin())
             .put(SERVER_ATTR, chatUser1.getChatDomain())
             .put(NICK_ATTR, chatUser1.getDisplayedName())
+            .put(GROUP_ATTR, "")
             .put(SUBSCRIPTION_ATTR, "to"));
     request(command, o ->
         o.put(LOCAL_USER_ATTR, chatUser1.getChatLogin())
@@ -115,6 +117,7 @@ public class EJabberdServer implements ChatServer {
             .put(USER_ATTR, chatUser2.getChatLogin())
             .put(SERVER_ATTR, chatUser2.getChatDomain())
             .put(NICK_ATTR, chatUser2.getDisplayedName())
+            .put(GROUP_ATTR, "")
             .put(SUBSCRIPTION_ATTR, "to"));
     request(command, o ->
         o.put(LOCAL_USER_ATTR, chatUser2.getChatLogin())
@@ -122,6 +125,7 @@ public class EJabberdServer implements ChatServer {
             .put(USER_ATTR, chatUser1.getChatLogin())
             .put(SERVER_ATTR, chatUser1.getChatDomain())
             .put(NICK_ATTR, chatUser1.getDisplayedName())
+            .put(GROUP_ATTR, "")
             .put(SUBSCRIPTION_ATTR, "both"));
     request(command, o ->
         o.put(LOCAL_USER_ATTR, chatUser1.getChatLogin())
@@ -129,6 +133,7 @@ public class EJabberdServer implements ChatServer {
             .put(USER_ATTR, chatUser2.getChatLogin())
             .put(SERVER_ATTR, chatUser2.getChatDomain())
             .put(NICK_ATTR, chatUser2.getDisplayedName())
+            .put(GROUP_ATTR, "")
             .put(SUBSCRIPTION_ATTR, "both"));
   }
 
