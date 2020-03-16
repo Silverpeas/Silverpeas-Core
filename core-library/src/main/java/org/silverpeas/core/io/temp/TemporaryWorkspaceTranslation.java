@@ -23,22 +23,24 @@
  */
 package org.silverpeas.core.io.temp;
 
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.text.MessageFormat.format;
 import static org.silverpeas.core.util.SerializationUtil.deserializeFromString;
 import static org.silverpeas.core.util.SerializationUtil.serializeAsString;
+import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
 
 /**
  * If a treatment uses a real resource identifier for a temporary resource, it is possible
@@ -79,8 +81,7 @@ public class TemporaryWorkspaceTranslation {
   }
 
   private TemporaryWorkspaceTranslation(final String id) {
-    this.descriptor =
-        new File(FileRepositoryManager.getTemporaryPath(), (SILVERPEAS_TRANSLATION_PREFIX + id));
+    this.descriptor = new File(getTemporaryPath(), checkedPath(SILVERPEAS_TRANSLATION_PREFIX + id));
     initialize();
   }
 
@@ -103,9 +104,18 @@ public class TemporaryWorkspaceTranslation {
       } else {
         descriptorContent.put(TRANSLATION_ID, UUID.randomUUID().toString());
       }
-      this.workspace =
-          new File(FileRepositoryManager.getTemporaryPath(), descriptorContent.get(TRANSLATION_ID));
+      this.workspace = new File(getTemporaryPath(), checkedPath(descriptorContent.get(TRANSLATION_ID)));
     }
+  }
+
+  private String checkedPath(final String path) {
+    final String pathToCheck = StringUtil.defaultStringIfNotDefined(path, "unknown");
+    if (pathToCheck.contains("..")) {
+      final String errorMsg = format("Path Traversal attack detected at {0}", LocalDateTime.now());
+      SilverLogger.getLogger("silverpeas.core.security").error(errorMsg);
+      throw new SilverpeasRuntimeException(errorMsg);
+    }
+    return pathToCheck;
   }
 
   /**
