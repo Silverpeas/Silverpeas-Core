@@ -43,14 +43,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import static java.text.MessageFormat.format;
+import static org.silverpeas.core.util.JSONCodec.encodeObject;
+import static org.silverpeas.core.util.URLUtil.getFullApplicationURL;
 
 public class GoToFile extends GoTo {
 
   private static final long serialVersionUID = 1L;
 
   @Override
-  public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) {
+  public String getDestination(String objectId, Context context) {
+    final HttpServletRequest req = context.getRequest();
+    final HttpServletResponse res = context.getResponse();
     SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
         searchDocumentById(new SimpleDocumentPK(objectId), getContentLanguage(req));
     if (attachment == null) {
@@ -60,7 +63,9 @@ public class GoToFile extends GoTo {
     String foreignId = attachment.getForeignId();
 
     if (isUserLogin(req) && attachment.canBeAccessedBy(UserDetail.getCurrentRequester())) {
-      if (attachment.isContentPdf()) {
+      if (context.isFromResponsiveWindow()) {
+        return sendJson(encodeObject(o -> o.put("downloadUrl", req.getRequestURI())));
+      } else if (attachment.isContentPdf()) {
         final DocumentView view = ViewService.get().getDocumentView(ViewerContext.from(attachment));
         return URLUtil.getServerURL(req) + DocumentViewEntity.createFrom(view).getViewerUri();
       } else {
@@ -68,7 +73,7 @@ public class GoToFile extends GoTo {
         res.setContentType(format("{0}; charset=utf-8", attachment.getContentType()));
         String fileName = ClientBrowserUtil.rfc2047EncodeFilename(req, attachment.getFilename());
         res.setHeader("Content-Disposition", format("inline; filename=\"{0}\"", fileName));
-        return URLUtil.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
+        return getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
       }
     }
 
@@ -78,6 +83,13 @@ public class GoToFile extends GoTo {
 
     return "ComponentId=" + componentId + "&AttachmentId=" + objectId + "&Mapping=File&ForeignId="
         + foreignId;
+  }
+
+  @Override
+  public String getDestination(final String objectId, final HttpServletRequest req,
+      final HttpServletResponse res) {
+    // Must not be called
+    return null;
   }
 
   private String encodeFilename(String url) {
