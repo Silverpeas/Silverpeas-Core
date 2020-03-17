@@ -246,7 +246,8 @@
                              showMenuNotif="${showMenuNotif}"
                              useWebDAV="${webdavEditingEnable}"
                              useXMLForm="${useXMLForm}"
-                             fromAlias="${fromAlias}" />
+                             fromAlias="${fromAlias}"
+                             userRole="${highestUserRole}"/>
         <span class="lineMain ${forbiddenDownloadClass}">
             <img id='edit_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:url value="/util/icons/arrow/menuAttachment.gif" />' class="moreActions"/>
             <c:if test="${showIcon}">
