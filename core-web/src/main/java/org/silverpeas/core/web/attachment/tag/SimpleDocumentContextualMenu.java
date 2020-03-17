@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.attachment.tag;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -53,6 +54,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   private boolean useWebDAV;
   private boolean showMenuNotif;
   private boolean fromAlias;
+  private SilverpeasRole userRole;
 
   private static final String TEMPLATE = "oMenu%s.getItem(%s).cfg.setProperty(\"disabled\", %s);";
 
@@ -80,6 +82,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     this.fromAlias = fromAlias;
   }
 
+  public void setUserRole(final SilverpeasRole userRole) { this.userRole = userRole; }
+
   @Override
   public int doStartTag() throws JspException {
     try {
@@ -89,7 +93,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
           "org.silverpeas.util.attachment.multilang.attachment", favoriteLanguage);
       UserDetail user = mainSessionController.getCurrentUserDetail();
-      if (!fromAlias && attachment.canBeModifiedBy(user)) {
+      if (!fromAlias && canBeModified(user)) {
         pageContext.getOut().print(
             prepareActions(attachment, useXMLForm, useWebDAV, user,
                 favoriteLanguage, messages, showMenuNotif));
@@ -106,6 +110,11 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   @Override
   public int doEndTag() throws JspException {
     return EVAL_PAGE;
+  }
+
+  boolean canBeModified(UserDetail user) {
+    return (userRole != null && userRole.isGreaterThanOrEquals(SilverpeasRole.writer)) &&
+        attachment.canBeModifiedBy(user);
   }
 
   boolean isAdmin(User user) {

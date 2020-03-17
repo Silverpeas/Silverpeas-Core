@@ -76,5 +76,12 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Boolean</type>
     </attribute>
+    <attribute>
+      <description>To indicate the current role.</description>
+      <name>userRole</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>org.silverpeas.core.admin.user.model.SilverpeasRole</type>
+    </attribute>
   </tag>
 </taglib>
