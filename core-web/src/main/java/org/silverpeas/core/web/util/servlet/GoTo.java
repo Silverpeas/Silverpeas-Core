@@ -26,6 +26,7 @@ package org.silverpeas.core.web.util.servlet;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -51,6 +52,7 @@ import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBun
 public abstract class GoTo extends HttpServlet {
 
   private static final long serialVersionUID = -8381001443484846645L;
+  private static final String MANUAL_JSON_RESPONSE_PREFIX = "MANUAL_JSON_RESPONSE_";
 
   @Inject
   protected SilverpeasWebUtil util;
@@ -68,12 +70,19 @@ public abstract class GoTo extends HttpServlet {
     final Context context = new Context(httpRequest, res).init();
     String id = getObjectId(httpRequest);
     try {
-      String redirect = getDestination(id, httpRequest, res);
+      String redirect = getDestination(id, context);
       if (!StringUtil.isDefined(redirect)) {
         objectNotFound(context);
       } else {
         if (!res.isCommitted()) {
           // The response was not previously sent
+          if (redirect.startsWith(MANUAL_JSON_RESPONSE_PREFIX)) {
+            res.setContentType(MediaType.APPLICATION_JSON);
+            res.setCharacterEncoding(Charsets.UTF_8.name());
+            res.getWriter().append(redirect.substring(MANUAL_JSON_RESPONSE_PREFIX.length()));
+            res.flushBuffer();
+            return;
+          }
           if (!redirect.startsWith("http")) {
             redirect = URLUtil.getFullApplicationURL(httpRequest) + "/autoRedirect.jsp?" + redirect;
           }
@@ -89,8 +98,16 @@ public abstract class GoTo extends HttpServlet {
     }
   }
 
+  public String getDestination(String objectId, Context context) throws Exception {
+    return getDestination(objectId, context.getRequest(), context.getResponse());
+  }
+
   public abstract String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception;
+
+  protected String sendJson(String jsonContent) {
+    return MANUAL_JSON_RESPONSE_PREFIX + jsonContent;
+  }
 
   private void objectNotFound(final Context context) throws IOException {
     if (context.isFromResponsiveWindow()) {
@@ -176,7 +193,7 @@ public abstract class GoTo extends HttpServlet {
     return util.getContentLanguage(request);
   }
 
-  private static class Context {
+  public static class Context {
     private final HttpRequest request;
     private final HttpServletResponse response;
     private final boolean fromResponsiveWindow;
@@ -191,23 +208,23 @@ public abstract class GoTo extends HttpServlet {
           : DisplayI18NHelper.getDefaultLanguage();
     }
 
-    public Context init() {
+    Context init() {
       return this;
     }
 
-    HttpServletRequest getRequest() {
+    public HttpServletRequest getRequest() {
       return request;
     }
 
-    HttpServletResponse getResponse() {
+    public HttpServletResponse getResponse() {
       return response;
     }
 
-    boolean isFromResponsiveWindow() {
+    public boolean isFromResponsiveWindow() {
       return fromResponsiveWindow;
     }
 
-    String getLanguage() {
+    public String getLanguage() {
       return language;
     }
   }
