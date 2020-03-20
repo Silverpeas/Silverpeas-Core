@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.web.look;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TickerSettings {
 
@@ -36,6 +36,7 @@ public class TickerSettings {
   private boolean linkOnItem = false;
   private int refreshDelay = 60;
   private boolean displayDescription = false;
+  private int displayLimit = 10;
 
   public TickerSettings(SettingBundle settings) {
     for (String key : settings.keySet()) {
@@ -49,6 +50,7 @@ public class TickerSettings {
     linkOnItem = settings.getBoolean("ticker.linkOnItem", false);
     refreshDelay = settings.getInteger("ticker.autocheck.delay", 60);
     displayDescription = settings.getBoolean("ticker.items.description", false);
+    displayLimit = settings.getInteger("ticker.display.limit", 10);
   }
 
   public void setLabel(String label) {
@@ -72,6 +74,10 @@ public class TickerSettings {
 
   public int getRefreshDelay() {
     return refreshDelay;
+  }
+
+  public int getDisplayLimit() {
+    return displayLimit;
   }
 
   public boolean isDescriptionDisplayed() {

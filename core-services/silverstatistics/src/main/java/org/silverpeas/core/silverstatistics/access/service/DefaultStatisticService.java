@@ -30,6 +30,8 @@ import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.access.dao.HistoryObjectDAO;
@@ -39,19 +41,25 @@ import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria.QUERY_O
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.SilverpeasList;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.silverpeas.core.silverstatistics.access.dao.HistoryObjectDAO.countByPeriodAndUser;
 
 /**
  * Default implementation of Statistic service layer which manage statistics
@@ -267,20 +275,21 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   public int getCountByPeriodAndUser(List<WAPrimaryKey> primaryKeys, String objectType,
       Date startDate, Date endDate, List<String> userIds) {
     int nb = 0;
-    Connection con = getConnection();
-    try {
-      if (!userIds.isEmpty()) {
-        for (String userId : userIds) {
-          for (WAPrimaryKey primaryKey : primaryKeys) {
-            nb += HistoryObjectDAO
-                .getCountByPeriodAndUser(con, primaryKey, objectType, startDate, endDate, userId);
+    if (!userIds.isEmpty()) {
+      final Set<ContributionIdentifier> ids = primaryKeys.stream()
+          .map(k -> ContributionIdentifier.from(k, objectType))
+          .collect(Collectors.toSet());
+      try (Connection con = getConnection()) {
+        nb += userIds.stream().flatMapToInt(u -> {
+          try {
+            return countByPeriodAndUser(con, ids, startDate, endDate, u).mapToInt(Pair::getSecond);
+          } catch (SQLException e) {
+            throw new StatisticRuntimeException(e);
           }
-        }
+        }).sum();
+      } catch (Exception e) {
+        throw new StatisticRuntimeException(e);
       }
-    } catch (Exception e) {
-      throw new StatisticRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
     }
     return nb;
   }
@@ -343,17 +352,17 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
     }
   }
 
-  public boolean isRead(SilverpeasContent content, String userId) {
-    Connection con = getConnection();
-    try {
-      int numberOfReading = HistoryObjectDAO
-          .getCountByPeriodAndUser(con, getForeignPK(content), content.getContributionType(), null,
-              null, userId);
-      return numberOfReading > 0;
+  @Override
+  public <T extends Contribution> Stream<T> filterRead(final Collection<T> contributions,
+      final String userId) {
+    try (final Connection con = getConnection()) {
+      final Map<ContributionIdentifier, T> indexed = contributions.stream()
+          .collect(Collectors.toMap(Contribution::getContributionId, c -> c));
+      return countByPeriodAndUser(con, indexed.keySet(), null, null, userId)
+          .filter(p -> p.getSecond() > 0)
+          .map(p -> indexed.get(p.getFirst()));
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
