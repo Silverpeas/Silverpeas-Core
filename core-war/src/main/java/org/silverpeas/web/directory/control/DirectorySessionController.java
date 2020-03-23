@@ -23,11 +23,18 @@
  */
 package org.silverpeas.web.directory.control;
 
+import net.htmlparser.jericho.Source;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.domain.DomainDriver;
+import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
@@ -39,11 +46,14 @@ import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.core.contact.service.ContactService;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
@@ -67,13 +77,16 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.ImageTag;
 import org.silverpeas.web.directory.DirectoryException;
+import org.silverpeas.web.directory.model.CSVHeader;
 import org.silverpeas.web.directory.model.ContactItem;
 import org.silverpeas.web.directory.model.DirectoryItem;
 import org.silverpeas.web.directory.model.DirectoryItemList;
@@ -85,6 +98,8 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.function.Function;
 
+import static org.silverpeas.core.admin.domain.DomainDriverManagerProvider
+    .getCurrentDomainDriverManager;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlParagraphe;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
 
@@ -146,25 +161,30 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private List<Domain> currentDomains;
   private SpaceInstLight currentSpace;
   private SilverpeasComponentInstance currentComponent;
-  private RelationShipService relationShipService;
+  private transient RelationShipService relationShipService;
   private String currentQuery;
   private String initSort = SORT_ALPHA;
   private String currentSort = SORT_ALPHA;
   private String previousSort = SORT_ALPHA;
   // Extra form session objects
-  private PublicationTemplate xmlTemplate = null;
+  private transient PublicationTemplate xmlTemplate = null;
   private DataRecord xmlData = null;
   private boolean xmlTemplateLoaded = false;
-  PagesContext extraFormContext =
+  private transient PagesContext extraFormContext =
       new PagesContext("useless", "useless", getLanguage(), getUserId());
 
-  private SilverpeasTemplate template;
+  private transient SilverpeasTemplate template;
   private PaginationPage memberPage;
 
-  private List<DirectorySource> directorySources = new ArrayList<>();
+  private transient List<DirectorySource> directorySources = new ArrayList<>();
   private boolean doNotUseContactsComponents = false;
 
-  private final Function<DirectoryItem, UserFragmentVO> asFragment = item -> {
+  // used when directory is set up through an hyperlink application
+  private String referer;
+
+  private static final String EXPORT_PROPERTY_PREFIX = "export.";
+
+  private final transient Function<DirectoryItem, UserFragmentVO> asFragment = item -> {
     SilverpeasTemplate fragmentTemplate = getFragmentTemplate();
     fragmentTemplate.setAttribute("mail",
         StringUtil.isDefined(item.getMail()) ? javaStringToHtmlString(item.getMail()) : null);
@@ -345,9 +365,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @param groupIds:a list of groups' ids
    *
    */
-  public DirectoryItemList getAllUsersByGroups(List<String> groupIds) {
+  public DirectoryItemList getAllUsersByGroups(List<String> groupIds, String componentId) {
     resetDirectorySession();
     setCurrentDirectory(DIRECTORY_GROUP);
+
+    addSourceFromComponent(componentId);
 
     DirectoryItemList tmpList = new DirectoryItemList();
 
@@ -361,11 +383,18 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       }
     }
 
+    for (DirectorySource source : getDirectorySources()) {
+      if (source.isContactsComponent()) {
+        tmpList.addContactItems(getContacts(source.getId(), false));
+      }
+    }
+
     lastAllListUsersCalled = tmpList;
-
     lastListUsersCalled = lastAllListUsersCalled;
-    return lastAllListUsersCalled;
 
+    sort(getCurrentSort());
+
+    return lastAllListUsersCalled;
   }
 
   public void removeUserFromLists(User userToRemove) {
@@ -484,7 +513,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return lastAllListUsersCalled;
   }
 
-  public UserFull getUserFul(String userId) {
+  private UserFull getUserFul(String userId) {
     return getOrganisationController().getUserFull(userId);
   }
 
@@ -861,7 +890,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         if (fieldValue.contains("##")) {
           String operator = FileUploadUtil.getParameter(items,fieldName+"Operator");
           getExtraFormContext().setSearchOperator(fieldName, operator);
-          fieldQuery = fieldQuery.replaceAll("##", " "+operator+" ");
+          fieldQuery = fieldQuery.replace("##", " "+operator+" ");
         }
         return new FieldDescription(templateName + "$$" + fieldName, fieldQuery, getLanguage());
       }
@@ -976,6 +1005,16 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     directorySources.add(new DirectorySource(domain.getId(), domain.getName(), domain.getDescription()));
   }
 
+  private void addSourceFromComponent(final String componentId) {
+    if (StringUtil.isDefined(componentId)) {
+      Optional<SilverpeasComponentInstance> component =
+          SilverpeasComponentInstance.getById(componentId);
+      if (component.isPresent()) {
+        addSource(component.get());
+      }
+    }
+  }
+
   public void setSelectedSource(String id) {
     for (DirectorySource source : directorySources) {
       source.setSelected(source.getId().equals(id));
@@ -1022,6 +1061,304 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private boolean isDoNotUseContacts() {
     return doNotUseContactsComponents;
+  }
+
+  public void setReferer(String referer) {
+    this.referer = referer;
+  }
+
+  private String getReferer() {
+    return referer;
+  }
+
+  private List<String> getDomainNotExportableFields(String domainId) {
+    String key = EXPORT_PROPERTY_PREFIX + getReferer() + ".domain." + domainId + ".exclude";
+    return getNotExportableFields(key);
+  }
+
+  private boolean isDomainDataExportable(String domainId) {
+    return !getDomainNotExportableFields(domainId).contains("*");
+  }
+
+  public boolean isExportEnabled() {
+    if (User.getCurrentRequester().isAccessAdmin()) {
+      return true;
+    }
+    return getSettings().getBoolean(EXPORT_PROPERTY_PREFIX + getReferer(), false);
+  }
+
+  private List<String> getExtraFormNotExportableFields(String extraFormName) {
+    if (User.getCurrentRequester().isAccessAdmin()) {
+      return Collections.emptyList();
+    }
+    String key = EXPORT_PROPERTY_PREFIX + getReferer() + ".extraForm." +
+        extraFormName.substring(0, extraFormName.lastIndexOf('.')) + ".exclude";
+    return getNotExportableFields(key);
+  }
+
+  private boolean isExtraFormExportable(String extraFormName) {
+    return !getExtraFormNotExportableFields(extraFormName).contains("*");
+  }
+
+  private List<String> getNotExportableFields(String key) {
+    if (User.getCurrentRequester().isAccessAdmin()) {
+      return Collections.emptyList();
+    }
+    String value = getSettings().getString(key, "");
+    return Arrays.asList(StringUtils.split(value, ','));
+  }
+
+  public ExportCSVBuilder export()
+      throws PublicationTemplateException, FormException, AdminException {
+    ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
+    PublicationTemplate directoryTemplate =
+        PublicationTemplateManager.getInstance().getDirectoryTemplate();
+
+    // add header
+    CSVHeader csvHeader = setCSVHeader(csvBuilder);
+
+    for (DirectoryItem item : lastListUsersCalled) {
+      CSVRow csvRow = new CSVRow();
+
+      // add common data between users and contacts
+      csvRow.addCell(item.getLastName());
+      csvRow.addCell(item.getFirstName());
+      csvRow.addCell(item.getMail());
+
+      // getting extra data (from form)
+      if (item instanceof ContactItem) {
+        ContactItem contactItem = (ContactItem) item;
+        exportContact(contactItem, csvRow, csvHeader);
+      } else if (item instanceof UserItem) {
+        UserItem userItem = (UserItem) item;
+        exportUser(userItem, csvRow, csvHeader, directoryTemplate);
+      }
+
+      csvBuilder.addLine(csvRow);
+    }
+
+    return csvBuilder;
+  }
+
+  private CSVHeader setCSVHeader(ExportCSVBuilder csvBuilder)
+      throws PublicationTemplateException, FormException, AdminException {
+
+    CSVHeader csvHeader = new CSVHeader();
+    csvHeader.addStandardCol(getString("GML.lastName"));
+    csvHeader.addStandardCol(getString("GML.firstName"));
+    csvHeader.addStandardCol(getString("GML.eMail"));
+    csvHeader.addStandardCol(getString("GML.phoneNumber"));
+    csvHeader.addStandardCol(getString("GML.faxNumber"));
+
+    List<String> sources = getCurrentSourcesToExport();
+    for (String source : sources) {
+      if (!StringUtil.isInteger(source) && isExtraFormExportable(source)) {
+        // it's a template, not a domain
+        csvHeader.addSourceCols(source, getCSVColsFromExtraForm(source));
+      } else if (isDomainDataExportable(source)) {
+        // it's a domain
+        csvHeader.addSourceCols(source, getCSVColsFromDomain(source));
+      }
+    }
+    csvBuilder.setHeader(csvHeader.asCSVRow());
+    return csvHeader;
+  }
+
+  private List<String> getCSVColsFromDomain(String domainId) throws AdminException {
+    final DomainDriverManager driverManager = getCurrentDomainDriverManager();
+    final DomainDriver driver = driverManager.getDomainDriver(domainId);
+    Map<String, String> properties = driver.getPropertiesLabels(getLanguage());
+    List<String> excludedFields = getDomainNotExportableFields(domainId);
+    List<String> labels = new ArrayList<>();
+    for (String key : driver.getPropertiesNames()) {
+      if (!key.startsWith("password") && !excludedFields.contains(key)) {
+        labels.add(properties.get(key));
+      }
+    }
+    return labels;
+  }
+
+  private List<String> getCSVColsFromExtraForm(String formName)
+      throws PublicationTemplateException, FormException {
+    PublicationTemplate aTemplate =
+        PublicationTemplateManager.getInstance().loadPublicationTemplate(formName);
+    FieldTemplate[] fields = aTemplate.getRecordTemplate().getFieldTemplates();
+    List<String> excludedFields = getExtraFormNotExportableFields(formName);
+    List<String> labels = new ArrayList<>();
+    for (FieldTemplate field : fields) {
+      if (!excludedFields.contains(field.getFieldName())) {
+        labels.add(field.getLabel(getLanguage()));
+      }
+    }
+    return labels;
+  }
+
+  private void exportUser(UserItem userItem, CSVRow csvRow, CSVHeader csvHeader,
+      PublicationTemplate directoryTemplate) throws PublicationTemplateException, FormException {
+
+    int nbCells = 0;
+    int index = 0;
+    String domainId = userItem.getDomainId();
+    if (isDomainDataExportable(domainId)) {
+      csvRow.addCell(userItem.getPhone());
+      csvRow.addCell(userItem.getFax());
+
+      index = csvHeader.getIndexOfSourceCols(domainId);
+      addEmptyColsToReachIndex(csvRow, index);
+
+      nbCells = addDomainDataToCSVRow(csvRow, userItem);
+    } else {
+      // phone and fax
+      csvRow.addCell("");
+      csvRow.addCell("");
+    }
+
+    if (directoryTemplate != null) {
+
+      index = csvHeader.getIndexOfSourceCols(directoryTemplate.getFileName());
+      addEmptyColsToReachIndex(csvRow, index);
+
+      nbCells += addExtraFormDataToCSVRow(csvRow, directoryTemplate, userItem);
+    }
+
+    int nbCellsToTerminateRow = csvHeader.getTotalOfCols() - (index + nbCells);
+    addEmptyColsToCSVRow(csvRow, nbCellsToTerminateRow);
+  }
+
+  private void exportContact(ContactItem contactItem, CSVRow csvRow,
+      CSVHeader csvHeader) throws PublicationTemplateException, FormException {
+    CompleteContact completeContact = (CompleteContact) contactItem.getContact();
+    String contactSource = completeContact.getModelId();
+
+    csvRow.addCell(contactItem.getPhone());
+    csvRow.addCell(contactItem.getFax());
+
+    if (contactSource == null) {
+      // contact is associated to no form
+      addEmptyColsToCSVRow(csvRow, csvHeader.getTotalOfCols());
+      return;
+    }
+
+    int index = csvHeader.getIndexOfSourceCols(contactSource);
+    addEmptyColsToCSVRow(csvRow, index);
+
+    String templateId = completeContact.getPK().getInstanceId() + ":" +
+        FilenameUtils.getBaseName(contactSource);
+    PublicationTemplate theTemplate =
+        PublicationTemplateManager.getInstance().getPublicationTemplate(templateId);
+    int nbCells = addExtraFormDataToCSVRow(csvRow, theTemplate, contactItem);
+
+    int nbCellsToTerminateRow = csvHeader.getTotalOfCols() - (index + nbCells);
+    addEmptyColsToCSVRow(csvRow, nbCellsToTerminateRow);
+  }
+
+  private void addEmptyColsToCSVRow(CSVRow csvRow, int nbCols) {
+    for (int i=0; i<nbCols; i++) {
+      csvRow.addCell("");
+    }
+  }
+
+  private void addEmptyColsToReachIndex(CSVRow csvRow, int index) {
+    int init = csvRow.size() - 5;
+    for (int i=init; i<index; i++) {
+      csvRow.addCell("");
+    }
+  }
+
+  private int addDomainDataToCSVRow(CSVRow csvRow, UserItem userItem) {
+    int nbCells = 0;
+    UserFull userFull = userItem.getUserFull();
+    List<String> excludedFields = getDomainNotExportableFields(userItem.getDomainId());
+    String[] propertyNames = userFull.getPropertiesNames();
+    for (String propertyName : propertyNames) {
+      if (!propertyName.startsWith("password") && !excludedFields.contains(propertyName)) {
+        csvRow.addCell(getValueToExport(userFull, propertyName));
+        nbCells++;
+      }
+    }
+    return nbCells;
+  }
+
+  private String getValueToExport(UserFull userFull, String propertyName) {
+    DomainProperty property = userFull.getProperty(propertyName);
+    String value = userFull.getValue(propertyName);
+    if (StringUtil.isDefined(value)) {
+      if (property.getType().equals(DomainProperty.PROPERTY_TYPE_USERID)) {
+        User user = User.getById(value);
+        if (user != null) {
+          value = user.getDisplayedName();
+        }
+      } else if (property.getType().equals(DomainProperty.PROPERTY_TYPE_BOOLEAN)) {
+        value = (StringUtil.getBooleanValue(value) ? getString("GML.yes") : getString("GML.no"));
+      }
+    }
+    return value;
+  }
+
+  private int addExtraFormDataToCSVRow(CSVRow csvRow, PublicationTemplate template,
+      DirectoryItem item) throws PublicationTemplateException, FormException {
+    if (isExtraFormExportable(template.getFileName())) {
+      DataRecord dataRecord = template.getRecordSet().getRecord(item.getOriginalId());
+      Map<String, String> values;
+      if (dataRecord != null) {
+        values = dataRecord.getValues(getLanguage());
+      } else {
+        values = Collections.emptyMap();
+      }
+      // add extra data
+      FieldTemplate[] fields = template.getRecordTemplate().getFieldTemplates();
+      List<String> excludedFields = getExtraFormNotExportableFields(template.getFileName());
+      for (FieldTemplate field : fields) {
+        if (!excludedFields.contains(field.getFieldName())) {
+          String value = values.getOrDefault(field.getFieldName(), "");
+          // removing all HTML
+          value = new Source(value).getTextExtractor().toString();
+          csvRow.addCell(value);
+        }
+      }
+      return fields.length;
+    }
+    return 0;
+  }
+
+  /**
+   * Returns domain(s) and form(s) of current users and/or contacts
+   * To prevent multiple identical sources, a domain or a form is returned only once because some
+   * exported users and contacts can used the same form
+   * @return a List containing domain and forms of current users and forms of current contacts
+   */
+  private List<String> getCurrentSourcesToExport() {
+    PublicationTemplate directoryTemplate =
+        PublicationTemplateManager.getInstance().getDirectoryTemplate();
+
+    List<String> sources = new ArrayList<>();
+    for (DirectoryItem item : lastListUsersCalled) {
+      processItemSource(item, sources, directoryTemplate);
+    }
+    return sources;
+  }
+
+  private void processItemSource(DirectoryItem item, List<String> sources,
+      PublicationTemplate directoryTemplate) {
+    if (item instanceof ContactItem) {
+      ContactItem contactItem = (ContactItem) item;
+      CompleteContact completeContact = (CompleteContact) contactItem.getContact();
+      String form = completeContact.getModelId();
+      if (StringUtil.isDefined(form) && !sources.contains(form)) {
+        sources.add(form);
+      }
+    } else {
+      UserItem userItem = (UserItem) item;
+      String domainId = userItem.getDomainId();
+      if (!sources.contains(domainId)) {
+        if (isDomainDataExportable(domainId)) {
+          sources.add(0, domainId);
+        }
+        if (directoryTemplate != null && !sources.contains(directoryTemplate.getFileName())) {
+          sources.add(directoryTemplate.getFileName());
+        }
+      }
+    }
   }
 
   /**

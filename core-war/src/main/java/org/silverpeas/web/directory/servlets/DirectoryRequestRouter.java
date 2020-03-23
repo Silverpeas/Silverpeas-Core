@@ -29,8 +29,10 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -78,8 +80,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
       DirectoryItemList users;
       if ("Main".equalsIgnoreCase(function)) {
 
-        String groupId = request.getParameter("GroupId");
-        String groupIds = request.getParameter("GroupIds");
+        List<String> groupIds = processGroups(request);
         String spaceId = request.getParameter("SpaceId");
         String userId = request.getParameter("UserId");
         // case of a direct access to directory of contacts of once component
@@ -95,11 +96,10 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         String doNotUseContactsComponents = request.getParameter("DoNotUseContacts");
         directorySC.setDoNotUseContacts(StringUtil.getBooleanValue(doNotUseContactsComponents));
 
-        if (StringUtil.isDefined(groupId)) {
-          users = directorySC.getAllUsersByGroup(groupId);
-        } else if (StringUtil.isDefined(groupIds)) {
-          List<String> lGroupIds = Arrays.asList(StringUtil.split(groupIds, ','));
-          users = directorySC.getAllUsersByGroups(lGroupIds);
+        directorySC.setReferer(request.getParameter("Referer"));
+
+        if (CollectionUtil.isNotEmpty(groupIds)) {
+          users = directorySC.getAllUsersByGroups(groupIds, componentId);
         } else if (StringUtil.isDefined(spaceId)) {
           users = directorySC.getAllUsersBySpace(spaceId);
         } else if (!lDomainIds.isEmpty()) {
@@ -196,7 +196,15 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
           users = directorySC.getAllUsersByDomains();
         }
         destination = doPagination(request, users, directorySC);
+      } else  if ("Export".equals(function)) {
+        try {
+          ExportCSVBuilder csvBuilder = directorySC.export();
+          return csvBuilder.setupRequest(request);
+        } catch (Exception e) {
+          //destination = getDestination("Main", directorySC, request);
+        }
       }
+      request.setAttribute("ExportEnabled", directorySC.isExportEnabled());
     } catch (DirectoryException e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
@@ -332,5 +340,19 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
       directorySC.setCurrentDomains(lDomainIds);
     }
     return lDomainIds;
+  }
+
+  private List<String> processGroups(HttpServletRequest request) {
+    String groupId = request.getParameter("GroupId");
+    String groupIds = request.getParameter("GroupIds");
+
+    List<String> lGroupIds = new ArrayList<>();
+    if (StringUtil.isDefined(groupId)) {
+      lGroupIds.add(groupId);
+    }
+    if (StringUtil.isDefined(groupIds)) {
+      lGroupIds.addAll(Arrays.asList(StringUtil.split(groupIds, ',')));
+    }
+    return lGroupIds;
   }
 }

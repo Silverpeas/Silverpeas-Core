@@ -84,16 +84,22 @@ public class UserItem extends AbstractDirectoryItem implements DirectoryUserItem
 
   @Override
   public String getPhone() {
-    if (getUserFull() != null && StringUtil.isDefined(getUserFull().getValue("phone"))) {
-      return getUserFull().getValue("phone");
+    if (getUserFull() != null) {
+      String phone = getUserFull().getValue("phone");
+      if (StringUtil.isDefined(phone)) {
+        return phone;
+      }
     }
     return null;
   }
 
   @Override
   public String getFax() {
-    if (getUserFull() != null && StringUtil.isDefined(getUserFull().getValue("fax"))) {
-      return getUserFull().getValue("fax");
+    if (getUserFull() != null) {
+      String fax = getUserFull().getValue("fax");
+      if (StringUtil.isDefined(fax)) {
+        return fax;
+      }
     }
     return null;
   }
@@ -110,7 +116,7 @@ public class UserItem extends AbstractDirectoryItem implements DirectoryUserItem
    * Gets full data of the user associated to the item.
    * @return
    */
-  private UserFull getUserFull(){
+  public UserFull getUserFull(){
     if (userFull == null) {
       userFull = UserFull.getById(getOriginalId());
     }
