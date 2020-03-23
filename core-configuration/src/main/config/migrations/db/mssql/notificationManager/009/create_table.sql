@@ -81,5 +81,5 @@ CREATE TABLE st_delayednotification (
    notificationResourceId	bigint NOT NULL ,
    language					varchar(2) NOT NULL ,
    creationDate				datetime NOT NULL ,
-   message					varchar(10000) NULL
+   message					varchar(8000) NULL
 );
