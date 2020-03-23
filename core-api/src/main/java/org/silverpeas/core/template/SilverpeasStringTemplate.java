@@ -91,11 +91,17 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
   public String applyFileTemplate(final String fileName) {
     return paths.stream()
         .map(d -> Pair.of(d, new StringTemplateGroup(fileName, d)))
-        .filter(g -> {
-          final String physicalName = g.getSecond().getFileNameFromTemplateName(fileName);
-          final File file = new File(g.getFirst(), physicalName);
+        .map(p -> {
+          final String physicalName = p.getSecond().getFileNameFromTemplateName(fileName);
+          return Pair.of(new File(p.getFirst(), physicalName), p.getSecond());
+        })
+        .filter(p -> {
+          final File file = p.getFirst();
           return file.exists() && file.isFile();
         })
+        .findFirst()
+        // In case the file is empty, StringTemplate is in error because the encoding can't be guessed ...
+        .filter(p -> p.getFirst().length() > 0)
         .map(p -> {
           final StringTemplateGroup group = p.getSecond();
           group.setFileCharEncoding(Charsets.UTF_8.name());
@@ -103,7 +109,6 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
         })
         .map(g -> g.getInstanceOf(fileName))
         .map(this::applyAttributes)
-        .findFirst()
         .orElse("");
   }
 
