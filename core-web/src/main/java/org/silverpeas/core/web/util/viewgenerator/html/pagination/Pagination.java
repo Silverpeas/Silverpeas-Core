@@ -105,13 +105,12 @@ public interface Pagination extends SimpleGraphicElement {
     return Pair.of(firstIndex, lastIndex);
   }
 
-  @SuppressWarnings("unchecked")
-  default SilverpeasList getPaginatedListFrom(List list) {
-    if (list instanceof SilverpeasList && ((SilverpeasList) list).isSlice()) {
-      return (SilverpeasList) list;
+  default <T> SilverpeasList<T> getPaginatedListFrom(List<T> list) {
+    if (list instanceof SilverpeasList && ((SilverpeasList<T>) list).isSlice()) {
+      return (SilverpeasList<T>) list;
     }
     final Pair<Integer, Integer> indexes = getStartLastIndexes();
-    final List lightList = list.subList(indexes.getLeft(), indexes.getRight());
+    final List<T> lightList = list.subList(indexes.getLeft(), indexes.getRight());
     return PaginationList.from(lightList, list.size());
   }
 

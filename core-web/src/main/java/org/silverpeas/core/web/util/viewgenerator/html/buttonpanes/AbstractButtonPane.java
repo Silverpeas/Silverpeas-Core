@@ -23,7 +23,9 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.buttonpanes;
 
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.buttons.Button;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,11 +37,11 @@ import java.util.List;
  */
 public abstract class AbstractButtonPane implements ButtonPane {
 
+  public static final int VERTICAL_PANE = 1;
+  public static final int HORIZONTAL_PANE = 2;
+  private String cssClass = StringUtil.EMPTY;
   private List<Button> buttons = null;
   private String verticalWidth = "50px";
-  public final static int VERTICAL_PANE = 1;
-  public final static int HORIZONTAL_PANE = 2;
-
   private int viewType = HORIZONTAL_PANE;
 
   /**
@@ -47,7 +49,16 @@ public abstract class AbstractButtonPane implements ButtonPane {
    *
    */
   public AbstractButtonPane() {
-    buttons = new ArrayList<Button>();
+    buttons = new ArrayList<>();
+  }
+
+  @Override
+  public void setCssClass(final String cssClass) {
+    this.cssClass = cssClass != null && cssClass.length() > 0 ? " " + cssClass : StringUtil.EMPTY;
+  }
+
+  protected String getCssClass() {
+    return cssClass;
   }
 
   /**
@@ -67,16 +78,6 @@ public abstract class AbstractButtonPane implements ButtonPane {
   @Override
   public void setVerticalPosition() {
     viewType = VERTICAL_PANE;
-  }
-
-  /**
-   * Method declaration
-   * @param width
-   *
-   */
-  @Override
-  public void setVerticalWidth(String width) {
-    verticalWidth = width;
   }
 
   /**
@@ -117,6 +118,16 @@ public abstract class AbstractButtonPane implements ButtonPane {
 
   /**
    * Method declaration
+   * @param width
+   *
+   */
+  @Override
+  public void setVerticalWidth(String width) {
+    verticalWidth = width;
+  }
+
+  /**
+   * Method declaration
    * @return
    *
    */
@@ -128,12 +139,4 @@ public abstract class AbstractButtonPane implements ButtonPane {
    *
    */
   public abstract String verticalPrint();
-
-  /**
-   * Method declaration
-   * @return
-   *
-   */
-  @Override
-  public abstract String print();
 }

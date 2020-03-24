@@ -24,36 +24,55 @@
 package org.silverpeas.core.web.util.viewgenerator.html.list;
 
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
+import org.silverpeas.core.web.util.viewgenerator.html.list.AccumulativeListPaneTag.State;
 
 import java.util.List;
+
+import static org.silverpeas.core.util.PaginationList.from;
 
 /**
  * Iterate over items.
  * <p>If an instance of {@link SilverpeasList} is given, optimizations are offered</p>
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
-public class ListItemsTag extends AbstractListItemsTag {
-  private static final long serialVersionUID = 8166244530238320119L;
+public class AccumulativeListItemsTag extends AbstractListItemsTag {
+  private static final long serialVersionUID = 8537592673853508370L;
 
   @Override
   protected <T> SilverpeasList<T> optimize(final List<T> list) {
-    final ListPaneTag pane = getListPane();
+    final AccumulativeListPaneTag pane = getListPane();
     final SilverpeasList<T> silverpeasList = SilverpeasList.wrap(list);
+    final int originalListSize = (int) silverpeasList.originalListSize();
+    // Getting (and initializing if necessary) the pagination
+    final State state = pane.getState();
+    final int batchSize = state.getBatchSize();
+    final int currentIndex;
+    if (state.isFirstDisplay()) {
+      currentIndex = 0;
+    } else if (silverpeasList.isSlice()) {
+      currentIndex = state.getCurrentStartIndex() + batchSize;
+    } else {
+      final int offset = Math.max(originalListSize - state.getCurrentListSize(), 0);
+      currentIndex = state.getCurrentStartIndex() + offset + batchSize;
+    }
+    state.setCurrentListSize(originalListSize);
+    state.setCurrentStartIndex(currentIndex);
+    final int nextIndex = Math.min(currentIndex + batchSize, originalListSize);
+    state.setNextStartIndex(nextIndex);
+    pane.setMoreItems(nextIndex < originalListSize);
     if (silverpeasList.isSlice()) {
       // The list is already paginated
       return silverpeasList;
     } else {
-      // Getting (and initializing) the pagination
-      final Pagination pagination = pane.getPagination(list.size());
       // Computing the paginated list
-      return pagination.getPaginatedListFrom(silverpeasList);
+      int lastIndex = Math.min(currentIndex + batchSize, originalListSize);
+      return from(list.subList(currentIndex, lastIndex), list.size());
     }
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  protected ListPaneTag getListPane() {
-    return (ListPaneTag) findAncestorWithClass(this, ListPaneTag.class);
+  protected AccumulativeListPaneTag getListPane() {
+    return (AccumulativeListPaneTag) findAncestorWithClass(this, AccumulativeListPaneTag.class);
   }
 }

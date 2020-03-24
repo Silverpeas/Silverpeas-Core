@@ -772,6 +772,12 @@
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
+      <name>cssClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
       <description>Indicates if the button are added vertically.</description>
       <name>verticalPosition</name>
       <required>false</required>
@@ -1521,6 +1527,135 @@
     </description>
     <name>listItems</name>
     <tag-class>org.silverpeas.core.web.util.viewgenerator.html.list.ListItemsTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        Collection of items to iterate over.
+      </description>
+      <name>items</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Object</type>
+      <deferred-value>
+        <type>java.lang.Object</type>
+      </deferred-value>
+    </attribute>
+    <attribute>
+      <description>
+        If items specified:
+        Iteration begins at the item located at the
+        specified index. First item of the collection has
+        index 0.
+        If items not specified:
+        Iteration begins with index set at the value
+        specified.
+      </description>
+      <name>begin</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>int</type>
+    </attribute>
+    <attribute>
+      <description>
+        If items specified:
+        Iteration ends at the item located at the
+        specified index (inclusive).
+        If items not specified:
+        Iteration ends when index reaches the value
+        specified.
+      </description>
+      <name>end</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>int</type>
+    </attribute>
+    <attribute>
+      <description>
+        Iteration will only process every step items of
+        the collection, starting with the first one.
+      </description>
+      <name>step</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>int</type>
+    </attribute>
+    <attribute>
+      <description>
+        Name of the exported scoped variable for the
+        current item of the iteration. This scoped
+        variable has nested visibility. Its type depends
+        on the object of the underlying collection.
+      </description>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description>
+        Name of the exported scoped variable for the
+        status of the iteration. Object exported is of type
+        javax.servlet.jsp.jstl.core.LoopTagStatus. This scoped variable has nested
+        visibility.
+      </description>
+      <name>varStatus</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to create an accumulative list pane to display a list of data.</description>
+    <name>accListPane</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.list.AccumulativeListPaneTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>HTML identifier of the HTML list (UL or OL normally) which is necessary for the
+        line update mechanism. This target list id is used to create automatically the HTML
+        identifier of the accumulative list pane by concatenating '-pane' to the given identifier.
+      </description>
+      <name>targetListId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The label of the next action.</description>
+      <name>nextActionLabel</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of the accumulative list pane in the SessionScope</description>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>URL to be used to get next lines.</description>
+      <name>routingAddress</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Defines default number of next lines to retrieve</description>
+      <name>batchSize</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
+      This TAG must be enclosed into a accListPane one.
+      MANDATORY in case of optimized pagination rendering.
+      The basic iteration tag, accepting many different
+      collection types and supporting subsetting and other
+      functionality.
+    </description>
+    <name>accListItems</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.list.AccumulativeListItemsTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description>
@@ -2527,6 +2662,12 @@
     <body-content>JSP</body-content>
     <attribute>
       <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>cssClass</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>

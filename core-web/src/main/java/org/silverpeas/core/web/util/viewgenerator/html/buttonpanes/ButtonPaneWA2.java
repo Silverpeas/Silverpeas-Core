@@ -28,9 +28,6 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.buttonpanes;
 
-import org.silverpeas.core.web.util.viewgenerator.html.buttons.Button;
-import java.util.List;
-
 /**
  * The default implementation of ArrayPane interface
  * @author squere
@@ -38,63 +35,29 @@ import java.util.List;
  */
 public class ButtonPaneWA2 extends AbstractButtonPane {
 
-  /**
-   * Constructor declaration
-   *
-   */
   public ButtonPaneWA2() {
     super();
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   @Override
   public String horizontalPrint() {
-    StringBuilder result = new StringBuilder();
-    List<Button> buttons = getButtons();
-
-    result.append("<div class=\"sp_buttonPane\">");
-
-    if (buttons.size() > 0) {
-      result.append(buttons.get(0).print());
-    }
-    for (int i = 1; i < buttons.size(); i++) {
-      result.append(buttons.get(i).print());
-    }
-  
+    final StringBuilder result = new StringBuilder();
+    result.append("<div class=\"sp_buttonPane").append(getCssClass()).append("\">");
+    getButtons().forEach(b -> result.append(b.print()));
     result.append("</div>");
-
     return result.toString();
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   @Override
   public String verticalPrint() {
-    StringBuilder result = new StringBuilder();
-    List<Button> buttons = getButtons();
-    String verticalWidth = getVerticalWidth();
-    result.append(
-        "<div class=\"sp_buttonPane verticalPane\" style=\"width:").append(verticalWidth).
-        append(";\">");
-    for (Button button : buttons) {
-      result.append(button.print());
-    }
+    final StringBuilder result = new StringBuilder();
+    result.append("<div class=\"sp_buttonPane verticalPane").append(getCssClass())
+        .append("\" style=\"width:").append(getVerticalWidth()).append(";\">");
+    getButtons().forEach(b -> result.append(b.print()));
     result.append("</div>");
     return result.toString();
   }
 
-  /**
-   * Method declaration
-   * @return
-   *
-   */
   @Override
   public String print() {
     if (getViewType() == VERTICAL_PANE) {

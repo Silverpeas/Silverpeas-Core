@@ -370,10 +370,10 @@ out.println(window.printAfter());
 %>
 <view:progressMessage/>
 <div id="pasteOptionsDialog" style="display:none">
-<form name="pasteForm" action="Paste" method="post">
+<form name="pasteForm" action="Paste" method="GET">
 <div id="pasteOptions"></div>
 </form>
-  <form id="spaceForm" action="" method="POST">
+  <form id="spaceForm" action="" method="GET">
     <input id='Translation' name='Translation' type='hidden'/>
     <input id='Id' name='Id' type='hidden'/>
   </form>
