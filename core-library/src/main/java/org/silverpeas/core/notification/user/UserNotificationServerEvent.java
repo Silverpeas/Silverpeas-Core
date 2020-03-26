@@ -27,8 +27,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.CommonServerEvent;
 import org.silverpeas.core.util.JSONCodec;
 
-import static org.silverpeas.core.notification.user.server.channel.silvermail
-    .SILVERMAILPersistence.countNotReadMessagesOfFolder;
+import static org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence.countNotReadMessagesOfFolder;
 
 /**
  * This server event is sent on the reception of a user notification.
@@ -119,6 +118,18 @@ public class UserNotificationServerEvent extends CommonServerEvent {
   @Override
   public ServerEventName getName() {
     return EVENT_NAME;
+  }
+
+  /**
+   * Gets the identifier of the emitter of the notification.
+   * <p>
+   * Please verify the use of this method by mobile services before modifying or deleting it.
+   * </p>
+   * @return an identifier as string.
+   */
+  @SuppressWarnings("unused")
+  public String getEmitterUserId() {
+    return emitterUserId;
   }
 
   @Override
