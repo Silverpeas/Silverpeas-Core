@@ -23,11 +23,10 @@
  */
 package org.silverpeas.core.admin.space.quota;
 
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.model.Quota;
-import org.silverpeas.core.admin.quota.offset.AbstractQuotaCountingOffset;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.UnitUtil;
@@ -35,9 +34,12 @@ import org.silverpeas.core.util.memory.MemoryUnit;
 
 import javax.inject.Singleton;
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.apache.commons.io.FileUtils.sizeOfDirectory;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getAbsolutePath;
+import static org.silverpeas.core.util.file.FileRepositoryManager.getDirectorySize;
 
 /**
  * @author Yohann Chastagnier
@@ -65,6 +67,9 @@ public class DefaultDataStorageSpaceQuotaService
 
   @Override
   public Quota get(final DataStorageSpaceQuotaKey key) throws QuotaException {
+    if (!isActivated()) {
+      return new Quota();
+    }
     if (key.getSpace().isPersonalSpace()) {
       Quota quota = new Quota();
       // Setting a dummy id
@@ -99,55 +104,18 @@ public class DefaultDataStorageSpaceQuotaService
    * @see QuotaService#getCurrentCount(QuotaKey)
    */
   @Override
-  public long getCurrentCount(final DataStorageSpaceQuotaKey key) throws QuotaException {
-
-    // Initializing the counting result
+  public long getCurrentCount(final DataStorageSpaceQuotaKey key) {
     long currentCount = 0;
-
     // space could be null if user space is performed
     if (key.getSpace() != null) {
-      File file;
-      for (final String componentId : OrganizationControllerProvider.getOrganisationController()
-          .getAllComponentIdsRecur(key.getSpace().getId())) {
-        file = new File(getAbsolutePath(componentId));
-        if (file.exists()) {
-          currentCount += sizeOfDirectory(file);
-        }
-      }
+      final List<File> files = Stream
+          .of(OrganizationController.get().getAllComponentIdsRecur(key.getSpace().getId()))
+          .map(i -> new File(getAbsolutePath(i)))
+          .filter(File::exists)
+          .collect(Collectors.toList());
+      currentCount = getDirectorySize(files);
     }
-
-    // Result
     return currentCount;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * org.silverpeas.core.admin.space.quota.AbstractSpaceQuotaService#verify(org.silverpeas.core.admin.space
-   * .quota.AbstractSpaceQuotaKey, AbstractQuotaCountingOffset)
-   */
-  @Override
-  public Quota verify(final DataStorageSpaceQuotaKey key,
-      final AbstractQuotaCountingOffset countingOffset) throws QuotaException {
-    Quota quota = new Quota();
-    if (isActivated() && key.isValid()) {
-      if (key.getSpace().isPersonalSpace()) {
-        // Setting a dummy id
-        quota.setQuotaId(-1L);
-        // The type
-        quota.setType(key.getQuotaType());
-        // The resource id
-        quota.setResourceId(key.getResourceId());
-        // Setting the max count
-        quota.setMaxCount(dataStorageInPersonalSpaceQuotaDefaultMaxCount);
-        // Verifying
-        quota = super.verify(key, quota, countingOffset);
-      } else {
-        // Default verifying
-        quota = super.verify(key, countingOffset);
-      }
-    }
-    return quota;
   }
 
   @Override

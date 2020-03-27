@@ -35,35 +35,41 @@ import org.silverpeas.core.web.util.viewgenerator.html.buttons.Button;
 public interface ButtonPane extends SimpleGraphicElement {
 
   /**
+   * Sets some CSS classes
+   * @param cssClass CSS classes.
+   */
+  void setCssClass(String cssClass);
+
+  /**
    * Method declaration
    * @param button
    * @see
    */
-  public void addButton(Button button);
+  void addButton(Button button);
 
   /**
    * Method declaration
    * @see
    */
-  public void setVerticalPosition();
+  void setVerticalPosition();
 
   /**
    * Method declaration
    * @param width
    * @see
    */
-  public void setVerticalWidth(String width);
+  void setVerticalWidth(String width);
 
   /**
    * Method declaration
    * @see
    */
-  public void setHorizontalPosition();
+  void setHorizontalPosition();
 
   /**
    * Print the browseBar in an html format.
    * @return The html based line code
    */
-  public String print();
+  String print();
 
 }

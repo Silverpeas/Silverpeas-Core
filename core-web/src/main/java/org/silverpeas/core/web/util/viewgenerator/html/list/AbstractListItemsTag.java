@@ -23,37 +23,33 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.list;
 
+import org.apache.taglibs.standard.tag.rt.core.ForEachTag;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
+import javax.servlet.jsp.JspTagException;
 import java.util.List;
 
 /**
- * Iterate over items.
+ * Centralizing code about iterating over items.
  * <p>If an instance of {@link SilverpeasList} is given, optimizations are offered</p>
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
-public class ListItemsTag extends AbstractListItemsTag {
-  private static final long serialVersionUID = 8166244530238320119L;
+public abstract class AbstractListItemsTag extends ForEachTag {
+  private static final long serialVersionUID = -6470873825192693523L;
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   @Override
-  protected <T> SilverpeasList<T> optimize(final List<T> list) {
-    final ListPaneTag pane = getListPane();
-    final SilverpeasList<T> silverpeasList = SilverpeasList.wrap(list);
-    if (silverpeasList.isSlice()) {
-      // The list is already paginated
-      return silverpeasList;
+  public void setItems(final Object items) throws JspTagException {
+    if (items instanceof List) {
+      final SilverpeasList optimized = optimize((List) items);
+      getListPane().setNbItems((int) optimized.originalListSize());
+      super.setItems(optimized);
     } else {
-      // Getting (and initializing) the pagination
-      final Pagination pagination = pane.getPagination(list.size());
-      // Computing the paginated list
-      return pagination.getPaginatedListFrom(silverpeasList);
+      super.setItems(items);
     }
   }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  protected ListPaneTag getListPane() {
-    return (ListPaneTag) findAncestorWithClass(this, ListPaneTag.class);
-  }
+  protected abstract <T> SilverpeasList<T> optimize(final List<T> list);
+
+  protected abstract <T extends AbstractListPaneTag> T getListPane();
 }

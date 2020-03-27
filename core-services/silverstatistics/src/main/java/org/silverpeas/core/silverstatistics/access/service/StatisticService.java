@@ -26,6 +26,7 @@ package org.silverpeas.core.silverstatistics.access.service;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
 import org.silverpeas.core.silverstatistics.access.model.HistoryCriteria.QUERY_ORDER_BY;
@@ -36,6 +37,7 @@ import org.silverpeas.core.util.SilverpeasList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * contract interface to manage silverpeas statistics
@@ -135,5 +137,13 @@ public interface StatisticService {
   Collection<HistoryObjectDetail> getLastHistoryOfObjectsForUser(String userId,
       int actionType, String objectType, int nbObjects);
 
-  boolean isRead(SilverpeasContent content, String userId);
+  /**
+   * Filters the given contributions in order to keep only those read by the user represented by
+   * the given identifier.
+   * @param contributions the contributions to filter.
+   * @param userId the identifier of the user to verify.
+   * @param <T> the type of contribution.
+   * @return a stream of read <T>
+   */
+  <T extends Contribution> Stream<T> filterRead(Collection<T> contributions, String userId);
 }

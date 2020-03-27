@@ -45,7 +45,7 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
    * @param space
    * @return
    */
-  abstract protected T createKeyFrom(SpaceInst space);
+  protected abstract T createKeyFrom(SpaceInst space);
 
   /*
      * (non-Javadoc)
@@ -71,10 +71,8 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
           // Parent quota
           spaceQuotaReached = get(createKeyFrom(fromSpaceTheQuotaIsReached));
         }
-      } catch (final AdminException e) {
+      } catch (final AdminException | QuotaException e) {
         SilverLogger.getLogger(this).error(e);
-      } catch (final QuotaException qe) {
-        SilverLogger.getLogger(this).error(qe);
       }
 
       if (!spaceQuotaReached.isReached()) {
@@ -84,23 +82,19 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
     return spaceQuotaReached;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AbstractQuotaService#verify(QuotaKey,
-   * AbstractQuotaCountingOffset)
-   */
   @Override
-  public Quota verify(T key, final AbstractQuotaCountingOffset countingOffset)
-      throws QuotaException {
+  public Quota verify(final T key, final Quota quota,
+      final AbstractQuotaCountingOffset countingOffset) throws QuotaException {
     if (!isActivated()) {
       return new Quota();
     }
-    Quota quota = super.verify(key, countingOffset);
-    while (key.isValid() && !key.getSpace().isRoot()) {
-      key = createKeyFrom(OrganizationControllerProvider.getOrganisationController()
-          .getSpaceInstById(key.getSpace().getDomainFatherId()));
-      quota = super.verify(key, countingOffset);
+    T currentKey = key;
+    Quota verifiedQuota = verifyQuota(quota, countingOffset);
+    while (currentKey.isValid() && !currentKey.getSpace().isRoot()) {
+      currentKey = createKeyFrom(OrganizationControllerProvider.getOrganisationController()
+          .getSpaceInstById(currentKey.getSpace().getDomainFatherId()));
+      verifiedQuota = verifyQuota(get(currentKey), countingOffset);
     }
-    return quota;
+    return verifiedQuota;
   }
 }

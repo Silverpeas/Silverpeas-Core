@@ -37,11 +37,20 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
 public class BodyPartLayoutTag extends SilverpeasLayout {
   private static final long serialVersionUID = 7740509977305998444L;
 
+  private String cssClass;
+
+  public void setCssClass(final String cssClass) {
+    this.cssClass = cssClass;
+  }
+
   @Override
   public int doEndTag() throws JspException {
     final body body = new body();
     if (isDefined(getId())) {
       body.setID(getId());
+    }
+    if (isDefined(cssClass)) {
+      body.setClass(cssClass);
     }
     body.addElement(getBodyContent().getString());
     renderAngularJs(body);

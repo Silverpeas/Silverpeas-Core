@@ -29,43 +29,26 @@ import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyTagSupport;
+import java.io.Serializable;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
-    .INDEX_PARAMETER_NAME;
-import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
-    .ITEMS_PER_PAGE_PARAM;
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.INDEX_PARAMETER_NAME;
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.ITEMS_PER_PAGE_PARAM;
 
 /**
  * Create a new ListPane.
  * @author silveryocha
  */
-public class ListPaneTag extends BodyTagSupport {
+public class ListPaneTag extends AbstractListPaneTag {
   private static final long serialVersionUID = 1370094709020971998L;
-  private static final int DEFAULT_NB_ITEM_PER_PAGE = 10;
-  private String var;
-  private String routingAddress = null;
   private int numberLinesPerPage = DEFAULT_NB_ITEM_PER_PAGE;
   private PaginationPage page;
-  private int nbItems = 0;
-
-  public String getRoutingAddress() {
-    return routingAddress;
-  }
-
-  public void setRoutingAddress(String routingAddress) {
-    this.routingAddress = routingAddress;
-  }
 
   @Override
   public int doStartTag() throws JspException {
-    nbItems = 0;
     initNbLinesPerPage();
-    return EVAL_BODY_BUFFERED;
+    return super.doStartTag();
   }
 
   @Override
@@ -96,14 +79,6 @@ public class ListPaneTag extends BodyTagSupport {
     return EVAL_PAGE;
   }
 
-  /**
-   * The name of the HttpSession attribute that contains the Pagination.
-   * @param name the name which references the pagination into the session.
-   */
-  public void setVar(final String name) {
-    this.var = name;
-  }
-
   public void setNumberLinesPerPage(int numberLinesPerPage) {
     this.numberLinesPerPage = numberLinesPerPage;
   }
@@ -118,7 +93,7 @@ public class ListPaneTag extends BodyTagSupport {
    * @return the {@link Pagination} instance.
    */
   Pagination getPagination(final int nbItems) {
-    final String cacheKey = this.getClass().getSimpleName() + "pagination" + this.var;
+    final String cacheKey = this.getClass().getSimpleName() + "pagination" + getVar();
     Pagination pagination = (Pagination) getRequest().getAttribute(cacheKey);
     if (pagination == null) {
       GraphicElementFactory gef = getGraphicElementFactory();
@@ -138,7 +113,7 @@ public class ListPaneTag extends BodyTagSupport {
   private void initNbLinesPerPage() {
     final String nbLines = getRequest().getParameter(ITEMS_PER_PAGE_PARAM);
     if (isDefined(nbLines)) {
-      getState().setMaximumVisibleLine(Integer.valueOf(nbLines));
+      getState().setMaximumVisibleLine(Integer.parseInt(nbLines));
     }
     final String index = getRequest().getParameter(INDEX_PARAMETER_NAME);
     if (isDefined(index)) {
@@ -146,16 +121,8 @@ public class ListPaneTag extends BodyTagSupport {
     }
   }
 
-  int getNbItems() {
-    return nbItems;
-  }
-
-  void setNbItems(final int nbItems) {
-    this.nbItems = nbItems;
-  }
-
   State getState() {
-    final String sessionKey = this.getClass().getSimpleName() + this.var;
+    final String sessionKey = this.getClass().getSimpleName() + getVar();
     State state = (State) getSession().getAttribute(sessionKey);
     if (state == null) {
       state = new State(numberLinesPerPage);
@@ -173,17 +140,10 @@ public class ListPaneTag extends BodyTagSupport {
         .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
   }
 
-  private ServletRequest getRequest() {
-    return pageContext.getRequest();
-  }
-
-  private HttpSession getSession() {
-    return pageContext.getSession();
-  }
-
-  static class State {
+  static class State implements Serializable {
+    private static final long serialVersionUID = 879525429823439845L;
+    private int maximumVisibleLine;
     private int firstVisibleLine = 0;
-    private int maximumVisibleLine = DEFAULT_NB_ITEM_PER_PAGE;
 
     public State(final int maximumVisibleLine) {
       this.maximumVisibleLine = maximumVisibleLine;

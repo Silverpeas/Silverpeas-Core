@@ -76,7 +76,7 @@ var tickerNews = [];
 (function($) {
   function worker() {
     $.ajax({
-      url : webContext + '/services/news/ticker',
+      url : webContext + '/services/news/ticker?limit='+${settings.displayLimit},
       type : "GET",
       dataType : "json",
       cache : false,

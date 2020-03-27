@@ -25,6 +25,7 @@ package org.silverpeas.core.silverstatistics.access.dao;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
@@ -34,6 +35,7 @@ import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeExcepti
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 
@@ -45,11 +47,16 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static org.silverpeas.core.contribution.model.ContributionIdentifier.from;
+import static org.silverpeas.core.util.DateUtil.*;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class HistoryObjectDAO {
@@ -75,10 +82,6 @@ public class HistoryObjectDAO {
   private static final String QUERY_STATISTIC_COUNT_BY_PERIOD =
       "SELECT COUNT(resourceId) FROM SB_Statistic_History WHERE resourceId=? AND ComponentId =? " +
           "AND resourceType = ? AND datestat >= ? AND datestat <= ?";
-
-  private static final String QUERY_STATISTIC_COUNT_BY_PERIOD_AND_USER =
-      "SELECT COUNT(resourceId) FROM SB_Statistic_History WHERE resourceId=? AND ComponentId =? " +
-          "AND resourceType = ? AND datestat >= ? AND datestat <= ? AND userid = ?";
 
   private HistoryObjectDAO() {
   }
@@ -132,7 +135,7 @@ public class HistoryObjectDAO {
     try {
       Date now = new Date();
       prepStmt = con.prepareStatement(QUERY_STATISTIC_INSERT);
-      prepStmt.setString(1, DateUtil.date2SQLDate(now));
+      prepStmt.setString(1, date2SQLDate(now));
       prepStmt.setString(2, DateUtil.formatTime(now));
       prepStmt.setString(3, userId);
       prepStmt.setString(4, resourceReference.getId());
@@ -281,8 +284,8 @@ public class HistoryObjectDAO {
       prepStmt.setString(1, primaryKey.getId());
       prepStmt.setString(2, primaryKey.getInstanceId());
       prepStmt.setString(3, objectType);
-      prepStmt.setString(4, DateUtil.date2SQLDate(startDate));
-      prepStmt.setString(5, DateUtil.date2SQLDate(endDate));
+      prepStmt.setString(4, date2SQLDate(startDate));
+      prepStmt.setString(5, date2SQLDate(endDate));
       rs = prepStmt.executeQuery();
       if (rs.next()) {
         nb = rs.getInt(1);
@@ -293,35 +296,37 @@ public class HistoryObjectDAO {
     }
   }
 
-  public static int getCountByPeriodAndUser(Connection con, WAPrimaryKey primaryKey,
-      String objectType, Date startDate, Date endDate, String userId) throws SQLException {
-    int nb = 0;
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(QUERY_STATISTIC_COUNT_BY_PERIOD_AND_USER);
-      prepStmt.setString(1, primaryKey.getId());
-      prepStmt.setString(2, primaryKey.getInstanceId());
-      prepStmt.setString(3, objectType);
-      if (startDate != null) {
-        prepStmt.setString(4, DateUtil.date2SQLDate(startDate));
-      } else {
-        prepStmt.setString(4, DateUtil.date2SQLDate(DateUtil.MINIMUM_DATE));
-      }
-      if (endDate != null) {
-        prepStmt.setString(5, DateUtil.date2SQLDate(endDate));
-      } else {
-        prepStmt.setString(5, DateUtil.date2SQLDate(DateUtil.MAXIMUM_DATE));
-      }
-      prepStmt.setString(6, userId);
-      rs = prepStmt.executeQuery();
-      if (rs.next()) {
-        nb = rs.getInt(1);
-      }
-      return nb;
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
+  public static Stream<Pair<ContributionIdentifier, Integer>> countByPeriodAndUser(
+      final Connection con, final Collection<ContributionIdentifier> contributionIds,
+      final Date startDate, final Date endDate, final String userId) throws SQLException {
+    final Set<String> ids = contributionIds.stream()
+        .map(ContributionIdentifier::getLocalId)
+        .collect(Collectors.toSet());
+    final Set<String> instanceIds = contributionIds.stream()
+        .map(ContributionIdentifier::getComponentInstanceId)
+        .collect(Collectors.toSet());
+    final Set<String> types = contributionIds.stream()
+        .map(ContributionIdentifier::getType)
+        .collect(Collectors.toSet());
+    final Map<ContributionIdentifier, Integer> result = new HashMap<>(contributionIds.size());
+    JdbcSqlQuery.executeBySplittingOn(ids, (idBatch, ignore) ->
+        JdbcSqlQuery.executeBySplittingOn(instanceIds, (instanceIdBatch, ignoreToo) ->
+            JdbcSqlQuery.executeBySplittingOn(types, (typeBatch, ignoreAlsoToo) -> JdbcSqlQuery
+                .createSelect("resourceId, ComponentId, resourceType, count(*)")
+                .from(HISTORY_TABLE_NAME)
+                .where("resourceId").in(idBatch)
+                .and("ComponentId").in(instanceIdBatch)
+                .and("resourceType").in(typeBatch)
+                .and("datestat >= ?", date2SQLDate(startDate != null ? startDate : MINIMUM_DATE))
+                .and("datestat <= ?", date2SQLDate(endDate != null ? endDate : MAXIMUM_DATE))
+                .and("userid = ?", userId)
+                .groupBy("resourceId, ComponentId, resourceType")
+                .executeWith(con, r -> {
+                  final ContributionIdentifier cId = from(r.getString(2), r.getString(1), r.getString(3));
+                  result.put(cId, r.getInt(4));
+                  return null;
+                }))));
+    return contributionIds.stream().map(i -> Pair.of(i, result.getOrDefault(i, 0)));
   }
 
   public static void move(Connection con, ResourceReference toResourceReference, int actionType, String objectType)
@@ -372,8 +377,8 @@ public class HistoryObjectDAO {
       prepStmt = con.prepareStatement(query.toString());
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, objectType);
-      prepStmt.setString(3, DateUtil.date2SQLDate(startDate));
-      prepStmt.setString(4, DateUtil.date2SQLDate(endDate));
+      prepStmt.setString(3, date2SQLDate(startDate));
+      prepStmt.setString(4, date2SQLDate(endDate));
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         results.add(rs.getString(1));
@@ -415,8 +420,8 @@ public class HistoryObjectDAO {
       prepStmt = con.prepareStatement(query.toString());
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, objectType);
-      prepStmt.setString(3, DateUtil.date2SQLDate(startDate));
-      prepStmt.setString(4, DateUtil.date2SQLDate(endDate));
+      prepStmt.setString(3, date2SQLDate(startDate));
+      prepStmt.setString(4, date2SQLDate(endDate));
       prepStmt.setString(5, userId);
       rs = prepStmt.executeQuery();
       while (rs.next()) {

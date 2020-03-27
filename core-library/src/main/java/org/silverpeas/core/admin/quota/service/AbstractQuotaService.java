@@ -23,18 +23,18 @@
  */
 package org.silverpeas.core.admin.quota.service;
 
+import org.silverpeas.core.admin.quota.QuotaKey;
 import org.silverpeas.core.admin.quota.constant.QuotaLoad;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.core.admin.quota.exception.QuotaNotEnoughException;
-import org.silverpeas.core.admin.quota.offset.AbstractQuotaCountingOffset;
-import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.TransactionRuntimeException;
-import org.silverpeas.core.admin.quota.QuotaKey;
 import org.silverpeas.core.admin.quota.exception.QuotaFullException;
+import org.silverpeas.core.admin.quota.exception.QuotaNotEnoughException;
 import org.silverpeas.core.admin.quota.exception.QuotaOutOfBoundsException;
 import org.silverpeas.core.admin.quota.model.Quota;
+import org.silverpeas.core.admin.quota.offset.AbstractQuotaCountingOffset;
 import org.silverpeas.core.admin.quota.offset.SimpleQuotaCountingOffset;
 import org.silverpeas.core.admin.quota.repository.QuotaRepository;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.core.util.Process;
 
 import javax.inject.Inject;
@@ -97,10 +97,13 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
 
   @Override
   public Quota get(final T key) throws QuotaException {
+    if (!isActivated()) {
+      return new Quota();
+    }
     return requiredTransaction(() -> {
       final Quota quota = getByQuotaKey(key);
       if (quota.exists()) {
-        final long currentCount = getCurrentCount(key);
+        final long currentCount = quota.isNotUnlimitedLoad() ? getCurrentCount(key) : 0L;
         if (quota.getCount() != currentCount) {
           quota.setCount(currentCount);
           quotaRepository.saveAndFlush(quota);
@@ -129,9 +132,6 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
 
   @Override
   public Quota verify(final T key) throws QuotaException {
-    if (!isActivated()) {
-      return new Quota();
-    }
     return verify(key, SimpleQuotaCountingOffset.from(0));
   }
 
@@ -142,21 +142,45 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
       return new Quota();
     }
     // Returning the quota used by this verify process
-    return verify(key, getByQuotaKey(key), countingOffset);
+    return verify(key, get(key), countingOffset);
+  }
+
+  @Override
+  public Quota verify(final T key, final Quota quota) throws QuotaException {
+    if (!isActivated()) {
+      return new Quota();
+    }
+    return verify(key, quota, SimpleQuotaCountingOffset.from(0));
+  }
+
+  @Override
+  public Quota verify(final T key, final Quota quota,
+      final AbstractQuotaCountingOffset countingOffset) throws QuotaException {
+    return verifyQuota(quota, countingOffset);
   }
 
   /**
-   * Verify from a given quota
+   * This method ensures that no recursion can be done between service signatures.
+   * <p>
+   * The count of given quota MUST have been computed before calling this method.
+   * </p>
+   * @param quota the quota to verify.
+   * @param countingOffset an offset to apply.
+   * @throws QuotaException when the quota is reached.
+   * @return a copied quota from the given one containing the count with the offset used by
+   * the verify treatment
    */
-  protected Quota verify(final T key, final Quota quota,
+  protected final Quota verifyQuota(final Quota quota,
       final AbstractQuotaCountingOffset countingOffset) throws QuotaException {
     if (!isActivated()) {
       return new Quota();
     }
     if (quota.exists()) {
+      final Quota copy = new Quota(quota);
+      copy.setQuotaId(Long.parseLong(quota.getId()));
       long offset = countingOffset.getOffset();
-      quota.setCount(getCurrentCount(key) + offset);
-      final QuotaLoad quotaLoad = quota.getLoad();
+      copy.setCount(quota.getCount() + offset);
+      final QuotaLoad quotaLoad = copy.getLoad();
       if (QuotaLoad.OUT_OF_BOUNDS.equals(quotaLoad)) {
         throw new QuotaOutOfBoundsException(quota);
       } else if (QuotaLoad.FULL.equals(quotaLoad)) {
@@ -164,6 +188,7 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
       } else if (QuotaLoad.NOT_ENOUGH.equals(quotaLoad)) {
         throw new QuotaNotEnoughException(quota);
       }
+      return copy;
     }
     return quota;
   }
@@ -179,8 +204,7 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
     });
   }
 
-  private <RETURN_VALUE> RETURN_VALUE requiredTransaction(
-      final Process<RETURN_VALUE> process) throws QuotaException {
+  private <R> R requiredTransaction(final Process<R> process) throws QuotaException {
     try {
       return Transaction.performInOne(process);
     } catch (TransactionRuntimeException e) {
@@ -195,5 +219,5 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
    * Indicates if the type of quota is activated
    * @return true if activated, false otherwise
    */
-  abstract protected boolean isActivated();
+  protected abstract boolean isActivated();
 }

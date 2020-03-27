@@ -1930,6 +1930,33 @@ if (typeof window.sp === 'undefined') {
         };
       }
     },
+    accListPane : {
+      nextItems : function(url, targetListId) {
+        return sp.ajaxRequest(url).send()
+            .then(function(request) {
+              const $tmpContainer = jQuery('<div>');
+              $tmpContainer.html(request.responseText);
+              const paneSelector = '#' + targetListId + '-pane';
+              const targetListSelector = '#' + targetListId;
+              const actionsPaneSelector = paneSelector + ' .acc-list-pane-actions';
+              const $tmpListContent = jQuery(targetListSelector, $tmpContainer);
+              const $tmpActionContent = jQuery(actionsPaneSelector, $tmpContainer);
+              jQuery(targetListSelector).append($tmpListContent.children());
+              jQuery(actionsPaneSelector).remove();
+              const $pane = jQuery(paneSelector);
+              if ($tmpActionContent.length) {
+                $pane.append($tmpActionContent);
+              }
+            })
+            .then(function() {
+              if (window.spProgressMessage) {
+                window.spProgressMessage.hide();
+              } else if (window.top.spProgressMessage) {
+                window.top.spProgressMessage.hide();
+              }
+            });
+      }
+    },
     arrayPane : {
       ajaxControls : function(containerCssSelector, options) {
         var __refreshFromRequestResponse = function(request) {

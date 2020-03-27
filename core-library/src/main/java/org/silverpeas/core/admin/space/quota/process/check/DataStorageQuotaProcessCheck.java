@@ -24,7 +24,6 @@
 package org.silverpeas.core.admin.space.quota.process.check;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.quota.constant.QuotaLoad;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
@@ -88,7 +87,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
       for (final SpaceInst space : identifyHandledSpaces(processExecutionContext, fileHandler)) {
         try {
           SpaceServiceProvider.getDataStorageSpaceQuotaService()
-              .verify(DataStorageSpaceQuotaKey.from(space),
+              .verify(DataStorageSpaceQuotaKey.from(space), space.getDataStorageQuota(),
                   SpaceDataStorageQuotaCountingOffset.from(space, fileHandler));
         } catch (final QuotaException quotaException) {
           SilverLogger.getLogger(this).silent(quotaException);
@@ -134,7 +133,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
     final List<SpaceInst> handledSpaces = new ArrayList<>();
     for (final String spaceId : spaceIds) {
       SpaceInst handledSpace = organizationController.getSpaceInstById(spaceId);
-      if (!QuotaLoad.UNLIMITED.equals(handledSpace.getDataStorageQuota().getLoad())) {
+      if (handledSpace.getDataStorageQuota().isNotUnlimitedLoad()) {
         handledSpaces.add(handledSpace);
       }
     }

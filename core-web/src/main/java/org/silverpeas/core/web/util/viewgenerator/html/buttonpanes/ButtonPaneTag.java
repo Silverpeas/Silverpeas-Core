@@ -23,9 +23,11 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.buttonpanes;
 
+import org.apache.ecs.ElementContainer;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.buttons.Button;
-import java.io.IOException;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -37,16 +39,24 @@ public class ButtonPaneTag extends TagSupport {
   private static final String BUTTON_PANE_ATT = "pageContextButtonPane";
   private static final long serialVersionUID = -3658916991820665360L;
 
+  private String cssClass = StringUtil.EMPTY;
+
+  public void setCssClass(final String cssClass) {
+    this.cssClass = cssClass;
+  }
+
   @Override
   public int doEndTag() throws JspException {
-    final ButtonPane buttonPane = (ButtonPane) pageContext.getAttribute(BUTTON_PANE_ATT);
-    try {
-      pageContext.getOut().println(buttonPane.print());
-    } catch (final IOException e) {
-      throw new JspException("ButtonPane Tag", e);
-    }
-    pageContext.removeAttribute(BUTTON_PANE_ATT);
+    getContent().output(pageContext.getOut());
     return EVAL_PAGE;
+  }
+
+  public ElementContainer getContent() {
+    final ElementContainer elements = new ElementContainer();
+    final ButtonPane buttonPane = (ButtonPane) pageContext.getAttribute(BUTTON_PANE_ATT);
+    elements.addElement(buttonPane.print());
+    pageContext.removeAttribute(BUTTON_PANE_ATT);
+    return elements;
   }
 
   @Override
@@ -82,6 +92,7 @@ public class ButtonPaneTag extends TagSupport {
           getAttribute(
           GraphicElementFactory.GE_FACTORY_SESSION_ATT);
       result = gef.getButtonPane();
+      result.setCssClass(cssClass);
       pageContext.setAttribute(BUTTON_PANE_ATT, result);
     }
     return result;

@@ -557,6 +557,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       try {
         SpaceServiceProvider.getComponentSpaceQuotaService().initialize(
             ComponentSpaceQuotaKey.from(space), space.getComponentSpaceQuota().getMaxCount());
+        space.clearComponentSpaceQuotaCache();
       } catch (QuotaException qe) {
         throw new QuotaRuntimeException(qe.getMessage(), qe);
       }
@@ -573,6 +574,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       try {
         SpaceServiceProvider.getDataStorageSpaceQuotaService().initialize(
             DataStorageSpaceQuotaKey.from(space), space.getDataStorageQuota().getMaxCount());
+        space.clearDataStorageQuotaCache();
       } catch (QuotaException qe) {
         throw new QuotaRuntimeException(qe.getMessage(), qe);
       }
