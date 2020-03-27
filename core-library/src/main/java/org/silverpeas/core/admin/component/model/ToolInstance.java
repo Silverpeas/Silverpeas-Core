@@ -26,12 +26,8 @@ package org.silverpeas.core.admin.component.model;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Optional;
-
-import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
  * @author silveryocha
@@ -54,11 +50,6 @@ public class ToolInstance implements SilverpeasPersonalComponentInstance {
    * @return optionally an instance of {@link ToolInstance}.
    */
   public static Optional<ToolInstance> from(String toolId) {
-    if (isNotDefined(toolId)) {
-      String message = undefined("tool instance");
-      SilverLogger.getLogger(ToolInstance.class).error(message);
-      throw new IllegalArgumentException(message);
-    }
     return Tool.getById(toolId).map(ToolInstance::new);
   }
 
