@@ -79,8 +79,12 @@ public interface QuotaService<T extends QuotaKey> {
 
   /**
    * Verifies if the quota is full or not enough from a given quota key.
-   * If full then a quota full exception is throwed.
-   * If not enough then a quota not enough exception is throwed.
+   * <p>
+   * Be aware of that the quota count will be loaded and computed each time this signature is
+   * called.
+   * </p>
+   * If full then a quota full exception is thrown
+   * If not enough then a quota not enough exception is thrown.
    * @param key the key
    * @return the quota used by the verify treatment
    * @throws QuotaException on error
@@ -90,14 +94,52 @@ public interface QuotaService<T extends QuotaKey> {
   /**
    * Verifies if the quota is full or not enough from a given quota key and adding a counting
    * offset.
-   * If full then a quota full exception is throwed.
-   * If not enough then a quota not enough exception is throwed.
+   * <p>
+   * Be aware of that the quota count will be loaded and computed each time this signature is
+   * called.
+   * </p>
+   * If full then a quota full exception is throw.
+   * If not enough then a quota not enough exception is throw.
    * @param key the key
-   * @param countingOffset a counting offiset
+   * @param countingOffset a counting offset
    * @return the quota used by the verify treatment
    * @throws QuotaException on error
    */
   Quota verify(T key, AbstractQuotaCountingOffset countingOffset) throws QuotaException;
+
+  /**
+   * Verifies if the given loaded and computed quota.
+   * <p>
+   * Be aware of that the quota count is not again computed by this service. When this signature
+   * is called, it means that the {@link Quota} instance has been already loaded and there is no
+   * need to perform again the counting.
+   * </p>
+   * If full then a quota full exception is thrown
+   * If not enough then a quota not enough exception is thrown.
+   * @param key the key
+   * @param quota a loaded quota
+   * @return the quota used by the verify treatment
+   * @throws QuotaException on error
+   */
+  Quota verify(T key, Quota quota) throws QuotaException;
+
+  /**
+   * Verifies if the given loaded and computed quota by adding a counting offset.
+   * <p>
+   * Be aware of that the quota count is not again computed by this service. When this signature
+   * is called, it means that the {@link Quota} instance has been already loaded and there is no
+   * need to perform again the counting.
+   * </p>
+   * If full then a quota full exception is thrown.
+   * If not enough then a quota not enough exception is thrown.
+   * @param key the key
+   * @param quota a loaded quota
+   * @param countingOffset a counting offset
+   * @throws QuotaException on error
+   * @return a copied quota from the given one containing the count with the offset used by
+   * the verify treatment
+   */
+  Quota verify(T key, Quota quota, AbstractQuotaCountingOffset countingOffset) throws QuotaException;
 
   /**
    * Removes quietly the quota of the resource from a given quota key.

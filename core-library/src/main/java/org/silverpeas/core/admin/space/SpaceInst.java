@@ -38,6 +38,7 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -55,6 +56,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static org.silverpeas.core.admin.space.SpaceServiceProvider.getComponentSpaceQuotaService;
+import static org.silverpeas.core.admin.space.SpaceServiceProvider.getDataStorageSpaceQuotaService;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -68,12 +72,16 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   public static final String DEFAULT_SPACE_ID = "-20";
   private static final long serialVersionUID = 4695928610067045964L;
   // First page possible types
-  final public static int FP_TYPE_STANDARD = 0; // Page d'acueil standard
-  final public static int FP_TYPE_COMPONENT_INST = 1; // Composant (dans ce cas
+  public static final int FP_TYPE_STANDARD = 0; // Page d'acueil standard
+  public static final int FP_TYPE_COMPONENT_INST = 1; // Composant (dans ce cas
   // : firstPageExtraParam = composant instance ID)
-  final public static int FP_TYPE_PORTLET = 2; // Portlets
-  final public static int FP_TYPE_HTML_PAGE = 3; // Page HTML
-  final public static String STATUS_REMOVED = "R";
+  public static final int FP_TYPE_PORTLET = 2; // Portlets
+  public static final int FP_TYPE_HTML_PAGE = 3; // Page HTML
+  public static final String STATUS_REMOVED = "R";
+  public static final String QUOTA_STORAGE_PREFIX_KEY = SpaceInst.class + "@DataStorageQuota@";
+  public static final String QUOTA_STORAGE_REACHED_PREFIX_KEY = SpaceInst.class + "@ReachedDataStorageQuota@";
+  public static final String QUOTA_COMPONENT_PREFIX_KEY = SpaceInst.class + "@ComponentQuota@";
+  public static final String QUOTA_COMPONENT_REACHED_PREFIX_KEY = SpaceInst.class + "@ReachedComponentQuota@";
 
   /* Unique identifier of the space */
   private String id;
@@ -118,16 +126,6 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   private int level = 0;
   private boolean displaySpaceFirst = true;
   private boolean isPersonalSpace = false;
-  /**
-   * This data is not used in equals and hashcode process as it is an extra information.
-   */
-  private Quota componentSpaceQuota = null;
-  private Quota componentSpaceQuotaReached = null;
-  /**
-   * This data is not used in equals and hashcode process as it is an extra information.
-   */
-  private Quota dataStorageQuota = null;
-  private Quota dataStorageQuotaReached = null;
 
   /**
    * Constructor
@@ -606,10 +604,18 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @return the componentSpaceQuota
    */
   public Quota getComponentSpaceQuota() {
-    if (componentSpaceQuota == null) {
-      loadComponentSpaceQuota();
-    }
-    return componentSpaceQuota;
+    final SimpleCache cache = getRequestCacheService().getCache();
+    return cache.computeIfAbsent(QUOTA_COMPONENT_PREFIX_KEY + getLocalId(), Quota.class, () -> {
+      try {
+        return getComponentSpaceQuotaService().get(ComponentSpaceQuotaKey.from(this));
+      } catch (final QuotaException qe) {
+        throw new QuotaRuntimeException("Cannot get quota for space", qe);
+      }
+    });
+  }
+
+  public void clearComponentSpaceQuotaCache() {
+    getRequestCacheService().getCache().remove(QUOTA_COMPONENT_PREFIX_KEY + getLocalId());
   }
 
   /**
@@ -617,9 +623,19 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    */
   public void setComponentSpaceQuotaMaxCount(final long componentSpaceQuotaMaxCount)
       throws QuotaException {
-    loadComponentSpaceQuota();
+    final Quota componentSpaceQuota = getComponentSpaceQuota();
     componentSpaceQuota.setMaxCount(componentSpaceQuotaMaxCount);
     componentSpaceQuota.validateBounds();
+  }
+
+  /**
+   * @return the componentSpaceQuota
+   */
+  private Quota getReachedComponentSpaceQuota() {
+    final SimpleCache cache = getRequestCacheService().getCache();
+    return cache.computeIfAbsent(QUOTA_COMPONENT_REACHED_PREFIX_KEY + getLocalId(), Quota.class,
+        () -> getComponentSpaceQuotaService()
+            .getQuotaReachedFromSpacePath(ComponentSpaceQuotaKey.from(this)));
   }
 
   /**
@@ -628,9 +644,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @return
    */
   public boolean isComponentSpaceQuotaReached() {
-    componentSpaceQuotaReached = SpaceServiceProvider.getComponentSpaceQuotaService()
-        .getQuotaReachedFromSpacePath(ComponentSpaceQuotaKey.from(this));
-    return componentSpaceQuotaReached.isReached();
+    return getReachedComponentSpaceQuota().isReached();
   }
 
   /**
@@ -640,30 +654,25 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @return
    */
   public String getComponentSpaceQuotaReachedErrorMessage(final String language) {
-    return getQuotaReachedErrorMessage(componentSpaceQuotaReached, language,
-        "componentSpaceQuotaReached");
-  }
-
-  /**
-   * Centralizes the component space quota loading
-   */
-  private void loadComponentSpaceQuota() {
-    try {
-      componentSpaceQuota = SpaceServiceProvider.getComponentSpaceQuotaService()
-          .get(ComponentSpaceQuotaKey.from(this));
-    } catch (final QuotaException qe) {
-      throw new QuotaRuntimeException("Cannot get quota for space", qe);
-    }
+    return getQuotaReachedErrorMessage(getReachedComponentSpaceQuota(), language, "componentSpaceQuotaReached");
   }
 
   /**
    * @return the dataStorageQuota
    */
   public Quota getDataStorageQuota() {
-    if (dataStorageQuota == null) {
-      loadDataStorageQuota();
-    }
-    return dataStorageQuota;
+    final SimpleCache cache = getRequestCacheService().getCache();
+    return cache.computeIfAbsent(QUOTA_STORAGE_PREFIX_KEY + getLocalId(), Quota.class, () -> {
+      try {
+        return getDataStorageSpaceQuotaService().get(DataStorageSpaceQuotaKey.from(this));
+      } catch (final QuotaException qe) {
+        throw new QuotaRuntimeException("Cannot get quota for data storage", qe);
+      }
+    });
+  }
+
+  public void clearDataStorageQuotaCache() {
+    getRequestCacheService().getCache().remove(QUOTA_STORAGE_PREFIX_KEY + getLocalId());
   }
 
   /**
@@ -671,9 +680,19 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    */
   public void setDataStorageQuotaMaxCount(final long dataStorageQuotaMaxCount)
       throws QuotaException {
-    loadDataStorageQuota();
+    final Quota dataStorageQuota = getDataStorageQuota();
     dataStorageQuota.setMaxCount(dataStorageQuotaMaxCount);
     dataStorageQuota.validateBounds();
+  }
+
+  /**
+   * @return the dataStorageQuota
+   */
+  private Quota getReachedDataStorageQuota() {
+    final SimpleCache cache = getRequestCacheService().getCache();
+    return cache.computeIfAbsent(QUOTA_STORAGE_REACHED_PREFIX_KEY + getLocalId(), Quota.class,
+        () -> getDataStorageSpaceQuotaService()
+            .getQuotaReachedFromSpacePath(DataStorageSpaceQuotaKey.from(this)));
   }
 
   /**
@@ -682,9 +701,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @return
    */
   public boolean isDataStorageQuotaReached() {
-    dataStorageQuotaReached = SpaceServiceProvider.getDataStorageSpaceQuotaService()
-        .getQuotaReachedFromSpacePath(DataStorageSpaceQuotaKey.from(this));
-    return dataStorageQuotaReached.isReached();
+    return getReachedDataStorageQuota().isReached();
   }
 
   /**
@@ -694,19 +711,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @return
    */
   public String getDataStorageQuotaReachedErrorMessage(final String language) {
-    return getQuotaReachedErrorMessage(dataStorageQuotaReached, language, "dataStorageQuotaReached");
-  }
-
-  /**
-   * Centralizes the data storage quota loading
-   */
-  private void loadDataStorageQuota() {
-    try {
-      dataStorageQuota = SpaceServiceProvider.getDataStorageSpaceQuotaService().get(
-          DataStorageSpaceQuotaKey.from(this));
-    } catch (final QuotaException qe) {
-      throw new QuotaRuntimeException("Cannot get quota for data storage", qe);
-    }
+    return getQuotaReachedErrorMessage(getReachedDataStorageQuota(), language, "dataStorageQuotaReached");
   }
 
   /**

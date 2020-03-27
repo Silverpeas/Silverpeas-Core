@@ -23,23 +23,38 @@
  */
 package org.silverpeas.core.util.file;
 
-import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.memory.MemoryUnit;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.StringTokenizer;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import static java.io.File.separatorChar;
+import static java.nio.file.Files.walkFileTree;
+import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.maxThreadPoolSizeOf;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
@@ -206,6 +221,53 @@ public class FileRepositoryManager {
   }
 
   /**
+   * Computes as fast as possible the size of a given directory list.
+   * @param directories a list of directory.
+   * @return the size of given directory list as long.
+   */
+  public static <T> long getDirectorySize(final Collection<T> directories) {
+    long size = 0L;
+    final List<Callable<Long>> directorySizes = directories.stream()
+        .map(d -> (Callable<Long>) () -> getDirectorySize(toPath(d)))
+        .collect(Collectors.toList());
+    try {
+      final List<Future<Long>> result = ManagedThreadPool.getPool()
+          .invoke(directorySizes, maxThreadPoolSizeOf(Runtime.getRuntime().availableProcessors()));
+      for (final Future<Long> future : result) {
+        size += future.get();
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(FileRepositoryManager.class).error(e);
+    }
+    return size;
+  }
+
+  /**
+   * Computes as fast as possible the size of a given directory.
+   * @param directory a directory.
+   * @return the size of given directory as long.
+   */
+  public static <T> long getDirectorySize(final T directory) {
+    final FileSizeCounter sizeCounter = new FileSizeCounter();
+    try {
+      walkFileTree(toPath(directory), sizeCounter);
+    } catch (IOException e) {
+      SilverLogger.getLogger(FileRepositoryManager.class).error(e);
+    }
+    return sizeCounter.getSize();
+  }
+
+  private static <T> Path toPath(final T path) {
+    if (path instanceof Path) {
+      return (Path) path;
+    } else if (path instanceof File) {
+      return ((File) path).toPath();
+    } else {
+      return Paths.get(path.toString());
+    }
+  }
+
+  /**
    * Get the estimated download time
    *
    * @param size the file's size
@@ -302,5 +364,36 @@ public class FileRepositoryManager {
   }
 
   private FileRepositoryManager() {
+  }
+
+  private static class FileSizeCounter implements FileVisitor<Path> {
+
+    private long size = 0L;
+
+    @Override
+    public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) {
+      return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) {
+      Objects.requireNonNull(file);
+      size += attrs.size();
+      return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult visitFileFailed(final Path file, final IOException exc) {
+      return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult postVisitDirectory(final Path dir, final IOException exc) {
+      return FileVisitResult.CONTINUE;
+    }
+
+    long getSize() {
+      return size;
+    }
   }
 }

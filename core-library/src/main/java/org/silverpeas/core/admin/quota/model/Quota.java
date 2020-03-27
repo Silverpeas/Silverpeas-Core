@@ -31,13 +31,13 @@ import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 import static java.util.EnumSet.of;
@@ -48,10 +48,10 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 @Entity
 @Table(name = "st_quota")
-@NamedQueries({@NamedQuery(name = "Quota.getByTypeAndResourceId",
-    query = "from Quota where type = :type and resourceId = :resourceId")})
+@NamedQuery(name = "Quota.getByTypeAndResourceId",
+            query = "from Quota where type = :type and resourceId = :resourceId")
 public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
-    implements Serializable, Cloneable {
+    implements Serializable {
   private static final long serialVersionUID = 6564633879921455848L;
 
   @Column(name = "quotaType", nullable = false)
@@ -72,6 +72,25 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
   @Column(name = "saveDate", nullable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
   private Date saveDate;
+
+  /**
+   * Constructor for JPA and internal services.
+   */
+  public Quota() {
+  }
+
+  /**
+   * Copy constructor.
+   * @param other the quota to copy.
+   */
+  public Quota(final Quota other) {
+    this.type = other.type;
+    this.resourceId = other.resourceId;
+    this.minCount = other.minCount;
+    this.maxCount = other.maxCount;
+    this.count = other.count;
+    this.saveDate = other.saveDate;
+  }
 
   @Override
   protected void performBeforePersist() {
@@ -124,7 +143,7 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
    */
   public QuotaLoad getLoad() {
     final QuotaLoad quotaLoad;
-    if (getMaxCount() > 0) {
+    if (isNotUnlimitedLoad()) {
       if (getCount() > getMaxCount()) {
         quotaLoad = QuotaLoad.OUT_OF_BOUNDS;
       } else if (getCount() == 0) {
@@ -140,6 +159,10 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
       quotaLoad = QuotaLoad.UNLIMITED;
     }
     return quotaLoad;
+  }
+
+  public boolean isNotUnlimitedLoad() {
+    return getMaxCount() > 0;
   }
 
   /**
@@ -159,7 +182,7 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
     if (!QuotaLoad.UNLIMITED.equals(getLoad())) {
       loadRate =
           new BigDecimal(String.valueOf(getCount())).divide(
-              new BigDecimal(String.valueOf(getMaxCount())), 20, BigDecimal.ROUND_HALF_DOWN);
+              new BigDecimal(String.valueOf(getMaxCount())), 20, RoundingMode.HALF_DOWN);
     } else {
       loadRate = BigDecimal.ZERO;
     }
@@ -171,8 +194,8 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
    * @return
    */
   public BigDecimal getLoadPercentage() {
-    return getLoadRate().multiply(new BigDecimal(String.valueOf(100))).setScale(2,
-        BigDecimal.ROUND_HALF_DOWN);
+    return getLoadRate().multiply(new BigDecimal(String.valueOf(100)))
+        .setScale(2, RoundingMode.HALF_DOWN);
   }
 
   /**

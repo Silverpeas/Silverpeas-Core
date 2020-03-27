@@ -33,18 +33,24 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.exception.QuotaFullException;
 import org.silverpeas.core.admin.quota.exception.QuotaNotEnoughException;
 import org.silverpeas.core.admin.quota.exception.QuotaOutOfBoundsException;
 import org.silverpeas.core.admin.quota.model.Quota;
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.admin.quota.offset.SimpleQuotaCountingOffset;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -104,21 +110,46 @@ public class AbstractQuotaServiceIT {
     quotaService.setCount(100);
   }
 
+  private void waitForTenMillis() {
+    long start = System.currentTimeMillis();
+    await().atLeast(10, TimeUnit.MILLISECONDS).untilTrue(new AtomicBoolean(true));
+    Logger.getLogger(AbstractQuotaServiceIT.class.getName())
+        .log(Level.INFO, "waitForTenMillis -> {0}",
+            new Object[]{System.currentTimeMillis() - start});
+  }
+
   @Test
   public void testGet() throws QuotaException {
     Date date = new Date();
     assertThat(quotaService.get(dummyKey), notNullValue());
     assertThat(quotaService.get(dummyKey).exists(), is(false));
+    waitForTenMillis();
     final Quota quota = quotaService.get(existingKey);
     assertThat(quota, notNullValue());
     assertThat(quota.getCount(), is(100L));
-    assertThat(quota.getSaveDate().getTime(), greaterThanOrEqualTo(date.getTime()));
+    assertThat(quota.getSaveDate().getTime(), greaterThan(date.getTime()));
     date = quota.getSaveDate();
+    waitForTenMillis();
     final Quota quotaNotChanged = quotaService.get(existingKey);
     assertThat(quotaNotChanged, notNullValue());
     assertThat(quotaNotChanged, not(sameInstance(quota)));
     assertThat(quotaNotChanged.getCount(), is(100L));
     assertThat(quotaNotChanged.getSaveDate().getTime(), Matchers.equalTo(date.getTime()));
+    // Becoming unlimited
+    quota.setMinCount(0);
+    quota.setMaxCount(0);
+    waitForTenMillis();
+    date = quotaService.initialize(existingKey, quota).getSaveDate();
+    assertThat(quota.getCount(), is(100L));
+    waitForTenMillis();
+    final Quota quotaChanged = quotaService.get(existingKey);
+    assertThat(quotaChanged, notNullValue());
+    assertThat(quotaChanged, not(sameInstance(quota)));
+    assertThat(quotaChanged.getCount(), is(0L));
+    assertThat(quotaChanged.getSaveDate().getTime(), greaterThan(date.getTime()));
+    date = quotaChanged.getSaveDate();
+    waitForTenMillis();
+    assertThat(quotaService.get(existingKey).getSaveDate().getTime(), Matchers.equalTo(date.getTime()));
   }
 
   @Test
@@ -206,16 +237,45 @@ public class AbstractQuotaServiceIT {
 
   @Test
   public void testVerify() throws QuotaException {
-    Quota quota = quotaService.verify(newKey);
-    assertThat(quota, notNullValue());
-    assertThat(quota.exists(), is(false));
-    quota = quotaService.verify(existingKey);
-    assertThat(quota, notNullValue());
-    assertThat(quota.exists(), is(true));
-
+    quotaService.setCount(23);
+    Quota notExistingQuota = quotaService.verify(newKey);
+    assertThat(notExistingQuota, notNullValue());
+    assertThat(notExistingQuota.exists(), is(false));
+    final Quota existingQuota = quotaService.get(existingKey);
+    quotaService.setCount(100);
+    final Quota verifiedExistingQuota = quotaService.verify(existingKey);
+    assertThat(verifiedExistingQuota, notNullValue());
+    assertThat(verifiedExistingQuota, not(sameInstance(existingQuota)));
+    assertThat(verifiedExistingQuota.exists(), is(true));
+    assertThat(existingQuota.getCount(), is(23L));
+    assertThat(verifiedExistingQuota.getCount(), is(100L));
+    // Verifying exceptions (loading the quota count when verifying)
     assertVerifyException(QuotaOutOfBoundsException.class, existingKey, 1000);
     assertVerifyException(QuotaNotEnoughException.class, existingKey, 1);
     assertVerifyException(QuotaFullException.class, existingKey, 500);
+    Quota verifiedQuota;
+    // Verifying that the quota count is not again computed when giving directly a loaded quota
+    quotaService.setCount(10000);
+    verifiedQuota = quotaService.verify(existingKey, existingQuota);
+    assertThat(verifiedQuota, notNullValue());
+    assertThat(verifiedQuota, not(sameInstance(existingQuota)));
+    assertThat(verifiedQuota.getCount(), is(existingQuota.getCount()));
+    assertThat(verifiedQuota.getCount(), is(23L));
+    // Verifying offset (loading the quota count when verifying)
+    final SimpleQuotaCountingOffset offset = SimpleQuotaCountingOffset.from(10L);
+    quotaService.setCount(50);
+    verifiedQuota = quotaService.verify(existingKey, offset);
+    assertThat(verifiedQuota, notNullValue());
+    assertThat(verifiedQuota, not(sameInstance(existingQuota)));
+    assertThat(verifiedQuota.getCount(), not(is(existingQuota.getCount())));
+    assertThat(verifiedQuota.getCount(), is(50L + 10L));
+    // Verifying offset (quota count is not again performed when giving directly a loaded quota)
+    quotaService.setCount(50);
+    verifiedQuota = quotaService.verify(existingKey, existingQuota, offset);
+    assertThat(verifiedQuota, notNullValue());
+    assertThat(verifiedQuota, not(sameInstance(existingQuota)));
+    assertThat(verifiedQuota.getCount(), not(is(existingQuota.getCount())));
+    assertThat(verifiedQuota.getCount(), is(23L + 10L));
 
   }
 
