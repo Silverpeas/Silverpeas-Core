@@ -23,36 +23,21 @@
  */
 package org.silverpeas.core.personalorganizer.service;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class CalendarRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = -5706968069226233839L;
+  private static final long serialVersionUID = -1641597154737132587L;
 
-  /**
-   * method of interface FromModule
-   */
-  public String getModule() {
-    return "calendar";
+  public CalendarRuntimeException(final String message) {
+    super(message);
   }
 
-  public CalendarRuntimeException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  public CalendarRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public CalendarRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  public CalendarRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public CalendarRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public CalendarRuntimeException(final Throwable cause) {
+    super(cause);
   }
 }

@@ -81,7 +81,6 @@ import org.silverpeas.web.directory.model.DirectorySource;
 import org.silverpeas.web.directory.model.UserFragmentVO;
 import org.silverpeas.web.directory.model.UserItem;
 
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.*;
 import java.util.function.Function;
@@ -460,13 +459,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       otherUserDetail = getUserDetail(userId);
     }
     lastAllListUsersCalled = new DirectoryItemList();
-    try {
-      List<String> contactsIds = relationShipService.getMyContactsIds(Integer.parseInt(userId));
-      for (String contactId : contactsIds) {
-        lastAllListUsersCalled.add(new UserItem(getOrganisationController().getUserDetail(contactId)));
-      }
-    } catch (SQLException ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+    List<String> contactsIds = relationShipService.getMyContactsIds(Integer.parseInt(userId));
+    for (String contactId : contactsIds) {
+      lastAllListUsersCalled.add(
+          new UserItem(getOrganisationController().getUserDetail(contactId)));
     }
     lastListUsersCalled = lastAllListUsersCalled;
     return lastAllListUsersCalled;
@@ -477,14 +473,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentDirectory(DIRECTORY_COMMON);
     commonUserDetail = getUserDetail(userId);
     lastAllListUsersCalled = new DirectoryItemList();
-    try {
-      List<String> contactsIds = relationShipService.getAllCommonContactsIds(Integer.parseInt(
-          getUserId()), Integer.parseInt(userId));
-      for (String contactId : contactsIds) {
-        lastAllListUsersCalled.add(new UserItem(getOrganisationController().getUserDetail(contactId)));
-      }
-    } catch (SQLException ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+    List<String> contactsIds =
+        relationShipService.getAllCommonContactsIds(Integer.parseInt(getUserId()),
+            Integer.parseInt(userId));
+    for (String contactId : contactsIds) {
+      lastAllListUsersCalled.add(
+          new UserItem(getOrganisationController().getUserDetail(contactId)));
     }
     lastListUsersCalled = lastAllListUsersCalled;
     return lastAllListUsersCalled;

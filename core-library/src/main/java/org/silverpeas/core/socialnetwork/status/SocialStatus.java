@@ -23,16 +23,16 @@
  */
 package org.silverpeas.core.socialnetwork.status;
 
-import org.silverpeas.core.date.Date;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.socialnetwork.provider.SocialStatusInterface;
+import org.silverpeas.core.socialnetwork.provider.SocialStatusProvider;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Date;
 import java.util.List;
 
 @Singleton
-public class SocialStatus implements SocialStatusInterface {
+public class SocialStatus implements SocialStatusProvider {
 
   @Inject
   private StatusService statusService;
@@ -51,8 +51,9 @@ public class SocialStatus implements SocialStatusInterface {
   }
 
   @Override
-  public List<SocialInformation> getSocialInformationListOfMyContacts(
-      List<String> myContactsIds, Date begin, Date end) {
+  public List<SocialInformation> getSocialInformationListOfMyContacts(final String myId,
+      final List<String> myContactsIds, final Date begin, final Date end) {
     return getStatusService().getSocialInformationListOfMyContacts(myContactsIds, begin, end);
   }
+
 }

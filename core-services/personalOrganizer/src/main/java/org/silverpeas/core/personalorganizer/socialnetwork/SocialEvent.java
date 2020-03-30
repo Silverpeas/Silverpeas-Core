@@ -23,36 +23,28 @@
  */
 package org.silverpeas.core.personalorganizer.socialnetwork;
 
-import org.silverpeas.core.date.Date;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.socialnetwork.provider.SocialEventsInterface;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.personalorganizer.service.CalendarException;
-import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.provider.SocialEventProvider;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
  * @author Bensalem Nabil
  */
 @Singleton
-public class SocialEvent implements SocialEventsInterface {
+public class SocialEvent implements SocialEventProvider {
 
   @Inject
   private SilverpeasCalendar calendar;
 
-  private SilverpeasCalendar getCalendar() throws CalendarException {
-    if (calendar == null) {
-      throw new CalendarException(SocialEvent.class.getSimpleName(), SilverTrace.TRACE_LEVEL_ERROR,
-          "IoC error to get SilverpeasCalendar implementation");
-    }
+  private SilverpeasCalendar getCalendar() {
     return calendar;
   }
 
@@ -66,27 +58,25 @@ public class SocialEvent implements SocialEventsInterface {
    * @param begin date
    * @param end date
    * @return
-   * @throws CalendarException
-   * @throws UtilException
    */
   @Override
   public List<SocialInformation> getSocialInformationsList(String userId, String classification,
-      Date begin, Date end) throws CalendarException {
-    try {
-      String now = DateUtil.date2SQLDate(new java.util.Date());
-      List<JournalHeader> list =
-          getCalendar().getNextEventsForUser(now, userId, classification, begin, end);
-      List<SocialInformation> listEvent = new ArrayList<>(list.size());
-      for (JournalHeader jh : list) {
-        SocialInformationEvent event = new SocialInformationEvent(jh);
-        listEvent.add(event);
-      }
-      return listEvent;
-    } catch (CalendarException ex) {
-      throw new CalendarException("SocialEvent.getSocialInformationsList()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
+      Date begin, Date end) {
+    String now = DateUtil.date2SQLDate(new java.util.Date());
+    List<JournalHeader> list =
+        getCalendar().getNextEventsForUser(now, userId, classification, begin, end);
+    List<SocialInformation> listEvent = new ArrayList<>(list.size());
+    for (JournalHeader jh : list) {
+      SocialInformationEvent event = new SocialInformationEvent(jh);
+      listEvent.add(event);
     }
+    return listEvent;
+  }
 
+  @Override
+  public List<SocialInformation> getSocialInformationList(final String userId, final Date begin,
+      final Date end) {
+    return getSocialInformationsList(userId, "", begin, end);
   }
 
   /**
@@ -96,18 +86,12 @@ public class SocialEvent implements SocialEventsInterface {
    * @param begin date
    * @param end date
    * @return
-   * @throws SilverpeasException
    */
   @Override
-  public List getSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
-      Date begin, Date end) throws SilverpeasException {
+  public List getSocialInformationListOfMyContacts(String myId, List<String> myContactsIds,
+      Date begin, Date end) {
     String day = DateUtil.date2SQLDate(new java.util.Date());
-    try {
-      return getCalendar().getNextEventsForMyContacts(day, myId, myContactsIds, begin, end);
-    } catch (Exception ex) {
-      throw new CalendarException("SocialEvent.getSocialInformationsList()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
-    }
+    return getCalendar().getNextEventsForMyContacts(day, myId, myContactsIds, begin, end);
   }
 
   /**
@@ -117,35 +101,22 @@ public class SocialEvent implements SocialEventsInterface {
    * @param begin date
    * @param end date
    * @return
-   * @throws SilverpeasException
    */
   @Override
   public List getLastSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
-      Date begin, Date end) throws SilverpeasException {
+      Date begin, Date end) {
     String day = DateUtil.date2SQLDate(new java.util.Date());
-    try {
-      return getCalendar().getLastEventsForMyContacts(day, myId, myContactsIds, begin, end);
-    } catch (Exception ex) {
-      throw new CalendarException("SocialEvent.getSocialInformationsList()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
-    }
+    return getCalendar().getLastEventsForMyContacts(day, myId, myContactsIds, begin, end);
   }
 
   /**
    * get the my last socialEvents according to number of Item and the first Index
    * @param myId
    * @return
-   * @throws SilverpeasException
    */
   @Override
-  public List getMyLastSocialInformationsList(String myId, Date begin, Date end)
-      throws SilverpeasException {
+  public List getMyLastSocialInformationsList(String myId, Date begin, Date end) {
     String day = DateUtil.date2SQLDate(new java.util.Date());
-    try {
-      return getCalendar().getMyLastEvents(day, myId, begin, end);
-    } catch (Exception ex) {
-      throw new CalendarException("SocialEvent.getSocialInformationsList()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
-    }
+    return getCalendar().getMyLastEvents(day, myId, begin, end);
   }
 }

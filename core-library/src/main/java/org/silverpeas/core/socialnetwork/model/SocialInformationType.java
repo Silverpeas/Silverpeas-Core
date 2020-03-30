@@ -37,5 +37,5 @@ public enum SocialInformationType {
   NEWS, COMMENTNEWS,
   BOOKMARK,
   SITE,
-  COMMENT;
+  COMMENT
 }

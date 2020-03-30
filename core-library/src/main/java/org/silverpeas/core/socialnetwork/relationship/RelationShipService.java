@@ -33,7 +33,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -49,7 +48,7 @@ public class RelationShipService {
   private RelationShipEventNotifier relationShipEventNotifier;
 
   public static RelationShipService get() {
-    return ServiceProvider.getService(RelationShipService.class);
+    return ServiceProvider.getSingleton(RelationShipService.class);
   }
 
   protected RelationShipService() {
@@ -74,7 +73,7 @@ public class RelationShipService {
     return endAction;
   }
 
-  public boolean isInRelationShip(int user1Id, int user2Id) throws SQLException {
+  public boolean isInRelationShip(int user1Id, int user2Id) {
     boolean isInRelationShip = false;
     try (Connection connection = DBUtil.openConnection()) {
       isInRelationShip = relationShipDao.isInRelationShip(connection, user1Id, user2Id);
@@ -84,8 +83,8 @@ public class RelationShipService {
     return isInRelationShip;
   }
 
-  public List<RelationShip> getAllMyRelationShips(int myId) throws SQLException {
-    List<RelationShip> listMyRelation = new ArrayList<RelationShip>();
+  public List<RelationShip> getAllMyRelationShips(int myId) {
+    List<RelationShip> listMyRelation = new ArrayList<>();
     try (Connection connection = DBUtil.openConnection()) {
       listMyRelation = relationShipDao.getAllMyRelationShips(connection, myId);
     } catch (Exception ex) {
@@ -94,8 +93,8 @@ public class RelationShipService {
     return listMyRelation;
   }
 
-  public List<String> getMyContactsIds(int myId) throws SQLException {
-    List<String> myContactsIds = new ArrayList<String>();
+  public List<String> getMyContactsIds(int myId) {
+    List<String> myContactsIds = new ArrayList<>();
     try (Connection connection = DBUtil.openConnection()) {
       myContactsIds = relationShipDao.getMyContactsIds(connection, myId);
     } catch (Exception ex) {
@@ -104,8 +103,8 @@ public class RelationShipService {
     return myContactsIds;
   }
 
-  public List<String> getAllCommonContactsIds(int user1Id, int user2Id) throws SQLException {
-    List<String> myContactsIds = new ArrayList<String>();
+  public List<String> getAllCommonContactsIds(int user1Id, int user2Id) {
+    List<String> myContactsIds = new ArrayList<>();
     try (Connection connection = DBUtil.openConnection()) {
       myContactsIds = relationShipDao.getAllCommonContactsIds(connection, user1Id, user2Id);
     } catch (Exception ex) {
@@ -114,8 +113,7 @@ public class RelationShipService {
     return myContactsIds;
   }
 
-  public List<SocialInformation> getAllMyRelationShips(String userId,
-      Date begin, Date end) throws SQLException {
+  public List<SocialInformation> getAllMyRelationShips(String userId, Date begin, Date end) {
     try (Connection connection = DBUtil.openConnection()) {
       return relationShipDao.getAllMyRelationShips(connection, userId, begin, end);
     } catch (Exception ex) {
@@ -125,7 +123,7 @@ public class RelationShipService {
   }
 
   public List<SocialInformation> getAllRelationShipsOfContacts(List<String> myContactsIds,
-      Date begin, Date end) throws SQLException {
+      Date begin, Date end) {
     try (Connection connection = DBUtil.openConnection()) {
       return relationShipDao.getAllRelationShipsOfContacts(connection, myContactsIds, begin, end);
     } catch (Exception ex) {
@@ -134,7 +132,7 @@ public class RelationShipService {
     return new ArrayList<>();
   }
 
-  public RelationShip getRelationShip(int user1Id, int user2Id) throws SQLException {
+  public RelationShip getRelationShip(int user1Id, int user2Id) {
     RelationShip relation = null;
     try (Connection connection = DBUtil.openConnection()) {
       relation = relationShipDao.getRelationShip(connection, user1Id, user2Id);
