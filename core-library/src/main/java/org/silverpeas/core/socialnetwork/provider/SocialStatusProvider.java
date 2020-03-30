@@ -21,35 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.web.socialnetwork.profil.control;
+package org.silverpeas.core.socialnetwork.provider;
 
-import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
- * @author Bensalem Nabil
+ * Provider of user social status.
  */
-public class ProfilSessionController extends AbstractComponentSessionController {
+public interface SocialStatusProvider extends SocialInformationProvider {
 
-  public ProfilSessionController(MainSessionController mainSessionCtrl,
-      ComponentContext componentContext) {
-    super(mainSessionCtrl,
-        componentContext,
-        "org.silverpeas.social.multilang.socialNetworkBundle",
-        "org.silverpeas.social.settings.socialNetworkIcons",
-        "org.silverpeas.social.settings.socialNetworkSettings");
+  static SocialStatusProvider get() {
+    return ServiceProvider.getService(SocialStatusProvider.class);
   }
-
-  /*
-   * this userId is in my Contacts
-   * @param: int userId
-   * @return true if this user in my Contacts
-   */
-  public boolean isInMyContact(String userId) {
-    int id = Integer.parseInt(userId);
-    return RelationShipService.get().isInRelationShip(Integer.parseInt(this.getUserId()), id);
-  }
-
 }

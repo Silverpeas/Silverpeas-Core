@@ -23,27 +23,18 @@
  */
 package org.silverpeas.web.socialnetwork.mycontactprofil.control;
 
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.user.model.UserFull;
 
-import java.sql.SQLException;
 import java.util.List;
-
-import org.silverpeas.core.socialnetwork.SocialNetworkException;
-import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.exception.SilverpeasException;
-
-import java.util.ArrayList;
 
 /**
  * @author Bensalem Nabil
  */
 public class MyContactProfilSessionController extends AbstractComponentSessionController {
-
-  private RelationShipService relationShipService = RelationShipService.get();
 
   /**
    * @param mainSessionCtrl
@@ -71,14 +62,9 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
    * @return true if this user in my Contacts
    * @param userId : int userId
    */
-  public boolean isInMyContact(String userId) throws SocialNetworkException {
-    try {
-      int id = Integer.parseInt(userId);
-      return relationShipService.isInRelationShip(Integer.parseInt(this.getUserId()), id);
-    } catch (SQLException ex) {
-      throw new SocialNetworkException("ProfilSessionController.isInMyContact(String userId)",
-          SilverpeasException.ERROR, "root.EX_NO_MESSAGE", ex);
-    }
+  public boolean isInMyContact(String userId) {
+    int id = Integer.parseInt(userId);
+    return getRelationShipService().isInRelationShip(Integer.parseInt(this.getUserId()), id);
   }
 
   /**
@@ -87,13 +73,7 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
    * @return : List<String> of contact identifiers
    */
   public List<String> getContactsIdsForUser(String userId) {
-    try {
-      return relationShipService.getMyContactsIds(Integer.parseInt(userId));
-    } catch (SQLException ex) {
-      SilverTrace.error("MyContactProfilSessionController",
-          "MyContactProfilSessionController.getContactsForUser", "", ex);
-    }
-    return new ArrayList<String>();
+    return getRelationShipService().getMyContactsIds(Integer.parseInt(userId));
   }
 
   /**
@@ -102,13 +82,11 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
    * @param userId : int myId
    */
   public List<String> getCommonContactsIdsForUser(String userId) {
-    try {
-      return relationShipService
-          .getAllCommonContactsIds(Integer.parseInt(userId), Integer.parseInt(this.getUserId()));
-    } catch (SQLException ex) {
-      SilverTrace.error("MyContactProfilSessionController",
-          "MyContactProfilSessionController.getContactsForUser", "", ex);
-    }
-    return new ArrayList<String>();
+    return getRelationShipService().getAllCommonContactsIds(Integer.parseInt(userId),
+        Integer.parseInt(this.getUserId()));
+  }
+
+  private RelationShipService getRelationShipService() {
+    return RelationShipService.get();
   }
 }

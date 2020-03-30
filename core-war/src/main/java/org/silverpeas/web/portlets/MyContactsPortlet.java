@@ -28,7 +28,6 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chat.ChatUser;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.portlets.FormNames;
 
 import javax.portlet.GenericPortlet;
@@ -37,7 +36,6 @@ import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,13 +46,8 @@ public class MyContactsPortlet extends GenericPortlet implements FormNames {
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
     RelationShipService relationShipService = RelationShipService.get();
-    List<String> listContactIds = null;
-    try {
-      listContactIds = relationShipService.getMyContactsIds(
-          Integer.parseInt(UserDetail.getCurrentRequester().getId()));
-    } catch (SQLException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
+    List<String> listContactIds = relationShipService.getMyContactsIds(
+        Integer.parseInt(UserDetail.getCurrentRequester().getId()));
 
     List<UserDetail> contactsConnected = new ArrayList<>();
     List<User> contactsMemberConnected = new ArrayList<>();

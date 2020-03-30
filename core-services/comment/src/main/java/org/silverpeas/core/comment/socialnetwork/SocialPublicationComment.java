@@ -29,23 +29,23 @@ import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.date.Date;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.socialnetwork.provider.SocialCommentPublicationsInterface;
+import org.silverpeas.core.socialnetwork.provider.SocialPublicationCommentProvider;
 import org.silverpeas.core.util.URLUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 @Singleton
-public class SocialCommentPublications implements SocialCommentPublicationsInterface {
+public class SocialPublicationComment implements SocialPublicationCommentProvider {
 
   @Inject
   private PublicationService publicationService;
@@ -88,9 +88,7 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
    */
   @SuppressWarnings("unchecked")
   @Override
-  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
-      throws SilverpeasException {
-
+  public List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end) {
     List<SocialInformationComment> listSocialInformation =
         CommentServiceProvider.getCommentService()
             .getSocialInformationCommentsListByUserId(getListResourceType(), userId,
@@ -109,9 +107,8 @@ public class SocialCommentPublications implements SocialCommentPublicationsInter
    * @throws SilverpeasException
    */
   @Override
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
-
+  public List<SocialInformation> getSocialInformationListOfMyContacts(String myId,
+      List<String> myContactsIds, Date begin, Date end) {
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     List<String> instanceIds = new ArrayList<>();
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));

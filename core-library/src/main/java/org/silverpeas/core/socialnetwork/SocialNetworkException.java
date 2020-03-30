@@ -23,33 +23,21 @@
  */
 package org.silverpeas.core.socialnetwork;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
-public class SocialNetworkException extends SilverpeasException {
+public class SocialNetworkException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = 8552020923204390308L;
+  private static final long serialVersionUID = -8969268834390643955L;
 
-  public SocialNetworkException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  public SocialNetworkException(final String message) {
+    super(message);
   }
 
-  public SocialNetworkException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public SocialNetworkException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public SocialNetworkException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public SocialNetworkException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "socialNetwork";
+  public SocialNetworkException(final Throwable cause) {
+    super(cause);
   }
 }

@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2019 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General  License as
+ * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,28 +16,34 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General  License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General  License
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.socialnetwork.provider;
 
-import org.silverpeas.core.date.Date;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.ServiceProvider;
+
+import java.util.Date;
 import java.util.List;
 
 /**
- * @author Bensalem Nabil
+ * Provider of calendar events shared with other users.
  */
-public interface SocialRelationShipsInterface {
+public interface SocialEventProvider extends SocialInformationProvider {
 
-  List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
-      throws
-      SilverpeasException;
+  static SocialEventProvider get() {
+    return ServiceProvider.getService(SocialEventProvider.class);
+  }
 
-  List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
+  List<SocialInformation> getSocialInformationsList(String userId, String classification,
+      Date begin, Date end);
+
+  List<SocialInformation> getLastSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds,
-      Date begin, Date end) throws SilverpeasException;
+      Date begin, Date end);
+
+  List<SocialInformation> getMyLastSocialInformationsList(String myId, Date begin, Date end);
 }

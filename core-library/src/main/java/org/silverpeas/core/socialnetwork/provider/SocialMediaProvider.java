@@ -23,26 +23,15 @@
  */
 package org.silverpeas.core.socialnetwork.provider;
 
-import org.silverpeas.core.date.Date;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
-import java.util.List;
 
 /**
+ * Provider of medias to share among users (like video, pictures, ...)
  * @author Bensalrm Nabil
  */
-public interface SocialGalleryInterface {
+public interface SocialMediaProvider extends SocialInformationProvider {
 
-  static SocialGalleryInterface get() {
-    return ServiceProvider.getService(SocialGalleryInterface.class);
+  static SocialMediaProvider get() {
+    return ServiceProvider.getService(SocialMediaProvider.class);
   }
-
-  List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
-      throws
-      SilverpeasException;
-
-  List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds,
-      Date begin, Date end) throws SilverpeasException;
 }

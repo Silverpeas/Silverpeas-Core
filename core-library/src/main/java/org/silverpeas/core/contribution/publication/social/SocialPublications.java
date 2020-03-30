@@ -27,21 +27,20 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.date.Date;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.socialnetwork.provider.SocialPublicationsInterface;
+import org.silverpeas.core.socialnetwork.provider.SocialPublicationProvider;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 @Singleton
-public class SocialPublications implements SocialPublicationsInterface {
+public class SocialPublications implements SocialPublicationProvider {
 
   @Inject
   private PublicationService publicationService;
@@ -55,11 +54,9 @@ public class SocialPublications implements SocialPublicationsInterface {
    * @param begin
    * @param end
    * @return List
-   * @throws SilverpeasException
    */
   @Override
-  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
-      throws SilverpeasException {
+  public List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end) {
     return getPublicationService().getAllPublicationsWithStatusbyUserid(userId, begin, end);
   }
 
@@ -74,15 +71,14 @@ public class SocialPublications implements SocialPublicationsInterface {
    * @param begin
    * @param end
    * @return List
-   * @throws SilverpeasException
    */
   @SuppressWarnings("unchecked")
   @Override
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
+  public List<SocialInformation> getSocialInformationListOfMyContacts(String myId,
+      List<String> myContactsIds, Date begin, Date end) {
     // getting all components allowed to me
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
-    List<String> instanceIds = new ArrayList<String>();
+    List<String> instanceIds = new ArrayList<>();
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "toolbox")));
     instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmax")));
@@ -101,15 +97,13 @@ public class SocialPublications implements SocialPublicationsInterface {
       SocialInformationPublication socialPublication = socialPublicationIt.next();
       String instanceId = socialPublication.getPublication().getComponentInstanceId();
 
-      if (!myId.equals(socialPublication.getAuthor()) && instanceId.startsWith("kmelia")) {
-
-        // On Kmelia application, if the user has not access right to the publication, then it is
-        // removed from the result
-
-        if (!PublicationAccessControl.get().isUserAuthorized(myId,
-            new PublicationPK(socialPublication.getPublication().getId(), instanceId))) {
-          socialPublicationIt.remove();
-        }
+      // On Kmelia application, if the user has not access right to the publication, then it is
+      // removed from the result
+      if (!myId.equals(socialPublication.getAuthor()) && instanceId.startsWith("kmelia") &&
+          !PublicationAccessControl.get()
+              .isUserAuthorized(myId,
+                  new PublicationPK(socialPublication.getPublication().getId(), instanceId))) {
+        socialPublicationIt.remove();
       }
     }
     return (List) socialPublications;
