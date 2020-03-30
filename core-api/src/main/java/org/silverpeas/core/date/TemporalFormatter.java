@@ -28,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
@@ -275,31 +276,42 @@ public class TemporalFormatter {
    * that conforms to the l10n rules of the country/language identified by the given ISO 632-1
    * locale code. The rules of formatting are based upon the {@link DateTimeFormatter} that fully
    * follows the l10n rules of several country/language calendar systems. If the zone id of the
-   * temporal differs from the specified one, then the zone id of the temporal will be also
-   * formatted and represented into the returned result. Otherwise, this method will behave as the
+   * temporal differs of the specified one, then the zone id of the temporal will be also
+   * formatted and represented into the returned result. In the case the temporal doesn't carry its
+   * own time zone, if its time offset differs of the time offset implied by the specified time
+   * zone, then the time offset of the temporal will be also formatted and represented into the
+   * returned result. Otherwise, this method will behave as the
    * {@link #toLocalized(Temporal, String)} one.
    * </p>
    * <p>
-   * This method is useful to format temporal expressed in a given timezone in its localized
-   * representation and for which the renderer is on a possible different timezone.
+   * This method is useful to format temporal expressed in a given timezone or in a given time
+   * offset in its localized representation and for which the renderer is on a possible different
+   * timezone. Be cautious with temporal only expressed by a time offset and not by a time zone
+   * because with the daylight the rendered text can change (the time offset differ from winter to
+   * summer daylight for a same zone id).
    * </p>
    * <p>
    * If the temporal is a date, then the localized representation will be of a local date.
    * If the temporal is a local datetime, then the localized representation will be of a localized
    * date + localized time.
-   * If the temporal is in another timezone than the specified one, then the localized
-   * representation of the temporal will be expressed with its timezone. For datetime, the
-   * seconds and nanoseconds aren't represented as localized datetime are meaningful only for
-   * displaying usage (for transport, the ISO-8601 is always used).
+   * If the temporal is in another timezone (time offset) than the specified one, then the localized
+   * representation of the temporal will be expressed with its timezone (or time offset). For
+   * datetime, the seconds and nanoseconds aren't represented as localized datetime are meaningful
+   * only for displaying usage (for transport, the ISO-8601 is always used).
    * </p>
    * <p>
    * Examples:
    * <pre>
-   *   {@code TemporalConverter.toLocalized(OffsetDateTime.now(ZoneId.of("Europe/Paris")),
+   *   {@code TemporalFormatter.toLocalized(ZonedDateTime.now(ZoneId.of("Europe/Paris")),
    *   ZoneId.of("America/Cancun"), "fr")}
    *   {@code Result: 13/03/2018 09:11 (Europe/Paris)}
    *
-   *   {@code TemporalConverter.toLocalized(OffsetDateTime.now(ZoneId.of("America/Cancun")),
+   *   {@code TemporalFormatter.toLocalized(OffsetDateTime.now(ZoneId.of("Europe/Paris")),
+   *    ZoneId.of("America/Cancun"), "fr")}
+   *    {@code Result for a day in February: 13/02/2018 09:11 (+01:00)}
+   *    {@code Result for a day in April   : 13/04/2018 09:11 (+02:00)}
+   *
+   *   {@code TemporalFormatter.toLocalized(OffsetDateTime.now(ZoneId.of("America/Cancun")),
    *   ZoneId.of("America/Cancun"), "fr")}
    *   {@code Result: 13/03/2018 09:11}
    * </pre>
@@ -313,14 +325,18 @@ public class TemporalFormatter {
    */
   public static String toLocalized(final Temporal temporal, final ZoneId zoneId,
       final String language) {
-    if (temporal.isSupported(ChronoUnit.HOURS) && temporal.get(ChronoField.OFFSET_SECONDS) !=
-        ZonedDateTime.now(zoneId).get(ChronoField.OFFSET_SECONDS)) {
+    final String formatted;
+    if (!temporal.isSupported(ChronoUnit.HOURS) || (temporal instanceof ChronoZonedDateTime &&
+        ((ChronoZonedDateTime) temporal).getZone().equals(zoneId)) ||
+        temporal.get(ChronoField.OFFSET_SECONDS) ==
+            ZonedDateTime.now(zoneId).get(ChronoField.OFFSET_SECONDS)) {
+      formatted = toLocalized(temporal, language);
+    } else {
       final ZoneId actualZoneId = asZonedDateTime(temporal).getZone();
       final String pattern = getDateTimePattern(language);
-      return toZonedFormat(pattern, temporal, actualZoneId);
-    } else {
-      return toLocalized(temporal, language);
+      formatted = toZonedFormat(pattern, temporal, actualZoneId);
     }
+    return formatted;
   }
 
   /**

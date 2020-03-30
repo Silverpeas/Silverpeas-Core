@@ -43,6 +43,7 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -135,7 +136,7 @@ class ExportCSVBuilderTest {
   @Test
   void oneLineWithOneTemporal() throws IOException {
     final ExportCSVBuilder builder = new ExportCSVBuilder();
-    builder.addLine(aLineWith(OffsetDateTime.parse("2016-01-08T18:30:08+01:00")));
+    builder.addLine(aLineWith(ZonedDateTime.parse("2016-01-08T18:30:08+01:00[Europe/Paris]")));
     final String result = getCsvFrom(builder);
     assertThat(result, is("08/01/2016 18:30" + LINE_SEPARATOR));
   }
