@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.Date;
 
@@ -117,6 +118,17 @@ public class ChatUser extends UserDetail {
   public String getChatDomain() {
     ChatSettings settings = ChatServer.getChatSettings();
     return settings.getMappedXmppDomain(getDomainId());
+  }
+
+  /**
+   * Is the chat service is enabled for this user? It is enabled if both the chat service is enabled
+   * in Silverpeas and the user domain he belongs to is mapped to a chat domain in the chat
+   * service.
+   * @return true if the chat is enabled for the user. False otherwise.
+   */
+  public boolean isChatEnabled() {
+    ChatSettings settings = ChatServer.getChatSettings();
+    return settings.isChatEnabled() && StringUtil.isDefined(getChatDomain());
   }
 
   @Override

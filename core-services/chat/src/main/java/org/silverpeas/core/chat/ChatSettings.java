@@ -25,8 +25,11 @@
 package org.silverpeas.core.chat;
 
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+
+import javax.inject.Singleton;
 
 /**
  * Setting properties of the chat service. It loads the
@@ -34,11 +37,20 @@ import org.silverpeas.core.util.StringUtil;
  * all the settings required by the Silverpeas Chat to work correctly.
  * @author mmoquillon
  */
+@Singleton
 public class ChatSettings {
 
   private final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.chat.settings.chat");
   private final String xmppBaseUrl;
+
+  /**
+   * Gets an instance of the {@link ChatSettings} class.
+   * @return a {@link ChatSettings} instance.
+   */
+  public static ChatSettings get() {
+    return ServiceProvider.getSingleton(ChatSettings.class);
+  }
 
   /**
    * Constructs a new object wrapping all the settings on the Silverpeas chat service.
@@ -122,27 +134,54 @@ public class ChatSettings {
 
   /**
    * Gets the XMPP domain mapped with the specified Silverpeas domain. If the given domain isn't
-   * mapped with any XMPP domain, then returns the default XMPP domain (provided by the property
-   * <code>chat.xmpp.domain.0</code> in the chat settings).
+   * mapped with any XMPP domain, then returns an empty string.
    * @param silverpeasDomainId the unique identifier of a domain in Silverpeas. Can be null or
-   * empty in that case the default XMPP domain is returned.
-   * @return the XMPP domain mapped with the specified Silverpeas domain or the default XMPP
-   * domain if set in the chat settings. If no XMPP domain is set in the chat settings, then
-   * returns an empty string.
+   * empty in that case an empty string is returned.
+   * @return the XMPP domain mapped with the specified Silverpeas domain. If no XMPP domain mapping
+   * is defined for the given domain then returns an empty string.
    */
-  public String getMappedXmppDomain(final String silverpeasDomainId) {
-    String xmppDomain;
+  public String getExplicitMappedXmppDomain(final String silverpeasDomainId) {
+    String xmppDomain = "";
     if (StringUtil.isDefined(silverpeasDomainId)) {
       xmppDomain = settings.getString("chat.xmpp.domain." + silverpeasDomainId, "");
-      if (xmppDomain.isEmpty()) {
-        xmppDomain =settings.getString("chat.xmpp.domain.0", "");
-      }
-    } else {
-      xmppDomain =settings.getString("chat.xmpp.domain.0", "");
     }
     return xmppDomain;
   }
 
+  /**
+   * Gets the XMPP domain to use for any Silverpeas domains that have no mapping rule to a XMPP
+   * domain. If no such default XMPP domain is defined, then the Silverpeas domains with no mapping
+   * rule won't be mapped to a XMPP domain and hence the users of those domains won't have an XMPP
+   * account; the chat won't be enabled for them.
+   * @return
+   */
+  public String getDefaultXmppDomain() {
+    return settings.getString("chat.xmpp.domain.default", "");
+  }
+
+  /**
+   * Gets the XMPP domain in the chat server that is mapped to the specified Silverpeas domain. If
+   * there is no explicit XMPP domain mapped to the given Silverpeas domain, then uses the default
+   * XMPP domain set in the chat service settings. If no such default XMPP domain is set, then
+   * returns an empty string.
+   * @param silverpeasDomainId the unique identifier of a user domain in Silverpeas.
+   * @return the XMPP domain that is explicitly or by default mapped to the given user domain in
+   * Silverpeas. If no mapping exists with the given domain in the chat service settings, then
+   * returns an empty string.
+   */
+  public String getMappedXmppDomain(final String silverpeasDomainId) {
+    String xmppDomain = getExplicitMappedXmppDomain(silverpeasDomainId);
+    if (xmppDomain.isEmpty()) {
+      return getDefaultXmppDomain();
+    }
+    return xmppDomain;
+  }
+
+  /**
+   * Is the chat service enabled in Silverpeas?
+   * @return true if the chat service is explicitly enabled and if the chat service properties are
+   * set.
+   */
   public boolean isChatEnabled() {
     boolean enabled = settings.getBoolean("chat.enable");
     final String rest = settings.getString("chat.xmpp.rest", "");

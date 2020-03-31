@@ -26,6 +26,7 @@ package org.silverpeas.core.chat.servers;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.ChatServerException;
 import org.silverpeas.core.chat.ChatSettings;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * This interface represents a Chat server. An implementation of this interface has to implement
@@ -43,7 +44,7 @@ public interface ChatServer {
    * @return a bundle of settings on the chat service.
    */
   static ChatSettings getChatSettings() {
-    return new ChatSettings();
+    return ChatSettings.get();
   }
 
   /**
@@ -69,14 +70,14 @@ public interface ChatServer {
    * @param user a Silverpeas user.
    * @throws ChatServerException if an error occurs while creating the user in the chat server.
    */
-  void createUser(User user);
+  void createUser(final User user);
 
   /**
    * Deletes in the chat server the account of the specified user.
    * @param user a Silverpeas user.
    * @throws ChatServerException if an error occurs while deleting the user in the chat server.
    */
-  void deleteUser(User user);
+  void deleteUser(final User user);
 
   /**
    * Creates a relationship between the two specified user in the chat server. If the relationship
@@ -86,7 +87,7 @@ public interface ChatServer {
    * @throws ChatServerException if an error occurs while creating a relationship between the two
    * users in the chat server.
    */
-  void createRelationShip(User user1, User user2);
+  void createRelationShip(final User user1, final User user2);
 
   /**
    * Deletes the relationship existing between the two specified user in the chat server.
@@ -95,14 +96,26 @@ public interface ChatServer {
    * @throws ChatServerException if an error occurs while deleting a relationship between the two
    * users in the chat server.
    */
-  void deleteRelationShip(User user1, User user2);
+  void deleteRelationShip(final User user1, final User user2);
 
   /**
-   * Is the specified user has already an account in the chat server.
+   * Is the specified user has already an account in the chat server?
    * @param user a Silverpeas user.
    * @return true if the user has an account in the chat server, false otherwise.
    * @throws ChatServerException if an error occurs while communicating with the chat server.
    */
-  boolean isUserExisting(User user);
+  boolean isUserExisting(final User user);
+
+  /**
+   * Is the specified Silverpeas domain is supported by chat server? The domain is supported if
+   * it exists a mapping between it and a setting in the chat server. In that case, any users in
+   * the domain can be registered and retrieved in the chat server.
+   * @param domainId the unique identifier of a user domain in Silverpeas.
+   * @return true if the domain is supported by the chat server.
+   */
+  default boolean isUserDomainSupported(final String domainId) {
+    final ChatSettings settings = getChatSettings();
+    return StringUtil.isDefined(settings.getMappedXmppDomain(domainId));
+  }
 
 }

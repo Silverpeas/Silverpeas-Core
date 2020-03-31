@@ -55,4 +55,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface TestManagedMock {
+
+  /**
+   * Is all of the methods of the mock should be stubbed? By default, a call to method of such an
+   * object is stubbed unless a behaviour was previously set to that method. To reverse this default
+   * behaviour, that is to say to allow a call to the methods invokes the <i>real</i> implementation
+   * of the called method, just set this property to false.
+   */
+  boolean stubbed() default true;
 }

@@ -29,7 +29,6 @@ import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.util.Pair;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,23 +55,6 @@ public class DefaultSocialInformationProviderSwitcher implements SocialInformati
 
   private static final Pair<SocialInfoListSupplier, SocialInfoListSupplier> NOTHING =
       Pair.of(c -> Collections.emptyList(), c -> Collections.emptyList());
-
-  @Inject
-  private SocialPublicationProvider socialPublicationProvider;
-  @Inject
-  private SocialPublicationCommentProvider socialPublicationCommentProvider;
-  @Inject
-  private SocialStatusProvider socialStatusProvider;
-  @Inject
-  private SocialRelationShipProvider socialRelationShipProvider;
-  @Inject
-  private SocialNewsCommentProvider newsCommentProvider;
-  @Inject
-  private SocialEventProvider socialEventProvider;
-  @Inject
-  private SocialMediaProvider socialMediaProvider;
-  @Inject
-  private SocialMediaCommentProvider socialMediaCommentProvider;
 
   @PostConstruct
   private void initSocialInfoProviders() {
@@ -205,7 +187,7 @@ public class DefaultSocialInformationProviderSwitcher implements SocialInformati
    * @return SocialEventsInterface
    */
   public SocialEventProvider getSocialEventsProvider() {
-    return socialEventProvider;
+    return SocialEventProvider.get();
   }
 
   /**
@@ -213,7 +195,7 @@ public class DefaultSocialInformationProviderSwitcher implements SocialInformati
    * @return SocialGalleryInterface
    */
   public SocialMediaProvider getSocialMediaProvider() {
-    return socialMediaProvider;
+    return SocialMediaProvider.get();
   }
 
   /**
@@ -221,7 +203,7 @@ public class DefaultSocialInformationProviderSwitcher implements SocialInformati
    * @return SocialCommentGalleryInterface
    */
   public SocialMediaCommentProvider getSocialMediaCommentProvider() {
-    return socialMediaCommentProvider;
+    return SocialMediaCommentProvider.get();
   }
 
 
@@ -230,7 +212,7 @@ public class DefaultSocialInformationProviderSwitcher implements SocialInformati
    * @return SocialPublicationsInterface
    */
   public SocialPublicationProvider getSocialPublicationProvider() {
-    return socialPublicationProvider;
+    return SocialPublicationProvider.get();
   }
 
   /**
@@ -238,7 +220,7 @@ public class DefaultSocialInformationProviderSwitcher implements SocialInformati
    * @return SocialCommentPublicationsInterface
    */
   public SocialPublicationCommentProvider getSocialPublicationCommentProvider() {
-    return socialPublicationCommentProvider;
+    return SocialPublicationCommentProvider.get();
   }
 
   /**
@@ -246,7 +228,7 @@ public class DefaultSocialInformationProviderSwitcher implements SocialInformati
    * @return SocialCommentQuickInfosInterface
    */
   public SocialNewsCommentProvider getSocialNewsCommentProvider() {
-    return newsCommentProvider;
+    return SocialNewsCommentProvider.get();
   }
 
   /**
@@ -254,7 +236,7 @@ public class DefaultSocialInformationProviderSwitcher implements SocialInformati
    * @return SocialStatusInterface
    */
   public SocialStatusProvider getSocialStatusProvider() {
-    return socialStatusProvider;
+    return SocialStatusProvider.get();
   }
 
   /**
@@ -262,7 +244,7 @@ public class DefaultSocialInformationProviderSwitcher implements SocialInformati
    * @return SocialRelationShipsInterface
    */
   public SocialRelationShipProvider getSocialRelationShipProvider() {
-    return socialRelationShipProvider;
+    return SocialRelationShipProvider.get();
   }
 
   @FunctionalInterface

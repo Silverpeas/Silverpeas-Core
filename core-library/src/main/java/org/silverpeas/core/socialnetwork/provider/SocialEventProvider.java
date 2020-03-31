@@ -35,7 +35,7 @@ import java.util.List;
 public interface SocialEventProvider extends SocialInformationProvider {
 
   static SocialEventProvider get() {
-    return ServiceProvider.getService(SocialEventProvider.class);
+    return ServiceProvider.getSingleton(SocialEventProvider.class);
   }
 
   List<SocialInformation> getSocialInformationsList(String userId, String classification,
