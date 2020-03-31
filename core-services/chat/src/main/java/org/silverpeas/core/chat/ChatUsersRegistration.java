@@ -81,18 +81,21 @@ public class ChatUsersRegistration {
    * @throws ChatServerException a runtime exception if the registration fails.
    */
   public void registerUser(final User user) {
-    if (isChatServiceEnabled() && !chatServer.isUserExisting(user)) {
+    if (isChatServiceEnabled() && !isAlreadyRegistered(user) && isDomainMapped(user)) {
       logger.debug("Register user {0}", user.getDisplayedName());
       chatServer.createUser(user);
-      List<String> contactIds =
+      final List<String> contactIds =
           relationShipService.getMyContactsIds(Integer.parseInt(user.getId()));
-      for (String contactId : contactIds) {
-        User friend = User.getById(contactId);
-        registerUser(friend);
+      contactIds.stream().map(User::getById).filter(this::isDomainMapped).forEach(c -> {
+        registerUser(c);
         logger.debug("Register relationship {0} - {1}", user.getDisplayedName(),
-            friend.getDisplayedName());
-        chatServer.createRelationShip(user, friend);
-      }
+            c.getDisplayedName());
+        chatServer.createRelationShip(user, c);
+      });
     }
+  }
+
+  private boolean isDomainMapped(final User user) {
+    return chatServer.isUserDomainSupported(user.getDomainId());
   }
 }

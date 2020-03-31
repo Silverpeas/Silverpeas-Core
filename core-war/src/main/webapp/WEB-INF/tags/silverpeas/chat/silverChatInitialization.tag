@@ -46,7 +46,7 @@
   (function() {
     whenSilverpeasReady(function() {
       <c:choose>
-      <c:when test="${sessionScope.get('Silverpeas.Chat')}">
+      <c:when test="${sessionScope.get('Silverpeas.Chat') and chatUser.chatEnabled}">
       SilverChat.init({
         url : '${chatUrl}',
         id : '${chatUser.chatLogin}',

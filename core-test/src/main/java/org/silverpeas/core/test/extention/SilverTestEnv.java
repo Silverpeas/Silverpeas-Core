@@ -177,7 +177,13 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
     } else if (parameterContext.isAnnotated(TestManagedMock.class)) {
       bean = TestBeanContainer.getMockedBeanContainer().getBeanByType(parameter.getType());
       if (bean == null) {
-        bean = mock(parameter.getType());
+        TestManagedMock annotation = parameterContext.findAnnotation(TestManagedMock.class)
+            .orElseThrow(RuntimeException::new);
+        if (annotation.stubbed()) {
+          bean = mock(parameter.getType());
+        } else {
+          bean = spy(parameter.getType());
+        }
         registerInBeanContainer(bean);
       }
     } else if (parameterContext.isAnnotated(TestManagedBean.class)) {
@@ -227,8 +233,13 @@ public class SilverTestEnv implements TestInstancePostProcessor, ParameterResolv
   private void processMockedBeanAnnotation(final Field field, final Object testInstance)
       throws IllegalAccessException {
     if (field.isAnnotationPresent(TestManagedMock.class)) {
-      field.setAccessible(true);
-      Object bean = mock(field.getType());
+      TestManagedMock annotation = field.getAnnotation(TestManagedMock.class);
+      Object bean;
+      if (annotation.stubbed()) {
+        bean = mock(field.getType());
+      } else {
+        bean = spy(field.getType());
+      }
       field.setAccessible(true);
       field.set(testInstance, bean);
       registerInBeanContainer(bean);

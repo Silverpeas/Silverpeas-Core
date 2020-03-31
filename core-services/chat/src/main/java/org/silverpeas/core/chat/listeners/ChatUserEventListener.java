@@ -43,17 +43,29 @@ public class ChatUserEventListener extends CDIResourceEventListener<UserEvent> {
   private ChatServer server;
 
   @Override
-  public void onCreation(final UserEvent event) throws Exception {
+  public void onCreation(final UserEvent event) {
     UserDetail detail = event.getTransition().getAfter();
-    server.createUser(detail);
-    logger.debug("Chat account have been created for user {0}", detail.getId());
+    if (server.isUserDomainSupported(detail.getDomainId())) {
+      server.createUser(detail);
+      logger.debug("Chat account have been created for user {0}", detail.getId());
+    } else {
+      logger.debug("No chat account created for user {0}: " +
+              "the user domain {0} isn't mapped to any chat server", detail.getId(),
+          detail.getDomainId());
+    }
   }
 
   @Override
-  public void onDeletion(final UserEvent event) throws Exception {
+  public void onDeletion(final UserEvent event) {
     UserDetail detail = event.getTransition().getBefore();
-    server.deleteUser(detail);
-    logger.debug("Chat account have been deleted for user {0}", detail.getId());
+    if (server.isUserDomainSupported(detail.getDomainId())) {
+      server.deleteUser(detail);
+      logger.debug("Chat account have been deleted for user {0}", detail.getId());
+    } else {
+      logger.debug("No chat account deleted for user {0}: " +
+              "the user domain {0} isn't mapped to any chat server", detail.getId(),
+          detail.getDomainId());
+    }
   }
 
   @Override
