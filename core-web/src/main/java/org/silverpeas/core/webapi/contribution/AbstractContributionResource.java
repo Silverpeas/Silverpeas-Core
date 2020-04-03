@@ -87,11 +87,28 @@ public abstract class AbstractContributionResource extends RESTWebService {
       DataRecord data, String lang) throws Exception {
     int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
     List<FormFieldValueEntity> values = new ArrayList<>();
-    for (int occ = 0; occ < maxOccurrences; occ++) {
-      Field field = data.getField(fieldTemplate.getFieldName(), occ);
-      if (field != null && !field.isNull()) {
-        FormFieldValueEntity value = getFormFieldValue(fieldTemplate, field, lang);
-        values.add(value);
+
+    Map<String, String> keyValuePairs =
+        ((GenericFieldTemplate) fieldTemplate).getKeyValuePairs(lang);
+    if (!keyValuePairs.isEmpty()) {
+      // it's a multi-value field (checkbox)
+      Field field = data.getField(fieldTemplate.getFieldName());
+      String fieldValue = field.getValue(lang);
+      if (StringUtil.isDefined(fieldValue)) {
+        String[] fieldValues = fieldValue.split("##");
+        for (String value : fieldValues) {
+          FormFieldValueEntity valueEntity =
+              FormFieldValueEntity.createFrom(value, keyValuePairs.getOrDefault(value, ""));
+          values.add(valueEntity);
+        }
+      }
+    } else {
+      for (int occ = 0; occ < maxOccurrences; occ++) {
+        Field field = data.getField(fieldTemplate.getFieldName(), occ);
+        if (field != null && !field.isNull()) {
+          FormFieldValueEntity value = getFormFieldValue(fieldTemplate, field, lang);
+          values.add(value);
+        }
       }
     }
     return values;
@@ -168,25 +185,10 @@ public abstract class AbstractContributionResource extends RESTWebService {
                   fieldTemplate.getFieldName(), lang));
 
         } else {
-
-          // Simple text
-          Map<String, String> keyValuePairs =
-              ((GenericFieldTemplate) fieldTemplate).getKeyValuePairs(lang);
-
-          // Field value entity
-          if (keyValuePairs.isEmpty()) {
-            // Simple value
-            entity = FormFieldValueEntity.createFrom(null, fieldValue);
-          } else {
-            // Value like checkbox for example.
-            // Value is empty if "##" string is detected.
-            entity = FormFieldValueEntity
-                .createFrom((!fieldValue.contains("##") ? fieldValue : null),
-                    keyValuePairs.get(fieldValue));
-          }
+          // Simple value
+          entity = FormFieldValueEntity.createFrom(null, fieldValue);
         }
       } else {
-
         // No value
         entity = FormFieldValueEntity.createFrom(null, "");
       }
@@ -199,8 +201,7 @@ public abstract class AbstractContributionResource extends RESTWebService {
    * @param formId
    * @return
    */
-  protected PublicationTemplate getPublicationTemplate(String formId)
-      throws PublicationTemplateException {
+  protected PublicationTemplate getPublicationTemplate(String formId) {
     try {
       return PublicationTemplateManager.getInstance()
           .getPublicationTemplate(createExternalId(formId));
