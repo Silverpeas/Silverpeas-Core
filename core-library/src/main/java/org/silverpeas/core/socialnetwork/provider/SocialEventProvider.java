@@ -42,8 +42,7 @@ public interface SocialEventProvider extends SocialInformationProvider {
       Date begin, Date end);
 
   List<SocialInformation> getLastSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds,
-      Date begin, Date end);
+      List<String> myContactsIds, Date begin, Date end);
 
   List<SocialInformation> getMyLastSocialInformationsList(String myId, Date begin, Date end);
 }

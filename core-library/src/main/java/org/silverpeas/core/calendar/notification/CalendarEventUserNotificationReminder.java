@@ -25,6 +25,7 @@
 package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -121,6 +122,15 @@ public class CalendarEventUserNotificationReminder implements BackgroundReminder
         final SilverpeasTemplate template) {
       super.performTemplateData(localizedContribution, template);
       template.setAttribute("contributionType_" + CalendarEvent.TYPE, true);
+    }
+
+    @Override
+    protected boolean isUserCanBeNotified(final String userId) {
+      if (PersonalComponentInstance.from(getComponentInstanceId()).isPresent()) {
+        // It is the case of reminder on an event on a personal calendar
+        return true;
+      }
+      return super.isUserCanBeNotified(userId);
     }
   }
 }

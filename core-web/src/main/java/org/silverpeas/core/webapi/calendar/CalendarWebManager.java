@@ -635,6 +635,23 @@ public class CalendarWebManager {
    */
   public List<CalendarEventOccurrence> getEventOccurrencesOf(LocalDate startDate, LocalDate endDate,
       List<Calendar> calendars) {
+    return getEventOccurrencesOf(startDate, endDate, calendars, User.getCurrentRequester());
+  }
+
+  /**
+   * Gets the event occurrences associated to a calendar and contained a the time window specified
+   * by the start and end datetimes.<br>
+   * The occurrences are sorted from the lowest to the highest date.
+   * @param startDate the start date of time window.
+   * @param endDate the end date of time window.
+   * @param calendars the calendars the event occurrences belong to.
+   * @return a list of entities of calendar event occurrences.
+   */
+  public List<CalendarEventOccurrence> getEventOccurrencesOf(LocalDate startDate, LocalDate endDate,
+      List<Calendar> calendars, User currentRequester) {
+    if (currentRequester == null) {
+      throw new IllegalArgumentException("Current requester MUST be defined");
+    }
     return calendars.isEmpty() ? emptyList() : Calendar
         .getTimeWindowBetween(startDate, endDate)
         .filter(f -> f.onCalendar(calendars))

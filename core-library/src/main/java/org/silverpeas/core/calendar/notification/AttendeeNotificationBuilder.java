@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar.notification;
 
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.CalendarComponent;
@@ -63,7 +64,7 @@ import static org.silverpeas.core.util.DateUtil.getHourOutputFormat;
  * default one.
  * @author mmoquillon
  */
-class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationBuilder
+class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationBuilder<Contribution>
     implements RemoveSenderRecipientBehavior {
 
   private NotifAction notifCause;
@@ -78,7 +79,6 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
    * @param calendarComponent the calendar component concerned by the notification.
    * @param action the action that was performed onto the event.
    */
-  @SuppressWarnings("unchecked")
   AttendeeNotificationBuilder(final Contribution calendarComponent, final NotifAction action) {
     super(calendarComponent, null);
     this.notifCause = action;
@@ -255,5 +255,14 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
               getHourOutputFormat(language).getPattern())) + " (" +
           calendarComponent.getCalendar().getZoneId() + ")";
     }
+  }
+
+  @Override
+  protected boolean isUserCanBeNotified(final String userId) {
+    if (PersonalComponentInstance.from(getComponentInstanceId()).isPresent()) {
+      // It is the case of attendee of an event on a personal calendar
+      return true;
+    }
+    return super.isUserCanBeNotified(userId);
   }
 }

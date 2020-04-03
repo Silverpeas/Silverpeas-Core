@@ -50,10 +50,9 @@ public class UserCalendarWebManager extends CalendarWebManager {
 
   @Override
   public List<CalendarEventOccurrence> getEventOccurrencesOf(final LocalDate startDate,
-      final LocalDate endDate, final List<Calendar> calendars) {
+      final LocalDate endDate, final List<Calendar> calendars, final User currentRequester) {
     List<CalendarEventOccurrence> result =
-        super.getEventOccurrencesOf(startDate, endDate, calendars);
-    final User currentRequester = User.getCurrentRequester();
+        super.getEventOccurrencesOf(startDate, endDate, calendars, currentRequester);
     calendars.stream().filter(c -> c.isMainPersonalOf(currentRequester)).forEach(p -> {
       // Add occurrence participation of user
       final List<CalendarEventOccurrence> participationOccurrences =
