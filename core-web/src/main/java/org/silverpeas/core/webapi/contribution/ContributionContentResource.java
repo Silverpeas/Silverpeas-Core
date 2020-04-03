@@ -30,6 +30,7 @@ import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.util.StringUtil;
 
@@ -42,6 +43,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -138,7 +140,11 @@ public class ContributionContentResource extends AbstractContributionResource {
       // Adding form content
       for (FieldTemplate fieldTemplate : recordTemplate.getFieldTemplates()) {
 
-        if (fieldTemplate.isRepeatable()) {
+        Map<String, String> keyValuePairs =
+            ((GenericFieldTemplate) fieldTemplate).getKeyValuePairs(lang);
+
+        if (fieldTemplate.isRepeatable() || !keyValuePairs.isEmpty()) {
+          // Field is repeatable or multi-valuable (like checkbox)
           List<FormFieldValueEntity>
               fieldValueEntities = getFormFieldValues(fieldTemplate, data, language);
 
