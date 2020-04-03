@@ -94,65 +94,67 @@ public class JdbcSqlQuery {
   }
 
   /**
-   * Creates a new instance of the SQL builder initialized with the given sql part.
+   * Creates a new instance of the JDBC SQL query initialized with the given sql part.
    * @param sqlPart the sql part to append.
    * @param paramValue the value of parameters included into the given sqlPart.
-   * @return the instance of the new builder.
+   * @return the instance of the new sql query.
    */
   public static JdbcSqlQuery create(String sqlPart, Object... paramValue) {
     return new JdbcSqlQuery().addSqlPart(sqlPart, paramValue);
   }
 
   /**
-   * Creates a new instance of the SQL builder initialized with the given sql part.
+   * Creates a new instance of the JDBC SQL query initialized with the given sql part.
    * @param sqlPart the sql part to append.
    * @param paramValue the value of parameters included into the given sqlPart.
-   * @return the instance of the new builder.
+   * @return the instance of the new sql query.
    */
   public static JdbcSqlQuery create(String sqlPart, Collection<?> paramValue) {
     return new JdbcSqlQuery().addSqlPart(sqlPart, paramValue);
   }
 
   /**
-   * Creates a new instance of the SQL builder initialized with the given sql part.
+   * Creates a new instance of the JDBC SQL query to select some fields of the items to find
+   * according to the specified SQL part.
    * @param sqlPart the sql part to append.
    * @param paramValue the value of parameters included into the given sqlPart.
-   * @return the instance of the new builder.
+   * @return the instance of the new sql query.
    */
   public static JdbcSqlQuery createSelect(String sqlPart, Object... paramValue) {
     return new JdbcSqlQuery().addSqlPart("SELECT").addSqlPart(sqlPart, paramValue);
   }
 
   /**
-   * Creates a new instance of the SQL builder initialized with the given sql part.
+   * Creates a new instance of the JDBC SQL query to select some fields of the items to find
+   * according to the specified SQL part.
    * @param sqlPart the sql part to append.
    * @param paramValue the value of parameters included into the given sqlPart.
-   * @return the instance of the new builder.
+   * @return the instance of the new sql query.
    */
   public static JdbcSqlQuery createSelect(String sqlPart, Collection<?> paramValue) {
     return new JdbcSqlQuery().addSqlPart("SELECT").addSqlPart(sqlPart, paramValue);
   }
 
   /**
-   * Creates a new instance of the SQL builder initialized for count.
+   * Creates a new instance of the SQL query to count the items that are in the specified table.
    * @param tableName the table name aimed by the count.
-   * @return the instance of the new builder.
+   * @return the instance of the new sql query.
    */
   public static JdbcSqlQuery createCountFor(String tableName) {
     return new JdbcSqlQuery().addSqlPart("SELECT COUNT(*) FROM").addSqlPart(tableName);
   }
 
   /**
-   * Creates a new instance of the SQL builder initialized for table creation.
+   * Creates a new instance of the SQL query to create the specified table.
    * @param tableName the table name aimed by the insert.
-   * @return the instance of the new builder.
+   * @return the instance of the new sql query.
    */
   public static JdbcSqlQuery createTable(String tableName) {
     return new JdbcSqlQuery().addSqlPart("CREATE TABLE").addSqlPart(tableName).addSqlPart(" (");
   }
 
   /**
-   * Creates a new instance of the SQL builder initialized for insert.
+   * Creates a new instance of the SQL query to insert one or more items in the specified table.
    * @param tableName the table name aimed by the insert.
    * @return the instance of the new builder.
    */
@@ -161,27 +163,27 @@ public class JdbcSqlQuery {
   }
 
   /**
-   * Creates a new instance of the SQL builder initialized for update.
+   * Creates a new instance of the SQL query to update some items in the specified table.
    * @param tableName the table name aimed by the update.
-   * @return the instance of the new builder.
+   * @return the instance of the new sql query.
    */
   public static JdbcSqlQuery createUpdateFor(String tableName) {
     return new JdbcSqlQuery().addSqlPart("UPDATE ").addSqlPart(tableName).addSqlPart(" SET");
   }
 
   /**
-   * Creates a new instance of the SQL builder initialized for delete.
+   * Creates a new instance of the SQL query to delete some items in the specified table.
    * @param tableName the table name aimed by the delete.
-   * @return the instance of the new builder.
+   * @return the instance of the new sql query.
    */
   public static JdbcSqlQuery createDeleteFor(String tableName) {
     return new JdbcSqlQuery().addSqlPart("DELETE FROM").addSqlPart(tableName);
   }
 
   /**
-   * Creates a new instance of the SQL builder initialized for delete.
+   * Creates a new instance of the SQL query to drop the specified table.
    * @param tableName the table name aimed by the drop.
-   * @return the instance of the new builder.
+   * @return the instance of the new sql query.
    */
   public static JdbcSqlQuery createDropFor(String tableName) {
     return new JdbcSqlQuery().addSqlPart("DROP TABLE").addSqlPart(tableName);
@@ -829,13 +831,17 @@ public class JdbcSqlQuery {
     }
 
     public Configuration withResultLimit(final int limit) {
-      assert limit >= 0;
+      if (limit < 0) {
+        throw new IllegalArgumentException("Invalid limit: expected positive value");
+      }
       this.limit = limit;
       return this;
     }
 
     public Configuration withOffset(final int offset) {
-      assert offset >= 0;
+      if (offset < 0) {
+        throw new IllegalArgumentException("Invalid offset: expected positive value");
+      }
       this.offset = offset;
       return this;
     }

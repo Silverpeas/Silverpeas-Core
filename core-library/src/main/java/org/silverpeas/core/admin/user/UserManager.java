@@ -40,9 +40,9 @@ import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.dao.GroupDAO;
 import org.silverpeas.core.admin.user.dao.UserDAO;
-import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.user.notification.UserEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -143,7 +143,7 @@ public class UserManager {
       AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       return userDAO.getUserCountByCriteria(connection,
-          UserSearchCriteriaForDAO.newCriteria().onDomainIds(domainId)
+          new UserDetailsSearchCriteria().onDomainIds(domainId)
               .onUserStatesToExclude(UserState.REMOVED));
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("user count in domain", domainId), e);
@@ -157,8 +157,8 @@ public class UserManager {
    */
   public int getUserCount() throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
-      return userDAO.getUserCountByCriteria(connection, UserSearchCriteriaForDAO.newCriteria()
-          .onUserStatesToExclude(UserState.REMOVED));
+      return userDAO.getUserCountByCriteria(connection,
+          new UserDetailsSearchCriteria().onUserStatesToExclude(UserState.REMOVED));
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("total user count", ""), e);
     }
@@ -185,13 +185,12 @@ public class UserManager {
 
   /**
    * Gets the users that match the specified criteria.
-   *
    * @param criteria the criteria in searching of user details.
    * @return a slice of the list of user details matching the criteria or an empty list of no ones
    * are found.
    * @throws AdminException if an error occurs while getting the user details.
    */
-  public ListSlice<UserDetail> getUsersMatchingCriteria(final UserSearchCriteriaForDAO criteria)
+  public ListSlice<UserDetail> getUsersMatchingCriteria(final UserDetailsSearchCriteria criteria)
       throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       return userDAO.getUsersByCriteria(connection, criteria);
@@ -262,8 +261,7 @@ public class UserManager {
           ? new UserState[]{UserState.DELETED}
           : new UserState[]{UserState.REMOVED, UserState.DELETED};
       ListSlice<UserDetail> users = userDAO.getUsersByCriteria(connection,
-          UserSearchCriteriaForDAO.newCriteria()
-              .onDomainIds(sDomainId)
+          new UserDetailsSearchCriteria().onDomainIds(sDomainId)
               .onUserStatesToExclude(userStatesToExclude));
 
       UserDetail[] usersInDomain = new UserDetail[users.size()];

@@ -75,18 +75,6 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   }
 
   @Override
-  public GroupSearchCriteriaForDAO and() {
-    this.criteria.and();
-    return this;
-  }
-
-  @Override
-  public GroupSearchCriteriaForDAO or() {
-    this.criteria.or();
-    return this;
-  }
-
-  @Override
   public GroupSearchCriteriaForDAO onName(String name) {
     if (isDefined(name)) {
       this.criteria.onName(name);

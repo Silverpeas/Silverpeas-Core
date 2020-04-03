@@ -330,26 +330,6 @@ public class GroupsSearchCriteria implements SearchCriteria {
     return hash;
   }
 
-  /**
-   * Useless as by default the criteria forms a conjonction.
-   *
-   * @return itself.
-   */
-  @Override
-  public SearchCriteria and() {
-    return this;
-  }
-
-  /**
-   * Not supported. By default, the criteria form a conjonction.
-   *
-   * @return nothing, thrown an UnsupportedOperationException exception.
-   */
-  @Override
-  public SearchCriteria or() {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
   @Override
   public boolean isEmpty() {
     return criteria.isEmpty();

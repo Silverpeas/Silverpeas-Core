@@ -26,7 +26,6 @@ package org.silverpeas.core.admin.user.model;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Arrays;
@@ -56,6 +55,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   private static final String FIRST_NAME = "firstName";
   private static final String LAST_NAME = "lastName";
   private static final String PAGINATION = "pagination";
+  private static final String ROLE_GROUPS = "groupIdsInRole";
   private Map<String, Object> criteria = new HashMap<>();
 
   @Override
@@ -108,9 +108,25 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
     return this;
   }
 
+  /**
+   * The users to search must be in specified groups playing the roles that are defined by the
+   * criterion on the role names. If this criterion isn't set, then only the users playing directly
+   * the roles will be searched and not those that are part of a group playing the roles. It is
+   * strongly recommended to specify the groups along with their own children groups.
+   * @param groupIds one or more unique identifiers of groups playing the role that is specified
+   * in the criterion on the role names.
+   * @return itself.
+   */
+  public UserDetailsSearchCriteria onGroupsInRoles(String... groupIds) {
+    if (isNotEmpty(groupIds)) {
+      criteria.put(ROLE_GROUPS, groupIds);
+    }
+    return this;
+  }
+
   @Override
   public UserDetailsSearchCriteria onGroupIds(String... groupIds) {
-    if (groupIds != null) {
+    if (isNotEmpty(groupIds)) {
       criteria.put(GROUP_IDS,
           Arrays.stream(groupIds).filter(StringUtil::isDefined).toArray(String[]::new));
     }
@@ -118,7 +134,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   public UserDetailsSearchCriteria onDomainIds(String... domainIds) {
-    if (domainIds != null) {
+    if (isNotEmpty(domainIds)) {
       criteria.put(DOMAIN_IDS,
           Arrays.stream(domainIds).filter(StringUtil::isDefined).toArray(String[]::new));
     }
@@ -138,7 +154,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
     if (isNotEmpty(userStates)) {
       criteria.put(USER_STATES_TO_EXCLUDE, userStates);
     }
-    return null;
+    return this;
   }
 
   @Override
@@ -150,7 +166,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   @Override
-  public UserDetailsSearchCriteria onUserIds(String[] userIds) {
+  public UserDetailsSearchCriteria onUserIds(String... userIds) {
     if (isNotEmpty(userIds)) {
       criteria.put(USER_IDS, userIds);
     }
@@ -177,6 +193,10 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
     return criteria.containsKey(ROLE_NAMES);
   }
 
+  public boolean isCriterionOnGroupsInRolesSet() {
+    return criteria.containsKey(ROLE_GROUPS) && isNotEmpty((String[]) criteria.get(ROLE_GROUPS));
+  }
+
   public boolean isCriterionOnResourceIdSet() {
     return criteria.containsKey(RESOURCE_ID);
   }
@@ -194,13 +214,11 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   public boolean isCriterionOnGroupIdsSet() {
-    final String[] groupIds = (String[]) criteria.get(GROUP_IDS);
-    return ArrayUtil.isNotEmpty(groupIds);
+    return criteria.containsKey(GROUP_IDS) && isNotEmpty((String[]) criteria.get(GROUP_IDS));
   }
 
   public boolean isCriterionOnDomainIdSet() {
-    final String[] domainIds = (String[]) criteria.get(DOMAIN_IDS);
-    return ArrayUtil.isNotEmpty(domainIds);
+    return criteria.containsKey(DOMAIN_IDS) && isNotEmpty((String[]) criteria.get(DOMAIN_IDS));
   }
 
   public boolean isCriterionOnAccessLevelsSet() {
@@ -228,11 +246,20 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   /**
-   * Gets the disjonction on the role names.
-   * @return an array with each element of the disjonction.
+   * Gets the disjunction on the role names.
+   * @return an array with each element of the disjunction.
    */
   public String[] getCriterionOnRoleNames() {
     return (String[]) criteria.get(ROLE_NAMES);
+  }
+
+  /**
+   * Gets the disjunction on the groups that play the roles given by the criterion on the role 
+   * names.
+   * @return an array with each element of the disjunction.
+   */
+  public String[] getCriterionOnGroupsInRoles() {
+    return (String[]) criteria.get(ROLE_GROUPS);
   }
 
   /**
@@ -252,24 +279,24 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   /**
-   * Gets the disjonction on the user identifiers.
-   * @return an array with each element of the disjonction.
+   * Gets the disjunction on the user identifiers.
+   * @return an array with each element of the disjunction.
    */
   public String[] getCriterionOnUserIds() {
     return (String[]) criteria.get(USER_IDS);
   }
 
   /**
-   * Gets the disjonction on the user specific identifiers.
-   * @return an array with each element of the disjonction.
+   * Gets the disjunction on the user specific identifiers.
+   * @return an array with each element of the disjunction.
    */
   public String[] getCriterionOnUserSpecificIds() {
     return (String[]) criteria.get(USER_SPECIFIC_IDS);
   }
 
   /**
-   * Gets the disjonction on the group identifiers.
-   * @return an array with each element of the disjonction.
+   * Gets the disjunction on the group identifiers.
+   * @return an array with each element of the disjunction.
    */
   public String[] getCriterionOnGroupIds() {
     return (String[]) criteria.get(GROUP_IDS);
@@ -349,26 +376,6 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
     int hash = 5;
     hash = 53 * hash + (this.criteria != null ? this.criteria.hashCode() : 0);
     return hash;
-  }
-
-  /**
-   * Useless as by default the criteria forms a conjunction.
-   *
-   * @return itself.
-   */
-  @Override
-  public UserDetailsSearchCriteria and() {
-    return this;
-  }
-
-  /**
-   * Not supported. By default, the criteria form a conjunction.
-   *
-   * @return nothing, thrown an UnsupportedOperationException exception.
-   */
-  @Override
-  public UserDetailsSearchCriteria or() {
-    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override

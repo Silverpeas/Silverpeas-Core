@@ -26,6 +26,7 @@ package org.silverpeas.core.admin.user.dao;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.ListSlice;
@@ -55,7 +56,8 @@ public class UserDAO {
   private static final String USER_TABLE = "st_user";
   private static final String GROUP_USER_REL_TABLE = "st_group_user_rel";
   private static final String USER_COLUMNS =
-      "DISTINCT(id),specificId,domainId,login,firstName,lastName,loginMail,email,accessLevel,"
+      "DISTINCT(st_user.id),specificId,domainId,login,firstName,lastName,loginMail,email," +
+          "accessLevel,"
       + "loginQuestion,loginAnswer,creationDate,saveDate,version,tosAcceptanceDate,"
       + "lastLoginDate,nbSuccessfulLoginAttempts,lastLoginCredentialUpdateDate,expirationDate,"
       + "state,stateSaveDate, notifManualReceiverLimit";
@@ -319,15 +321,15 @@ public class UserDAO {
   /**
    * Gets the user details that match the specified criteria. The criteria are provided by an
    * UserSearchCriteriaBuilder instance that was used to create them.
-   *
    * @param connection the connection with a data source to use.
-   * @param criteria a builder with which the criteria the user details must satisfy has been built.
+   * @param criteria the criteria to apply on the users to get.
    * @return a list of user details matching the criteria or an empty list if no such user details
    * are found.
    */
   public ListSlice<UserDetail> getUsersByCriteria(Connection connection,
-      UserSearchCriteriaForDAO criteria) throws SQLException {
-      return criteria.toSQLQuery(USER_COLUMNS).executeWith(connection, UserDAO::fetchUser);
+      UserDetailsSearchCriteria criteria) throws SQLException {
+    SqlSelectorByCriteriaBuilder builder = new SqlSelectorByCriteriaBuilder(USER_COLUMNS);
+    return builder.build(criteria).executeWith(connection, UserDAO::fetchUser);
   }
 
   /**
@@ -339,10 +341,11 @@ public class UserDAO {
    * built.
    * @return the number of users that match the specified criteria.
    */
-  public int getUserCountByCriteria(Connection connection, UserSearchCriteriaForDAO criteria) throws
-      SQLException {
-    return criteria.toSQLQuery("COUNT(DISTINCT id)")
-        .executeUniqueWith(connection, row -> row.getInt(1));
+  public int getUserCountByCriteria(Connection connection, UserDetailsSearchCriteria criteria)
+      throws SQLException {
+    final SqlSelectorByCriteriaBuilder builder =
+        new SqlSelectorByCriteriaBuilder("COUNT(DISTINCT st_user.id)");
+    return builder.build(criteria).executeUniqueWith(connection, row -> row.getInt(1));
   }
 
   public List<UserDetail> getUsersInGroups(Connection con, List<String> groupIds)

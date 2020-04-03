@@ -374,7 +374,7 @@ public class DefaultOrganizationController implements OrganizationController {
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
-    return null;
+    return new ListSlice<>(Collections.emptyList());
   }
 
   @Override

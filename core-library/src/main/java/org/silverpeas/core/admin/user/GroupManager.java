@@ -39,10 +39,9 @@ import org.silverpeas.core.admin.service.GroupAlreadyExistsAdminException;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.dao.GroupDAO;
 import org.silverpeas.core.admin.user.dao.GroupSearchCriteriaForDAO;
-import org.silverpeas.core.admin.user.dao.SearchCriteriaDAOFactory;
 import org.silverpeas.core.admin.user.dao.UserDAO;
-import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.model.GroupDetail;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.notification.GroupEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -93,7 +92,7 @@ public class GroupManager {
   }
 
   public static GroupManager get() {
-    return ServiceProvider.getService(GroupManager.class);
+    return ServiceProvider.getSingleton(GroupManager.class);
   }
 
   /**
@@ -115,19 +114,19 @@ public class GroupManager {
           break;
         }
       }
-      final SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
       for (final GroupDetail group : groups) {
         final List<String> groupIds = filter.getAllSubGroups(group.getId())
             .stream()
             .map(GroupDetail::getId)
             .collect(Collectors.toList());
         groupIds.add(group.getId());
-        final UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
-        final UserState[] criterionOnUserStatesToExclude = criteria.getCriterionOnUserStatesToExclude();
-        final int userCount = userDao.getUserCountByCriteria(connection, criteriaOnUsers.
-            onDomainIds(domainIdConstraint).
-            onGroupIds(groupIds.toArray(new String[0])).
-            onUserStatesToExclude(criterionOnUserStatesToExclude));
+        final UserState[] criterionOnUserStatesToExclude =
+            criteria.getCriterionOnUserStatesToExclude();
+        final int userCount =
+            userDao.getUserCountByCriteria(connection, new UserDetailsSearchCriteria().
+                onDomainIds(domainIdConstraint).
+                onGroupIds(groupIds.toArray(new String[0])).
+                onUserStatesToExclude(criterionOnUserStatesToExclude));
         group.setTotalNbUsers(userCount);
       }
       return groups;
@@ -148,11 +147,9 @@ public class GroupManager {
     Connection connection = null;
     try {
       connection = DBUtil.openConnection();
-      SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
       List<String> groupIds = getAllSubGroupIdsRecursively(groupId);
       groupIds.add(groupId);
-      UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
-      return userDao.getUserCountByCriteria(connection, criteriaOnUsers.
+      return userDao.getUserCountByCriteria(connection, new UserDetailsSearchCriteria().
           onDomainIds(domainId).
           onGroupIds(groupIds.toArray(new String[0])).
           onUserStatesToExclude(UserState.REMOVED));

@@ -26,8 +26,6 @@ package org.silverpeas.core.admin.service;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
@@ -71,8 +69,6 @@ import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.dao.GroupSearchCriteriaForDAO;
-import org.silverpeas.core.admin.user.dao.SearchCriteriaDAOFactory;
-import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
@@ -84,7 +80,6 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.Process;
 import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -5182,202 +5177,93 @@ class Admin implements Administration {
   // -------------------------------------------------------------------------
 
   @Override
-  public SilverpeasList<UserDetail> searchUsers(final UserDetailsSearchCriteria searchCriteria) throws
+  public ListSlice<UserDetail> searchUsers(final UserDetailsSearchCriteria searchCriteria) throws
       AdminException {
-    List<String> userIds = null;
+    setAllGroupChildren(searchCriteria);
+
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
-      userIds = searchUsersInComponentInstance(searchCriteria);
-      if (userIds == null) {
-        return new ListSlice<>(0, 0, 0);
-      }
-    }
-
-    if (searchCriteria.isCriterionOnUserIdsSet()) {
-      userIds = searchUserByTheirIds(searchCriteria, userIds);
-    }
-
-    if (searchCriteria.isCriterionOnGroupIdsSet()) {
-      userIds = searchUsersByGroupIds(searchCriteria, userIds);
-    }
-
-    if (userIds != null && userIds.size() > 10000) {
-      // split query
-      final List users = new ArrayList<>(userIds.size());
-      final PaginationPage paginationPage = searchCriteria.getCriterionOnPagination();
-      searchCriteria.clearPagination();
-      try {
-        JdbcSqlQuery.executeBySplittingOn(userIds, (userIdBatch, result) -> {
-          try {
-            UserSearchCriteriaForDAO criteria = buildUserSearchCriteriaForDAO(searchCriteria, userIdBatch);
-            users.addAll(userManager.getUsersMatchingCriteria(criteria));
-          } catch (AdminException e) {
-            throw new SilverpeasRuntimeException(e);
+      List<String> roleNames = searchCriteria.isCriterionOnRoleNamesSet() ?
+          Arrays.asList(searchCriteria.getCriterionOnRoleNames()) : Collections.emptyList();
+      final SilverpeasComponentInstance instance =
+          getComponentInstance(searchCriteria.getCriterionOnComponentInstanceId());
+      if (!roleNames.isEmpty() || !instance.isPublic()) {
+        if (!instance.isPersonal()) {
+          setGroupsPlayingRole(roleNames, instance, searchCriteria);
+        } else {
+          final String currentUserId =
+              getCurrentUserPlayingRole(roleNames, instance, searchCriteria);
+          if (StringUtil.isDefined(currentUserId)) {
+            searchCriteria.onUserIds(currentUserId);
+          } else {
+            return ListSlice.emptyList();
           }
-        });
-        users.sort(Comparator.comparing(UserDetail::getLastName).thenComparing(UserDetail::getFirstName));
-        if (paginationPage != null) {
-          // recupere uniquement les users de la page demandée
-          int startIndex = (paginationPage.getPageNumber() - 1) * paginationPage.getPageSize();
-          int lastIndex = Math.min(startIndex + paginationPage.getPageSize(), users.size());
-          return PaginationList.from(users.subList(startIndex, lastIndex), users.size());
         }
-      } catch (SQLException e) {
-        throw new AdminException(e);
       }
-      return SilverpeasList.wrap(users);
-    } else {
-      UserSearchCriteriaForDAO criteria = buildUserSearchCriteriaForDAO(searchCriteria, userIds);
-      return userManager.getUsersMatchingCriteria(criteria);
     }
+
+    return userManager.getUsersMatchingCriteria(searchCriteria);
   }
 
-  private UserSearchCriteriaForDAO buildUserSearchCriteriaForDAO(
-      final UserDetailsSearchCriteria searchCriteria, final Collection<String> userIds)
+  private String getCurrentUserPlayingRole(final List<String> listOfRoleNames,
+      final SilverpeasComponentInstance instance, final UserDetailsSearchCriteria searchCriteria) {
+    final User user = ((SilverpeasPersonalComponentInstance) instance).getUser();
+    final Collection<String> userRoles =
+        instance.getSilverpeasRolesFor(user).stream().map(Enum::name).collect(Collectors.toList());
+    if (!CollectionUtil.intersection(userRoles, listOfRoleNames).isEmpty()) {
+      return Stream.of(searchCriteria.getCriterionOnUserIds())
+          .filter(u -> u.equals(user.getId()))
+          .findFirst()
+          .orElse("");
+    }
+    return "";
+  }
+
+  private void setGroupsPlayingRole(final List<String> roleNames,
+      final SilverpeasComponentInstance instance, final UserDetailsSearchCriteria searchCriteria)
       throws AdminException {
-    SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
-    UserSearchCriteriaForDAO criteria = factory.getUserSearchCriteriaDAO();
-    if (userIds != null) {
-      criteria.onUserIds(userIds.toArray(new String[0]));
-    }
+    final Set<String> groupIds = getRecursivelyGroupsIdPlaying(roleNames, instance,
+        searchCriteria.getCriterionOnResourceId());
     if (searchCriteria.isCriterionOnGroupIdsSet()) {
-      setCriteriaWithGroupIds(searchCriteria, criteria);
-    }
-    if (searchCriteria.isCriterionOnDomainIdSet()) {
-      criteria.and().onDomainIds(searchCriteria.getCriterionOnDomainIds());
-    }
-    if (searchCriteria.isCriterionOnUserSpecificIdsSet()) {
-      criteria.and().onUserSpecificIds(searchCriteria.getCriterionOnUserSpecificIds());
-    }
-    if (searchCriteria.isCriterionOnAccessLevelsSet()) {
-      criteria.and().onAccessLevels(searchCriteria.getCriterionOnAccessLevels());
-    }
-    if (searchCriteria.isCriterionOnUserStatesToExcludeSet()) {
-      criteria.and().onUserStatesToExclude(searchCriteria.getCriterionOnUserStatesToExclude());
-    }
-    if (searchCriteria.isCriterionOnNameSet()) {
-      criteria.and().onName(searchCriteria.getCriterionOnName());
+      final List<String> allGroupsId = Arrays.asList(searchCriteria.getCriterionOnGroupIds());
+      final Collection<String> groupsToTake = CollectionUtil.intersection(allGroupsId, groupIds);
+      searchCriteria.onGroupsInRoles(groupsToTake.toArray(new String[0]));
     } else {
-      if (searchCriteria.isCriterionOnFirstNameSet()) {
-        criteria.and().onFirstName(searchCriteria.getCriterionOnFirstName());
-      }
-      if (searchCriteria.isCriterionOnLastNameSet()) {
-        criteria.and().onLastName(searchCriteria.getCriterionOnLastName());
-      }
-    }
-    if (searchCriteria.isCriterionOnPaginationSet()) {
-      criteria.onPagination(searchCriteria.getCriterionOnPagination());
-    }
-    return criteria;
-  }
-
-  private void setCriteriaWithGroupIds(final UserDetailsSearchCriteria searchCriteria,
-      final UserSearchCriteriaForDAO criteria) throws AdminException {
-    String[] theGroupIds = searchCriteria.getCriterionOnGroupIds();
-    if (theGroupIds == UserDetailsSearchCriteria.ANY_GROUPS) {
-      criteria.and().onGroupIds(SearchCriteria.Constants.ANY);
-    } else {
-      Set<String> groupIds = new HashSet<>();
-      for (String aGroupId : theGroupIds) {
-        groupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
-        groupIds.add(aGroupId);
-      }
-      criteria.and().onGroupIds(groupIds.toArray(new String[0]));
+      searchCriteria.onGroupsInRoles(groupIds.toArray(new String[0]));
     }
   }
 
-  @NotNull
-  private List<String> searchUserByTheirIds(final UserDetailsSearchCriteria searchCriteria,
-      List<String> userIds) {
-    if (userIds == null) {
-      userIds = Arrays.asList(searchCriteria.getCriterionOnUserIds());
-    } else {
-      List<String> userIdsInCriterion = Arrays.asList(searchCriteria.getCriterionOnUserIds());
-      List<String> userIdsToTake = new ArrayList<>();
-      for (String userId : userIds) {
-        if (userIdsInCriterion.contains(userId)) {
-          userIdsToTake.add(userId);
-        }
+  private void setAllGroupChildren(final UserDetailsSearchCriteria searchCriteria)
+      throws AdminException {
+    if (searchCriteria.isCriterionOnGroupIdsSet()) {
+      final Set<String> allGroupsId = new HashSet<>();
+      for (String aGroupId : searchCriteria.getCriterionOnGroupIds()) {
+        allGroupsId.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
+        allGroupsId.add(aGroupId);
       }
-      userIds = userIdsToTake;
+      searchCriteria.onGroupIds(allGroupsId.toArray(new String[0]));
     }
-    return userIds;
   }
 
-  private List<String> searchUsersByGroupIds(final UserDetailsSearchCriteria searchCriteria, List<String> userIds) {
-    if (userIds != null) {
-      String[] groupIds = searchCriteria.getCriterionOnGroupIds();
-      List<String> userIdsInCriterion = new ArrayList<>();
-
-      int nbUsers = 0;
-      for (String groupId : groupIds) {
-        nbUsers += Group.getById(groupId).getNbUsers();
-      }
-
-      if (nbUsers < 10000) {
-        for (String groupId : groupIds) {
-          List<String> userIdsInGroup = Arrays.asList(Group.getById(groupId).getUserIds());
-          userIdsInGroup.retainAll(userIds);
-          userIdsInCriterion.addAll(userIdsInGroup);
-        }
-        userIds = userIdsInCriterion;
-      }
-    }
-    return userIds;
-  }
-
-  /**
-   * Search user ids according to given criteria.
-   * @param searchCriteria the criteria to apply.
-   * @return a list (empty or filled) of matching user ids. If a null value is returned, then the
-   * search has to be stopped.
-   * @throws AdminException on technical error.
-   */
-  private List<String> searchUsersInComponentInstance(
-      final UserDetailsSearchCriteria searchCriteria) throws AdminException {
-    List<String> listOfRoleNames = Collections.emptyList();
-    if (searchCriteria.isCriterionOnRoleNamesSet()) {
-      listOfRoleNames = Arrays.asList(searchCriteria.getCriterionOnRoleNames());
-    }
-    final SilverpeasComponentInstance instance =
-        getComponentInstance(searchCriteria.getCriterionOnComponentInstanceId());
-    List<String> result = new ArrayList<>();
-    if (!listOfRoleNames.isEmpty() || !instance.isPublic()) {
-      if (!instance.isPersonal()) {
-        addUserIdsByCriteria(instance, searchCriteria, listOfRoleNames, result);
-      } else {
-        final User user = ((SilverpeasPersonalComponentInstance) instance).getUser();
-        final Collection<String> userRoles =
-            instance.getSilverpeasRolesFor(user).stream().map(Enum::name)
-                .collect(Collectors.toList());
-        if (!CollectionUtil.intersection(userRoles, listOfRoleNames).isEmpty()) {
-          result.add(user.getId());
-        }
-      }
-      if (result.isEmpty()) {
-        // no users in component instance or component instance role
-        // no additional filtering is needed
-        result = null;
-      }
-    }
-    return result;
-  }
-
-  private void addUserIdsByCriteria(final SilverpeasComponentInstance instance,
-      final UserDetailsSearchCriteria searchCriteria, final List<String> listOfRoleNames,
-      final List<String> result) throws AdminException {
-    List<ProfileInst> profiles;
-    if (searchCriteria.isCriterionOnResourceIdSet()) {
-      profiles =
-          getProfileInstsFor(searchCriteria.getCriterionOnResourceId(), instance.getId());
+  private Set<String> getRecursivelyGroupsIdPlaying(final List<String> roleNames,
+      final SilverpeasComponentInstance instance, final String resourceId) throws AdminException {
+    final Set<String> allGroupIds = new HashSet<>();
+    final List<ProfileInst> profiles;
+    if (StringUtil.isDefined(resourceId)) {
+      profiles = getProfileInstsFor(resourceId, instance.getId());
     } else {
       profiles = getComponentInst(instance.getId()).getAllProfilesInst();
     }
     for (ProfileInst aProfile : profiles) {
-      if (listOfRoleNames.isEmpty() || listOfRoleNames.
-          contains(aProfile.getName())) {
-        addAllUsersInProfile(aProfile, result);
+      if (roleNames.isEmpty() || roleNames.contains(aProfile.getName())) {
+        // groups (and recursively their subgroups) playing the role
+        List<String> groupIds = aProfile.getAllGroups();
+        for (String aGroupId : groupIds) {
+          allGroupIds.add(aGroupId);
+          allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
+        }
       }
     }
+    return allGroupIds;
   }
 
   private void addAllUsersInProfile(final ProfileInst aProfile, final Collection<String> userIds)
@@ -5397,8 +5283,7 @@ class Admin implements Administration {
   @Override
   public SilverpeasList<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria) throws
       AdminException {
-    SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
-    GroupSearchCriteriaForDAO criteria = factory.getGroupSearchCriteriaDAO();
+    GroupSearchCriteriaForDAO criteria = GroupSearchCriteriaForDAO.newCriteria();
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
       makeCriteriaOnComponentInstanceId(searchCriteria, criteria);
     }
@@ -5421,23 +5306,23 @@ class Admin implements Administration {
     }
 
     if (searchCriteria.isCriterionOnGroupIdsSet()) {
-      criteria.and().onGroupIds(searchCriteria.getCriterionOnGroupIds());
+      criteria.onGroupIds(searchCriteria.getCriterionOnGroupIds());
     }
 
     if (searchCriteria.isCriterionOnNameSet()) {
-      criteria.and().onName(searchCriteria.getCriterionOnName());
+      criteria.onName(searchCriteria.getCriterionOnName());
     }
 
     if (searchCriteria.isCriterionOnAccessLevelsSet()) {
-      criteria.and().onAccessLevels(searchCriteria.getCriterionOnAccessLevels());
+      criteria.onAccessLevels(searchCriteria.getCriterionOnAccessLevels());
     }
 
     if (searchCriteria.isCriterionOnUserStatesToExcludeSet()) {
-      criteria.and().onUserStatesToExclude(searchCriteria.getCriterionOnUserStatesToExclude());
+      criteria.onUserStatesToExclude(searchCriteria.getCriterionOnUserStatesToExclude());
     }
 
     if (searchCriteria.isCriterionOnSuperGroupIdSet()) {
-      criteria.and().onSuperGroupId(searchCriteria.getCriterionOnSuperGroupId());
+      criteria.onSuperGroupId(searchCriteria.getCriterionOnSuperGroupId());
     }
 
     if (searchCriteria.isCriterionOnPaginationSet()) {
@@ -5449,13 +5334,13 @@ class Admin implements Administration {
 
   private void makeCriteriaOnComponentInstanceId(final GroupsSearchCriteria searchCriteria,
       final GroupSearchCriteriaForDAO criteria) throws AdminException {
-    final List<String> listOfRoleNames = new ArrayList<>();
+    final List<String> roleNames = new ArrayList<>();
     if (searchCriteria.isCriterionOnRoleNamesSet()) {
-      listOfRoleNames.addAll(Arrays.asList(searchCriteria.getCriterionOnRoleNames()));
+      roleNames.addAll(Arrays.asList(searchCriteria.getCriterionOnRoleNames()));
     }
     SilverpeasComponentInstance instance =
         getComponentInstance(searchCriteria.getCriterionOnComponentInstanceId());
-    if (!listOfRoleNames.isEmpty() || !instance.isPublic()) {
+    if (!roleNames.isEmpty() || !instance.isPublic()) {
       List<String> roleIds = new ArrayList<>();
       if (!instance.isPersonal()) {
         List<ProfileInst> profiles;
@@ -5465,8 +5350,7 @@ class Admin implements Administration {
         } else {
           profiles = getComponentInst(instance.getId()).getAllProfilesInst();
         }
-        profiles.stream()
-            .filter(p -> listOfRoleNames.isEmpty() || listOfRoleNames.contains(p.getName()))
+        profiles.stream().filter(p -> roleNames.isEmpty() || roleNames.contains(p.getName()))
             .forEach(p -> roleIds.add(p.getId()));
       }
       criteria.onRoleNames(roleIds.toArray(new String[0]));

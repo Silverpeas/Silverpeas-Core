@@ -27,6 +27,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,6 +41,10 @@ public class ListSlice<T> extends ArrayList<T> implements SilverpeasList<T> {
   private int start;
   private int end;
   private long maxsize = -1;
+
+  public static <T> ListSlice<T> emptyList() {
+    return new ListSlice<>(Collections.emptyList());
+  }
 
   /**
    * Constructs a new slice for a given list.
