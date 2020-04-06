@@ -99,9 +99,9 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
     final String sqlQuery;
     boolean countOverPaginationMethod = isCountOverPaginationMethod(queryConf);
     if (countOverPaginationMethod) {
-      final String query = selectQuery.getSqlQuery();
-      final int selectIndex = query.indexOf("select");
-      if (selectIndex >= 0 && query.indexOf("select", selectIndex + 1) < 0) {
+      final String theQuery = selectQuery.getSqlQuery().toLowerCase();
+      final int selectIndex = theQuery.indexOf("select");
+      if (selectIndex >= 0 && theQuery.indexOf("select", selectIndex + 1) < 0) {
         sqlQuery = selectQuery.getSqlQuery()
             .replaceFirst("(?i)(select .*)from ", "$1, COUNT(*) OVER() AS SP_MAX_ROW_COUNT FROM ");
       } else {

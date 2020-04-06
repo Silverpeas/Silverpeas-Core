@@ -156,23 +156,26 @@ public class SqlSelectorByCriteriaBuilder {
   private void applyCriteriaOnRoles(final JdbcSqlQuery query,
       final UserDetailsSearchCriteria criteria) {
     if (criteria.isCriterionOnComponentInstanceIdSet()) {
-      int instanceId = ComponentInst.getComponentLocalId(criteria.getCriterionOnComponentInstanceId());
-      query.and("((st_userrole.instanceId = ?", instanceId)
-          .and("st_userrole_user_rel.userId = st_user.id");
+      int instanceId =
+          ComponentInst.getComponentLocalId(criteria.getCriterionOnComponentInstanceId());
+      query.and("(st_user.id IN (")
+          .addSqlPart("SELECT st_userrole_user_rel.userId FROM st_userrole inner join " +
+              "st_userrole_user_rel on st_userrole_user_rel.userroleId = st_userrole.id WHERE " +
+              "st_userrole.instanceId = ?", instanceId);
       if (criteria.isCriterionOnResourceIdSet()) {
         query.and("st_userrole.objectId = ?",
             Integer.parseInt(criteria.getCriterionOnResourceId()));
       }
       if (criteria.isCriterionOnRoleNamesSet()) {
-        query.and("st_userrole.roleName")
-            .in(criteria.getCriterionOnRoleNames());
+        query.and("st_userrole.roleName").in(criteria.getCriterionOnRoleNames());
       }
       query.addSqlPart(")");
       if (criteria.isCriterionOnGroupsInRolesSet()) {
         String[] groupIds = criteria.getCriterionOnGroupsInRoles();
-        query.or("(st_group_user_rel.groupId")
+        query.or("st_user.id IN (")
+            .addSqlPart("SELECT userId FROM st_group_user_rel WHERE st_group_user_rel.groupId")
             .in(Stream.of(groupIds).map(Integer::parseInt).collect(Collectors.toList()))
-            .and("st_group_user_rel.userId = st_user.id)");
+            .addSqlPart(")");
       }
       query.addSqlPart(")");
     }
@@ -190,13 +193,8 @@ public class SqlSelectorByCriteriaBuilder {
   private String[] getTables(final UserDetailsSearchCriteria criteria) {
     final List<String> tables = new ArrayList<>();
     tables.add("st_user");
-    if (criteria.isCriterionOnGroupIdsSet() || criteria.isCriterionOnGroupsInRolesSet()) {
+    if (criteria.isCriterionOnGroupIdsSet()) {
       tables.add("st_group_user_rel");
-    }
-    if (criteria.isCriterionOnComponentInstanceIdSet()) {
-      tables.add(
-          "st_userrole inner join st_userrole_user_rel on st_userrole_user_rel.userroleId = " +
-              "st_userrole.id");
     }
     return tables.toArray(new String[0]);
   }
