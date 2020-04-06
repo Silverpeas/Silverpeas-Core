@@ -375,4 +375,8 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   public boolean isEmpty() {
     return criteria.isEmpty();
   }
+
+  public void clearPagination() {
+    criteria.remove(PAGINATION);
+  }
 }

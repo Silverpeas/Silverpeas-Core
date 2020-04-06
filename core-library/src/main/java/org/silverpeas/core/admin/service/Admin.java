@@ -26,6 +26,8 @@ package org.silverpeas.core.admin.service;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
@@ -82,6 +84,7 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.Process;
 import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -5179,7 +5182,7 @@ class Admin implements Administration {
   // -------------------------------------------------------------------------
 
   @Override
-  public ListSlice<UserDetail> searchUsers(final UserDetailsSearchCriteria searchCriteria) throws
+  public SilverpeasList searchUsers(final UserDetailsSearchCriteria searchCriteria) throws
       AdminException {
     List<String> userIds = null;
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
@@ -5193,12 +5196,43 @@ class Admin implements Administration {
       userIds = searchUserByTheirIds(searchCriteria, userIds);
     }
 
-    UserSearchCriteriaForDAO criteria = buildUserSearchCriteriaForDAO(searchCriteria, userIds);
-    return userManager.getUsersMatchingCriteria(criteria);
+    if (searchCriteria.isCriterionOnGroupIdsSet()) {
+      userIds = searchUsersByGroupIds(searchCriteria, userIds);
+    }
+
+    if (userIds != null && userIds.size() > 10000) {
+      // split query
+      final List users = new ArrayList<>(userIds.size());
+      final PaginationPage paginationPage = searchCriteria.getCriterionOnPagination();
+      searchCriteria.clearPagination();
+      try {
+        JdbcSqlQuery.executeBySplittingOn(userIds, (userIdBatch, result) -> {
+          try {
+            UserSearchCriteriaForDAO criteria = buildUserSearchCriteriaForDAO(searchCriteria, userIdBatch);
+            users.addAll(userManager.getUsersMatchingCriteria(criteria));
+          } catch (AdminException e) {
+            throw new SilverpeasRuntimeException(e);
+          }
+        });
+        users.sort(Comparator.comparing(UserDetail::getLastName).thenComparing(UserDetail::getFirstName));
+        if (paginationPage != null) {
+          // recupere uniquement les users de la page demandée
+          int startIndex = (paginationPage.getPageNumber() - 1) * paginationPage.getPageSize();
+          int lastIndex = Math.min(startIndex + paginationPage.getPageSize(), users.size());
+          return PaginationList.from(users.subList(startIndex, lastIndex), users.size());
+        }
+      } catch (SQLException e) {
+        throw new AdminException(e);
+      }
+      return SilverpeasList.wrap(users);
+    } else {
+      UserSearchCriteriaForDAO criteria = buildUserSearchCriteriaForDAO(searchCriteria, userIds);
+      return userManager.getUsersMatchingCriteria(criteria);
+    }
   }
 
   private UserSearchCriteriaForDAO buildUserSearchCriteriaForDAO(
-      final UserDetailsSearchCriteria searchCriteria, final List<String> userIds)
+      final UserDetailsSearchCriteria searchCriteria, final Collection<String> userIds)
       throws AdminException {
     SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
     UserSearchCriteriaForDAO criteria = factory.getUserSearchCriteriaDAO();
@@ -5265,6 +5299,28 @@ class Admin implements Administration {
         }
       }
       userIds = userIdsToTake;
+    }
+    return userIds;
+  }
+
+  private List<String> searchUsersByGroupIds(final UserDetailsSearchCriteria searchCriteria, List<String> userIds) {
+    if (userIds != null) {
+      String[] groupIds = searchCriteria.getCriterionOnGroupIds();
+      List<String> userIdsInCriterion = new ArrayList<>();
+
+      int nbUsers = 0;
+      for (String groupId : groupIds) {
+        nbUsers += Group.getById(groupId).getNbUsers();
+      }
+
+      if (nbUsers < 10000) {
+        for (String groupId : groupIds) {
+          List<String> userIdsInGroup = Arrays.asList(Group.getById(groupId).getUserIds());
+          userIdsInGroup.retainAll(userIds);
+          userIdsInCriterion.addAll(userIdsInGroup);
+        }
+        userIds = userIdsInCriterion;
+      }
     }
     return userIds;
   }
