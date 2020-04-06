@@ -38,9 +38,9 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.GroupAlreadyExistsAdminException;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.dao.GroupDAO;
-import org.silverpeas.core.admin.user.dao.GroupSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.dao.UserDAO;
 import org.silverpeas.core.admin.user.model.GroupDetail;
+import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.notification.GroupEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -102,16 +102,18 @@ public class GroupManager {
    * @return a slice of the list of user groups matching the criteria or an empty list of no ones are found.
    * @throws AdminException if an error occurs while getting the user groups.
    */
-  public SilverpeasList<GroupDetail> getGroupsMatchingCriteria(final GroupSearchCriteriaForDAO criteria) throws
+  public SilverpeasList<GroupDetail> getGroupsMatchingCriteria(final GroupsSearchCriteria criteria) throws
           AdminException {
     try (Connection connection = DBUtil.openConnection()){
       final GroupCriteriaFilter filter = new GroupCriteriaFilter(connection, criteria, groupDao);
       final SilverpeasList<GroupDetail> groups = filter.getFilteredGroups();
       String[] domainIdConstraint = new String[0];
-      for (final String domainId : criteria.getCriterionOnDomainIds()) {
-        if (!MIXED_DOMAIN_ID.equals(domainId)) {
-          domainIdConstraint = new String[]{domainId};
-          break;
+      if (criteria.isCriterionOnDomainIdSet()) {
+        for (final String domainId : criteria.getCriterionOnDomainIds()) {
+          if (!MIXED_DOMAIN_ID.equals(domainId)) {
+            domainIdConstraint = new String[]{domainId};
+            break;
+          }
         }
       }
       for (final GroupDetail group : groups) {
@@ -873,7 +875,7 @@ public class GroupManager {
 
   private static class GroupCriteriaFilter {
     private final Connection connection;
-    private final GroupSearchCriteriaForDAO criteria;
+    private final GroupsSearchCriteria criteria;
     private final GroupDAO groupDao;
     private final String nameFilter;
     private final PaginationPage paginationPage;
@@ -881,13 +883,13 @@ public class GroupManager {
     private final boolean logicalNameFiltering;
     private final Map<String, List<GroupDetail>> subGroupsOfGroupsCache = new LinkedHashMap<>();
 
-    GroupCriteriaFilter(final Connection connection, final GroupSearchCriteriaForDAO criteria,
+    GroupCriteriaFilter(final Connection connection, final GroupsSearchCriteria criteria,
         final GroupDAO groupDao) {
       this.connection = connection;
       this.criteria = criteria;
       this.groupDao = groupDao;
       this.nameFilter = criteria.getCriterionOnName();
-      this.paginationPage = criteria.getPagination();
+      this.paginationPage = criteria.getCriterionOnPagination();
       this.childrenRequired = criteria.childrenRequired();
       this.logicalNameFiltering = childrenRequired && isDefined(nameFilter);
       if (childrenRequired) {

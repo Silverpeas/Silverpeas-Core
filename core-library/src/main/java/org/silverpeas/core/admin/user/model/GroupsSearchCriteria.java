@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin.user.model;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
@@ -34,6 +33,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -44,6 +44,7 @@ public class GroupsSearchCriteria implements SearchCriteria {
   private static final String USER_ACCESS_LEVELS = "userAccessLevels";
   private static final String USER_STATES_TO_EXCLUDE = "userStatesToExclude";
   private static final String GROUP_ID = "groupId";
+  private static final String USER_ID = "userId";
   private static final String SUPERGROUP_ID = "parentId";
   private static final String ROLE_NAMES = "roleIds";
   private static final String DOMAIN_IDS = "domainIds";
@@ -125,7 +126,7 @@ public class GroupsSearchCriteria implements SearchCriteria {
 
   @Override
   public GroupsSearchCriteria onDomainIds(String... domainIds) {
-    if (domainIds != null) {
+    if (isNotEmpty(domainIds)) {
       criteria.put(DOMAIN_IDS,
           Arrays.stream(domainIds).filter(StringUtil::isDefined).toArray(String[]::new));
     }
@@ -179,7 +180,7 @@ public class GroupsSearchCriteria implements SearchCriteria {
   }
 
   public boolean isCriterionOnDomainIdSet() {
-    return getCriterionOnDomainId() != null;
+    return criteria.containsKey(DOMAIN_IDS) && isNotEmpty((String[]) criteria.get(DOMAIN_IDS));
   }
 
   public boolean isCriterionOnAccessLevelsSet() {
@@ -196,6 +197,10 @@ public class GroupsSearchCriteria implements SearchCriteria {
       return Arrays.stream(domainIds).anyMatch(Domain.MIXED_DOMAIN_ID::equals);
     }
     return false;
+  }
+
+  public boolean isCriterionOnUserIdsSet() {
+    return criteria.containsKey(USER_ID);
   }
 
   public boolean isCriterionOnNameSet() {
@@ -259,22 +264,17 @@ public class GroupsSearchCriteria implements SearchCriteria {
     return (String[]) criteria.get(GROUP_ID);
   }
 
+  public String[] getCriterionOnUserIds() {
+    return (String[]) criteria.get(USER_ID);
+  }
+
   /**
-   * Gets the domain identifier, other than the mixed domain, onto which the groups must belong.
+   * Gets the domain identifiers onto which the groups must belong. It can include the mixed domain.
    *
-   * @return the identifier of the domain (other than the mixed domain).
+   * @return the identifier of the domain
    */
-  public String getCriterionOnDomainId() {
-     String[] domainIds = (String[]) criteria.get(DOMAIN_IDS);
-     if (ArrayUtils.isNotEmpty(domainIds)) {
-       final int domainCount = 2;
-       if (domainIds.length == domainCount) {
-         return domainIds[1];
-       } else if (!Domain.MIXED_DOMAIN_ID.equals(domainIds[0])) {
-         return domainIds[0];
-       }
-     }
-     return null;
+  public String[] getCriterionOnDomainIds() {
+     return (String[]) criteria.get(DOMAIN_IDS);
   }
 
   /**
@@ -341,6 +341,9 @@ public class GroupsSearchCriteria implements SearchCriteria {
    */
   @Override
   public SearchCriteria onUserIds(String... userIds) {
+    if (userIds != null && userIds.length > 0) {
+      criteria.put(USER_ID, userIds);
+    }
     return this;
   }
 

@@ -68,7 +68,6 @@ import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.admin.user.dao.GroupSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
@@ -5283,78 +5282,32 @@ class Admin implements Administration {
   @Override
   public SilverpeasList<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria) throws
       AdminException {
-    GroupSearchCriteriaForDAO criteria = GroupSearchCriteriaForDAO.newCriteria();
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
-      makeCriteriaOnComponentInstanceId(searchCriteria, criteria);
-    }
-
-    if (searchCriteria.childrenRequired()) {
-      criteria.withChildren();
-    }
-
-    if (searchCriteria.mustBeRoot()) {
-      criteria.onAsRootGroup();
-    }
-
-    if (searchCriteria.isCriterionOnDomainIdSet()) {
-      String domainId = searchCriteria.getCriterionOnDomainId();
-      if (searchCriteria.isCriterionOnMixedDomainIdSet()) {
-        criteria.onMixedDomainOrOnDomainId(domainId);
-      } else {
-        criteria.onDomainIds(domainId);
+      // ok, replace role names and component instance by role ids.
+      final List<String> roleNames = new ArrayList<>();
+      if (searchCriteria.isCriterionOnRoleNamesSet()) {
+        roleNames.addAll(Arrays.asList(searchCriteria.getCriterionOnRoleNames()));
       }
-    }
-
-    if (searchCriteria.isCriterionOnGroupIdsSet()) {
-      criteria.onGroupIds(searchCriteria.getCriterionOnGroupIds());
-    }
-
-    if (searchCriteria.isCriterionOnNameSet()) {
-      criteria.onName(searchCriteria.getCriterionOnName());
-    }
-
-    if (searchCriteria.isCriterionOnAccessLevelsSet()) {
-      criteria.onAccessLevels(searchCriteria.getCriterionOnAccessLevels());
-    }
-
-    if (searchCriteria.isCriterionOnUserStatesToExcludeSet()) {
-      criteria.onUserStatesToExclude(searchCriteria.getCriterionOnUserStatesToExclude());
-    }
-
-    if (searchCriteria.isCriterionOnSuperGroupIdSet()) {
-      criteria.onSuperGroupId(searchCriteria.getCriterionOnSuperGroupId());
-    }
-
-    if (searchCriteria.isCriterionOnPaginationSet()) {
-      criteria.onPagination(searchCriteria.getCriterionOnPagination());
-    }
-
-    return groupManager.getGroupsMatchingCriteria(criteria);
-  }
-
-  private void makeCriteriaOnComponentInstanceId(final GroupsSearchCriteria searchCriteria,
-      final GroupSearchCriteriaForDAO criteria) throws AdminException {
-    final List<String> roleNames = new ArrayList<>();
-    if (searchCriteria.isCriterionOnRoleNamesSet()) {
-      roleNames.addAll(Arrays.asList(searchCriteria.getCriterionOnRoleNames()));
-    }
-    SilverpeasComponentInstance instance =
-        getComponentInstance(searchCriteria.getCriterionOnComponentInstanceId());
-    if (!roleNames.isEmpty() || !instance.isPublic()) {
-      List<String> roleIds = new ArrayList<>();
-      if (!instance.isPersonal()) {
-        List<ProfileInst> profiles;
-        if (searchCriteria.isCriterionOnResourceIdSet()) {
-          profiles =
-              getProfileInstsFor(searchCriteria.getCriterionOnResourceId(), instance.getId());
-        } else {
-          profiles = getComponentInst(instance.getId()).getAllProfilesInst();
+      SilverpeasComponentInstance instance =
+          getComponentInstance(searchCriteria.getCriterionOnComponentInstanceId());
+      if (!roleNames.isEmpty() || !instance.isPublic()) {
+        List<String> roleIds = new ArrayList<>();
+        if (!instance.isPersonal()) {
+          List<ProfileInst> profiles;
+          if (searchCriteria.isCriterionOnResourceIdSet()) {
+            profiles =
+                getProfileInstsFor(searchCriteria.getCriterionOnResourceId(), instance.getId());
+          } else {
+            profiles = getComponentInst(instance.getId()).getAllProfilesInst();
+          }
+          profiles.stream().filter(p -> roleNames.isEmpty() || roleNames.contains(p.getName()))
+              .forEach(p -> roleIds.add(p.getId()));
         }
-        profiles.stream().filter(p -> roleNames.isEmpty() || roleNames.contains(p.getName()))
-            .forEach(p -> roleIds.add(p.getId()));
+        searchCriteria.onRoleNames(roleIds.toArray(new String[0]));
       }
-      criteria.onRoleNames(roleIds.toArray(new String[0]));
     }
+
+    return groupManager.getGroupsMatchingCriteria(searchCriteria);
   }
 
   // -------------------------------------------------------------------------

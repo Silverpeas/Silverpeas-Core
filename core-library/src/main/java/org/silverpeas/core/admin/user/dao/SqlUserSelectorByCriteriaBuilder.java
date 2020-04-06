@@ -39,15 +39,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * A builder of {@link JdbcSqlQuery} to select some fields of the users or groups of users found
+ * A builder of {@link JdbcSqlQuery} to select some fields of the users found
  * from some given criteria.
  * @author mmoquillon
  */
-public class SqlSelectorByCriteriaBuilder {
+public class SqlUserSelectorByCriteriaBuilder {
 
   private final String fields;
 
-  SqlSelectorByCriteriaBuilder(final String fields) {
+  SqlUserSelectorByCriteriaBuilder(final String fields) {
     this.fields = fields;
   }
 

@@ -328,7 +328,7 @@ public class UserDAO {
    */
   public ListSlice<UserDetail> getUsersByCriteria(Connection connection,
       UserDetailsSearchCriteria criteria) throws SQLException {
-    SqlSelectorByCriteriaBuilder builder = new SqlSelectorByCriteriaBuilder(USER_COLUMNS);
+    SqlUserSelectorByCriteriaBuilder builder = new SqlUserSelectorByCriteriaBuilder(USER_COLUMNS);
     return builder.build(criteria).executeWith(connection, UserDAO::fetchUser);
   }
 
@@ -343,8 +343,8 @@ public class UserDAO {
    */
   public int getUserCountByCriteria(Connection connection, UserDetailsSearchCriteria criteria)
       throws SQLException {
-    final SqlSelectorByCriteriaBuilder builder =
-        new SqlSelectorByCriteriaBuilder("COUNT(DISTINCT st_user.id)");
+    final SqlUserSelectorByCriteriaBuilder builder =
+        new SqlUserSelectorByCriteriaBuilder("COUNT(DISTINCT st_user.id)");
     return builder.build(criteria).executeUniqueWith(connection, row -> row.getInt(1));
   }
 
