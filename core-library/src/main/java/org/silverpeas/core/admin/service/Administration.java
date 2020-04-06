@@ -49,7 +49,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
@@ -1238,7 +1237,7 @@ public interface Administration {
 
   List<String> searchUserIdsByProfile(final List<String> profileIds) throws AdminException;
 
-  ListSlice<UserDetail> searchUsers(UserDetailsSearchCriteria searchCriteria) throws AdminException;
+  SilverpeasList searchUsers(UserDetailsSearchCriteria searchCriteria) throws AdminException;
 
   SilverpeasList<GroupDetail> searchGroups(GroupsSearchCriteria searchCriteria) throws AdminException;
 

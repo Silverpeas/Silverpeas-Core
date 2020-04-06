@@ -38,6 +38,7 @@ import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
@@ -185,7 +186,7 @@ public class UserProfileResource extends RESTWebService {
     // Users to exclude by their state
     setCriterionOnUserStates(criteriaBuilder, userStatesToExclude, includeRemovedUsers);
 
-    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
+    SilverpeasList users = getOrganisationController().searchUsers(criteriaBuilder.build());
     return Response.ok(
         asWebEntity(users, locatedAt(getUri().getAbsolutePath()))).
         header(RESPONSE_HEADER_USERSIZE, users.originalListSize()).
@@ -296,7 +297,7 @@ public class UserProfileResource extends RESTWebService {
     // Users to exclude by their state
     setCriterionOnUserStates(criteriaBuilder, userStatesToExclude, includeRemovedUsers);
 
-    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
+    SilverpeasList users = getOrganisationController().searchUsers(criteriaBuilder.build());
     URI usersUri = getUri().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
         asWebEntity(users, locatedAt(usersUri))).
@@ -347,7 +348,7 @@ public class UserProfileResource extends RESTWebService {
     User theUser = getUserDetailMatching(userId);
     String[] roleNames = isDefined(roles) ? roles.split(",") : null;
     String[] contactIds = getContactIds(theUser.getId());
-    ListSlice<UserDetail> contacts;
+    SilverpeasList contacts;
     if (contactIds.length > 0) {
       UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder.aSearchCriteria()
           .withComponentInstanceId(instanceId)

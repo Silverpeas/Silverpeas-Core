@@ -49,7 +49,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.SilverpeasList;
 
@@ -1072,7 +1071,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public ListSlice<UserDetail> searchUsers(final UserDetailsSearchCriteria searchCriteria) {
+  public SilverpeasList searchUsers(final UserDetailsSearchCriteria searchCriteria) {
     return null;
   }
 

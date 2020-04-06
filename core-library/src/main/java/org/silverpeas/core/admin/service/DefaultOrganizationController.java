@@ -51,7 +51,6 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -367,9 +366,9 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public <T extends User> ListSlice<T> searchUsers(final UserDetailsSearchCriteria criteria) {
+  public <T extends User> SilverpeasList<T> searchUsers(final UserDetailsSearchCriteria criteria) {
     try {
-      return (ListSlice<T>) getAdminService().searchUsers(criteria);
+      return getAdminService().searchUsers(criteria);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }

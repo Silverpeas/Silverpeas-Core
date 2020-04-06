@@ -43,7 +43,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
@@ -218,7 +217,7 @@ public interface OrganizationController extends java.io.Serializable {
    * @throws AdminException if an error occurs while getting the
    * user details.
    */
-  <T extends User> ListSlice<T> searchUsers(UserDetailsSearchCriteria criteria);
+  <T extends User> SilverpeasList<T> searchUsers(UserDetailsSearchCriteria criteria);
 
   /**
    * Gets all the user groups that belong to the specified domain.
