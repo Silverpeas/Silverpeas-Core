@@ -471,8 +471,31 @@ Definition des class de style Silverpeas
   white-space: nowrap;
 }
 
+.error-container.popin {
+  min-width: 650px;
+}
+
+.error-container.popin div {
+  background-color: transparent;
+}
+
+.error-container.popin .error-message-container {
+  min-height: 40px;
+}
+
+.error-container .intfdcolor,
+.error-container .intfdcolor4,
 .portlet-content .intfdcolor {
   white-space: normal;
+}
+
+.error-container.intfdcolor,
+.error-container .intfdcolor4 {
+  text-align: center;
+}
+
+.error-container .intfdcolor4 div {
+  padding-bottom: 10px;
 }
 
 #outilsAdmin {
