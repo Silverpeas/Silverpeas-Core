@@ -1630,7 +1630,15 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       JobDomainPeasTrappedException trappedException = new JobDomainPeasTrappedException(
           "JobDomainPeasSessionController.createDomain()",
           SilverpeasException.ERROR, "admin.MSG_ERR_DOMAIN_ALREADY_EXIST_DATABASE", e);
-      trappedException.setGoBackPage("displayDomainCreate");
+      final String goBackPage;
+      if (DomainType.LDAP == domainType) {
+        goBackPage = "displayDomainCreate";
+      } else if (DomainType.GOOGLE == domainType) {
+        goBackPage = "displayDomainGoogleCreate";
+      } else {
+        goBackPage = "displayDomain" + domainType + "Create";
+      }
+      trappedException.setGoBackPage(goBackPage);
       throw trappedException;
     }
 
