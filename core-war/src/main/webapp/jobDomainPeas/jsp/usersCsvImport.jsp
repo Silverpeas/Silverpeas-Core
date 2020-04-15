@@ -24,43 +24,21 @@
 
 --%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %><%--
-
-    Copyright (C) 2000 - 2020 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
---%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="org.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle"/>
+
+<c:set var="directoryExtraForm" value="${requestScope.DirectoryExtraForm}"/>
+<c:set var="fieldsToImport" value="${requestScope.FieldsToImport}"/>
 
 <%
 	Domain 		domObject 		= (Domain)request.getAttribute("domainObject");
@@ -72,7 +50,7 @@
 <html>
 <head>
 <view:looknfeel withCheckFormScript="true" withFieldsetStyle="true"/>
-<script language="JavaScript">
+<script type="text/javascript">
 function SubmitWithVerif() {
   var csvFilefld = stripInitialWhitespace(document.csvFileForm.file_upload.value);
   var errorMsg = "";
@@ -80,11 +58,12 @@ function SubmitWithVerif() {
     errorMsg = "<%=resource.getString("JDP.missingFieldStart")+resource.getString("JDP.csvFile")+resource.getString("JDP.missingFieldEnd")%>";
   } else {
     var ext = csvFilefld.substring(csvFilefld.length - 4);
-    if (ext.toLowerCase() != ".csv") {
+    if (ext.toLowerCase() !== ".csv") {
       errorMsg = "<%=resource.getString("JDP.errorCsvFile")%>";
     }
   }
-  if (errorMsg == "") {
+  if (errorMsg === "") {
+    $.progressMessage();
     document.csvFileForm.submit();
   } else {
     jQuery.popup.error(errorMsg);
@@ -110,6 +89,7 @@ $(document).ready(function(){
 <div class="inlineMessage">
   <fmt:message key="JDP.csvImport.help">
     <fmt:param value="<%=domObject.getPropFileName()%>"/>
+    <fmt:param value="${fieldsToImport}"/>
   </fmt:message>
 </div>
 <form name="csvFileForm" action="usersCsvImport" method="post" enctype="multipart/form-data">
@@ -121,6 +101,20 @@ $(document).ready(function(){
           <input type="file" name="file_upload" size="50" maxlength="50"/>&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
         </div>
       </div>
+      <div class="field" id="form-row-ignoreFirstLine">
+        <label class="txtlibform"><%=resource.getString("JDP.csvImport.ignoreFirstLine") %></label>
+        <div class="champs">
+          <input type="checkbox" name="ignoreFirstLine" value="true" />&nbsp;<fmt:message key="GML.yes" />
+        </div>
+      </div>
+      <c:if test="${not empty directoryExtraForm}">
+        <div class="field" id="form-row-importExtraForm">
+          <label class="txtlibform"><fmt:message key="JDP.csvImport.extraForm" /></label>
+          <div class="champs">
+            <input type="checkbox" name="importExtraForm" value="true" />&nbsp;<fmt:message key="GML.yes" />
+          </div>
+        </div>
+      </c:if>
       <div class="field" id="sendEmailTRid">
         <label class="txtlibform"><fmt:message key="JDP.sendEmail" /></label>
         <div class="champs">
@@ -148,5 +142,6 @@ $(document).ready(function(){
   out.println(bouton.print());
   out.println(window.printAfter());
 %>
+<view:progressMessage/>
 </body>
 </html>

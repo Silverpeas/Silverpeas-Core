@@ -69,6 +69,20 @@
   </view:buttonPane>
   <script type="text/javascript">
     (function() {
+      const __fillingWithCarriageReturns = function($span, value) {
+        if (typeof value === 'string') {
+          const separator = '#@' + Date.now() + '@#';
+          const parts = value.replaceAll('[<][ ]*br[ /]*[>]', separator).split(separator);
+          parts.forEach(function(part, index) {
+            if (index > 0) {
+              $span.appendChild(document.createElement('br'));
+            }
+            const $subSpan = document.createElement('span');
+            $subSpan.textContent = part;
+            $span.appendChild($subSpan);
+          })
+        }
+      };
       const displayedIntoPopup = !!window.opener;
       let submitAutomaticallyAuthorized = displayedIntoPopup;
       let $parentWindow = window;
@@ -99,15 +113,15 @@
         let $detailedMsg = window.document.querySelector('.error-container .detail-slot');
         let $stack = window.document.querySelector('.error-container .stack-slot');
         let $action = window.document.querySelector('.error-container .action');
-        $msg.textContent = $errorFormProvider.message.value;
+        __fillingWithCarriageReturns($msg, $errorFormProvider.message.value);
         let $parentExtraMessageInput = $errorFormProvider.messageExtra;
         if ($parentExtraMessageInput && StringUtil.isDefined($parentExtraMessageInput.value)) {
-          $msgExtra.textContent = $parentExtraMessageInput.value;
+          __fillingWithCarriageReturns($msgExtra, $parentExtraMessageInput.value);
           $msgExtra.parentElement.classList.remove('hide');
         } else {
           $msgExtra = undefined;
         }
-        $detailedMsg.textContent = $errorFormProvider.detailedMessage.value;
+        __fillingWithCarriageReturns($detailedMsg, $errorFormProvider.detailedMessage.value);
         $stack.value = $errorFormProvider.stack.value;
         this.switchDisplay = function() {
           if (__detailed === 'start') {

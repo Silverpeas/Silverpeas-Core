@@ -24,6 +24,8 @@
 package org.silverpeas.web.jobdomain.control;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.ecs.xhtml.br;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.LocalizedComponent;
 import org.silverpeas.core.admin.component.model.WAComponent;
@@ -54,8 +56,13 @@ import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;
@@ -141,6 +148,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   private static final String USER_ACCOUNT_TEMPLATE_FILE = "userAccount_email";
   private static final List<String> USERTYPES =
       Arrays.asList("Admin", "AdminPdc", "AdminDomain", "User", "Guest");
+  private static final String BR_ELEMENT = new br().toString();
 
   private Map<String, LocalizedComponent> localizedComponents = new HashMap<>();
 
@@ -250,16 +258,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     theNewUser.setId(idRet);
 
     // Registering the preferred user language if any and if it is different from the default one
-    final boolean isPreferredLanguageFilled =
-        !userRequestData.getLanguage().equals(DisplayI18NHelper.getDefaultLanguage());
-    final boolean isPreferredZoneIdFilled =
-        !userRequestData.getZoneId().equals(DisplayI18NHelper.getDefaultZoneId());
-    if (isPreferredLanguageFilled || isPreferredZoneIdFilled) {
-      UserPreferences userPreferences = theNewUser.getUserPreferences();
-      userPreferences.setLanguage(userRequestData.getLanguage());
-      userPreferences.setZoneId(userRequestData.getZoneId());
-      getPersonalizationService().saveUserSettings(userPreferences);
-    }
+    saveUserSettings(userRequestData, theNewUser);
 
     // Send an email to alert this user
     notifyUserAccount(userRequestData, theNewUser, req, true);
@@ -278,7 +277,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       }
 
       // process data of extra template
-      processDataOfExtraTemplate(uf.getId(), req);
+      if (!userRequestData.isFromCSV()) {
+        processDataOfExtraTemplate(uf.getId(), req);
+      } else {
+        processDataOfExtraTemplate(uf.getId(), properties);
+      }
 
       try {
         idRet = adminCtrl.updateUserFull(uf);
@@ -295,6 +298,19 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
 
     return idRet;
+  }
+
+  private void saveUserSettings(UserRequestData userRequestData, UserDetail theNewUser) {
+    final boolean isPreferredLanguageFilled =
+        !userRequestData.getLanguage().equals(DisplayI18NHelper.getDefaultLanguage());
+    final boolean isPreferredZoneIdFilled =
+        !userRequestData.getZoneId().equals(DisplayI18NHelper.getDefaultZoneId());
+    if (isPreferredLanguageFilled || isPreferredZoneIdFilled) {
+      UserPreferences userPreferences = theNewUser.getUserPreferences();
+      userPreferences.setLanguage(userRequestData.getLanguage());
+      userPreferences.setZoneId(userRequestData.getZoneId());
+      getPersonalizationService().saveUserSettings(userPreferences);
+    }
   }
 
   /**
@@ -473,7 +489,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * @throws JobDomainPeasTrappedException
    */
   public void importCsvUsers(FileItem filePart, UserRequestData data, HttpRequest req)
-      throws JobDomainPeasTrappedException {
+      throws JobDomainPeasTrappedException, PublicationTemplateException {
     InputStream is;
     try {
       is = filePart.getInputStream();
@@ -488,215 +504,165 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     csvReader.initCSVFormat("org.silverpeas.jobDomainPeas.settings.usersCSVFormat", "User", ";",
         getTargetDomain().getPropFileName(), "property");
 
-    // spécifique domaine Silverpeas (2 colonnes en moins (password et
-    // passwordValid)
-    if (Domain.MIXED_DOMAIN_ID.equals(getTargetDomain().getId())
-        || "0".equals(getTargetDomain().getId())) {
+    // spécifique domaine Silverpeas (2 colonnes en moins (password et passwordValid)
+    if ("0".equals(getTargetDomain().getId())) {
       // domaine Silverpeas
-      csvReader.setSpecificNbCols(csvReader.getSpecificNbCols() - 2);
+      csvReader.removeLastTwoColumns();
     }
 
+    boolean importExtraFormData = req.getParameterAsBoolean("importExtraForm");
+    if (importExtraFormData) {
+      PublicationTemplate template = getDirectoryExtraForm();
+      if (template != null) {
+        String[] extraFields = template.getRecordTemplate().getFieldNames();
+        for (String extraField : extraFields) {
+          csvReader.addSpecificCol(extraField, 2000, Variant.TYPE_STRING, "false");
+        }
+      }
+    }
+
+    boolean ignoreFirstLine = req.getParameterAsBoolean("ignoreFirstLine");
     Variant[][] csvValues;
     try {
-      csvValues = csvReader.parseStream(is);
+      csvValues = csvReader.parseStream(is, ignoreFirstLine);
     } catch (UtilTrappedException ute) {
       JobDomainPeasTrappedException e = new JobDomainPeasTrappedException(
           IMPORT_CSV_USERS_OPERATION,
-          SilverpeasException.ERROR, ERROR_CSV_FILE, ute);
+          SilverpeasException.ERROR, ERROR_CSV_FILE, ute.getExtraInfos(), ute);
       e.setGoBackPage("displayUsersCsvImport");
       throw e;
     }
 
-    StringBuilder listErrors = new StringBuilder("");
-    String nom;
-    String prenom;
-    String login;
-    String existingLogin;
-    String email;
-    String droits;
-    UserAccessLevel userAccessLevel;
-    String motDePasse;
+    checkCSVFileContent(csvValues, csvReader, ignoreFirstLine);
 
-    String title;
-    String company;
-    String position;
-    String boss;
-    String phone;
-    String homePhone;
-    String fax;
-    String cellularPhone;
-    String address;
+    // no error, importing users...
+    HashMap<String, String> properties;
+    int nbCreatedUsers = 0;
+    for (Variant[] csvValue : csvValues) {
 
-    String informationSpecifiqueString;
-    boolean informationSpecifiqueBoolean;
+      UserRequestData userRequestData = new UserRequestData();
+      userRequestData.setFromCSV(true);
+      userRequestData.setLogin(csvValue[2].getValueString());
+      userRequestData.setLastName(csvValue[0].getValueString());
+      userRequestData.setFirstName(csvValue[1].getValueString());
+      userRequestData.setEmail(csvValue[3].getValueString());
 
-    for (int i = 0; i < csvValues.length; i++) {
-      // Nom
-      nom = csvValues[i][0].getValueString();
-      if (nom.length() == 0) {
-        // champ obligatoire
-        listErrors.append(getErrorMessage(i + 1, 1, nom));
-        listErrors.append(getString("JDP.obligatoire")).append("<br>");
-      } else if (nom.length() > 100) {
-        listErrors.append(getErrorMessage(i + 1, 1, nom));
-        listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").
-            append(getString("JDP.caracteres")).append("<br>");
+      // Droits
+      userRequestData.setAccessLevel(getAccessLevelFromCSV(csvValue[4].getValueString()));
+
+      String motDePasse = csvValue[5].getValueString();
+      // password is not mandatory
+      userRequestData.setPasswordValid(isDefined(motDePasse));
+      userRequestData.setPassword(motDePasse);
+
+      // données spécifiques
+      properties = new HashMap<>();
+      if (csvReader.getSpecificNbCols() > 0) {
+        for (int j = 0; j < csvReader.getSpecificNbCols(); j++) {
+          String paramName = csvReader.getSpecificParameterName(j);
+          if (Variant.TYPE_STRING.equals(csvReader.getSpecificColType(j))) {
+            String informationSpecifiqueString = csvValue[j + 6].getValueString();
+            properties.put(paramName, informationSpecifiqueString);
+          } else if (Variant.TYPE_BOOLEAN.equals(csvReader.getSpecificColType(j))) {
+            boolean informationSpecifiqueBoolean = csvValue[j + 6].getValueBoolean();
+            if (informationSpecifiqueBoolean) {
+              properties.put(paramName, "1");
+            } else {
+              properties.put(paramName, "0");
+            }
+          }
+        }
       }
+
+      userRequestData.setSendEmail(data.isSendEmail());
+      userRequestData.setExtraMessage(data.getExtraMessage());
+      userRequestData.setUserManualNotifReceiverLimitEnabled(true);
+      try {
+        createUser(userRequestData, properties, req);
+        nbCreatedUsers++;
+      } catch (JobDomainPeasException e) {
+        throw new JobDomainPeasTrappedException(IMPORT_CSV_USERS_OPERATION,
+            SilverpeasException.ERROR, ERROR_CSV_FILE, e);
+      }
+    }
+    MessageNotifier.addSuccess(getString("JDP.csvImport.nbUsers"), nbCreatedUsers);
+  }
+
+  private void checkCSVFileContent(Variant[][] csvValues, CSVReader csvReader,
+      boolean ignoreFirstLine) throws JobDomainPeasTrappedException {
+    StringBuilder listErrors = new StringBuilder("");
+    for (int i = 0; i < csvValues.length; i++) {
+
+      int lineNumber = i+1;
+      if (ignoreFirstLine) {
+        lineNumber = i+2;
+      }
+
+      // Nom
+      String nom = csvValues[i][0].getValueString();
+      listErrors.append(checkCSVData(nom, lineNumber, 1,true, 100));
 
       // Prenom
-      prenom = csvValues[i][1].getValueString();
-      if (prenom.length() > 100) {
-        listErrors.append(getErrorMessage(i + 1, 2, prenom));
-        listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(
-            getString("JDP.caracteres")).append("<br>");
-      }
+      String prenom = csvValues[i][1].getValueString();
+      listErrors.append(checkCSVData(prenom, lineNumber, 2,false, 100));
 
       // Login
-      login = csvValues[i][2].getValueString();
-      if (login.length() == 0) {
-        // champ obligatoire
-        listErrors.append(getErrorMessage(i + 1, 3, login));
-        listErrors.append(getString("JDP.obligatoire")).append("<br>");
+      String login = csvValues[i][2].getValueString();
+      String loginError = checkCSVData(login, lineNumber, 3,true, 50);
+      if (StringUtil.isDefined(loginError)) {
+        listErrors.append(loginError);
       } else if (login.length() < JobDomainSettings.m_MinLengthLogin) {// verifier
-        listErrors.append(getErrorMessage(i + 1, 3, login));
+        listErrors.append(getErrorMessage(lineNumber, 3, login));
         listErrors.append(getString("JDP.nbCarMin")).append(" ").append(
             JobDomainSettings.m_MinLengthLogin).append(" ").append(getString("JDP.caracteres")).
-            append("<br>");
-      } else if (login.length() > 50) {
-        listErrors.append(getErrorMessage(i + 1, 3, login));
-        listErrors.append(getString("JDP.nbCarMax")).append(" 50 ").append(getString(
-            "JDP.caracteres")).append("<br>");
+            append(BR_ELEMENT);
       } else {
         // verif login unique
-        existingLogin = adminCtrl.getUserIdByLoginAndDomain(login, targetDomainId);
+        String existingLogin = adminCtrl.getUserIdByLoginAndDomain(login, targetDomainId);
         if (existingLogin != null) {
-          listErrors.append(getErrorMessage(i + 1, 3, login));
-          listErrors.append(getString("JDP.existingLogin")).append("<br>");
+          listErrors.append(getErrorMessage(lineNumber, 3, login));
+          listErrors.append(getString("JDP.existingLogin")).append(BR_ELEMENT);
         }
       }
 
       // Email
-      email = csvValues[i][3].getValueString();
-      if (email.length() > 100) {
-        listErrors.append(getErrorMessage(i + 1, 4, email));
-        listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
-            "JDP.caracteres")).append("<br>");
-      }
+      String email = csvValues[i][3].getValueString();
+      listErrors.append(checkCSVData(email, lineNumber, 4,false, 100));
 
       // Droits
-      droits = csvValues[i][4].getValueString();
+      String droits = csvValues[i][4].getValueString();
       if (!"".equals(droits) && !USERTYPES.contains(droits)) {
-        listErrors.append(getErrorMessage(i + 1, 5, droits));
-        listErrors.append(getString("JDP.valeursPossibles")).append("<br>");
+        listErrors.append(getErrorMessage(lineNumber, 5, droits));
+        listErrors.append(getString("JDP.valeursPossibles")).append(BR_ELEMENT);
       }
 
       // MotDePasse
-      motDePasse = csvValues[i][5].getValueString();
+      String motDePasse = csvValues[i][5].getValueString();
       // password is not mandatory
       if (isDefined(motDePasse)) {
         // Cheking password
-        PasswordCheck passwordCheck = PasswordRulesServiceProvider.getPasswordRulesService().check(motDePasse);
-        if (!passwordCheck.isCorrect()) {
-          listErrors.append(getErrorMessage(i + 1, 6, motDePasse))
-              .append(passwordCheck.getFormattedErrorMessage(getLanguage()));
-          listErrors.append("<br>");
-        } else if (motDePasse.length() > 32) {
-          listErrors.append(getErrorMessage(i + 1, 6, motDePasse));
-          listErrors.append(getString("JDP.nbCarMax")).append(" 32 ").append(getString(
-              "JDP.caracteres")).append("<br>");
+        String passwordError = checkCSVData(motDePasse, lineNumber, 6, false, 32);
+        if (StringUtil.isDefined(passwordError)) {
+          listErrors.append(passwordError);
+        } else {
+          PasswordCheck passwordCheck =
+              PasswordRulesServiceProvider.getPasswordRulesService().check(motDePasse);
+          if (!passwordCheck.isCorrect()) {
+            listErrors.append(getErrorMessage(lineNumber, 6, motDePasse))
+                .append(passwordCheck.getFormattedErrorMessage(getLanguage()));
+            listErrors.append(BR_ELEMENT);
+          }
         }
       }
 
       if (csvReader.getSpecificNbCols() > 0) {
-        if (getTargetDomain().isMixedOne() || "0".equals(getTargetDomain().getId())) {
-          // domaine Silverpeas
+        for (int j = 0; j < csvReader.getSpecificNbCols(); j++) {
+          if (Variant.TYPE_STRING.equals(csvReader.getSpecificColType(j))) {
+            String informationSpecifiqueString = csvValues[i][j + 6].getValueString();
 
-          // title
-          title = csvValues[i][6].getValueString();
-          if (title.length() > 100) {
-            listErrors.append(getErrorMessage(i + 1, 7, title));
-            listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
-                "JDP.caracteres")).append("<br>");
-          }
-
-          // company
-          company = csvValues[i][7].getValueString();
-          if (company.length() > 100) {
-            listErrors.append(getErrorMessage(i + 1, 8, company));
-            listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
-                "JDP.caracteres")).append("<br>");
-          }
-
-          // position
-          position = csvValues[i][8].getValueString();
-          if (position.length() > 100) {
-            listErrors.append(getErrorMessage(i + 1, 9, position));
-            listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
-                "JDP.caracteres")).append("<br>");
-          }
-
-          // boss
-          boss = csvValues[i][9].getValueString();
-          if (boss.length() > 100) {
-            listErrors.append(getErrorMessage(i + 1, 10, boss));
-            listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
-                "JDP.caracteres")).append("<br>");
-          }
-
-          // phone
-          phone = csvValues[i][10].getValueString();
-          if (phone.length() > 20) {
-            listErrors.append(getErrorMessage(i + 1, 11, phone));
-            listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
-                "JDP.caracteres")).append("<br>");
-          }
-
-          // homePhone
-          homePhone = csvValues[i][11].getValueString();
-          if (homePhone.length() > 20) {
-            listErrors.append(getErrorMessage(i + 1, 12, homePhone));
-            listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
-                "JDP.caracteres")).append("<br>");
-          }
-
-          // fax
-          fax = csvValues[i][12].getValueString();
-          if (fax.length() > 20) {
-            listErrors.append(getErrorMessage(i + 1, 13, fax));
-            listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
-                "JDP.caracteres")).append("<br>");
-          }
-
-          // cellularPhone
-          cellularPhone = csvValues[i][13].getValueString();
-
-          // max
-          if (cellularPhone.length() > 20) {
-            listErrors.append(getErrorMessage(i + 1, 14, cellularPhone));
-            listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
-                "JDP.caracteres")).append("<br>");
-          }
-
-          // address
-          address = csvValues[i][14].getValueString();
-          if (address.length() > 500) {
-            listErrors.append(getErrorMessage(i + 1, 15, address));
-            listErrors.append(getString("JDP.nbCarMax")).append(" 500 ").append(getString(
-                "JDP.caracteres")).append("<br>");
-          }
-        } else {
-          // domaine SQL
-          for (int j = 0; j < csvReader.getSpecificNbCols(); j++) {
-            if (Variant.TYPE_STRING.equals(csvReader.getSpecificColType(j))) {
-              informationSpecifiqueString = csvValues[i][j + 6].getValueString();
-              // verify the length
-              if (informationSpecifiqueString.length() > csvReader.getSpecificColMaxLength(j)) {
-                listErrors.append(getErrorMessage(i + 1, j + 6, informationSpecifiqueString));
-                listErrors.append(getString("JDP.nbCarMax")).append(" ")
-                    .append(csvReader.getSpecificColMaxLength(j)).append(" ")
-                    .append(getString("JDP.caracteres")).append("<br>");
-              }
-            }
+            // verify the length
+            listErrors.append(checkCSVData(informationSpecifiqueString, lineNumber, j + 6, false,
+                csvReader.getSpecificColMaxLength(j)));
           }
         }
       }
@@ -709,124 +675,67 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       jdpe.setGoBackPage("displayUsersCsvImport");
       throw jdpe;
     }
+  }
 
-    // pas d'erreur, on importe les utilisateurs
-    HashMap<String, String> properties;
-    for (Variant[] csvValue : csvValues) {
-      // Nom
-      nom = csvValue[0].getValueString();
+  private String checkCSVData(String data, int lineNumber, int column, boolean mandatory,
+      int maxLength) {
+    String result = "";
+    if (mandatory && data.length() == 0) {
+      // champ obligatoire
+      result +=
+          getErrorMessage(lineNumber, column, data) + getString("JDP.obligatoire") + BR_ELEMENT;
+    } else if (maxLength > -1 && data.length() > maxLength) {
+      result +=
+          getErrorMessage(lineNumber, column, data) + getString("JDP.nbCarMax") + " " + maxLength +
+              " " + getString("JDP.caracteres") + BR_ELEMENT;
+    }
+    return result;
+  }
 
-      // Prenom
-      prenom = csvValue[1].getValueString();
+  public String getFieldsToCSVImport()
+      throws AdminException, PublicationTemplateException, FormException {
+    List<String> fields = new ArrayList<>();
+    fields.add(getString("GML.lastName"));
+    fields.add(getString("GML.firstName"));
+    fields.add(getString("GML.login"));
+    fields.add(getString("GML.eMail"));
+    fields.add(getString("GML.type")+ "(Admin, AdminPdc, AdminDomain, User, Guest)");
+    fields.add(getString("GML.password"));
 
-      // Login
-      login = csvValue[2].getValueString();
-
-      // Email
-      email = csvValue[3].getValueString();
-
-      // Droits
-      droits = csvValue[4].getValueString();
-      if ("Admin".equals(droits)) {
-        userAccessLevel = UserAccessLevel.ADMINISTRATOR;
-      } else if ("AdminPdc".equals(droits)) {
-        userAccessLevel = UserAccessLevel.PDC_MANAGER;
-      } else if ("AdminDomain".equals(droits)) {
-        userAccessLevel = UserAccessLevel.DOMAIN_ADMINISTRATOR;
-      } else if ("User".equals(droits)) {
-        userAccessLevel = UserAccessLevel.USER;
-      } else if ("Guest".equals(droits)) {
-        userAccessLevel = UserAccessLevel.GUEST;
-      } else {
-        userAccessLevel = UserAccessLevel.USER;
-      }
-
-      // MotDePasse
-      motDePasse = csvValue[5].getValueString();
-
-      // données spécifiques
-      properties = new HashMap<>();
-      if (csvReader.getSpecificNbCols() > 0) {
-        if (getTargetDomain().isMixedOne() || "0".equals(getTargetDomain().getId())) {
-          // domaine Silverpeas
-
-          // title
-          title = csvValue[6].getValueString();
-          properties.put(csvReader.getSpecificParameterName(0), title);
-
-          // company
-          company = csvValue[7].getValueString();
-          properties.put(csvReader.getSpecificParameterName(1), company);
-
-          // position
-          position = csvValue[8].getValueString();
-          properties.put(csvReader.getSpecificParameterName(2), position);
-
-          // boss
-          boss = csvValue[9].getValueString();
-          properties.put(csvReader.getSpecificParameterName(3), boss);
-
-          // phone
-          phone = csvValue[10].getValueString();
-          properties.put(csvReader.getSpecificParameterName(4), phone);
-
-          // homePhone
-          homePhone = csvValue[11].getValueString();
-          properties.put(csvReader.getSpecificParameterName(5), homePhone);
-
-          // fax
-          fax = csvValue[12].getValueString();
-          properties.put(csvReader.getSpecificParameterName(6), fax);
-
-          // cellularPhone
-          cellularPhone = csvValue[13].getValueString();
-          properties.put(csvReader.getSpecificParameterName(7), cellularPhone);
-
-          // address
-          address = csvValue[14].getValueString();
-          properties.put(csvReader.getSpecificParameterName(8), address);
-
-        } else {
-          // domaine SQL
-
-          // informations spécifiques
-          for (int j = 0; j < csvReader.getSpecificNbCols(); j++) {
-            if (Variant.TYPE_STRING.equals(csvReader.getSpecificColType(j))) {
-              informationSpecifiqueString = csvValue[j + 6].getValueString();
-              properties.put(csvReader.getSpecificParameterName(j),
-                  informationSpecifiqueString);
-            } else if (Variant.TYPE_BOOLEAN.equals(csvReader.getSpecificColType(j))) {
-              informationSpecifiqueBoolean = csvValue[j + 6].getValueBoolean();
-              if (informationSpecifiqueBoolean) {
-                properties.put(csvReader.getSpecificParameterName(j), "1");
-              } else {
-                properties.put(csvReader.getSpecificParameterName(j), "0");
-              }
-            }
-          }
-        }
-      }
-
-      // password is not mandatory
-      boolean passwordValid = isDefined(motDePasse);
-      UserRequestData userRequestData = new UserRequestData();
-      userRequestData.setLogin(login);
-      userRequestData.setLastName(nom);
-      userRequestData.setFirstName(prenom);
-      userRequestData.setEmail(email);
-      userRequestData.setAccessLevel(userAccessLevel);
-      userRequestData.setPasswordValid(passwordValid);
-      userRequestData.setPassword(motDePasse);
-      userRequestData.setSendEmail(data.isSendEmail());
-      userRequestData.setExtraMessage(data.getExtraMessage());
-      userRequestData.setUserManualNotifReceiverLimitEnabled(true);
-      try {
-        createUser(userRequestData, properties, req);
-      } catch (JobDomainPeasException e) {
-        throw new JobDomainPeasTrappedException(IMPORT_CSV_USERS_OPERATION,
-            SilverpeasException.ERROR, ERROR_CSV_FILE, e);
+    // add complementary fields
+    final DomainDriver driver = getCurrentDomainDriverManager().getDomainDriver(getTargetDomain().getId());
+    Map<String, String> propertiesLabels = driver.getPropertiesLabels(getLanguage());
+    for (String propertyName : driver.getPropertiesNames()) {
+      if (!propertyName.startsWith("password")) {
+        fields.add(propertiesLabels.get(propertyName));
       }
     }
+
+    // add personalized fields
+    PublicationTemplate extraForm = getDirectoryExtraForm();
+    if (extraForm != null) {
+      FieldTemplate[] extraFields = extraForm.getRecordTemplate().getFieldTemplates();
+      for (FieldTemplate extraField : extraFields) {
+        fields.add(extraField.getLabel(getLanguage()));
+      }
+    }
+
+    return StringUtils.join(fields, ";");
+  }
+
+  private UserAccessLevel getAccessLevelFromCSV(String droits) {
+    if ("Admin".equals(droits)) {
+      return UserAccessLevel.ADMINISTRATOR;
+    } else if ("AdminPdc".equals(droits)) {
+      return UserAccessLevel.PDC_MANAGER;
+    } else if ("AdminDomain".equals(droits)) {
+      return UserAccessLevel.DOMAIN_ADMINISTRATOR;
+    } else if ("User".equals(droits)) {
+      return UserAccessLevel.USER;
+    } else if ("Guest".equals(droits)) {
+      return UserAccessLevel.GUEST;
+    }
+    return UserAccessLevel.USER;
   }
 
   private String getErrorMessage(int line, int column, String value) {
@@ -2145,6 +2054,32 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         MessageNotifier.addError("Les données du formulaire n'ont pas été enregistrées !");
       }
     }
+  }
+
+  private void processDataOfExtraTemplate(String userId, Map<String, String> properties) {
+    PublicationTemplate template = getDirectoryExtraForm();
+    if (template != null) {
+      try {
+        RecordSet recordSet = template.getRecordSet();
+        DataRecord data = recordSet.getEmptyRecord();
+        data.setId(userId);
+
+        FieldTemplate[] fieldTemplates = template.getRecordTemplate().getFieldTemplates();
+        for (FieldTemplate fieldTemplate : fieldTemplates) {
+          String fieldName = fieldTemplate.getFieldName();
+          data.getField(fieldName).setObjectValue(properties.get(fieldName));
+        }
+
+        recordSet.save(data);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+        MessageNotifier.addError("Les données du formulaire n'ont pas été enregistrées !");
+      }
+    }
+  }
+
+  public PublicationTemplate getDirectoryExtraForm() {
+    return PublicationTemplateManager.getInstance().getDirectoryTemplate();
   }
 
   private PagesContext getTemplateContext(String userId) {
