@@ -654,6 +654,8 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute(GROUPS_PATH_ATTR, jobDomainSC
               .getPath((String) request.getAttribute(MY_COMPONENT_URL_ATTR),
                   jobDomainSC.getString("JDP.csvImport") + "..."));
+          request.setAttribute("DirectoryExtraForm", jobDomainSC.getDirectoryExtraForm());
+          request.setAttribute("FieldsToImport", jobDomainSC.getFieldsToCSVImport());
           destination = "usersCsvImport.jsp";
         } else if (function.startsWith("displayUserModify")) {
           request.setAttribute(USER_OBJECT_ATTR, jobDomainSC.getTargetUserFull());

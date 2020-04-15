@@ -56,7 +56,6 @@ public class CSVReader {
   protected List<Integer> specificColMaxLengths;
   protected List<String> specificColTypes;
   protected List<String> specificColMandatory;
-  protected List<String> specificParameterNames;
 
   // Active control file columns/object columns
   private boolean columnNumberControlEnabled = true;
@@ -127,17 +126,24 @@ public class CSVReader {
     }
 
     specificColMandatory = sP.getStringList(specificRootPropertyName, "Mandatory", specificNbCols);
-
-    specificParameterNames = specificColNames;
   }
 
   public Variant[][] parseStream(InputStream is) throws UtilTrappedException {
+    return parseStream(is, false);
+  }
+
+  public Variant[][] parseStream(InputStream is, boolean ignoreFirstLine)
+      throws UtilTrappedException {
     List<Variant[]> finalResult = new ArrayList<>();
     int lineNumber = 1;
     StringBuilder listErrors = new StringBuilder("");
     try {
       BufferedReader rb = new BufferedReader(new InputStreamReader(is, Charsets.UTF_8));
       String theLine = rb.readLine();
+      if (ignoreFirstLine) {
+        // read second line directly
+        theLine = rb.readLine();
+      }
       if (theLine != null && !isExtraColumnsControlEnabled()) {
         StringTokenizer st = new StringTokenizer(theLine, separator);
         setSpecificNbCols(st.countTokens() - nbCols);
@@ -395,7 +401,7 @@ public class CSVReader {
    * @return the parameter name of specific column i.
    */
   public String getSpecificParameterName(int i) {
-    return specificParameterNames.get(i);
+    return specificColNames.get(i);
   }
 
   /**
@@ -403,5 +409,21 @@ public class CSVReader {
    */
   public int getSpecificColMaxLength(int i) {
     return specificColMaxLengths.get(i);
+  }
+
+  public void removeLastTwoColumns() {
+    specificColNames = specificColNames.subList(0, specificColNames.size()-2);
+    specificColMaxLengths = specificColMaxLengths.subList(0, specificColMaxLengths.size()-2);
+    specificColTypes = specificColTypes.subList(0, specificColTypes.size()-2);
+    specificColMandatory = specificColMandatory.subList(0, specificColMandatory.size()-2);
+    specificNbCols -= 2;
+  }
+
+  public void addSpecificCol(String name, int maxLength, String type, String mandatory) {
+    specificColNames.add(name);
+    specificColMaxLengths.add(maxLength);
+    specificColTypes.add(type);
+    specificColMandatory.add(mandatory);
+    specificNbCols++;
   }
 }
