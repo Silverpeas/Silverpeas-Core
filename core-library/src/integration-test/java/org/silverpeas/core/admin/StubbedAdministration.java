@@ -1071,7 +1071,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public SilverpeasList searchUsers(final UserDetailsSearchCriteria searchCriteria) {
+  public SilverpeasList<UserDetail> searchUsers(final UserDetailsSearchCriteria searchCriteria) {
     return null;
   }
 

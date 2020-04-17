@@ -210,7 +210,7 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public SilverpeasList searchUsers(final UserDetailsSearchCriteria criteria) {
+  public <T extends User> SilverpeasList<T> searchUsers(final UserDetailsSearchCriteria criteria) {
     return null;
   }
 

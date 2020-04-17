@@ -1237,7 +1237,7 @@ public interface Administration {
 
   List<String> searchUserIdsByProfile(final List<String> profileIds) throws AdminException;
 
-  SilverpeasList searchUsers(UserDetailsSearchCriteria searchCriteria) throws AdminException;
+  SilverpeasList<UserDetail> searchUsers(UserDetailsSearchCriteria searchCriteria) throws AdminException;
 
   SilverpeasList<GroupDetail> searchGroups(GroupsSearchCriteria searchCriteria) throws AdminException;
 

@@ -5182,7 +5182,7 @@ class Admin implements Administration {
   // -------------------------------------------------------------------------
 
   @Override
-  public SilverpeasList searchUsers(final UserDetailsSearchCriteria searchCriteria) throws
+  public SilverpeasList<UserDetail> searchUsers(final UserDetailsSearchCriteria searchCriteria) throws
       AdminException {
     List<String> userIds = null;
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {

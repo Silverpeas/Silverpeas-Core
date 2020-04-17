@@ -365,10 +365,12 @@ public class DefaultOrganizationController implements OrganizationController {
     return Collections.emptyList();
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public <T extends User> SilverpeasList<T> searchUsers(final UserDetailsSearchCriteria criteria) {
     try {
-      return getAdminService().searchUsers(criteria);
+      final SilverpeasList<UserDetail> userDetails = getAdminService().searchUsers(criteria);
+      return (SilverpeasList<T>) userDetails;
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }

@@ -186,7 +186,7 @@ public class UserProfileResource extends RESTWebService {
     // Users to exclude by their state
     setCriterionOnUserStates(criteriaBuilder, userStatesToExclude, includeRemovedUsers);
 
-    SilverpeasList users = getOrganisationController().searchUsers(criteriaBuilder.build());
+    SilverpeasList<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     return Response.ok(
         asWebEntity(users, locatedAt(getUri().getAbsolutePath()))).
         header(RESPONSE_HEADER_USERSIZE, users.originalListSize()).
@@ -297,7 +297,7 @@ public class UserProfileResource extends RESTWebService {
     // Users to exclude by their state
     setCriterionOnUserStates(criteriaBuilder, userStatesToExclude, includeRemovedUsers);
 
-    SilverpeasList users = getOrganisationController().searchUsers(criteriaBuilder.build());
+    SilverpeasList<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     URI usersUri = getUri().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
         asWebEntity(users, locatedAt(usersUri))).
@@ -348,7 +348,7 @@ public class UserProfileResource extends RESTWebService {
     User theUser = getUserDetailMatching(userId);
     String[] roleNames = isDefined(roles) ? roles.split(",") : null;
     String[] contactIds = getContactIds(theUser.getId());
-    SilverpeasList contacts;
+    SilverpeasList<UserDetail> contacts;
     if (contactIds.length > 0) {
       UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder.aSearchCriteria()
           .withComponentInstanceId(instanceId)
