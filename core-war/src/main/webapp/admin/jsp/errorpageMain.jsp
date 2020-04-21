@@ -36,14 +36,16 @@ if (response.isCommitted() == false) {
  % (via the template.jsp)
 --%>
 
-<%@ page isErrorPage="false" import="org.silverpeas.core.web.mvc.util.HomePageUtil" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ page import="org.silverpeas.core.exception.SilverpeasTrappedException"%>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.web.mvc.util.HomePageUtil" %>
+<%@ page import="java.io.PrintWriter" %>
 
 <%@ include file="import.jsp" %>
 
@@ -52,47 +54,43 @@ Throwable exception = (Throwable) request.getAttribute("javax.servlet.jsp.jspExc
 Throwable toDisplayException = HomePageUtil.getExceptionToDisplay(exception);
 String exStr = HomePageUtil.getMessageToDisplay(exception , language);
 String detailedString = HomePageUtil.getMessagesToDisplay(exception , language);
-HomePageUtil.traceException(toDisplayException);
+boolean isGobackPage = false;
+String gobackPage = null;
+String extraInfos = null;
+if (exception instanceof SilverpeasTrappedException) {
+  final SilverpeasTrappedException ste = (SilverpeasTrappedException) exception;
+  gobackPage = ste.getGoBackPage();
+  isGobackPage = StringUtil.isDefined(gobackPage);
+  extraInfos = StringUtil.defaultStringIfNotDefined(ste.getExtraInfos(), null);
+  // Trace the exception
+  HomePageUtil.traceException(exception);
+} else {
+  // Trace the exception
+  HomePageUtil.traceException(toDisplayException);
+}
+gobackPage = StringUtil.defaultStringIfNotDefined(gobackPage, "javascript:void(0)");
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><%= generalMessage.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
-</head>
-<body>
-<%
-Window window = gef.getWindow();
-out.println(window.printBefore());
-Frame frame = gef.getFrame();
-out.println(frame.printBefore());
-%>
-<center>
-  <form name="formError" action="<%=m_context%>/admin/jsp/errorpageMainMax.jsp" method="post">
-    <input type="hidden" name="message" value="<% if (exStr != null){out.print(exStr);}%>"/>
-    <input type="hidden" name="detailedMessage" value="<% if (detailedString != null){out.print(detailedString);}%>"/>
-    <input type="hidden" name="pile" value="<% if (toDisplayException != null) {toDisplayException.printStackTrace(new PrintWriter(out));}%>"/>
-    <table cellpadding="0" cellspacing="2" border="0" width="98%" class="intfdcolor">
-      <tr>
-        <td class="intfdcolor4" nowrap="nowrap">
-          <center>
-            <br/><span class="txtnav"><% if (exStr != null){out.print(exStr);}%></span><br/>
-          </center>
-        </td>
-      </tr>
-    </table>
-  </form>
-  <br/>
-<%
-ButtonPane buttonPane = gef.getButtonPane();
-buttonPane.addButton((Button) gef.getFormButton(generalMessage.getString("GML.detail"), "javascript:document.formError.submit();", false));
-out.println(buttonPane.print());
-%>
-</center>
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
-</body>
-</html>
+
+<view:sp-page>
+  <fmt:setLocale value="${requestScope.userLanguage}"/>
+  <view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
+  <view:sp-head-part/>
+  <view:sp-body-part>
+    <form name="formError" action="<%=gobackPage%>" method="POST" style="display: none">
+      <input type="hidden" name="message" value="<% if (exStr != null){out.print(WebEncodeHelper.javaStringToHtmlString(exStr));}%>"/>
+      <input type="hidden" name="messageExtra" value="<% if (extraInfos != null){out.print(WebEncodeHelper.javaStringToHtmlString(extraInfos));}%>"/>
+      <input type="hidden" name="detailedMessage" value="<% out.print(WebEncodeHelper.javaStringToHtmlString(detailedString));%>"/>
+      <input type="hidden" name="stack" value="<% if (toDisplayException != null) {toDisplayException.printStackTrace(new PrintWriter(out));}%>"/>
+    </form>
+    <view:window>
+      <view:frame>
+        <div class="inlineMessage-nok"><fmt:message key="GML.error.help"/></div>
+        <c:set var="formNameErrorDataProvider" value="formError" scope="request"/>
+        <c:if test="<%=isGobackPage%>">
+          <c:set var="formNameErrorDataProviderSubmitButtonLabel" scope="request"><fmt:message key="GML.ok"/></c:set>
+        </c:if>
+        <jsp:include page="errorContentFragment.jsp"/>
+      </view:frame>
+    </view:window>
+  </view:sp-body-part>
+</view:sp-page>

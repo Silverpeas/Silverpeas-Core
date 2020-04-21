@@ -38,7 +38,6 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.exception.SilverpeasTrappedException;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ServiceProvider;
@@ -879,11 +878,7 @@ public class JobDomainPeasRequestRouter extends
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
-      if (e instanceof SilverpeasTrappedException) {
-        destination = "/admin/jsp/errorpageTrapped.jsp";
-      } else {
-        destination = "/admin/jsp/errorpageMain.jsp";
-      }
+      destination = "/admin/jsp/errorpageMain.jsp";
     }
 
 
