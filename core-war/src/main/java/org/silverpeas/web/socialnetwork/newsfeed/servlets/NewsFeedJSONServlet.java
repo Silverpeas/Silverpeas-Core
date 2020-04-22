@@ -23,8 +23,8 @@
  */
 package org.silverpeas.web.socialnetwork.newsfeed.servlets;
 
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
@@ -41,7 +41,6 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.UserNameGenerator;
 import org.silverpeas.web.socialnetwork.myprofil.control.SocialNetworkService;
 
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -50,12 +49,15 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.UnaryOperator;
+
+import static java.time.ZoneId.systemDefault;
 
 public class NewsFeedJSONServlet extends HttpServlet {
 
@@ -64,9 +66,6 @@ public class NewsFeedJSONServlet extends HttpServlet {
   private static final String TITLE = "title";
   private static final String DESCRIPTION = "description";
   private static final String LABEL = "label";
-
-  @Inject
-  private OrganizationController organizationController;
 
   /**
    * servlet method for returning JSON format
@@ -98,7 +97,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
     int minNbDataBeforeNewTry = settings.getInteger("newsFeed.minNbDataBeforeNewTry", 15);
 
     if (StringUtil.getBooleanValue(request.getParameter("Init"))) {
-      session.setAttribute(SILVERPEAS_NEWS_FEED_LAST_DATE, new Date());
+      session.setAttribute(SILVERPEAS_NEWS_FEED_LAST_DATE, LocalDate.now());
     }
 
     Map<Date, List<SocialInformation>> map = new LinkedHashMap<>();
@@ -119,17 +118,15 @@ public class NewsFeedJSONServlet extends HttpServlet {
         }
       }
 
-      org.silverpeas.core.date.Date[] period = getPeriod(session, settings);
-      org.silverpeas.core.date.Date begin = period[0];
-      org.silverpeas.core.date.Date end = period[1];
+      Period period = getPeriod(session, settings);
 
-      map = getInformation(view, userId, type, anotherUserId, begin, end);
+      map = getInformation(view, userId, type, anotherUserId, period);
 
       int nbTries = 0;
       while (getNumberOfInformations(map) < minNbDataBeforeNewTry && nbTries < maxNbTries) {
         period = getPeriod(session, settings);
 
-        map.putAll(getInformation(view, userId, type, anotherUserId, period[0], period[1]));
+        map.putAll(getInformation(view, userId, type, anotherUserId, period));
         nbTries++;
       }
 
@@ -142,46 +139,32 @@ public class NewsFeedJSONServlet extends HttpServlet {
     out.println(toJsonS(map, multilang));
   }
 
-  private org.silverpeas.core.date.Date[] getPeriod(HttpSession session, SettingBundle settings) {
-    int periodLength = settings.getInteger("newsFeed.period", 15);
-
-    Date lastDate = (Date) session.getAttribute(SILVERPEAS_NEWS_FEED_LAST_DATE);
-
-    // process endDate
-    org.silverpeas.core.date.Date begin = new org.silverpeas.core.date.Date(lastDate);
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(lastDate);
-    calendar.add(Calendar.DAY_OF_MONTH, 0 - periodLength);
-    org.silverpeas.core.date.Date end = new org.silverpeas.core.date.Date(calendar.getTime());
-
-    // prepare next startDate
-    calendar.add(Calendar.DAY_OF_MONTH, -1);
-    session.setAttribute(SILVERPEAS_NEWS_FEED_LAST_DATE, calendar.getTime());
-
-    org.silverpeas.core.date.Date[] dates = new org.silverpeas.core.date.Date[2];
-    dates[0] = begin;
-    dates[1] = end;
-
-    return dates;
+  private Period getPeriod(HttpSession session, SettingBundle settings) {
+    final int periodLength = settings.getInteger("newsFeed.period", 15);
+    final LocalDate lastDate = (LocalDate) session.getAttribute(SILVERPEAS_NEWS_FEED_LAST_DATE);
+    final OffsetDateTime begin = lastDate.minusDays(periodLength).atStartOfDay(systemDefault()).toOffsetDateTime();
+    final OffsetDateTime end = lastDate.plusDays(1).atStartOfDay(systemDefault()).minusSeconds(1).toOffsetDateTime();
+    session.setAttribute(SILVERPEAS_NEWS_FEED_LAST_DATE, begin.minusDays(1).toLocalDate());
+    return Period.between(begin, end);
   }
 
   private Map<Date, List<SocialInformation>> getInformation(String view, String userId,
-      SocialInformationType type, String anotherUserId, Date begin, Date end) {
+      SocialInformationType type, String anotherUserId, Period period) {
     Map<Date, List<SocialInformation>> map = new LinkedHashMap<>();
 
     SocialNetworkService socialNetworkService = new SocialNetworkService(userId);
 
     if ("MyFeed".equals(view)) {
       // get all data from me and my contacts
-      map = socialNetworkService.getSocialInformationOfMyContacts(type, begin, end);
+      map = socialNetworkService.getSocialInformationOfMyContacts(type, period);
     } else if ("MyContactWall".equals(view)) {
       // get all data from my contact
       if (StringUtil.isDefined(anotherUserId)) {
-        map = socialNetworkService.getSocialInformationOfMyContact(anotherUserId, type, begin, end);
+        map = socialNetworkService.getSocialInformationOfMyContact(anotherUserId, type, period);
       }
     } else { // Wall
       // get all data from me
-      map = socialNetworkService.getSocialInformation(type, begin, end);
+      map = socialNetworkService.getSocialInformation(type, period);
     }
     return map;
   }

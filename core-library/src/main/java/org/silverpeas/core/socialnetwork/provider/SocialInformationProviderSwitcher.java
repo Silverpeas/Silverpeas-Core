@@ -23,11 +23,16 @@
  */
 package org.silverpeas.core.socialnetwork.provider;
 
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 
 import java.util.Date;
 import java.util.List;
+
+import static java.time.ZoneId.systemDefault;
+import static org.silverpeas.core.date.TemporalConverter.asDate;
+import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 /**
  * A provider of social information by the type of such information to get. It delegates the task
@@ -49,10 +54,10 @@ public interface SocialInformationProviderSwitcher {
     private List<String> contactIds = null;
     private String classification = "";
 
-    public SocialInfoContext(final String userId, final Date begin, final Date end) {
+    public SocialInfoContext(final String userId, final Period period) {
       this.userId = userId;
-      this.begin = begin;
-      this.end = end;
+      this.begin = asDate(asOffsetDateTime(period.getStartDate()).atZoneSameInstant(systemDefault()));
+      this.end = asDate(asOffsetDateTime(period.getEndDate()).atZoneSameInstant(systemDefault()));
     }
 
     public SocialInfoContext withContactIds(final List<String> contactIds) {

@@ -81,7 +81,7 @@ public class ChatUsersRegistration {
    * @throws ChatServerException a runtime exception if the registration fails.
    */
   public void registerUser(final User user) {
-    if (isChatServiceEnabled() && !isAlreadyRegistered(user) && isDomainMapped(user)) {
+    if (isChatServiceEnabled() && isDomainMapped(user) && !isAlreadyRegistered(user)) {
       logger.debug("Register user {0}", user.getDisplayedName());
       chatServer.createUser(user);
       final List<String> contactIds =

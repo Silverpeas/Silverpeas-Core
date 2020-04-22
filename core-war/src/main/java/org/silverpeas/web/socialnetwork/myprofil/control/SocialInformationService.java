@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.control;
 
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.socialnetwork.provider.SocialInformationProviderSwitcher;
@@ -32,7 +33,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -51,15 +51,14 @@ public class SocialInformationService {
    * @param socialInformationType
    * @param userId
    * @param classification
-   * @param begin
-   * @param end
+   * @param period
    */
 
   public List<SocialInformation> getSocialInformationsList(
       SocialInformationType socialInformationType, String userId,
-      String classification, Date begin, Date end) {
+      String classification, Period period) {
     try {
-      final SocialInfoContext ctx = new SocialInfoContext(userId, begin, end)
+      final SocialInfoContext ctx = new SocialInfoContext(userId, period)
           .withClassification(classification);
       return switchInterface.getSocialInformationsList(socialInformationType, ctx);
     } catch (Exception ex) {
@@ -75,15 +74,14 @@ public class SocialInformationService {
    * @param socialInformationType
    * @param myId
    * @param myContactIds
-   * @param begin
-   * @param end
+   * @param period
    */
 
   public List<SocialInformation> getSocialInformationsListOfMyContact(
       SocialInformationType socialInformationType, String myId,
-      List<String> myContactIds, Date begin, Date end) {
+      List<String> myContactIds, Period period) {
     try {
-      final SocialInfoContext ctx = new SocialInfoContext(myId, begin, end)
+      final SocialInfoContext ctx = new SocialInfoContext(myId, period)
         .withContactIds(myContactIds);
       return switchInterface.getSocialInformationsListOfMyContacts(socialInformationType, ctx);
     } catch (Exception ex) {

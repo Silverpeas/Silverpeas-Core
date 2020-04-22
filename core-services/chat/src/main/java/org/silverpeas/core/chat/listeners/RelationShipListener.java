@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.chat.listeners;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.chat.servers.DefaultChatServer;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
@@ -31,6 +31,7 @@ import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipEvent;
 
 import javax.inject.Inject;
+import java.util.stream.Stream;
 
 /**
  * Listen relationship modifications to clone them in the Chat server
@@ -45,29 +46,47 @@ public class RelationShipListener extends CDIResourceEventListener<RelationShipE
   @Override
   public void onCreation(final RelationShipEvent event) throws Exception {
     final RelationShip rs = event.getTransition().getAfter();
-
-    UserDetail uf1 = UserDetail.getById(String.valueOf(rs.getUser1Id()));
-    UserDetail uf2 = UserDetail.getById(String.valueOf(rs.getUser2Id()));
-
-    server.createRelationShip(uf1, uf2);
-
-    logger.debug("Chat relationship between {0} and {1} has been created", uf1.getId(), uf2.getId());
+    final User uf1 = User.getById(String.valueOf(rs.getUser1Id()));
+    final User uf2 = User.getById(String.valueOf(rs.getUser2Id()));
+    if (isRelationshipMappable(uf1, uf2)) {
+      server.createRelationShip(uf1, uf2);
+      logger.debug("Chat relationship between {0} and {1} has been created", uf1.getId(), uf2.getId());
+    } else {
+      logger.debug("No chat relationship can be created between user {0} and {1}", uf1.getId(), uf2.getId());
+    }
   }
 
   @Override
   public void onDeletion(final RelationShipEvent event) throws Exception {
     final RelationShip rs = event.getTransition().getBefore();
-
-    UserDetail uf1 = UserDetail.getById(String.valueOf(rs.getUser1Id()));
-    UserDetail uf2 = UserDetail.getById(String.valueOf(rs.getUser2Id()));
-
-    server.deleteRelationShip(uf1, uf2);
-
-    logger.debug("Chat relationship between {0} and {1} has been deleted", uf1.getId(), uf2.getId());
+    final User uf1 = User.getById(String.valueOf(rs.getUser1Id()));
+    final User uf2 = User.getById(String.valueOf(rs.getUser2Id()));
+    if (isRelationshipMappable(uf1, uf2)) {
+      server.deleteRelationShip(uf1, uf2);
+      logger.debug("Chat relationship between {0} and {1} has been deleted", uf1.getId(),
+          uf2.getId());
+    } else {
+      logger.debug("No chat relationship can be deleted between user {0} and {1}", uf1.getId(),
+          uf2.getId());
+    }
   }
 
   @Override
   public boolean isEnabled() {
     return ChatServer.isEnabled();
+  }
+
+  private boolean isRelationshipMappable(final User uf1, final User uf2) {
+    return Stream.of(uf1, uf2)
+        .filter(u -> {
+          final boolean domainMapped = server.isUserDomainSupported(u.getDomainId());
+          if (!domainMapped) {
+            logger.debug(
+                "No chat relationship can be handled for user {0} as its domain is not mapped " +
+                    "with a chat server", u.getId());
+          }
+          return domainMapped;
+        })
+        .count() == 2;
   }
 }
