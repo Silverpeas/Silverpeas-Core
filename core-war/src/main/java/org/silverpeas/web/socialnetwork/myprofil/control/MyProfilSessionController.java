@@ -39,7 +39,6 @@ import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.socialnetwork.invitation.Invitation;
 import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
@@ -55,10 +54,9 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.web.socialnetwork.invitation.model.InvitationUser;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -84,14 +82,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
    * @return :List<String>
    */
   public List<String> getContactsIdsForUser() {
-    try {
-      return relationShipService.getMyContactsIds(Integer.parseInt(getUserId()));
-    } catch (SQLException ex) {
-      SilverTrace
-          .error("MyProfilSessionController", "MyProfilSessionController.getContactsIdsForUser", "",
-              ex);
-    }
-    return new ArrayList<>();
+    return relationShipService.getMyContactsIds(Integer.parseInt(getUserId()));
   }
 
   /**
@@ -235,7 +226,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
    * @return
    */
   public Map<SocialNetworkID, ExternalAccount> getAllMyNetworks() {
-    Map<SocialNetworkID, ExternalAccount> networks = new HashMap<>();
+    Map<SocialNetworkID, ExternalAccount> networks = new EnumMap<>(SocialNetworkID.class);
 
     List<ExternalAccount> externalAccounts = SocialNetworkService.getInstance().
         getUserExternalAccounts(getUserId());

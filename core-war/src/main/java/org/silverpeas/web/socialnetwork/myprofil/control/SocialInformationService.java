@@ -23,15 +23,16 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.control;
 
-import org.silverpeas.core.date.Date;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
-import org.silverpeas.core.socialnetwork.provider.ProviderSwitchInterface;
+import org.silverpeas.core.socialnetwork.provider.SocialInformationProviderSwitcher;
+import org.silverpeas.core.socialnetwork.provider.SocialInformationProviderSwitcher.SocialInfoContext;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,10 +42,7 @@ import java.util.List;
 public class SocialInformationService {
 
   @Inject
-  private ProviderSwitchInterface switchInterface;
-
-  public SocialInformationService() {
-  }
+  private SocialInformationProviderSwitcher switchInterface;
 
   /**
    * get the List of social Information of my according the type of social information and the
@@ -53,21 +51,20 @@ public class SocialInformationService {
    * @param socialInformationType
    * @param userId
    * @param classification
-   * @param begin
-   * @param end
+   * @param period
    */
 
   public List<SocialInformation> getSocialInformationsList(
       SocialInformationType socialInformationType, String userId,
-      String classification, Date begin, Date end) {
+      String classification, Period period) {
     try {
-      return switchInterface.getSocialInformationsList(socialInformationType, userId,
-          classification,
-          begin, end);
+      final SocialInfoContext ctx = new SocialInfoContext(userId, period)
+          .withClassification(classification);
+      return switchInterface.getSocialInformationsList(socialInformationType, ctx);
     } catch (Exception ex) {
-
+      SilverLogger.getLogger(this).error(ex);
     }
-    return new ArrayList<>();
+    return Collections.emptyList();
   }
 
   /**
@@ -77,20 +74,20 @@ public class SocialInformationService {
    * @param socialInformationType
    * @param myId
    * @param myContactIds
-   * @param begin
-   * @param end
+   * @param period
    */
 
   public List<SocialInformation> getSocialInformationsListOfMyContact(
       SocialInformationType socialInformationType, String myId,
-      List<String> myContactIds, Date begin, Date end) {
+      List<String> myContactIds, Period period) {
     try {
-      return switchInterface.getSocialInformationsListOfMyContacts(socialInformationType, myId,
-          myContactIds, begin, end);
+      final SocialInfoContext ctx = new SocialInfoContext(myId, period)
+        .withContactIds(myContactIds);
+      return switchInterface.getSocialInformationsListOfMyContacts(socialInformationType, ctx);
     } catch (Exception ex) {
-      SilverLogger.getLogger(this).warn(ex);
+      SilverLogger.getLogger(this).error(ex);
     }
-    return new ArrayList<>();
+    return Collections.emptyList();
   }
 
 }

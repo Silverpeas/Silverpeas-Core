@@ -23,46 +23,31 @@
  */
 package org.silverpeas.core.socialnetwork.relationship;
 
-import org.silverpeas.core.date.Date;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.socialnetwork.SocialNetworkException;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.socialnetwork.provider.SocialRelationShipsInterface;
+import org.silverpeas.core.socialnetwork.provider.SocialRelationShipProvider;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 /**
  * @author Bensalem Nabil
  */
 @Singleton
-public class SocialRelationShips implements SocialRelationShipsInterface {
+public class SocialRelationShips implements SocialRelationShipProvider {
 
   @Inject
   private RelationShipService relationShipService;
 
   @Override
-  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
-      throws SilverpeasException {
-    try {
-      return relationShipService.getAllMyRelationShips(userId, begin, end);
-    } catch (SQLException ex) {
-      throw new SocialNetworkException("SocialEvent.getSocialInformationsList()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
-    }
+  public List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end) {
+    return relationShipService.getAllMyRelationShips(userId, begin, end);
   }
 
   @Override
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
-    try {
-      return relationShipService.getAllRelationShipsOfContacts(myContactsIds, begin,
-          end);
-    } catch (SQLException ex) {
-      throw new SocialNetworkException("SocialEvent.getSocialInformationsList()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
-    }
+  public List<SocialInformation> getSocialInformationListOfMyContacts(String myId,
+      List<String> myContactsIds, Date begin, Date end) {
+    return relationShipService.getAllRelationShipsOfContacts(myContactsIds, begin, end);
   }
 }

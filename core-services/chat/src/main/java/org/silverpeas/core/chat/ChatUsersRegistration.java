@@ -31,7 +31,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -62,10 +61,10 @@ public class ChatUsersRegistration {
    * Is the specified user already registered into the remote chat server?
    * @param user the user to check the existence.
    * @return true if the user has an account in the remote chat server, false otherwise.
-   * @throws ChatServerException if an error occurs while communicating with the remote chat
+   * @throws ChatServerException a runtime exception if an error occurs while communicating with the remote chat
    * server.
    */
-  public boolean isAlreadyRegistered(final User user) throws ChatServerException {
+  public boolean isAlreadyRegistered(final User user) {
     return chatServer.isUserExisting(user);
   }
 
@@ -79,25 +78,24 @@ public class ChatUsersRegistration {
    * the chat server, then he's registered before creating the relationship in the server.
    *
    * @param user the user to register if not yet done.
-   * @throws ChatServerException if the registration fails.
+   * @throws ChatServerException a runtime exception if the registration fails.
    */
-  public void registerUser(final User user) throws ChatServerException {
-    if (isChatServiceEnabled() && !chatServer.isUserExisting(user)) {
+  public void registerUser(final User user) {
+    if (isChatServiceEnabled() && isDomainMapped(user) && !isAlreadyRegistered(user)) {
       logger.debug("Register user {0}", user.getDisplayedName());
       chatServer.createUser(user);
-      try {
-        List<String> contactIds =
-            relationShipService.getMyContactsIds(Integer.parseInt(user.getId()));
-        for (String contactId : contactIds) {
-          User friend = User.getById(contactId);
-          registerUser(friend);
-          logger.debug("Register relationship {0} - {1}", user.getDisplayedName(),
-              friend.getDisplayedName());
-          chatServer.createRelationShip(user, friend);
-        }
-      } catch (SQLException e) {
-        throw new ChatServerException(e);
-      }
+      final List<String> contactIds =
+          relationShipService.getMyContactsIds(Integer.parseInt(user.getId()));
+      contactIds.stream().map(User::getById).filter(this::isDomainMapped).forEach(c -> {
+        registerUser(c);
+        logger.debug("Register relationship {0} - {1}", user.getDisplayedName(),
+            c.getDisplayedName());
+        chatServer.createRelationShip(user, c);
+      });
     }
+  }
+
+  private boolean isDomainMapped(final User user) {
+    return chatServer.isUserDomainSupported(user.getDomainId());
   }
 }

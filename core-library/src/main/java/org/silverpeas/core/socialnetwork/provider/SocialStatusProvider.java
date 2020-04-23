@@ -23,18 +23,14 @@
  */
 package org.silverpeas.core.socialnetwork.provider;
 
-import org.silverpeas.core.date.Date;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.util.ServiceProvider;
 
-import java.util.List;
+/**
+ * Provider of user social status.
+ */
+public interface SocialStatusProvider extends SocialInformationProvider {
 
-public interface SocialStatusInterface {
-
-  List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end)
-      throws
-      SilverpeasException;
-
-  List<SocialInformation> getSocialInformationListOfMyContacts(List<String> myContactsIds,
-      Date begin, Date end);
+  static SocialStatusProvider get() {
+    return ServiceProvider.getSingleton(SocialStatusProvider.class);
+  }
 }

@@ -24,9 +24,6 @@
 package org.silverpeas.core.personalorganizer.service;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -54,11 +51,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 
@@ -69,6 +69,12 @@ import static java.util.Collections.emptyList;
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultCalendarService implements SilverpeasCalendar, ComponentInstanceDeletion {
 
+  private static final String CANNOT_GET_JOURNALS_OF_USER = "Cannot get journals of user ";
+  private static final String NO_SUCH_JOURNAL = "No such journal ";
+  private static final String ERROR_WHILE_PARSING_THE_DATES_OF_A_JOURNAL =
+      "Error while parsing the dates of a journal";
+  private static final String IDX_USER_PREFIX = "user@";
+  private static final String CANNOT_GET_JOURNALS = "Cannot get journals";
   @Inject
   private JournalDAO journalDAO;
 
@@ -77,8 +83,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.getConnection()", SilverpeasException.ERROR,
-          "root.EX_CONNECTION_OPEN_FAILED");
+      throw new CalendarRuntimeException("Cannot open connection");
     }
   }
 
@@ -94,9 +99,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return getJournalDAO().hasTentativeJournalsForUser(con, userId);
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB. hasTentativeSchedulablesForUser(String userId)", SilverpeasException.ERROR,
-          "calendar.MSG_CANT_GET_JOURNALS", "userId=" + userId, e);
+      throw new CalendarRuntimeException(CANNOT_GET_JOURNALS_OF_USER + userId, e);
 
     } finally {
       DBUtil.close(con);
@@ -110,9 +113,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return getJournalDAO().getTentativeJournalHeadersForUser(con, userId);
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getTentativeSchedulablesForUser(String userId)", SilverpeasException.ERROR,
-          "calendar.MSG_CANT_GET_JOURNALS", "userId=" + userId, e);
+      throw new CalendarRuntimeException(CANNOT_GET_JOURNALS_OF_USER + userId, e);
     } finally {
       DBUtil.close(con);
     }
@@ -127,8 +128,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return ToDoDAO.getNotCompletedToDoHeadersForUser(userId);
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.getNotCompletedToDosForUser(String userId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "userId=" + userId, e);
+      throw new CalendarRuntimeException("Cannot get todos of user " + userId, e);
     }
   }
 
@@ -137,8 +137,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return ToDoDAO.getAllTodoByUser(userId);
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.getAllToDoForUser(String userId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "userId=" + userId, e);
+      throw new CalendarRuntimeException("Cannot get todos of user " + userId, e);
     }
   }
 
@@ -147,9 +146,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return ToDoDAO.getOrganizerToDoHeaders(organizerId);
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.getOrganizerToDos(String organizerId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "organizerId=" + organizerId,
-          e);
+      throw new CalendarRuntimeException("Cannot get journals from organizer " + organizerId, e);
     }
   }
 
@@ -158,9 +155,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return ToDoDAO.getClosedToDoHeaders(organizerId);
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.getClosedToDos(String organizerId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "organizerId=" + organizerId,
-          e);
+      throw new CalendarRuntimeException("Cannot get journals from organizer " + organizerId, e);
     }
   }
 
@@ -171,9 +166,8 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       return ToDoDAO.getToDoHeadersByExternalId(componentId, externalId);
     } catch (Exception e) {
       throw new CalendarRuntimeException(
-          "CalendarEJB.getExternalTodos(String spaceId, String componentId, String externalId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS",
-          "spaceId=" + spaceId + ", componentId=" + componentId + ", externalId=" + externalId, e);
+          "Cannot get journals in space " + spaceId + ", application " + componentId +
+              ", and external resource " + externalId, e);
     }
   }
 
@@ -182,8 +176,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return ToDoDAO.getToDoHeader(todoId);
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.getToDoHeader(String todoId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODO", "todoId=" + todoId, e);
+      throw new CalendarRuntimeException("Cannot get the todo " + todoId, e);
     }
   }
 
@@ -204,28 +197,14 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return ToDoDAO.getToDoHeadersByInstanceId(instanceId);
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getToDoHeadersByInstanceId(String instanceId)", SilverpeasException.ERROR,
-          "calendar.MSG_CANT_GET_TODO", "instanceId=" + instanceId, e);
+      throw new CalendarRuntimeException("Cannot get todos in application " + instanceId, e);
     }
   }
 
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void updateToDo(ToDoHeader todo) {
-    if (todo.getName() == null) {
-      throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-          "calendar.EX_PARAM_NULL");
-    }
-    if (todo.getDelegatorId() == null) {
-      throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-          "calendar.EX_PARAM_NULL");
-    }
-    if (todo.getEndDate() != null && todo.getStartDate() != null &&
-        todo.getStartDate().after(todo.getEndDate())) {
-      throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-          "calendar.EX_DATE_FIN_ERROR");
-    }
+    checkTodo(todo);
 
     Connection con = getConnection();
     try {
@@ -237,30 +216,29 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
         createIndex(todo, attendee.getUserId()); // vide
       }
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.updateToDo(ToDoHeader todo)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_UPDATE_TODO", e);
+      throw new CalendarRuntimeException("Cannot update the todo " + todo.getId(), e);
     } finally {
       DBUtil.close(con);
+    }
+  }
+
+  private void checkTodo(final ToDoHeader todo) {
+    if (todo.getName() == null) {
+      throw new CalendarRuntimeException("Todo's name is null!");
+    }
+    if (todo.getDelegatorId() == null) {
+      throw new CalendarRuntimeException("Todo's delegator is null!");
+    }
+    if (todo.getEndDate() != null && todo.getStartDate() != null &&
+        todo.getStartDate().after(todo.getEndDate())) {
+      throw new CalendarRuntimeException("The todo period is incorrect!");
     }
   }
 
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public String addToDo(ToDoHeader todo) {
-    if (todo.getName() == null) {
-      throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-          "calendar.EX_PARAM_NULL");
-    }
-    if (todo.getDelegatorId() == null) {
-      throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-          "calendar.EX_PARAM_NULL");
-    }
-    if ((todo.getEndDate() != null) && (todo.getStartDate() != null)) {
-      if (todo.getStartDate().compareTo(todo.getEndDate()) > 0) {
-        throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-            "calendar.EX_DATE_FIN_ERROR");
-      }
-    }
+    checkTodo(todo);
     Connection con = getConnection();
     try {
       String result = ToDoDAO.addToDo(con, todo);
@@ -268,8 +246,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       createIndex(todo, todo.getDelegatorId());
       return result;
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.addToDo(ToDoHeader todo)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CREATE_TODO", e);
+      throw new CalendarRuntimeException("Cannot create new todo", e);
     } finally {
       DBUtil.close(con);
     }
@@ -303,8 +280,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       setToDoAttendees(id, ArrayUtil.EMPTY_STRING_ARRAY);
       ToDoDAO.removeToDo(id);
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.removeToDo(String id)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_REMOVE_TODO", e);
+      throw new CalendarRuntimeException("Cannot delete todo " + id, e);
     }
     removeIndex(todo, todo.getDelegatorId());
   }
@@ -356,10 +332,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       return getJournalDAO()
           .getDayJournalHeadersForUser(con, day, userId, categoryId, participation);
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getDaySchedulablesForUser(String day,String userId,String categoryId," +
-              "String participation)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNALS", e);
+      throw new CalendarRuntimeException(CANNOT_GET_JOURNALS_OF_USER + userId, e);
     } finally {
       DBUtil.close(con);
     }
@@ -373,10 +346,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       return getJournalDAO()
           .getNextJournalHeadersForUser(con, day, userId, categoryId, participation);
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getNextDaySchedulablesForUser(String day,String userId,String categoryId," +
-              "String participation)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNALS", e);
+      throw new CalendarRuntimeException(CANNOT_GET_JOURNALS_OF_USER + userId, e);
     } finally {
       DBUtil.close(con);
     }
@@ -390,10 +360,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       return getJournalDAO()
           .getPeriodJournalHeadersForUser(con, begin, end, userId, categoryId, participation);
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.CalendarEJB. getPeriodSchedulablesForUser(String begin,String end," +
-              "String userId,String categoryId,String participation)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNALS", e);
+      throw new CalendarRuntimeException(CANNOT_GET_JOURNALS_OF_USER + userId, e);
     } finally {
       DBUtil.close(con);
     }
@@ -407,10 +374,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       return getJournalDAO()
           .countMonthJournalsForUser(con, month, userId, categoryId, participation);
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.CalendarEJB.countMonthSchedulablesForUser(String month,String userId," +
-              "String categoryId,String participation)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNALS", e);
+      throw new CalendarRuntimeException(CANNOT_GET_JOURNALS_OF_USER + userId, e);
     } finally {
       DBUtil.close(con);
     }
@@ -430,15 +394,8 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       journal.setId(result);
       createIndex(journal, journal.getDelegatorId());
       return result;
-    } catch (SQLException se) {
-      throw new CalendarRuntimeException("CalendarEJB.addJournal(JournalHeader journal)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_ADD_JOURNAL", se);
-    } catch (UtilException ue) {
-      throw new CalendarRuntimeException("CalendarEJB.addJournal(JournalHeader journal)",
-          SilverpeasException.ERROR, "root.EX_GET_NEXTID_FAILED", ue);
-    } catch (CalendarException ce) {
-      throw new CalendarRuntimeException("CalendarEJB.addJournal(JournalHeader journal)",
-          SilverpeasException.ERROR, "calendar.EX_EXCUTE_INSERT_EMPTY", ce);
+    } catch (Exception e) {
+      throw new CalendarRuntimeException("Cannot add journal", e);
     } finally {
       DBUtil.close(con);
     }
@@ -456,11 +413,9 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
         createIndex(journal, attendee.getUserId());
       }
     } catch (SQLException se) {
-      throw new CalendarRuntimeException("CalendarEJB.updateJournal(JournalHeader journal)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_UPADATE_JOURNAL", se);
+      throw new CalendarRuntimeException("Cannot update journal " + journal.getId(), se);
     } catch (CalendarException ce) {
-      throw new CalendarRuntimeException("CalendarEJB.updateJournal(JournalHeader journal)",
-          SilverpeasException.ERROR, "calendar.EX_NOT_FOUND_JOURNAL", ce);
+      throw new CalendarRuntimeException(NO_SUCH_JOURNAL + journal.getId(), ce);
     } finally {
       DBUtil.close(con);
     }
@@ -469,40 +424,26 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   private void validateJournal(JournalHeader journal) {
     // verify the journal attributes are correctly set
     if (journal.getName() == null) {
-      throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-          "calendar.EX_PARAM_NULL", "name");
+      throw new CalendarRuntimeException("The journal's name is null!");
     }
     if (journal.getStartDate() == null) {
-      throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-          "calendar.EX_PARAM_NULL", "startDate");
+      throw new CalendarRuntimeException("The journal's starting date is null!");
     }
     if (journal.getDelegatorId() == null) {
-      throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-          "calendar.EX_PARAM_NULL", "delegatorId");
+      throw new CalendarRuntimeException("The journal's delegator is null!");
     }
-    if (journal.getStartDate().compareTo(journal.getEndDate()) > 0) {
-      throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-          "calendar.EX_DATE_FIN_ERROR");
+    if (journal.getStartDate().after(journal.getEndDate())) {
+      throw new CalendarRuntimeException("The journal's period is invalid!");
     }
-    if (journal.getStartHour() != null) {
-      if (journal.getEndHour() == null) {
-        throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-            "calendar.EX_PARAM_NULL", "endHour");
-      }
+    if (journal.getStartHour() != null && journal.getEndHour() == null) {
+      throw new CalendarRuntimeException("The journal doesn't end!");
     }
-    if (journal.getEndHour() != null) {
-      if (journal.getStartHour() == null) {
-        throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-            "calendar.EX_PARAM_NULL", "startHour");
-      }
+    if (journal.getEndHour() != null && journal.getStartHour() == null) {
+      throw new CalendarRuntimeException("The journal starting hour isn't defined!");
     }
-    if (journal.getStartDate().equals(journal.getEndDate())) {
-      if (journal.getStartHour() != null) {
-        if (journal.getStartHour().compareTo(journal.getEndHour()) > 0) {
-          throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-              "calendar.EX_HOUR_FIN_ERRORR");
-        }
-      }
+    if (journal.getStartDate().equals(journal.getEndDate()) && journal.getStartHour() != null &&
+        journal.getStartHour().compareTo(journal.getEndHour()) > 0) {
+      throw new CalendarRuntimeException("The journal period is invalid!");
     }
   }
 
@@ -518,11 +459,9 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       getJournalDAO().removeJournal(con, journalId);
       removeIndex(journal, journal.getDelegatorId());
     } catch (SQLException se) {
-      throw new CalendarRuntimeException("CalendarEJB.removeJournal(String journalId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_REMOVE_JOURNAL", se);
+      throw new CalendarRuntimeException("Cannot remove journal " + journalId, se);
     } catch (CalendarException ce) {
-      throw new CalendarRuntimeException("CalendarEJB.removeJournal(String journalId)",
-          SilverpeasException.ERROR, "calendar.EX_NOT_FOUND_JOURNAL", ce);
+      throw new CalendarRuntimeException(NO_SUCH_JOURNAL + journalId, ce);
     } finally {
       DBUtil.close(con);
     }
@@ -535,14 +474,11 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return getJournalDAO().getJournalHeader(con, journalId);
     } catch (SQLException se) {
-      throw new CalendarRuntimeException("CalendarEJB.getJournalHeader(String journalId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNAL", se);
+      throw new CalendarRuntimeException("Cannot get journal " + journalId, se);
     } catch (java.text.ParseException pe) {
-      throw new CalendarRuntimeException("CalendarEJB.getJournalHeader(String journalId)",
-          SilverpeasException.ERROR, "calendar.EX_ERROR_PARSING_DATE", pe);
+      throw new CalendarRuntimeException("Cannot parse dates of journal " + journalId, pe);
     } catch (CalendarException ce) {
-      throw new CalendarRuntimeException("CalendarEJB.getJournalHeader(String journalId)",
-          SilverpeasException.ERROR, "calendar.EX_NOT_FOUND_JOURNAL", ce);
+      throw new CalendarRuntimeException(NO_SUCH_JOURNAL + journalId, ce);
     } finally {
       DBUtil.close(con);
     }
@@ -553,13 +489,9 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try(final Connection con = getConnection()) {
       return getJournalDAO().getOutlookJournalHeadersForUser(con, userId);
     } catch (SQLException se) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getOutlookJournalHeadersForUser(String userId)", SilverpeasException.ERROR,
-          "calendar.MSG_CANT_GET_JOURNAL", se);
+      throw new CalendarRuntimeException(CANNOT_GET_JOURNALS_OF_USER + userId, se);
     } catch (java.text.ParseException pe) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getOutlookJournalHeadersForUser(String userId)", SilverpeasException.ERROR,
-          "calendar.EX_ERROR_PARSING_DATE", pe);
+      throw new CalendarRuntimeException(ERROR_WHILE_PARSING_THE_DATES_OF_A_JOURNAL, pe);
     }
   }
 
@@ -569,13 +501,9 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try(final Connection con = getConnection()) {
       return getJournalDAO().getOutlookJournalHeadersForUserAfterDate(con, userId, startDate);
     } catch (SQLException se) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getOutlookJournalHeadersForUserAfterDate(String userId, Date startDate)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNAL", se);
+      throw new CalendarRuntimeException(CANNOT_GET_JOURNALS_OF_USER + userId, se);
     } catch (java.text.ParseException pe) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getOutlookJournalHeadersForUserAfterDate(String userId, Date startDate)",
-          SilverpeasException.ERROR, "calendar.EX_ERROR_PARSING_DATE", pe);
+      throw new CalendarRuntimeException(ERROR_WHILE_PARSING_THE_DATES_OF_A_JOURNAL, pe);
     }
   }
 
@@ -585,15 +513,9 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try (final Connection con = getConnection()) {
       return getJournalDAO().getJournalHeadersForUserAfterDate(con, userId, startDate, nbReturned);
     } catch (SQLException se) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getJournalHeadersForUserAfterDate(String userId, Date startDate, " +
-              "int nbReturned)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNAL", se);
+      throw new CalendarRuntimeException(CANNOT_GET_JOURNALS_OF_USER + userId, se);
     } catch (java.text.ParseException pe) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getJournalHeadersForUserAfterDate(String userId, Date startDate, " +
-              "int nbReturned)",
-          SilverpeasException.ERROR, "calendar.EX_ERROR_PARSING_DATE", pe);
+      throw new CalendarRuntimeException(ERROR_WHILE_PARSING_THE_DATES_OF_A_JOURNAL, pe);
     }
   }
 
@@ -606,9 +528,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       AttendeeDAO.addJournalAttendee(con, journalId, attendee);
       createIndex(getJournalHeader(journalId), attendee.getUserId());
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.addJournalAttendee(String journalId,Attendee attendee)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_JOURNAL_ATTENDEES", e);
+      throw new CalendarRuntimeException("Cannot add attendee to the journal " + journalId, e);
     }
 
   }
@@ -620,9 +540,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       removeIndex(getJournalHeader(journalId), attendee.getUserId());
 
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.removeJournalAttendee(String journalId,Attendee attendee)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_JOURNAL_ATTENDEES", e);
+      throw new CalendarRuntimeException("Cannot remove attendee to the journal " + journalId, e);
     }
 
   }
@@ -632,8 +550,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return AttendeeDAO.getJournalAttendees(journalId);
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.getJournalAttendees(String journalId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNAL_ATTENDEES", e);
+      throw new CalendarRuntimeException("Cannot get attendees to the journal " + journalId, e);
     }
   }
 
@@ -641,40 +558,26 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   public void setJournalAttendees(String journalId, String[] userIds) {
     Collection<Attendee> current = getJournalAttendees(journalId);
     JournalHeader journalHeader = getJournalHeader(journalId);
+    final List<String> usersToAdd =
+        userIds != null ? Arrays.asList(userIds) : Collections.emptyList();
     // search for element to remove
-    for (Attendee attendee : current) {
-      boolean toRemove = true;
-      if (userIds != null) {
-        for (String userId : userIds) {
-          if (userId.equals(attendee.getUserId())) {
-            toRemove = false;
-          }
-        }
-      }
-      if (toRemove) {
-        removeJournalAttendee(journalId, new Attendee(attendee.getUserId()));
-      }
-    }
+    current.stream()
+        .filter(a -> !usersToAdd.contains(a.getUserId()))
+        .forEach(a -> removeJournalAttendee(journalId, new Attendee(a.getUserId())));
+
     // search for element to add
-    if (userIds != null) {
-      for (String userId : userIds) {
-        boolean toAdd = true;
-        for (Attendee attendee : current) {
-          if (userId.equals(attendee.getUserId())) {
-            toAdd = false;
-          }
-        }
-        if (toAdd) {
-          Attendee attendee;
-          if (userId.equals(journalHeader.getDelegatorId())) {
-            attendee = new Attendee(userId, ParticipationStatus.ACCEPTED);
+    List<String> attendees = current.stream().map(Attendee::getUserId).collect(Collectors.toList());
+    usersToAdd.stream()
+        .filter(u -> attendees.stream().noneMatch(a -> a.equals(u)))
+        .forEach(u -> {
+          final Attendee attendee;
+          if (u.equals(journalHeader.getDelegatorId())) {
+            attendee = new Attendee(u, ParticipationStatus.ACCEPTED);
           } else {
-            attendee = new Attendee(userId);
+            attendee = new Attendee(u);
           }
           addJournalAttendee(journalId, attendee);
-        }
-      }
-    }
+        });
   }
 
   @Override
@@ -686,10 +589,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       AttendeeDAO.removeJournalAttendee(con, journalId, attendee);
       AttendeeDAO.addJournalAttendee(con, journalId, attendee);
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.setJournalParticipationStatus(String journalId,String userId," +
-              "String participation)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_UPDATE_JOURNAL", e);
+      throw new CalendarRuntimeException("Cannot update the journal " + journalId, e);
     } finally {
       DBUtil.close(con);
     }
@@ -703,9 +603,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       AttendeeDAO.addToDoAttendee(con, todoId, attendee);
       createIndex(getToDoHeader(todoId), attendee.getUserId());
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.addToDoAttendee(String todoId,Attendee attendee)", SilverpeasException.ERROR,
-          "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
+      throw new CalendarRuntimeException("Cannot add attendee to the todo " + todoId, e);
     } finally {
       DBUtil.close(con);
     }
@@ -721,9 +619,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       removeIndex(getToDoHeader(todoId), attendee.getUserId());
 
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.removeToDoAttendee(String todoId,Attendee attendee)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
+      throw new CalendarRuntimeException("Cannot remove attendee to the todo " + todoId, e);
     } finally {
       DBUtil.close(con);
     }
@@ -735,8 +631,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return AttendeeDAO.getToDoAttendees(todoId);
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.getToDoAttendees(String todoId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODO_ATTENDEES", e);
+      throw new CalendarRuntimeException("Cannot get attendees to the todo " + todoId, e);
     }
   }
 
@@ -745,8 +640,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return AttendeeDAO.getToDoAttendees(todoIds);
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.getToDoAttendees(String todoId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODO_ATTENDEES", e);
+      throw new CalendarRuntimeException("Cannot add attendees to several todos", e);
     }
   }
 
@@ -754,35 +648,21 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   @Transactional(Transactional.TxType.REQUIRED)
   public void setToDoAttendees(String todoId, String[] userIds) {
     Collection<Attendee> current = getToDoAttendees(todoId);
+    final List<String> usersToAdd =
+        userIds != null ? Arrays.asList(userIds) : Collections.emptyList();
     // search for element to remove
-    for (Attendee attendee : current) {
-      boolean toRemove = true;
-      if (userIds != null) {
-        for (String userId : userIds) {
-          if (userId.equals(attendee.getUserId())) {
-            toRemove = false;
-          }
-        }
-      }
-      if (toRemove) {
-        removeToDoAttendee(todoId, new Attendee(attendee.getUserId()));
-      }
-    }
+    current.stream()
+        .filter(a -> !usersToAdd.contains(a.getUserId()))
+        .forEach(a -> removeToDoAttendee(todoId, new Attendee(a.getUserId())));
+
     // search for element to add
-    if (userIds != null) {
-      for (String userId : userIds) {
-        boolean toAdd = true;
-        for (Attendee attendee : current) {
-          if (userId.equals(attendee.getUserId())) {
-            toAdd = false;
-          }
-        }
-        if (toAdd) {
-          Attendee attendee = new Attendee(userId);
+    List<String> attendees = current.stream().map(Attendee::getUserId).collect(Collectors.toList());
+    usersToAdd.stream()
+        .filter(u -> attendees.stream().noneMatch(a -> a.equals(u)))
+        .forEach(u -> {
+          Attendee attendee = new Attendee(u);
           addToDoAttendee(todoId, attendee);
-        }
-      }
-    }
+        });
   }
 
   /**
@@ -794,8 +674,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return CategoryDAO.getAllCategories(con);
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.getAllCategories()",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_CATEGORIES", e);
+      throw new CalendarRuntimeException("Cannot get all the categories", e);
     } finally {
       DBUtil.close(con);
     }
@@ -808,8 +687,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return CategoryDAO.getCategory(con, categoryId);
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.getCategory(String categoryId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_CATEGORIES", e);
+      throw new CalendarRuntimeException("Cannot get category " + categoryId, e);
     } finally {
       DBUtil.close(con);
     }
@@ -823,8 +701,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       CategoryDAO.addJournalCategory(con, journalId, categoryId);
     } catch (Exception e) {
       throw new CalendarRuntimeException(
-          "CalendarEJB.addJournalCategory(String journalId,String categoryId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_CATEGORIES", e);
+          "Cannot add journal " + journalId + " in category " + categoryId, e);
 
     } finally {
       DBUtil.close(con);
@@ -839,8 +716,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
       CategoryDAO.removeJournalCategory(con, journalId, categoryId);
     } catch (Exception e) {
       throw new CalendarRuntimeException(
-          "CalendarEJB.removeJournalCategory(String journalId,String categoryId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_CATEGORIES", e);
+          "Cannot remove journal " + journalId + " from category " + categoryId, e);
     } finally {
       DBUtil.close(con);
     }
@@ -853,8 +729,8 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return CategoryDAO.getJournalCategories(con, journalId);
     } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.getJournalCategories(String journalId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_CATEGORIES", e);
+      throw new CalendarRuntimeException("Cannot get all the categories of journal " + journalId,
+          e);
     } finally {
       DBUtil.close(con);
     }
@@ -865,39 +741,20 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   @Transactional(Transactional.TxType.REQUIRED)
   public void setJournalCategories(String journalId, String[] categoryIds) {
     Collection<Category> current = getJournalCategories(journalId);
+    final List<String> categoriesToAdd =
+        categoryIds != null ? Arrays.asList(categoryIds) : Collections.emptyList();
     // search for element to remove
-    for (Category category : current) {
-      boolean toRemove = true;
-      if (categoryIds != null) {
-        for (String categoryId : categoryIds) {
-          if (categoryId.equals(category.getId())) {
-            toRemove = false;
-          }
-        }
-      }
-      if (toRemove) {
-        removeJournalCategory(journalId, category.getId());
-      }
-    }
+    current.stream()
+        .filter(c -> !categoriesToAdd.contains(c.getId()))
+        .forEach(c -> removeJournalCategory(journalId, c.getId()));
+
     // search for element to add
-    if (categoryIds != null) {
-      for (String categoryId : categoryIds) {
-        boolean toAdd = true;
-        for (Category category : current) {
-          if (categoryId.equals(category.getId())) {
-            toAdd = false;
-          }
-        }
-        if (toAdd) {
-          addJournalCategory(journalId, categoryId);
-        }
-      }
-    }
+    List<String> categories = current.stream().map(Category::getId).collect(Collectors.toList());
+    categoriesToAdd.stream()
+        .filter(c1 -> categories.stream().noneMatch(c2 -> c2.equals(c1)))
+        .forEach(c -> addJournalCategory(journalId, c));
   }
 
-  /**
-   * methode de reindexation de tous les todos
-   */
   @Override
   public void indexAllTodo() {
     final List<ToDoHeader> todos = new ArrayList<>(JdbcSqlQuery.SPLIT_BATCH);
@@ -946,9 +803,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return HolidaysDAO.getHolidayDates(con, userId);
     } catch (Exception re) {
-      throw new CalendarRuntimeException("calendarBmEJB.getHolidayDates()",
-          SilverpeasRuntimeException.ERROR, "calendar.GETTING_HOLIDAYDATES_FAILED",
-          "userId = " + userId, re);
+      throw new CalendarRuntimeException("Cannot get holiday dates of user " + userId, re);
     } finally {
       DBUtil.close(con);
     }
@@ -960,9 +815,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return HolidaysDAO.getHolidayDates(con, userId, beginDate, endDate);
     } catch (Exception re) {
-      throw new CalendarRuntimeException("calendarBmEJB.getHolidayDates()",
-          SilverpeasRuntimeException.ERROR, "calendar.GETTING_HOLIDAYDATES_FAILED",
-          "userId = " + userId, re);
+      throw new CalendarRuntimeException("Cannot get holiday dates of user " + userId, re);
     } finally {
       DBUtil.close(con);
     }
@@ -974,9 +827,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       HolidaysDAO.addHolidayDate(con, holiday);
     } catch (Exception re) {
-      throw new CalendarRuntimeException("calendarBmEJB.addHolidayDate()",
-          SilverpeasRuntimeException.ERROR, "calendar.ADDING_HOLIDAYDATE_FAILED",
-          "date = " + holiday.getDate().toString(), re);
+      throw new CalendarRuntimeException("Cannot add holiday date", re);
     } finally {
       DBUtil.close(con);
     }
@@ -990,8 +841,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
         HolidaysDAO.addHolidayDate(con, holiday);
       }
     } catch (Exception re) {
-      throw new CalendarRuntimeException("calendarBmEJB.addHolidayDates()",
-          SilverpeasRuntimeException.ERROR, "calendar.ADDING_HOLIDAYDATES_FAILED", re);
+      throw new CalendarRuntimeException("Cannot add holiday dates", re);
     } finally {
       DBUtil.close(con);
     }
@@ -1003,9 +853,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       HolidaysDAO.removeHolidayDate(con, holiday);
     } catch (Exception re) {
-      throw new CalendarRuntimeException("calendarBmEJB.removeHolidayDate()",
-          SilverpeasRuntimeException.ERROR, "calendar.REMOVING_HOLIDAYDATE_FAILED",
-          "date = " + holiday.getDate().toString(), re);
+      throw new CalendarRuntimeException("Cannot remove holiday date", re);
     } finally {
       DBUtil.close(con);
     }
@@ -1019,8 +867,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
         HolidaysDAO.removeHolidayDate(con, holiday);
       }
     } catch (Exception re) {
-      throw new CalendarRuntimeException("CalendarEJB.removeHolidayDates()",
-          SilverpeasRuntimeException.ERROR, "calendar.REMOVING_HOLIDAYDATES_FAILED", re);
+      throw new CalendarRuntimeException("Cannot remove holiday dates", re);
     } finally {
       DBUtil.close(con);
     }
@@ -1032,8 +879,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return HolidaysDAO.isHolidayDate(con, date);
     } catch (Exception re) {
-      throw new CalendarRuntimeException("CalendarEJB.isHolidayDate()",
-          SilverpeasRuntimeException.ERROR, "calendar.GETTING_HOLIDAYDATE_FAILED", re);
+      throw new CalendarRuntimeException("Cannot get holiday date", re);
     } finally {
       DBUtil.close(con);
     }
@@ -1066,9 +912,10 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       FullIndexEntry indexEntry;
       if (detail instanceof ToDoHeader) {
-        indexEntry = new FullIndexEntry("user@" + userId + "_todo", "todo", detail.getId());
+        indexEntry = new FullIndexEntry(IDX_USER_PREFIX + userId + "_todo", "todo", detail.getId());
       } else {
-        indexEntry = new FullIndexEntry("user@" + userId + "_agenda", "agenda", detail.getId());
+        indexEntry =
+            new FullIndexEntry(IDX_USER_PREFIX + userId + "_agenda", "agenda", detail.getId());
       }
       indexEntry.setTitle(detail.getName());
       indexEntry.setPreview(detail.getDescription());
@@ -1091,9 +938,10 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   private IndexEntryKey getIndexEntry(Schedulable detail, String userId) {
     IndexEntryKey indexEntry;
     if (detail instanceof ToDoHeader) {
-      indexEntry = new IndexEntryKey("user@" + userId + "_todo", "todo", detail.getId());
+      indexEntry = new IndexEntryKey(IDX_USER_PREFIX + userId + "_todo", "todo", detail.getId());
     } else {
-      indexEntry = new IndexEntryKey("user@" + userId + "_agenda", "agenda", detail.getId());
+      indexEntry =
+          new IndexEntryKey(IDX_USER_PREFIX + userId + "_agenda", "agenda", detail.getId());
     }
     return indexEntry;
   }
@@ -1114,10 +962,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return getJournalDAO().getNextEventsForUser(con, day, userId, classification, begin, end);
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getNextEventsForUser(String day,String userId,String classification," +
-              "int limit, int offset)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNALS", e);
+      throw new CalendarRuntimeException(CANNOT_GET_JOURNALS, e);
     } finally {
       DBUtil.close(con);
     }
@@ -1139,10 +984,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return getJournalDAO().getNextEventsForMyContacts(con, day, myId, myContactsIds, begin, end);
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getNextEventsForUser(String day,String userId,String classification," +
-              "int limit, int offset)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNALS", e);
+      throw new CalendarRuntimeException(CANNOT_GET_JOURNALS, e);
     } finally {
       DBUtil.close(con);
     }
@@ -1164,10 +1006,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return getJournalDAO().getLastEventsForMyContacts(con, day, myId, myContactsIds, begin, end);
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getNextEventsForUser(String day,String userId,String classification," +
-              "int limit, int offset)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNALS", e);
+      throw new CalendarRuntimeException(CANNOT_GET_JOURNALS, e);
     } finally {
       DBUtil.close(con);
     }
@@ -1188,10 +1027,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       return getJournalDAO().getMyLastEvents(con, day, myId, begin, end);
     } catch (Exception e) {
-      throw new CalendarRuntimeException(
-          "CalendarEJB.getNextEventsForUser(String day,String userId,String classification," +
-              "int limit, int offset)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNALS", e);
+      throw new CalendarRuntimeException(CANNOT_GET_JOURNALS, e);
     } finally {
       DBUtil.close(con);
     }
@@ -1212,8 +1048,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
         ToDoDAO.removeToDo(todo.getId());
         AttendeeDAO.removeToDo(todo.getId());
       } catch (Exception e) {
-        throw new CalendarRuntimeException("CalendarEJB.removeToDoByInstanceId(String instanceId)",
-            SilverpeasException.ERROR, "calendar.MSG_CANT_CREATE_TODO", e);
+        throw new CalendarRuntimeException("Cannot delete todos", e);
       }
       removeIndex(todo, todo.getDelegatorId());
     }

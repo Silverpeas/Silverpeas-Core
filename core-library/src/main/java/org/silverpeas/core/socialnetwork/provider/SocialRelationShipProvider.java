@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2019 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General  License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,28 +16,22 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General  License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General  License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.personalorganizer.service;
+package org.silverpeas.core.socialnetwork.provider;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.util.ServiceProvider;
 
-public class CalendarRuntimeException extends SilverpeasRuntimeException {
+/**
+ * Provider of relationships between two users.
+ * @author Bensalem Nabil
+ */
+public interface SocialRelationShipProvider extends SocialInformationProvider {
 
-  private static final long serialVersionUID = -1641597154737132587L;
-
-  public CalendarRuntimeException(final String message) {
-    super(message);
-  }
-
-  public CalendarRuntimeException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
-  public CalendarRuntimeException(final Throwable cause) {
-    super(cause);
+  static SocialRelationShipProvider get() {
+    return ServiceProvider.getSingleton(SocialRelationShipProvider.class);
   }
 }

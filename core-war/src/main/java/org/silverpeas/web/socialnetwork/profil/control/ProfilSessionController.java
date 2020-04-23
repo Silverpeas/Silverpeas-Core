@@ -23,14 +23,10 @@
  */
 package org.silverpeas.web.socialnetwork.profil.control;
 
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.socialnetwork.SocialNetworkException;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-
-import java.sql.SQLException;
 
 /**
  * @author Bensalem Nabil
@@ -51,16 +47,9 @@ public class ProfilSessionController extends AbstractComponentSessionController 
    * @param: int userId
    * @return true if this user in my Contacts
    */
-  public boolean isInMyContact(String userId) throws SocialNetworkException {
-    try {
-      int id = Integer.parseInt(userId);
-      return RelationShipService.get()
-          .isInRelationShip(Integer.parseInt(this.getUserId()), id);
-    } catch (SQLException ex) {
-      throw new SocialNetworkException(
-          "ProfilSessionController.isInMyContact(String userId)",
-          SilverpeasException.ERROR, "root.EX_NO_MESSAGE", ex);
-    }
+  public boolean isInMyContact(String userId) {
+    int id = Integer.parseInt(userId);
+    return RelationShipService.get().isInRelationShip(Integer.parseInt(this.getUserId()), id);
   }
 
 }

@@ -54,7 +54,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -430,23 +429,18 @@ public class UserProfileResource extends RESTWebService {
   }
 
   private String[] getContactIds(String userId) {
-    try {
-      int myId = Integer.parseInt(userId);
-      List<RelationShip> relationShips = relationShipService.getAllMyRelationShips(myId);
-      String[] userIds = new String[relationShips.size()];
-      for (int i = 0; i < relationShips.size(); i++) {
-        RelationShip relationShip = relationShips.get(i);
-        if (relationShip.getUser1Id() != myId) {
-          userIds[i] = String.valueOf(relationShip.getUser1Id());
-        } else {
-          userIds[i] = String.valueOf(relationShip.getUser2Id());
-        }
+    int myId = Integer.parseInt(userId);
+    List<RelationShip> relationShips = relationShipService.getAllMyRelationShips(myId);
+    String[] userIds = new String[relationShips.size()];
+    for (int i = 0; i < relationShips.size(); i++) {
+      RelationShip relationShip = relationShips.get(i);
+      if (relationShip.getUser1Id() != myId) {
+        userIds[i] = String.valueOf(relationShip.getUser1Id());
+      } else {
+        userIds[i] = String.valueOf(relationShip.getUser2Id());
       }
-      return userIds;
-    } catch (SQLException ex) {
-      Logger.getLogger(UserProfileResource.class.getName()).log(Level.SEVERE, null, ex);
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
+    return userIds;
   }
 
   /**

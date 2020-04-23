@@ -180,12 +180,10 @@
     <c:if test="${(scope == DIRECTORY_MINE)}">
     function deleteRelationCallback(withUser) {
       spProgressMessage.show();
-      var currentParams = location.href.split('?');
-      var url = '<c:url value="/Rdirectory/jsp/RemoveUserFromLists?UserId="/>' + withUser.id;
-      if (currentParams.length > 1) {
-        url += '&' + currentParams[1];
-      }
-      sp.ajaxRequest(url).loadTarget('#myContacts', true).then(function() {
+      let explodedUrl = sp.url.explode(location.href);
+      explodedUrl.base = '<c:url value="/Rdirectory/jsp/RemoveUserFromLists"/>';
+      explodedUrl.parameters['UserId'] = withUser.id;
+      sp.ajaxRequest(sp.url.formatFromExploded(explodedUrl)).loadTarget('#myContacts', true).then(function() {
         spProgressMessage.hide();
         activateUserZoom();
       });

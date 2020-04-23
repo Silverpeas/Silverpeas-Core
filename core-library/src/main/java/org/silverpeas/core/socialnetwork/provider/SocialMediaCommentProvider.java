@@ -23,22 +23,15 @@
  */
 package org.silverpeas.core.socialnetwork.provider;
 
-import org.silverpeas.core.date.Date;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
 
-import java.util.List;
+/**
+ * Provider of comments on a media (that can be a video, a picture, ...) to share among users.
+ */
+public interface SocialMediaCommentProvider extends SocialInformationProvider {
 
-public interface SocialCommentPublicationsInterface {
-
-  static SocialCommentPublicationsInterface get() {
-    return ServiceProvider.getService(SocialCommentPublicationsInterface.class);
+  static SocialMediaCommentProvider get() {
+    return ServiceProvider.getSingleton(SocialMediaCommentProvider.class);
   }
 
-  List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
-      throws SilverpeasException;
-
-  List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException;
 }

@@ -23,24 +23,22 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.control;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.socialnetwork.status.Status;
 import org.silverpeas.core.socialnetwork.status.StatusService;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.DateUtil;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Bensalem Nabil
@@ -56,19 +54,15 @@ public class SocialNetworkService {
   /**
    * get my wall : the List of my social information according to the type of social information
    * @param type
-   * @param begin
-   * @param end
+   * @param period
    * @return: Map<Date, List<SocialInformation>
    */
   public Map<Date, List<SocialInformation>> getSocialInformation(SocialInformationType type,
-      Date begin, Date end) {
-
-    org.silverpeas.core.date.Date dBegin = new org.silverpeas.core.date.Date(begin);
-    org.silverpeas.core.date.Date dEnd = new org.silverpeas.core.date.Date(end);
+      Period period) {
 
     List<SocialInformation> socialInformationsFull =
         socialInformationService().getSocialInformationsList(type, myId,
-        null, dEnd, dBegin);
+        null, period);
 
     Collections.sort(socialInformationsFull);
 
@@ -113,15 +107,11 @@ public class SocialNetworkService {
   /**
    * get my feed : the List of my social information and those of my contacts, according to the type of social information
    * @param type
-   * @param begin
-   * @param end
+   * @param period
    * @return: Map<Date, List<SocialInformation>
    */
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContacts(
-      SocialInformationType type, Date begin, Date end) {
-
-    org.silverpeas.core.date.Date dBegin = new org.silverpeas.core.date.Date(begin);
-    org.silverpeas.core.date.Date dEnd = new org.silverpeas.core.date.Date(end);
+      SocialInformationType type, Period period) {
 
     List<String> myContactIds = getMyContactsIds();
     // add myself
@@ -129,7 +119,7 @@ public class SocialNetworkService {
 
     List<SocialInformation> socialInformationsFull =
         socialInformationService().getSocialInformationsListOfMyContact(type, myId,
-        myContactIds, dEnd, dBegin);
+        myContactIds, period);
 
     Collections.sort(socialInformationsFull);
 
@@ -140,21 +130,17 @@ public class SocialNetworkService {
    * get my contact wall : the List of social information of the contacts of user in parameter, according to the type of social information
    * @param myContactId
    * @param type
-   * @param begin
-   * @param end
+   * @param period
    * @return: Map<Date, List<SocialInformation>
    */
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContact(String myContactId,
-      SocialInformationType type, Date begin, Date end) {
+      SocialInformationType type, Period period) {
 
-    org.silverpeas.core.date.Date dBegin = new org.silverpeas.core.date.Date(begin);
-    org.silverpeas.core.date.Date dEnd = new org.silverpeas.core.date.Date(end);
-
-    List<String> myContactIds = Arrays.asList(myContactId);
+    List<String> myContactIds = Collections.singletonList(myContactId);
 
     List<SocialInformation> socialInformationsFull =
         socialInformationService().getSocialInformationsListOfMyContact(type, myId,
-        myContactIds, dEnd, dBegin);
+        myContactIds, period);
 
     Collections.sort(socialInformationsFull);
 
@@ -185,21 +171,11 @@ public class SocialNetworkService {
   }
 
   public List<String> getMyContactsIds() {
-    try {
-      return getRelationShipService().getMyContactsIds(Integer.parseInt(myId));
-    } catch (SQLException ex) {
-      SilverTrace.error("socialNetworkService", "SocialNetworkService.getMyContactsIds", "", ex);
-    }
-    return new ArrayList<>();
+    return getRelationShipService().getMyContactsIds(Integer.parseInt(myId));
   }
 
   public List<String> getTheContactsIds(String myContactId) {
-    try {
-      return getRelationShipService().getMyContactsIds(Integer.parseInt(myContactId));
-    } catch (SQLException ex) {
-      SilverTrace.error("socialNetworkService", "SocialNetworkService.getTheContactsIds", "", ex);
-    }
-    return new ArrayList<>();
+    return getRelationShipService().getMyContactsIds(Integer.parseInt(myContactId));
   }
 
   private SocialInformationService socialInformationService() {

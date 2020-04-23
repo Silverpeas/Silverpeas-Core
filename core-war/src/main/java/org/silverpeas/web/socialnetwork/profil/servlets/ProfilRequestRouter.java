@@ -24,8 +24,6 @@
 package org.silverpeas.web.socialnetwork.profil.servlets;
 
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.socialnetwork.SocialNetworkException;
-import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -82,11 +80,6 @@ public class ProfilRequestRouter extends ComponentRequestRouter<ProfilSessionCon
    */
 
   public boolean isInMyContact(String userId, ProfilSessionController profileSC) {
-    try {
-      return profileSC.isInMyContact(userId);
-    } catch (SocialNetworkException ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-    }
-    return false;
+    return profileSC.isInMyContact(userId);
   }
 }
