@@ -77,11 +77,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.*;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.util.StringUtil.normalize;
 
@@ -92,7 +94,6 @@ import static org.silverpeas.core.util.StringUtil.normalize;
 public class SimpleDocumentService
     implements AttachmentService, ComponentInstanceDeletion, VolatileResourceCleaner {
 
-  private static final int STEP = 5;
   private static final String ATTACHMENT_TYPE = "Attachment";
   private static final String COMMENT_TYPE = "Comment";
   @Inject
@@ -610,11 +611,27 @@ public class SimpleDocumentService
 
   private void reorderDocuments(final JcrSession session, final List<SimpleDocument> documents)
       throws RepositoryException {
-    int i = STEP;
+    int i;
+    if (listFromYoungestToOldestAdd()) {
+      boolean isYoungestToOldestSorted = true;
+      for (int y = 1; isYoungestToOldestSorted && y < documents.size(); y++) {
+        final SimpleDocument previous = documents.get(y - 1);
+        final SimpleDocument current = documents.get(y);
+        isYoungestToOldestSorted = previous.getOldSilverpeasId() > current.getOldSilverpeasId();
+      }
+      if (isYoungestToOldestSorted) {
+        i = DEFAULT_REORDER_START;
+        Collections.reverse(documents);
+      } else {
+        i = YOUNGEST_TO_OLDEST_MANUAL_REORDER_START;
+      }
+    } else {
+      i = DEFAULT_REORDER_START;
+    }
     for (SimpleDocument doc : documents) {
       doc.setOrder(i);
       repository.setOrder(session, doc);
-      i += STEP;
+      i += 1;
     }
   }
 

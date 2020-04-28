@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -34,6 +32,8 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -46,8 +46,9 @@ import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -69,6 +70,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -223,6 +226,78 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           .findLast(session, instanceId, foreignId, DocumentType.attachment);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(oldSilverpeasId));
+    }
+  }
+
+  /**
+   * Test of findLast method, of class DocumentRepository.
+   */
+  @Test
+  public void testGetMinMaxIndexes() throws Exception {
+    final String foreignId = "node78";
+    try (JcrSession session = openSystemSession()) {
+      // can not get MIN MAX because it does not exist document into JCR for the foreignId
+      Optional<Pair<Integer, Integer>> minMax = documentRepository
+          .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
+      assertThat(minMax, notNullValue());
+      assertThat(minMax.isPresent(), is(false));
+      // registering now the first document into JCR
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+          Charsets.UTF_8));
+      SimpleAttachment attachment = createFrenchVersionnedAttachment();
+      SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
+      SimpleDocumentPK result = createVersionedDocument(session, document, content);
+      session.save();
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      // getting MIN MAX with only one document
+      minMax = documentRepository
+          .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
+      assertThat(minMax, notNullValue());
+      assertThat(minMax.isPresent(), is(true));
+      assertThat(minMax.get().getFirst(), is(10));
+      assertThat(minMax.get().getSecond(), is(10));
+      // registering now a second document into JCR
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+      attachment = createFrenchVersionnedAttachment();
+      document = new HistorisedDocument(emptyId, foreignId, 5, attachment);
+      result = createVersionedDocument(session, document, content);
+      session.save();
+      expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      // getting MIN MAX with two documents
+      minMax = documentRepository
+          .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
+      assertThat(minMax, notNullValue());
+      assertThat(minMax.isPresent(), is(true));
+      assertThat(minMax.get().getFirst(), is(5));
+      assertThat(minMax.get().getSecond(), is(10));
+      // registering now several documents into JCR
+      IntStream.of(0, -6, 30, 40, 10000000, -3890000, 78, 1, 10).forEach(i -> {
+        final SimpleDocumentPK _emptyId = new SimpleDocumentPK("-1", instanceId);
+        final ByteArrayInputStream _content = new ByteArrayInputStream(("With index order " + i).getBytes(Charsets.UTF_8));
+        final SimpleAttachment _attachment = createFrenchVersionnedAttachment();
+        final SimpleDocument _document = new HistorisedDocument(_emptyId, foreignId, i, _attachment);
+        try {
+          final SimpleDocumentPK _result = createVersionedDocument(session, _document, _content);
+          session.save();
+          final SimpleDocumentPK _expResult = new SimpleDocumentPK(_result.getId(), instanceId);
+          assertThat(_result, is(_expResult));
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      });
+      // getting MIN MAX with two documents
+      minMax = documentRepository
+          .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
+      assertThat(minMax, notNullValue());
+      assertThat(minMax.isPresent(), is(true));
+      assertThat(minMax.get().getFirst(), is(1));
+      // because of order index increment rule, after registering document with order 10000000
+      // the next one with index -3890000 is indeed registered with the max order + 1
+      assertThat(minMax.get().getSecond(), is(10000001));
     }
   }
 

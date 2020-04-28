@@ -37,6 +37,10 @@ import java.util.stream.Stream;
  */
 public class AttachmentSettings {
 
+  public static final int DEFAULT_REORDER_START = 1;
+  public static final int YOUNGEST_TO_OLDEST_MANUAL_REORDER_START = 200000;
+  public static final int YOUNGEST_TO_OLDEST_MANUAL_REORDER_THRESHOLD = 100000;
+
   private static SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
 

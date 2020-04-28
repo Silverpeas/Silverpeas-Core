@@ -24,9 +24,8 @@
 package org.silverpeas.core.contribution.attachment;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.CharEncoding;
-import org.apache.jackrabbit.commons.cnd.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -61,15 +60,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
@@ -100,7 +96,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
   }
 
   @Before
-  public void setUpJcr() throws RepositoryException, ParseException, IOException, SQLException {
+  public void setUpJcr() throws Exception {
     try (JcrSession session = openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
       if (!session.getRootNode().hasNode(instanceId)) {
@@ -809,14 +805,14 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
   }
 
   /**
-   * Test of reorderAttachments method, of class AttachmentService.
+   * Test of reorderAttachments and createAttachment methods, of class AttachmentService.
    *
    * @throws LoginException
    * @throws RepositoryException
    * @throws IOException
    */
   @Test
-  public void testReorderAttachments() throws RepositoryException, IOException {
+  public void testReorderAttachmentsAndCreateAttachment() throws RepositoryException, IOException {
     ResourceReference foreignKey = new ResourceReference("node36", instanceId);
     try (JcrSession session = openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
@@ -853,8 +849,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
       documentRepository.storeContent(document3, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      foreignId = "node49";
-      SimpleDocument document4 = new SimpleDocument(emptyId, foreignId, 0, false,
+      SimpleDocument document4 = new SimpleDocument(emptyId, "node49", 0, false,
           new SimpleAttachment("test.docx", "en", "My test document 4",
           "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
           MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
@@ -870,6 +865,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
       assertThat(result.get(0), SimpleDocumentMatcher.matches(document2));
       assertThat(result.get(1), SimpleDocumentMatcher.matches(document1));
       assertThat(result.get(2), SimpleDocumentMatcher.matches(document3));
+      // manual sorting
       List<SimpleDocumentPK> reorderedList = new ArrayList<>(3);
       reorderedList.add(document1.getPk());
       reorderedList.add(document2.getPk());
@@ -878,12 +874,155 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
       result = instance.listDocumentsByForeignKey(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(3));
-      document1.setOrder(5);
-      document2.setOrder(10);
-      document3.setOrder(15);
+      document1.setOrder(1);
+      document2.setOrder(2);
+      document3.setOrder(3);
       assertThat(result.get(0), SimpleDocumentMatcher.matches(document1));
       assertThat(result.get(1), SimpleDocumentMatcher.matches(document2));
       assertThat(result.get(2), SimpleDocumentMatcher.matches(document3));
+      // Create new document
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      SimpleDocument document5 = new SimpleDocument(emptyId, foreignId, 0, false,
+          new SimpleAttachment("test.docx", "en", "My test document 5",
+              "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
+              MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
+      content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      id = documentRepository.createDocument(session, document5);
+      document5.setPK(id);
+      documentRepository.storeContent(document5, content);
+      session.save();
+      document5 = documentRepository.findDocumentById(session, document5.getPk(), "fr");
+      assertThat(document5.getOrder(), is(4));
+      // Getting default sorting according to UI
+      reorderedList = new ArrayList<>(3);
+      reorderedList.add(document2.getPk());
+      reorderedList.add(document1.getPk());
+      reorderedList.add(document3.getPk());
+      reorderedList.add(document5.getPk());
+      instance.reorderAttachments(reorderedList);
+      result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+      assertThat(result, is(notNullValue()));
+      assertThat(result, hasSize(4));
+      document2.setOrder(1);
+      document1.setOrder(2);
+      document3.setOrder(3);
+      document5.setOrder(4);
+      assertThat(result.get(0), SimpleDocumentMatcher.matches(document2));
+      assertThat(result.get(1), SimpleDocumentMatcher.matches(document1));
+      assertThat(result.get(2), SimpleDocumentMatcher.matches(document3));
+      assertThat(result.get(3), SimpleDocumentMatcher.matches(document5));
+    }
+  }
+
+  /**
+   * Test of reorderAttachments and createAttachment methods, of class AttachmentService.
+   *
+   * @throws LoginException
+   * @throws RepositoryException
+   * @throws IOException
+   */
+  @Test
+  public void testReorderAttachmentsAndCreateAttachmentWhenSortedFromYoungestToOldestOnUI()
+      throws RepositoryException, IOException {
+    attachmentSettings.put("attachment.list.order", "-1");
+    ResourceReference foreignKey = new ResourceReference("node36", instanceId);
+    try (JcrSession session = openSystemSession()) {
+      DocumentRepository documentRepository = new DocumentRepository();
+      Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      String foreignId = foreignKey.getId();
+      SimpleDocument document1 = new SimpleDocument(emptyId, foreignId, 5, false,
+          new SimpleAttachment("test.odp", "fr", "Mon document de test 1",
+          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+      SimpleDocumentPK id = documentRepository.createDocument(session, document1);
+      document1.setPK(id);
+      documentRepository.storeContent(document1, content);
+
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      SimpleDocument document2 = new SimpleDocument(emptyId, foreignId, 50, false,
+          new SimpleAttachment("test.odp", "fr", "Mon document de test 2",
+          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+      id = documentRepository.createDocument(session, document2);
+      document2.setPK(id);
+      documentRepository.storeContent(document2, content);
+
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      SimpleDocument document3 = new SimpleDocument(emptyId, foreignId, 100, false,
+          new SimpleAttachment("test.odp", "fr", "Mon document de test 3",
+          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+      id = documentRepository.createDocument(session, document3);
+      document3.setPK(id);
+      documentRepository.storeContent(document3, content);
+
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      SimpleDocument document4 = new SimpleDocument(emptyId, "node49", 0, false,
+          new SimpleAttachment("test.docx", "en", "My test document 4",
+          "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
+          MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
+      content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      id = documentRepository.createDocument(session, document4);
+      document4.setPK(id);
+      documentRepository.storeContent(document4, content);
+      session.save();
+      List<SimpleDocument> result =
+          instance.listDocumentsByForeignKey(foreignKey, "fr");
+      assertThat(result, is(notNullValue()));
+      assertThat(result, hasSize(3));
+      assertThat(result.get(0), SimpleDocumentMatcher.matches(document3));
+      assertThat(result.get(1), SimpleDocumentMatcher.matches(document2));
+      assertThat(result.get(2), SimpleDocumentMatcher.matches(document1));
+      // manual sorting
+      List<SimpleDocumentPK> reorderedList = new ArrayList<>(3);
+      reorderedList.add(document3.getPk());
+      reorderedList.add(document1.getPk());
+      reorderedList.add(document2.getPk());
+      instance.reorderAttachments(reorderedList);
+      result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+      assertThat(result, is(notNullValue()));
+      assertThat(result, hasSize(3));
+      document3.setOrder(200000);
+      document1.setOrder(200001);
+      document2.setOrder(200002);
+      assertThat(result.get(0), SimpleDocumentMatcher.matches(document3));
+      assertThat(result.get(1), SimpleDocumentMatcher.matches(document1));
+      assertThat(result.get(2), SimpleDocumentMatcher.matches(document2));
+      // Create new document
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      SimpleDocument document5 = new SimpleDocument(emptyId, foreignId, 0, false,
+          new SimpleAttachment("test.docx", "en", "My test document 5",
+              "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
+              MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
+      content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      id = documentRepository.createDocument(session, document5);
+      document5.setPK(id);
+      documentRepository.storeContent(document5, content);
+      session.save();
+      document5 = documentRepository.findDocumentById(session, document5.getPk(), null);
+      assertThat(document5.getOrder(), is(199999));
+      // Getting default sorting according to UI
+      reorderedList = new ArrayList<>(4);
+      reorderedList.add(document5.getPk());
+      reorderedList.add(document3.getPk());
+      reorderedList.add(document2.getPk());
+      reorderedList.add(document1.getPk());
+      instance.reorderAttachments(reorderedList);
+      result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+      assertThat(result, is(notNullValue()));
+      assertThat(result, hasSize(4));
+      document5.setOrder(4);
+      document3.setOrder(3);
+      document2.setOrder(2);
+      document1.setOrder(1);
+      assertThat(result.get(0), SimpleDocumentMatcher.matches(document5));
+      assertThat(result.get(1), SimpleDocumentMatcher.matches(document3));
+      assertThat(result.get(2), SimpleDocumentMatcher.matches(document2));
+      assertThat(result.get(3), SimpleDocumentMatcher.matches(document1));
     }
   }
 
@@ -1214,33 +1353,36 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     String owner = "10";
     Calendar today = Calendar.getInstance();
     DateUtil.setAtBeginOfDay(today);
+    Date createdDate = RandomGenerator.getRandomCalendar().getTime();
     SimpleDocument docToLeaveLocked1 = new SimpleDocument(emptyId, foreignId, 10, false, otherOwner,
         new SimpleAttachment("test.pdf", "en", "My test document",
         "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
+        MimeTypes.PDF_MIME_TYPE, "0", createdDate, "18"));
     docToLeaveLocked1.setExpiry(today.getTime());
     instance.createAttachment(docToLeaveLocked1, content);
     emptyId = new SimpleDocumentPK("-1", otherInstanceId);
+    createdDate = new Date(createdDate.getTime() + 36000000);
     SimpleDocument docToUnlock2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
         new SimpleAttachment("test.odp", "fr", "Mon document de test",
         "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", RandomGenerator.getRandomCalendar().getTime(),
+        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", createdDate,
         "5"));
     docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
     instance.createAttachment(docToUnlock2, content);
-    await().atLeast(1, TimeUnit.MILLISECONDS).timeout(1, TimeUnit.SECONDS).until(() -> true);
+    createdDate = new Date(createdDate.getTime() + 36000000);
     emptyId = new SimpleDocumentPK("-1", instanceId);
     SimpleDocument docToUnlock3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
         new SimpleAttachment("test.pdf", "en", "My test document",
         "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
+        MimeTypes.PDF_MIME_TYPE, "0", createdDate, "18"));
     docToUnlock3.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
     instance.createAttachment(docToUnlock3, content);
+    createdDate = new Date(createdDate.getTime() + 36000000);
     emptyId = new SimpleDocumentPK("-1", otherInstanceId);
     SimpleDocument docToLeaveLocked4 = new SimpleDocument(emptyId, foreignId, 25, false, otherOwner,
         new SimpleAttachment("test.odp", "fr", "Mon document de test",
         "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", RandomGenerator.getRandomCalendar().getTime(),
+        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", createdDate,
         "5"));
     Calendar beforeDate = RandomGenerator.getCalendarAfter(today);
     docToLeaveLocked4.setExpiry(beforeDate.getTime());

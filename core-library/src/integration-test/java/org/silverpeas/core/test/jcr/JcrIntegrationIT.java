@@ -23,11 +23,14 @@
  */
 package org.silverpeas.core.test.jcr;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.silverpeas.core.contribution.attachment.process.SimpleDocumentDummyHandledFileConverter;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
+import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
+import org.silverpeas.core.test.extention.SettingBundleStub;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.ServiceProvider;
@@ -41,8 +44,13 @@ public abstract class JcrIntegrationIT {
       "org/silverpeas/core/admin/create_space_components_database.sql";
   public static final String DATASET_SCRIPT =
       "org/silverpeas/core/admin/test-spaces_and_components-dataset.sql";
-
+  protected SettingBundleStub attachmentSettings;
   public MavenTargetDirectoryRule mavenTargetDirectory = new MavenTargetDirectoryRule(this);
+
+  @Rule
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("/" + DATABASE_CREATION_SCRIPT)
+      .loadInitialDataSetFrom("/" + DATASET_SCRIPT);
+
   private ExpectedException expectedException = ExpectedException.none();
   private JcrContext jcrContext = new JcrContext();
 
@@ -61,13 +69,15 @@ public abstract class JcrIntegrationIT {
     return jcrContext;
   }
 
-  @Rule
-  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("/" + DATABASE_CREATION_SCRIPT)
-      .loadInitialDataSetFrom("/" + DATASET_SCRIPT);
-
   @Before
   public void setup() throws Exception {
     ServiceProvider.getService(SimpleDocumentDummyHandledFileConverter.class).init();
+    attachmentSettings = new SettingBundleStub(AttachmentSettings.class, "settings");
+    attachmentSettings.beforeEach(null);
   }
 
+  @After
+  public void clean() throws Exception {
+    attachmentSettings.afterEach(null);
+  }
 }

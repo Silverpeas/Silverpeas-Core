@@ -25,7 +25,6 @@ package org.silverpeas.web.attachment;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.importexport.control.RepositoriesTypeManager;
@@ -48,7 +47,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
 import static org.silverpeas.core.i18n.I18NHelper.checkLanguage;
 import static org.silverpeas.core.importexport.control.RepositoriesTypeManager.handleFileToAttach;
@@ -128,9 +126,7 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
 
       final List<File> files = new ArrayList<>(
           FileUtils.listFiles(rootUploadFolder, FileFilterUtils.fileFileFilter(), FileFilterUtils.trueFileFilter()));
-      if (listFromYoungestToOldestAdd() && !getAttachmentService().
-          listDocumentsByForeignKeyAndType(new ResourceReference(resourceId, componentId),
-              documentType, null).isManuallySorted()) {
+      if (listFromYoungestToOldestAdd()) {
         Collections.reverse(files);
       }
       for (final File file : files) {

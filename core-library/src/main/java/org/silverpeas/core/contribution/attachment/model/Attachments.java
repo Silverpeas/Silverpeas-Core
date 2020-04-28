@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
-import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -39,7 +38,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
 
 /**
@@ -112,10 +110,7 @@ public class Attachments {
     if (CollectionUtil.isNotEmpty(this.uploadedFiles)) {
       List<UploadedFile> files = new ArrayList<>(this.uploadedFiles);
       final ContributionIdentifier contributionId = contribution.getContributionId();
-      if (listFromYoungestToOldestAdd() && !getAttachmentService().
-          listDocumentsByForeignKeyAndType(new ResourceReference(contributionId.getLocalId(),
-              contributionId.getComponentInstanceId()), DocumentType.attachment, null)
-          .isManuallySorted()) {
+      if (listFromYoungestToOldestAdd()) {
         Collections.reverse(files);
       }
       for (UploadedFile uploadedFile : files) {

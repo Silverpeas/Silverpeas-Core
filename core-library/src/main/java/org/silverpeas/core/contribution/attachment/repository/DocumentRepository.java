@@ -41,6 +41,7 @@ import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.persistence.jcr.util.NodeIterable;
 import org.silverpeas.core.persistence.jcr.util.PropertyIterable;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
@@ -78,9 +79,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static java.util.Optional.ofNullable;
+import static java.util.Optional.*;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.YOUNGEST_TO_OLDEST_MANUAL_REORDER_THRESHOLD;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
 import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
@@ -118,10 +121,17 @@ public class DocumentRepository {
    */
   public SimpleDocumentPK createDocument(Session session, SimpleDocument document) throws
       RepositoryException {
-    final SimpleDocument last = findLast(session, document.getInstanceId(), document.getForeignId(),
-        document.getDocumentType());
-    if ((null != last) && (0 >= document.getOrder())) {
-      document.setOrder(last.getOrder() + 1);
+    if (0 >= document.getOrder()) {
+      getMinMaxOrderIndexes(session, document.getInstanceId(), document.getForeignId(),
+          document.getDocumentType()).ifPresent(i -> {
+        final Integer minOrderIndex = i.getFirst();
+        if (listFromYoungestToOldestAdd() &&
+            minOrderIndex > YOUNGEST_TO_OLDEST_MANUAL_REORDER_THRESHOLD) {
+          document.setOrder(minOrderIndex - 1);
+        } else {
+          document.setOrder(i.getSecond() + 1);
+        }
+      });
     }
     Node docsNode = prepareComponentAttachments(session, document.getInstanceId(), document.
         getFolder());
@@ -605,6 +615,34 @@ public class DocumentRepository {
       }
     }
     return null;
+  }
+
+  /**
+   * Get the minimum and maximum order indexes of attachments linked to a resource for a given type.
+   *
+   * @param session the current JCR session.
+   * @param instanceId the component id containing the documents.
+   * @param foreignId the id of the container owning the documents.
+   * @param documentType the type of document.
+   * @return optional min and max order indexes of documents for the specified foreignId and type.
+   * Optional is empty when it exists no document for the foreign key and the type.
+   * @throws RepositoryException in case of JCR repository problem.
+   */
+  Optional<Pair<Integer, Integer>> getMinMaxOrderIndexes(Session session, String instanceId,
+      String foreignId, final DocumentType documentType) throws RepositoryException {
+    final NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
+        documentType);
+    int min = Integer.MAX_VALUE;
+    int max = Integer.MIN_VALUE;
+    while (iter.hasNext()) {
+      final Node node = iter.nextNode();
+      if (node.hasProperty(SLV_PROPERTY_ORDER)) {
+        final int currentOrder = (int) node.getProperty(SLV_PROPERTY_ORDER).getLong();
+        min = Math.min(min, currentOrder);
+        max = Math.max(max, currentOrder);
+      }
+    }
+    return min == Integer.MAX_VALUE ? empty() : of(Pair.of(min, max));
   }
 
   /**
