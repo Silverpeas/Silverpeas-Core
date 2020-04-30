@@ -11,7 +11,7 @@
 				<div id="resource_body" style="margin-left:15px;">
 					- description : Test resource description<br/>
 					- emplacement : Test > Delegate > Resource > Location<br/>
-					- accès : <a href="ErrorGettingDomainServerDelegate+test+resource" target=_blank>Cliquer ici ...</a><br/>
+					- accès : <a href="https://www.silverpeas.org/silverpeas//autoRedirect.jsp?domainId=0&goto=Delegate+test+resource" target=_blank>Cliquer ici ...</a><br/>
 					- notification :
 					<div id="resource_item" style="margin-left:25px;">
 						. supprimée par User 500, le 01/01/2012 à 08:10
@@ -21,7 +21,7 @@
 			</div><br/>
 			<div id="footer">
 			Vous recevrez la semaine prochaine une nouvelle synthèse de notifications.<br/>
-			Vous pouvez à tout moment changer la fréquence de réception de cette synthèse depuis le paramétrage de "Mes notifications" accessible depuis votre espace personnel.</div>
+			Vous pouvez à tout moment changer la fréquence de réception de cette synthèse depuis le paramétrage de "Mes notifications" accessible depuis votre espace personnel <a style="color:#FFF;" href="https://www.silverpeas.org/silverpeas/">de votre plateforme Silverpeas</a>.</div>
 		</div>
 	</body>
 </html>
