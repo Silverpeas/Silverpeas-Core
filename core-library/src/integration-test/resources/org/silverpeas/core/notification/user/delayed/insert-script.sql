@@ -2,6 +2,26 @@
 COMMONS
  */
 
+INSERT INTO st_domain (id, name, description, propFileName, className, authenticationServer,
+                       silverpeasserverurl)
+VALUES (0, 'domainSilverpeas', 'default domain for Silverpeas',
+        'org.silverpeas.domains.domainSP',
+        'org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver', 'autDomainSP',
+        'https://www.silverpeas.org');
+
+INSERT INTO st_user (id, domainId, specificId, lastName, login, accessLevel, state, stateSaveDate)
+VALUES (9, 0, '9', 'LastName9', 'Login51', 'U', 'VALID', '2012-01-01 00:00:00.000'),
+       (50, 0, '50', 'LastName50', 'Login50', 'U', 'VALID', '2012-01-01 00:00:00.000'),
+       (51, 0, '51', 'LastName51', 'Login51', 'U', 'VALID', '2012-01-01 00:00:00.000'),
+       (52, 0, '52', 'LastName52', 'Login52', 'U', 'VALID', '2012-01-01 00:00:00.000'),
+       (53, 0, '53', 'LastName53', 'Login53', 'U', 'VALID', '2012-01-01 00:00:00.000'),
+       (54, 0, '54', 'LastName54', 'Login54', 'U', 'VALID', '2012-01-01 00:00:00.000'),
+       (55, 0, '55', 'LastName55', 'Login55', 'U', 'VALID', '2012-01-01 00:00:00.000'),
+       (56, 0, '56', 'LastName56', 'Login56', 'U', 'VALID', '2012-01-01 00:00:00.000'),
+       (60, 0, '60', 'LastName60', 'Login60', 'U', 'VALID', '2012-01-01 00:00:00.000'),
+       (70, 0, '70', 'LastName70', 'Login70', 'U', 'VALID', '2012-01-01 00:00:00.000'),
+       (80, 0, '80', 'LastName80', 'Login80', 'U', 'VALID', '2012-01-01 00:00:00.000');
+
 INSERT INTO st_notificationresource (id, resourceId, resourceType, resourceName, resourceDescription, resourceLocation, resourceUrl, componentInstanceId)
 VALUES (1, '10', 'publication', 'Test resource name', 'Test resource description',
         'Test > Resource > Location', 'Test resource URL', 'aComponentInstanceId');

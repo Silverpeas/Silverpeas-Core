@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.AttachmentLink;
 import org.silverpeas.core.notification.user.client.AbstractNotification;
@@ -56,6 +57,7 @@ import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import javax.annotation.Nonnull;
 import java.util.*;
 
+import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.NOTIFICATION_SERVER_URL;
 import static org.silverpeas.core.notification.user.delayed.DelayedNotificationProvider.getDelayedNotification;
 import static org.silverpeas.core.util.MapUtil.putAddList;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
@@ -494,9 +496,12 @@ public class DelayedNotificationDelegate extends AbstractNotification {
   private String buildMessage(final DelayedNotificationSyntheseData synthese)
       throws AdminException {
     clearTemplate();
+    final User user = getUserDetail(synthese.getUserId());
+    getTemplate().setAttribute(NOTIFICATION_SERVER_URL.toString(),
+        getUserAutoRedirectSilverpeasServerURL(user.getId()));
     getTemplate().setAttribute("delay",
         getStringTranslation("delay" + synthese.getFrequency().name(), synthese.getLanguage()));
-    getTemplate().setAttribute("userName", getUserDetail(synthese.getUserId()).getDisplayedName());
+    getTemplate().setAttribute("userName", user.getDisplayedName());
     getTemplate().setAttribute("nbResources", synthese.getNbResources());
     getTemplate().setAttribute("severalResources", (synthese.getNbResources() > 1));
     getTemplate().setAttribute("nbNotifications", synthese.getNbNotifications());
