@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.web.look;
 
-import java.util.Comparator;
-
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+
+import java.util.Comparator;
 
 public class PublicationUpdateDateComparator implements Comparator<PublicationDetail> {
 
-  static public PublicationUpdateDateComparator comparator = new PublicationUpdateDateComparator();
+  public static final PublicationUpdateDateComparator comparator = new PublicationUpdateDateComparator();
 
   @Override
   public int compare(PublicationDetail o1, PublicationDetail o2) {
