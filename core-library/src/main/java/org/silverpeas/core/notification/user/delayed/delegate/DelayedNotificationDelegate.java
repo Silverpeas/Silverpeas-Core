@@ -412,7 +412,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
           WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(syntheseResource.getDescription()));
     }
     syntheseResource.setLocation(resource.getResourceLocation()
-        .replaceAll(NotificationResourceData.LOCATION_SEPARATOR, LOCATION_SEPARATOR));
+        .replace(NotificationResourceData.LOCATION_SEPARATOR, LOCATION_SEPARATOR));
     syntheseResource.setUrl(resource.getResourceUrl());
     if (syntheseResource.getUrl() != null) {
       syntheseResource.setUrl(computeURL(synthese.getUserId(), syntheseResource.getUrl()));
