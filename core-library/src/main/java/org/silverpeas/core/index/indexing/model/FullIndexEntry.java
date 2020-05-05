@@ -23,6 +23,10 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.StringUtil;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,7 +70,9 @@ public class FullIndexEntry extends IndexEntry implements Serializable, Cloneabl
   }
 
   public void addTextContent(String text, String language) {
-    getTextList().add(new TextDescription(text, language));
+    if (StringUtil.isDefined(text)) {
+      getTextList().add(new TextDescription(text, language));
+    }
   }
 
   /**
@@ -85,6 +91,18 @@ public class FullIndexEntry extends IndexEntry implements Serializable, Cloneabl
       FileDescription fd = new FileDescription(path, encoding, format, lang);
       if (!getFileList().contains(fd)) {
         getFileList().add(fd);
+      }
+    }
+  }
+
+  public void addDocument(SimpleDocument document, boolean indexFileContent) {
+    if (document != null) {
+      addTextContent(document.getTitle(), getLang());
+      addTextContent(document.getDescription(), getLang());
+      addTextContent(document.getFilename(), getLang());
+      if (indexFileContent) {
+        addFileContent(document.getAttachmentPath(), Charsets.UTF_8.name(), document.getContentType(),
+            getLang());
       }
     }
   }

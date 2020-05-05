@@ -361,6 +361,14 @@ public class IndexManager {
    */
   private Document makeDocument(FullIndexEntry indexEntry) {
     Document doc = new Document();
+
+    // First enrich indexEntry with files data
+    if (StringUtil.isDefined(indexEntry.getObjectId())) {
+      ServiceProvider.getAllServices(DocumentIndexing.class)
+          .stream()
+          .forEach(documentIndexing -> documentIndexing.updateIndexEntryWithDocuments(indexEntry));
+    }
+
     // fields creation
     doc.add(new StringField(KEY, indexEntry.getPK().toString(), Field.Store.YES));
     doc.add(new StringField(SCOPE, indexEntry.getPK().getComponent(), Field.Store.YES));
@@ -373,13 +381,6 @@ public class IndexManager {
     setContentFields(indexEntry, doc);
     setContentTextField(indexEntry, doc);
     setAlias(indexEntry, doc);
-
-    if (StringUtil.isDefined(indexEntry.getObjectId())) {
-      ServiceProvider.getAllServices(DocumentIndexing.class)
-          .stream()
-          .forEach(documentIndexing -> documentIndexing.updateIndexEntryWithDocuments(indexEntry));
-    }
-
     setFileRelativeFields(indexEntry, doc);
     setAdditionalFields(indexEntry, doc);
 

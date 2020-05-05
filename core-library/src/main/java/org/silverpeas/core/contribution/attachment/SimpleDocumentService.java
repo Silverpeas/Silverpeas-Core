@@ -937,18 +937,15 @@ public class SimpleDocumentService
 
   @Override
   public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
-    if (settings.getBoolean("attachment.index.incorporated", true) &&
-        !indexEntry.getObjectType().startsWith(ATTACHMENT_TYPE) &&
+    if (!indexEntry.getObjectType().startsWith(ATTACHMENT_TYPE) &&
         !indexEntry.getObjectType().startsWith(COMMENT_TYPE)) {
       ResourceReference pk =
           new ResourceReference(indexEntry.getObjectId(), indexEntry.getComponent());
       List<SimpleDocument> documents = listDocumentsByForeignKey(pk, indexEntry.getLang());
+      boolean indexFileContent = settings.getBoolean("attachment.index.incorporated", true);
       for (SimpleDocument currentDocument : documents) {
         SimpleDocument version = currentDocument.getLastPublicVersion();
-        if (version != null) {
-          indexEntry.addFileContent(version.getAttachmentPath(), Charsets.UTF_8.name(), version.
-              getContentType(), indexEntry.getLang());
-        }
+        indexEntry.addDocument(version, indexFileContent);
       }
     }
   }
