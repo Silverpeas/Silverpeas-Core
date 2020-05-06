@@ -60,6 +60,7 @@ import javax.jcr.query.qom.Comparison;
 import javax.jcr.query.qom.DescendantNode;
 import javax.jcr.query.qom.Ordering;
 import javax.jcr.query.qom.QueryObjectModel;
+import javax.jcr.query.qom.QueryObjectModelConstants;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.version.Version;
@@ -577,10 +578,10 @@ public class DocumentRepository {
     DescendantNode descendantdNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS,
         session.getRootNode().getPath() + instanceId);
     Comparison oldSilverpeasIdComparison = factory.comparison(factory.propertyValue(
-        SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_OLD_ID), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO,
+        SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_OLD_ID), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO,
         factory.literal(session.getValueFactory().createValue(oldSilverpeasId)));
     Comparison versionedComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_VERSIONED), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
+        SLV_PROPERTY_VERSIONED), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(versioned)));
 
     QueryObjectModel query = factory.createQuery(source, factory.and(descendantdNodeConstraint,
@@ -768,7 +769,7 @@ public class DocumentRepository {
     DescendantNode descendantdNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS,
         session.getRootNode().getPath() + instanceId);
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
+        SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(foreignId)));
     Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_ORDER));
@@ -795,7 +796,7 @@ public class DocumentRepository {
     ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
         getPath() + instanceId + '/' + type.getFolderName());
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
+        SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(foreignId)));
     Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_ORDER));
@@ -823,7 +824,7 @@ public class DocumentRepository {
         getRootNode().getPath() + instanceId + '/');
     Comparison foreignIdComparison = factory
         .comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_FOREIGN_KEY),
-            QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
+            QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
                 literal(session.getValueFactory().createValue(foreignId))
         );
     Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
@@ -927,7 +928,7 @@ public class DocumentRepository {
     expiry.setTime(DateUtil.getBeginOfDay(expiryDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
+        SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(expiry)));
     Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_ORDER));
@@ -968,7 +969,7 @@ public class DocumentRepository {
     expiry.setTime(DateUtil.getBeginOfDay(expiryDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelFactory.JCR_OPERATOR_LESS_THAN, factory.
+        SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelConstants.JCR_OPERATOR_LESS_THAN, factory.
         literal(session.getValueFactory().createValue(expiry)));
     Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_ORDER));
@@ -993,7 +994,7 @@ public class DocumentRepository {
     alert.setTime(DateUtil.getBeginOfDay(alertDate));
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_ALERT_DATE), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
+        SLV_PROPERTY_ALERT_DATE), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(alert)));
     Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_ORDER));
@@ -1020,7 +1021,7 @@ public class DocumentRepository {
     ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
         getPath() + instanceId + '/' + DocumentType.attachment.getFolderName());
     Comparison ownerComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_OWNER), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
+        SLV_PROPERTY_OWNER), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
         getValueFactory().createValue(owner)));
     Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_ORDER));
@@ -1044,7 +1045,7 @@ public class DocumentRepository {
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     Comparison ownerComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
-        SLV_PROPERTY_OWNER), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
+        SLV_PROPERTY_OWNER), QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
         getValueFactory().createValue(owner)));
     Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_ORDER));

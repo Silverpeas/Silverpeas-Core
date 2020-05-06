@@ -1062,7 +1062,7 @@ public class SimpleDocumentService
   @Override
   public void switchAllowingDownloadForReaders(final SimpleDocumentPK pk, final boolean allowing) {
     SimpleDocument document = searchDocumentById(pk, null);
-    final Boolean documentUpdateRequired;
+    final boolean documentUpdateRequired;
     if (allowing) {
       documentUpdateRequired =
           document.addRolesForWhichDownloadIsAllowed(SilverpeasRole.READER_ROLES);
