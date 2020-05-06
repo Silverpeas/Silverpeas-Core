@@ -23,16 +23,18 @@
  */
 package org.silverpeas.core.webapi.contribution;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -44,6 +46,7 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -112,83 +115,116 @@ public class ContributionContentResource extends AbstractContributionResource {
   public FormEntity getFormContent(@PathParam("formId") final String formId,
       @QueryParam("lang") final String lang, @QueryParam("renderView") final boolean renderView) {
     try {
-      String language =
+      final String language =
           (StringUtil.isDefined(lang) ? lang : getDefaultPublicationTemplateLanguage());
-
-      RecordTemplate recordTemplate = null;
-      DataRecord data = null;
-      Form formView = null;
-      if (StringUtil.isDefined(formId)) {
-        PublicationTemplate publicationTemplate = getPublicationTemplate(formId);
-        if (publicationTemplate != null) {
-          if (renderView) {
-            formView = publicationTemplate.getViewForm();
-          }
-          recordTemplate = publicationTemplate.getRecordTemplate();
-          data = publicationTemplate.getRecordSet().getRecord(contributionId, language);
-        }
-      }
-
-      // If no data exists, http not found error is returned
-      if (data == null) {
-        throw new WebApplicationException(Response.Status.NOT_FOUND);
-      }
-
+      final FormData formData = loadFormData(formId, language, renderView);
+      final DataRecord data = formData.getData();
       // Creating the form entity
-      FormEntity form = FormEntity.createFrom(formId);
-
+      final FormEntity form = FormEntity.createFrom(formId);
       // Adding form content
-      for (FieldTemplate fieldTemplate : recordTemplate.getFieldTemplates()) {
-
-        Map<String, String> keyValuePairs =
+      for (FieldTemplate fieldTemplate : formData.getRecordTemplate().getFieldTemplates()) {
+        final Map<String, String> keyValuePairs =
             ((GenericFieldTemplate) fieldTemplate).getKeyValuePairs(lang);
-
         if (fieldTemplate.isRepeatable() || !keyValuePairs.isEmpty()) {
           // Field is repeatable or multi-valuable (like checkbox)
-          List<FormFieldValueEntity>
+          final List<FormFieldValueEntity>
               fieldValueEntities = getFormFieldValues(fieldTemplate, data, language);
-
           // Field entity
-          FormFieldEntity fieldEntity = FormFieldEntity
+          final FormFieldEntity fieldEntity = FormFieldEntity
               .createFrom(fieldTemplate.getTypeName(), fieldTemplate.getFieldName(),
                   fieldTemplate.getLabel(language), fieldValueEntities);
-
           // Adding field to the form entity
           form.addFormField(fieldEntity);
-
         } else {
           // Field value
-          FormFieldValueEntity fieldValueEntity = getFormFieldValue(fieldTemplate, data, language);
-
+          final FormFieldValueEntity fieldValueEntity = getFormFieldValue(fieldTemplate, data, language);
           // Field entity
-          FormFieldEntity fieldEntity = FormFieldEntity
+          final FormFieldEntity fieldEntity = FormFieldEntity
               .createFrom(fieldTemplate.getTypeName(), fieldTemplate.getFieldName(),
                   fieldTemplate.getLabel(language), fieldValueEntity);
-
           // Adding field to the form entity
           form.addFormField(fieldEntity);
         }
       }
-
-      if (formView != null) {
-        PagesContext context =
+      // Render view if any
+      formData.getFormView().ifPresent(v -> {
+        final PagesContext context =
             new PagesContext("myForm", "0", getUserPreferences().getLanguage(), false,
                 getComponentId(), getUser().getId());
         context.setObjectId(contributionId);
-        form.withRenderedView(formView.toString(context, data));
-      }
-
+        form.withRenderedView(v.toString(context, data));
+      });
       // Returning the contribution content entity
-      URI formUri = getUri().getBaseUriBuilder()
+      final URI formUri = getUri().getBaseUriBuilder()
           .segment(CONTRIBUTION_BASE_URI, getComponentId(), getContributionId(),
               CONTRIBUTION_CONTENT_URI_PART, CONTRIBUTION_CONTENT_FORM_URI_PART, formId)
           .build();
       return form.withURI(formUri);
-
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
       throw new WebApplicationException(ex, Response.Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  /**
+   * Loading the data of a form registration from its identifier and a content language.
+   * @param formId the identifier of the form registration.
+   * @param language the aimed content language.
+   * @param renderView true tu also get the render view form, false to avoid to load it.
+   * @return a {@link FormData} instance containing all the aimed data.
+   * @throws PublicationTemplateException in case of technical problem with services.
+   * @throws FormException in case of technical problem with services.
+   * @throws WebApplicationException thrown if no data have been found from given identifier and
+   * given language.
+   */
+  private FormData loadFormData(final String formId, final String language,
+      final boolean renderView) throws PublicationTemplateException, FormException {
+    final FormData formData = new FormData();
+    if (StringUtil.isDefined(formId)) {
+      final PublicationTemplate publicationTemplate = getPublicationTemplate(formId);
+      if (publicationTemplate != null) {
+        if (renderView) {
+          formData.setFormView(publicationTemplate.getViewForm());
+        }
+        formData.setRecordTemplate(publicationTemplate.getRecordTemplate());
+        formData.setData(publicationTemplate.getRecordSet().getRecord(contributionId, language));
+      }
+    }
+    // If no data exists, http not found error is returned
+    if (formData.getRecordTemplate() == null || formData.getData() == null) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+    return formData;
+  }
+
+  private static class FormData {
+    private RecordTemplate recordTemplate = null;
+    private DataRecord data = null;
+    private Form formView = null;
+
+    public RecordTemplate getRecordTemplate() {
+      return recordTemplate;
+    }
+
+    public void setRecordTemplate(final RecordTemplate recordTemplate) {
+      this.recordTemplate = recordTemplate;
+    }
+
+    public DataRecord getData() {
+      return data;
+    }
+
+    public void setData(final DataRecord data) {
+      this.data = data;
+    }
+
+    public Optional<Form> getFormView() {
+      return Optional.ofNullable(formView);
+    }
+
+    public void setFormView(final Form formView) {
+      this.formView = formView;
     }
   }
 }
