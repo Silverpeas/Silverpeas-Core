@@ -64,7 +64,7 @@ $(document).ready(function(){
 			<a id="scope-<%=SocialInformationType.RELATIONSHIP %>" class="" href="#" onclick="changeScope('<%=SocialInformationType.RELATIONSHIP %>')"><fmt:message key="newsFeed.scope.relationship" /></a>
 			<a id="scope-<%=SocialInformationType.PUBLICATION %>" class="" href="#" onclick="changeScope('<%=SocialInformationType.PUBLICATION %>')"><fmt:message key="newsFeed.scope.publication" /></a>
 			<a id="scope-<%=SocialInformationType.MEDIA %>" class="" href="#" onclick="changeScope('<%=SocialInformationType.MEDIA %>')"><fmt:message key="newsFeed.scope.media" /></a>
-			<a id="scope-<%=SocialInformationType.EVENT %>" class="" href="#" onclick="changeScope('<%=SocialInformationType.EVENT %>')"><fmt:message key="newsFeed.scope.event" /></a>
+			<a id="scope-<%=SocialInformationType.LASTEVENT %>" class="" href="#" onclick="changeScope('<%=SocialInformationType.LASTEVENT %>')"><fmt:message key="newsFeed.scope.event" /></a>
 			<a id="scope-<%=SocialInformationType.COMMENT %>" class="" href="#" onclick="changeScope('<%=SocialInformationType.COMMENT %>')"><fmt:message key="newsFeed.scope.comment" /></a>
 		</p>
 	</div>

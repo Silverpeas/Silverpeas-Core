@@ -184,51 +184,58 @@ public class NewsFeedJSONServlet extends HttpServlet {
    */
   private UnaryOperator<JSONObject> getJSONSocialInfo(
       SocialInformation information, LocalizationBundle multilang) {
-    SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
-
     return jsonSocialInfo -> {
-
-        jsonSocialInfo.put("type", information.getType());
-        UserDetail contactUser1 = UserDetail.getById(information.getAuthor());
-        jsonSocialInfo.putJSONObject("author", userDetailToJSON(contactUser1));
-        jsonSocialInfo.put(TITLE, information.getTitle());
-        jsonSocialInfo.put(DESCRIPTION,
-            WebEncodeHelper.javaStringToHtmlParagraphe(information.getDescription()));
-        // if time not identified display string empty
-        if ("00:00".equalsIgnoreCase(formatTime.format(information.getDate()))) {
-          jsonSocialInfo.put("hour", "");
+      fillJsonSocialCommonInfo(information, jsonSocialInfo);
+      if (information.getType().equals(SocialInformationType.RELATIONSHIP.toString())) {
+        final UserDetail contactUser2 = UserDetail.getById(information.getTitle());
+        jsonSocialInfo.putJSONObject(TITLE, userDetailToJSON(contactUser2));
+        jsonSocialInfo.put(LABEL, multilang.getStringWithParams("newsFeed.relationShip.label",
+            UserNameGenerator.toString(contactUser2, "-1")));
+      } else if (information.getType().endsWith(SocialInformationType.EVENT.toString())) {
+        if (!information.isUpdated() &&
+            information.getIcon().startsWith(information.getType() + "_private")) {
+          jsonSocialInfo.put(TITLE, multilang.getString("profil.icon.private.event"));
+          jsonSocialInfo.put(DESCRIPTION, "");
         } else {
-          jsonSocialInfo.put("hour", formatTime.format(information.getDate()));
+          jsonSocialInfo.put(TITLE, information.getTitle());
+          jsonSocialInfo.put(DESCRIPTION, information.getDescription());
         }
-        jsonSocialInfo.put("url", URLUtil.getApplicationURL() + information.getUrl());
+        jsonSocialInfo
+            .put(LABEL, multilang.getString("newsFeed." + information.getType().toLowerCase() +
+                ".label"));
+      } else if (information.getType().equals(SocialInformationType.STATUS.toString())) {
+        jsonSocialInfo.put(TITLE, multilang.getString("newsFeed.status.suffix"));
+      } else {
+        jsonSocialInfo
+            .put(LABEL, multilang.getString("newsFeed." + information.getType().toLowerCase() +
+                ".updated." + information.isUpdated()));
+      }
+      return jsonSocialInfo;
+    };
+  }
 
-        if (information.getType().equals(SocialInformationType.RELATIONSHIP.toString())) {
-          UserDetail contactUser2 = UserDetail.getById(information.getTitle());
-          jsonSocialInfo.putJSONObject(TITLE, userDetailToJSON(contactUser2));
-          jsonSocialInfo.put(LABEL, multilang.getStringWithParams("newsFeed.relationShip.label",
-              UserNameGenerator.toString(contactUser2, "-1")));
-        } else if (information.getType().endsWith(SocialInformationType.EVENT.toString())) {
-          if (!information.isUpdated() &&
-              information.getIcon().startsWith(information.getType() + "_private")) {
-            jsonSocialInfo.put(TITLE, multilang.getString("profil.icon.private.event"));
-            jsonSocialInfo.put(DESCRIPTION, "");
-          } else {
-            jsonSocialInfo.put(TITLE, information.getTitle());
-            jsonSocialInfo.put(DESCRIPTION, information.getDescription());
-          }
-          jsonSocialInfo
-              .put(LABEL, multilang.getString("newsFeed." + information.getType().toLowerCase() +
-                  ".label"));
-        } else if (information.getType().equals(SocialInformationType.STATUS.toString())) {
-          jsonSocialInfo.put(TITLE, multilang.getString("newsFeed.status.suffix"));
-        } else {
-          jsonSocialInfo
-              .put(LABEL, multilang.getString("newsFeed." + information.getType().toLowerCase() +
-                  ".updated." + information.isUpdated()));
-        }
-
-        return jsonSocialInfo;
-      };
+  private void fillJsonSocialCommonInfo(final SocialInformation information,
+      final JSONObject jsonSocialInfo) {
+    final SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
+    jsonSocialInfo.put("type", information.getType());
+    final UserDetail contactUser1 = UserDetail.getById(information.getAuthor());
+    jsonSocialInfo.putJSONObject("author", userDetailToJSON(contactUser1));
+    jsonSocialInfo.put(TITLE, information.getTitle());
+    jsonSocialInfo.put(DESCRIPTION,
+        WebEncodeHelper.javaStringToHtmlParagraphe(information.getDescription()));
+    // if time not identified display string empty
+    if ("00:00".equalsIgnoreCase(formatTime.format(information.getDate()))) {
+      jsonSocialInfo.put("hour", "");
+    } else {
+      jsonSocialInfo.put("hour", formatTime.format(information.getDate()));
+    }
+    String url = information.getUrl();
+    if (StringUtil.isDefined(url)) {
+      url = url.contains(URLUtil.getApplicationURL()) ? url :URLUtil.getApplicationURL() + url;
+    } else {
+      url = "javascript:void(0)";
+    }
+    jsonSocialInfo.put("url", url);
   }
 
   /**

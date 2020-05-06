@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 
 public class StringUtil extends StringUtils {
 
+  public static final String EMPTY = StringUtils.EMPTY;
   public static final String NEWLINE = System.getProperty("line.separator");
 
   private static final String PATTERN_START = "{";
@@ -146,7 +147,6 @@ public class StringUtil extends StringUtils {
     return StringUtils.defaultString((isDefined(string) ? string : null), defaultString);
   }
 
-  @SuppressWarnings("ResultOfMethodCallIgnored")
   public static boolean isInteger(String value) {
     try {
       Integer.parseInt(value);
@@ -166,7 +166,6 @@ public class StringUtil extends StringUtils {
     return integer;
   }
 
-  @SuppressWarnings("ResultOfMethodCallIgnored")
   public static boolean isLong(String value) {
     try {
       Long.parseLong(value);
@@ -178,17 +177,16 @@ public class StringUtil extends StringUtils {
 
   public static float asFloat(String value) {
     if (StringUtil.isFloat(value)) {
-      return Float.valueOf(value);
+      return Float.parseFloat(value);
     } else if (value != null) {
       String charge = value.replace(',', '.');
       if (StringUtil.isFloat(charge)) {
-        return Float.valueOf(charge);
+        return Float.parseFloat(charge);
       }
     }
     return 0f;
   }
 
-  @SuppressWarnings("ResultOfMethodCallIgnored")
   public static boolean isFloat(String value) {
     try {
       Float.parseFloat(value);
@@ -203,7 +201,7 @@ public class StringUtil extends StringUtils {
    * @return a String with all quotes replaced by spaces
    */
   public static String escapeQuote(String text) {
-    return text.replaceAll("'", " ");
+    return text.replace("'", " ");
   }
 
   /**
