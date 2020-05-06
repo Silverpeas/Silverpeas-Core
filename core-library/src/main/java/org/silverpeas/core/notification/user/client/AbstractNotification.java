@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.notification.user.client;
 
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
@@ -75,7 +75,6 @@ public abstract class AbstractNotification {
   public String getUserAutoRedirectSilverpeasServerURL(final String userId) {
     final UserDetail ud = UserDetail.getById(userId);
     final Domain dom = ud.getDomain();
-    String url = dom.getSilverpeasServerURL() + getApplicationURL();
-    return url;
+    return dom.getSilverpeasServerURL() + getApplicationURL();
   }
 }

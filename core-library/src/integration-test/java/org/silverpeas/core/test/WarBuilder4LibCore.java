@@ -107,6 +107,7 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.exception.WithNested;
+import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.io.media.MetaData;
@@ -312,6 +313,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     }
     if (!contains(URLEncoder.class)) {
       addClasses(URLEncoder.class);
+    }
+    if (!contains(PermalinkRegistry.class)) {
+      addClasses(PermalinkRegistry.class);
     }
     return this;
   }
