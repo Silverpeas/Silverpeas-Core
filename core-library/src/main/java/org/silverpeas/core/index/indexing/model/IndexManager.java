@@ -365,7 +365,6 @@ public class IndexManager {
     // First enrich indexEntry with files data
     if (StringUtil.isDefined(indexEntry.getObjectId())) {
       ServiceProvider.getAllServices(DocumentIndexing.class)
-          .stream()
           .forEach(documentIndexing -> documentIndexing.updateIndexEntryWithDocuments(indexEntry));
     }
 

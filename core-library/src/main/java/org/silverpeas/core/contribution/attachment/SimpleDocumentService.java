@@ -939,13 +939,22 @@ public class SimpleDocumentService
   public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
     if (!indexEntry.getObjectType().startsWith(ATTACHMENT_TYPE) &&
         !indexEntry.getObjectType().startsWith(COMMENT_TYPE)) {
-      ResourceReference pk =
+      final ResourceReference pk =
           new ResourceReference(indexEntry.getObjectId(), indexEntry.getComponent());
-      List<SimpleDocument> documents = listDocumentsByForeignKey(pk, indexEntry.getLang());
-      boolean indexFileContent = settings.getBoolean("attachment.index.incorporated", true);
+      final String lang = indexEntry.getLang();
+      final List<SimpleDocument> documents = listDocumentsByForeignKey(pk, lang);
+      final boolean indexFileContent = settings.getBoolean("attachment.index.incorporated", true);
       for (SimpleDocument currentDocument : documents) {
-        SimpleDocument version = currentDocument.getLastPublicVersion();
-        indexEntry.addDocument(version, indexFileContent);
+        final SimpleDocument lastPublicVersion = currentDocument.getLastPublicVersion();
+        if (lastPublicVersion != null) {
+          indexEntry.addTextContent(lastPublicVersion.getTitle(), lang);
+          indexEntry.addTextContent(lastPublicVersion.getDescription(), lang);
+          indexEntry.addTextContent(lastPublicVersion.getFilename(), lang);
+          if (indexFileContent) {
+            indexEntry.addFileContent(lastPublicVersion.getAttachmentPath(), Charsets.UTF_8.name(),
+                lastPublicVersion.getContentType(), lang);
+          }
+        }
       }
     }
   }
