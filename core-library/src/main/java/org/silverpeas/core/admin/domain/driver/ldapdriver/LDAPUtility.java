@@ -250,12 +250,12 @@ public class LDAPUtility {
    */
   static String[] getAttributeValues(LDAPEntry theEntry, String theAttributeName) {
     if (theEntry == null || !StringUtil.isDefined(theAttributeName)) {
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
 
     LDAPAttribute theAttr = theEntry.getAttribute(theAttributeName);
     if (theAttr == null) {
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
 
     if (isAGuid(theAttributeName)) {

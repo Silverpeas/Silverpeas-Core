@@ -44,7 +44,7 @@ public class GroupDetail implements Group {
   private String name = "";
   private String description = "";
   private String rule = null;
-  private String[] userIds = ArrayUtil.EMPTY_STRING_ARRAY;
+  private String[] userIds = ArrayUtil.emptyStringArray();
 
   private int nbUsers = -1;
   private int nbTotalUsers = -1;

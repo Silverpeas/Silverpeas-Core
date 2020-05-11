@@ -35,7 +35,6 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.chat.ChatUser;
 import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
-import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.SilverpeasList;
@@ -289,7 +288,7 @@ public class UserProfileResource extends RESTWebService {
         .withComponentInstanceId(instanceId)
         .withRoles(roleNames)
         .withResourceId(resource)
-        .withGroupIds(ArrayUtil.toArray(groupId))
+        .withGroupIds(groupId)
         .withName(name)
         .withPaginationPage(fromPage(page));
 
@@ -351,7 +350,7 @@ public class UserProfileResource extends RESTWebService {
     if (contactIds.length > 0) {
       UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder.aSearchCriteria()
           .withComponentInstanceId(instanceId)
-          .withDomainIds(ArrayUtil.toArray(domainId))
+          .withDomainIds(domainId)
           .withRoles(roleNames)
           .withResourceId(resource)
           .withUserIds(contactIds)

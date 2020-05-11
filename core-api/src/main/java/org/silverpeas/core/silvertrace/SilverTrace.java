@@ -36,10 +36,16 @@ import java.util.Properties;
  * latter as the Silver Trace API will be removed in the future.
  * @see org.silverpeas.core.util.logging.SilverLogger
  *
+ * @deprecated
+ *
  * @author Thierry leroi
  */
 @Deprecated
 public class SilverTrace {
+
+  private SilverTrace() {
+  }
+
   /**
    * Used in setTraceLevel to reset a level trace.
    *
@@ -139,7 +145,7 @@ public class SilverTrace {
    * @see #addAppenderRollingFile
    */
   @Deprecated
-  public final static String ROLLING_MODE_MONTH = "'.'yyyy-MM";
+  public static final String ROLLING_MODE_MONTH = "'.'yyyy-MM";
   /**
    * The trace file will be copied every 1st day of a week with the name : FileName.ext.year-week A
    * new file named FileName.ext is the created and will contains the next week's traces Example :
@@ -148,7 +154,7 @@ public class SilverTrace {
    * @see #addAppenderRollingFile
    */
   @Deprecated
-  public final static String ROLLING_MODE_WEEK = "'.'yyyy-WW";
+  public static final String ROLLING_MODE_WEEK = "'.'yyyy-WW";
   /**
    * The trace file will be copied every day at midnight with the name :
    * FileName.ext.year-mounth-day A new file named FileName.ext is the created and will contains the
@@ -157,7 +163,7 @@ public class SilverTrace {
    * @see #addAppenderRollingFile
    */
   @Deprecated
-  public final static String ROLLING_MODE_DAILY = "'.'yyyy-MM-dd";
+  public static final String ROLLING_MODE_DAILY = "'.'yyyy-MM-dd";
   /**
    * The trace file will be copied every hour with the name : FileName.ext.year-mounth-day-hour A
    * new file named FileName.ext is the created and will contains the next hour's traces Example :
@@ -166,22 +172,22 @@ public class SilverTrace {
    * @see #addAppenderRollingFile
    */
   @Deprecated
-  public final static String ROLLING_MODE_HOUR = "'.'yyyy-MM-dd-HH";
+  public static final String ROLLING_MODE_HOUR = "'.'yyyy-MM-dd-HH";
   /**
    * The silverpeas root module's name
    */
   @Deprecated
-  public final static String MODULE_ROOT = "root";
+  public static final String MODULE_ROOT = "root";
   /**
    * The special output for ERROR and FATAL module's name
    */
   @Deprecated
-  public final static String MODULE_ERROR_AND_FATAL = "outErrorAndFatal";
+  public static final String MODULE_ERROR_AND_FATAL = "outErrorAndFatal";
   /**
    * The special output for SPY module's name
    */
   @Deprecated
-  public final static String MODULE_SPY = "outSpy";
+  public static final String MODULE_SPY = "outSpy";
   /**
    * Create action code
    */

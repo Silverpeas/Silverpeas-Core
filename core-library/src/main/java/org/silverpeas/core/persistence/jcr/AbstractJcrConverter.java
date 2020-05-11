@@ -342,31 +342,26 @@ public abstract class AbstractJcrConverter {
    * @throws RepositoryException on error
    */
   public void setContent(Node fileNode, byte[] content, String mimeType) throws RepositoryException {
-    ByteArrayInputStream in = new ByteArrayInputStream(content);
-    try {
+    try(ByteArrayInputStream in = new ByteArrayInputStream(content)) {
       setContent(fileNode, in, mimeType);
-    } finally {
-      IOUtils.closeQuietly(in);
+    } catch(IOException e) {
+      throw new RepositoryException(e);
     }
   }
 
   public byte[] getContent(Node fileNode) throws RepositoryException {
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
     Node contentNode;
     if (fileNode.hasNode(JCR_CONTENT)) {
       contentNode = fileNode.getNode(JCR_CONTENT);
-      InputStream in = contentNode.getProperty(JCR_DATA).getBinary().getStream();
-      try {
+      try(InputStream in = contentNode.getProperty(JCR_DATA).getBinary().getStream();
+          ByteArrayOutputStream out = new ByteArrayOutputStream();) {
         IOUtils.copy(in, out);
+        return out.toByteArray();
       } catch (IOException ioex) {
         throw new RepositoryException(ioex);
-      } finally {
-        IOUtils.closeQuietly(in);
-        IOUtils.closeQuietly(out);
       }
-      return out.toByteArray();
     }
-    return ArrayUtil.EMPTY_BYTE_ARRAY;
+    return ArrayUtil.emptyByteArray();
   }
 
   public Binary getBinaryContent(Node fileNode) throws RepositoryException {
@@ -384,11 +379,9 @@ public abstract class AbstractJcrConverter {
     if (fileNode.hasNode(JCR_CONTENT)) {
       Node contentNode = fileNode.getNode(JCR_CONTENT);
       Binary content = contentNode.getProperty(JCR_DATA).getBinary();
-      InputStream in = content.getStream();
-      try {
+      try(InputStream in = content.getStream()) {
         IOUtils.copy(in, out);
       } finally {
-        IOUtils.closeQuietly(in);
         content.dispose();
       }
     }

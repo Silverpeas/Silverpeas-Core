@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.silvertrace;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -56,48 +55,80 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
   // Directory to the error files
   protected static String errorDir = null;
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void debug(String module, String classe, String message) {
     debug(module, classe, message, null, null);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void debug(String module, String classe, String message, String extraInfos) {
     debug(module, classe, message, extraInfos, null);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void debug(String module, String classe, String message, Throwable ex) {
     debug(module, classe, message, null, ex);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void debug(String module, String classe, String message, String extraInfos, Throwable ex) {
     SilverLogger.getLogger(computeNamespace(module)).debug(formatMessage(message, extraInfos));
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void info(String module, String classe, String messageID) {
     info(module, classe, messageID, null, null);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void info(String module, String classe, String messageID, String extraInfos) {
     info(module, classe, messageID, extraInfos, null);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void info(String module, String classe, String messageID, Throwable ex) {
     info(module, classe, messageID, null, ex);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void info(String module, String classe, String messageID, String extraInfos,
@@ -105,24 +136,40 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
     SilverLogger.getLogger(computeNamespace(module)).info(formatMessage(messageID, extraInfos));
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void warn(String module, String classe, String messageID) {
     warn(module, classe, messageID, null, null);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void warn(String module, String classe, String messageID, String extraInfos) {
     warn(module, classe, messageID, extraInfos, null);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void warn(String module, String classe, String messageID, Throwable ex) {
     warn(module, classe, messageID, null, ex);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void warn(String module, String classe, String messageID, String extraInfos,
@@ -130,24 +177,40 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
     SilverLogger.getLogger(computeNamespace(module)).warn(formatMessage(messageID, extraInfos));
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void error(String module, String classe, String messageID) {
     error(module, classe, messageID, null, null);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void error(String module, String classe, String messageID, String extraInfos) {
     error(module, classe, messageID, extraInfos, null);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void error(String module, String classe, String messageID, Throwable ex) {
     error(module, classe, messageID, null, ex);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void error(String module, String classe, String messageID, String extraInfos,
@@ -155,24 +218,40 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
     SilverLogger.getLogger(computeNamespace(module)).error(formatMessage(messageID, extraInfos), ex);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void fatal(String module, String classe, String messageID) {
     fatal(module, classe, messageID, null, null);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void fatal(String module, String classe, String messageID, String extraInfos) {
     fatal(module, classe, messageID, extraInfos, null);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void fatal(String module, String classe, String messageID, Throwable ex) {
     fatal(module, classe, messageID, null, ex);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void fatal(String module, String classe, String messageID, String extraInfos,
@@ -180,6 +259,10 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
     SilverLogger.getLogger(computeNamespace(module)).error(formatMessage(messageID, extraInfos), ex);
   }
 
+  /**
+   * This method will be removed in a future version
+   * @deprecated
+   */
   @Deprecated
   @Override
   public void spy(String module, String classe, String spaceId, String instanceId, String objectId,
@@ -189,29 +272,33 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
   }
 
   /**
-   * Does nothing.
+   * This method will be removed in a future version
+   * @deprecated
    */
   @Deprecated
   @Override
   public void resetAll() {
+    // does nothing
   }
 
   /**
-   * Does nothing
+   * This method will be removed in a future version
+   * @deprecated
    */
   @Deprecated
   @Override
   public void applyProperties(String filePath) {
-
+    // does nothing
   }
 
   /**
-   * Does nothing
+   * This method will be removed in a future version
+   * @deprecated
    */
   @Deprecated
   @Override
   public void initFromProperties(Properties fileProperties) {
-
+    // does nothing
   }
 
   /**
@@ -248,6 +335,8 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
         case SilverTrace.TRACE_LEVEL_FATAL:
           logger.setLevel(Level.ERROR);
           break;
+        default:
+          break;
       }
     }
   }
@@ -273,48 +362,56 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
   }
 
   /**
-   * Does nothing.
+   * This method will be removed in a future version
+   * @deprecated
    */
   @Deprecated
   @Override
   public void addAppenderConsole(String module, String patternLayout, String consoleName) {
-
+    // does nothing
   }
 
   /**
-   * Does nothing.
+   * This method will be removed in a future version
+   * @deprecated
    */
   @Deprecated
   @Override
   public void addAppenderFile(String module, String patternLayout, String fileName,
       boolean appendOnFile) {
+    // does nothing
   }
 
   /**
-   * Does nothing.
+   * This method will be removed in a future version
+   * @deprecated
    */
   @Deprecated
   @Override
   public void addAppenderRollingFile(String module, String patternLayout, String fileName,
       String rollingMode) {
+    // does nothing
   }
 
   /**
-   * Does nothing.
+   * This method will be removed in a future version
+   * @deprecated
    */
   @Deprecated
   @Override
   public void addAppenderMail(String module, String patternLayout, String mailHost, String mailFrom,
       String mailTo, String mailSubject) {
-
+    // does nothing
   }
 
   /**
-   * Does nothing.
+   * This method will be removed in a future version
+   * @deprecated
    */
   @Deprecated
   @Override
   public void removeAppender(String module, int typeOfAppender) {
+    // does nothing
   }
 
   /**
@@ -359,21 +456,18 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
   @Deprecated
   @Override
   public String[] getEndFileTrace(String nbLines) {
-    LineNumberReader lnr = null;
     File theFile = new File(errorDir + "/traces.txt");
-    List<String> ar = new ArrayList<String>();
-    try {
+    List<String> ar = new ArrayList<>();
+    try(LineNumberReader lnr = new LineNumberReader(new FileReader(theFile))) {
       // Get file length
       long fileLength = theFile.length();
       if (fileLength == 0L) {
-        return ArrayUtils.EMPTY_STRING_ARRAY;
+        return ArrayUtil.emptyStringArray();
       }
       int nbl = Integer.parseInt(nbLines);
-      lnr = new LineNumberReader(new FileReader(theFile));
-      if (nbl > 0) {
-        if ((nbl + 1) * 100 < fileLength) {
+
+      if (nbl > 0 && (nbl + 1) * 100 < fileLength) {
           lnr.skip(fileLength - ((nbl + 1) * 100));
-        }
       }
       String line = lnr.readLine();
       while (line != null) {
@@ -386,9 +480,7 @@ public class DefaultSilverpeasTrace implements SilverpeasTrace {
     } catch (Exception e) {
       error("silvertrace", "SilverTrace.getEndFileTrace()",
           "silvertrace.ERR_RUNTIME_ERROR_OCCUR", "File NOT FOUND :" + errorDir + "/traces.txt", e);
-      return ArrayUtils.EMPTY_STRING_ARRAY;
-    } finally {
-      IOUtils.closeQuietly(lnr);
+      return ArrayUtil.emptyStringArray();
     }
   }
 

@@ -61,6 +61,7 @@ public class DummyDataRecord implements DataRecord {
    */
   @Override
   public void setId(String externalId) {
+    // nothing to do
   }
 
   /**
@@ -94,7 +95,7 @@ public class DummyDataRecord implements DataRecord {
 
   @Override
   public String[] getFieldNames() {
-    return ArrayUtil.EMPTY_STRING_ARRAY;
+    return ArrayUtil.emptyStringArray();
   }
 
   @Override
@@ -104,6 +105,7 @@ public class DummyDataRecord implements DataRecord {
 
   @Override
   public void setLanguage(String language) {
+    // nothing to do
   }
 
   @Override

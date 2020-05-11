@@ -26,7 +26,6 @@ package org.silverpeas.core.contribution.attachment.util;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ws.rs.core.UriBuilder;
@@ -89,7 +88,7 @@ public class SharingContext {
    * @return
    */
   private String convertURLToSharedOne(String url) {
-    String[] parts = StringUtil.split(url, "/");
+    String[] parts = url.split("/");
     String name = parts[ArrayUtil.indexOf(parts, "name") + 1];
     String id = parts[ArrayUtil.indexOf(parts, "attachmentId") + 1];
     String instanceId = parts[ArrayUtil.indexOf(parts, "componentId") + 1];

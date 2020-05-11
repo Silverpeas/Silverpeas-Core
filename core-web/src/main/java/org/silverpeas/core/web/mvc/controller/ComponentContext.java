@@ -33,61 +33,61 @@ import org.silverpeas.core.util.StringUtil;
  */
 public class ComponentContext {
 
-  private String m_sCurSpaceName;
-  private String m_sCurSpaceId;
-  private String m_sCurCompoId;
-  private String m_sCurCompoName;
-  private String[] m_asCurProfile;
+  private String curSpaceName;
+  private String curSpaceId;
+  private String curCompoId;
+  private String curCompoName;
+  private String[] curProfile;
 
   ComponentContext() {
-    m_sCurSpaceName = "";
-    m_sCurSpaceId = "";
-    m_sCurCompoId = "";
-    m_sCurCompoName = "";
-    m_asCurProfile = ArrayUtil.EMPTY_STRING_ARRAY;
+    curSpaceName = "";
+    curSpaceId = "";
+    curCompoId = "";
+    curCompoName = "";
+    curProfile = ArrayUtil.emptyStringArray();
   }
 
   public void setCurrentSpaceName(String currentSpaceName) {
-    m_sCurSpaceName = StringUtil.defaultStringIfNotDefined(currentSpaceName);
+    curSpaceName = StringUtil.defaultStringIfNotDefined(currentSpaceName);
   }
 
   public String getCurrentSpaceName() {
-    return m_sCurSpaceName;
+    return curSpaceName;
   }
 
   public void setCurrentSpaceId(String currentSpaceId) {
-    m_sCurSpaceId = StringUtil.defaultStringIfNotDefined(currentSpaceId);
+    curSpaceId = StringUtil.defaultStringIfNotDefined(currentSpaceId);
   }
 
   public String getCurrentSpaceId() {
-    return m_sCurSpaceId;
+    return curSpaceId;
   }
 
   public void setCurrentComponentId(String clientComponentId) {
-    m_sCurCompoId = StringUtil.defaultStringIfNotDefined(clientComponentId);
+    curCompoId = StringUtil.defaultStringIfNotDefined(clientComponentId);
   }
 
   public String getCurrentComponentId() {
-    return m_sCurCompoId;
+    return curCompoId;
   }
 
   public void setCurrentComponentName(String currentComponentName) {
-    m_sCurCompoName = StringUtil.defaultStringIfNotDefined(currentComponentName);
+    curCompoName = StringUtil.defaultStringIfNotDefined(currentComponentName);
   }
 
   public String getCurrentComponentName() {
-    return m_sCurCompoName;
+    return curCompoName;
   }
 
   public String[] getCurrentProfile() {
-    return m_asCurProfile;
+    return curProfile;
   }
 
   void setCurrentProfile(String[] asCurrentProfile) {
     if (asCurrentProfile != null) {
-      m_asCurProfile = asCurrentProfile.clone();
+      curProfile = asCurrentProfile.clone();
     } else {
-      m_asCurProfile = ArrayUtil.EMPTY_STRING_ARRAY;
+      curProfile = ArrayUtil.emptyStringArray();
     }
   }
 }

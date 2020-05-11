@@ -47,6 +47,9 @@ public class StringUtil extends StringUtils {
       = "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
   private static final String HOUR_PATTERN = "^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$";
 
+  public static String emptyString() {
+    return EMPTY;
+  }
 
   public static boolean isDefined(String parameter) {
     return (parameter != null && !parameter.trim().isEmpty() && !"null".equalsIgnoreCase(parameter));

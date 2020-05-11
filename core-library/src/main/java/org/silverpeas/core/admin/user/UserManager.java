@@ -300,7 +300,7 @@ public class UserManager {
     try (Connection connection = DBUtil.openConnection()) {
       List<String> userIds = userDAO.getUserIdsByAccessLevel(connection, accessLevel);
       if (userIds.isEmpty()) {
-        return ArrayUtil.EMPTY_STRING_ARRAY;
+        return ArrayUtil.emptyStringArray();
       }
       return userIds.toArray(new String[userIds.size()]);
     } catch (Exception e) {
@@ -323,7 +323,7 @@ public class UserManager {
       List<String> userIds =
           userDAO.getUserIdsByAccessLevelInDomain(connection, accessLevel, sDomainId);
       if (userIds.isEmpty()) {
-        return ArrayUtil.EMPTY_STRING_ARRAY;
+        return ArrayUtil.emptyStringArray();
       }
       return userIds.toArray(new String[userIds.size()]);
     } catch (Exception e) {

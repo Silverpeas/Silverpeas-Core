@@ -95,7 +95,7 @@ public class DummyFieldTemplate implements FieldTemplate {
    */
   @Override
   public String[] getLanguages() {
-    return ArrayUtil.EMPTY_STRING_ARRAY;
+    return ArrayUtil.emptyStringArray();
   }
 
   /**

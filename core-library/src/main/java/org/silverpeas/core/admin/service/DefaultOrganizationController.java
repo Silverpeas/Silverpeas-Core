@@ -75,7 +75,7 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptyMap;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
-import static org.silverpeas.core.util.ArrayUtil.EMPTY_STRING_ARRAY;
+import static org.silverpeas.core.util.ArrayUtil.emptyStringArray;
 
 /**
  * This object is used by all the admin jsp such as SpaceManagement, UserManagement,
@@ -105,7 +105,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllSpaceIds();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
   }
 
@@ -115,7 +115,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllSubSpaceIds(sSpaceId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
   }
 
@@ -125,7 +125,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getSpaceNames(asSpaceIds);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
   }
 
@@ -155,7 +155,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAvailCompoIds(sClientSpaceId, sUserId);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -165,7 +165,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAvailCompoIds(sUserId);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -175,7 +175,7 @@ public class DefaultOrganizationController implements OrganizationController {
      return getAdminService().getAvailCompoIdsAtRoot(sClientSpaceId, sUserId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
   }
 
@@ -206,7 +206,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getComponentIdsByNameAndUserId(sUserId, sCompoName);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -216,7 +216,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getCompoId(sCompoName);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -580,7 +580,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAdministratorUserIds(fromUserId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -661,7 +661,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllSpaceIds(sUserId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -671,7 +671,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getUserManageableSpaceIds(sUserId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -681,7 +681,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllRootSpaceIds();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -691,7 +691,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllRootSpaceIds(sUserId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -701,7 +701,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllSubSpaceIds(sSpaceId, sUserId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -711,7 +711,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllComponentIds(sSpaceId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -721,7 +721,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllComponentIdsRecur(sSpaceId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -877,7 +877,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAllowedSubSpaceIds(userId, spaceFatherId);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -917,7 +917,7 @@ public class DefaultOrganizationController implements OrganizationController {
           .collect(Collectors.toList());
 
       if (profileIds.isEmpty()) {
-        return ArrayUtil.EMPTY_STRING_ARRAY;
+        return ArrayUtil.emptyStringArray();
       }
 
       userIds = getAdminService().searchUserIdsByProfile(profileIds);
@@ -941,7 +941,7 @@ public class DefaultOrganizationController implements OrganizationController {
       }
 
       if (profileIds.isEmpty()) {
-        return EMPTY_STRING_ARRAY;
+        return emptyStringArray();
       } // else return all users !!
 
       List<String> userIds = getAdminService().searchUserIdsByProfile(profileIds);
@@ -1003,7 +1003,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return listRes.toArray(new String[listRes.size()]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 
@@ -1018,7 +1018,7 @@ public class DefaultOrganizationController implements OrganizationController {
       return getAdminService().getAvailCompoIds(userId);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return emptyStringArray();
     }
   }
 

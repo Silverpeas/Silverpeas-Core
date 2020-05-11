@@ -374,7 +374,7 @@ class Admin implements Administration {
       cache.opAddSpace(getSpaceInstById(spaceInst.getLocalId()));
 
       // Instantiate the components
-      ArrayList<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
+      List<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
       for (ComponentInst componentInst : alCompoInst) {
         componentInst.setDomainFatherId(spaceInst.getId());
         addComponentInst(userId, componentInst);
@@ -456,7 +456,7 @@ class Admin implements Administration {
     }
 
     // Delete the components
-    ArrayList<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
+    List<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
     for (ComponentInst anAlCompoInst : alCompoInst) {
       deleteComponentInst(userId, getClientComponentId(anAlCompoInst), true);
     }
@@ -776,7 +776,7 @@ class Admin implements Administration {
   @Override
   public String[] getSpaceNames(String[] asClientSpaceIds) throws AdminException {
     if (asClientSpaceIds == null) {
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
     try {
       String[] asSpaceNames = new String[asClientSpaceIds.length];
@@ -925,7 +925,7 @@ class Admin implements Administration {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }
-    return StringUtil.EMPTY;
+    return StringUtil.emptyString();
   }
 
   @Override
@@ -2131,7 +2131,7 @@ class Admin implements Administration {
   @Override
   public String[] getGroupNames(String[] groupIds) throws AdminException {
     if (groupIds == null) {
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
     String[] asGroupNames = new String[groupIds.length];
     for (int nI = 0; nI < groupIds.length; nI++) {
@@ -2947,7 +2947,7 @@ class Admin implements Administration {
   public String[] getUserIdsOfDomain(String domainId) throws AdminException {
     try {
       if ("-1".equals(domainId)) {
-        return ArrayUtil.EMPTY_STRING_ARRAY;
+        return ArrayUtil.emptyStringArray();
       }
       List<String> userIds = userManager.getAllUserIdsInDomain(domainId);
       return userIds.toArray(new String[0]);
@@ -3864,7 +3864,7 @@ class Admin implements Administration {
       return arrayListToString(removeTuples(alProfiles));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
   }
 
@@ -4028,7 +4028,7 @@ class Admin implements Administration {
   // -------------------------------------------------------------------------
   private String[] arrayListToString(ArrayList<String> al) {
     if (al == null) {
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
 
     String[] as = new String[al.size()];
@@ -4300,7 +4300,7 @@ class Admin implements Administration {
     // We must first add the group with no child. Then, the childs will be added
     // during the internal synchronization function call
     String[] specificIds = gr.getUserIds();
-    gr.setUserIds(ArrayUtil.EMPTY_STRING_ARRAY);
+    gr.setUserIds(ArrayUtil.emptyStringArray());
     String groupId = addGroup(gr, true);
     gr.setId(groupId);
     gr.setUserIds(specificIds);
@@ -5399,7 +5399,7 @@ class Admin implements Administration {
    * @param listComponents
    * @return
    */
-  private String renameComponentName(String label, ArrayList<ComponentInst> listComponents) {
+  private String renameComponentName(String label, List<ComponentInst> listComponents) {
     String newComponentLabel = label;
     for (ComponentInst componentInst : listComponents) {
       if (componentInst.getLabel().equals(newComponentLabel)) {
@@ -5532,7 +5532,7 @@ class Admin implements Administration {
   @NotNull
   private SpaceInst createPasteSpace(final PasteDetail pasteDetail, final SpaceInst oldSpace,
       final String toSpaceId) throws AdminException {
-    SpaceInst newSpace = oldSpace.clone();
+    SpaceInst newSpace = oldSpace.copy();
     newSpace.setLocalId(-1);
     List<String> newBrotherIds;
     if (StringUtil.isDefined(toSpaceId)) {

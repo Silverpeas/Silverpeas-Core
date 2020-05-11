@@ -27,13 +27,14 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 @XmlRootElement(name = "label")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Label {
+public class Label implements Serializable {
 
   @XmlElement(name = "labelName")
-  private String label = "";
+  private String name = "";
   @XmlElement
   private String language = "";
 
@@ -41,12 +42,12 @@ public class Label {
   }
 
   public Label(String label, String language) {
-    this.label = label;
+    this.name = label;
     this.language = language;
   }
 
   public String getLabel() {
-    return this.label;
+    return this.name;
   }
 
   public String getLanguage() {
@@ -54,7 +55,7 @@ public class Label {
   }
 
   public void setLabel(String label) {
-    this.label = label;
+    this.name = label;
   }
 
   public void setLanguage(String language) {

@@ -1141,7 +1141,7 @@ public class ProcessInstanceImpl
 
   public String[] getActiveStates() {
     if (CollectionUtil.isEmpty(activeStates)) {
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     } else {
       List<String> stateNames = new ArrayList<>();
       for (ActiveState state : activeStates) {

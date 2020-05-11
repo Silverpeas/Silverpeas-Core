@@ -23,14 +23,13 @@
  */
 package org.silverpeas.core.contribution.content.form.field;
 
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.AbstractField;
 import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +48,7 @@ public class MultipleUserField extends AbstractField {
   /**
    * The text field type name.
    */
-  static public final String TYPE = "multipleUser";
+  public static final String TYPE = "multipleUser";
 
   /**
    * Returns the type name.
@@ -63,6 +62,7 @@ public class MultipleUserField extends AbstractField {
    * The no parameters constructor
    */
   public MultipleUserField() {
+    // nothing to do
   }
 
   /**
@@ -134,7 +134,8 @@ public class MultipleUserField extends AbstractField {
    * Does nothing since a user reference can't be computed from a user name.
    */
   @Override
-  public void setValue(String value) throws FormException {
+  public void setValue(String value) {
+    // nothing to do
   }
 
   /**
@@ -142,7 +143,8 @@ public class MultipleUserField extends AbstractField {
    * @throws FormException
    */
   @Override
-  public void setValue(String value, String language) throws FormException {
+  public void setValue(String value, String language) {
+    // nothing to do
   }
 
   /**
@@ -185,7 +187,7 @@ public class MultipleUserField extends AbstractField {
         userIds[i] = (values[i] == null) ? "" : values[i].getId();
       }
     } else if (value == null) {
-      this.userIds = ArrayUtil.EMPTY_STRING_ARRAY;
+      this.userIds = ArrayUtil.emptyStringArray();
     } else {
       throw new FormException("MultipleUserField.setObjectValue", "form.EXP_NOT_AN_USERS_ARRAY");
     }
@@ -207,7 +209,7 @@ public class MultipleUserField extends AbstractField {
     if (userIds == null) {
       return "";
     }
-    return StringUtil.join(userIds, ',');
+    return String.join(",", userIds);
   }
 
   /**

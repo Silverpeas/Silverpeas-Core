@@ -277,7 +277,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     ToDoHeader todo = getToDoHeader(id);
     try {
       // remove attendees and associated indexes
-      setToDoAttendees(id, ArrayUtil.EMPTY_STRING_ARRAY);
+      setToDoAttendees(id, ArrayUtil.emptyStringArray());
       ToDoDAO.removeToDo(id);
     } catch (Exception e) {
       throw new CalendarRuntimeException("Cannot delete todo " + id, e);
@@ -454,7 +454,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
     try {
       JournalHeader journal = getJournalHeader(journalId);
       // remove attendees and associated indexes
-      setJournalAttendees(journalId, ArrayUtil.EMPTY_STRING_ARRAY);
+      setJournalAttendees(journalId, ArrayUtil.emptyStringArray());
       CategoryDAO.removeJournal(con, journalId);
       getJournalDAO().removeJournal(con, journalId);
       removeIndex(journal, journal.getDelegatorId());

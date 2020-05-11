@@ -176,7 +176,7 @@ public class ComponentInstManager {
     int retry = 0;
     String deletedComponentName = null;
     while (!nameOK) {
-      String componentName = componentInst.getLabel() + Admin.Constants.BASKET_SUFFIX;
+      String componentName = componentInst.getLabel() + Administration.Constants.BASKET_SUFFIX;
       if (retry > 0) {
         componentName += " " + retry;
       }
@@ -522,7 +522,7 @@ public class ComponentInstManager {
           .getAllMatchingComponentInstances(
           cir);
       if (cirs == null) {
-        return ArrayUtil.EMPTY_STRING_ARRAY;
+        return ArrayUtil.emptyStringArray();
       }
 
       String[] compoIds = new String[cirs.length];

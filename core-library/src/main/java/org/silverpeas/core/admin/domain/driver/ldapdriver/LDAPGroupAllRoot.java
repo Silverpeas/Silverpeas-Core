@@ -86,7 +86,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
 
   @Override
   public String[] getGroupMemberGroupIds(String lds, String groupId) {
-    return ArrayUtil.EMPTY_STRING_ARRAY;
+    return ArrayUtil.emptyStringArray();
   }
 
   @Override

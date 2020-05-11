@@ -382,10 +382,8 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   @SuppressWarnings("unchecked")
   public Field getEmptyField(int occurrence) throws FormException {
     try {
-      Class[] noParameterClass = ArrayUtil.EMPTY_CLASS_ARRAY;
-      Constructor constructor = fieldImpl.getConstructor(noParameterClass);
-      Object[] noParameter = ArrayUtil.EMPTY_OBJECT_ARRAY;
-      Field field = (Field) constructor.newInstance(noParameter);
+      Constructor<Field> constructor = fieldImpl.getConstructor();
+      Field field = constructor.newInstance();
       field.setName(fieldName);
       field.setOccurrence(occurrence);
       return field;
@@ -424,7 +422,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   @Override
   public String[] getLanguages() {
     if (labels == null) {
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
 
     return labels.keySet().stream().map(labels::get).toArray(String[]::new);

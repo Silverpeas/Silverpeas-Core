@@ -101,18 +101,21 @@ public class SqlUserSelectorByCriteriaBuilder {
       final UserDetailsSearchCriteria criteria) {
     if (criteria.isCriterionOnNameSet()) {
       String normalizedName =
-          criteria.getCriterionOnName().replaceAll("'", "''").replaceAll("\\*", "%");
+          criteria.getCriterionOnName().replace("'", "''")
+              .replaceAll("\\*", "%");
       query.and("(lower(st_user.firstName) like lower(?) OR lower(st_user.lastName) like lower(?))",
           normalizedName, normalizedName);
     } else {
       if (criteria.isCriterionOnFirstNameSet()) {
         String normalizedName =
-            criteria.getCriterionOnFirstName().replaceAll("'", "''").replaceAll("\\*", "%");
+            criteria.getCriterionOnFirstName().replace("'", "''")
+                .replaceAll("\\*", "%");
         query.and("lower(st_user.firstName) like lower(?)", normalizedName);
       }
       if (criteria.isCriterionOnLastNameSet()) {
         String normalizedName =
-            criteria.getCriterionOnLastName().replaceAll("'", "''").replaceAll("\\*", "%");
+            criteria.getCriterionOnLastName().replace("'", "''")
+                .replaceAll("\\*", "%");
         query.and("lower(st_user.lastName) like lower(?)", normalizedName);
       }
     }
