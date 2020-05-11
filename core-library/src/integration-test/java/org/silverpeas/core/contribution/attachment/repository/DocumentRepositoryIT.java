@@ -45,6 +45,7 @@ import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.Pair;
 
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -58,9 +59,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.YOUNGEST_TO_OLDEST_MANUAL_REORDER_START;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
 
@@ -102,12 +106,106 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
       documentRepository.storeContent(document, content);
+      session.save();
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
       SimpleDocument doc = documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
       assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getOrder(), is(0));
+      checkEnglishSimpleDocument(doc);
+      // second document
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      attachment = createEnglishSimpleAttachment();
+      creationDate = attachment.getCreated();
+      document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
+      result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      session.save();
+      expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      doc = documentRepository.findDocumentById(session, expResult, language);
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
+      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getOrder(), is(1));
+      checkEnglishSimpleDocument(doc);
+      // third document
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      attachment = createEnglishSimpleAttachment();
+      creationDate = attachment.getCreated();
+      document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
+      result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      session.save();
+      expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      doc = documentRepository.findDocumentById(session, expResult, language);
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
+      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getOrder(), is(2));
+      checkEnglishSimpleDocument(doc);
+    }
+  }
+
+  /**
+   * Test of createDocument method, of class DocumentRepository.
+   */
+  @Test
+  public void testCreateDocumentWhenSortingFromYoungestToOldestOnUI() throws Exception {
+    attachmentSettings.put("attachment.list.order", "-1");
+    try (JcrSession session = openSystemSession()) {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      String language = "en";
+      InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      Date creationDate = attachment.getCreated();
+      String foreignId = "node18";
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
+      SimpleDocumentPK result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      session.save();
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      SimpleDocument doc = documentRepository.findDocumentById(session, expResult, language);
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
+      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getOrder(), is(0));
+      checkEnglishSimpleDocument(doc);
+      // second document
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      attachment = createEnglishSimpleAttachment();
+      creationDate = attachment.getCreated();
+      document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
+      result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      session.save();
+      expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      doc = documentRepository.findDocumentById(session, expResult, language);
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
+      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getOrder(), is(1));
+      checkEnglishSimpleDocument(doc);
+      // third document
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      attachment = createEnglishSimpleAttachment();
+      creationDate = attachment.getCreated();
+      document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
+      result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      session.save();
+      expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      doc = documentRepository.findDocumentById(session, expResult, language);
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
+      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getOrder(), is(2));
       checkEnglishSimpleDocument(doc);
     }
   }
@@ -226,6 +324,157 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
           .findLast(session, instanceId, foreignId, DocumentType.attachment);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(oldSilverpeasId));
+    }
+  }
+
+  /**
+   * Test of findLast method, of class DocumentRepository.
+   */
+  @Test
+  public void testGetMinMaxIndexes() throws Exception {
+    final String foreignId = "node18";
+    try (JcrSession session = openSystemSession()) {
+      // can not get MIN MAX because it does not exist document into JCR for the foreignId
+      Optional<Pair<Integer, Integer>> minMax = documentRepository
+          .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
+      assertThat(minMax, notNullValue());
+      assertThat(minMax.isPresent(), is(false));
+      // registering now the first document into JCR
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+          Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      SimpleDocumentPK result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      session.save();
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      // getting MIN MAX with only one document
+      minMax = documentRepository
+          .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
+      assertThat(minMax, notNullValue());
+      assertThat(minMax.isPresent(), is(true));
+      assertThat(minMax.get().getFirst(), is(10));
+      assertThat(minMax.get().getSecond(), is(10));
+      // registering now a second document into JCR
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+      attachment = createFrenchSimpleAttachment();
+      document = new SimpleDocument(emptyId, foreignId, 5, false, attachment);
+      result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      session.save();
+      expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      // getting MIN MAX with two documents
+      minMax = documentRepository
+          .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
+      assertThat(minMax, notNullValue());
+      assertThat(minMax.isPresent(), is(true));
+      assertThat(minMax.get().getFirst(), is(5));
+      assertThat(minMax.get().getSecond(), is(10));
+      // registering now several documents into JCR
+      IntStream.of(0, -6, 30, 40, 10000000, -3890000, 78, 1, 10).forEach(i -> {
+        final SimpleDocumentPK _emptyId = new SimpleDocumentPK("-1", instanceId);
+        final ByteArrayInputStream _content = new ByteArrayInputStream(("With index order " + i).getBytes(Charsets.UTF_8));
+        final SimpleAttachment _attachment = createFrenchSimpleAttachment();
+        final SimpleDocument _document = new SimpleDocument(_emptyId, foreignId, i, false, _attachment);
+        try {
+          final SimpleDocumentPK _result = documentRepository.createDocument(session, _document);
+          documentRepository.storeContent(_document, _content);
+          session.save();
+          final SimpleDocumentPK _expResult = new SimpleDocumentPK(_result.getId(), instanceId);
+          assertThat(_result, is(_expResult));
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      });
+      // getting MIN MAX with two documents
+      minMax = documentRepository
+          .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
+      assertThat(minMax, notNullValue());
+      assertThat(minMax.isPresent(), is(true));
+      assertThat(minMax.get().getFirst(), is(1));
+      // because of order index increment rule, after registering document with order 10000000
+      // the next one with index -3890000 is indeed registered with the max order + 1
+      assertThat(minMax.get().getSecond(), is(10000001));
+    }
+  }
+
+  /**
+   * Test of findLast method, of class DocumentRepository.
+   */
+  @Test
+  public void testGetMinMaxIndexesIntoContextWhereDocumentsAreSortedFromYoungestToOldestOnTheUI()
+      throws Exception {
+    attachmentSettings.put("attachment.list.order", "-1");
+    final String foreignId = "node18";
+    try (JcrSession session = openSystemSession()) {
+      // can not get MIN MAX because it does not exist document into JCR for the foreignId
+      Optional<Pair<Integer, Integer>> minMax = documentRepository
+          .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
+      assertThat(minMax, notNullValue());
+      assertThat(minMax.isPresent(), is(false));
+      // registering now the first document into JCR
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+          Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId,
+          YOUNGEST_TO_OLDEST_MANUAL_REORDER_START, false, attachment);
+      SimpleDocumentPK result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      session.save();
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      // getting MIN MAX with only one document
+      minMax = documentRepository
+          .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
+      assertThat(minMax, notNullValue());
+      assertThat(minMax.isPresent(), is(true));
+      assertThat(minMax.get().getFirst(), is(YOUNGEST_TO_OLDEST_MANUAL_REORDER_START));
+      assertThat(minMax.get().getSecond(), is(YOUNGEST_TO_OLDEST_MANUAL_REORDER_START));
+      // registering now a second document into JCR
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+      attachment = createFrenchSimpleAttachment();
+      document = new SimpleDocument(emptyId, foreignId, YOUNGEST_TO_OLDEST_MANUAL_REORDER_START - 5, false, attachment);
+      result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      session.save();
+      expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      // getting MIN MAX with two documents
+      minMax = documentRepository
+          .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
+      assertThat(minMax, notNullValue());
+      assertThat(minMax.isPresent(), is(true));
+      assertThat(minMax.get().getFirst(), is(YOUNGEST_TO_OLDEST_MANUAL_REORDER_START - 5));
+      assertThat(minMax.get().getSecond(), is(YOUNGEST_TO_OLDEST_MANUAL_REORDER_START));
+      // registering now several documents into JCR
+      IntStream.of(-1, -2, -3, -4, -5, -6, -7, -8).forEach(i -> {
+        final SimpleDocumentPK _emptyId = new SimpleDocumentPK("-1", instanceId);
+        final ByteArrayInputStream _content = new ByteArrayInputStream(("With index order " + i).getBytes(Charsets.UTF_8));
+        final SimpleAttachment _attachment = createFrenchSimpleAttachment();
+        final SimpleDocument _document = new SimpleDocument(_emptyId, foreignId, i, false, _attachment);
+        try {
+          final SimpleDocumentPK _result = documentRepository.createDocument(session, _document);
+          documentRepository.storeContent(_document, _content);
+          session.save();
+          final SimpleDocumentPK _expResult = new SimpleDocumentPK(_result.getId(), instanceId);
+          assertThat(_result, is(_expResult));
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      });
+      // getting MIN MAX with two documents
+      minMax = documentRepository
+          .getMinMaxOrderIndexes(session, instanceId, foreignId, DocumentType.attachment);
+      assertThat(minMax, notNullValue());
+      assertThat(minMax.isPresent(), is(true));
+      assertThat(minMax.get().getFirst(), is(YOUNGEST_TO_OLDEST_MANUAL_REORDER_START - 5 - 8));
+      assertThat(minMax.get().getSecond(), is(YOUNGEST_TO_OLDEST_MANUAL_REORDER_START));
     }
   }
 

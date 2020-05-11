@@ -27,4 +27,10 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class ArrayUtil extends ArrayUtils {
 
+  /**
+   * @see ArrayUtils#contains(Object[], Object)
+   */
+  public static boolean contains(final Object[] array, final Object objectToFind) {
+    return ArrayUtils.contains(array, objectToFind);
+  }
 }

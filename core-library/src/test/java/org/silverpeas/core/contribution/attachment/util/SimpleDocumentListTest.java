@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.util;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -30,24 +31,26 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.test.UnitTest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @UnitTest
 public class SimpleDocumentListTest {
 
   @Test
-  public void removeLanguageFallbacksOnEmptyList() {
-    new SimpleDocumentList().setQueryLanguage("en").removeLanguageFallbacks();
+  void removeLanguageFallbacksOnEmptyList() {
+    final SimpleDocumentList list = new SimpleDocumentList().setQueryLanguage("en").removeLanguageFallbacks();
+    assertThat(list, notNullValue());
   }
 
   @Test
-  public void removeLanguageFallbacksOnListWithOneElement() {
+  void removeLanguageFallbacksOnListWithOneElement() {
     assertThrows(NullPointerException.class, () -> {
       //noinspection MismatchedQueryAndUpdateOfCollection
       SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>().setQueryLanguage("en");
@@ -57,7 +60,7 @@ public class SimpleDocumentListTest {
   }
 
   @Test
-  public void removeLanguageFallbacksOnListWithOneElementButNoLanguageSet() {
+  void removeLanguageFallbacksOnListWithOneElementButNoLanguageSet() {
     //noinspection MismatchedQueryAndUpdateOfCollection
     SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>().setQueryLanguage("");
     test.add(new SimpleDocument());
@@ -66,7 +69,7 @@ public class SimpleDocumentListTest {
   }
 
   @Test
-  public void removeLanguageFallbacksOnListWithSeveralElementsButNoLanguageSet() {
+  void removeLanguageFallbacksOnListWithSeveralElementsButNoLanguageSet() {
     //noinspection MismatchedQueryAndUpdateOfCollection
     SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>().setQueryLanguage(null);
     int i = 1;
@@ -91,7 +94,7 @@ public class SimpleDocumentListTest {
   }
 
   @Test
-  public void removeLanguageFallbacksOnListWithSeveralElements() {
+  void removeLanguageFallbacksOnListWithSeveralElements() {
     //noinspection MismatchedQueryAndUpdateOfCollection
     SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>().setQueryLanguage("en");
     int i = 1;
@@ -116,16 +119,18 @@ public class SimpleDocumentListTest {
   }
 
   @Test
-  public void orderByLanguageAndLastUpdateOnEmptyList() {
-    new SimpleDocumentList().orderByLanguageAndLastUpdate("fr", "en");
+  void orderByLanguageAndLastUpdateOnEmptyList() {
+    final SimpleDocumentList list = new SimpleDocumentList().orderByLanguageAndLastUpdate("fr", "en");
+    assertThat(list, notNullValue());
   }
 
   @Test
-  public void orderByLanguageAndLastUpdateOnListWithOneElement() {
+  void orderByLanguageAndLastUpdateOnListWithOneElement() {
     //noinspection MismatchedQueryAndUpdateOfCollection
     SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>();
     test.add(new SimpleDocument());
     test.orderByLanguageAndLastUpdate("fr", "en");
+    assertThat(test, notNullValue());
   }
 
   /**
@@ -133,7 +138,7 @@ public class SimpleDocumentListTest {
    * @see #orderByLanguageAndLastUpdateOnListWithOneElement()
    */
   @Test
-  public void orderByLanguageAndLastUpdateOnListWithTwoElements() {
+  void orderByLanguageAndLastUpdateOnListWithTwoElements() {
     assertThrows(NullPointerException.class, () -> {
       //noinspection MismatchedQueryAndUpdateOfCollection
       SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>();
@@ -147,7 +152,7 @@ public class SimpleDocumentListTest {
    * Default platform language priorities : fr, en, de
    */
   @Test
-  public void orderByLanguageAndLastUpdateOnListWithSeveralElements() {
+  void orderByLanguageAndLastUpdateOnListWithSeveralElements() {
     //noinspection MismatchedQueryAndUpdateOfCollection
     SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>();
     int i = 1;
@@ -180,6 +185,105 @@ public class SimpleDocumentListTest {
     assertThat(ids, contains(12, 11, 9, 8, 6, 5, 1, 3, 10, 7, 4, 2));
   }
 
+  @Test
+  void isNotManuallySortedWhenEmpty() {
+    final SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>();
+    assertThat(test, empty());
+    assertThat(test.isManuallySorted(), is(false));
+  }
+
+  @Test
+  void isNotManuallySortedWhenContainingOnlyOne() {
+    final SimpleDocumentList<SimpleDocument> test = createDocumentList(1, 1);
+    assertThat(test, hasSize(1));
+    assertThat(test.isManuallySorted(), is(false));
+  }
+
+  @Test
+  void isNotManuallySortedWithSeveralDocuments() {
+    // From 2 to 100 documents
+    IntStream.of(2, 3, 4, 5, 10, 50).forEach(d ->
+        // For each list size, applying a stepOrder from 1 to 100
+        IntStream.of(1, 2, 3, 4, 5, 10, 50, 1000).forEach(s -> {
+          final SimpleDocumentList<SimpleDocument> test = createDocumentList(d, s);
+          assertThat(
+              "For doc size " + d + " with stepOrder " + s + " the list should not be manually sorted",
+              test.isManuallySorted(), is(false));
+        }));
+    // From 2 to 100 documents
+    IntStream.of(2, 3, 4, 5, 10, 50).forEach(d ->
+        // For each list size, applying a stepOrder from 1 to 100
+        IntStream.of(1, 2, 3, 4, 5, 10, 50, 1000).forEach(s -> {
+          final SimpleDocumentList<SimpleDocument> source = createDocumentList(d, s);
+          IntStream.rangeClosed(1, source.size()).forEach(nbSwap -> {
+            final SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>(source);
+            Collections.shuffle(test);
+            assertThat("For doc size " + d + " with stepOrder " + s +
+                " the list should not be manually sorted", test.isManuallySorted(), is(false));
+          });
+        }));
+  }
+
+  @Test
+  void isManuallySortedWithSeveralDocuments() {
+    // From 2 to 100 documents
+    IntStream.of(2, 3, 4, 5, 10, 50).forEach(d ->
+        // For each list size, applying a stepOrder from 1 to 100
+        IntStream.of(1, 2, 3, 4, 5, 10, 50, 1000).forEach(s -> {
+          final SimpleDocumentList<SimpleDocument> test = createDocumentList(d, s);
+          for (final SimpleDocument doc : test) {
+            doc.setOrder(doc.getOrder() + AttachmentSettings.YOUNGEST_TO_OLDEST_MANUAL_REORDER_START);
+          }
+          assertThat(
+              "For doc size " + d + " with stepOrder " + s + " the list should not be manually sorted",
+              test.isManuallySorted(), is(true));
+        }));
+    // From 2 to 100 documents
+    IntStream.of(2, 3, 4, 5, 10, 50).forEach(d ->
+        // For each list size, applying a stepOrder from 1 to 100
+        IntStream.of(1, 2, 3, 4, 5, 10, 50, 1000).forEach(s -> {
+          final SimpleDocumentList<SimpleDocument> source = createDocumentList(d, s);
+          IntStream.rangeClosed(1, source.size()).forEach(nbSwap -> {
+            final SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>(source);
+            final SimpleDocument first = test.get(0);
+            Collections.shuffle(test);
+            if (!first.getId().equals(test.get(0).getId())) {
+              setOrder(test, s);
+              assertThat("For doc size " + d + " with stepOrder " + s +
+                  " the list should be manually sorted", test.isManuallySorted(), is(true));
+            }
+          });
+        }));
+  }
+
+  @Test
+  void isManuallySortedForeignIdError() {
+    final SimpleDocumentList<SimpleDocument> test = createDocumentList(5, 1);
+    test.get(2).setForeignId("badForeignId");
+    Assertions.assertThrows(IllegalStateException.class,
+        () -> assertThat(test.isManuallySorted(), is(false)));
+  }
+
+  private SimpleDocumentList<SimpleDocument> createDocumentList(final int nbDocs,
+      final int stepOrder) {
+    SimpleDocumentList<SimpleDocument> test = new SimpleDocumentList<>();
+    IntStream.rangeClosed(1, nbDocs)
+        .mapToObj(i -> {
+          final SimpleDocument doc = createDocument(i, "fr", createDate("2014-01-01"));
+          doc.setForeignId("aForeignId");
+          return doc;
+        })
+        .forEach(test::add);
+    setOrder(test, stepOrder);
+    return test;
+  }
+
+  private void setOrder(final SimpleDocumentList<SimpleDocument> test, final int step) {
+    for (int z = 0 ; z < test.size() ; z++) {
+      test.get(z).setOrder(z * step);
+    }
+  }
+
   private static List<Integer> extractIds(List<SimpleDocument> list) {
     List<Integer> ids = new ArrayList<>(list.size());
     for (SimpleDocument document : list) {
@@ -208,6 +312,7 @@ public class SimpleDocumentListTest {
       document = new SimpleDocument();
     }
     document.setId(String.valueOf(id));
+    document.setOldSilverpeasId(id);
     document.setAttachment(new SimpleAttachment());
     document.setLanguage(language);
     if (id % 5 == 0) {

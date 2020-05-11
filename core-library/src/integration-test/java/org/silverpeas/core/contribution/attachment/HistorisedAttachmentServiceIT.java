@@ -26,7 +26,6 @@ package org.silverpeas.core.contribution.attachment;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
-import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -61,7 +60,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -98,7 +96,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
   }
 
   @Before
-  public void loadJcr() throws RepositoryException, IOException {
+  public void loadJcr() throws Exception {
     SchedulerInitializer.get().init(SchedulerInitializer.SchedulerType.VOLATILE);
     try (JcrSession session = openSystemSession()) {
       if (!session.getRootNode().hasNode(instanceId)) {
@@ -468,79 +466,196 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
   }
 
   /**
-   * Test of reorderAttachments method, of class AttachmentService.
-   *
-   * @throws LoginException
-   * @throws RepositoryException
-   * @throws IOException
+   * Test of reorderAttachments and createAttachment methods, of class AttachmentService.
    */
   @Test
-  public void testReorderAttachments() throws RepositoryException,
-      IOException {
+  public void testReorderAttachmentsAndCreateAttachment() {
     ResourceReference foreignKey = new ResourceReference("node36", instanceId);
-    try (JcrSession session = openSystemSession()) {
-      Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      String foreignId = foreignKey.getId();
-      SimpleDocument document1 = new HistorisedDocument(emptyId, foreignId, 10,
-          new SimpleAttachment("test.odp", "fr", "Mon document de test 1",
-          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
-      InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      SimpleDocumentPK id = instance.createAttachment(document1, content).getPk();
-      document1 = instance.searchDocumentById(id, "fr");
+    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+    SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+    String foreignId = foreignKey.getId();
+    SimpleDocument document1 = new HistorisedDocument(emptyId, foreignId, 10,
+        new SimpleAttachment("test.odp", "fr", "Mon document de test 1",
+        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+    InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+    SimpleDocumentPK id = instance.createAttachment(document1, content).getPk();
+    document1 = instance.searchDocumentById(id, "fr");
 
-      emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document2 = new HistorisedDocument(emptyId, foreignId, 5,
-          new SimpleAttachment("test.odp", "fr", "Mon document de test 2",
-          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
-      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      id = instance.createAttachment(document2, content).getPk();
-      document2  = instance.searchDocumentById(id, "fr");
+    emptyId = new SimpleDocumentPK("-1", instanceId);
+    SimpleDocument document2 = new HistorisedDocument(emptyId, foreignId, 5,
+        new SimpleAttachment("test.odp", "fr", "Mon document de test 2",
+        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+    content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+    id = instance.createAttachment(document2, content).getPk();
+    document2  = instance.searchDocumentById(id, "fr");
 
-      emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document3 = new HistorisedDocument(emptyId, foreignId, 100,
-          new SimpleAttachment("test.odp", "fr", "Mon document de test 3",
-          "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
-      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      id = instance.createAttachment(document3, content).getPk();
-      document3 = instance.searchDocumentById(id, "fr");
+    emptyId = new SimpleDocumentPK("-1", instanceId);
+    SimpleDocument document3 = new HistorisedDocument(emptyId, foreignId, 100,
+        new SimpleAttachment("test.odp", "fr", "Mon document de test 3",
+        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+    content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+    id = instance.createAttachment(document3, content).getPk();
+    document3 = instance.searchDocumentById(id, "fr");
 
-      emptyId = new SimpleDocumentPK("-1", instanceId);
-      foreignId = "node49";
-      SimpleDocument document4 = new HistorisedDocument(emptyId, foreignId, 0,
-          new SimpleAttachment("test.docx", "en", "My test document 4",
-          "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-          MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
-      content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      id = instance.createAttachment(document4, content).getPk();
-      document4 = instance.searchDocumentById(id, "en");
+    emptyId = new SimpleDocumentPK("-1", instanceId);
+    SimpleDocument document4 = new HistorisedDocument(emptyId, "node49", 0,
+        new SimpleAttachment("test.docx", "en", "My test document 4",
+        "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
+        MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
+    content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+    id = instance.createAttachment(document4, content).getPk();
+    document4 = instance.searchDocumentById(id, "en");
 
-      session.save();
-      List<SimpleDocument> result =
-          instance.listDocumentsByForeignKey(foreignKey, "fr");
-      assertThat(result, is(notNullValue()));
-      assertThat(result, hasSize(3));
-      assertThat(result.get(0), SimpleDocumentMatcher.matches(document2));
-      assertThat(result.get(1), SimpleDocumentMatcher.matches(document1));
-      assertThat(result.get(2), SimpleDocumentMatcher.matches(document3));
-      List<SimpleDocumentPK> reorderedList = new ArrayList<>(3);
-      reorderedList.add(document1.getPk());
-      reorderedList.add(document2.getPk());
-      reorderedList.add(document3.getPk());
-      instance.reorderAttachments(reorderedList);
-      result = instance.listDocumentsByForeignKey(foreignKey, "fr");
-      assertThat(result, is(notNullValue()));
-      assertThat(result, hasSize(3));
-      document1.setOrder(5);
-      document2.setOrder(10);
-      document3.setOrder(15);
-      assertThat(result.get(0), SimpleDocumentMatcher.matches(document1));
-      assertThat(result.get(1), SimpleDocumentMatcher.matches(document2));
-      assertThat(result.get(2), SimpleDocumentMatcher.matches(document3));
-    }
+    List<SimpleDocument> result =
+        instance.listDocumentsByForeignKey(foreignKey, "fr");
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(3));
+    assertThat(result.get(0), SimpleDocumentMatcher.matches(document2));
+    assertThat(result.get(1), SimpleDocumentMatcher.matches(document1));
+    assertThat(result.get(2), SimpleDocumentMatcher.matches(document3));
+    // manual sorting
+    List<SimpleDocumentPK> reorderedList = new ArrayList<>(3);
+    reorderedList.add(document1.getPk());
+    reorderedList.add(document2.getPk());
+    reorderedList.add(document3.getPk());
+    instance.reorderAttachments(reorderedList);
+    result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(3));
+    document1.setOrder(1);
+    document2.setOrder(2);
+    document3.setOrder(3);
+    assertThat(result.get(0), SimpleDocumentMatcher.matches(document1));
+    assertThat(result.get(1), SimpleDocumentMatcher.matches(document2));
+    assertThat(result.get(2), SimpleDocumentMatcher.matches(document3));
+    // Create new document
+    emptyId = new SimpleDocumentPK("-1", instanceId);
+    SimpleDocument document5 = new HistorisedDocument(emptyId, foreignId, 0,
+        new SimpleAttachment("test.odp", "fr", "Mon document de test 5",
+            "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+            MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+    content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+    id = instance.createAttachment(document5, content).getPk();
+    document5 = instance.searchDocumentById(id, "fr");
+    assertThat(document5.getOrder(), is(4));
+    // Getting default sorting according to UI
+    reorderedList = new ArrayList<>(3);
+    reorderedList.add(document2.getPk());
+    reorderedList.add(document1.getPk());
+    reorderedList.add(document3.getPk());
+    reorderedList.add(document5.getPk());
+    instance.reorderAttachments(reorderedList);
+    result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(4));
+    document2.setOrder(1);
+    document1.setOrder(2);
+    document3.setOrder(3);
+    document5.setOrder(4);
+    assertThat(result.get(0), SimpleDocumentMatcher.matches(document2));
+    assertThat(result.get(1), SimpleDocumentMatcher.matches(document1));
+    assertThat(result.get(2), SimpleDocumentMatcher.matches(document3));
+    assertThat(result.get(3), SimpleDocumentMatcher.matches(document5));
+  }
+
+  /**
+   * Test of reorderAttachments and createAttachment methods, of class AttachmentService.
+   */
+  @Test
+  public void testReorderAttachmentsAndCreateAttachmentWhenSortedFromYoungestToOldestOnUI() {
+    attachmentSettings.put("attachment.list.order", "-1");
+    ResourceReference foreignKey = new ResourceReference("node36", instanceId);
+    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+    SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+    String foreignId = foreignKey.getId();
+    SimpleDocument document1 = new HistorisedDocument(emptyId, foreignId, 5,
+        new SimpleAttachment("test.odp", "fr", "Mon document de test 1",
+        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+    InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+    SimpleDocumentPK id = instance.createAttachment(document1, content).getPk();
+    document1 = instance.searchDocumentById(id, "fr");
+
+    emptyId = new SimpleDocumentPK("-1", instanceId);
+    SimpleDocument document2 = new HistorisedDocument(emptyId, foreignId, 50,
+        new SimpleAttachment("test.odp", "fr", "Mon document de test 2",
+        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+    content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+    id = instance.createAttachment(document2, content).getPk();
+    document2  = instance.searchDocumentById(id, "fr");
+
+    emptyId = new SimpleDocumentPK("-1", instanceId);
+    SimpleDocument document3 = new HistorisedDocument(emptyId, foreignId, 100,
+        new SimpleAttachment("test.odp", "fr", "Mon document de test 3",
+        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+    content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+    id = instance.createAttachment(document3, content).getPk();
+    document3 = instance.searchDocumentById(id, "fr");
+
+    emptyId = new SimpleDocumentPK("-1", instanceId);
+    SimpleDocument document4 = new HistorisedDocument(emptyId, "node49", 0,
+        new SimpleAttachment("test.docx", "en", "My test document 4",
+        "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
+        MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
+    content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+    id = instance.createAttachment(document4, content).getPk();
+    document4 = instance.searchDocumentById(id, "en");
+
+    List<SimpleDocument> result =
+        instance.listDocumentsByForeignKey(foreignKey, "fr");
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(3));
+    assertThat(result.get(0), SimpleDocumentMatcher.matches(document3));
+    assertThat(result.get(1), SimpleDocumentMatcher.matches(document2));
+    assertThat(result.get(2), SimpleDocumentMatcher.matches(document1));
+    // manual sorting
+    List<SimpleDocumentPK> reorderedList = new ArrayList<>(3);
+    reorderedList.add(document3.getPk());
+    reorderedList.add(document1.getPk());
+    reorderedList.add(document2.getPk());
+    instance.reorderAttachments(reorderedList);
+    result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(3));
+    document3.setOrder(200000);
+    document1.setOrder(200001);
+    document2.setOrder(200002);
+    assertThat(result.get(0), SimpleDocumentMatcher.matches(document3));
+    assertThat(result.get(1), SimpleDocumentMatcher.matches(document1));
+    assertThat(result.get(2), SimpleDocumentMatcher.matches(document2));
+    // Create new document
+    emptyId = new SimpleDocumentPK("-1", instanceId);
+    SimpleDocument document5 = new HistorisedDocument(emptyId, foreignId, 0,
+        new SimpleAttachment("test.odp", "fr", "Mon document de test 5",
+            "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+            MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+    content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+    id = instance.createAttachment(document5, content).getPk();
+    document5 = instance.searchDocumentById(id, "fr");
+    assertThat(document5.getOrder(), is(199999));
+    // Getting default sorting according to UI
+    reorderedList = new ArrayList<>(4);
+    reorderedList.add(document5.getPk());
+    reorderedList.add(document3.getPk());
+    reorderedList.add(document2.getPk());
+    reorderedList.add(document1.getPk());
+    instance.reorderAttachments(reorderedList);
+    result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(4));
+    document5.setOrder(4);
+    document3.setOrder(3);
+    document2.setOrder(2);
+    document1.setOrder(1);
+    assertThat(result.get(0), SimpleDocumentMatcher.matches(document5));
+    assertThat(result.get(1), SimpleDocumentMatcher.matches(document3));
+    assertThat(result.get(2), SimpleDocumentMatcher.matches(document2));
+    assertThat(result.get(3), SimpleDocumentMatcher.matches(document1));
   }
 
   /**

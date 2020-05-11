@@ -32,11 +32,11 @@ import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
+import static java.util.Comparator.comparing;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.*;
 
 /**
  * This list provides some additional useful behaviors around simple documents.
@@ -122,34 +122,37 @@ public class SimpleDocumentList<T extends SimpleDocument>
   }
 
   /**
-   * Indicates from the given list of documents if the sort of the list is manual.
+   * Indicates from the given list of documents if is manually sorted without taking care about
+   * {@link AttachmentSettings#listFromYoungestToOldestAdd} setting.
    * <p>
-   *   The given list has to be provided by {@link DocumentRepository} listing methods which
+   *   The given list MUST be provided by {@link DocumentRepository} listing methods which
    *   apply an ordering on the order metadata.
    * </p>
-   * @return true if the list is sorted manually, false otherwise.
+   * <p>
+   *   In other words, it means that the documents MUST be ordered from lowest to greatest order
+   *   index ({@link SimpleDocument#getOrder()}) when calling this method. Otherwise the result
+   *   is not consistent.
+   * </p>
+   * @return true if the list is sorted manually (and so the list is ordered on order document
+   * data), false otherwise.
    * @throw IllegalStateException if documents of the list are not linked to a same foreignId.
    */
-  public boolean isManuallySorted() {
-    final SimpleDocumentList<T> documents;
-    if (youngestToOldestAddSorted) {
-      documents = new SimpleDocumentList<>(this);
-      Collections.reverse(documents);
-    } else {
-      documents = this;
-    }
+  protected boolean isManuallySorted() {
     boolean manuallySorted = false;
-    if (documents.size() > 1) {
-      final String foreignId = documents.get(0).getForeignId();
-      if (documents.stream().anyMatch(d -> !d.getForeignId().equals(foreignId))) {
+    if (size() > 1) {
+      final String foreignId = get(0).getForeignId();
+      if (stream().anyMatch(d -> !d.getForeignId().equals(foreignId))) {
         throw new IllegalStateException(
             "the given list must only contain documents linked to foreignId " + foreignId);
       }
-      for (int i = 1; !manuallySorted && i < documents.size(); i++) {
-        final int orderOffset = documents.get(i).getOrder() - documents.get(i - 1).getOrder();
-        manuallySorted =
-            documents.get(i).getOldSilverpeasId() < documents.get(i - 1).getOldSilverpeasId() &&
-                (orderOffset % 5) == 0;
+      for (int i = 1; !manuallySorted && i < size(); i++) {
+        final T previous = get(i - 1);
+        final T current = get(i);
+        if (previous.getOrder() >= current.getOrder()) {
+          break;
+        }
+        manuallySorted = previous.getOrder() >= YOUNGEST_TO_OLDEST_MANUAL_REORDER_THRESHOLD ||
+            previous.getOldSilverpeasId() > current.getOldSilverpeasId();
       }
     }
     return manuallySorted;
@@ -157,9 +160,9 @@ public class SimpleDocumentList<T extends SimpleDocument>
 
 
   public void sortYoungestToOldestAddIfEnabled() {
-    if (!isEmpty() && !youngestToOldestAddSorted && listFromYoungestToOldestAdd() &&
+    if (size() > 1 && !youngestToOldestAddSorted && listFromYoungestToOldestAdd() &&
         !isManuallySorted()) {
-      sort((o1, o2) -> o2.getOrder() - o1.getOrder());
+      sort(comparing(SimpleDocument::getOldSilverpeasId).reversed());
       youngestToOldestAddSorted = true;
     }
   }
