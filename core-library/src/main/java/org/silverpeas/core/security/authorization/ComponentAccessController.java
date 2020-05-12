@@ -114,41 +114,47 @@ public class ComponentAccessController extends AbstractAccessController<String>
   @Override
   protected void fillUserRoles(final Set<SilverpeasRole> userRoles,
       final AccessControlContext context, final String userId, final String componentId) {
-    final DataManager dataManager = getDataManager(context);
-    final Predicate<User> isUserNotValidState = u -> u == null || (!u.isActivatedState() && !u.isAnonymous());
-    final Predicate<String> isTool = c -> c == null || dataManager.isToolAvailable(c);
+    try {
+      final DataManager dataManager = getDataManager(context);
+      final Predicate<User> isUserNotValidState = u -> u == null || (!u.isActivatedState() && !u.isAnonymous());
+      final Predicate<String> isTool = c -> c == null || dataManager.isToolAvailable(c);
 
-    // If userId corresponds to nothing or to a deleted or deactivated user, then no role is
-    // retrieved.
-    User user = User.getById(userId);
-    if (isUserNotValidState.test(user)) {
-      return;
-    }
-
-    // Personal space or user tool
-    if (isTool.test(componentId)) {
-      userRoles.add(SilverpeasRole.admin);
-      return;
-    }
-    if (Administration.Constants.ADMIN_COMPONENT_ID.equals(componentId)) {
-      if (user.isAccessAdmin()) {
-        userRoles.add(SilverpeasRole.admin);
+      // If userId corresponds to nothing or to a deleted or deactivated user, then no role is
+      // retrieved.
+      User user = User.getById(userId);
+      if (isUserNotValidState.test(user)) {
+        return;
       }
-      return;
-    }
 
-    if (fillUserRolesFromComponentInstance(userId, componentId, context, userRoles)) {
-      return;
-    }
+      // Personal space or user tool
+      if (isTool.test(componentId)) {
+        userRoles.add(SilverpeasRole.admin);
+        return;
+      }
+      if (Administration.Constants.ADMIN_COMPONENT_ID.equals(componentId)) {
+        if (user.isAccessAdmin()) {
+          userRoles.add(SilverpeasRole.admin);
+        }
+        return;
+      }
 
-    if (dataManager.isComponentAvailableToUser(componentId, userId)) {
-      final String[] userProfiles = dataManager.getUserProfiles(componentId, userId);
-      userRoles.addAll(SilverpeasRole.from(userProfiles));
-      if (userRoles.isEmpty() && userProfiles != null && userProfiles.length > 0) {
-        // Taking into account the case where the user has only specific profiles.
-        // In that case, even the user is an admin one (indicated by a specific profile)
-        // it is considered as a simple user.
-        userRoles.add(SilverpeasRole.user);
+      if (fillUserRolesFromComponentInstance(userId, componentId, context, userRoles)) {
+        return;
+      }
+
+      if (dataManager.isComponentAvailableToUser(componentId, userId)) {
+        final String[] userProfiles = dataManager.getUserProfiles(componentId, userId);
+        userRoles.addAll(SilverpeasRole.from(userProfiles));
+        if (userRoles.isEmpty() && userProfiles != null && userProfiles.length > 0) {
+          // Taking into account the case where the user has only specific profiles.
+          // In that case, even the user is an admin one (indicated by a specific profile)
+          // it is considered as a simple user.
+          userRoles.add(SilverpeasRole.user);
+        }
+      }
+    } finally {
+      if (AccessControlOperation.isPersistActionFrom(context.getOperations())) {
+        userRoles.remove(SilverpeasRole.user);
       }
     }
   }

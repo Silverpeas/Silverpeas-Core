@@ -7,11 +7,11 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,31 +37,30 @@
     $window.CalendarBundle = new SilverpeasPluginBundle();
   }
 
-  var __potentialColors = $window.CalendarSettings.get('c.c');
+  const __potentialColors = $window.CalendarSettings.get('c.c');
 
-  var SilverpeasCalendarColorCache = SilverpeasCache.extend({
-    getColor: function(calendar) {
+  const SilverpeasCalendarColorCache = SilverpeasCache.extend({
+    getColor : function(calendar) {
       return this.get(calendar.id);
     },
-    setColor: function(calendar, color) {
+    setColor : function(calendar, color) {
       if (color === 'none') {
         this.unsetColor(calendar);
       } else {
         this.put(calendar.id, color);
       }
-    },
-    unsetColor: function(calendar) {
+    }, unsetColor : function(calendar) {
       this.remove(calendar.id);
     }
   });
 
-  var __calendarColorCache = new SilverpeasCalendarColorCache("silverpeas-calendar-color");
-  var __calendarVisibilityCache = new SilverpeasSessionCache("silverpeas-calendar-visibility");
+  const __calendarColorCache = new SilverpeasCalendarColorCache("silverpeas-calendar-color");
+  const __calendarVisibilityCache = new SilverpeasSessionCache("silverpeas-calendar-visibility");
 
-  var monthNames = [];
-  var dayNames = [];
-  var shortDayNames = [];
-  for (var i = 0; i < 12; i++) {
+  const monthNames = [];
+  const dayNames = [];
+  const shortDayNames = [];
+  for (let i = 0; i < 12; i++) {
     monthNames.push($window.CalendarBundle.get('c.m.' + i));
     if (i < 7) {
       dayNames.push($window.CalendarBundle.get('c.d.' + i));
@@ -105,8 +104,7 @@
   /**
    * VANILLA IMPLEMENTATION
    */
-
-  var calendarDebug = false;
+  const calendarDebug = false;
   sp.log.debugActivated = sp.log.debugActivated || calendarDebug;
 
   /**
@@ -116,20 +114,20 @@
    * @private
    */
   function __decorateCalendarWithColors(calendars, potentialColors) {
-    var usedColors = [];
+    const usedColors = [];
     calendars.forEach(function(calendar) {
-      var color = __calendarColorCache.getColor(calendar);
+      const color = __calendarColorCache.getColor(calendar);
       if (color) {
         usedColors.push(color);
       }
     });
-    var colorIndex = 0;
+    let colorIndex = 0;
     calendars.forEach(function(calendar) {
-      var color = __calendarColorCache.getColor(calendar);
+      let color = __calendarColorCache.getColor(calendar);
       if (!color) {
-        for(var i = 0 ; !color &&  i < potentialColors.length ; i++) {
-          var position = !colorIndex ? colorIndex : (colorIndex % potentialColors.length);
-          var potentialColor = potentialColors[position];
+        for(let i = 0 ; !color &&  i < potentialColors.length ; i++) {
+          const position = !colorIndex ? colorIndex : (colorIndex % potentialColors.length);
+          const potentialColor = potentialColors[position];
           if (usedColors.indexOf(potentialColor) < 0) {
             color = potentialColor;
           }
@@ -159,13 +157,13 @@
    * @type {SilverpeasCalendarTools}
    */
   $window.SilverpeasCalendarTools = new function() {
-    var __self = this;
+    const __self = this;
 
     /**
      * Init a new occurrence entity instance.
      */
     this.newEventOccurrenceEntity = function() {
-      var occurrence = this.extractEventOccurrenceEntityData();
+      const occurrence = this.extractEventOccurrenceEntityData();
       this.applyEventOccurrenceEntityAttributeWrappers(occurrence);
       return occurrence;
     };
@@ -221,6 +219,81 @@
     };
 
     /**
+     * Applies to the given calendar entity the getters and setters which are wrapping the
+     * attributes map.
+     * @param calendar
+     */
+    this.applyCalendarEntityAttributeWrappers = function(calendar) {
+      if (calendar) {
+        /**
+         * Gets the component instance url.
+         * @param externalUrl
+         */
+        if (!calendar.componentInstanceId) {
+          calendar.componentInstanceId = function() {
+            let calendarUri = this.calendarUri;
+            if (!calendarUri) {
+              calendarUri = this.uri;
+            }
+            return __self.extractComponentInstanceIdFromUri(calendarUri);
+          };
+        }
+      }
+    };
+
+    /**
+     * Sorts the given calendars:
+     * - first by calendar component identifier which is equal to the one of the component instance
+     * which is displaying (hosting) the calendars
+     * - then by calendar component instance identifier
+     * - then by main data (the one which can not be deleted)
+     * - then by title (without taking care of the case and the accents)
+     * @param calendars the calendar list to sort.
+     * @param instanceIdHost an optional information to indicate the instance identifier host.
+     */
+    this.sortCalendars = function(calendars, instanceIdHost) {
+      if (calendars) {
+        calendars.sort(function(cal1, cal2) {
+          let result = 0;
+          let instanceId1 = cal1.componentInstanceId();
+          let instanceId2 = cal2.componentInstanceId();
+          if (instanceIdHost) {
+            let cal1SameInstanceIdAsHost = instanceId1 === instanceIdHost;
+            let cal2SameInstanceIdAsHost = instanceId2 === instanceIdHost;
+            if (cal1SameInstanceIdAsHost !== cal2SameInstanceIdAsHost) {
+              if (cal1SameInstanceIdAsHost) {
+                result = -1;
+              } else {
+                result = 1;
+              }
+            }
+          }
+          if (result === 0) {
+            result = instanceId1 < instanceId2 ? -1 :
+                     instanceId1 > instanceId2 ?  1 : 0;
+          }
+          if (result === 0) {
+            let cal1Main = cal1.main;
+            let cal2Main = cal2.main;
+            if (cal1Main !== cal2Main) {
+              if (cal1Main) {
+                result = -1;
+              } else {
+                result = 1;
+              }
+            }
+          }
+          if (result === 0) {
+            let title1Normalized = cal1.title.toLowerCase().normalizeByRemovingAccent();
+            let title2Normalized = cal2.title.toLowerCase().normalizeByRemovingAccent();
+            result = title1Normalized < title2Normalized ? -1 : 1;
+          }
+          return result;
+        });
+      }
+    };
+
+    /**
      * Applies to the given occurrence entity the getters and setters which are wrapping the
      * attributes map.
      * @param occurrence
@@ -233,7 +306,7 @@
          */
         if (!occurrence.externalUrl) {
           occurrence.externalUrl = function(externalUrl) {
-            var externalUrlAttribute;
+            let externalUrlAttribute;
             if (arguments.length) {
               externalUrlAttribute = {name : 'externalUrl', value : externalUrl};
               if (!this.attributes.updateElement(externalUrlAttribute, 'name')) {
@@ -255,7 +328,7 @@
          */
         if (!occurrence.componentInstanceId) {
           occurrence.componentInstanceId = function() {
-            var calendarUri = this.calendarUri;
+            let calendarUri = this.calendarUri;
             if (!calendarUri) {
               if (!this.calendar || !this.calendar.uri) {
                 throw 'calendar uri can not be read from calendarUri or calendar.uri';
@@ -272,11 +345,11 @@
          */
         if (!occurrence.hasBeenModifiedAtEventLevel) {
           occurrence.hasBeenModifiedAtEventLevel = function(other) {
-            var dataToCompare = [{a : occurrence.visibility, b : other.visibility},
+            const dataToCompare = [{a : occurrence.visibility, b : other.visibility},
               {a : occurrence.content, b : other.content},
               {a : occurrence.recurrence, b : other.recurrence}];
-            for (var i = 0; i < dataToCompare.length; i++) {
-              var comparison = dataToCompare[i];
+            for (let i = 0; i < dataToCompare.length; i++) {
+              const comparison = dataToCompare[i];
               if (!sp.object.areExistingValuesEqual(comparison.a, comparison.b)) {
                 return true;
               }
@@ -291,7 +364,7 @@
       if (!uri) {
         return undefined;
       }
-      var instanceRegExp = new RegExp(webContext + '/services/[^/]+/([^/]+)/.+', "g");
+      const instanceRegExp = new RegExp(webContext + '/services/[^/]+/([^/]+)/.+', "g");
       return instanceRegExp.exec(uri)[1];
     };
 
@@ -356,7 +429,7 @@
   $window.SilverpeasCalendar = function(target, calendarOptions) {
     applyReadyBehaviorOn(this);
     __logDebug("initializing the plugin");
-    var __spCalendarApi = this;
+    const __spCalendarApi = this;
 
     /**
      * Clears all resources related to the silverpeas calendar instance.
@@ -395,9 +468,9 @@
      * @param calendar a calendar.
      */
     this.showEventSource = function(calendar) {
-      var spEventSource = SpEventSources.get(calendar.uri);
+      const spEventSource = SpEventSources.get(calendar.uri);
       if (spEventSource) {
-        var fcEventSource = spEventSource.getFcEventSource();
+        const fcEventSource = spEventSource.getFcEventSource();
         fcEventSource.backgroundColor = calendar.color;
         fcEventSource.color = calendar.color;
         spEventSource.render();
@@ -412,8 +485,8 @@
      *     the event occurrences belonging the calendar.
      */
     this.registerEventSource = function(calendar, occurrences) {
-      var spEventSource = SpEventSources.getOrCreate(calendar.uri);
-      var fcEventSource = spEventSource.getFcEventSource();
+      const spEventSource = SpEventSources.getOrCreate(calendar.uri);
+      const fcEventSource = spEventSource.getFcEventSource();
       fcEventSource.backgroundColor = calendar.color;
       fcEventSource.color = calendar.color;
       spEventSource.setOccurrences(occurrences);
@@ -444,9 +517,9 @@
      * @param callback the callback to apply on an event.
      */
     this.forEachEvent = function(callback) {
-      var events = this.$fc.fullCalendar('clientEvents') || [];
-      for (var i = 0; i < events.length; i++) {
-        var event = events[i];
+      const events = this.$fc.fullCalendar('clientEvents') || [];
+      for (let i = 0; i < events.length; i++) {
+        const event = events[i];
         callback(event);
       }
     }.bind(this);
@@ -455,12 +528,12 @@
      * Silverpeas Event sources manager
      */
     var SpEventSources = new function() {
-      var __cache = {};
+      const __cache = {};
       this.get = function(id) {
         return __cache[id];
       };
       this.getOrCreate = function(id) {
-        var spEventSource =  __cache[id];
+        let spEventSource = __cache[id];
         if (!spEventSource) {
           spEventSource = new SpEventSource(id);
           __cache[id] = spEventSource;
@@ -482,14 +555,14 @@
      * @constructor
      */
     var SpEventSource = function(id) {
-      var __onFc = false;
-      var __fcEventSource;
-      var __occurrences = [];
+      let __onFc = false;
+      let __fcEventSource;
+      let __occurrences = [];
       this.setOccurrences = function(occurrences) {
         __occurrences = occurrences ? occurrences : [];
       };
       this.getFcEventSource = function() {
-        var fcEventSource = __spCalendarApi.$fc.fullCalendar('getEventSourceById', id);
+        const fcEventSource = __spCalendarApi.$fc.fullCalendar('getEventSourceById', id);
         if (fcEventSource) {
           __onFc = true;
           __fcEventSource = fcEventSource;
@@ -497,7 +570,7 @@
           __fcEventSource = {
             id : id,
             events : function(start, end, timezone, callback) {
-              var __provide = function(events) {
+              const __provide = function(events) {
                 if (typeof calendarOptions.eventfilter === 'function') {
                   callback(events.filter(calendarOptions.eventfilter));
                 } else {
@@ -518,7 +591,7 @@
         return __fcEventSource;
       };
       this.render = function() {
-        var action = __onFc ? 'refetchEventSources' : 'addEventSource';
+        const action = __onFc ? 'refetchEventSources' : 'addEventSource';
         __spCalendarApi.$fc.fullCalendar(action, __fcEventSource);
       };
     };
@@ -590,89 +663,85 @@
    * @private
    */
   function __renderFullCalendar(target, options) {
-    var calendarOptions = extendsObject({}, options);
+    const calendarOptions = extendsObject({}, options);
     calendarOptions.currentDate = moment(calendarOptions.currentDate);
-    var fullCalendarOptions = {
-      locale: userLanguage,
-      header: false,
-      contentHeight:640,
-      monthNames: monthNames,
-      dayNames: dayNames,
-      dayNamesShort: shortDayNames,
-      buttonText: {
-        prev: '&nbsp;&#9668;&nbsp;', // left triangle
-        next: '&nbsp;&#9658;&nbsp;', // right triangle
-        prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
-        nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
-        today: $window.CalendarBundle.get("c.t"),
-        month: $window.CalendarBundle.get("c.m"),
-        week: $window.CalendarBundle.get("c.w"),
-        day: $window.CalendarBundle.get("c.d")
+    const fullCalendarOptions = {
+      locale : userLanguage,
+      header : false,
+      contentHeight : 640,
+      monthNames : monthNames,
+      dayNames : dayNames,
+      dayNamesShort : shortDayNames,
+      buttonText : {
+        prev : '&nbsp;&#9668;&nbsp;', // left triangle
+        next : '&nbsp;&#9658;&nbsp;', // right triangle
+        prevYear : '&nbsp;&lt;&lt;&nbsp;', // <<
+        nextYear : '&nbsp;&gt;&gt;&nbsp;', // >>
+        today : $window.CalendarBundle.get("c.t"),
+        month : $window.CalendarBundle.get("c.m"),
+        week : $window.CalendarBundle.get("c.w"),
+        day : $window.CalendarBundle.get("c.d")
       },
-      scrollTime: "08:00:00",
-      allDayText: '',
-      allDayDefault: false,
+      scrollTime : "08:00:00",
+      allDayText : '',
+      allDayDefault : false,
       slotLabelInterval : '01:00:00',
-      slotDuration: '00:30:00',
-      defaultTimedEventDuration: '01:00:00',
+      slotDuration : '00:30:00',
+      defaultTimedEventDuration : '01:00:00',
       defaultAllDayEventDuration : {days : 1},
       forceEventDuration : true,
-      timezone: options.timezone ? options.timezone : 'local',
-      timeFormat: 'HH:mm',
-      displayEventEnd: true,
-      slotLabelFormat: 'HH:mm',
+      timezone : options.timezone ? options.timezone : 'local',
+      timeFormat : 'HH:mm',
+      displayEventEnd : true,
+      slotLabelFormat : 'HH:mm',
       weekNumbers : true,
       weekNumberTitle : $window.CalendarBundle.get("c.w").substring(0, 1),
       listDayFormat : 'LL',
       noEventsMessage : $window.CalendarBundle.get("c.e.n"),
-      views: {
-        year: {
-          displayEventEnd: $window.CalendarSettings.get('c.v.y.e')
-        },
-        month: {
-          displayEventEnd: $window.CalendarSettings.get('c.v.m.e')
-        },
-        week: {
-          columnFormat: 'ddd DD',
-          displayEventEnd: $window.CalendarSettings.get('c.v.w.e')
-        },
-        day: {
-          displayEventEnd: $window.CalendarSettings.get('c.v.d.e')
+      views : {
+        year : {
+          displayEventEnd : $window.CalendarSettings.get('c.v.y.e')
+        }, month : {
+          displayEventEnd : $window.CalendarSettings.get('c.v.m.e')
+        }, week : {
+          columnFormat : 'ddd DD', displayEventEnd : $window.CalendarSettings.get('c.v.w.e')
+        }, day : {
+          displayEventEnd : $window.CalendarSettings.get('c.v.d.e')
         }
       },
-      firstDay: calendarOptions.firstDayOfWeek - 1,
-      defaultView: __getFullCalendarView(calendarOptions.view, calendarOptions.listMode),
-      dayClick: function(momentDate, jsEvent, view) {
+      firstDay : calendarOptions.firstDayOfWeek - 1,
+      defaultView : __getFullCalendarView(calendarOptions.view, calendarOptions.listMode),
+      dayClick : function(momentDate, jsEvent, view) {
         if (calendarOptions.onday) {
-          var dayDate = momentDate.format("YYYY-MM-DD[T]HH:mm");
+          const dayDate = momentDate.format("YYYY-MM-DD[T]HH:mm");
           calendarOptions.onday(dayDate);
         }
         if (calendarOptions.ondayclick) {
           calendarOptions.ondayclick(momentDate);
         }
       },
-      eventClick: function(calEvent, jsEvent, view) {
+      eventClick : function(calEvent, jsEvent, view) {
         if (calendarOptions.onevent) {
           calendarOptions.onevent(calEvent);
         }
       },
-      eventMouseover: function(calEvent, jsEvent, view) {
+      eventMouseover : function(calEvent, jsEvent, view) {
         if (calendarOptions.oneventmouseover) {
           calendarOptions.oneventmouseover(calEvent);
         }
       },
-      eventDrop: function(calEvent, delta, revertFunc) {
+      eventDrop : function(calEvent, delta, revertFunc) {
         if (calendarOptions.oneventdrop) {
           calendarOptions.oneventdrop(calEvent, delta, revertFunc);
         }
       },
-      eventResize: function(calEvent, delta, revertFunc) {
+      eventResize : function(calEvent, delta, revertFunc) {
         if (calendarOptions.oneventresize) {
           calendarOptions.oneventresize(calEvent, delta, revertFunc);
         }
       },
-      events: calendarOptions.events,
-      weekends: calendarOptions.weekends
+      events : calendarOptions.events,
+      weekends : calendarOptions.weekends
     };
 
     if (typeof calendarOptions.allDaySlot !== 'undefined') {
@@ -685,7 +754,7 @@
       };
     }
 
-    var $fullCalendar = jQuery(target);
+    const $fullCalendar = jQuery(target);
     $fullCalendar.fullCalendar(fullCalendarOptions);
     return $fullCalendar;
   }

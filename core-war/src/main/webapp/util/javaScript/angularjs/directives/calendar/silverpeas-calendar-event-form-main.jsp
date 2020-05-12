@@ -74,7 +74,7 @@
       <div class="champs">
         <span class="txtnav" ng-if="$ctrl.potentialCalendars.length == 1 || !$ctrl.isFirstEventOccurrence()">{{$ctrl.data.calendar.title}}</span>
         <select ng-if="$ctrl.potentialCalendars.length > 1 && $ctrl.isFirstEventOccurrence()" ng-model="$ctrl.data.calendar"
-                ng-options="calendar as calendar.title for calendar in $ctrl.potentialCalendars | orderBy: 'createdDate' track by calendar.id"
+                ng-options="calendar as calendar.title for calendar in $ctrl.potentialCalendars | sortedCalendars track by calendar.id"
                 id="sp_cal_event_form_main_c" class="txtnav">
         </select>
       </div>

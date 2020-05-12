@@ -80,8 +80,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
+import static java.util.Collections.*;
 import static org.silverpeas.core.calendar.CalendarEventOccurrence.COMPARATOR_BY_DATE_ASC;
 import static org.silverpeas.core.calendar.CalendarEventUtil.getDateWithOffset;
 import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
@@ -270,7 +269,7 @@ public class CalendarWebManager {
    * @return the list of calendars.
    */
   public List<Calendar> getCalendarsHandledBy(final String componentInstanceId) {
-    return Calendar.getByComponentInstanceId(componentInstanceId);
+    return getCalendarsHandledBy(singleton(componentInstanceId));
   }
 
   /**

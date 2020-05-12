@@ -127,6 +127,50 @@
     };
   });
 
+  /**
+   * Custom AngularJS filter in charge of sorting the given array of calendars.
+   * The sorting is the one of {@link SilverpeasCalendarTools#sortCalendars}.
+   * <br/>
+   * CSS classes are also computed into '__cssListClasses' attribute of each calendar of the sorted
+   * list:
+   * <ul>
+   * <li>'calendar-on-host-instance' class when the component instance id of the calendar is the same
+   * as the one which is displaying (hosting) the calendar. The instance id of the host is read
+   * from attribute 'component' of context data</li>
+   * <li>'calendar-[calendar component instance identifier]' class (for client specific stuffs)</li>
+   * <li>'first-calendar-on-other-instance' to identify calendar component instance ruptures</li>
+   * <li>'main-calendar' to identify directly a main calendar</li>
+   * </ul>
+   */
+  angular.module('silverpeas.directives').filter('sortedCalendars', ['context', function(context) {
+    return function(items) {
+      let sortedCalendars = [];
+      Array.prototype.push.apply(sortedCalendars, items);
+      let instanceIdHost = typeof context === 'object' ? context.component : undefined;
+      SilverpeasCalendarTools.sortCalendars(sortedCalendars, instanceIdHost);
+      var previousInstanceId = '';
+      sortedCalendars.forEach(function(calendar) {
+        if (!calendar.__cssListClasses) {
+          let __cssListClasses = '';
+          let currentInstanceId = calendar.componentInstanceId();
+          __cssListClasses = 'calendar-' + currentInstanceId;
+          if (currentInstanceId === instanceIdHost) {
+            __cssListClasses += ' calendar-on-host-instance';
+          }
+          if (previousInstanceId && previousInstanceId !== currentInstanceId) {
+            __cssListClasses += ' first-calendar-on-other-instance';
+          }
+          if (calendar.main) {
+            __cssListClasses += ' main-calendar';
+          }
+          calendar.__cssListClasses = __cssListClasses;
+          previousInstanceId = currentInstanceId;
+        }
+      });
+      return sortedCalendars;
+    };
+  }]);
+
   angular.module('silverpeas.directives').directive('silverpeasCalendar',
       ['$compile', '$timeout', 'context', 'CalendarService', 'visibleFilter',
         function($compile, $timeout, context, CalendarService, visibleFilter) {

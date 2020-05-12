@@ -138,7 +138,7 @@
     <div class="champs" ng-if="$ctrl.importEventCalendar">
       <span class="txtlibform">${icalFileImportIntoLabel}</span>
       <select ng-model="$ctrl.importEventCalendar"
-              ng-options="calendar as calendar.title for calendar in $ctrl.potentialCalendars | orderBy: 'createdDate' track by calendar.id"
+              ng-options="calendar as calendar.title for calendar in $ctrl.potentialCalendars | sortedCalendars track by calendar.id"
               class="txtnav">
       </select>
     </div>

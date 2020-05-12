@@ -45,7 +45,7 @@
           <a href="#" ng-click="$ctrl.view({calendar:$ctrl.calendar})">Info</a>
         </li>
         <li ng-if="(!$ctrl.calendar.userPersonal || $ctrl.calendar.canBeDeleted) && !$ctrl.calendar.canBeRemoved">
-          <a href="{{$ctrl.calendar.uri}}/export/ical" target="_blank" >Exporter</a>
+          <a href="{{$ctrl.calendar.uri}}/export/ical">Exporter</a>
         </li>
         <li ng-if="$ctrl.calendar.isSynchronized">
           <a href="#" ng-click="$ctrl.synchronize({calendar: $ctrl.calendar})">Synchroniser</a>
