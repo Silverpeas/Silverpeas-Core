@@ -294,7 +294,8 @@
   height: 2em;
 }
 
-.silverchat_roster_content .silverchat_menu_item.jsxc_disabled {
+.silverchat_roster_content .silverchat_menu_item.jsxc_disabled,
+#silverchat_roster_new_group_chat .silverchat_menu_item.jsxc_disabled {
   opacity: 0.3;
   cursor: default !important;
 }
@@ -325,6 +326,21 @@
   height: 34px;
   z-index: 100;
   padding: 0;
+}
+
+#silverchat_roster_new_group_chat {
+  position: absolute;
+  bottom: 35px;
+  width: 100%;
+  line-height: 34px;
+  height: 34px;
+  z-index: 100;
+  padding: 0;
+  text-align: center;
+}
+
+#silverchat_roster_new_group_chat span {
+  cursor: pointer;
 }
 
 #silverchat_roster_footer .jsxc_list {
