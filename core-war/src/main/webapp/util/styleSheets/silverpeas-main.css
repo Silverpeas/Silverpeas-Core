@@ -6947,8 +6947,13 @@ THESE TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
   height: auto;
 }
 
+.attachments-as-content {
+  display: flex;
+  flex-direction: column;
+}
+
 .attachments-as-content .attachment-container {
-  margin-bottom: 2em;
+  margin-bottom: 1em;
 }
 
 .attachments-as-content .content {

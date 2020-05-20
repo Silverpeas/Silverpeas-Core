@@ -42,6 +42,8 @@ public class SimpleDocumentEntity implements WebEntity {
   @XmlElement(required = true)
   private String id;
   @XmlElement(required = true)
+  private Long spId;
+  @XmlElement(required = true)
   private String instanceId;
   @XmlElement(required = true)
   private String fileName;
@@ -94,6 +96,7 @@ public class SimpleDocumentEntity implements WebEntity {
       throw new AttachmentException("Couldn't build the URI to the attachment", e);
     }
     entity.id = document.getId();
+    entity.spId = document.getOldSilverpeasId();
     entity.instanceId = document.getInstanceId();
     entity.fileName = document.getFilename();
     entity.description = document.getDescription();
@@ -133,6 +136,10 @@ public class SimpleDocumentEntity implements WebEntity {
 
   public String getId() {
     return id;
+  }
+
+  public Long getSpId() {
+    return spId;
   }
 
   public String getInstanceId() {

@@ -158,6 +158,15 @@ Vue.filter('displayAsDateTime', function(dateAsText) {
 });
 
 /**
+ * Centralizing the 'isDefined' validator.
+ * @param value the value to validate.
+ * @returns {*} false if the value is not defined, true otherwise.
+ */
+const isDefinedValidator = function(value) {
+  return StringUtil.isDefined(value);
+};
+
+/**
  * Common implementation for components which have to handle i18n by template.
  * Add it to a component or a vue instance by attribute mixins.
  *

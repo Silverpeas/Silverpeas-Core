@@ -1170,6 +1170,7 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
         }
       }
     };
+    return instance;
   };
 }
 
@@ -1244,6 +1245,49 @@ if (typeof window.sp === 'undefined') {
       },
       decode : function(str) {
         return window.atob(str);
+      }
+    },
+    anim : new function() {
+      const __decodeParams = function() {
+        const params = {
+          callback : undefined,
+          options : undefined
+        };
+        for (let i = 1; i < arguments.length; i++) {
+          let param = arguments[i];
+          let paramType = typeof param;
+          if (!params.callback && paramType === 'function') {
+            params.callback = param;
+          } else if (!params.options && paramType === 'object') {
+            params.options = param;
+          }
+        }
+        return params;
+      };
+      /**
+       * Performs a fadeIn animation.
+       * @param element the element on which to perform the fadeIn.
+       * @param [callback] an optional callback which MUST be executed just before the animation.
+       * @param [options] an optional object containing options as 'duration' for now.
+       */
+      this.fadeIn = function(element) {
+        const $element = sp.element.asVanillaOne(element);
+        const params = __decodeParams.apply(element, arguments);
+        const options = extendsObject({
+          duration : 400
+        }, params.options);
+        if (params.callback) {
+          params.callback.call(element);
+        }
+        const start = window.performance.now();
+        window.requestAnimationFrame(function __fadeIn(now) {
+          const progress = now - start;
+          let opacity = progress / options.duration;
+          $element.style.opacity = opacity > 1.0 ? 1.0 : opacity;
+          if (progress < options.duration) {
+            window.requestAnimationFrame(__fadeIn)
+          }
+        });
       }
     },
     object : new function() {

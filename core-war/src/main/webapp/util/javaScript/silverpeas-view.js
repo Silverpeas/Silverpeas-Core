@@ -28,6 +28,11 @@
  */
 (function($){
 
+  if ($.view) {
+    // no redefine
+    return;
+  }
+
   $.view = {
     webServiceContext : webContext + '/services'
   };
@@ -35,12 +40,12 @@
   /**
    * The different view methods handled by the plugin.
    */
-  var methods = {
+  const methods = {
 
     /**
      * Does nothing
      */
-    init : function( options ) {
+    init : function(options) {
       // Nothing to do at all
     },
 
@@ -50,7 +55,7 @@
      * - componentInstanceId : the id of the current component instance,
      * - attachmentId : the id of the aimed attachment.
      */
-    viewAttachment : function( options ) {
+    viewAttachment : function(options) {
 
       // Light checking
       if (!options.componentInstanceId || !options.attachmentId) {
@@ -96,18 +101,18 @@
       return $this;
 
     return $this.each(function() {
-      var $_this = $(this);
+      const $_this = $(this);
 
       // Waiting animation
       if (!options.insertMode) {
         $.popup.showWaiting();
       } else {
-        var imageUrl = popupViewGeneratorIconPath + '/inProgress.gif';
+        const imageUrl = popupViewGeneratorIconPath + '/inProgress.gif';
         $_this.html($('<img>').attr('src', imageUrl).attr('width', '32').attr('height', '32'));
       }
 
       // Getting view
-      var url = $.view.webServiceContext;
+      let url = $.view.webServiceContext;
       url += "/view/" + options.componentInstanceId;
       url += "/attachment/" + options.attachmentId;
       if (options.lang) {
@@ -141,17 +146,17 @@
     __adjustViewSize(view);
 
     // Initializing the resulting html container
-    var $baseContainer = $("<div>")
-                      .css('display', 'block')
-                      .css('border', '0px')
-                      .css('padding', '0px')
-                      .css('margin', '0px auto')
-                      .css('text-align', 'center')
-                      .css('background-color', 'white');
+    const $baseContainer = $("<div>")
+        .css('display', 'block')
+        .css('border', '0px')
+        .css('padding', '0px')
+        .css('margin', '0px auto')
+        .css('text-align', 'center')
+        .css('background-color', 'white');
     $this.html($baseContainer);
 
     // Popup
-    var $documentViewer = __setView($baseContainer, view, true);
+    const $documentViewer = __setView($baseContainer, view, true);
 
     // Player
     $documentViewer.embedPlayer({
@@ -170,7 +175,7 @@
     __adjustViewSize(view);
 
     // Initializing the resulting html container
-    var $baseContainer = $("#documentView");
+    let $baseContainer = $("#documentView");
     if ($baseContainer.length !== 0) {
       $baseContainer.remove();
     }
@@ -185,17 +190,17 @@
     $baseContainer.insertAfter($this);
 
     // Settings
-    var settings = {
+    const settings = {
       title : view.originalFileName,
       width : view.width,
       height : view.height,
-      callbackOnClose: function() {
+      callbackOnClose : function() {
         sp.navigation.unmute();
       }
     };
 
     // Popup
-    var $documentViewer = __setView($baseContainer, view);
+    const $documentViewer = __setView($baseContainer, view);
 
     // Player
     $documentViewer.embedPlayer({
@@ -211,16 +216,16 @@
    * Private function that adjust size of view (size limitations)
    */
   function __adjustViewSize(view) {
-    var isDefaultView = view.viewMode === 'Default';
+    const isDefaultView = view.viewMode === 'Default';
 
     // Screen size
-    var offsetWidth = isDefaultView ? 1 : (view.width < view.height ? 2 : 1.75);
-    var parentWidth = $(window).width() * 0.9;
-    var parentHeight = $(window).height() * 0.9;
+    const offsetWidth = isDefaultView ? 1 : (view.width < view.height ? 2 : 1.75);
+    const parentWidth = $(window).width() * 0.9;
+    const parentHeight = $(window).height() * 0.9;
 
     // Document size
-    var width = view.width * offsetWidth;
-    var height = view.height;
+    let width = view.width * offsetWidth;
+    let height = view.height;
 
     // Maximum size
     if (width > parentWidth) {
@@ -246,12 +251,12 @@
    * Private function that sets the view container.
    */
   function __setView($baseContainer, view, insertMode) {
-    var documentViewer = $('<div>')
+    const documentViewer = $('<div>')
         .css('display', 'block')
         .css('margin', '0px')
         .css('padding', '0px');
-    var $viewerContainer = $('<div>')
-        .attr('id','viewercontainer')
+    const $viewerContainer = $('<div>')
+        .attr('id', 'viewercontainer')
         .css('display', 'block')
         .css('margin', '0px')
         .css('padding', '0px')
@@ -273,10 +278,10 @@
   ATTACHMENT VIEWER AS CONTENT
    */
 
-  var DISPLAY_AS_CONTENT_COMPONENT_NAMES = ViewSettings.get("dac.cns");
+  const DISPLAY_AS_CONTENT_COMPONENT_NAMES = ViewSettings.get("dac.cns");
 
   window.AttachmentsAsContentViewer = function(options) {
-    var __context = {
+    const __context = {
       options : extendsObject({
         domSelector : undefined,
         parentContainer : undefined,
@@ -290,7 +295,8 @@
         enableVideo : true,
         enableAudio : true,
         enableViewable : true,
-        enableSimpleText : true
+        enableSimpleText : true,
+        loadedAttachments : []
       }, options)
     };
     if (!__context.options.componentInstanceId || !__context.options.resourceId ||
@@ -305,13 +311,13 @@
       return;
     }
 
-    var componentName = sp.component.extractNameFromInstanceId(__context.options.componentInstanceId);
+    const componentName = sp.component.extractNameFromInstanceId(__context.options.componentInstanceId);
     if (!DISPLAY_AS_CONTENT_COMPONENT_NAMES.getElement(componentName)) {
       sp.log.debug("Not activated for component name " + componentName);
       return;
     }
 
-    var __loadAttachments = function() {
+    const __loadAttachments = function() {
       return sp.ajaxRequest(webContext + "/services/documents/" +
           __context.options.componentInstanceId + "/resource/" + __context.options.resourceId +
           "/types/" + __context.options.documentType + "/" +
@@ -320,50 +326,50 @@
           .withParam("highestUserRole", __context.options.highestUserRole)
           .sendAndPromiseJsonResponse();
     };
-    var __initPromise = __loadAttachments();
+    const __initPromise = __loadAttachments();
 
-    var __renderContainer = function(attachment, __renderCallback) {
-      var $attContainer = document.createElement('div');
+    const __renderContainer = function(attachment, __renderCallback) {
+      const $attContainer = document.createElement('div');
       $attContainer.classList.add('attachment-container');
-      var $title = document.createElement('h3');
+      const $title = document.createElement('h3');
       $title.classList.add('title');
       $title.innerText = attachment.title ? attachment.title : attachment.fileName;
-      var $description = document.createElement('p');
+      const $description = document.createElement('p');
       $description.classList.add('description');
       $description.innerText = attachment.description;
       $attContainer.appendChild($title);
       if (StringUtil.isDefined(attachment.description)) {
         $attContainer.appendChild($description);
       }
-      var $renderedContent = __renderCallback(attachment);
+      const $renderedContent = __renderCallback(attachment);
       $renderedContent.classList.add('content');
       $attContainer.appendChild($renderedContent);
       return $attContainer;
     };
 
-    var __renderSimpleText = function(attachment) {
-      var $simpleText = document.createElement("div");
+    const __renderSimpleText = function(attachment) {
+      const $simpleText = document.createElement("div");
       sp.ajaxRequest(webContext + attachment.downloadUrl).send().then(function(request) {
         $simpleText.innerText = request.responseText;
       });
       return $simpleText;
     };
-    var __renderImage = function(attachment) {
-      var $imageContainer = document.createElement("div");
-      var $img = document.createElement("img");
+    const __renderImage = function(attachment) {
+      const $imageContainer = document.createElement("div");
+      const $img = document.createElement("img");
       $img.src = webContext + attachment.downloadUrl.replace(/(\/lang\/[a-z]+\/)(name\/)/g, '$1size/600x/$2');
       $imageContainer.appendChild($img);
       return $imageContainer;
     };
-    var __renderMedia = function(attachment) {
-      var $mediaContainer = document.createElement("div");
+    const __renderMedia = function(attachment) {
+      const $mediaContainer = document.createElement("div");
       jQuery($mediaContainer).embedPlayer({
         url : webContext + attachment.downloadUrl
       });
       return $mediaContainer;
     };
-    var __renderViewable = function(attachment) {
-      var $viewableContainer = document.createElement("div");
+    const __renderViewable = function(attachment) {
+      const $viewableContainer = document.createElement("div");
       jQuery($viewableContainer).view("viewAttachment", {
         componentInstanceId: attachment.instanceId,
         attachmentId: attachment.id,
@@ -372,7 +378,7 @@
       });
       return $viewableContainer;
     };
-    var domInit = function() {
+    const domInit = function() {
       if (__context.options.parentContainer) {
         this.$rootContainer = document.createElement('div');
         this.$rootContainer.classList.add('attachments-as-content');
@@ -381,31 +387,57 @@
         this.$rootContainer = document.querySelector(__context.options.domSelector);
       }
       __initPromise.then(function(attachments) {
-        attachments.forEach(function(attachment) {
-          if (!attachment.displayAsContent) {
-            return;
-          }
-          var $renderedContainer;
-          if (__context.options.enableViewable && attachment.viewable) {
-            $renderedContainer = __renderContainer(attachment, __renderViewable);
-            $renderedContainer.classList.add('viewable');
-          } else if (__context.options.enableAudio && attachment.contentType.startsWith('audio')) {
-            $renderedContainer = __renderContainer(attachment, __renderMedia);
-            $renderedContainer.classList.add('audio');
-          } else if (__context.options.enableVideo && attachment.contentType.startsWith('video')) {
-            $renderedContainer = __renderContainer(attachment, __renderMedia);
-            $renderedContainer.classList.add('video');
-          } else if (__context.options.enableImage && attachment.contentType.startsWith('image')) {
-            $renderedContainer = __renderContainer(attachment, __renderImage);
-            $renderedContainer.classList.add('image');
-          } else if (__context.options.enableSimpleText && attachment.contentType.startsWith('text')) {
-            $renderedContainer = __renderContainer(attachment, __renderSimpleText);
-            $renderedContainer.classList.add('simple-text');
-          } else {
-            sp.log.debug("AttachmentsAsContentViewer - no renderer for " + JSON.stringify(attachment));
-          }
-          if ($renderedContainer) {
-            this.$rootContainer.appendChild($renderedContainer);
+        __context.options.loadedAttachments = attachments
+            .filter(function(attachment) {
+              if (!attachment.displayAsContent) {
+                return false;
+              }
+              let $renderedContainer;
+              if (__context.options.enableViewable && attachment.viewable) {
+                $renderedContainer = __renderContainer(attachment, __renderViewable);
+                $renderedContainer.classList.add('viewable');
+              } else if (__context.options.enableAudio && attachment.contentType.startsWith('audio')) {
+                $renderedContainer = __renderContainer(attachment, __renderMedia);
+                $renderedContainer.classList.add('audio');
+              } else if (__context.options.enableVideo && attachment.contentType.startsWith('video')) {
+                $renderedContainer = __renderContainer(attachment, __renderMedia);
+                $renderedContainer.classList.add('video');
+              } else if (__context.options.enableImage && attachment.contentType.startsWith('image')) {
+                $renderedContainer = __renderContainer(attachment, __renderImage);
+                $renderedContainer.classList.add('image');
+              } else if (__context.options.enableSimpleText && attachment.contentType.startsWith('text')) {
+                $renderedContainer = __renderContainer(attachment, __renderSimpleText);
+                $renderedContainer.classList.add('simple-text');
+              } else {
+                sp.log.debug("AttachmentsAsContentViewer - no renderer for " + JSON.stringify(attachment));
+                return false;
+              }
+              attachment.spId = '' + attachment.spId;
+              attachment.$renderedContainer = $renderedContainer;
+              return true;
+            });
+        __context.options.loadedAttachments.forEach(function(attachment, index) {
+          attachment.$renderedContainer.style.order = index;
+          this.$rootContainer.appendChild(attachment.$renderedContainer);
+        }.bind(this));
+        document.body.addEventListener('resource-attached-file-sorted', function(event) {
+          let sortedData = event.detail.data;
+          if (sortedData.resourceId === __context.options.resourceId) {
+            const positions = {};
+            for (let i = 0, index = 0; i < sortedData.sortedAttachedFileIds.length; i++) {
+              let spId = sortedData.sortedAttachedFileIds[i];
+              if (__context.options.loadedAttachments.indexOfElement({'spId' : spId}, 'spId') >= 0) {
+                positions[spId] = '' + (index++);
+              }
+            }
+            __context.options.loadedAttachments.forEach(function(attachment) {
+              let position = positions[attachment.spId];
+              if (position !== attachment.$renderedContainer.style.order) {
+                sp.anim.fadeIn(attachment.$renderedContainer, function() {
+                  attachment.$renderedContainer.style.order = position;
+                });
+              }
+            });
           }
         }.bind(this));
       }.bind(this));
