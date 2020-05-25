@@ -69,9 +69,29 @@
   </view:buttonPane>
   <script type="text/javascript">
     (function() {
-      const isPopin = window.opener == null;
-      const $parentWindow = isPopin ? window : window.opener;
-      const formName = '${formNameErrorDataProvider}';
+      const displayedIntoPopup = !!window.opener;
+      let submitAutomaticallyAuthorized = displayedIntoPopup;
+      let $parentWindow = window;
+      let $errorFormProvider = $parentWindow.document.querySelector('form[name="${formNameErrorDataProvider}"]');
+      while (!$errorFormProvider && !!$parentWindow.opener) {
+        $parentWindow = $parentWindow.opener;
+        $errorFormProvider = $parentWindow.document.querySelector('form[name="${formNameErrorDataProvider}"]');
+      }
+      if (!$errorFormProvider) {
+        submitAutomaticallyAuthorized = false;
+        $parentWindow = window;
+        let $stackInput = $parentWindow.document.querySelector('input[name="stack"]');
+        while (!$stackInput && !!$parentWindow.opener) {
+          $parentWindow = $parentWindow.opener;
+          $stackInput = $parentWindow.document.querySelector('input[name="stack"]');
+        }
+        if (!!$stackInput) {
+          $errorFormProvider = $stackInput.parentElement;
+          while ($errorFormProvider.tagName.toLowerCase() !== 'form') {
+            $errorFormProvider = $errorFormProvider.parentElement;
+          }
+        }
+      }
       window.errorManager = new function() {
         let __detailed = 'start';
         let $msg = window.document.querySelector('.error-container .message-slot');
@@ -79,16 +99,16 @@
         let $detailedMsg = window.document.querySelector('.error-container .detail-slot');
         let $stack = window.document.querySelector('.error-container .stack-slot');
         let $action = window.document.querySelector('.error-container .action');
-        $msg.textContent = $parentWindow.document[formName].message.value;
-        let $parentExtraMessageInput = $parentWindow.document[formName].messageExtra;
+        $msg.textContent = $errorFormProvider.message.value;
+        let $parentExtraMessageInput = $errorFormProvider.messageExtra;
         if ($parentExtraMessageInput && StringUtil.isDefined($parentExtraMessageInput.value)) {
           $msgExtra.textContent = $parentExtraMessageInput.value;
           $msgExtra.parentElement.classList.remove('hide');
         } else {
           $msgExtra = undefined;
         }
-        $detailedMsg.textContent = $parentWindow.document[formName].detailedMessage.value;
-        $stack.value = $parentWindow.document[formName].stack.value;
+        $detailedMsg.textContent = $errorFormProvider.detailedMessage.value;
+        $stack.value = $errorFormProvider.stack.value;
         this.switchDisplay = function() {
           if (__detailed === 'start') {
             __detailed = false;
@@ -111,7 +131,7 @@
             $action.innerHTML = '${minimizeLabel}';
             __detailed = true;
           }
-          if (!isPopin) {
+          if (displayedIntoPopup) {
             setTimeout(function() {
               currentPopupResize();
               window.focus();
@@ -122,9 +142,9 @@
       };
       <c:if test="${not (action eq 'NOBack')}">
       whenSilverpeasEntirelyLoaded().then(function() {
-        if (!isPopin) {
+        if (submitAutomaticallyAuthorized) {
           setTimeout(function() {
-            $parentWindow.document[formName].submit();
+            $errorFormProvider.submit();
           }, 0);
         }
       });
