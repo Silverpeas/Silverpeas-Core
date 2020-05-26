@@ -180,6 +180,7 @@
   <c:set var="showMenuNotif" value="${silfn:booleanValue(param.ShowMenuNotif)}" />
   <c:set var="displayUniversalLinks"><%=URLUtil.displayUniversalLinks()%></c:set>
 
+  <c:set var="domIdSuffix" value="${fn:replace(fn:replace(param.Id, '=', '_'), '-', '_')}"/>
   <c:set var="Silverpeas_Attachment_ObjectId" value="${param.Id}" scope="session" />
   <c:set var="Silverpeas_Attachment_ComponentId" value="${param.ComponentId}" scope="session" />
   <c:choose>
@@ -225,7 +226,7 @@
   <c:if test="${contextualMenuEnabled}">
   <div id="attachment-creation-actions"><a class="menubar-creation-actions-item menubar-creation-actions-move-ignored" href="javascript:addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
   </c:if>
-    <ul id="attachmentList">
+    <ul id="attachmentList" class="attachmentList attachmentList${domIdSuffix}">
       <c:forEach items="${pageScope.attachments}" var="currentAttachment" >
         <%-- Download variable handling --%>
         <c:set var="canUserDownloadFile" value="${true}"/>
@@ -386,6 +387,18 @@
     <c:param name="Language" value="${contentLanguage}"/>
   </c:url>
   var publicVersionsWindow = window;
+  const attachmentEventManager = {
+    dispatchEvent : function(eventName, data) {
+      document.body.dispatchEvent(new CustomEvent(eventName, {
+        detail : {
+          from : this,
+          data : data
+        },
+        bubbles : true,
+        cancelable : true
+      }));
+    }
+  };
   function viewPublicVersions(docId) {
       var url = '${allVersionsUrl}&DocId=' + docId;
       var windowName = "publicVersionsWindow";
@@ -1022,7 +1035,7 @@
         }
       });
 
-        $("#attachmentList").sortable({opacity: 0.4, axis: 'y', cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
+        $(".attachmentList${domIdSuffix}").sortable({opacity: 0.4, axis: 'y', cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
         $("#attachmentModalDialog").dialog({
           autoOpen: false,
           modal: true,
@@ -1138,30 +1151,38 @@
         }
       });
 
-      $('#attachmentList').bind('sortupdate', function(event, ui) {
-        var reg = new RegExp("attachment", "g");
-        var data = $('#attachmentList').sortable('serialize');
+      $('.attachmentList${domIdSuffix}').bind('sortupdate', function(event, ui) {
+        const reg = new RegExp("attachment", "g");
+        let data = $('.attachmentList${domIdSuffix}').sortable('serialize');
         data += "#";
-        var tableau = data.split(reg);
-        var param = "";
-        for (var i = 0; i < tableau.length; i++) {
-          if (i != 0) {
+        const tableau = data.split(reg);
+        let param = "";
+        for (let i = 0; i < tableau.length; i++) {
+          if (i !== 0) {
             param += ",";
           }
           param += tableau[i].substring(3, tableau[i].length - 1);
         }
-        sortAttachments(param);
+        sortAttachments('${param.Id}', param);
       });
 
       });
 
 
-      function sortAttachments(orderedList) {
+      function sortAttachments(objectId, orderedList) {
         $.post('<c:url value="/Attachment" />', { orderedList:orderedList, Action:'Sort'}, function(data){
           data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
-          if (data == "error") {
+          if (data === "error") {
             alert("Une erreur s'est produite !");
+            return;
           }
+          let sortedIds = orderedList.split(",").filter(function(id) {
+            return id;
+          });
+          attachmentEventManager.dispatchEvent('resource-attached-file-sorted', {
+            resourceId : objectId,
+            sortedAttachedFileIds : sortedIds
+          });
         }, 'text');
         if (pageMustBeReloadingAfterSorting) {
           reloadIncludingPage();
