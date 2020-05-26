@@ -28,7 +28,9 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.content.LinkUrlDataSource;
 import org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerProcess;
+import org.silverpeas.core.mail.MailContent;
 import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
 import javax.activation.DataHandler;
@@ -65,7 +67,9 @@ public class MailContentProcess
     try {
       final List<MimeBodyPart> bodyParts = new ArrayList<>();
       final Map<String, Optional<String>> mailAttachmentCidCache = new HashMap<>();
-      final Mutable<String> transformedWysiwygContent = Mutable.of(wysiwygContent);
+      final Mutable<String> transformedWysiwygContent = Mutable.of(wysiwygContent)
+          .filter(StringUtil::isDefined)
+          .map(MailContent::normalizeHtmlContent);
       final IdentifierGenerator idCount = new IdentifierGenerator();
       LinkUrlDataSourceScanner.getAll().forEach(u ->
         u.scanHtml(transformedWysiwygContent.get())
