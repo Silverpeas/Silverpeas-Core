@@ -1,0 +1,1 @@
+ALTER TABLE ST_NotifSended MODIFY title VARCHAR2(1024);

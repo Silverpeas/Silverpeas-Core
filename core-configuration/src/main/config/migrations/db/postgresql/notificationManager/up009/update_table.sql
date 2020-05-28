@@ -1,0 +1,1 @@
+ALTER TABLE ST_NotifSended ALTER COLUMN title type VARCHAR(1024);
