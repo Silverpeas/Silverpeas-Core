@@ -70,6 +70,158 @@ public class StringUtil extends StringUtils {
   }
 
   /**
+   * <p>Check if a CharSequence starts with a specified prefix.</p>
+   *
+   * <p>{@code null}s are handled without exceptions. Two {@code null}
+   * references are considered to be equal. The comparison is case sensitive.</p>
+   *
+   * <pre>
+   * StringUtils.startsWith(null, null)      = true
+   * StringUtils.startsWith(null, "abc")     = false
+   * StringUtils.startsWith("abcdef", null)  = false
+   * StringUtils.startsWith("abcdef", "abc") = true
+   * StringUtils.startsWith("ABCDEF", "abc") = false
+   * </pre>
+   *
+   * @see java.lang.String#startsWith(String)
+   * @param str  the CharSequence to check, may be null
+   * @param prefix the prefix to find, may be null
+   * @return {@code true} if the CharSequence starts with the prefix, case sensitive, or
+   *  both {@code null}
+   */
+  public static boolean startsWith(final CharSequence str, final CharSequence prefix) {
+    return StringUtils.startsWith(str, prefix);
+  }
+
+  /**
+   * <p>Splits the provided text into an array, separator string specified.</p>
+   *
+   * <p>The separator(s) will not be included in the returned String array.
+   * Adjacent separators are treated as one separator.</p>
+   *
+   * <p>A {@code null} input String returns {@code null}.
+   * A {@code null} separator splits on whitespace.</p>
+   *
+   * <pre>
+   * StringUtils.splitByWholeSeparator(null, *)               = null
+   * StringUtils.splitByWholeSeparator("", *)                 = []
+   * StringUtils.splitByWholeSeparator("ab de fg", null)      = ["ab", "de", "fg"]
+   * StringUtils.splitByWholeSeparator("ab   de fg", null)    = ["ab", "de", "fg"]
+   * StringUtils.splitByWholeSeparator("ab:cd:ef", ":")       = ["ab", "cd", "ef"]
+   * StringUtils.splitByWholeSeparator("ab-!-cd-!-ef", "-!-") = ["ab", "cd", "ef"]
+   * </pre>
+   *
+   * @param str  the String to parse, may be null
+   * @param separator  String containing the String to be used as a delimiter,
+   *  {@code null} splits on whitespace
+   * @return an array of parsed Strings, {@code null} if null String was input
+   */
+  public static String[] splitByWholeSeparator(final String str, final String separator) {
+    return StringUtils.splitByWholeSeparator(str, separator);
+  }
+
+  /**
+   * <p>Splits the provided text into an array, separator specified.
+   * This is an alternative to using StringTokenizer.</p>
+   *
+   * <p>The separator is not included in the returned String array.
+   * Adjacent separators are treated as one separator.
+   * For more control over the split use the StrTokenizer class.</p>
+   *
+   * <p>A {@code null} input String returns {@code null}.</p>
+   *
+   * <pre>
+   * StringUtils.split(null, *)         = null
+   * StringUtils.split("", *)           = []
+   * StringUtils.split("a.b.c", '.')    = ["a", "b", "c"]
+   * StringUtils.split("a..b.c", '.')   = ["a", "b", "c"]
+   * StringUtils.split("a:b:c", '.')    = ["a:b:c"]
+   * StringUtils.split("a b c", ' ')    = ["a", "b", "c"]
+   * </pre>
+   *
+   * @param str  the String to parse, may be null
+   * @param separatorChar  the character used as the delimiter
+   * @return an array of parsed Strings, {@code null} if null String input
+   * @since 2.0
+   */
+  public static String[] split(final String str, final char separatorChar) {
+    return StringUtils.split(str, separatorChar);
+  }
+
+  /**
+   * <p>Splits the provided text into an array, separators specified.
+   * This is an alternative to using StringTokenizer.</p>
+   *
+   * <p>The separator is not included in the returned String array.
+   * Adjacent separators are treated as one separator.
+   * For more control over the split use the StrTokenizer class.</p>
+   *
+   * <p>A {@code null} input String returns {@code null}.
+   * A {@code null} separatorChars splits on whitespace.</p>
+   *
+   * <pre>
+   * StringUtils.split(null, *)         = null
+   * StringUtils.split("", *)           = []
+   * StringUtils.split("abc def", null) = ["abc", "def"]
+   * StringUtils.split("abc def", " ")  = ["abc", "def"]
+   * StringUtils.split("abc  def", " ") = ["abc", "def"]
+   * StringUtils.split("ab:cd:ef", ":") = ["ab", "cd", "ef"]
+   * </pre>
+   *
+   * @param str  the String to parse, may be null
+   * @param separatorChars  the characters used as the delimiters,
+   *  {@code null} splits on whitespace
+   * @return an array of parsed Strings, {@code null} if null String input
+   */
+  public static String[] split(final String str, final String separatorChars) {
+    return StringUtils.split(str, separatorChars);
+  }
+
+  /**
+   * <p>Capitalizes a String changing the first character to title case as
+   * per {@link Character#toTitleCase(int)}. No other characters are changed.</p>
+   *
+   * <p>A {@code null} input String returns {@code null}.</p>
+   *
+   * <pre>
+   * StringUtils.capitalize(null)  = null
+   * StringUtils.capitalize("")    = ""
+   * StringUtils.capitalize("cat") = "Cat"
+   * StringUtils.capitalize("cAt") = "CAt"
+   * StringUtils.capitalize("'cat'") = "'cat'"
+   * </pre>
+   *
+   * @param str the String to capitalize, may be null
+   * @return the capitalized String, {@code null} if null String input
+   * @see #uncapitalize(String)
+   */
+  public static String capitalize(final String str) {
+    return StringUtils.capitalize(str);
+  }
+
+  /**
+   * <p>Uncapitalizes a String, changing the first character to lower case as
+   * per {@link Character#toLowerCase(int)}. No other characters are changed.</p>
+   *
+   * <p>A {@code null} input String returns {@code null}.</p>
+   *
+   * <pre>
+   * StringUtils.uncapitalize(null)  = null
+   * StringUtils.uncapitalize("")    = ""
+   * StringUtils.uncapitalize("cat") = "cat"
+   * StringUtils.uncapitalize("Cat") = "cat"
+   * StringUtils.uncapitalize("CAT") = "cAT"
+   * </pre>
+   *
+   * @param str the String to uncapitalize, may be null
+   * @return the uncapitalized String, {@code null} if null String input
+   * @see #capitalize(String)
+   */
+  public static String uncapitalize(final String str) {
+    return StringUtils.uncapitalize(str);
+  }
+
+  /**
    * Normalizes the given string (which must be encoded into UTF-8) in order that the result
    * contains only unified chars.
    * <p>Indeed, according to the environment of the user, sometimes it is sent data with
