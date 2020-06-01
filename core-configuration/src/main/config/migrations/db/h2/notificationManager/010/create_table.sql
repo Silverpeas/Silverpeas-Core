@@ -40,7 +40,7 @@ CREATE TABLE ST_NotifSended (
 	userId		int		NOT NULL,
 	messageType	int		NULL,
 	notifDate	char (13)	NOT NULL,
-	title		varchar (255)	NULL,
+	title		varchar (1024)	NULL,
 	link		varchar (255)	NULL,
 	sessionId	varchar (255)	NULL,
 	componentId	varchar (255)	NULL,
@@ -68,7 +68,7 @@ CREATE TABLE st_notificationresource (
    resourceDescription	varchar(2000) NULL ,
    resourceLocation		varchar(500) NOT NULL ,
    resourceUrl			varchar(1000) NULL,
-	 attachmentTargetId	varchar(500) NULL,
+	 attachmentTargetId varchar(500) NULL,
    resourceDetails			varchar(8000) NULL
 );
 
