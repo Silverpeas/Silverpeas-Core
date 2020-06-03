@@ -234,7 +234,7 @@
         </c:choose>
         <p>
           <input type="submit" style="width:0; height:0; border:0; padding:0"/>
-          <a href="#" class="<%=submitClass%>" onclick="checkForm()"><span><span>LOGIN</span></span></a>
+          <a href="#" class="<%=submitClass%>" onclick="checkForm()"><span><span><fmt:message key="authentication.logon.login.button"/></span></span></a>
         </p>
 
         <% if (forgottenPwdActive || changePwdFromLoginPageActive) { %>
