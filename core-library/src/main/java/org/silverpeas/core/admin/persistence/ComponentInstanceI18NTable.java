@@ -23,10 +23,16 @@
  */
 package org.silverpeas.core.admin.persistence;
 
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.util.MapUtil;
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A ComponentInstanceI18NTable object manages the ST_ComponentInstance table.
@@ -34,56 +40,72 @@ import java.util.List;
 public class ComponentInstanceI18NTable extends Table<ComponentInstanceI18NRow> {
 
   public ComponentInstanceI18NTable() {
-    super("ST_ComponentInstanceI18N");
+    super(TABLENAME);
   }
 
-  private static final String COLUMNS = "id,componentId,lang,name,description";
+  private static final String TABLENAME = "ST_ComponentInstanceI18N";
+  private static final String COMPONENT_ID_FIELD = "componentId";
+  private static final String COLUMNS = "id," + COMPONENT_ID_FIELD + ",lang,name,description";
 
   /**
    * Fetch the current component row from a resultSet.
-   * @param rs
+   * @param rs the result set containing the data.
    * @return the current component row from a resultSet.
-   * @throws SQLException
+   * @throws SQLException on technical problem.
    */
-  protected ComponentInstanceI18NRow fetchTranslation(ResultSet rs) throws SQLException {
-    ComponentInstanceI18NRow s = new ComponentInstanceI18NRow();
-
+  private ComponentInstanceI18NRow fetchTranslation(ResultSet rs) throws SQLException {
+    final ComponentInstanceI18NRow s = new ComponentInstanceI18NRow();
     s.id = rs.getInt(1);
     s.componentId = rs.getInt(2);
     s.lang = rs.getString(3);
     s.name = rs.getString(4);
     s.description = rs.getString(5);
-
     return s;
   }
 
   /**
-   * Returns the Component whith the given id.
-   * @param componentId
-   * @return the Component whith the given id.
-   * @throws SQLException
+   * Returns the Component with the given id.
+   * @param componentId the identifier of the component instance to check.
+   * @return the Component with the given id.
+   * @throws SQLException on technical problem.
    */
-  public List<ComponentInstanceI18NRow> getTranslations(int componentId) throws
-      SQLException {
+  public List<ComponentInstanceI18NRow> getTranslations(int componentId) throws SQLException {
     return getRows(SELECT_TRANSLATIONS, componentId);
   }
 
-  private static final String SELECT_TRANSLATIONS = "select " + COLUMNS
-      + " from ST_ComponentInstanceI18N where componentId = ?";
+  private static final String SELECT_TRANSLATIONS =
+      "select " + COLUMNS + " from " + TABLENAME + " where " + COMPONENT_ID_FIELD + " = ?";
+
+  /**
+   * Gets the translations of component instance represented by the given identifiers indexed by
+   * identifiers of component instance.
+   * @param con a database connection.
+   * @param componentIds the identifiers of component instance.
+   * @return a {@link Map} which translations are indexed by identifiers of component instance.
+   * @throws SQLException on technical problem.
+   */
+  public Map<Integer, List<ComponentInstanceI18NRow>> getIndexedTranslations(final Connection con,
+      final Collection<Integer> componentIds) throws SQLException {
+    return JdbcSqlQuery.executeBySplittingOn(componentIds,
+        (idBatch, result) -> JdbcSqlQuery.createSelect(COLUMNS).from(TABLENAME)
+            .where(COMPONENT_ID_FIELD).in(idBatch).executeWith(con, r -> {
+              final ComponentInstanceI18NRow translation = fetchTranslation(r);
+              MapUtil.putAddList(result, translation.componentId, translation);
+              return null;
+            }));
+  }
 
   /**
    * Inserts in the database a new component row.
    * @param translation
    * @throws SQLException
    */
-  public void createTranslation(ComponentInstanceI18NRow translation) throws
-      SQLException {
+  public void createTranslation(ComponentInstanceI18NRow translation) throws SQLException {
     insertRow(INSERT_TRANSLATION, translation);
   }
 
-  private static final String INSERT_TRANSLATION = "insert into"
-      + " ST_ComponentInstanceI18N(" + COLUMNS + ")"
-      + " values  (?, ?, ?, ?, ?)";
+  private static final String INSERT_TRANSLATION =
+      "insert into " + TABLENAME + "(" + COLUMNS + ")" + " values  (?, ?, ?, ?, ?)";
 
   @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
@@ -106,8 +128,8 @@ public class ComponentInstanceI18NTable extends Table<ComponentInstanceI18NRow> 
     updateRow(UPDATE_TRANSLATION, component);
   }
 
-  private static final String UPDATE_TRANSLATION = "update ST_ComponentInstanceI18N set"
-      + " name = ?," + " description = ? " + " WHERE id = ? ";
+  private static final String UPDATE_TRANSLATION =
+      "update " + TABLENAME + " set name = ?," + " description = ? " + " WHERE id = ? ";
 
   @Override
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
@@ -126,8 +148,7 @@ public class ComponentInstanceI18NTable extends Table<ComponentInstanceI18NRow> 
     updateRelation(DELETE_TRANSLATION, id);
   }
 
-  private static final String DELETE_TRANSLATION =
-      "delete from ST_ComponentInstanceI18N where id = ?";
+  private static final String DELETE_TRANSLATION = "delete from " + TABLENAME + " where id = ?";
 
   /**
    * Delete all component's translations.
@@ -139,7 +160,7 @@ public class ComponentInstanceI18NTable extends Table<ComponentInstanceI18NRow> 
   }
 
   private static final String DELETE_TRANSLATIONS =
-      "delete from ST_ComponentInstanceI18N where componentId = ?";
+      "delete from " + TABLENAME + " where " + COMPONENT_ID_FIELD + " = ?";
 
   /**
    * Fetch the current component row from a resultSet.

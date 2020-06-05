@@ -95,6 +95,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
     domainFatherId = Integer.toString(compo.spaceId);
     setLabel(compo.name);
     setDescription(compo.description);
+    setLanguage(compo.lang);
     name = compo.componentName;
 
     if (compo.createTime != null) {

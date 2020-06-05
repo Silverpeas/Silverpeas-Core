@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.component.model.ComponentI18N;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.Parameter;
+import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.component.notification.ComponentInstanceEventNotifier;
 import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
@@ -35,9 +36,11 @@ import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.user.ProfileInstManager;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -51,9 +54,13 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.DELETION;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.UPDATE;
@@ -274,17 +281,7 @@ public class ComponentInstManager {
         compoLight = new ComponentInstLight(compo);
         compoLight.setLocalId(compLocalId);
         compoLight.setDomainFatherId("WA" + compoLight.getDomainFatherId());
-
-        // Add default translation
-        ComponentI18N translation = new ComponentI18N(compo.lang, compo.name, compo.description);
-        compoLight.addTranslation(translation);
-
-        List<ComponentInstanceI18NRow> translations = organizationSchema.instanceI18N().
-            getTranslations(compo.id);
-        for (int t = 0; translations != null && t < translations.size(); t++) {
-          ComponentInstanceI18NRow row = translations.get(t);
-          compoLight.addTranslation(new ComponentI18N(row));
-        }
+        loadTranslations(compoLight, compo);
       }
     } catch (Exception e) {
       throw new AdminException(failureOnGetting(COMPONENT, compLocalId), e);
@@ -344,17 +341,8 @@ public class ComponentInstManager {
 
         componentInst.setLanguage(instance.lang);
 
-        // Add default translation
-        ComponentI18N translation = new ComponentI18N(instance.lang,
-            instance.name, instance.description);
-        componentInst.addTranslation(translation);
-
-        List<ComponentInstanceI18NRow> translations = organizationSchema.instanceI18N()
-            .getTranslations(instance.id);
-        for (int t = 0; translations != null && t < translations.size(); t++) {
-          ComponentInstanceI18NRow row = translations.get(t);
-          componentInst.addTranslation(new ComponentI18N(row));
-        }
+        // translations
+        loadTranslations(componentInst, instance);
 
         componentInst.setPublic(instance.publicAccess == 1);
         componentInst.setHidden(instance.hidden == 1);
@@ -565,12 +553,72 @@ public class ComponentInstManager {
       con = DBUtil.openConnection();
 
       // getting all components in given space
-      return ComponentDAO.getComponentsInSpace(con, spaceId);
+      final List<ComponentInstLight> componentsInSpace = ComponentDAO.getComponentsInSpace(con, spaceId);
+      setTranslations(con, componentsInSpace);
+      return componentsInSpace;
 
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("component instances in space", spaceId), e);
     } finally {
       DBUtil.close(con);
+    }
+  }
+
+  @SuppressWarnings({"unchecked"})
+  private void loadTranslations(final SilverpeasSharedComponentInstance instance,
+      final ComponentInstanceRow compo) throws SQLException {
+    // default translation
+    final ComponentI18N translation = new ComponentI18N(compo.lang, compo.name, compo.description);
+    final AbstractI18NBean<ComponentI18N> i18nInstance = (AbstractI18NBean<ComponentI18N>) instance;
+    i18nInstance.addTranslation(translation);
+    // other ones
+    final List<ComponentInstanceI18NRow> translations = organizationSchema.instanceI18N().
+        getTranslations(compo.id);
+    for (int i = 0; translations != null && i < translations.size(); i++) {
+      final ComponentInstanceI18NRow row = translations.get(i);
+      i18nInstance.addTranslation(new ComponentI18N(row));
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T extends SilverpeasSharedComponentInstance> void setTranslations(final Connection con,
+      Collection<T> instances) throws AdminException {
+    if (!instances.isEmpty()) {
+      long startTime = System.currentTimeMillis();
+      final Map<Integer, T> instancesByLocalIds = new HashMap<>(instances.size());
+      final Map<Integer, AbstractI18NBean<ComponentI18N>> i18nInstancesByLocalIds = instances.stream()
+          .map(i -> {
+            final int localId;
+            if (i instanceof ComponentInstLight) {
+              localId = ((ComponentInstLight) i).getLocalId();
+            } else {
+              localId = ((ComponentInst) i).getLocalId();
+            }
+            instancesByLocalIds.put(localId, i);
+            return Pair.of(localId, (AbstractI18NBean<ComponentI18N>) i);
+          })
+          .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+      try {
+        final Map<Integer, List<ComponentInstanceI18NRow>> allTranslations = organizationSchema
+            .instanceI18N().getIndexedTranslations(con, i18nInstancesByLocalIds.keySet());
+        i18nInstancesByLocalIds.forEach((localId, i18nInstance) -> {
+          final T instance = instancesByLocalIds.get(localId);
+          // default translation
+          final ComponentI18N translation = new ComponentI18N(i18nInstance.getLanguage(),
+              instance.getLabel(), instance.getDescription());
+          i18nInstance.addTranslation(translation);
+          // other ones
+          allTranslations.getOrDefault(localId, emptyList())
+              .forEach(r -> i18nInstance.addTranslation(new ComponentI18N(r)));
+        });
+      } catch (SQLException e) {
+        throw new AdminException(e);
+      } finally {
+        long endTime = System.currentTimeMillis();
+        SilverLogger.getLogger(this).debug(() -> MessageFormat
+            .format(" search translations in {0} for {1} component instances",
+                formatDurationHMS(endTime - startTime), instances.size()));
+      }
     }
   }
 
