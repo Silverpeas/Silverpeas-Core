@@ -38,7 +38,7 @@ import static org.silverpeas.core.calendar.CalendarEventUtil.asAttendee;
  * A notifier of attendees about some lifecycle events triggered by the Calendar engine.
  * @author mmoquillon
  */
-public abstract class AttendeeNotifier<T extends ResourceEvent>
+public abstract class AbstractNotifier<T extends ResourceEvent>
     extends CDIAfterSuccessfulTransactionResourceEventListener<T> {
 
   protected List<Attendee> ownerOf(final CalendarComponent calendarComponent) {

@@ -59,6 +59,12 @@ public class CalendarSilverpeasTemplateNames {
   public static final String TEMPLATE_ATTENDEE_PRESENCE = "attendeePresenceUpdated";
 
   /**
+   * Template of the message that will be sent to notify about the creation of the properties of a
+   * given calendar event (other than its attendees).
+   */
+  public static final String TEMPLATE_EVENT_CREATED = "calendarEventCreated";
+
+  /**
    * Template of the message that will be sent to notify about the update of the properties of a
    * given calendar event (other than its attendees).
    */

@@ -55,8 +55,7 @@ public class CalendarWarBuilder extends WarBuilder4LibCore {
         HtmlProperty.class);
     addClasses(CalendarEventUserNotificationReminder.class);
     addClasses(CDIAfterSuccessfulTransactionResourceEventListener.class, Reminder.class,
-        AttendeeLifeCycleEventNotifier.class, CalendarEventUserNotificationReminder.class,
-        DefaultContributionReminderUserNotification.class);
+        CalendarEventUserNotificationReminder.class, DefaultContributionReminderUserNotification.class);
   }
 
   /**
