@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2019 Silverpeas
+ * Copyright (C) 2000 - 2020 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -49,7 +49,7 @@ import javax.ws.rs.core.Response.Status;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /*
- * Copyright (C) 2000 - 2019 Silverpeas
+ * Copyright (C) 2000 - 2020 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as

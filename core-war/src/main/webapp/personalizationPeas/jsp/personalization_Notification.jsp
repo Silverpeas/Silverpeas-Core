@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2019 Silverpeas
+    Copyright (C) 2000 - 2020 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -25,7 +25,7 @@
 --%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %><%--
 
-    Copyright (C) 2000 - 2019 Silverpeas
+    Copyright (C) 2000 - 2020 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
