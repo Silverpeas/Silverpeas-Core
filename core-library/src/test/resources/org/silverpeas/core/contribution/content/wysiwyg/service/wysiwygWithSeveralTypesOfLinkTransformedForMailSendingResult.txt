@@ -1,4 +1,4 @@
-<p>Un contenu complexe pour une <span style="color:#FFFFE0;"><span style="background-color: rgb(255, 0, 0);">campagne</span></span> simple.</p>
+<html><body><p>Un contenu complexe pour une <span style="color:#FFFFE0;"><span style="background-color: rgb(255, 0, 0);">campagne</span></span> simple.</p>
 
 <p><u>Soulign&eacute;</u></p>
 
@@ -56,3 +56,4 @@
 <p><a class="toto" href="/silverpeas/Publication/346" target="_blank">  Publication 346  </a></p>
 
 <p><a class="toto" href="/silverpeas/Publication/346" target="_self">  Publication 346  </a></p>
+</body></html>

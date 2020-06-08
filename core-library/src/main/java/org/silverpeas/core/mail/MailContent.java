@@ -23,12 +23,19 @@
  */
 package org.silverpeas.core.mail;
 
+import net.htmlparser.jericho.Renderer;
+import net.htmlparser.jericho.Source;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.activation.DataHandler;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 
 /**
  * @author Yohann Chastagnier
@@ -37,10 +44,30 @@ public class MailContent {
   public static final MailContent EMPTY = new MailContent();
 
   private static final String DEFAULT_CONTENT_TYPE = "text/html; charset=\"UTF-8\"";
+  private static final String TEXT_CONTENT_TYPE = "text/plain; charset=\"UTF-8\"";
+  private static final String ALTERNATIVE_SUBTYPE = "alternative";
 
   private Object content = "";
   private String contentType = DEFAULT_CONTENT_TYPE;
   private boolean isHtml = true;
+
+  /**
+   * Hidden constructor.
+   */
+  private MailContent() {
+  }
+
+  private static MimeBodyPart initMimeBodyPartFromContent(final String content,
+      final String contentType) {
+    final MimeBodyPart mimeBodyPart = new MimeBodyPart();
+    try {
+      mimeBodyPart.setDataHandler(
+          new DataHandler(new ByteArrayDataSource(content.getBytes(Charsets.UTF_8), contentType)));
+    } catch (MessagingException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+    return mimeBodyPart;
+  }
 
   /**
    * Gets a new instance of {@link MimeMessage} by specifying a content as a string.
@@ -69,9 +96,39 @@ public class MailContent {
   }
 
   /**
-   * Hidden constructor.
+   * Normalizes the given HTML content in order to be sent safely by mail infrastructure.
+   * @param htmlContent an HTML content.
+   * @return a string representing the normalized HTML content.
    */
-  private MailContent() {
+  public static String normalizeHtmlContent(final String htmlContent) {
+    if (!htmlContent.toLowerCase().contains("<html>")) {
+      return "<html><body>" + htmlContent + "</body></html>";
+    }
+    return htmlContent;
+  }
+
+  /**
+   * Gets a {@link MimeBodyPart} filled with text content extracted from given HTML content.
+   * @param htmlContent an HTML content.
+   * @return a {@link MimeBodyPart}.
+   */
+  public static MimeBodyPart extractTextBodyPartFromHtmlContent(final String htmlContent) {
+    final String textContent = new Renderer(new Source(htmlContent))
+        .setConvertNonBreakingSpaces(true)
+        .setIncludeHyperlinkURLs(true)
+        .setDecorateFontStyles(true)
+        .setIncludeFirstElementTopMargin(true)
+        .toString();
+    return initMimeBodyPartFromContent(textContent, TEXT_CONTENT_TYPE);
+  }
+
+  /**
+   * Gets a {@link MimeBodyPart} initialized with given HTML content into UTF8 encoding.
+   * @param htmlContent an HTML content as UTF8 encoding.
+   * @return a {@link MimeBodyPart}.
+   */
+  public static MimeBodyPart getHtmlBodyPartFromHtmlContent(final String htmlContent) {
+    return initMimeBodyPartFromContent(htmlContent, DEFAULT_CONTENT_TYPE);
   }
 
   /**
@@ -127,10 +184,19 @@ public class MailContent {
    */
   public void applyOn(MimeMessage message) throws MessagingException {
     if (getValue() instanceof String) {
-      String contentAsString = (String) getValue();
-      if (!contentAsString.toLowerCase().contains("<html>") && !isHtml()) {
+      final String contentAsString = (String) getValue();
+      if (!isHtml() && !contentAsString.toLowerCase().contains("<html>")) {
         // Content as simple text if no <html> TAG is detected.
         message.setText(contentAsString, Charsets.UTF_8.name());
+      } else if (getContentType().toLowerCase().contains("html")) {
+        final String htmlContent = normalizeHtmlContent(contentAsString);
+        final Multipart multipart = new MimeMultipart(ALTERNATIVE_SUBTYPE);
+        content = multipart;
+        multipart.addBodyPart(extractTextBodyPartFromHtmlContent(htmlContent));
+        final MimeBodyPart htmlPart = initMimeBodyPartFromContent(htmlContent, getContentType());
+        multipart.addBodyPart(htmlPart);
+        // last body part is the preferred alternative
+        message.setContent(multipart);
       } else {
         message.setContent(contentAsString, getContentType());
       }

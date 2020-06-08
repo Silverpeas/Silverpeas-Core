@@ -36,10 +36,10 @@ import org.silverpeas.core.mail.engine.MailSender;
 import org.silverpeas.core.mail.engine.MailSenderProvider;
 import org.silverpeas.core.mail.engine.MailSenderTask;
 import org.silverpeas.core.mail.engine.SmtpMailSender;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.GreenMailExtension;
 import org.silverpeas.core.test.extention.LoggerExtension;
 import org.silverpeas.core.test.extention.LoggerLevel;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.SmtpConfig;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.util.MimeTypes;
@@ -47,13 +47,18 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.Level;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -70,6 +75,7 @@ public class SmtpMailSendingTest {
   private final static String MALFORMED_FROM = "fromATtiti.org";
   private final static String COMMON_TO = "to@toto.org";
   private final static String MALFORMED_TO = "toATtoto.org";
+  private static final String EMPTY_HTML_CONTENT = "<html><body></body></html>";
 
   private MailSender oldMailSender;
 
@@ -115,7 +121,7 @@ public class SmtpMailSendingTest {
     assertThat(mailSending.getMailToSend().getTo(), nullValue());
     assertThat(mailSending.getMailToSend().getSubject(), isEmptyString());
     assertThat(mailSending.getMailToSend().getContent().isHtml(), is(true));
-    assertThat(mailSending.getMailToSend().getContent().toString(), isEmptyString());
+    assertThatContentIsHtmlComputed(mailSending.getMailToSend(), EMPTY_HTML_CONTENT);
     assertThat(mailSending.getMailToSend().isReplyToRequired(), is(false));
     assertThat(mailSending.getMailToSend().isAsynchronous(), is(true));
 
@@ -138,7 +144,7 @@ public class SmtpMailSendingTest {
     assertThat(mailToSend.getTo(), hasItem(receiverEmail));
     assertThat(mailToSend.getSubject(), isEmptyString());
     assertThat(mailToSend.getContent().isHtml(), is(true));
-    assertThat(mailToSend.getContent().toString(), isEmptyString());
+    assertThatContentIsHtmlComputed(mailToSend, EMPTY_HTML_CONTENT);
     assertThat(mailToSend.isReplyToRequired(), is(false));
     assertThat(mailToSend.isAsynchronous(), is(false));
     assertMailSent(mailToSend, mail);
@@ -155,7 +161,7 @@ public class SmtpMailSendingTest {
     assertThat(mailSending.getMailToSend().getTo(), hasItem(receiverEmail));
     assertThat(mailSending.getMailToSend().getSubject(), isEmptyString());
     assertThat(mailSending.getMailToSend().getContent().isHtml(), is(true));
-    assertThat(mailSending.getMailToSend().getContent().toString(), isEmptyString());
+    assertThatContentIsHtmlComputed(mailSending.getMailToSend(), EMPTY_HTML_CONTENT);
     assertThat(mailSending.getMailToSend().isReplyToRequired(), is(false));
     assertThat(mailSending.getMailToSend().isAsynchronous(), is(true));
 
@@ -178,7 +184,7 @@ public class SmtpMailSendingTest {
     assertThat(mailToSend.getTo(), hasItem(receiverEmail));
     assertThat(mailToSend.getSubject(), isEmptyString());
     assertThat(mailToSend.getContent().isHtml(), is(true));
-    assertThat(mailToSend.getContent().toString(), isEmptyString());
+    assertThatContentIsHtmlComputed(mailToSend, EMPTY_HTML_CONTENT);
     assertThat(mailToSend.isReplyToRequired(), is(false));
     assertThat(mailToSend.isAsynchronous(), is(false));
     assertMailSent(mailToSend, mail);
@@ -200,7 +206,7 @@ public class SmtpMailSendingTest {
     assertThat(mailToSend.getTo(), hasItem(receiverEmail));
     assertThat(mailToSend.getSubject(), is(subject));
     assertThat(mailToSend.getContent().isHtml(), is(true));
-    assertThat(mailToSend.getContent().toString(), isEmptyString());
+    assertThatContentIsHtmlComputed(mailToSend, EMPTY_HTML_CONTENT);
     assertThat(mailToSend.isReplyToRequired(), is(false));
     assertThat(mailToSend.isAsynchronous(), is(false));
     assertMailSent(mailToSend, mail);
@@ -223,7 +229,7 @@ public class SmtpMailSendingTest {
     assertThat(mailToSend.getTo(), hasItem(receiverEmail));
     assertThat(mailToSend.getSubject(), isEmptyString());
     assertThat(mailToSend.getContent().isHtml(), is(true));
-    assertThat(mailToSend.getContent().toString(), is(content));
+    assertThatContentIsHtmlComputed(mailToSend, "<html><body>" + content + "</body></html>");
     assertThat(mailToSend.isReplyToRequired(), is(false));
     assertThat(mailToSend.isAsynchronous(), is(false));
     assertMailSent(mailToSend, mail);
@@ -249,7 +255,7 @@ public class SmtpMailSendingTest {
     assertThat(mailToSend.getTo(), hasItem(receiverEmail));
     assertThat(mailToSend.getSubject(), is(subject));
     assertThat(mailToSend.getContent().isHtml(), is(true));
-    assertThat(mailToSend.getContent().toString(), isEmptyString());
+    assertThatContentIsHtmlComputed(mailToSend, EMPTY_HTML_CONTENT);
     assertThat(mailToSend.isReplyToRequired(), is(false));
     assertThat(mailToSend.isAsynchronous(), is(false));
     assertMailSent(mailToSend, mail);
@@ -313,7 +319,7 @@ public class SmtpMailSendingTest {
   }
 
   @Test
-  public void sendingMailAsynchronously(GreenMailOperations mail) throws Exception {
+  public void sendingMailAsynchronously(GreenMailOperations mail) {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     MailSending mailSending =
@@ -335,8 +341,16 @@ public class SmtpMailSendingTest {
   Tool methods
    */
 
-  private void sendSynchronouslyAndAssertThatNoSendingDone(MailSending mailSending, GreenMailOperations mail)
-      throws Exception {
+  private void assertThatContentIsHtmlComputed(final MailToSend mailToSend,
+      final String expectedContent)
+      throws IOException, MessagingException {
+    assertThat(mailToSend.getContent().getValue(), instanceOf(Multipart.class));
+    assertThat(
+        ((Multipart) mailToSend.getContent().getValue()).getBodyPart(1).getContent().toString(),
+        is(expectedContent));
+  }
+
+  private void sendSynchronouslyAndAssertThatNoSendingDone(MailSending mailSending, GreenMailOperations mail) {
     mailSending.sendSynchronously();
     // Verifying sent data
     assertThat(mail.getReceivedMessages(), emptyArray());
@@ -407,16 +421,13 @@ public class SmtpMailSendingTest {
   /**
    * Stubbed SMTP mail sender.
    */
-  class StubbedSmtpMailSender extends SmtpMailSender {
+  static class StubbedSmtpMailSender extends SmtpMailSender {
 
     public MailToSend currentMailToSend;
 
     @Override
     public void send(final MailToSend mail) {
-      try {
-        Thread.sleep(2);
-      } catch (InterruptedException ignored) {
-      }
+      await().atLeast(2, TimeUnit.MILLISECONDS).untilTrue(new AtomicBoolean(true));
       currentMailToSend = mail;
       super.send(mail);
     }
