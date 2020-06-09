@@ -171,6 +171,16 @@ public abstract class RESTWebService implements ProtectedWebResource {
   }
 
   /**
+   * Is the user behind the request is well-defined in Silverpeas? In the case of an anonymous
+   * or public request, the user isn't identified in Silverpeas and therefore this method returns
+   * false.
+   * @return true if the user behind the request is well identified, false otherwise.
+   */
+  protected boolean isUserDefined() {
+    return getSilverpeasContext().getUser() != null;
+  }
+
+  /**
    * Gets the detail about the user that has called this web service. If the user isn't already
    * identified by this web service, then null is returned.
    *

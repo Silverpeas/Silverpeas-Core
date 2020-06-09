@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.publication;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -31,6 +32,9 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
 import javax.ws.rs.WebApplicationException;
@@ -39,6 +43,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A REST Web resource providing access to publications.
@@ -86,7 +91,12 @@ public abstract class AbstractPublicationResource extends RESTWebService {
         attachments.addAll(attachmentService.listDocumentsByForeignKeyAndType(
             publication.getPK().toResourceReference(),
             DocumentType.form, null));
-        entity.withAttachments(attachments);
+        // only the attachments that can be accessible by any readers (meaning that can be
+        // downloaded in order to access the file content)
+        List<SimpleDocument> accessibleAttachments = attachments.stream()
+            .filter(this::isAttachmentAuthorized)
+            .collect(Collectors.toList());
+        entity.withAttachments(accessibleAttachments);
       }
       return entity;
     }
@@ -118,4 +128,15 @@ public abstract class AbstractPublicationResource extends RESTWebService {
     }
   }
 
+  private boolean isAttachmentAuthorized(final SimpleDocument attachment) {
+    final boolean authorized;
+    if (isUserDefined()) {
+      final User user = getUser();
+      authorized = SimpleDocumentAccessControl.get().isUserAuthorized(user.getId(), attachment,
+          AccessControlContext.init().onOperationsOf(AccessControlOperation.download));
+    } else {
+      authorized = attachment.isDownloadAllowedForReaders();
+    }
+    return authorized;
+  }
 }
