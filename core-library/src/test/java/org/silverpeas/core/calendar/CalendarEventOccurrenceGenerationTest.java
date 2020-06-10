@@ -620,13 +620,13 @@ public class CalendarEventOccurrenceGenerationTest {
     assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 3, 29, 1, 0)));
     assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 3, 29, 2, 30)));
 
-    from = ZonedDateTime.parse("2018-03-29T02:59:59+01:00[Europe/Paris]");
+    from = ZonedDateTime.parse("2018-03-29T02:59:59+02:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
     assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 3, 29, 1, 0)));
     assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 3, 29, 2, 30)));
 
-    from = ZonedDateTime.parse("2018-03-29T03:00:00+01:00[Europe/Paris]");
+    from = ZonedDateTime.parse("2018-03-29T03:00:00+02:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
     assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 4, 29, 1, 0)));

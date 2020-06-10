@@ -827,7 +827,7 @@ public class DateUtil {
     Locale locale = getLocale(language);
     Calendar calendar = (locale != null ? getInstance(locale) : getInstance());
     calendar.setTime(date);
-    calendar.set(DAY_OF_WEEK, getFirstDayOfWeek(language));
+    calendar.set(DAY_OF_WEEK, getFirstDayOfWeek(locale));
     calendar.set(HOUR_OF_DAY, 0);
     calendar.set(MINUTE, 0);
     calendar.set(SECOND, 0);
@@ -846,7 +846,7 @@ public class DateUtil {
     Locale locale = getLocale(language);
     Calendar calendar = (locale != null ? getInstance(locale) : getInstance());
     calendar.setTime(date);
-    calendar.set(DAY_OF_WEEK, getFirstDayOfWeek(language));
+    calendar.set(DAY_OF_WEEK, getFirstDayOfWeek(locale));
     calendar.set(HOUR_OF_DAY, 23);
     calendar.set(MINUTE, 59);
     calendar.set(SECOND, 59);
@@ -861,23 +861,55 @@ public class DateUtil {
    * @param locale the locale to take into account (fr for the french locale (fr_FR) for example).
    */
   private static Locale getLocale(final String locale) {
+    final Locale l;
     if (StringUtil.isDefined(locale)) {
-      return new Locale(locale);
+      if (locale.contains("_")) {
+        String[] i18n = locale.split("_");
+        l = new Locale(i18n[0], i18n[1]);
+      } else {
+        // we take into account only supported locale in Silverpeas
+        switch (locale) {
+          case "fr":
+            l = Locale.FRANCE;
+            break;
+          case "en":
+            l = Locale.US;
+            break;
+          case "de":
+            l = Locale.GERMANY;
+            break;
+          default:
+            l = new Locale(locale);
+            break;
+        }
+      }
+      return l;
     }
     return null;
   }
 
   /**
    * Gets the first day of weeks of the calendar with 1 meaning for sunday, 2 meaning for monday,
-   * and so on. The first day of weeks depends on the locale; the first day of weeks is monday for
-   * french whereas it is for sunday for US.
-   * @param language the locale to take into account (fr for the french locale (fr_FR) for
-   * example).
+   * and so on. The first day of weeks depends on the i18n code of the country; for example the
+   * first day of weeks is monday for France and UK whereas it is sunday for USA.
+   * @param localeCode the l10n or the i18n code of the locale (fr for the french or fr_FR for
+   * France for example).
    * @return the first day of week.
    */
-  public static int getFirstDayOfWeek(String language) {
+  public static int getFirstDayOfWeek(String localeCode) {
+    Locale locale = getLocale(localeCode);
+    return getFirstDayOfWeek(locale);
+  }
+
+  /**
+   * Gets the first day of weeks of the calendar with 1 meaning for sunday, 2 meaning for monday,
+   * and so on. The first day of weeks depends on the locale; the first day of weeks is monday for
+   * french whereas it is for sunday for US.
+   * @param locale the locale to take into account.
+   * @return the first day of week.
+   */
+  public static int getFirstDayOfWeek(Locale locale) {
     Calendar calendar;
-    Locale locale = getLocale(language);
     if (locale == null) {
       calendar = Calendar.getInstance();
     } else {
