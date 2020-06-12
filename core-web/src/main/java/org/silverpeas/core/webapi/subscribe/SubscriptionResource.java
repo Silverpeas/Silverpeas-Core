@@ -29,8 +29,8 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.comment.CommentRuntimeException;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
@@ -55,7 +55,10 @@ import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static org.silverpeas.core.subscription.SubscriptionResourceType.from;
 import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.UNKNOWN;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -203,12 +206,11 @@ public class SubscriptionResource extends RESTWebService {
       @PathParam("subscriptionType") String subscriptionType, @PathParam("id") String resourceId,
       @QueryParam("existenceIndicatorOnly") boolean existenceIndicatorOnly) {
     try {
-      SubscriptionResourceType parsedSubscriptionResourceType =
-          SubscriptionResourceType.from(subscriptionType);
-      if (parsedSubscriptionResourceType == SubscriptionResourceType.UNKNOWN) {
+      final SubscriptionResourceType parsedSubscriptionResourceType = from(subscriptionType);
+      if (parsedSubscriptionResourceType == UNKNOWN) {
         throw new WebApplicationException(Status.NOT_FOUND);
       }
-      if (parsedSubscriptionResourceType != SubscriptionResourceType.COMPONENT &&
+      if (parsedSubscriptionResourceType != COMPONENT &&
           StringUtil.isNotDefined(resourceId)) {
         throw new WebApplicationException(Status.NOT_FOUND);
       }

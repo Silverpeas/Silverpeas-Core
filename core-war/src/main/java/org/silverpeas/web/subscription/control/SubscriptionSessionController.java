@@ -23,36 +23,38 @@
  */
 package org.silverpeas.web.subscription.control;
 
+import org.silverpeas.core.admin.ProfiledObjectType;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.NodeSubscription;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionList;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.ProfiledObjectType;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
-import org.silverpeas.core.util.ResourceLocator;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
 import static org.silverpeas.core.subscription.util.SubscriptionUtil.isSameVisibilityAsTheCurrentRequester;
 
 /**
@@ -60,8 +62,9 @@ import static org.silverpeas.core.subscription.util.SubscriptionUtil.isSameVisib
  * Date: 04/03/13
  */
 public class SubscriptionSessionController extends AbstractComponentSessionController {
+  private static final long serialVersionUID = -5612529905360855746L;
 
-  private SubscriptionService subscriptionService;
+  private transient SubscriptionService subscriptionService;
 
   /**
    * Default constructor.
@@ -113,7 +116,7 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
     // Add extra params
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(resource.getInstanceId());
-    if (resource.getType() == SubscriptionResourceType.NODE &&
+    if (resource.getType() == NODE &&
         getComponentAccessController().isRightOnTopicsEnabled(sug.getComponentId())) {
       NodeDetail node =
           NodeService.get().getHeader(new NodePK(resource.getId(), resource.getInstanceId()));
@@ -139,37 +142,32 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
 
     // Initializing necessary subscriptions
     SubscriptionResource resource = getContext().getResource();
-    Collection<Subscription> subscriptions =
-        new ArrayList<Subscription>(users.length + groups.length);
+    Collection<Subscription> subscriptions = new ArrayList<>(users.length + groups.length);
     for (UserDetail user : users) {
       if (!isSameVisibilityAsTheCurrentRequester(user, getUserDetail())) {
         continue;
       }
-      switch (resource.getType()) {
-        case NODE:
-          subscriptions.add(new NodeSubscription(UserSubscriptionSubscriber.from(user.getId()),
-              (NodePK) resource.getPK(), getUserId()));
-          break;
-        case COMPONENT:
-          subscriptions.add(new ComponentSubscription(UserSubscriptionSubscriber.from(user.getId()),
-              resource.getInstanceId(), getUserId()));
-          break;
+      SubscriptionResourceType type = resource.getType();
+      if (NODE.equals(type)) {
+        subscriptions.add(new NodeSubscription(UserSubscriptionSubscriber.from(user.getId()),
+            resource.getPK(), getUserId()));
+      } else if (COMPONENT.equals(type)) {
+        subscriptions.add(new ComponentSubscription(UserSubscriptionSubscriber.from(user.getId()),
+            resource.getInstanceId(), getUserId()));
       }
     }
     for (Group group : groups) {
       if (!isSameVisibilityAsTheCurrentRequester(group, getUserDetail())) {
         continue;
       }
-      switch (resource.getType()) {
-        case NODE:
-          subscriptions.add(new NodeSubscription(GroupSubscriptionSubscriber.from(group.getId()),
-              (NodePK) resource.getPK(), getUserId()));
-          break;
-        case COMPONENT:
-          subscriptions.add(
-              new ComponentSubscription(GroupSubscriptionSubscriber.from(group.getId()),
-                  resource.getInstanceId(), getUserId()));
-          break;
+      SubscriptionResourceType type = resource.getType();
+      if (NODE.equals(type)) {
+        subscriptions.add(
+            new NodeSubscription(GroupSubscriptionSubscriber.from(group.getId()), resource.getPK(),
+                getUserId()));
+      } else if (COMPONENT.equals(type)) {
+        subscriptions.add(new ComponentSubscription(GroupSubscriptionSubscriber.from(group.getId()),
+            resource.getInstanceId(), getUserId()));
       }
     }
 

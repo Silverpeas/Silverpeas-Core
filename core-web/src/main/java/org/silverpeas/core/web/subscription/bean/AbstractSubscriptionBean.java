@@ -38,10 +38,11 @@ import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.util.URLUtil;
 
 import java.util.Date;
+
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
 
 /**
  * Abstract class that defines all the common properties of the different concrete type of
@@ -122,7 +123,7 @@ public abstract class AbstractSubscriptionBean implements Subscription {
 
   private boolean isUserCanAccess(final String userId, SubscriptionResource resource) {
     final boolean accessOK;
-    if (resource.getType() == SubscriptionResourceType.NODE) {
+    if (resource.getType() == NODE) {
       NodePK nodePK = new NodePK(resource.getId(), resource.getInstanceId());
       accessOK = NodeAccessControl.get().isUserAuthorized(userId, nodePK);
     } else {
@@ -133,7 +134,7 @@ public abstract class AbstractSubscriptionBean implements Subscription {
 
   private boolean isGroupCanAccess(final String groupId, SubscriptionResource resource) {
     final boolean accessOK;
-    if (resource.getType() == SubscriptionResourceType.NODE) {
+    if (resource.getType() == NODE) {
       NodePK nodePK = new NodePK(resource.getId(), resource.getInstanceId());
       accessOK = NodeAccessControl.get().isGroupAuthorized(groupId, nodePK);
     } else {

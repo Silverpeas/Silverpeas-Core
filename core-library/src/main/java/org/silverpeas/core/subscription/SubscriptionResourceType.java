@@ -23,38 +23,36 @@
  */
 package org.silverpeas.core.subscription;
 
-import org.silverpeas.core.WAPrimaryKey;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+import java.io.Serializable;
 
 /**
- * A resource implied in a user subscription.
+ * The type of a resource that can be targeted by a subscription.
  * @author Yohann Chastagnier
- * @since 20/02/13
  */
-public interface SubscriptionResource {
+public interface SubscriptionResourceType extends Serializable {
 
   /**
-   * Gets the identifier of the resource aimed by a subscription.
-   * @return the unique identifier of a resource.
+   * Is this type is valid? It is valid if the type of the resource isn't unknown.
+   * @return true if the type of the resource targeted by a subscription is known, false otherwise.
    */
-  String getId();
+  default boolean isValid() {
+    return true;
+  }
 
   /**
-   * Gets the type of the resource aimed by the subscription
-   * @return a well predefined type of resource on which a subscription can be done.
+   * Indicates a priority which can be used by UI as example.
+   * @return an integer which lowest value means the highest priority.
    */
-  SubscriptionResourceType getType();
+  int priority();
 
-  /**
-   * Gets the instance identifier of the component instance that handles the resource in Silverpeas.
-   * @return the unique identifier of a component instance.
-   */
-  String getInstanceId();
+  @JsonValue
+  String getName();
 
-  /**
-   * Gets the Silverpeas Primary Key of the aimed resource.
-   * @param <T> the concrete type of the key.
-   * @return the key identifying the resource in the data source used by Silverpeas to persist its
-   * data.
-   */
-  <T extends WAPrimaryKey> T getPK();
+  @JsonCreator
+  static SubscriptionResourceType from(String name) {
+    return SubscriptionResourceTypeRegistry.get().getByName(name);
+  }
 }

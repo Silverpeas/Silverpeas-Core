@@ -23,8 +23,9 @@
  */
 package org.silverpeas.core.subscription.service;
 
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.node.model.NodePK;
+
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
 
 /**
  * User: Yohann Chastagnier
@@ -46,6 +47,6 @@ public class NodeSubscriptionResource extends AbstractSubscriptionResource<NodeP
    * @param nodePK
    */
   protected NodeSubscriptionResource(final NodePK nodePK) {
-    super(nodePK.getId(), SubscriptionResourceType.NODE, nodePK);
+    super(nodePK.getId(), NODE, nodePK);
   }
 }

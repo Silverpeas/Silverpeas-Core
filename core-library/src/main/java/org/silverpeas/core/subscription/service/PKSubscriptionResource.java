@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.subscription.service;
 
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
 
 /**
  * A subscription resource related to a PKSubscription.

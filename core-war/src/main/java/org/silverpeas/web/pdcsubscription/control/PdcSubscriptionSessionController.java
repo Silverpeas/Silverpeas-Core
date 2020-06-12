@@ -36,7 +36,6 @@ import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionService;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.subscription.service.NodeSubscription;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
@@ -49,12 +48,15 @@ import org.silverpeas.core.web.subscription.SubscriptionComparator;
 import org.silverpeas.core.web.subscription.bean.ComponentSubscriptionBean;
 import org.silverpeas.core.web.subscription.bean.NodeSubscriptionBean;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
+
 public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
+  private static final long serialVersionUID = 3130701500269550099L;
 
   private PdcSubscription currentPdcSubscription = null;
 
@@ -97,7 +99,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     for (Subscription subscription : list) {
       try {
         // Subscriptions managed at this level are only those of node subscription.
-        if (SubscriptionResourceType.NODE.equals(subscription.getResource().getType())) {
+        if (NODE.equals(subscription.getResource().getType())) {
           getOrganisationController().getComponentInstance(subscription.getResource().getInstanceId())
               .ifPresent(i -> {
                 NodePath path = getNodeBm().getPath((NodePK) subscription.getResource().getPK());
@@ -122,7 +124,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     Collection<Subscription> list = getSubscribeService().getByUserSubscriber(currentUserId);
     for (Subscription subscription : list) {
       // Subscriptions managed at this level are only those of node subscription.
-      if (SubscriptionResourceType.COMPONENT.equals(subscription.getResource().getType())) {
+      if (COMPONENT.equals(subscription.getResource().getType())) {
         getOrganisationController().getComponentInstance(subscription.getResource().getInstanceId())
             .ifPresent(i -> subscribes.add(new ComponentSubscriptionBean(subscription, i, getLanguage()))); }
     }
@@ -157,32 +159,31 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     }
   }
 
-  public List<PdcSubscription> getUserPDCSubscription() throws RemoteException {
+  public List<PdcSubscription> getUserPDCSubscription() {
     return getPdcSubscriptionService().getPDCSubscriptionByUserId(Integer.parseInt(getUserId()));
   }
 
-  public List<PdcSubscription> getUserPDCSubscription(int userId) throws RemoteException {
+  public List<PdcSubscription> getUserPDCSubscription(int userId) {
     return getPdcSubscriptionService().getPDCSubscriptionByUserId(userId);
   }
 
-  public PdcSubscription getPDCSubsriptionById(int id) throws RemoteException {
+  public PdcSubscription getPDCSubsriptionById(int id) {
     return getPdcSubscriptionService().getPDCSubsriptionById(id);
   }
 
-  public void createPDCSubscription(PdcSubscription subscription)
-      throws RemoteException {
+  public void createPDCSubscription(PdcSubscription subscription) {
     subscription.setId(getPdcSubscriptionService().createPDCSubscription(subscription));
   }
 
-  public void updatePDCSubscription(PdcSubscription subscription) throws RemoteException {
+  public void updatePDCSubscription(PdcSubscription subscription) {
     getPdcSubscriptionService().updatePDCSubscription(subscription);
   }
 
-  public void removePDCSubscriptionById(int id) throws RemoteException {
+  public void removePDCSubscriptionById(int id) {
     getPdcSubscriptionService().removePDCSubscriptionById(id);
   }
 
-  public void removeICByPK(int[] ids) throws RemoteException {
+  public void removeICByPK(int[] ids) {
     getPdcSubscriptionService().removePDCSubscriptionById(ids);
   }
 
@@ -201,17 +202,17 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     if (path.equals("/")) {
       newValueId = newValueId.substring(1); // on retire le slash
     } else {
-      int lastIdx = path.lastIndexOf("/");
+      int lastIdx = path.lastIndexOf('/');
       newValueId = path.substring(lastIdx + 1);
     }
     return newValueId;
   }
 
   public List<List<Value>> getPathCriterias(List<? extends Criteria> searchCriterias) throws
-      Exception {
+      PdcException {
     List<List<Value>> pathCriteria = new ArrayList<>();
 
-    if (searchCriterias.size() > 0) {
+    if (!searchCriterias.isEmpty()) {
       for (Criteria sc : searchCriterias) {
         int searchAxisId = sc.getAxisId();
         String searchValue = getLastValueOf(sc.getValue());
@@ -233,10 +234,6 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     return pathCriteria;
   }
 
-  @Override
-  public void close() {
-  }
-
   public PdcSubscription getCurrentPdcSubscription() {
     return currentPdcSubscription;
   }
@@ -245,15 +242,13 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     this.currentPdcSubscription = currentPdcSubscription;
   }
 
-  public void createPDCSubscription(String name, final List<? extends Criteria> criteria) throws
-      RemoteException {
+  public void createPDCSubscription(String name, final List<? extends Criteria> criteria) {
     PdcSubscription subscription =
         new PdcSubscription(-1, name, criteria, Integer.parseInt(getUserId()));
     createPDCSubscription(subscription);
   }
 
-  public void updateCurrentSubscription(String name, final List<? extends Criteria> criteria) throws
-      RemoteException {
+  public void updateCurrentSubscription(String name, final List<? extends Criteria> criteria) {
     PdcSubscription subscription = getCurrentPdcSubscription();
     if (StringUtil.isDefined(name)) {
       subscription.setName(name);
@@ -263,8 +258,8 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     updatePDCSubscription(subscription);
   }
 
-  public PdcSubscription setAsCurrentPDCSubscription(String subscriptionId) throws RemoteException {
-    int id = Integer.valueOf(subscriptionId);
+  public PdcSubscription setAsCurrentPDCSubscription(String subscriptionId) {
+    int id = Integer.parseInt(subscriptionId);
     PdcSubscription pdcSubscription = getPDCSubsriptionById(id);
     setCurrentPdcSubscription(pdcSubscription);
     return pdcSubscription;

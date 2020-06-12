@@ -27,13 +27,14 @@ import org.silverpeas.core.subscription.constant.SubscriptionMethod;
 import org.silverpeas.core.subscription.util.SubscriptionList;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
  * Interface declaration
  * @author
  */
-public interface SubscriptionService {
+public interface SubscriptionService extends Serializable {
 
   /**
    * Register a subscription. The informations of creator identifier and creation date are ignored.

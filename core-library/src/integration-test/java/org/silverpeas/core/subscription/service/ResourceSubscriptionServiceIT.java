@@ -23,16 +23,16 @@
  */
 package org.silverpeas.core.subscription.service;
 
-import org.silverpeas.core.subscription.AbstractCommonSubscriptionIntegrationTest;
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
-import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.core.node.model.NodePK;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.subscription.AbstractCommonSubscriptionIntegrationTest;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
 
 @RunWith(Arquillian.class)
 public class ResourceSubscriptionServiceIT extends
@@ -63,7 +63,7 @@ public class ResourceSubscriptionServiceIT extends
   @Test
   public void testGetSubscribersForNodeResourcesWithId0AndExtractUserIds() {
     SubscriptionSubscriberList result = ResourceSubscriptionProvider
-        .getSubscribersOfComponentAndTypedResource(INSTANCE_ID, SubscriptionResourceType.NODE, "0");
+        .getSubscribersOfComponentAndTypedResource(INSTANCE_ID, NODE, "0");
     assertThat(result, hasSize(10));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("1")));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("2")));
@@ -110,8 +110,7 @@ public class ResourceSubscriptionServiceIT extends
   @Test
   public void testGetSubscribersForNodeResourcesWithId10AndExtractUserIds() {
     SubscriptionSubscriberList result = ResourceSubscriptionProvider
-        .getSubscribersOfComponentAndTypedResource(INSTANCE_ID, SubscriptionResourceType.NODE,
-            "10");
+        .getSubscribersOfComponentAndTypedResource(INSTANCE_ID, NODE, "10");
     assertThat(result, hasSize(10));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("1")));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("2")));

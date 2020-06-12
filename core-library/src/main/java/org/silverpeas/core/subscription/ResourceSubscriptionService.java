@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.subscription;
 
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 
 /**

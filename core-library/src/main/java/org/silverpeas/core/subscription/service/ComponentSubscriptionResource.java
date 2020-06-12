@@ -24,8 +24,9 @@
 package org.silverpeas.core.subscription.service;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.node.model.NodePK;
+
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 
 /**
  * User: Yohann Chastagnier
@@ -47,18 +48,8 @@ public class ComponentSubscriptionResource extends AbstractSubscriptionResource<
    * @param instanceId
    */
   protected ComponentSubscriptionResource(String instanceId) {
-    super(NodePK.ROOT_NODE_ID, SubscriptionResourceType.COMPONENT,
-        new ResourceReference(NodePK.ROOT_NODE_ID));
+    super(NodePK.ROOT_NODE_ID, COMPONENT, new ResourceReference(NodePK.ROOT_NODE_ID));
     getPK().setSpace("component");
     getPK().setComponentName(instanceId);
-  }
-
-  /**
-   * Gets the Silverpeas Primary Key of the aimed resource
-   * @return
-   */
-  @Override
-  public ResourceReference getPK() {
-    return super.getPK();
   }
 }

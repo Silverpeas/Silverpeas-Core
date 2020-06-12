@@ -29,8 +29,9 @@
 
   $.subscription = {
     subscriptionType : {
-      COMPONENT : 'COMPONENT', NODE : 'NODE', FORUM : 'FORUM', FORUM_MESSAGE : 'FORUM_MESSAGE'
-    }, parameters : {
+      COMPONENT : 'COMPONENT', NODE : 'NODE'
+    },
+    parameters : {
       confirmNotificationSendingOnUpdateEnabled : false
     },
 
@@ -44,6 +45,15 @@
       $(document.body).subscription('confirmNotificationSendingOnUpdate', options);
     }
   };
+
+  if (!window.SubscriptionSettings) {
+    window.SubscriptionSettings = new SilverpeasPluginSettings();
+  }
+
+  const SUBSCRIPTION_TYPES = SubscriptionSettings.get('s.t');
+  SUBSCRIPTION_TYPES.forEach(function(subscriptionType) {
+    $.subscription.subscriptionType[subscriptionType] = subscriptionType;
+  });
 
   /**
    * The parameter settings of the plugin with, for some, the default value.

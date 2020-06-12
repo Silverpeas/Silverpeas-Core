@@ -23,20 +23,23 @@
  */
 package org.silverpeas.core.subscription.service;
 
-import org.silverpeas.core.subscription.ResourceSubscriptionService;
-import org.silverpeas.core.subscription.SubscriptionResource;
-import org.silverpeas.core.subscription.SubscriptionSubscriber;
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
-import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.node.model.NodePath;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.subscription.ResourceSubscriptionService;
+import org.silverpeas.core.subscription.SubscriptionResource;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 
 import java.util.Collection;
 import java.util.HashSet;
 
 import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
 
 /**
  * @author Yohann Chastagnier
@@ -57,8 +60,7 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
 
   @Override
   public SubscriptionSubscriberList getSubscribersOfComponent(final String componentInstanceId) {
-    return getSubscribersOfComponentAndTypedResource(componentInstanceId,
-        SubscriptionResourceType.COMPONENT, null);
+    return getSubscribersOfComponentAndTypedResource(componentInstanceId, COMPONENT, null);
   }
 
   @Override
@@ -72,31 +74,30 @@ public abstract class AbstractResourceSubscriptionService implements ResourceSub
   public SubscriptionSubscriberList getSubscribersOfComponentAndTypedResource(
       final String componentInstanceId, final SubscriptionResourceType resourceType,
       final String resourceId) {
-
-    Collection<SubscriptionSubscriber> subscribers = new HashSet<>();
-
-    switch (resourceType) {
-      case FORUM_MESSAGE:
-      case FORUM:
-        // nothing is done here, explicit component implementation must exist.
-        break;
-      case NODE:
-        Collection<NodeDetail> path = !"kmax".equals(componentInstanceId) ?
-            getNodeService().getPath(new NodePK(resourceId, componentInstanceId)) : null;
-        addAllSubscribersForEachNode(path, subscribers);
-      case COMPONENT:
-        subscribers.addAll(getSubscribeService()
-            .getSubscribers(ComponentSubscriptionResource.from(componentInstanceId)));
-        break;
+    final Collection<SubscriptionSubscriber> subscribers = new HashSet<>();
+    if (NODE == resourceType) {
+      final NodePath path = !"kmax".equals(componentInstanceId) ? getNodeService()
+          .getPath(new NodePK(resourceId, componentInstanceId)) : null;
+      addAllSubscribersAboutNodePath(path, subscribers);
+      addAllSubscribersAboutComponentInstance(componentInstanceId, subscribers);
+    } else if (COMPONENT == resourceType) {
+      addAllSubscribersAboutComponentInstance(componentInstanceId, subscribers);
+    } else {
+      // nothing is done here about other types, explicit component implementation MUST exist.
     }
-
     return new SubscriptionSubscriberList(subscribers);
   }
 
-  protected void addAllSubscribersForEachNode(Collection<NodeDetail> nodes,
-      Collection<SubscriptionSubscriber> subscribers) {
-    if (nodes != null) {
-      for (final NodeDetail node : nodes) {
+  private void addAllSubscribersAboutComponentInstance(final String componentInstanceId,
+      final Collection<SubscriptionSubscriber> subscribers) {
+    subscribers.addAll(getSubscribeService()
+        .getSubscribers(ComponentSubscriptionResource.from(componentInstanceId)));
+  }
+
+  protected void addAllSubscribersAboutNodePath(final NodePath nodePath,
+      final Collection<SubscriptionSubscriber> subscribers) {
+    if (nodePath != null) {
+      for (final NodeDetail node : nodePath) {
         subscribers.addAll(getSubscribeService()
             .getSubscribers(NodeSubscriptionResource.from(node.getNodePK())));
       }
