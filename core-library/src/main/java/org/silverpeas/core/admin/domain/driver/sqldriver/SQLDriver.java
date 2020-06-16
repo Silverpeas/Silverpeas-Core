@@ -78,7 +78,7 @@ public class SQLDriver extends AbstractDomainDriver {
     if ((group != null) && (group.getSuperGroupId() != null)) {
       return new String[] { group.getSuperGroupId() };
     }
-    return ArrayUtil.EMPTY_STRING_ARRAY;
+    return ArrayUtil.emptyStringArray();
   }
 
   /**

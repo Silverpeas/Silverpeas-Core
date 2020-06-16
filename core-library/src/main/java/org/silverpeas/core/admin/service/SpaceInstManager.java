@@ -368,7 +368,7 @@ public class SpaceInstManager {
       if (asSpaceIds != null) {
         return asSpaceIds;
       }
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all root spaces", ""), e);
     }
@@ -383,7 +383,7 @@ public class SpaceInstManager {
       if (asSpaceIds != null) {
         return asSpaceIds;
       }
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all spaces", ""), e);
     }
@@ -477,7 +477,7 @@ public class SpaceInstManager {
       if (asSpaceProfileIds != null) {
         return asSpaceProfileIds;
       } else {
-        return ArrayUtil.EMPTY_STRING_ARRAY;
+        return ArrayUtil.emptyStringArray();
       }
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("profiles of space", String.valueOf(spaceLocalId)),
@@ -494,7 +494,7 @@ public class SpaceInstManager {
       if (asSpaceIds != null) {
         return asSpaceIds;
       }
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     } catch (Exception e) {
       throw new AdminException(
           failureOnGetting("all subspaces of space", String.valueOf(sDomainFatherId)), e);
@@ -527,7 +527,7 @@ public class SpaceInstManager {
     int retry = 0;
     String deletedSpaceName = null;
     while (!nameOK) {
-      String spaceName = spaceInst.getName() + Admin.Constants.BASKET_SUFFIX;
+      String spaceName = spaceInst.getName() + Administration.Constants.BASKET_SUFFIX;
       if (retry > 0) {
         spaceName += " " + retry;
       }

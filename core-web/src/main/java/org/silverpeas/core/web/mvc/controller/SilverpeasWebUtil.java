@@ -99,16 +99,13 @@ public class SilverpeasWebUtil {
           componentId = pathInfo.substring(0, pathInfo.indexOf('/'));
         }
 
-        if (function.startsWith("Main") || function.startsWith("searchResult")
-            || function.equalsIgnoreCase("searchresult")
-            || function.startsWith("portlet")
-            || function.equals("GoToFilesTab")) {
-
-          if (!PersonalComponentInstance.from(componentId).isPresent()) {
-            ComponentInstLight component =
-                getOrganisationController().getComponentInstLight(componentId);
-            spaceId = component.getDomainFatherId();
-          }
+        if ((function.startsWith("Main") || function.startsWith("searchResult") ||
+            function.equalsIgnoreCase("searchresult") || function.startsWith("portlet") ||
+            function.equals("GoToFilesTab")) &&
+            !PersonalComponentInstance.from(componentId).isPresent()) {
+          ComponentInstLight component =
+              getOrganisationController().getComponentInstLight(componentId);
+          spaceId = component.getDomainFatherId();
         }
       }
     } else {
@@ -116,8 +113,7 @@ public class SilverpeasWebUtil {
       componentId = "-1";
       function = "Error";
     }
-    String[] context = new String[]{spaceId, componentId, function};
-    return context;
+    return new String[]{spaceId, componentId, function};
   }
 
   public String[] getRoles(HttpServletRequest request) {
@@ -126,7 +122,7 @@ public class SilverpeasWebUtil {
       return getOrganisationController()
           .getUserProfiles(controller.getUserId(), getComponentId(request)[1]);
     }
-    return ArrayUtil.EMPTY_STRING_ARRAY;
+    return ArrayUtil.emptyStringArray();
   }
 
   /**

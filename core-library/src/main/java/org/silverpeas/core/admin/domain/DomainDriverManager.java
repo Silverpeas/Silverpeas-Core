@@ -32,9 +32,9 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.dao.GroupDAO;
 import org.silverpeas.core.admin.user.dao.UserDAO;
-import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
@@ -264,7 +264,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   @Override
   public String[] getUserMemberGroupIds(String specificId) throws AdminException {
-    return ArrayUtil.EMPTY_STRING_ARRAY;
+    return ArrayUtil.emptyStringArray();
   }
 
   @Override
@@ -512,7 +512,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   @Override
   public String[] getGroupMemberGroupIds(String groupId) throws AdminException {
-    return ArrayUtil.EMPTY_STRING_ARRAY;
+    return ArrayUtil.emptyStringArray();
   }
 
 
@@ -792,12 +792,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
   private String[] translateUserIdsToSpecificIds(String domainId, String[] ids)
       throws AdminException {
     if (ids == null || ids.length == 0) {
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
 
     try(Connection connection = DBUtil.openConnection()) {
       List<UserDetail> users = userDAO.getUsersByCriteria(connection,
-          UserSearchCriteriaForDAO.newCriteria().onDomainIds(domainId).onUserIds(ids));
+          new UserDetailsSearchCriteria().onDomainIds(domainId).onUserIds(ids));
       return users.stream().map(UserDetail::getSpecificId).toArray(String[]::new);
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting("users", String.join(",", ids)), e);

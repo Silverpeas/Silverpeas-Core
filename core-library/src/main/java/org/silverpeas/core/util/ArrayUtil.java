@@ -25,7 +25,54 @@ package org.silverpeas.core.util;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-public class ArrayUtil extends ArrayUtils {
+public class ArrayUtil {
+
+  private ArrayUtil() {
+  }
+
+  public static byte[] emptyByteArray() {
+    return ArrayUtils.EMPTY_BYTE_ARRAY;
+  }
+
+  public static String[] emptyStringArray() {
+    return ArrayUtils.EMPTY_STRING_ARRAY;
+  }
+
+  public static boolean isEmpty(byte[] array) {
+    return ArrayUtils.isEmpty(array);
+  }
+
+  public static boolean isEmpty(Object[] array) {
+    return ArrayUtils.isEmpty(array);
+  }
+
+  public static boolean isNotEmpty(Object[] array) {
+    return ArrayUtils.isNotEmpty(array);
+  }
+
+  public static String[] nullToEmpty(String[] array) {
+    return ArrayUtils.nullToEmpty(array);
+  }
+
+  public static int indexOf(Object[] array, Object itemToFind) {
+    return ArrayUtils.indexOf(array, itemToFind);
+  }
+
+  public static byte[] subarray(byte[] array, int startIndexInclusive, int endIndexExclusive) {
+    return ArrayUtils.subarray(array, startIndexInclusive, endIndexExclusive);
+  }
+
+  public static byte[] addAll(byte[] array1, byte... array2) {
+    return ArrayUtils.addAll(array1, array2);
+  }
+
+  public static <T> T[] add(T[] array, int index, T item) {
+    return ArrayUtils.insert(index, array, item);
+  }
+
+  public static String[] removeElement(String[] array, String element) {
+    return ArrayUtils.removeElement(array, element);
+  }
 
   /**
    * @see ArrayUtils#contains(Object[], Object)

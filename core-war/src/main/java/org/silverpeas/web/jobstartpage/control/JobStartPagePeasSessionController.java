@@ -642,7 +642,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    * ********************* Gestion des managers d'espaces ****************************************
    */
   public String getSpaceProfileName(SpaceInst spaceint1) {
-    ArrayList<SpaceProfileInst> m_Profile = spaceint1.getAllSpaceProfilesInst();
+    List<SpaceProfileInst> m_Profile = spaceint1.getAllSpaceProfilesInst();
     int i = 0;
     SpaceProfileInst m_SpaceProfileInst;
     String name = "";
@@ -772,7 +772,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    * ********************* Gestion des composants ****************************************
    */
   public ComponentInst[] getBrotherComponents(boolean isNew) {
-    ArrayList<ComponentInst> arc = getSpaceInstById().getAllComponentsInst();
+    List<ComponentInst> arc = getSpaceInstById().getAllComponentsInst();
     if (arc == null || arc.isEmpty()) {
       return new ComponentInst[0];
     }
