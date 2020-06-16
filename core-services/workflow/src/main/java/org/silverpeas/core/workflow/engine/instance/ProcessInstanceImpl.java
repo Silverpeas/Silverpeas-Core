@@ -662,7 +662,7 @@ public class ProcessInstanceImpl
   @Override
   public HistoryStep[] getHistorySteps() {
     if (historySteps != null) {
-      List<HistoryStep> steps = new ArrayList(historySteps);
+      List<HistoryStep> steps = new ArrayList<>(historySteps);
       Collections.sort(steps);
       return steps.toArray(new HistoryStep[steps.size()]);
     }
@@ -1141,7 +1141,7 @@ public class ProcessInstanceImpl
 
   public String[] getActiveStates() {
     if (CollectionUtil.isEmpty(activeStates)) {
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     } else {
       List<String> stateNames = new ArrayList<>();
       for (ActiveState state : activeStates) {

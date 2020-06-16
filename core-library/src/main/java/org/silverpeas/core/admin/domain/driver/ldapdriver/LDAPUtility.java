@@ -245,17 +245,17 @@ public class LDAPUtility {
    * Reads the values of an attribute and return the strings
    *
    * @param theEntry entry to read the attribute
-   * @param theAttributeName name of the attribute to retreive
+   * @param theAttributeName name of the attribute to retrieve
    * @return the attribute's values as string
    */
   static String[] getAttributeValues(LDAPEntry theEntry, String theAttributeName) {
     if (theEntry == null || !StringUtil.isDefined(theAttributeName)) {
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
 
     LDAPAttribute theAttr = theEntry.getAttribute(theAttributeName);
     if (theAttr == null) {
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      return ArrayUtil.emptyStringArray();
     }
 
     if (isAGuid(theAttributeName)) {

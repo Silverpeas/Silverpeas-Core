@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.user.dao;
 
 import org.silverpeas.core.admin.user.model.GroupCache;
 import org.silverpeas.core.admin.user.model.GroupDetail;
+import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.ListSlice;
@@ -277,8 +278,10 @@ public class GroupDAO {
    * is the whole list of groups matching the other criteria.
    */
   public ListSlice<GroupDetail> getGroupsByCriteria(Connection connection,
-      GroupSearchCriteriaForDAO criteria) throws SQLException {
-    return criteria.toSQLQuery(GROUP_COLUMNS).executeWith(connection, GroupDAO::fetchGroup);
+      GroupsSearchCriteria criteria) throws SQLException {
+    return new SqlGroupSelectorByCriteriaBuilder(GROUP_COLUMNS)
+        .build(criteria)
+        .executeWith(connection, GroupDAO::fetchGroup);
   }
 
   public GroupDetail getGroupBySpecificId(final Connection connection, final String domainId,

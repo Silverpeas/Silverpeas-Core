@@ -38,11 +38,11 @@ import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
 public class UserFull extends UserDetail {
 
   private static final long serialVersionUID = 1L;
-  protected HashMap<String, String> m_hInfos = null;
-  protected DomainDriver m_pDomainDriver = null;
-  protected String m_password = "";
-  protected boolean m_isPasswordValid = false;
-  protected boolean m_isPasswordAvailable = false;
+  private HashMap<String, String> infos = null;
+  private DomainDriver domainDriver = null;
+  private String password = "";
+  private boolean isPasswordValid = false;
+  private boolean isPasswordAvailable = false;
 
   /**
    * Gets the full profile of the user with the specified identifier.
@@ -59,63 +59,63 @@ public class UserFull extends UserDetail {
    */
   public UserFull() {
     super();
-    m_hInfos = new HashMap<String, String>();
+    infos = new HashMap<>();
   }
 
   public UserFull(DomainDriver domainDriver) {
     super();
-    m_hInfos = new HashMap<String, String>();
-    m_pDomainDriver = domainDriver;
+    infos = new HashMap<>();
+    this.domainDriver = domainDriver;
   }
 
   public UserFull(DomainDriver domainDriver, UserDetail toClone) {
     super(toClone);
-    m_hInfos = new HashMap<String, String>();
-    m_pDomainDriver = domainDriver;
+    infos = new HashMap<>();
+    this.domainDriver = domainDriver;
   }
 
   // Password specific entries
   public boolean isPasswordAvailable() {
-    return m_isPasswordAvailable;
+    return isPasswordAvailable;
   }
 
   public void setPasswordAvailable(boolean pa) {
-    m_isPasswordAvailable = pa;
+    isPasswordAvailable = pa;
   }
 
   public boolean isPasswordValid() {
-    return m_isPasswordValid;
+    return isPasswordValid;
   }
 
   public void setPasswordValid(boolean pv) {
-    m_isPasswordValid = pv;
+    isPasswordValid = pv;
   }
 
   public String getPassword() {
-    return (m_password == null) ? "" : m_password;
+    return (password == null) ? "" : password;
   }
 
   public void setPassword(String p) {
-    m_password = p;
+    password = p;
   }
 
   // Values' getters
   public String[] getPropertiesNames() {
-    if (m_pDomainDriver != null) {
-      return m_pDomainDriver.getPropertiesNames();
+    if (domainDriver != null) {
+      return domainDriver.getPropertiesNames();
     }
-    return ArrayUtil.EMPTY_STRING_ARRAY;
+    return ArrayUtil.emptyStringArray();
 
   }
 
   public Map<String, String> getSpecificDetails() {
-    return m_hInfos;
+    return infos;
   }
 
   public String getValue(String propertyName, String defaultValue) {
     String valret;
 
-    valret = m_hInfos.get(propertyName);
+    valret = infos.get(propertyName);
     if (valret == null) {
       valret = defaultValue;
     }
@@ -129,7 +129,7 @@ public class UserFull extends UserDetail {
   public boolean getValue(String propertyName, boolean defaultValue) {
     boolean valret = defaultValue;
 
-    String sValret = m_hInfos.get(propertyName);
+    String sValret = infos.get(propertyName);
     if (sValret != null) {
       valret = Boolean.parseBoolean(sValret);
     }
@@ -138,8 +138,8 @@ public class UserFull extends UserDetail {
 
   // Labels' getters
   public Map<String, String> getSpecificLabels(String language) {
-    if (m_pDomainDriver != null) {
-      return m_pDomainDriver.getPropertiesLabels(language);
+    if (domainDriver != null) {
+      return domainDriver.getPropertiesLabels(language);
     }
     return null;
   }
@@ -147,8 +147,8 @@ public class UserFull extends UserDetail {
   public String getSpecificLabel(String language, String propertyName) {
     String valret = null;
 
-    if (m_pDomainDriver != null) {
-      Map<String, String> theLabels = m_pDomainDriver.getPropertiesLabels(language);
+    if (domainDriver != null) {
+      Map<String, String> theLabels = domainDriver.getPropertiesLabels(language);
       valret = theLabels.get(propertyName);
     }
     if (valret == null) {
@@ -160,8 +160,8 @@ public class UserFull extends UserDetail {
   public String getPropertyType(String propertyName) {
     String valret = null;
 
-    if (m_pDomainDriver != null) {
-      DomainProperty domainProperty = m_pDomainDriver.getProperty(propertyName);
+    if (domainDriver != null) {
+      DomainProperty domainProperty = domainDriver.getProperty(propertyName);
       if (domainProperty != null) {
         valret = domainProperty.getType();
       }
@@ -173,8 +173,8 @@ public class UserFull extends UserDetail {
   }
 
   public boolean isPropertyUpdatableByUser(String property) {
-    if (m_pDomainDriver != null) {
-      DomainProperty domainProperty = m_pDomainDriver.getProperty(property);
+    if (domainDriver != null) {
+      DomainProperty domainProperty = domainDriver.getProperty(property);
       if (domainProperty != null) {
         return domainProperty.isUpdateAllowedToUser();
       }
@@ -183,8 +183,8 @@ public class UserFull extends UserDetail {
   }
 
   public boolean isPropertyUpdatableByAdmin(String property) {
-    if (m_pDomainDriver != null) {
-      DomainProperty domainProperty = m_pDomainDriver.getProperty(property);
+    if (domainDriver != null) {
+      DomainProperty domainProperty = domainDriver.getProperty(property);
       if (domainProperty != null) {
         return domainProperty.isUpdateAllowedToAdmin();
       }
@@ -193,8 +193,8 @@ public class UserFull extends UserDetail {
   }
 
   public boolean isAtLeastOnePropertyUpdatableByAdmin() {
-    if (m_pDomainDriver != null) {
-      String[] properties = m_pDomainDriver.getPropertiesNames();
+    if (domainDriver != null) {
+      String[] properties = domainDriver.getPropertiesNames();
       for (String property : properties) {
         if (isPropertyUpdatableByAdmin(property)) {
           return true;
@@ -205,8 +205,8 @@ public class UserFull extends UserDetail {
   }
 
   public boolean isAtLeastOnePropertyUpdatableByUser() {
-    if (m_pDomainDriver != null) {
-      String[] properties = m_pDomainDriver.getPropertiesNames();
+    if (domainDriver != null) {
+      String[] properties = domainDriver.getPropertiesNames();
       for (String property : properties) {
         if (isPropertyUpdatableByUser(property)) {
           return true;
@@ -217,19 +217,19 @@ public class UserFull extends UserDetail {
   }
 
   public DomainProperty getProperty(String property) {
-    if (m_pDomainDriver != null) {
-      return m_pDomainDriver.getProperty(property);
+    if (domainDriver != null) {
+      return domainDriver.getProperty(property);
     }
     return null;
   }
 
   // Values' setters
   public void setValue(String propertyName, String value) {
-    m_hInfos.put(propertyName, value);
+    infos.put(propertyName, value);
   }
 
   public void setValue(String propertyName, boolean bValue) {
-    m_hInfos.put(propertyName, String.valueOf(bValue));
+    infos.put(propertyName, String.valueOf(bValue));
   }
 
   public Map<String, String> getDefinedDomainValues() {
@@ -259,7 +259,7 @@ public class UserFull extends UserDetail {
     if (other instanceof UserFull) {
       UserFull cmpUser = (UserFull) other;
       if (super.equals(cmpUser)) {
-        String[] keys = m_hInfos.keySet().toArray(new String[m_hInfos.size()]);
+        String[] keys = infos.keySet().toArray(new String[0]);
         boolean isTheSame = true;
         for (int i = 0; (i < keys.length) && isTheSame; i++) {
           isTheSame = getValue(keys[i]).equals(cmpUser.getValue(keys[i]));
@@ -273,10 +273,7 @@ public class UserFull extends UserDetail {
 
   @Override
   public int hashCode() {
-    //int hash = 3;
-    //hash = 53 * hash + (this.m_hInfos != null ? this.m_hInfos.hashCode() : 0);
-    int hash = 53 * super.hashCode();
-    return hash;
+    return 53 * super.hashCode();
   }
 
 }
