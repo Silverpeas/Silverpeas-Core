@@ -21,55 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.core.web.subscription.bean;
 
-package org.silverpeas.core.node.model;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
 
-import org.silverpeas.core.util.ResourcePath;
-
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * List of {@link NodeDetail} which represents a path.
+ * This class is implementing {@link org.silverpeas.core.initialization.Initialization}, no
+ * annotation appears in order to be taken into account by CDI.<br>
+ * The service will be taken in charge by initialization treatments.
  * @author silveryocha
  */
-public class NodePath extends ResourcePath<NodeDetail> {
-  private static final long serialVersionUID = -2389557818767894656L;
-
-  public NodePath() {
-    super();
-  }
-
-  public NodePath(final int initialCapacity) {
-    super(initialCapacity);
-  }
-
-  public NodePath(final Collection<? extends NodeDetail> c) {
-    super(c);
-  }
+public final class DefaultSubscriptionBeanService extends AbstractSubscriptionBeanService {
 
   @Override
-  protected String getInstanceId(final NodeDetail node) {
-    return node.getNodePK().getInstanceId();
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  protected Integer getId(final NodeDetail node) {
-    return node.getId();
-  }
-
-  @Override
-  protected boolean isRoot(final NodeDetail node) {
-    return node.isRoot();
-  }
-
-  @Override
-  protected boolean rootIsComponentInstance() {
-    return true;
-  }
-
-  @Override
-  protected String getLabel(final NodeDetail node, final String language) {
-    return node.getName(language);
+  protected List<SubscriptionResourceType> getHandledSubscriptionResourceTypes() {
+    return Collections.emptyList();
   }
 }

@@ -22,54 +22,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.node.model;
+package org.silverpeas.core.web.subscription.bean;
 
-import org.silverpeas.core.util.ResourcePath;
+import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
- * List of {@link NodeDetail} which represents a path.
+ * This interface defines some services for which it exists one default implementations and
+ * potentially one per {@link SubscriptionResourceType} instances.
  * @author silveryocha
  */
-public class NodePath extends ResourcePath<NodeDetail> {
-  private static final long serialVersionUID = -2389557818767894656L;
+public interface SubscriptionBeanService {
 
-  public NodePath() {
-    super();
-  }
+  /**
+   * Gets the label of a list of the given {@link SubscriptionResourceType} instance.
+   * @param type a type of subscription.
+   * @param language the aimed language.
+   * @return the label
+   */
+  String getSubscriptionTypeListLabel(final SubscriptionResourceType type, final String language);
 
-  public NodePath(final int initialCapacity) {
-    super(initialCapacity);
-  }
-
-  public NodePath(final Collection<? extends NodeDetail> c) {
-    super(c);
-  }
-
-  @Override
-  protected String getInstanceId(final NodeDetail node) {
-    return node.getNodePK().getInstanceId();
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  protected Integer getId(final NodeDetail node) {
-    return node.getId();
-  }
-
-  @Override
-  protected boolean isRoot(final NodeDetail node) {
-    return node.isRoot();
-  }
-
-  @Override
-  protected boolean rootIsComponentInstance() {
-    return true;
-  }
-
-  @Override
-  protected String getLabel(final NodeDetail node, final String language) {
-    return node.getName(language);
-  }
+  /**
+   * Gets the list of subscription of a user.
+   * @param subscriptions the subscriptions to convert.
+   * @param language the aimed language.
+   * @return a list of {@link AbstractSubscriptionBean}.
+   */
+  List<AbstractSubscriptionBean> toSubscriptionBean(final Collection<Subscription> subscriptions,
+      final String language);
 }

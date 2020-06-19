@@ -105,7 +105,6 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
 
   @Override
   public void unsubscribe(final Collection<? extends Subscription> subscriptions) {
-
     Connection con = null;
     try {
       con = getConnection();

@@ -23,24 +23,28 @@
  */
 package org.silverpeas.web.pdcsubscription.servlets;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
-import org.silverpeas.web.pdcsubscription.control.PdcSubscriptionSessionController;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
+import org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.pdc.classification.Criteria;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.web.pdcsubscription.control.PdcSubscriptionSessionController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 
 public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<PdcSubscriptionSessionController> {
 
   private static final long serialVersionUID = -441269066150311066L;
+  private static final String SUB_RES_TYPE_ATTR = "subResType";
 
   @Override
   public PdcSubscriptionSessionController createComponentSessionController(
@@ -80,7 +84,7 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
 
     try {
       if (function.startsWith("subscriptionList")) {
-        destination = getDestination("ViewSubscriptionTheme", pdcSC, request);
+        destination = getDestination("ViewSubscriptionOfType", pdcSC, request);
       } else if ("ViewSubscriptionTaxonomy".equals(function)) {
         destination = rootDest + processSubscriptionList(request, pdcSC);
       } else if (function.startsWith("showUserSubscriptions")) {
@@ -89,6 +93,19 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
           int userId = Integer.parseInt(reqUserId);
           destination = rootDest + processUserSubscriptions(request, pdcSC, userId);
         }
+      } else if (function.equals("ViewSubscriptionOfType")) {
+        final String userId = request.getParameter("userId");
+        SubscriptionResourceType subResType = SubscriptionResourceType.from(request.getParameter(SUB_RES_TYPE_ATTR));
+        if (!subResType.isValid()) {
+          subResType = CommonSubscriptionResourceConstants.COMPONENT;
+        }
+        final String action = request.getParameter("action");
+        // passage des parametres ...
+        request.setAttribute("subscriptions", pdcSC.getUserSubscriptionsOfType(userId, subResType));
+        request.setAttribute(SUB_RES_TYPE_ATTR, subResType);
+        request.setAttribute("action", action);
+        request.setAttribute("userId", userId);
+        destination = rootDest + "viewSubscriptionsOfType.jsp";
       } else if (function.equals("ViewSubscriptionTheme")) {
         String userId = request.getParameter("userId");
         String action = request.getParameter("action");
@@ -97,6 +114,13 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
         request.setAttribute("action", action);
         request.setAttribute("userId", userId);
         destination = rootDest + "viewSubscriptionTheme.jsp";
+      } else if (function.equals("DeleteSubscriptionOfType")) {
+        final SubscriptionResourceType subResType = SubscriptionResourceType.from(request.getParameter(SUB_RES_TYPE_ATTR));
+        final String[] selectedItems = request.getParameterValues("subscriptionCheckbox");
+        if (!ArrayUtils.isEmpty(selectedItems)) {
+          pdcSC.deleteUserSubscriptionsOfType(selectedItems, subResType);
+        }
+        destination = getDestination("ViewSubscriptionOfType", pdcSC, request);
       } else if (function.equals("DeleteTheme")) {
         Object o = request.getParameterValues("themeCheck");
         if (o != null) {
