@@ -191,6 +191,10 @@ public class CompleteContact implements Contact, Serializable {
     Form form = null;
     try {
       if (isFormDefined()) {
+
+        // ensure template is registered
+        registerForm(modelId);
+
         // création du PublicationTemplate
         PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
         PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) templateManager.
@@ -219,13 +223,10 @@ public class CompleteContact implements Contact, Serializable {
 
   public void saveForm() throws PublicationTemplateException, FormException {
     if (isFormDefined()) {
-      String xmlFormName = modelId;
       // création du PublicationTemplate
-      String key = getFullTemplateId();
       PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
-      templateManager.addDynamicPublicationTemplate(key, xmlFormName);
       PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) templateManager.
-          getPublicationTemplate(key, xmlFormName);
+          getPublicationTemplate(getFullTemplateId(), modelId);
 
       Form formUpdate = pubTemplate.getUpdateForm();
       RecordSet recordSet = pubTemplate.getRecordSet();
@@ -364,6 +365,12 @@ public class CompleteContact implements Contact, Serializable {
 
   public String getCreatorLanguage() {
     return creatorLanguage;
+  }
+
+  private void registerForm(String xmlFormName) throws PublicationTemplateException {
+    String key = getFullTemplateId();
+    PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+    templateManager.addDynamicPublicationTemplate(key, xmlFormName);
   }
 
 }

@@ -43,24 +43,24 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 
 	out.println("<div class='champs'>");
 
-	String disabled = "disabled=\"disabled\"";
+	String disabled = " disabled=\"disabled\" ";
 	if (parameter.isAlwaysUpdatable()) {
-        disabled = "";
-    }
+	  disabled = "";
+	}
 
 	if (parameter.isCheckbox()) {
 		String checked = "";
 		if (StringUtil.getBooleanValue(parameter.getValue())) {
 			checked = "checked=\"checked\"";
 		}
-		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" "+disabled+">");
+		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+ checked + disabled + ">");
     if (StringUtil.isDefined(parameter.getWarning())) {
       out.println("<div style=\"display: none;\" id=\"warning-"+parameter.getName()+"\">"+parameter.getWarning()+"</div>");
     }
 	} else if (parameter.isSelect() || parameter.isXmlTemplate()) {
 		List<LocalizedOption> options = parameter.getOptions();
 		if (options != null) {
-			out.println("<select name=\""+parameter.getName()+"\">");
+			out.println("<select name=\""+parameter.getName()+"\" "+disabled+">");
 			if (!parameter.isMandatory()) {
 			  out.println("<option value=\"\"></option>");
 			}
@@ -90,7 +90,7 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 	          if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value) || i == 0) {
 	            checked = "checked=\"checked\"";
 	          }
-	          out.println("<input type=\"radio\" name=\"" + parameter.getName() + "\" value=\"" + value + "\"" + checked + ">");
+	          out.println("<input type=\"radio\" name=\"" + parameter.getName() + "\" value=\"" + value + "\"" + checked + disabled + ">");
 	          out.println(name + "&nbsp;<br/>");
 		}
 		} else {
@@ -101,7 +101,7 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 		boolean mandatory = parameter.isMandatory();;
 
 		String sSize = "60";
-		if (parameter.getSize() != null && parameter.getSize().intValue() > 0) {
+		if (parameter.getSize() != null && parameter.getSize() > 0) {
 			sSize = parameter.getSize().toString();
 		}
 
