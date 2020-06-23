@@ -24,8 +24,8 @@
 package org.silverpeas.web.jobdomain.control;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.ecs.xhtml.br;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.LocalizedComponent;
 import org.silverpeas.core.admin.component.model.WAComponent;
@@ -105,12 +105,15 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.synchronizedList;
+import static java.util.stream.Collectors.toList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriverManagerProvider.getCurrentDomainDriverManager;
 import static org.silverpeas.core.personalization.service.PersonalizationServiceProvider.getPersonalizationService;
+import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -365,7 +368,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    */
   private String getLoginUrl(UserDetail user, HttpServletRequest req) {
     SettingBundle general =
-        ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
+        getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
     String loginPage = general.getString("loginPage");
     if (!isDefined(loginPage)) {
       loginPage = "/defaultLogin.jsp";
@@ -500,17 +503,33 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       jdpe.setGoBackPage("displayUsersCsvImport");
       throw jdpe;
     }
-    CSVReader csvReader = new CSVReader(getLanguage());
+    final CSVReader csvReader = new CSVReader(getLanguage());
+    final SettingBundle domainSettings = getSettingBundle(getTargetDomain().getPropFileName());
+    final String propertyPrefix = "property";
     csvReader.initCSVFormat("org.silverpeas.jobDomainPeas.settings.usersCSVFormat", "User", ";",
-        getTargetDomain().getPropFileName(), "property");
-
-    // spécifique domaine Silverpeas (2 colonnes en moins (password et passwordValid)
-    if ("0".equals(getTargetDomain().getId())) {
-      // domaine Silverpeas
-      csvReader.removeLastTwoColumns();
-    }
-
-    boolean importExtraFormData = req.getParameterAsBoolean("importExtraForm");
+        domainSettings, propertyPrefix, l -> {
+          int numberOfSpecificCols = domainSettings.getInteger(propertyPrefix + ".Number", -1);
+          Stream<String> specificFieldStream = l.stream();
+          if ("0".equals(getTargetDomain().getId())) {
+            // specific password fields of Silverpeas's domain are ignored
+            final List<String> passwordFilteredList = specificFieldStream
+                .filter(p -> !p.startsWith("password"))
+                .collect(toList());
+            specificFieldStream = passwordFilteredList.stream();
+            numberOfSpecificCols -= (l.size() - passwordFilteredList.size());
+          }
+          if (numberOfSpecificCols > -1) {
+            specificFieldStream = specificFieldStream.limit(numberOfSpecificCols);
+          }
+          final List<String> finalSpecificFieldList = specificFieldStream.collect(toList());
+          if (numberOfSpecificCols > finalSpecificFieldList.size()) {
+            throw new SilverpeasRuntimeException(String.format(
+                "The domain property file %s.properties is specifying %s specific(s) column(s), but only %s are defined",
+                domainSettings.getBaseBundleName(), numberOfSpecificCols, finalSpecificFieldList.size()));
+          }
+          return finalSpecificFieldList;
+        });
+    final boolean importExtraFormData = req.getParameterAsBoolean("importExtraForm");
     if (importExtraFormData) {
       PublicationTemplate template = getDirectoryExtraForm();
       if (template != null) {
@@ -692,35 +711,34 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return result;
   }
 
-  public String getFieldsToCSVImport()
+  public Map<String, String> getFieldLabelsOfCSVToImport()
       throws AdminException, PublicationTemplateException, FormException {
-    List<String> fields = new ArrayList<>();
-    fields.add(getString("GML.lastName"));
-    fields.add(getString("GML.firstName"));
-    fields.add(getString("GML.login"));
-    fields.add(getString("GML.eMail"));
-    fields.add(getString("GML.type")+ "(Admin, AdminPdc, AdminDomain, User, Guest)");
-    fields.add(getString("GML.password"));
-
+    final Map<String, String> fieldsByCategory = new LinkedHashMap<>();
+    fieldsByCategory.put("MANDATORY", String.join(";",
+        getString("GML.lastName"),
+        getString("GML.firstName"),
+        getString("GML.login"),
+        getString("GML.eMail"),
+        getString("GML.type") + "<span class='user-type-list'>(Admin, AdminPdc, AdminDomain, User, Guest)</span>",
+        getString("GML.password")));
     // add complementary fields
     final DomainDriver driver = getCurrentDomainDriverManager().getDomainDriver(getTargetDomain().getId());
-    Map<String, String> propertiesLabels = driver.getPropertiesLabels(getLanguage());
-    for (String propertyName : driver.getPropertiesNames()) {
-      if (!propertyName.startsWith("password")) {
-        fields.add(propertiesLabels.get(propertyName));
-      }
+    final Map<String, String> propertiesLabels = driver.getPropertiesLabels(getLanguage());
+    if (!propertiesLabels.isEmpty()) {
+      fieldsByCategory.put("COMPLEMENTARY", Stream.of(driver.getPropertiesNames())
+          .filter(p -> !p.startsWith("password"))
+          .map(propertiesLabels::get)
+          .collect(Collectors.joining(";")));
     }
-
     // add personalized fields
-    PublicationTemplate extraForm = getDirectoryExtraForm();
+    final PublicationTemplate extraForm = getDirectoryExtraForm();
     if (extraForm != null) {
-      FieldTemplate[] extraFields = extraForm.getRecordTemplate().getFieldTemplates();
-      for (FieldTemplate extraField : extraFields) {
-        fields.add(extraField.getLabel(getLanguage()));
-      }
+      final FieldTemplate[] extraFields = extraForm.getRecordTemplate().getFieldTemplates();
+      fieldsByCategory.put("PERSONALIZED", Stream.of(extraFields)
+          .map(f -> f.getLabel(getLanguage()))
+          .collect(Collectors.joining(";")));
     }
-
-    return StringUtils.join(fields, ";");
+    return fieldsByCategory;
   }
 
   private UserAccessLevel getAccessLevelFromCSV(String droits) {

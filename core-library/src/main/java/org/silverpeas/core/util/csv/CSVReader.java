@@ -24,13 +24,13 @@
 package org.silverpeas.core.util.csv;
 
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.exception.UtilTrappedException;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.exception.UtilTrappedException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,6 +39,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.function.UnaryOperator;
 
 public class CSVReader {
   protected int nbCols = 0;
@@ -99,11 +100,11 @@ public class CSVReader {
   }
 
   public void initCSVFormat(String propertiesFile, String rootPropertyName, String separator,
-      String specificPropertiesFile, String specificRootPropertyName) {
+      SettingBundle sP, String specificRootPropertyName,
+      UnaryOperator<List<String>> specificFieldNameMapper) {
     initCSVFormat(propertiesFile, rootPropertyName, separator);
 
-    SettingBundle sP = ResourceLocator.getSettingBundle(specificPropertiesFile);
-    specificColNames = sP.getStringList(specificRootPropertyName, "Name", -1);
+    specificColNames = specificFieldNameMapper.apply(sP.getStringList(specificRootPropertyName, "Name", -1));
     specificNbCols = specificColNames.size();
 
     specificColTypes = sP.getStringList(specificRootPropertyName, "Type", specificNbCols);
@@ -409,14 +410,6 @@ public class CSVReader {
    */
   public int getSpecificColMaxLength(int i) {
     return specificColMaxLengths.get(i);
-  }
-
-  public void removeLastTwoColumns() {
-    specificColNames = specificColNames.subList(0, specificColNames.size()-2);
-    specificColMaxLengths = specificColMaxLengths.subList(0, specificColMaxLengths.size()-2);
-    specificColTypes = specificColTypes.subList(0, specificColTypes.size()-2);
-    specificColMandatory = specificColMandatory.subList(0, specificColMandatory.size()-2);
-    specificNbCols -= 2;
   }
 
   public void addSpecificCol(String name, int maxLength, String type, String mandatory) {
