@@ -24,8 +24,8 @@
 
 package org.silverpeas.core.contribution.converter.openoffice;
 
-import org.jodconverter.office.LocalOfficeManager;
-import org.jodconverter.office.OfficeManager;
+import org.jodconverter.local.office.LocalOfficeManager;
+import org.jodconverter.core.office.OfficeManager;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -53,7 +53,7 @@ public class OpenOfficeService implements Initialization {
   public void init() throws Exception {
     final String home = settings.getString(OPENOFFICE_HOME);
     final String ports = settings.getString(OPENOFFICE_PORT, "8100");
-    final int taskTimeout = settings.getInteger(OPENOFFICE_TASK_TIMEOUT, 30000);
+    final long taskTimeout = settings.getLong(OPENOFFICE_TASK_TIMEOUT, 30000);
     final int[] portNumbers = Stream.of(ports.split(","))
         .map(String::trim)
         .mapToInt(Integer::parseInt)

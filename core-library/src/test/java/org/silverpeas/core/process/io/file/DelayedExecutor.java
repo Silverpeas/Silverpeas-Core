@@ -24,8 +24,9 @@
 
 package org.silverpeas.core.process.io.file;
 
-import org.awaitility.Duration;
+import org.awaitility.core.DurationFactory;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.with;
@@ -43,7 +44,7 @@ public class DelayedExecutor {
   }
 
   public static DelayedExecutor in(long time, TimeUnit unit) {
-    return new DelayedExecutor(new Duration(time, unit));
+    return new DelayedExecutor(DurationFactory.of(time, unit));
   }
 
   public static DelayedExecutor in(final Duration duration) {

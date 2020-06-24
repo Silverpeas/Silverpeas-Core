@@ -24,18 +24,16 @@
 package org.silverpeas.core.io.upload;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
-import org.silverpeas.core.test.rule.MockByReflectionRule;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -44,6 +42,7 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
@@ -52,39 +51,33 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPa
 /**
  * @author Yohann Chastagnier
  */
-@UnitTest
+@EnableSilverTestEnv
 public class TestUploadSession {
 
   private static final String SESSION_CACHE_KEY = "@@@_" + UploadSession.class.getName();
   private static final String UPLOAD_SESSION_CACHE_KEY_PREFIX = "@@@_instance_for_";
 
   private SessionInfo si;
-  private AccessController accessControllerMock;
+
+  @TestManagedMock
+  private ComponentAccessControl accessControllerMock;
+  @TestManagedMock
   private OrganizationController organisationControllerMock;
 
-  @Rule
-  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
-
-  @Rule
-  public MockByReflectionRule reflectionRule = new MockByReflectionRule();
-
-  @Before
-  @After
+  @BeforeEach
+  @AfterEach
   public void cleanTest() {
 
     // Test
     FileUtils.deleteQuietly(new File(getTemporaryPath()));
-    getSessionCacheService().getCache().remove(SESSION_CACHE_KEY);
+    SimpleCache cache = getSessionCacheService().getCache();
+    if (cache != null) {
+      cache.remove(SESSION_CACHE_KEY);
+    }
   }
 
-  @Before
+  @BeforeEach
   public void setup() {
-    accessControllerMock =
-        commonAPI4Test.injectIntoMockedBeanContainer(mock(ComponentAccessControl.class));
-
-    organisationControllerMock =
-        commonAPI4Test.injectIntoMockedBeanContainer(mock(OrganizationController.class));
-
     UserDetail user = new UserDetail();
     user.setId("32");
     si = new SessionInfo(null, user);
@@ -180,7 +173,7 @@ public class TestUploadSession {
         is("writing test..."));
   }
 
-  @Test(expected = IOException.class)
+  @Test
   public void registerSameFileButWritingIsInProgress() throws Exception {
     UploadSessionFile uploadSessionFile = initializeUploadSessionAndRegisterFile();
     UploadSessionFile sameUploadSessionFile =
@@ -194,12 +187,13 @@ public class TestUploadSession {
     FileUtils.write(uploadSessionFile.getServerFile(), "File exists...");
     assertThat(uploadSessionFile.getServerFile().exists(), is(true));
 
-    sameUploadSessionFile =
+    UploadSessionFile sameUploadSessionFile2 =
         uploadSessionFile.getUploadSession().getUploadSessionFile("path/test/name");
-    assertThat(sameUploadSessionFile.getServerFile().getPath(),
+    assertThat(sameUploadSessionFile2.getServerFile().getPath(),
         is(new File(getUploadSessionFile(uploadSessionFile.getUploadSession()), "path/test/name")
             .getPath()));
-    sameUploadSessionFile.write(new ByteArrayInputStream("writing test...".getBytes()));
+    assertThrows(IOException.class, () -> sameUploadSessionFile2.write(new ByteArrayInputStream("writing test...".getBytes())));
+
   }
 
   @Test

@@ -39,6 +39,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,8 +54,6 @@ import static org.apache.commons.io.IOUtils.write;
 import static org.apache.commons.io.IOUtils.*;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Awaitility.with;
-import static org.awaitility.Duration.ONE_SECOND;
-import static org.awaitility.Duration.TWO_SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.process.io.file.DelayedExecutor.in;
@@ -63,6 +63,9 @@ import static org.silverpeas.core.process.io.file.DelayedExecutor.in;
  */
 @UnitTest
 public class TestFileHandler extends AbstractHandledFileTest {
+
+  private static final Duration ONE_SECOND = Duration.of(1, ChronoUnit.SECONDS);
+  private static final Duration TWO_SECONDS = Duration.of(2, ChronoUnit.SECONDS);
 
   /*
    * getAttachment

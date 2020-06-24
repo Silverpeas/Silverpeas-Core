@@ -26,6 +26,7 @@ package org.silverpeas.core.persistence.datasource.repository.jpa;
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
 import org.hamcrest.MatcherAssert;
+import org.hibernate.LazyInitializationException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -53,6 +54,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -570,29 +572,46 @@ public class SilverpeasJpaEntityRepositoryIT {
 
   @Test
   public void deleteEntityById() {
+    // Equipments (equipments are dependent to animals, so they have to be deleted before)
+    List<Equipment> equipments = jpaEntityServiceTest.getAllEquiments();
+    Equipment oneEquipment = equipments.get(0);
+    MatcherAssert.assertThat(equipments, hasSize(1));
 
     // Animals (animals are dependents to persons, so they have to be deleted before)
-    MatcherAssert.assertThat(jpaEntityServiceTest.getAllEquiments(), hasSize(1));
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(5));
     long nbDeleted = jpaEntityServiceTest.deleteAnimalById("1");
+    assertThat(nbDeleted, is(1L));
     assertThat(jpaEntityServiceTest.getAnimalById("1"), nullValue());
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(4));
-    assertThat(nbDeleted, is(1L));
+
     nbDeleted = jpaEntityServiceTest.deleteAnimalById("38", "26", "3", "27", "38", "2", "36", "22");
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(2));
     assertThat(nbDeleted, is(2L));
+
     // Verifying here that cascade process is not performed in this deletion way ...
-    MatcherAssert.assertThat(jpaEntityServiceTest.getAllEquiments(), hasSize(1));
+    // as each Equipment instance requires an Animal object, getting the equipment of a deleted
+    // animal should return nothing as such object can be constructed, even with the lazy
+    // fetching strategy: this does work only with Hibernate >= 5.3.17 as before this version the
+    // error will be triggered only when accessing the entity in a lazy relationship link
+    final Equipment equipment = jpaEntityServiceTest.getEquipmentById(oneEquipment.getId());
+    // equipment should be null with Hibernate >= 5.3.17, otherwise an error should be thrown when
+    // attempting to get a property of a deleted dependent entity through its proxy
+    if (equipment != null) {
+      // get the proxy of the lazy relationship
+      final Animal related = equipment.getAnimal();
+      // error here because the entity behind the proxy doesn't exist anymore
+      assertThrows(LazyInitializationException.class, related::getName);
+    }
 
     // Persons
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(5));
     nbDeleted = jpaEntityServiceTest.deletePersonById("person_1");
+    assertThat(nbDeleted, is(1L));
     assertThat(jpaEntityServiceTest.getPersonById("person_1"), nullValue());
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(4));
-    assertThat(nbDeleted, is(1L));
-    nbDeleted = jpaEntityServiceTest
-        .deletePersonById("person_38", "person_26", "person_3", "person_27", "person_38",
-            "person_2", "person_36", "person_22");
+    nbDeleted =
+        jpaEntityServiceTest.deletePersonById("person_38", "person_26", "person_3", "person_27",
+            "person_38", "person_2", "person_36", "person_22");
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(2));
     assertThat(nbDeleted, is(2L));
   }

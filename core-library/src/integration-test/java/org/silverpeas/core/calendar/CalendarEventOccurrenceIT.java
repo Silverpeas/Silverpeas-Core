@@ -48,7 +48,7 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.ACCEPTED;
 import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.AWAITING;
 
@@ -356,9 +356,9 @@ public class CalendarEventOccurrenceIT extends BaseCalendarTest {
       assertThat(o.getAttendees().size(), is(1));
     });
 
-    // the new event hos the 10 next occurrences with the updated data
+    // the new event hos the 9 next occurrences with the updated data
     occurrences = allOccurrencesOf(result.created().get());
-    assertThat(occurrences.size(), is(OCCURRENCE_COUNT - 7));
+    assertThat(occurrences.size(), is(OCCURRENCE_COUNT - 6));
     occurrences.forEach(o -> {
       assertThat(o.getLocation(), is(newLocation));
       assertThat(o.getAttendees().size(), is(2));

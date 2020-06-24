@@ -7,7 +7,7 @@ pipeline {
   }
   agent {
     docker {
-      image 'silverpeas/silverbuild'
+      image 'silverpeas/silverbuild:java-11'
       args '-v $HOME/.m2:/home/silverbuild/.m2 -v $HOME/.gitconfig:/home/silverbuild/.gitconfig -v $HOME/.ssh:/home/silverbuild/.ssh -v $HOME/.gnupg:/home/silverbuild/.gnupg'
     }
   }
@@ -16,6 +16,7 @@ pipeline {
       steps {
         script {
           version = computeSnapshotVersion()
+          checkParentPOMVersion(version)
           waitForDependencyRunningBuildIfAny(version, 'core')
           lockFilePath = createLockFile(version, 'core')
           sh """
@@ -115,5 +116,18 @@ def waitForDependencyRunningBuildIfAny(version, projectName) {
   }
   if (isLockFileExisting(dependencyLockFilePath)) {
     error "After timeout dependency lock file ${dependencyLockFilePath} is yet existing!!!!"
+  }
+}
+
+def checkParentPOMVersion(version) {
+  def pom = readMavenPom()
+  int idx = pom.parent.version.indexOf('-SNAPSHOT')
+  if (idx > 0) {
+    String[] snapshot = version.split('-')
+    String parentVersion = pom.parent.version.substring(0, idx) + '-' + snapshot[0]
+    echo "Update parent POM to ${parentVersion}"
+    sh """
+mvn versions:update-parent -DgenerateBackupPoms=false -DparentVersion="[${parentVersion}]"
+"""
   }
 }

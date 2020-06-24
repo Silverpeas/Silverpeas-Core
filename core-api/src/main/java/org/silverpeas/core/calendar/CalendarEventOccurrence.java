@@ -42,16 +42,15 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection
-    .setCreationData;
-import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection
-    .setUpdateData;
+import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection.setCreationData;
+import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection.setUpdateData;
 
 /**
  * The occurrence of an event in a Silverpeas calendar. It is an instance of an event in the
@@ -229,6 +228,27 @@ public class CalendarEventOccurrence
       }
     });
     return occurrences;
+  }
+
+  /**
+   * Gets the next occurrence of the given event since the specified datetime. If the datetime is
+   * before the event start date, then the first occurrence of the event is returned. If the event
+   * has no occurrence since the specified datetime, then nothing is returned.
+   * @param event the event the event for which the next occurrence is asked.
+   * @param dateTime the datetime after which the next occurrence should occur.
+   * @return optionally the next event's occurrence occurring after the specified datetime or
+   * nothing if there is no more occurrences after that datetime.
+   */
+  static Optional<CalendarEventOccurrence> getNextOccurrence(final CalendarEvent event,
+      final ZonedDateTime dateTime) {
+    final CalendarEventOccurrence occurrence =
+        generator().generateNextOccurrenceOf(event, dateTime);
+    if (occurrence != null) {
+      CalendarEventOccurrence modifiedOccurrence =
+          CalendarEventOccurrenceRepository.get().getById(occurrence.getId());
+      return Optional.of(modifiedOccurrence == null ? occurrence : modifiedOccurrence);
+    }
+    return Optional.empty();
   }
 
   @Override

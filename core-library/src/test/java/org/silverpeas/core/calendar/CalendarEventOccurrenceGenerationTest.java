@@ -119,7 +119,7 @@ public class CalendarEventOccurrenceGenerationTest {
     List<CalendarEventOccurrence> occurrences =
         generator.generateOccurrencesOf(calendarEventsForTest(), in(Year.of(2016)));
     assertThat(occurrences.isEmpty(), is(false));
-    assertThat(occurrences.size(), is(103));
+    assertThat(occurrences.size(), is(102));
 
     // compute the occurrence count both per month and per event
     int[] occurrenceCountPerMonth = new int[12];
@@ -138,7 +138,7 @@ public class CalendarEventOccurrenceGenerationTest {
     assertThat(occurrenceCountPerMonth[JUNE.ordinal()], is(10));
     assertThat(occurrenceCountPerMonth[JULY.ordinal()], is(4));
     assertThat(occurrenceCountPerMonth[AUGUST.ordinal()], is(5));
-    assertThat(occurrenceCountPerMonth[SEPTEMBER.ordinal()], is(18));
+    assertThat(occurrenceCountPerMonth[SEPTEMBER.ordinal()], is(17));
     assertThat(occurrenceCountPerMonth[OCTOBER.ordinal()], is(17));
     assertThat(occurrenceCountPerMonth[NOVEMBER.ordinal()], is(17));
     assertThat(occurrenceCountPerMonth[DECEMBER.ordinal()], is(12));
@@ -148,7 +148,7 @@ public class CalendarEventOccurrenceGenerationTest {
     assertThat(occurrenceCountPerEvent[Integer.parseInt("2") - 1], is(1));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("3") - 1], is(42));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("4") - 1], is(1));
-    assertThat(occurrenceCountPerEvent[Integer.parseInt("5") - 1], is(46));
+    assertThat(occurrenceCountPerEvent[Integer.parseInt("5") - 1], is(45));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("6") - 1], is(12));
   }
 

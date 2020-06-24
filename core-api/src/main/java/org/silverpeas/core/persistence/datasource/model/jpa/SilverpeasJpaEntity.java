@@ -154,28 +154,69 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
     return (E) this;
   }
 
+  /**
+   * Gets the identifier of the user that has persisted this entity the first time.
+   * <p>
+   * Don't override this method. It cannot be final to be proxied by the JPA implementation in lazy
+   * loadings.
+   * </p>
+   * @return the unique identifier of the creator.
+   */
   @Override
   public String getCreatorId() {
     return creatorId;
   }
 
-  @SuppressWarnings("unchecked")
-  public final E createdBy(final String creatorId) {
+  /**
+   * Sets the identifier of the user that has persisted this entity the first time.
+   * <p>
+   * Don't override this method. It cannot be final to be proxied by the JPA implementation in lazy
+   * loadings.
+   * </p>
+   * @param creatorId the unique identifier of the user that has created this entity.
+   * @return the entity itself.
+   */
+  public E createdBy(final String creatorId) {
     return createdBy(User.getById(creatorId), new Date());
   }
 
+  /**
+   * Gets the date at which this entity has been persisted into the data store the first time.
+   * <p>
+   * Don't override this method. It cannot be final to be proxied by the JPA implementation in lazy
+   * loadings.
+   * </p>
+   * @return the entity's creation date.
+   */
   @Override
   public Date getCreationDate() {
     return creationDate;
   }
 
-  @SuppressWarnings("unchecked")
-  protected final SilverpeasJpaEntity setCreationDate(final Date creationDate) {
+  /**
+   * Sets the date at which this entity has been persisted the first time.
+   * <p>
+   * Don't override this method. It cannot be final to be proxied by the JPA implementation in lazy
+   * loadings.
+   * </p>
+   * @param creationDate the creation date
+   * @return the entity itself.
+   */
+  protected SilverpeasJpaEntity setCreationDate(final Date creationDate) {
     this.creationDate = creationDate;
     return this;
   }
 
-  protected final SilverpeasJpaEntity setCreator(final User creator) {
+  /**
+   * Sets the user that has created this entity.
+   * <p>
+   * Don't override this method. It cannot be final to be proxied by the JPA implementation in lazy
+   * loadings.
+   * </p>
+   * @param creator the user that has created this entity.
+   * @return the entity itself.
+   */
+  protected SilverpeasJpaEntity setCreator(final User creator) {
     this.creator = creator;
     this.creatorId = creator == null ? null : creator.getId();
     return this;
@@ -186,35 +227,87 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
     return lastUpdateDate == null ? creationDate : lastUpdateDate;
   }
 
-  @SuppressWarnings("unchecked")
-  protected final SilverpeasJpaEntity setLastUpdateDate(final Date lastUpdateDate) {
+  /**
+   * Sets the date at which this entity has been updated the last time.
+   * <p>
+   * Don't override this method. It cannot be final to be proxied by the JPA implementation in lazy
+   * loadings.
+   * </p>
+   * @param lastUpdateDate the date of the last update.
+   * @return the entity itself.
+   */
+  protected SilverpeasJpaEntity setLastUpdateDate(final Date lastUpdateDate) {
     this.lastUpdateDate = lastUpdateDate;
     return this;
   }
 
-  protected final SilverpeasJpaEntity setLastUpdater(final User updater) {
+  /**
+   * Sets the user that has updated this entity the last time.
+   * <p>
+   * Don't override this method. It cannot be final to be proxied by the JPA implementation in lazy
+   * loadings.
+   * </p>
+   * @param updater the user that has updated this entity.
+   * @return the entity itself.
+   */
+  protected SilverpeasJpaEntity setLastUpdater(final User updater) {
     this.lastUpdater = updater;
     this.lastUpdaterId = updater == null ? null : updater.getId();
     return this;
   }
 
+  /**
+   * Gets the identifier of the user that has updated this entity the last time.
+   * <p>
+   * Don't override this method. It cannot be final to be proxied by the JPA implementation in lazy
+   * loadings.
+   * </p>
+   * @return the unique identifier of the user that has updated lastly this entity.
+   */
   @Override
   public String getLastUpdaterId() {
     return this.lastUpdaterId;
   }
 
-  @SuppressWarnings("unchecked")
-  public final E lastUpdatedBy(final String lastUpdaterId) {
+
+  /**
+   * Sets the identifier of the user that has updated this entity the last time.
+   * <p>
+   * Don't override this method. It cannot be final to be proxied by the JPA implementation in lazy
+   * loadings.
+   * </p>
+   * @param lastUpdaterId the unique identifier of the user that has updated this entity.
+   * @return the entity itself.
+   */
+  public E lastUpdatedBy(final String lastUpdaterId) {
     return updatedBy(User.getById(lastUpdaterId), new Date());
   }
 
+  /**
+   * Gets the version of this entity. To be used for optimistic locking in update.
+   * <p>
+   * Don't override this method. It cannot be final to be proxied by the JPA implementation in lazy
+   * loadings.
+   * </p>
+   * @return the entity version.
+   */
   @Override
   public Long getVersion() {
     return version;
   }
 
+
+  /**
+   * Sets the version of this entity in the data source.
+   * <p>
+   * Don't override this method. It cannot be final to be proxied by the JPA implementation in lazy
+   * loadings.
+   * </p>
+   * @param version the version of the entity.
+   * @return the entity itself.
+   */
   @SuppressWarnings("unchecked")
-  protected final E setVersion(final Long version) {
+  protected E setVersion(final Long version) {
     this.version = version;
     return (E) this;
   }
