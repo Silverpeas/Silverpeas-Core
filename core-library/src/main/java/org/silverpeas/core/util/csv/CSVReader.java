@@ -24,13 +24,13 @@
 package org.silverpeas.core.util.csv;
 
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.exception.UtilTrappedException;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.exception.UtilTrappedException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,6 +39,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.function.UnaryOperator;
 
 public class CSVReader {
   protected int nbCols = 0;
@@ -56,7 +57,6 @@ public class CSVReader {
   protected List<Integer> specificColMaxLengths;
   protected List<String> specificColTypes;
   protected List<String> specificColMandatory;
-  protected List<String> specificParameterNames;
 
   // Active control file columns/object columns
   private boolean columnNumberControlEnabled = true;
@@ -100,11 +100,11 @@ public class CSVReader {
   }
 
   public void initCSVFormat(String propertiesFile, String rootPropertyName, String separator,
-      String specificPropertiesFile, String specificRootPropertyName) {
+      SettingBundle sP, String specificRootPropertyName,
+      UnaryOperator<List<String>> specificFieldNameMapper) {
     initCSVFormat(propertiesFile, rootPropertyName, separator);
 
-    SettingBundle sP = ResourceLocator.getSettingBundle(specificPropertiesFile);
-    specificColNames = sP.getStringList(specificRootPropertyName, "Name", -1);
+    specificColNames = specificFieldNameMapper.apply(sP.getStringList(specificRootPropertyName, "Name", -1));
     specificNbCols = specificColNames.size();
 
     specificColTypes = sP.getStringList(specificRootPropertyName, "Type", specificNbCols);
@@ -127,17 +127,24 @@ public class CSVReader {
     }
 
     specificColMandatory = sP.getStringList(specificRootPropertyName, "Mandatory", specificNbCols);
-
-    specificParameterNames = specificColNames;
   }
 
   public Variant[][] parseStream(InputStream is) throws UtilTrappedException {
+    return parseStream(is, false);
+  }
+
+  public Variant[][] parseStream(InputStream is, boolean ignoreFirstLine)
+      throws UtilTrappedException {
     List<Variant[]> finalResult = new ArrayList<>();
     int lineNumber = 1;
     StringBuilder listErrors = new StringBuilder("");
     try {
       BufferedReader rb = new BufferedReader(new InputStreamReader(is, Charsets.UTF_8));
       String theLine = rb.readLine();
+      if (ignoreFirstLine) {
+        // read second line directly
+        theLine = rb.readLine();
+      }
       if (theLine != null && !isExtraColumnsControlEnabled()) {
         StringTokenizer st = new StringTokenizer(theLine, separator);
         setSpecificNbCols(st.countTokens() - nbCols);
@@ -395,7 +402,7 @@ public class CSVReader {
    * @return the parameter name of specific column i.
    */
   public String getSpecificParameterName(int i) {
-    return specificParameterNames.get(i);
+    return specificColNames.get(i);
   }
 
   /**
@@ -403,5 +410,13 @@ public class CSVReader {
    */
   public int getSpecificColMaxLength(int i) {
     return specificColMaxLengths.get(i);
+  }
+
+  public void addSpecificCol(String name, int maxLength, String type, String mandatory) {
+    specificColNames.add(name);
+    specificColMaxLengths.add(maxLength);
+    specificColTypes.add(type);
+    specificColMandatory.add(mandatory);
+    specificNbCols++;
   }
 }

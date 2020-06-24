@@ -135,6 +135,8 @@ public class UserRequestData {
   @FormParam("userManualNotifReceiverLimitValue")
   private Integer userManualNotifReceiverLimitValue;
 
+  private boolean fromCSV = false;
+
   /**
    * Applies the data on the specified new instance of a user.<br>
    * Following data are not set:
@@ -301,6 +303,14 @@ public class UserRequestData {
       limit = userManualNotifReceiverLimitValue;
     }
     return limit;
+  }
+
+  public boolean isFromCSV() {
+    return fromCSV;
+  }
+
+  public void setFromCSV(final boolean fromCSV) {
+    this.fromCSV = fromCSV;
   }
 
   @Override

@@ -2348,6 +2348,11 @@ caption {
   border:1px solid #F1790F;
 }
 
+.user-type-list {
+  font-weight: lighter;
+  font-size: 0.8em;
+}
+
 /*- [ directory BEGIN ] --------------------------- */
 
 #directory .message_list {
