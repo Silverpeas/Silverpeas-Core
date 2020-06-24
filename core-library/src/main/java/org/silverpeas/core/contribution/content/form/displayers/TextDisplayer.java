@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -30,6 +33,7 @@ import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.field.DateField;
+import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.util.DateUtil;
@@ -105,6 +109,12 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
           value = DateUtil.getOutputDate(field.getValue(), pagesContext.getLanguage());
         } catch (Exception e) {
           SilverLogger.getLogger(this).error("Incorrect type for value " + field.getValue(), e);
+        }
+      } else if (field.getTypeName().equals(FileField.TYPE)) {
+        SimpleDocument doc = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
+            new SimpleDocumentPK(field.getValue(), pagesContext.getComponentId()), null);
+        if (doc != null) {
+          value = doc.getFilename();
         }
       } else {
         value = WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(field.getValue(language));

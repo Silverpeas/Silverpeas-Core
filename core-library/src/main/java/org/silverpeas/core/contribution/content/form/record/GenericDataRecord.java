@@ -94,7 +94,6 @@ public class GenericDataRecord implements DataRecord, Serializable {
    */
   @Override
   public void setId(String id) {
-    // if (this.externalId == null)
     this.externalId = id;
   }
 
@@ -163,7 +162,6 @@ public class GenericDataRecord implements DataRecord, Serializable {
    * Sets the internal id. May be used only by a package class !
    */
   void setInternalId(int id) {
-    // if (this.id == -1)
     this.id = id;
   }
 
@@ -204,13 +202,16 @@ public class GenericDataRecord implements DataRecord, Serializable {
           fieldDisplayer =
               TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "wysiwyg");
         }
-        StringWriter sw = new StringWriter();
-        PrintWriter out = new PrintWriter(sw);
-        //noinspection unchecked
-        fieldDisplayer.display(out, field, fieldTemplate, pageContext);
-        String value = sw.toString();
-        if (StringUtil.isDefined(value)) {
-          formValues.put(fieldName, value);
+        if (fieldTemplate.isRepeatable()) {
+          // returns each value (of a repeatable field) separated by " / "
+          formValues.put(fieldName,
+              getRepeatableFieldDisplayableValues(field, fieldTemplate, fieldDisplayer,
+                  pageContext));
+        } else {
+          String value = getFieldDisplayableValue(field, fieldTemplate, fieldDisplayer, pageContext);
+          if (StringUtil.isDefined(value)) {
+            formValues.put(fieldName, value);
+          }
         }
       } catch (Exception e) {
         SilverTrace.warn("form", "GenericDataRecord.getValues", "CANT_GET_FIELD_VALUE",
@@ -218,6 +219,34 @@ public class GenericDataRecord implements DataRecord, Serializable {
       }
     }
     return formValues;
+  }
+
+  private String getRepeatableFieldDisplayableValues(Field field, FieldTemplate fieldTemplate,
+      FieldDisplayer fieldDisplayer, PagesContext pageContext) throws FormException {
+    int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
+    StringBuilder fieldValues = new StringBuilder();
+    for (int occ = 0; occ < maxOccurrences; occ++) {
+      final Field fieldOcc = getField(field.getName(), occ);
+      if (fieldOcc != null && !fieldOcc.isNull()) {
+        String value =
+            getFieldDisplayableValue(fieldOcc, fieldTemplate, fieldDisplayer, pageContext);
+        if (StringUtil.isDefined(value)) {
+          if (fieldValues.length() > 0) {
+            fieldValues.append(" / ");
+          }
+          fieldValues.append(value);
+        }
+      }
+    }
+    return fieldValues.toString();
+  }
+
+  private <T extends Field> String getFieldDisplayableValue(T field, FieldTemplate fieldTemplate,
+      FieldDisplayer<T> fieldDisplayer, PagesContext pageContext) throws FormException {
+    StringWriter sw = new StringWriter();
+    PrintWriter out = new PrintWriter(sw);
+    fieldDisplayer.display(out, field, fieldTemplate, pageContext);
+    return sw.toString();
   }
 
   @Override
