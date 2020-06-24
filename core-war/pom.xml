@@ -177,7 +177,7 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.spec</groupId>
-      <artifactId>jboss-javaee-all-7.0</artifactId>
+      <artifactId>jboss-javaee-all-8.0</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

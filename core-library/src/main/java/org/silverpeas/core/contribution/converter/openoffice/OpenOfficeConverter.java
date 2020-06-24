@@ -24,10 +24,10 @@
 package org.silverpeas.core.contribution.converter.openoffice;
 
 import org.apache.commons.io.FilenameUtils;
-import org.jodconverter.DocumentConverter;
-import org.jodconverter.LocalConverter;
-import org.jodconverter.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.office.OfficeManager;
+import org.jodconverter.core.DocumentConverter;
+import org.jodconverter.local.LocalConverter;
+import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
+import org.jodconverter.core.office.OfficeManager;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.DocumentFormatConversion;
 import org.silverpeas.core.contribution.converter.DocumentFormatConversionException;
@@ -129,9 +129,9 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
     return builder.build();
   }
 
-  private org.jodconverter.document.DocumentFormat documentFormat(final DocumentFormat format) {
+  private org.jodconverter.core.document.DocumentFormat documentFormat(final DocumentFormat format) {
     String mimeType = format.getMimeType();
-    org.jodconverter.document.DocumentFormat docFormat =
+    org.jodconverter.core.document.DocumentFormat docFormat =
         DefaultDocumentFormatRegistry.getFormatByMediaType(mimeType);
     if (docFormat == null) {
       if (RTF_MIME_TYPE.equals(mimeType)) {

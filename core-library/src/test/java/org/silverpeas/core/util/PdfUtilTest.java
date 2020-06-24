@@ -32,9 +32,8 @@ import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Files;
 
-import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.apache.commons.io.FileUtils.listFiles;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
@@ -58,6 +57,7 @@ public class PdfUtilTest {
   public void beforeTest() throws Exception {
     rootTempPath = new File(FileRepositoryManager.getTemporaryPath());
     cleanTest();
+    Files.createDirectories(rootTempPath.toPath());
   }
 
   @AfterEach
@@ -69,11 +69,7 @@ public class PdfUtilTest {
    * Cleaning files handled by a test
    */
   private void cleanTest() {
-    if (rootTempPath.isDirectory()) {
-      for (File file : listFiles(rootTempPath, null, false)) {
-        deleteQuietly(file);
-      }
-    }
+    FileUtils.deleteQuietly(rootTempPath);
   }
 
   @Test

@@ -29,9 +29,7 @@ import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.ParameterFactoryRegistry;
 import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.model.PropertyFactoryRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
@@ -53,6 +51,7 @@ import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -64,7 +63,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
@@ -107,11 +105,8 @@ public class ICal4JImporter implements ICalendarImporter {
       final Consumer<Stream<Pair<CalendarEvent, List<CalendarEventOccurrence>>>> consumer)
       throws ImportException {
     try {
-      PropertyFactoryRegistry propertyFactoryRegistry = new PropertyFactoryRegistry();
-      propertyFactoryRegistry.register(HtmlProperty.PROPERTY_NAME, HtmlProperty.FACTORY);
       CalendarBuilder builder =
-          new CalendarBuilder(CalendarParserFactory.getInstance().createParser(),
-              propertyFactoryRegistry, new ParameterFactoryRegistry(),
+          new CalendarBuilder(CalendarParserFactory.getInstance().get(),
               TimeZoneRegistryFactory.getInstance().createRegistry());
       Calendar calendar = builder.build(getCalendarInputStream(descriptor));
       if (calendar.getComponents().isEmpty()) {
@@ -120,7 +115,7 @@ public class ICal4JImporter implements ICalendarImporter {
       }
       calendar.validate();
 
-      Mutable<ZoneId> zoneId = Mutable.of(ZoneOffset.systemDefault());
+      Mutable<ZoneId> zoneId = Mutable.of(ZoneId.systemDefault());
 
       Map<String, List<VEvent>> readEvents = new LinkedHashMap<>();
       calendar.getComponents().forEach(component -> {
@@ -184,7 +179,8 @@ public class ICal4JImporter implements ICalendarImporter {
     final String replacements =
         settings.getString("calendar.import.ics.file.replace.before.process", "");
     if (isDefined(replacements)) {
-      Mutable<String> icsContent = Mutable.of(IOUtils.toString(descriptor.getInputStream()));
+      Mutable<String> icsContent = Mutable.of(IOUtils.toString(descriptor.getInputStream(),
+          Charsets.UTF_8));
       Arrays.stream(replacements.split(";")).map(r -> {
         String[] replacement = r.split("[/]");
         return Pair.of(replacement[0], replacement[1]);
@@ -192,7 +188,7 @@ public class ICal4JImporter implements ICalendarImporter {
         String previous = icsContent.get();
         icsContent.set(previous.replaceAll(r.getLeft(), r.getRight()));
       });
-      return toInputStream(icsContent.get());
+      return toInputStream(icsContent.get(), Charsets.UTF_8);
     }
     return descriptor.getInputStream();
   }
@@ -230,8 +226,8 @@ public class ICal4JImporter implements ICalendarImporter {
     }
 
     // Categories
-    if (vEvent.getProperty(Categories.CATEGORIES) != null) {
-      Categories categories = (Categories) vEvent.getProperty(Categories.CATEGORIES);
+    if (vEvent.getProperty(Property.CATEGORIES) != null) {
+      Categories categories = vEvent.getProperty(Property.CATEGORIES);
       Iterator<String> categoriesIt = categories.getCategories().iterator();
       while (categoriesIt.hasNext()) {
         event.getCategories().add(categoriesIt.next());

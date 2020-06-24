@@ -24,19 +24,29 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
-             http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
-             version="2.0">
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
+             version="2.2">
   <persistence-unit name="silverpeas" transaction-type="JTA">
+    <!-- JNDI name of the data source to use as persistence backend for Silverpeas -->
     <jta-data-source>java:/datasources/silverpeas</jta-data-source>
+    <!-- no entities are cached in the second level cache of the JPA provider -->
+    <shared-cache-mode>NONE</shared-cache-mode>
     <properties>
-      <!-- Properties for Hibernate (default provider for JBoss AS, must be installed on GlassFish) -->
+      <!-- to give the opportunity to specify a custom dialect for a given SQL backend -->
       <property name="hibernate.dialect_resolvers" value="org.silverpeas.core.persistence.SilverpeasDialectResolver"/>
+      <!-- doesn't write out all the SQL queries in the logs -->
       <property name="hibernate.show_sql" value="false"/>
+      <!-- doesn't pretty-print out the SQL statements -->
       <property name="hibernate.format_sql" value="false"/>
-      <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
+      <!-- disable the second level cache (second level cache improve the performance but can cause
+           some concurrent troubles -->
+      <property name="hibernate.cache.use_second_level_cache" value="false"/>
+      <!-- if second level cache enabled: no cache provider defined -->
+      <property name="hibernate.cache.region.factory_class"
+                value="org.hibernate.cache.internal.NoCachingRegionFactory"/>
     </properties>
   </persistence-unit>
 </persistence>

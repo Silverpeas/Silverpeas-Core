@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.security.authorization;
 
-import org.jodconverter.office.utils.Lo;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;

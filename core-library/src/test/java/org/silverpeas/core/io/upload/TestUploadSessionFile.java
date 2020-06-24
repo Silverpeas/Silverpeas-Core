@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.io.upload;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMocks;
 
 import java.io.File;
 
@@ -39,15 +39,15 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author Yohann Chastagnier
  */
-@UnitTest
+@EnableSilverTestEnv
+@TestManagedMocks(OrganizationController.class)
 public class TestUploadSessionFile {
 
-  @Rule
-  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
-
-  @Before
+  @BeforeEach
   public void setup() {
-    new SessionInfo(null, new UserDetail());
+    UserDetail user = new UserDetail();
+    user.setId("32");
+    new SessionInfo(null, user);
   }
 
   @Test
