@@ -98,8 +98,7 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.function.Function;
 
-import static org.silverpeas.core.admin.domain.DomainDriverManagerProvider
-    .getCurrentDomainDriverManager;
+import static org.silverpeas.core.admin.domain.DomainDriverManagerProvider.getCurrentDomainDriverManager;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlParagraphe;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
 
@@ -1007,11 +1006,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private void addSourceFromComponent(final String componentId) {
     if (StringUtil.isDefined(componentId)) {
-      Optional<SilverpeasComponentInstance> component =
-          SilverpeasComponentInstance.getById(componentId);
-      if (component.isPresent()) {
-        addSource(component.get());
-      }
+      SilverpeasComponentInstance.getById(componentId).ifPresent(this::addSource);
     }
   }
 
@@ -1072,7 +1067,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   private List<String> getDomainNotExportableFields(String domainId) {
-    String key = EXPORT_PROPERTY_PREFIX + getReferer() + ".domain." + domainId + ".exclude";
+    final String key = EXPORT_PROPERTY_PREFIX + getReferer() + ".domain." + domainId + ".exclude";
     return getNotExportableFields(key);
   }
 
@@ -1088,10 +1083,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   private List<String> getExtraFormNotExportableFields(String extraFormName) {
-    if (User.getCurrentRequester().isAccessAdmin()) {
-      return Collections.emptyList();
-    }
-    String key = EXPORT_PROPERTY_PREFIX + getReferer() + ".extraForm." +
+    final String key = EXPORT_PROPERTY_PREFIX + getReferer() + ".extraForm." +
         extraFormName.substring(0, extraFormName.lastIndexOf('.')) + ".exclude";
     return getNotExportableFields(key);
   }
@@ -1110,30 +1102,25 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   public ExportCSVBuilder export()
       throws PublicationTemplateException, FormException, AdminException {
-    ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
-    PublicationTemplate directoryTemplate =
+    final ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
+    final PublicationTemplate directoryTemplate =
         PublicationTemplateManager.getInstance().getDirectoryTemplate();
-
     // add header
-    CSVHeader csvHeader = setCSVHeader(csvBuilder);
-
-    for (DirectoryItem item : lastListUsersCalled) {
-      CSVRow csvRow = new CSVRow();
-
+    final CSVHeader csvHeader = setCSVHeader(csvBuilder);
+    for (final DirectoryItem item : lastListUsersCalled) {
+      final CSVRow csvRow = new CSVRow(csvHeader.getTotalOfCols());
       // add common data between users and contacts
-      csvRow.addCell(item.getLastName());
-      csvRow.addCell(item.getFirstName());
-      csvRow.addCell(item.getMail());
-
+      csvRow.setCell(0, item.getLastName());
+      csvRow.setCell(1, item.getFirstName());
+      csvRow.setCell(2, item.getMail());
       // getting extra data (from form)
       if (item instanceof ContactItem) {
-        ContactItem contactItem = (ContactItem) item;
+        final ContactItem contactItem = (ContactItem) item;
         exportContact(contactItem, csvRow, csvHeader);
       } else if (item instanceof UserItem) {
-        UserItem userItem = (UserItem) item;
+        final UserItem userItem = (UserItem) item;
         exportUser(userItem, csvRow, csvHeader, directoryTemplate);
       }
-
       csvBuilder.addLine(csvRow);
     }
 
@@ -1142,19 +1129,21 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private CSVHeader setCSVHeader(ExportCSVBuilder csvBuilder)
       throws PublicationTemplateException, FormException, AdminException {
-
-    CSVHeader csvHeader = new CSVHeader();
+    // mandatory columns
+    final CSVHeader csvHeader = new CSVHeader();
     csvHeader.addStandardCol(getString("GML.lastName"));
     csvHeader.addStandardCol(getString("GML.firstName"));
     csvHeader.addStandardCol(getString("GML.eMail"));
     csvHeader.addStandardCol(getString("GML.phoneNumber"));
     csvHeader.addStandardCol(getString("GML.faxNumber"));
-
-    List<String> sources = getCurrentSourcesToExport();
+    // specific columns
+    final List<String> sources = getCurrentSourcesToExport();
     for (String source : sources) {
-      if (!StringUtil.isInteger(source) && isExtraFormExportable(source)) {
-        // it's a template, not a domain
-        csvHeader.addSourceCols(source, getCSVColsFromExtraForm(source));
+      if (!StringUtil.isInteger(source)) {
+        if (isExtraFormExportable(source)) {
+          // it's a template, not a domain
+          csvHeader.addSourceCols(source, getCSVColsFromExtraForm(source));
+        }
       } else if (isDomainDataExportable(source)) {
         // it's a domain
         csvHeader.addSourceCols(source, getCSVColsFromDomain(source));
@@ -1195,88 +1184,52 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private void exportUser(UserItem userItem, CSVRow csvRow, CSVHeader csvHeader,
       PublicationTemplate directoryTemplate) throws PublicationTemplateException, FormException {
-
-    int nbCells = 0;
-    int index = 0;
-    String domainId = userItem.getDomainId();
+    final String domainId = userItem.getDomainId();
     if (isDomainDataExportable(domainId)) {
-      csvRow.addCell(userItem.getPhone());
-      csvRow.addCell(userItem.getFax());
-
-      index = csvHeader.getIndexOfSourceCols(domainId);
-      addEmptyColsToReachIndex(csvRow, index);
-
-      nbCells = addDomainDataToCSVRow(csvRow, userItem);
-    } else {
-      // phone and fax
-      csvRow.addCell("");
-      csvRow.addCell("");
+      csvRow.setCell(3, userItem.getPhone());
+      csvRow.setCell(4, userItem.getFax());
+      csvHeader.getIndexOfSourceCols(domainId)
+          .ifPresent(i -> setFromIndexDomainDataToCSVRow(i, csvRow, userItem));
     }
-
     if (directoryTemplate != null) {
-
-      index = csvHeader.getIndexOfSourceCols(directoryTemplate.getFileName());
-      addEmptyColsToReachIndex(csvRow, index);
-
-      nbCells += addExtraFormDataToCSVRow(csvRow, directoryTemplate, userItem);
+      final Optional<Integer> index = csvHeader.getIndexOfSourceCols(directoryTemplate.getFileName());
+      if (index.isPresent()) {
+        setFromIndexExtraFormDataToCSVRow(index.get(), csvRow, directoryTemplate, userItem);
+      }
     }
-
-    int nbCellsToTerminateRow = csvHeader.getTotalOfCols() - (index + nbCells);
-    addEmptyColsToCSVRow(csvRow, nbCellsToTerminateRow);
   }
 
   private void exportContact(ContactItem contactItem, CSVRow csvRow,
       CSVHeader csvHeader) throws PublicationTemplateException, FormException {
-    CompleteContact completeContact = (CompleteContact) contactItem.getContact();
-    String contactSource = completeContact.getModelId();
-
-    csvRow.addCell(contactItem.getPhone());
-    csvRow.addCell(contactItem.getFax());
-
+    final CompleteContact completeContact = (CompleteContact) contactItem.getContact();
+    final String contactSource = completeContact.getModelId();
+    csvRow.setCell(3, contactItem.getPhone());
+    csvRow.setCell(4, contactItem.getFax());
     if (contactSource == null) {
-      // contact is associated to no form
-      addEmptyColsToCSVRow(csvRow, csvHeader.getTotalOfCols());
+      // contact is not associated to a form
       return;
     }
-
-    int index = csvHeader.getIndexOfSourceCols(contactSource);
-    addEmptyColsToCSVRow(csvRow, index);
-
-    String templateId = completeContact.getPK().getInstanceId() + ":" +
-        FilenameUtils.getBaseName(contactSource);
-    PublicationTemplate theTemplate =
-        PublicationTemplateManager.getInstance().getPublicationTemplate(templateId);
-    int nbCells = addExtraFormDataToCSVRow(csvRow, theTemplate, contactItem);
-
-    int nbCellsToTerminateRow = csvHeader.getTotalOfCols() - (index + nbCells);
-    addEmptyColsToCSVRow(csvRow, nbCellsToTerminateRow);
-  }
-
-  private void addEmptyColsToCSVRow(CSVRow csvRow, int nbCols) {
-    for (int i=0; i<nbCols; i++) {
-      csvRow.addCell("");
+    final Optional<Integer> index = csvHeader.getIndexOfSourceCols(contactSource);
+    if (index.isPresent()) {
+      final String templateId =
+          completeContact.getPK().getInstanceId() + ":" + FilenameUtils.getBaseName(contactSource);
+      final PublicationTemplate theTemplate = PublicationTemplateManager.getInstance()
+          .getPublicationTemplate(templateId);
+      setFromIndexExtraFormDataToCSVRow(index.get(), csvRow, theTemplate, contactItem);
     }
   }
 
-  private void addEmptyColsToReachIndex(CSVRow csvRow, int index) {
-    int init = csvRow.size() - 5;
-    for (int i=init; i<index; i++) {
-      csvRow.addCell("");
-    }
-  }
-
-  private int addDomainDataToCSVRow(CSVRow csvRow, UserItem userItem) {
-    int nbCells = 0;
-    UserFull userFull = userItem.getUserFull();
-    List<String> excludedFields = getDomainNotExportableFields(userItem.getDomainId());
-    String[] propertyNames = userFull.getPropertiesNames();
-    for (String propertyName : propertyNames) {
+  private void setFromIndexDomainDataToCSVRow(final int fromIndex, final CSVRow csvRow,
+      final UserItem userItem) {
+    final UserFull userFull = userItem.getUserFull();
+    final List<String> excludedFields = getDomainNotExportableFields(userItem.getDomainId());
+    final String[] propertyNames = userFull.getPropertiesNames();
+    int index = fromIndex;
+    for (final String propertyName : propertyNames) {
       if (!propertyName.startsWith("password") && !excludedFields.contains(propertyName)) {
-        csvRow.addCell(getValueToExport(userFull, propertyName));
-        nbCells++;
+        csvRow.setCell(index++, getValueToExport(userFull, propertyName));
       }
     }
-    return nbCells;
   }
 
   private String getValueToExport(UserFull userFull, String propertyName) {
@@ -1295,30 +1248,30 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return value;
   }
 
-  private int addExtraFormDataToCSVRow(CSVRow csvRow, PublicationTemplate template,
-      DirectoryItem item) throws PublicationTemplateException, FormException {
+  private void setFromIndexExtraFormDataToCSVRow(final int fromIndex, final CSVRow csvRow,
+      final PublicationTemplate template, final DirectoryItem item)
+      throws PublicationTemplateException, FormException {
     if (isExtraFormExportable(template.getFileName())) {
-      DataRecord dataRecord = template.getRecordSet().getRecord(item.getOriginalId());
-      Map<String, String> values;
+      final DataRecord dataRecord = template.getRecordSet().getRecord(item.getOriginalId());
+      final Map<String, String> values;
       if (dataRecord != null) {
         values = dataRecord.getValues(getLanguage());
       } else {
         values = Collections.emptyMap();
       }
       // add extra data
-      FieldTemplate[] fields = template.getRecordTemplate().getFieldTemplates();
-      List<String> excludedFields = getExtraFormNotExportableFields(template.getFileName());
-      for (FieldTemplate field : fields) {
+      final FieldTemplate[] fields = template.getRecordTemplate().getFieldTemplates();
+      final List<String> excludedFields = getExtraFormNotExportableFields(template.getFileName());
+      int index = fromIndex;
+      for (final FieldTemplate field : fields) {
         if (!excludedFields.contains(field.getFieldName())) {
           String value = values.getOrDefault(field.getFieldName(), "");
           // removing all HTML
           value = new Source(value).getTextExtractor().toString();
-          csvRow.addCell(value);
+          csvRow.setCell(index++, value);
         }
       }
-      return fields.length;
     }
-    return 0;
   }
 
   /**
@@ -1364,7 +1317,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   /**
    * Used to sort user id from highest to lowest
    */
-  private class CreationDateComparator implements Comparator<DirectoryItem> {
+  private static class CreationDateComparator implements Comparator<DirectoryItem> {
 
     @Override
     public int compare(DirectoryItem o1, DirectoryItem o2) {

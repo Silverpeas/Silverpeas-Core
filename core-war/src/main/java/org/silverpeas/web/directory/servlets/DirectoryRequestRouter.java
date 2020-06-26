@@ -48,8 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
-    .getPaginationPageFrom;
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.getPaginationPageFrom;
 
 /**
  * @author azzedine
@@ -197,12 +196,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         }
         destination = doPagination(request, users, directorySC);
       } else  if ("Export".equals(function)) {
-        try {
-          ExportCSVBuilder csvBuilder = directorySC.export();
-          return csvBuilder.setupRequest(request);
-        } catch (Exception e) {
-          //destination = getDestination("Main", directorySC, request);
-        }
+        return performExport(request, directorySC);
       }
       request.setAttribute("ExportEnabled", directorySC.isExportEnabled());
     } catch (DirectoryException e) {
@@ -211,6 +205,16 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     }
     return destination;
 
+  }
+
+  private String performExport(final HttpRequest request,
+      final DirectorySessionController directorySC) throws DirectoryException {
+    try {
+      final ExportCSVBuilder csvBuilder = directorySC.export();
+      return csvBuilder.setupRequest(request);
+    } catch (Exception e) {
+      throw new DirectoryException("DirectoryRequestRouter", "CSV export error", e);
+    }
   }
 
   /**
