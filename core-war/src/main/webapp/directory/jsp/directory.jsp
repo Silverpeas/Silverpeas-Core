@@ -61,6 +61,7 @@
 <c:set var="domains" value="${requestScope.Domains}"/>
 <c:set var="groups" value="${requestScope.Groups}"/>
 <c:set var="sources" value="${requestScope.DirectorySources}"/>
+<c:set var="exportEnabled" value="${requestScope.ExportEnabled}"/>
 
 <c:set var="currentSource" value=""/>
 <c:set var="currentSourceCSS" value=""/>
@@ -72,6 +73,7 @@
 </c:forEach>
 
 <fmt:message key="GML.print" var="labelPrint"/>
+<fmt:message key="GML.export" var="labelExport"/>
 
 <%
   Form extraForm = (Form) request.getAttribute("ExtraForm");
@@ -258,6 +260,9 @@
 <view:browseBar extraInformations="${breadcrumb}"/>
 <view:operationPane>
   <view:operation action="javascript:window.print()" altText="${labelPrint}"/>
+  <c:if test="${exportEnabled}">
+    <view:operation action="javascript:sp.preparedDownloadRequest('Export').download()" altText="${labelExport}"/>
+  </c:if>
 </view:operationPane>
 <view:window>
   <view:frame>

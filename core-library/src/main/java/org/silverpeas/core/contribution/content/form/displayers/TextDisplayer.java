@@ -201,7 +201,7 @@ public class TextDisplayer extends AbstractFieldDisplayer<Field> {
     if (StringUtil.isDefined(classe)) {
       html.append("</span>");
     }
-    out.println(html.toString());
+    out.print(html.toString());
   }
 
   /**
