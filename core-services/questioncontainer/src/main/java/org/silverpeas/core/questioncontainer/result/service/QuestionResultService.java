@@ -26,9 +26,11 @@ package org.silverpeas.core.questioncontainer.result.service;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
+import org.silverpeas.core.questioncontainer.result.model.Results;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface QuestionResultService {
 
@@ -104,4 +106,6 @@ public interface QuestionResultService {
    */
   QuestionResult getUserAnswerToQuestion(String userId, ResourceReference questionPK,
       AnswerPK answerPK);
+
+  Results getResultsOfQuestions(List<ResourceReference> pks);
 }
