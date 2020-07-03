@@ -29,11 +29,13 @@ import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.questioncontainer.result.dao.QuestionResultDAO;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResultRuntimeException;
+import org.silverpeas.core.questioncontainer.result.model.Results;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * QuestionResultService Stateless service to manage access to question results.
@@ -155,6 +157,18 @@ public class DefaultQuestionResultService implements QuestionResultService {
     Connection con = getConnection();
     try {
       return QuestionResultDAO.getUserAnswerToQuestion(con, userId, questionPK, answerPK);
+    } catch (Exception e) {
+      throw new QuestionResultRuntimeException(e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
+  @Override
+  public Results getResultsOfQuestions(List<ResourceReference> pks) {
+    Connection con = getConnection();
+    try {
+      return QuestionResultDAO.getResults(con, pks);
     } catch (Exception e) {
       throw new QuestionResultRuntimeException(e);
     } finally {

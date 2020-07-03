@@ -23,11 +23,13 @@
  */
 package org.silverpeas.core.questioncontainer.result.dao;
 
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResultPK;
+import org.silverpeas.core.questioncontainer.result.model.Results;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -305,6 +307,40 @@ public class QuestionResultDAO {
         result = getQuestionResultFromResultSet(rs, questionPK);
       }
       return result;
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  public static Results getResults(Connection con, List<ResourceReference> pks) throws SQLException {
+    ResultSet rs = null;
+    QuestionResult questionResult;
+    String tableName = new QuestionResultPK("").getTableName();
+    Results results = new Results();
+
+    List<String> ids = new ArrayList<>(pks.size());
+    ResourceReference firstQuestionPK = null;
+    for (ResourceReference pk : pks) {
+      if (firstQuestionPK == null) {
+        firstQuestionPK = pk;
+      }
+      ids.add(pk.getId());
+    }
+
+    String selectStatement =
+        "select " + QUESTIONRESULTCOLUMNNAMES + " from " + tableName + " where questionId in (" +
+            StringUtils.join(ids, ',') + ")";
+
+    PreparedStatement prepStmt = null;
+
+    try {
+      prepStmt = con.prepareStatement(selectStatement);
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        questionResult = getQuestionResultFromResultSet(rs, firstQuestionPK);
+        results.addQuestionResult(questionResult);
+      }
+      return results;
     } finally {
       DBUtil.close(rs, prepStmt);
     }
