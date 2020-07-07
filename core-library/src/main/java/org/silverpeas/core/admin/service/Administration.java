@@ -75,7 +75,7 @@ public interface Administration {
   }
 
   static Administration get() {
-    return ServiceProvider.getService(Administration.class);
+    return ServiceProvider.getSingleton(Administration.class);
   }
 
   void reloadCache();

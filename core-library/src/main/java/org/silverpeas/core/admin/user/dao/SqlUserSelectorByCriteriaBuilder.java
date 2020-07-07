@@ -24,19 +24,30 @@
 
 package org.silverpeas.core.admin.user.dao;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.util.MemoizedSupplier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
+import static org.silverpeas.core.util.ArrayUtil.isNotEmpty;
 
 /**
  * A builder of {@link org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery} to select some fields
@@ -46,6 +57,7 @@ import java.util.stream.Stream;
 public class SqlUserSelectorByCriteriaBuilder {
 
   private final String fields;
+  private MemoizedSupplier<SilverpeasComponentInstance> componentInstanceSupplier;
 
   SqlUserSelectorByCriteriaBuilder(final String fields) {
     this.fields = fields;
@@ -89,33 +101,29 @@ public class SqlUserSelectorByCriteriaBuilder {
 
   private void applyCriteriaOnGroupIds(final JdbcSqlQuery query,
       final UserDetailsSearchCriteria criteria) {
-    if (criteria.isCriterionOnGroupIdsSet()) {
-      String[] groupIds = criteria.getCriterionOnGroupIds();
-      query.and("st_group_user_rel.groupId")
-          .in(Stream.of(groupIds).map(Integer::parseInt).collect(Collectors.toList()))
-          .and("st_group_user_rel.userId = st_user.id");
+    if (criteria.isCriterionOnGroupIdsSet() || criteria.isCriterionOnAnyGroupSet()) {
+      query.and("st_group_user_rel.userId = st_user.id");
+      final String[] groupIds = criteria.getCriterionOnGroupIds();
+      if (isNotEmpty(groupIds)) {
+        query.and("st_group_user_rel.groupId")
+             .in(Stream.of(groupIds).map(Integer::parseInt).collect(Collectors.toList()));
+      }
     }
   }
 
   private void applyCriteriaOnUserName(final JdbcSqlQuery query,
       final UserDetailsSearchCriteria criteria) {
     if (criteria.isCriterionOnNameSet()) {
-      String normalizedName =
-          criteria.getCriterionOnName().replace("'", "''")
-              .replaceAll("\\*", "%");
+      final String normalizedName = criteria.getCriterionOnName().replaceAll("\\*", "%");
       query.and("(lower(st_user.firstName) like lower(?) OR lower(st_user.lastName) like lower(?))",
           normalizedName, normalizedName);
     } else {
       if (criteria.isCriterionOnFirstNameSet()) {
-        String normalizedName =
-            criteria.getCriterionOnFirstName().replace("'", "''")
-                .replaceAll("\\*", "%");
+        final String normalizedName = criteria.getCriterionOnFirstName().replaceAll("\\*", "%");
         query.and("lower(st_user.firstName) like lower(?)", normalizedName);
       }
       if (criteria.isCriterionOnLastNameSet()) {
-        String normalizedName =
-            criteria.getCriterionOnLastName().replace("'", "''")
-                .replaceAll("\\*", "%");
+        final String normalizedName = criteria.getCriterionOnLastName().replaceAll("\\*", "%");
         query.and("lower(st_user.lastName) like lower(?)", normalizedName);
       }
     }
@@ -158,16 +166,28 @@ public class SqlUserSelectorByCriteriaBuilder {
 
   private void applyCriteriaOnRoles(final JdbcSqlQuery query,
       final UserDetailsSearchCriteria criteria) {
-    if (criteria.isCriterionOnComponentInstanceIdSet()) {
-      int instanceId =
-          ComponentInst.getComponentLocalId(criteria.getCriterionOnComponentInstanceId());
+    getSharedComponentInstanceWithRights(criteria).ifPresent(i -> {
+      int instanceId = ComponentInst.getComponentLocalId(i.getId());
       query.and("(st_user.id IN (")
-          .addSqlPart("SELECT st_userrole_user_rel.userId FROM st_userrole inner join " +
-              "st_userrole_user_rel on st_userrole_user_rel.userroleId = st_userrole.id WHERE " +
-              "st_userrole.instanceId = ?", instanceId);
+          .addSqlPart("SELECT st_userrole_user_rel.userId " +
+              "FROM st_userrole " +
+              "INNER JOIN st_userrole_user_rel ON st_userrole_user_rel.userroleId = st_userrole.id " +
+              "WHERE st_userrole.instanceId = ?", instanceId);
       if (criteria.isCriterionOnResourceIdSet()) {
-        query.and("st_userrole.objectId = ?",
-            Integer.parseInt(criteria.getCriterionOnResourceId()));
+        final List<ProfiledObjectId> profiledResourceId = Stream
+            .of(criteria.getCriterionOnResourceId())
+            .map(ProfiledObjectId::from)
+            .collect(Collectors.toList());
+        query.and("st_userrole.objecttype").in(profiledResourceId.stream()
+            .map(ProfiledObjectId::getType)
+            .map(ProfiledObjectType::getCode)
+            .collect(Collectors.toList()));
+        query.and("st_userrole.objectId").in(profiledResourceId.stream()
+            .map(ProfiledObjectId::getId)
+            .map(Integer::parseInt)
+            .collect(Collectors.toList()));
+      } else {
+        query.andNull("st_userrole.objectId");
       }
       if (criteria.isCriterionOnRoleNamesSet()) {
         query.and("st_userrole.roleName").in(criteria.getCriterionOnRoleNames());
@@ -181,7 +201,26 @@ public class SqlUserSelectorByCriteriaBuilder {
             .addSqlPart(")");
       }
       query.addSqlPart(")");
+    });
+  }
+
+  private Optional<SilverpeasComponentInstance> getSharedComponentInstanceWithRights(
+      final UserDetailsSearchCriteria criteria) {
+    if (componentInstanceSupplier == null) {
+      componentInstanceSupplier = new MemoizedSupplier<>(() -> {
+        if (!criteria.isCriterionOnComponentInstanceIdSet()) {
+          return null;
+        }
+        final String instanceId = criteria.getCriterionOnComponentInstanceId();
+        try {
+          return Administration.get().getComponentInstance(instanceId);
+        } catch (AdminException e) {
+          throw new SilverpeasRuntimeException(failureOnGetting("component instance", instanceId));
+        }
+      });
     }
+    return Optional.ofNullable(componentInstanceSupplier.get())
+        .filter(i -> !i.isPersonal() && !i.isPublic());
   }
 
   private Set<UserState> getExcludedUserStates(final UserDetailsSearchCriteria criteria) {
@@ -190,13 +229,17 @@ public class SqlUserSelectorByCriteriaBuilder {
     if (criteria.isCriterionOnUserStatesToExcludeSet()) {
       excludedStates.addAll(Arrays.asList(criteria.getCriterionOnUserStatesToExclude()));
     }
+    getSharedComponentInstanceWithRights(criteria)
+        // this clause is to be compliant with searchGroup service
+        // this is a limitation induced by profile services which are excluding REMOVED users
+        .ifPresent(i -> excludedStates.add(UserState.REMOVED));
     return excludedStates;
   }
 
   private String[] getTables(final UserDetailsSearchCriteria criteria) {
     final List<String> tables = new ArrayList<>();
     tables.add("st_user");
-    if (criteria.isCriterionOnGroupIdsSet()) {
+    if (criteria.isCriterionOnGroupIdsSet() || criteria.isCriterionOnAnyGroupSet()) {
       tables.add("st_group_user_rel");
     }
     return tables.toArray(new String[0]);

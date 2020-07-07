@@ -61,8 +61,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.model.Domain.MIXED_DOMAIN_ID;
-import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.likeIgnoreCase;
+import static org.silverpeas.core.util.StringUtil.*;
 
 @Singleton
 @Transactional(Transactional.TxType.MANDATORY)
@@ -891,7 +890,7 @@ public class GroupManager {
       this.connection = connection;
       this.criteria = criteria;
       this.groupDao = groupDao;
-      this.nameFilter = criteria.getCriterionOnName();
+      this.nameFilter = defaultStringIfNotDefined(criteria.getCriterionOnName()).replaceAll("\\*", "%");
       this.paginationPage = criteria.getCriterionOnPagination();
       this.childrenRequired = criteria.childrenRequired();
       this.logicalNameFiltering = childrenRequired && isDefined(nameFilter);

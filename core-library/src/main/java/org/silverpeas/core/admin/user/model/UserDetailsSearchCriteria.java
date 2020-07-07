@@ -57,7 +57,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   private static final String LAST_NAME = "lastName";
   private static final String PAGINATION = "pagination";
   private static final String ROLE_GROUPS = "groupIdsInRole";
-  private Map<String, Object> criteria = new HashMap<>();
+  private final Map<String, Object> criteria = new HashMap<>();
 
   @Override
   public UserDetailsSearchCriteria onName(String name) {
@@ -132,6 +132,8 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
     if (isNotEmpty(groupIds)) {
       criteria.put(GROUP_IDS,
           Arrays.stream(groupIds).filter(StringUtil::isDefined).toArray(String[]::new));
+    } else if (groupIds == Constants.ANY) {
+      criteria.put(GROUP_IDS, groupIds);
     }
     return this;
   }
@@ -220,6 +222,10 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   public boolean isCriterionOnGroupIdsSet() {
     return criteria.containsKey(GROUP_IDS) && isNotEmpty((String[]) criteria.get(GROUP_IDS));
+  }
+
+  public boolean isCriterionOnAnyGroupSet() {
+    return criteria.containsKey(GROUP_IDS) && criteria.get(GROUP_IDS) == Constants.ANY;
   }
 
   public boolean isCriterionOnDomainIdSet() {
@@ -378,16 +384,12 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   @Override
   public int hashCode() {
     int hash = 5;
-    hash = 53 * hash + (this.criteria != null ? this.criteria.hashCode() : 0);
+    hash = 53 * hash + this.criteria.hashCode();
     return hash;
   }
 
   @Override
   public boolean isEmpty() {
     return criteria.isEmpty();
-  }
-
-  public void clearPagination() {
-    criteria.remove(PAGINATION);
   }
 }

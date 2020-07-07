@@ -101,7 +101,9 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
     if (countOverPaginationMethod) {
       final String theQuery = selectQuery.getSqlQuery().toLowerCase();
       final int selectIndex = theQuery.indexOf("select");
-      if (selectIndex >= 0 && theQuery.indexOf("select", selectIndex + 1) < 0) {
+      if (selectIndex >= 0 &&
+          theQuery.indexOf("select", selectIndex + 1) < 0 &&
+          theQuery.indexOf("distinct", selectIndex) < 0) {
         sqlQuery = selectQuery.getSqlQuery()
             .replaceFirst("(?i)(select .*)from ", "$1, COUNT(*) OVER() AS SP_MAX_ROW_COUNT FROM ");
       } else {

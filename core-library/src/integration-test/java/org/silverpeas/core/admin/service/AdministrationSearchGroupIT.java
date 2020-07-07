@@ -263,9 +263,18 @@ public class AdministrationSearchGroupIT extends AbstractAdministrationTest {
     SilverpeasList<GroupDetail> groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
         .containingUserIds(USER_SQLU3_2003_ID_DELETED)
         .build());
-    // Indeed, this filter is not handled.
-    // Modifying this test if it becomes the case.
-    assertSortedGroupIds(groups, ALL_GROUP_IDS_SORTED_BY_NAME);
+    assertThat(groups, notNullValue());
+    assertThat(groups, empty());
+    // searching for a user which is not DELETED
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .containingUserIds(USER_SPU7_1007_ID_DEACTIVATED)
+        .build());
+    assertSortedGroupIds(groups, GROUP_MIX_2_ID, GROUP_MIX_312_ID);
+    // searching for users which are not DELETED
+    groups = admin.searchGroups(newGroupSearchCriteriaBuilder()
+        .containingUserIds(USER_SPU7_1007_ID_DEACTIVATED, USER_SPU8_1008_ID_VALID)
+        .build());
+    assertSortedGroupIds(groups, GROUP_MIX_2_ID, GROUP_MIX_312_ID);
   }
 
   @Test
