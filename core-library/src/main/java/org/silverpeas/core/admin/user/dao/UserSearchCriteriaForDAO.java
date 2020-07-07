@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.silverpeas.core.util.ArrayUtil.isNotEmpty;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -130,7 +131,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public UserSearchCriteriaForDAO onGroupIds(String... groupIds) {
-    if (groupIds != Constants.ANY) {
+    if (isNotEmpty(groupIds) || groupIds == Constants.ANY) {
       tables.add("st_group_user_rel");
       criteria.onGroupIds(groupIds);
     }
@@ -139,7 +140,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public UserSearchCriteriaForDAO onAccessLevels(UserAccessLevel... accessLevels) {
-    if (accessLevels != null && accessLevels.length > 0) {
+    if (isNotEmpty(accessLevels)) {
       criteria.onAccessLevels(accessLevels);
     }
     return this;
@@ -154,7 +155,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public UserSearchCriteriaForDAO onUserIds(String... userIds) {
-    if (userIds != Constants.ANY) {
+    if (isNotEmpty(userIds)) {
       criteria.onUserIds(userIds);
     }
     return this;
@@ -162,7 +163,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public SearchCriteria onUserSpecificIds(final String... userSpecificIds) {
-    if (userSpecificIds != Constants.ANY) {
+    if (isNotEmpty(userSpecificIds)) {
       criteria.onUserSpecificIds(userSpecificIds);
     }
     return this;
@@ -190,20 +191,17 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     }
 
     if (criteria.isCriterionOnFirstNameSet()) {
-      String normalizedName =
-          criteria.getCriterionOnFirstName().replaceAll("'", "''").replaceAll("\\*", "%");
+      final String normalizedName = criteria.getCriterionOnFirstName().replaceAll("\\*", "%");
       query.and("lower(st_user.firstName) like lower(?)", normalizedName);
     }
 
     if (criteria.isCriterionOnLastNameSet()) {
-      String normalizedName =
-          criteria.getCriterionOnLastName().replaceAll("'", "''").replaceAll("\\*", "%");
+      final String normalizedName = criteria.getCriterionOnLastName().replaceAll("\\*", "%");
       query.and("lower(st_user.lastName) like lower(?)", normalizedName);
     }
 
     if (criteria.isCriterionOnNameSet()) {
-      String normalizedName =
-          criteria.getCriterionOnName().replaceAll("'", "''").replaceAll("\\*", "%");
+      final String normalizedName = criteria.getCriterionOnName().replaceAll("\\*", "%");
       query.and("(lower(st_user.firstName) like lower(?) OR lower(st_user.lastName) like lower(?))",
           normalizedName, normalizedName);
     }
@@ -218,7 +216,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     if (criteria.isCriterionOnUserSpecificIdsSet()) {
       if (criteria.getCriterionOnDomainIds().length > 1) {
         throw new IllegalArgumentException(
-            "one, and ony one, domain id must be set as filter when searching user on its " +
+            "one, and only one, domain id must be set as filter when searching user on its " +
                 "specific id");
       }
       final List<String> userSpecificIds = Arrays.stream(criteria.getCriterionOnUserSpecificIds())
@@ -227,11 +225,15 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     }
 
     if (criteria.isCriterionOnGroupIdsSet()) {
-      List<Integer> groupIds = Arrays.stream(criteria.getCriterionOnGroupIds())
-          .map(Integer::parseInt)
-          .collect(Collectors.toList());
       query.and("st_user.id = st_group_user_rel.userId")
-          .and("st_group_user_rel.groupId").in(groupIds);
+          .and("st_group_user_rel.groupId");
+      final String[] criterionOnGroupIds = criteria.getCriterionOnGroupIds();
+      if (isNotEmpty(criterionOnGroupIds)){
+        final List<Integer> groupIds = Arrays.stream(criterionOnGroupIds)
+            .map(Integer::parseInt)
+            .collect(Collectors.toList());
+        query.in(groupIds);
+      }
     }
 
     finalizeJdbcSqlQuery(fields, query);

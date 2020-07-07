@@ -37,7 +37,7 @@ import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
- * A conjonction of criteria in the search of user details.
+ * A conjunction of criteria in the search of user details.
  */
 public class UserDetailsSearchCriteria implements SearchCriteria {
 
@@ -110,9 +110,11 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   @Override
   public UserDetailsSearchCriteria onGroupIds(String... groupIds) {
-    if (groupIds != null) {
+    if (isNotEmpty(groupIds)) {
       criteria.put(GROUP_IDS,
           Arrays.stream(groupIds).filter(StringUtil::isDefined).toArray(String[]::new));
+    } else if (groupIds == Constants.ANY) {
+      criteria.put(GROUP_IDS, groupIds);
     }
     return this;
   }
@@ -195,7 +197,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   public boolean isCriterionOnGroupIdsSet() {
     final String[] groupIds = (String[]) criteria.get(GROUP_IDS);
-    return ArrayUtil.isNotEmpty(groupIds);
+    return ArrayUtil.isNotEmpty(groupIds) || groupIds == Constants.ANY;
   }
 
   public boolean isCriterionOnDomainIdSet() {

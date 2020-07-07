@@ -108,7 +108,9 @@ import java.util.stream.Stream;
 
 import static java.text.MessageFormat.format;
 import static java.util.Collections.singletonList;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Stream.concat;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_MIXED_GROUPS;
 import static org.silverpeas.core.util.StringUtil.isLong;
@@ -5168,7 +5170,7 @@ class Admin implements Administration {
       for (String profileId : profileIds) {
         ProfileInst profile = profileManager.getProfileInst(profileId);
         // add users directly attach to profile
-        addAllUsersInProfile(profile, userIds);
+        addAllUsersInProfile(null, profile, userIds);
       }
     } catch (Exception e) {
       throw new AdminException("Fail to search user ids by some profiles", e);
@@ -5184,12 +5186,14 @@ class Admin implements Administration {
   @Override
   public SilverpeasList<UserDetail> searchUsers(final UserDetailsSearchCriteria searchCriteria) throws
       AdminException {
+    setAllGroupChildren(searchCriteria);
     List<String> userIds = null;
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
-      userIds = searchUsersInComponentInstance(searchCriteria);
-      if (userIds == null) {
+      final Optional<List<String>> newUserIds = searchUsersInComponentInstance(searchCriteria);
+      if (!newUserIds.isPresent()) {
         return new ListSlice<>(0, 0, 0);
       }
+      userIds = newUserIds.get();
     }
 
     if (searchCriteria.isCriterionOnUserIdsSet()) {
@@ -5197,43 +5201,58 @@ class Admin implements Administration {
     }
 
     if (searchCriteria.isCriterionOnGroupIdsSet()) {
-      userIds = searchUsersByGroupIds(searchCriteria, userIds);
+      userIds = searchUsersByGroupIdsMatchingCurrentUserIds(searchCriteria, userIds);
     }
 
     if (userIds != null && userIds.size() > 10000) {
       // split query
-      final List users = new ArrayList<>(userIds.size());
+      final Mutable<Stream<UserDetail>> users = Mutable.of(Stream.empty());
       final PaginationPage paginationPage = searchCriteria.getCriterionOnPagination();
       searchCriteria.clearPagination();
       try {
         JdbcSqlQuery.executeBySplittingOn(userIds, (userIdBatch, result) -> {
           try {
             UserSearchCriteriaForDAO criteria = buildUserSearchCriteriaForDAO(searchCriteria, userIdBatch);
-            users.addAll(userManager.getUsersMatchingCriteria(criteria));
+            users.set(concat(users.get(), userManager.getUsersMatchingCriteria(criteria).stream()));
           } catch (AdminException e) {
             throw new SilverpeasRuntimeException(e);
           }
         });
-        users.sort(Comparator.comparing(UserDetail::getLastName).thenComparing(UserDetail::getFirstName));
+        users.set(users.get()
+            .distinct()
+            .sorted(Comparator.comparing(UserDetail::getLastName)
+                              .thenComparing(UserDetail::getFirstName)));
         if (paginationPage != null) {
           // recupere uniquement les users de la page demandée
+          final List<UserDetail> userResult = users.get().collect(Collectors.toList());
           int startIndex = (paginationPage.getPageNumber() - 1) * paginationPage.getPageSize();
-          int lastIndex = Math.min(startIndex + paginationPage.getPageSize(), users.size());
-          return PaginationList.from(users.subList(startIndex, lastIndex), users.size());
+          int lastIndex = Math.min(startIndex + paginationPage.getPageSize(), userResult.size());
+          return PaginationList.from(userResult.subList(startIndex, lastIndex), userResult.size());
         }
       } catch (SQLException e) {
         throw new AdminException(e);
       }
-      return SilverpeasList.wrap(users);
+      return SilverpeasList.wrap(users.get().collect(Collectors.toList()));
     } else {
       UserSearchCriteriaForDAO criteria = buildUserSearchCriteriaForDAO(searchCriteria, userIds);
       return userManager.getUsersMatchingCriteria(criteria);
     }
   }
 
-  private UserSearchCriteriaForDAO buildUserSearchCriteriaForDAO(
-      final UserDetailsSearchCriteria searchCriteria, final Collection<String> userIds)
+  private void setAllGroupChildren(final UserDetailsSearchCriteria searchCriteria)
       throws AdminException {
+    if (searchCriteria.isCriterionOnGroupIdsSet()) {
+      final Set<String> allGroupsId = new HashSet<>();
+      for (String aGroupId : searchCriteria.getCriterionOnGroupIds()) {
+        allGroupsId.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
+        allGroupsId.add(aGroupId);
+      }
+      searchCriteria.onGroupIds(allGroupsId.toArray(new String[0]));
+    }
+  }
+
+  private UserSearchCriteriaForDAO buildUserSearchCriteriaForDAO(
+      final UserDetailsSearchCriteria searchCriteria, final Collection<String> userIds) {
     SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
     UserSearchCriteriaForDAO criteria = factory.getUserSearchCriteriaDAO();
     if (userIds != null) {
@@ -5271,17 +5290,12 @@ class Admin implements Administration {
   }
 
   private void setCriteriaWithGroupIds(final UserDetailsSearchCriteria searchCriteria,
-      final UserSearchCriteriaForDAO criteria) throws AdminException {
+      final UserSearchCriteriaForDAO criteria) {
     String[] theGroupIds = searchCriteria.getCriterionOnGroupIds();
     if (theGroupIds == UserDetailsSearchCriteria.ANY_GROUPS) {
       criteria.and().onGroupIds(SearchCriteria.Constants.ANY);
     } else {
-      Set<String> groupIds = new HashSet<>();
-      for (String aGroupId : theGroupIds) {
-        groupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
-        groupIds.add(aGroupId);
-      }
-      criteria.and().onGroupIds(groupIds.toArray(new String[0]));
+      criteria.and().onGroupIds(theGroupIds);
     }
   }
 
@@ -5303,23 +5317,18 @@ class Admin implements Administration {
     return userIds;
   }
 
-  private List<String> searchUsersByGroupIds(final UserDetailsSearchCriteria searchCriteria, List<String> userIds) {
+  private List<String> searchUsersByGroupIdsMatchingCurrentUserIds(
+      final UserDetailsSearchCriteria searchCriteria, List<String> userIds) {
     if (userIds != null) {
-      String[] groupIds = searchCriteria.getCriterionOnGroupIds();
-      List<String> userIdsInCriterion = new ArrayList<>();
-
-      int nbUsers = 0;
-      for (String groupId : groupIds) {
-        nbUsers += Group.getById(groupId).getNbUsers();
-      }
-
-      if (nbUsers < 10000) {
-        for (String groupId : groupIds) {
-          List<String> userIdsInGroup = Arrays.asList(Group.getById(groupId).getUserIds());
-          userIdsInGroup.retainAll(userIds);
-          userIdsInCriterion.addAll(userIdsInGroup);
-        }
-        userIds = userIdsInCriterion;
+      final List<String> userIdsInGroup = Stream
+          .of(searchCriteria.getCriterionOnGroupIds())
+          .map(Group::getById)
+          .flatMap(g -> Stream.of(g.getUserIds()))
+          .distinct()
+          .collect(Collectors.toList());
+      if (userIdsInGroup.size() < 10000) {
+        userIdsInGroup.retainAll(userIds);
+        userIds = userIdsInGroup;
       }
     }
     return userIds;
@@ -5332,38 +5341,44 @@ class Admin implements Administration {
    * search has to be stopped.
    * @throws AdminException on technical error.
    */
-  private List<String> searchUsersInComponentInstance(
+  private Optional<List<String>> searchUsersInComponentInstance(
       final UserDetailsSearchCriteria searchCriteria) throws AdminException {
-    List<String> listOfRoleNames = Collections.emptyList();
-    if (searchCriteria.isCriterionOnRoleNamesSet()) {
-      listOfRoleNames = Arrays.asList(searchCriteria.getCriterionOnRoleNames());
-    }
-    final SilverpeasComponentInstance instance =
-        getComponentInstance(searchCriteria.getCriterionOnComponentInstanceId());
-    List<String> result = new ArrayList<>();
-    if (!listOfRoleNames.isEmpty() || !instance.isPublic()) {
-      if (!instance.isPersonal()) {
-        addUserIdsByCriteria(instance, searchCriteria, listOfRoleNames, result);
-      } else {
-        final User user = ((SilverpeasPersonalComponentInstance) instance).getUser();
-        final Collection<String> userRoles =
-            instance.getSilverpeasRolesFor(user).stream().map(Enum::name)
-                .collect(Collectors.toList());
-        if (!CollectionUtil.intersection(userRoles, listOfRoleNames).isEmpty()) {
-          result.add(user.getId());
+    final Mutable<List<String>> result = Mutable.of(new ArrayList<>());
+    final Set<String> listOfRoleNames = ofNullable(searchCriteria.getCriterionOnRoleNames())
+        .filter(ArrayUtil::isNotEmpty)
+        .map(Stream::of)
+        .orElseGet(Stream::empty)
+        .collect(Collectors.toSet());
+    final String instanceId = searchCriteria.getCriterionOnComponentInstanceId();
+    final SilverpeasComponentInstance instance = getComponentInstance(instanceId);
+    if (instance == null) {
+      // instance does not exist, stopping the search
+      SilverLogger.getLogger(this).warn(failureOnGetting("component instance", instanceId));
+      result.set(null);
+    } else {
+      if (!listOfRoleNames.isEmpty() || !instance.isPublic()) {
+        if (!instance.isPersonal()) {
+          addUserIdsByCriteria(instance, searchCriteria, listOfRoleNames, result.get());
+        } else if (!searchCriteria.isCriterionOnGroupIdsSet()){
+          final User user = ((SilverpeasPersonalComponentInstance) instance).getUser();
+          Optional.of(instance.getSilverpeasRolesFor(user).stream().map(Enum::name).collect(Collectors.toList()))
+                  .filter(r -> listOfRoleNames.isEmpty() || !CollectionUtil.intersection(r, listOfRoleNames).isEmpty())
+                  .filter(r -> !searchCriteria.isCriterionOnUserIdsSet()
+                               || ArrayUtil.contains(searchCriteria.getCriterionOnUserIds(), user.getId()))
+                  .ifPresent(r -> result.get().add(user.getId()));
+        }
+        if (result.get().isEmpty()) {
+          // no users in component instance or component instance role
+          // no additional filtering is needed
+          result.set(null);
         }
       }
-      if (result.isEmpty()) {
-        // no users in component instance or component instance role
-        // no additional filtering is needed
-        result = null;
-      }
     }
-    return result;
+    return result.map(Optional::of).orElseGet(Optional::empty);
   }
 
   private void addUserIdsByCriteria(final SilverpeasComponentInstance instance,
-      final UserDetailsSearchCriteria searchCriteria, final List<String> listOfRoleNames,
+      final UserDetailsSearchCriteria searchCriteria, final Set<String> listOfRoleNames,
       final List<String> result) throws AdminException {
     List<ProfileInst> profiles;
     if (searchCriteria.isCriterionOnResourceIdSet()) {
@@ -5373,23 +5388,31 @@ class Admin implements Administration {
       profiles = getComponentInst(instance.getId()).getAllProfilesInst();
     }
     for (ProfileInst aProfile : profiles) {
-      if (listOfRoleNames.isEmpty() || listOfRoleNames.
-          contains(aProfile.getName())) {
-        addAllUsersInProfile(aProfile, result);
+      if (listOfRoleNames.isEmpty() || listOfRoleNames.contains(aProfile.getName())) {
+        addAllUsersInProfile(searchCriteria, aProfile, result);
       }
     }
   }
 
-  private void addAllUsersInProfile(final ProfileInst aProfile, final Collection<String> userIds)
+  private void addAllUsersInProfile(final UserDetailsSearchCriteria searchCriteria,
+      final ProfileInst aProfile, final Collection<String> userIds)
       throws AdminException {
-    userIds.addAll(aProfile.getAllUsers());
-
+    if (searchCriteria == null || !searchCriteria.isCriterionOnGroupIdsSet()) {
+      userIds.addAll(aProfile.getAllUsers());
+    }
     // users of the groups (and recursively of their subgroups) playing the role
     List<String> groupIds = aProfile.getAllGroups();
     List<String> allGroupIds = new ArrayList<>();
     for (String aGroupId : groupIds) {
       allGroupIds.add(aGroupId);
       allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
+    }
+    if (searchCriteria != null && searchCriteria.isCriterionOnGroupIdsSet()) {
+      final Set<String> searchedGroupIds = Stream.of(searchCriteria.getCriterionOnGroupIds())
+          .collect(Collectors.toSet());
+      if (!searchedGroupIds.isEmpty()) {
+        allGroupIds.retainAll(searchedGroupIds);
+      }
     }
     userIds.addAll(userManager.getAllUserIdsInGroups(allGroupIds));
   }
@@ -5418,6 +5441,8 @@ class Admin implements Administration {
       } else {
         criteria.onDomainIds(domainId);
       }
+    } else if (searchCriteria.isCriterionOnMixedDomainIdSet()) {
+      criteria.onMixedDomainOrOnDomainId(null);
     }
 
     if (searchCriteria.isCriterionOnGroupIdsSet()) {
@@ -5468,6 +5493,11 @@ class Admin implements Administration {
         profiles.stream()
             .filter(p -> listOfRoleNames.isEmpty() || listOfRoleNames.contains(p.getName()))
             .forEach(p -> roleIds.add(p.getId()));
+        // if empty, given criteria are not consistent. A dummy role id is set in order to get an
+        // empty result
+        if (roleIds.isEmpty()) {
+          roleIds.add("-1000");
+        }
       }
       criteria.onRoleNames(roleIds.toArray(new String[0]));
     }

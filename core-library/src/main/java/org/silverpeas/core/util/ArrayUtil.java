@@ -33,4 +33,11 @@ public class ArrayUtil extends ArrayUtils {
   public static boolean contains(final Object[] array, final Object objectToFind) {
     return ArrayUtils.contains(array, objectToFind);
   }
+
+  /**
+   * @see ArrayUtils#isNotEmpty(Object[])
+   */
+  public static <T> boolean isNotEmpty(final T[] array) {
+    return ArrayUtils.isNotEmpty(array);
+  }
 }

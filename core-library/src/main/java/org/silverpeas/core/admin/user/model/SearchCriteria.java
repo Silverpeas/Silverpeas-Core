@@ -41,7 +41,7 @@ public interface SearchCriteria {
     /**
      * The whatever value to be used as criterion value if you don't care of a given criterion.
      */
-    public static final String[] ANY = null;
+    public static final String[] ANY = new String[0];
   }
 
   /**

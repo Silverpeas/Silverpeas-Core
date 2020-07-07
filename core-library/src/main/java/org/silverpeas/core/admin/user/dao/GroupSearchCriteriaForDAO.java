@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.silverpeas.core.util.ArrayUtil.isNotEmpty;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -101,7 +102,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public GroupSearchCriteriaForDAO onGroupIds(String... groupIds) {
-    if (groupIds != Constants.ANY) {
+    if (isNotEmpty(groupIds)) {
       this.criteria.onGroupIds(groupIds);
     }
     return this;
@@ -121,7 +122,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public SearchCriteria onUserStatesToExclude(final UserState... userStates) {
-    if (userStates != null && userStates.length > 0) {
+    if (isNotEmpty(userStates)) {
       this.criteria.onUserStatesToExclude(userStates);
       // It is only used in order to transport the criterion which will be given to the
       // UserSearchCriteriaForDAO when getting the number of users linked to the group
@@ -130,15 +131,13 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   }
 
   public GroupSearchCriteriaForDAO onMixedDomainOrOnDomainId(String domainId) {
-    if (isDefined(domainId)) {
-      this.criteria.onMixedDomainOrOnDomainId(domainId);
-    }
+    this.criteria.onMixedDomainOrOnDomainId(domainId);
     return this;
   }
 
   @Override
   public SearchCriteria onUserIds(String... userIds) {
-    if (userIds != Constants.ANY) {
+    if (isNotEmpty(userIds)) {
       tables.add("st_group_user_rel");
       this.userIds = Arrays.copyOf(userIds, userIds.length);
     }
@@ -152,7 +151,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public SearchCriteria onRoleNames(String... roleIds) {
-    if (roleIds != null && roleIds.length > 0) {
+    if (isNotEmpty(roleIds)) {
       tables.add("st_userrole_group_rel");
       this.criteria.onRoleNames(roleIds);
     }
@@ -180,7 +179,8 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
     JdbcSqlQuery query = prepareJdbcSqlQuery(fields);
 
     if (criteria.isCriterionOnNameSet()) {
-      query.and("lower(st_group.name) like lower(?)", criteria.getCriterionOnName());
+      final String normalizedName = criteria.getCriterionOnName().replaceAll("\\*", "%");
+      query.and("lower(st_group.name) like lower(?)", normalizedName);
     }
 
     if (criteria.isCriterionOnGroupIdsSet()) {
@@ -190,9 +190,10 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
       query.and("st_group.id").in(groupIds);
     }
 
-    if (criteria.isCriterionOnDomainIdSet()) {
+    final List<String> criterionOnDomainIds = getCriterionOnDomainIds();
+    if (!criterionOnDomainIds.isEmpty()) {
       List<Integer> domains =
-          getCriterionOnDomainIds().stream().map(Integer::parseInt).collect(Collectors.toList());
+          criterionOnDomainIds.stream().map(Integer::parseInt).collect(Collectors.toList());
       query.and("st_group.domainId").in(domains);
     }
 
