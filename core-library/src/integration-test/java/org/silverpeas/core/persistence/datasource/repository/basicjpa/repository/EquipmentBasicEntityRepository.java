@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.basicjpa.repository;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.EquipmentBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
@@ -32,6 +33,7 @@ import javax.inject.Singleton;
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */
+@Repository
 @Singleton
 public class EquipmentBasicEntityRepository extends
     BasicJpaEntityRepository<EquipmentBasicEntity> {

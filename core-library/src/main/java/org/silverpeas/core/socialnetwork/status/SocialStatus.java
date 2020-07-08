@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.socialnetwork.status;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialStatusProvider;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Date;
 import java.util.List;
 
-@Singleton
+@Provider
 public class SocialStatus implements SocialStatusProvider {
 
   @Inject

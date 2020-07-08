@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.webapi.search;
 
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchResult;
@@ -54,8 +53,7 @@ import java.util.function.Consumer;
 /**
  * @author Nicolas Eysseric
  */
-@Service
-@RequestScoped
+@WebService
 @Path(SearchResource.PATH)
 @Authenticated
 public class SearchResource extends RESTWebService {

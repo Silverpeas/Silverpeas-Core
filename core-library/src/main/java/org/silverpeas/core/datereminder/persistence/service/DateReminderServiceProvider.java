@@ -38,4 +38,8 @@ public class DateReminderServiceProvider {
   public static PersistentDateReminderService getDateReminderService() {
     return ServiceProvider.getService(PersistentDateReminderService.class);
   }
+
+  private DateReminderServiceProvider() {
+
+  }
 }

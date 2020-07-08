@@ -41,7 +41,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Same database environment as DAO tests. User: Yohann Chastagnier Date: 24/02/13

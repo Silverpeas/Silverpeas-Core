@@ -37,6 +37,8 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedThreadFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,9 +48,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.*;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 @RunWith(Arquillian.class)
 public class JdbcSqlQueryIT {
@@ -66,6 +70,9 @@ public class JdbcSqlQueryIT {
     }
     TABLE_SET_UP = insertBulider.build();
   }
+
+  @Resource
+  private ManagedThreadFactory managedThreadFactory;
 
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create_table_favorit_space.sql")
@@ -114,14 +121,14 @@ public class JdbcSqlQueryIT {
     final Object monitorOfVerification = new Object();
     assertThat(getTableLines(), hasSize((int) NB_ROW_AT_BEGINNING));
     final List<String> result = new ArrayList<>();
-    Thread deletionProcess = new Thread(() -> {
+    Thread deletionProcess = managedThreadFactory.newThread(() -> {
       try {
         Transaction.performInOne(() -> {
           try (final Connection connection = dbSetupRule.getSafeConnectionFromDifferentThread()) {
             Transaction.performInOne(() -> {
               try (Connection otherConnection = dbSetupRule.getSafeConnectionFromDifferentThread()) {
                 // Just opening two connections for pleasure :-)
-                Thread.sleep(50);
+                awaitUntil(50, MILLISECONDS);
                 synchronized (monitorOfVerification) {
                   info(result, "DELETION PROCESS - In transaction");
                   info(result, "DELETION PROCESS - Waiting for verification");
@@ -130,7 +137,7 @@ public class JdbcSqlQueryIT {
                 synchronized (monitorOfDeletion) {
                   monitorOfDeletion.wait(500);
                 }
-                Thread.sleep(10);
+                awaitUntil(10, MILLISECONDS);
                 synchronized (monitorOfVerification) {
                   assertThat(createDeleteFor("a_table").execute(), is(NB_ROW_AT_BEGINNING));
                   info(result, "DELETION PROCESS - Waiting for verification (lines deleted)");
@@ -139,7 +146,7 @@ public class JdbcSqlQueryIT {
                 synchronized (monitorOfDeletion) {
                   monitorOfDeletion.wait(500);
                 }
-                Thread.sleep(10);
+                awaitUntil(10, MILLISECONDS);
               }
               return null;
             });
@@ -159,12 +166,12 @@ public class JdbcSqlQueryIT {
         monitorOfVerification.notifyAll();
       }
     });
-    Thread deletionVerifications = new Thread(() -> {
+    Thread deletionVerifications = managedThreadFactory.newThread(() -> {
       try {
         synchronized (monitorOfVerification) {
           monitorOfVerification.wait(500);
         }
-        Thread.sleep(10);
+        awaitUntil(10, MILLISECONDS);
         synchronized (monitorOfDeletion) {
           info(result,
               "VERIFICATION PROCESS - BEFORE DELETION - " + getTableLines().size() + " line(s)");
@@ -173,7 +180,7 @@ public class JdbcSqlQueryIT {
         synchronized (monitorOfVerification) {
           monitorOfVerification.wait(500);
         }
-        Thread.sleep(10);
+        awaitUntil(10, MILLISECONDS);
         synchronized (monitorOfDeletion) {
           info(result,
               "VERIFICATION PROCESS - AFTER DELETION - " + getTableLines().size() + " line(s)");
@@ -182,7 +189,7 @@ public class JdbcSqlQueryIT {
         synchronized (monitorOfVerification) {
           monitorOfVerification.wait(500);
         }
-        Thread.sleep(10);
+        awaitUntil(10, MILLISECONDS);
         synchronized (monitorOfDeletion) {
           info(result,
               "VERIFICATION PROCESS - AFTER TRANSACTION - " + getTableLines().size() + " line(s)");
@@ -191,6 +198,7 @@ public class JdbcSqlQueryIT {
         throw new RuntimeException(e);
       }
     });
+
     List<Thread> threads = Arrays.asList(deletionVerifications, deletionProcess);
     for (Thread thread : threads) {
       thread.start();

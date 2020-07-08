@@ -23,12 +23,13 @@
  */
 package org.silverpeas.core.security.token.persistent.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.EntityReference;
+import org.silverpeas.core.security.token.TokenGenerationParameter;
+import org.silverpeas.core.security.token.TokenGenerator;
 import org.silverpeas.core.security.token.TokenGeneratorProvider;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
-import org.silverpeas.core.security.token.TokenGenerationParameter;
-import org.silverpeas.core.security.token.TokenGenerator;
 import org.silverpeas.core.security.token.persistent.repository.PersistentResourceTokenRepository;
 
 import javax.inject.Inject;
@@ -42,6 +43,7 @@ import static org.silverpeas.core.security.token.persistent.PersistentResourceTo
  *
  * @author Yohann Chastagnier
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultTokenService implements PersistentResourceTokenService {

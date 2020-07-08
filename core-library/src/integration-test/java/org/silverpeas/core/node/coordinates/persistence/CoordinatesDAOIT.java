@@ -48,7 +48,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.silverpeas.core.test.rule.DbSetupRule.getActualDataSet;
 import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 

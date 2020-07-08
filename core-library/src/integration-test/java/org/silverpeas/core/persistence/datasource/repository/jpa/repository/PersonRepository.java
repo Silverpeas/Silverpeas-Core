@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.jpa.repository;
 
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Animal;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
@@ -35,6 +35,7 @@ import java.util.List;
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */
+@Repository
 @Singleton
 public class PersonRepository extends SilverpeasJpaEntityRepository<Person> {
 

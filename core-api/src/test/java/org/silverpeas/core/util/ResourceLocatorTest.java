@@ -33,7 +33,7 @@ import org.silverpeas.core.util.lang.SystemWrapper;
 import java.util.MissingResourceException;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Unit tests on the getting of SilverpeasBundle instances.

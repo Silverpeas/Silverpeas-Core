@@ -39,7 +39,7 @@ import org.silverpeas.web.ResourceDeletionTest;
 import javax.ws.rs.core.Response;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration tests on the web service handling the replacements of users in a workflow.

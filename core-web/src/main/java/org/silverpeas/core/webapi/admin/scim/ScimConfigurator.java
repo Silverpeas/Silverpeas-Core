@@ -27,6 +27,7 @@ package org.silverpeas.core.webapi.admin.scim;
 import edu.psu.swe.scim.server.provider.ProviderRegistry;
 import edu.psu.swe.scim.spec.resources.ScimGroup;
 import edu.psu.swe.scim.spec.resources.ScimUser;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 
 import javax.enterprise.inject.Instance;
@@ -36,6 +37,7 @@ import javax.inject.Inject;
  * Some initializations that have to be done just after the server has started.
  * @author silveryocha
  */
+@Service
 public class ScimConfigurator implements Initialization {
 
   @Inject

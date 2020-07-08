@@ -25,22 +25,23 @@ package org.silverpeas.core.questioncontainer.answer.dao;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.questioncontainer.answer.model.Answer;
-import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.DataSetTest;
-import org.silverpeas.core.test.BasicWarBuilder;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.questioncontainer.answer.model.Answer;
+import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
+import org.silverpeas.core.test.BasicWarBuilder;
+import org.silverpeas.core.test.DataSetTest;
 
 import java.sql.Connection;
 import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author ebonnet
@@ -104,7 +105,7 @@ public class AnswerDAOIT extends DataSetTest {
     ResourceReference questionPK = new ResourceReference(questionId, componentId);
     try {
       Collection<Answer> result = AnswerDAO.getAnswersByQuestionPK(con, questionPK);
-      Assert.assertEquals(3, result.size());
+      assertEquals(3, result.size());
     } finally {
       DBUtil.close(con);
     }
@@ -162,7 +163,7 @@ public class AnswerDAOIT extends DataSetTest {
     try (Connection otherCon = getConnection()) {
       AnswerDAO.deleteAnswersToAQuestion(otherCon, resourceReference);
       Collection<Answer> answers = AnswerDAO.getAnswersByQuestionPK(con, resourceReference);
-      Assert.assertEquals(0, answers.size());
+      assertEquals(0, answers.size());
     } finally {
       DBUtil.close(con);
     }
@@ -179,7 +180,7 @@ public class AnswerDAOIT extends DataSetTest {
     try (Connection otherCon = getConnection()) {
       AnswerDAO.deleteAnswerToAQuestion(otherCon, resourceReference, answerId);
       Collection<Answer> answers = AnswerDAO.getAnswersByQuestionPK(con, resourceReference);
-      Assert.assertEquals(2, answers.size());
+      assertEquals(2, answers.size());
     } finally {
       DBUtil.close(con);
     }

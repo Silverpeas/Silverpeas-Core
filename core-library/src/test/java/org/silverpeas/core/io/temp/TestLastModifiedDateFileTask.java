@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +61,7 @@ public class TestLastModifiedDateFileTask {
 
   @BeforeEach
   public void setup() throws IOException {
-    tempPath = Path.of(getTemporaryPath());
+    tempPath = Paths.get(getTemporaryPath());
     cleanTest();
     Files.createDirectories(tempPath);
     assertThat(LastModifiedDateFileTask.isRunning(), is(false));

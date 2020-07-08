@@ -43,7 +43,7 @@ import java.io.IOException;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.silverpeas.core.io.file.ImageResizingProcessor.IMAGE_CACHE_PATH;
 
 @RunWith(Arquillian.class)

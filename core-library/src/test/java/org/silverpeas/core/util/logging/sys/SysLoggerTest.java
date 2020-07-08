@@ -34,7 +34,7 @@ import org.silverpeas.core.util.logging.LoggerConfigurationLoader;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Unit test on the SysLogger implementation of Logger.

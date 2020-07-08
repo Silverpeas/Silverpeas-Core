@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.rating.service;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.model.RaterRatingPK;
@@ -40,6 +41,7 @@ import java.util.Map;
  * ratings.
  * @author mmoquillon
  */
+@Repository
 public class RatingRepository extends BasicJpaEntityRepository<Rating> {
 
   public void deleteAllRatingsOfAContribution(ContributionRatingPK contribution) {

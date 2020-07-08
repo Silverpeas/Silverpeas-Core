@@ -24,6 +24,7 @@
 package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.exec.CommandLine;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.exec.ExternalExecution;
 import org.silverpeas.core.util.exec.ExternalExecution.Config;
@@ -34,6 +35,7 @@ import java.util.Map;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 public class SwfToolManager implements Initialization {
 
   private static boolean isActivated = false;

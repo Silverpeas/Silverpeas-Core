@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.webapi.thumbnail;
 
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
@@ -42,8 +41,7 @@ import javax.ws.rs.core.Response.Status;
  * A REST Web resource representing a given thumbnail.
  * It is a web service that provides an access to a thumbnail referenced by its URL.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(ThumbnailResource.PATH + "/{componentId}/{contributionType}/{contributionId}")
 @Authorized
 public class ThumbnailResource extends RESTWebService {

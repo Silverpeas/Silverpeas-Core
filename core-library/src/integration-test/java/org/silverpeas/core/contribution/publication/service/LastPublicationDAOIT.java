@@ -51,7 +51,9 @@ import java.util.Collection;
 import java.util.List;
 
 import static java.util.Calendar.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 
 /**
@@ -83,8 +85,8 @@ public class LastPublicationDAOIT {
           .ofStatus(PublicationDetail.VALID_STATUS)
           .mustHaveAtLeastOneNodeFather()
           .orderByDescendingLastUpdateDate());
-      assertNotNull(keys);
-      assertEquals(4, keys.size());
+      assertThat(keys, notNullValue());
+      assertThat(keys.size(), is(4));
       assertThat(keys, IsIterableContainingInOrder
           .contains(new PublicationPK("200", "kmelia200"), new PublicationPK("101", "kmelia100"),
               new PublicationPK("100", "kmelia100"), new PublicationPK("202", "kmelia200")));
@@ -99,8 +101,8 @@ public class LastPublicationDAOIT {
           .excludingTrashNodeOnComponentInstanceIds(componentIds)
           .ofStatus(PublicationDetail.VALID_STATUS)
           .orderByDescendingLastUpdateDate());
-      assertNotNull(keys);
-      assertEquals(4, keys.size());
+      assertThat(keys, notNullValue());
+      assertThat(keys.size(), is(4));
       assertThat(keys, IsIterableContainingInOrder
           .contains(new PublicationPK("200", "kmelia200"), new PublicationPK("101", "kmelia100"),
               new PublicationPK("100", "kmelia100"), new PublicationPK("202", "kmelia200")));
@@ -115,8 +117,8 @@ public class LastPublicationDAOIT {
           .onComponentInstanceIds(componentIds)
           .ofStatus(PublicationDetail.VALID_STATUS)
           .orderByDescendingLastUpdateDate());
-      assertNotNull(keys);
-      assertEquals(5, keys.size());
+      assertThat(keys, notNullValue());
+      assertThat(keys.size(), is(5));
       assertThat(keys, IsIterableContainingInOrder
           .contains(new PublicationPK("200", "kmelia200"), new PublicationPK("103", "kmelia100"), new PublicationPK("101", "kmelia100"),
               new PublicationPK("100", "kmelia100"), new PublicationPK("202", "kmelia200")));
@@ -132,8 +134,8 @@ public class LastPublicationDAOIT {
           .ofStatus(PublicationDetail.VALID_STATUS)
           .orderByDescendingLastUpdateDate()
           .paginateBy(new PaginationPage(1, 2)));
-      assertNotNull(keys);
-      assertEquals(2, keys.size());
+      assertThat(keys, notNullValue());
+      assertThat(keys.size(), is(2));
       assertThat(keys, IsIterableContainingInOrder
           .contains(new PublicationPK("200", "kmelia200"), new PublicationPK("101", "kmelia100")));
     }
@@ -148,8 +150,8 @@ public class LastPublicationDAOIT {
           .ofStatus(PublicationDetail.VALID_STATUS)
           .orderByDescendingLastUpdateDate()
           .paginateBy(new PaginationPage(2, 3)));
-      assertNotNull(keys);
-      assertEquals(1, keys.size());
+      assertThat(keys, notNullValue());
+      assertThat(keys.size(), is(1));
       assertThat(keys, IsIterableContainingInOrder.contains(new PublicationPK("202", "kmelia200")));
     }
   }
@@ -172,8 +174,8 @@ public class LastPublicationDAOIT {
           .ofStatus(PublicationDetail.VALID_STATUS)
           .lastUpdatedSince(since)
           .orderByDescendingLastUpdateDate());
-      assertNotNull(keys);
-      assertEquals(3, keys.size());
+      assertThat(keys, notNullValue());
+      assertThat(keys.size(), is(3));
       assertThat(keys, IsIterableContainingInOrder
           .contains(new PublicationPK("200", "kmelia200"), new PublicationPK("101", "kmelia100"),
               new PublicationPK("100", "kmelia100")));
@@ -183,8 +185,8 @@ public class LastPublicationDAOIT {
           .lastUpdatedSince(since)
           .orderByDescendingLastUpdateDate()
           .paginateBy(new PaginationPage(1, 2)));
-      assertNotNull(keys);
-      assertEquals(2, keys.size());
+      assertThat(keys, notNullValue());
+      assertThat(keys.size(), is(2));
       assertThat(keys, IsIterableContainingInOrder
           .contains(new PublicationPK("200", "kmelia200"), new PublicationPK("101", "kmelia100")));
       keys = PublicationDAO.selectPksByCriteria(con, PublicationCriteria
@@ -193,8 +195,8 @@ public class LastPublicationDAOIT {
           .lastUpdatedSince(since)
           .orderByDescendingLastUpdateDate()
           .paginateBy(new PaginationPage(3, 1)));
-      assertNotNull(keys);
-      assertEquals(1, keys.size());
+      assertThat(keys, notNullValue());
+      assertThat(keys.size(), is(1));
       assertThat(keys, IsIterableContainingInOrder
           .contains(new PublicationPK("100", "kmelia100")));
     }

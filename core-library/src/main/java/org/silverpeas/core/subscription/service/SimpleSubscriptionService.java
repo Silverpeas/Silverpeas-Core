@@ -24,6 +24,7 @@
 package org.silverpeas.core.subscription.service;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionService;
@@ -48,6 +49,7 @@ import java.util.Collections;
  * Class declaration
  * @author
  */
+@Service
 @Named("subscriptionService")
 public class SimpleSubscriptionService implements SubscriptionService, ComponentInstanceDeletion {
 

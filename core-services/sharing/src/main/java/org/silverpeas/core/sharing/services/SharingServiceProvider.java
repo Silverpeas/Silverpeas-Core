@@ -40,4 +40,7 @@ public class SharingServiceProvider {
     return ServiceProvider.getService(SharingTicketService.class);
   }
 
+  private SharingServiceProvider() {
+
+  }
 }

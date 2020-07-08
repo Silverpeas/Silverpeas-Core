@@ -26,6 +26,7 @@ package org.silverpeas.core.admin.domain.quota;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.service.AbstractQuotaService;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -36,6 +37,7 @@ import javax.transaction.Transactional;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 @Singleton
 public class UserDomainQuotaService extends AbstractQuotaService<UserDomainQuotaKey> {
 

@@ -49,7 +49,8 @@ import static java.time.temporal.ChronoUnit.HOURS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.junit.Assert.fail;
 
 /**
  * The scheduling engine in Silverpeas provides an API to get either a volatile or a persistent
@@ -337,7 +338,7 @@ public class PersistentSchedulerIT {
     JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
     try {
       ScheduledJob job = scheduler.scheduleJob(jobName, trigger, eventHandler);
-      assertNotNull(job);
+      assertThat(job, notNullValue());
     } catch (SchedulerException ex) {
       fail(ex.getMessage());
     }

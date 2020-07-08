@@ -24,8 +24,7 @@
 package org.silverpeas.core.webapi.pdc;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
@@ -89,8 +88,7 @@ import static org.silverpeas.core.webapi.pdc.PdcClassificationEntity.*;
  * position; classifications and positions are exposed in the Web by Silverpeas and are thus
  * uniquely identified by an URI in the Web.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(PdcClassificationResource.PATH + "/{componentId:[a-zA-Z]+[0-9]+}")
 @Authorized
 public class PdcPredefinedClassificationResource extends RESTWebService {

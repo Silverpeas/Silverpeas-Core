@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.webapi.admin;
 
-import javax.inject.Inject;
-
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.annotation.Service;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -36,6 +36,7 @@ import java.util.List;
  * entities.
  * @author Yohann Chastagnier
  */
+@Service
 public class AdminWebService {
 
   @Inject

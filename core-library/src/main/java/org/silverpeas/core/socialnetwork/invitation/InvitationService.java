@@ -24,6 +24,7 @@
 package org.silverpeas.core.socialnetwork.invitation;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.persistence.Transaction;
@@ -47,6 +48,7 @@ import java.util.List;
 /**
  * @author Bensalem Nabil
  */
+@Service
 @Singleton
 public class InvitationService {
 

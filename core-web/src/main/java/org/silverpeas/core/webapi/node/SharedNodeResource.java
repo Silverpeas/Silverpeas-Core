@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.webapi.node;
 
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.security.ShareableNode;
@@ -39,8 +38,7 @@ import javax.ws.rs.core.MediaType;
 /**
  * A REST Web resource providing access to a node through sharing mode.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(SharedNodeResource.PATH + "/{componentId}/{token}")
 public class SharedNodeResource extends AbstractNodeResource {
 

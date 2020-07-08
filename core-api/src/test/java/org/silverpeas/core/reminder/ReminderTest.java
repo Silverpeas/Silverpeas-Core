@@ -35,7 +35,7 @@ import org.silverpeas.core.test.rule.CommonAPI4Test;
 import java.time.OffsetDateTime;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.silverpeas.core.reminder.ReminderTestContext.PROCESS_NAME;
 
 /**

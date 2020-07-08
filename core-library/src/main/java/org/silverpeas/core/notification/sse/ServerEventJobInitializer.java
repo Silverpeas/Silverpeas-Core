@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.sse;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
@@ -43,6 +44,7 @@ import static org.silverpeas.core.notification.user.client.NotificationManagerSe
 /**
  * This JOB is in charge of cleanup the SSE contexts if necessary.
  */
+@Service
 class ServerEventJobInitializer implements Initialization {
 
   private static final String JOB_NAME = "ServerEventJob";

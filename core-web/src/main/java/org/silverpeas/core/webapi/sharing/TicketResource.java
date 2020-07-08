@@ -25,8 +25,7 @@ package org.silverpeas.core.webapi.sharing;
 
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingTicketService;
 import org.silverpeas.core.util.CollectionUtil;
@@ -53,8 +52,7 @@ import java.util.List;
 
 import static org.silverpeas.core.sharing.services.SharingServiceProvider.getSharingTicketService;
 
-@Service
-@RequestScoped
+@WebService
 @Path(TicketResource.PATH)
 @Authenticated
 public class TicketResource extends RESTWebService {

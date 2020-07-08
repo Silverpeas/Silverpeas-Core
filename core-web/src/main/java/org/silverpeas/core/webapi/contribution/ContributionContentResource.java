@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.contribution;
 
-import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -54,7 +54,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
  * User: Yohann Chastagnier
  * Date: 21/05/13
  */
-@RequestScoped
+@WebService
 @Path("contribution/{componentInstanceId}/{contributionId}/content")
 @Authorized
 public class ContributionContentResource extends AbstractContributionResource {

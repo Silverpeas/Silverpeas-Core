@@ -32,6 +32,7 @@ import org.silverpeas.core.admin.domain.exception.DomainPropertiesAlreadyExistsE
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.repository.SQLDomainRepository;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ResourceLocator;
@@ -54,6 +55,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.Normalizer;
 
+@Service
 @Singleton
 @Named("sqlDomainService")
 public class SQLDomainService extends AbstractDomainService {

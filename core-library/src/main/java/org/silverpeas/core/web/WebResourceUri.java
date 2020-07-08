@@ -47,8 +47,6 @@
  */
 package org.silverpeas.core.web;
 
-import org.silverpeas.core.annotation.RequestScoped;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
@@ -79,7 +77,6 @@ import java.net.URI;
  * </ul>
  * @author mmoquillon
  */
-@RequestScoped
 public class WebResourceUri {
 
   private final String webResourcePath;

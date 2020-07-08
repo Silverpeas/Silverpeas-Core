@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.webdav.impl;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
@@ -35,6 +36,7 @@ import java.io.IOException;
 
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 
+@Service
 public class WebDavDocumentService implements WebdavService {
 
   @Inject

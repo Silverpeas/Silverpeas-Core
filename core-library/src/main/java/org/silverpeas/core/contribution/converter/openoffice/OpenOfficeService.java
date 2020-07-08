@@ -26,6 +26,7 @@ package org.silverpeas.core.contribution.converter.openoffice;
 
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.jodconverter.core.office.OfficeManager;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -39,6 +40,7 @@ import static org.silverpeas.core.util.ResourceLocator.getSettingBundle;
  * The OpenOffice service gives access to an open office process.
  * @author mmoquillon
  */
+@Service
 @Singleton
 public class OpenOfficeService implements Initialization {
 

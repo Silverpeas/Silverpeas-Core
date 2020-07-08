@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.socialnetwork.status;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -35,6 +36,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+@Service
 @Singleton
 public class StatusService {
 

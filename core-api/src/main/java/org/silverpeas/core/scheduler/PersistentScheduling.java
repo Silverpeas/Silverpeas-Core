@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
  * at each runtime starting.
  * @author mmoquillon
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Qualifier

@@ -23,19 +23,19 @@
  */
 package org.silverpeas.core.web.external.webconnections.dao;
 
-import org.silverpeas.core.web.external.webconnections.model.ConnectionDetail;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.security.encryption.cipher.Cipher;
 import org.silverpeas.core.security.encryption.cipher.CipherFactory;
 import org.silverpeas.core.security.encryption.cipher.CipherKey;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.external.webconnections.model.ConnectionDetail;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ConnectionDAO {
+  private static final String SELECT_FROM = "select * from ";
   private static String tableName = "SB_webConnections_info";
   private static SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.external.webConnections.settings.webConnectionsSettings");
@@ -64,7 +65,7 @@ public class ConnectionDAO {
   public ConnectionDetail getConnection(Connection con, String componentId, String userId)
       throws SQLException {
     ConnectionDetail connection = null;
-    String query = "select * from " + tableName + " where componentId = ? and userId = ? ";
+    String query = SELECT_FROM + tableName + " where componentId = ? and userId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -91,7 +92,7 @@ public class ConnectionDAO {
   public ConnectionDetail getConnectionById(Connection con, String connectionId)
       throws SQLException {
     ConnectionDetail connection = null;
-    String query = "select * from " + tableName + " where connectionId = ? ";
+    String query = SELECT_FROM + tableName + " where connectionId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -190,7 +191,7 @@ public class ConnectionDAO {
   public List<ConnectionDetail> getConnectionsByUser(Connection con, String userId)
       throws SQLException {
     ArrayList<ConnectionDetail> connections = null;
-    String query = "select * from " + tableName + " where userId = ? ";
+    String query = SELECT_FROM + tableName + " where userId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -259,7 +260,7 @@ public class ConnectionDAO {
     try {
       crypPassword = getCryptString(password);
     } catch (CryptoException e) {
-      SilverTrace.error("webConnections", "ConnectionDAO", "initParam encryption error", e);
+      SilverLogger.getLogger(ConnectionDAO.class).error(e);
     }
     prepStmt.setString(4, login);
     prepStmt.setBytes(5, crypPassword);

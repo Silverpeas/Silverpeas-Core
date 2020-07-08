@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.template.publication;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.component.model.GlobalContext;
@@ -36,7 +35,8 @@ import org.silverpeas.core.test.extention.TestManagedBeans;
 import static java.io.File.separatorChar;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author ehugonnet
@@ -58,8 +58,8 @@ public class PublicationTemplateImplTest {
     FieldTemplate fieldTemplate = result.getFieldTemplate("civilite");
     Field field = fieldTemplate.getEmptyField();
     assertThat(field, is(notNullValue()));
-    Assert.assertEquals("Civilité", fieldTemplate.getLabel("fr"));
-    Assert.assertEquals(2, fieldTemplate.getParametersObj().size());
+    assertEquals("Civilité", fieldTemplate.getLabel("fr"));
+    assertEquals(2, fieldTemplate.getParametersObj().size());
   }
 
   @Test

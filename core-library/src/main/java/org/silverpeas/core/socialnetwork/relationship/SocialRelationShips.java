@@ -23,18 +23,18 @@
  */
 package org.silverpeas.core.socialnetwork.relationship;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialRelationShipProvider;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Date;
 import java.util.List;
 
 /**
  * @author Bensalem Nabil
  */
-@Singleton
+@Provider
 public class SocialRelationShips implements SocialRelationShipProvider {
 
   @Inject

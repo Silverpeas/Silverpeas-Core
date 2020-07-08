@@ -42,8 +42,8 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -384,7 +384,7 @@ class DirectorySessionControllerTest {
     DirectoryItemList userItemsAfterMerge = new DirectoryItemList(ol);
     directoryDSC.mergeUsersIntoDirectoryItemList(nl, userItemsAfterMerge);
     assertNotNull(ol);
-    assertEquals("size 5", 5, userItemsAfterMerge.size());
+    assertEquals(5, userItemsAfterMerge.size());
     assertEquals(userItemsAtStart.get(0), userItemsAfterMerge.get(0));
     assertEquals(userItemsAtStart.get(1), userItemsAfterMerge.get(1));
     assertEquals(userItemsAtStart.get(2), userItemsAfterMerge.get(2));

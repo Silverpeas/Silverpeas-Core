@@ -27,8 +27,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.webapi.base.RESTWebService;
@@ -59,8 +58,7 @@ import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.GROUPS_
  * profile of the user behind the requesting. The domain isolation defines the visibility of a user
  * or a group of groups in a given domain to the others domains in Silverpeas.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(GROUPS_BASE_URI)
 @Authenticated
 public class UserGroupProfileResource extends RESTWebService {

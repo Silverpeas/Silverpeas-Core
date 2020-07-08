@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.personalization.dao;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.personalization.UserPreferences;
 
@@ -32,6 +33,7 @@ import java.util.List;
 /**
  * @author Yohann Chastagnier
  */
+@Repository
 @Singleton
 public class PersonalizationJPARepository extends BasicJpaEntityRepository<UserPreferences>
     implements PersonalizationRepository {

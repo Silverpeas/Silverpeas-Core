@@ -25,6 +25,7 @@ package org.silverpeas.core.sharing.services;
 
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.sharing.model.DownloadDetail;
@@ -45,6 +46,7 @@ import static org.silverpeas.core.backgroundprocess.BackgroundProcessTask.LOCK_D
  *
  * @author ehugonnet
  */
+@Service
 @Singleton
 @Transactional
 public class JpaSharingTicketService implements SharingTicketService, ComponentInstanceDeletion {

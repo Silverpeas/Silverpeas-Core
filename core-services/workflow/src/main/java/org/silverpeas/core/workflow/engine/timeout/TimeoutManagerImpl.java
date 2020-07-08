@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.workflow.engine.timeout;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
@@ -48,6 +49,7 @@ import java.util.Date;
 /**
  * The workflow engine services relate to error management.
  */
+@Service
 @Singleton
 public class TimeoutManagerImpl implements Initialization, SchedulerEventListener {
 

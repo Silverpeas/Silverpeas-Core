@@ -23,11 +23,14 @@
  */
 package org.silverpeas.core.admin;
 
+import org.silverpeas.core.annotation.Service;
+
 import javax.inject.Singleton;
 
 /**
  * @author silveryocha
  */
+@Service
 @Singleton
 class TransactionSingletonTestServiceImpl extends AbstractTransactionTestService {
 }

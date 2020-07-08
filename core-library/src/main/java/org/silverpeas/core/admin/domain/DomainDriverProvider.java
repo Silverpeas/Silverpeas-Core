@@ -23,12 +23,13 @@
  */
 package org.silverpeas.core.admin.domain;
 
-import org.silverpeas.core.admin.domain.DomainDriver;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * @author ehugonnet
  */
+@Provider
 public class DomainDriverProvider {
 
   private DomainDriverProvider() {

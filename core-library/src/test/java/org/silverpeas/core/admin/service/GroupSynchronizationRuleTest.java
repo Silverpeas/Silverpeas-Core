@@ -51,9 +51,9 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.core.admin.service.GroupSynchronizationRule.from;
@@ -442,26 +442,23 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromSpecificPropertyRuleShouldReturnUsersWhichVerifyTheCondition()
-      throws Exception {
-    try {
+  public void getUserIdsFromSpecificPropertyRuleShouldReturnUsersWhichVerifyTheCondition() {
+    assertThrows(GroupSynchronizationRule.GroundRuleError.class, () -> {
       from(group4Rule(DOMAIN_A, "  DC_ ville= Romans sur Isère  ")).getUserIds();
-      fail("should throw an error");
-    } catch (GroupSynchronizationRule.GroundRuleError ignore) {
-    }
+    });
 
-    List<String> userIds = from(group4Rule(DOMAIN_A, "  DC_ville  = Romans sur Isère  ")).getUserIds();
-    assertThat(userIds, containsInAnyOrder(extractUserIds(
-        DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1)));
+    List<String> userIds =
+        from(group4Rule(DOMAIN_A, "  DC_ville  = Romans sur Isère  ")).getUserIds();
+    assertThat(userIds, containsInAnyOrder(
+        extractUserIds(DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1)));
 
     userIds = from(group4Rule(DOMAIN_B, "DC_ville=Romans sur Isère")).getUserIds();
-    assertThat(userIds, containsInAnyOrder(extractUserIds(
-        DOMAIN_B_USER_2)));
+    assertThat(userIds, containsInAnyOrder(extractUserIds(DOMAIN_B_USER_2)));
 
     userIds = from(group4Rule(SHARED_DOMAIN, "DC_ville=Romans sur Isère")).getUserIds();
-    assertThat(userIds, containsInAnyOrder(extractUserIds(
-        DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1,
-        DOMAIN_B_USER_2)));
+    assertThat(userIds, containsInAnyOrder(
+        extractUserIds(DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1,
+            DOMAIN_B_USER_2)));
   }
 
   @Test
@@ -612,16 +609,12 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void negateOperatorCanNotBeUsedDirectlyIntoSimpleSilverpeasRule() throws Exception {
-    List<String> userIds =
-        from(group4Rule(DOMAIN_A, "(!(DC_ville=Va\\(le\\)nce))")).getUserIds();
-    assertThat(userIds, containsInAnyOrder(extractUserIds(
-        DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1)));
-    try {
-      from(group4Rule(DOMAIN_A, "((!DC_ville= Va\\(le\\)nce))")).getUserIds();
-      fail("should throw an error");
-    } catch (GroupSynchronizationRule.GroundRuleError ignore) {
-    }
+  public void negateOperatorCanNotBeUsedDirectlyIntoSimpleSilverpeasRule() {
+    List<String> userIds = from(group4Rule(DOMAIN_A, "(!(DC_ville=Va\\(le\\)nce))")).getUserIds();
+    assertThat(userIds, containsInAnyOrder(
+        extractUserIds(DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1)));
+    assertThrows(GroupSynchronizationRule.GroundRuleError.class,
+        () -> from(group4Rule(DOMAIN_A, "((!DC_ville= Va\\(le\\)nce))")).getUserIds());
   }
 
   @Test

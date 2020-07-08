@@ -32,8 +32,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -66,8 +65,7 @@ import static org.silverpeas.core.webapi.admin.AdminResourceURIs.*;
  * A REST Web resource giving space data.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(SPACES_BASE_URI)
 @Authenticated
 public class SpaceResource extends AbstractAdminResource {

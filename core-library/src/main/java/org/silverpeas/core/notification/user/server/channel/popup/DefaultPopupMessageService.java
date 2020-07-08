@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server.channel.popup;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.user.server.NotificationData;
 import org.silverpeas.core.persistence.jdbc.LongText;
 import org.silverpeas.core.util.DateUtil;
@@ -37,6 +38,7 @@ import java.util.Map;
 /**
  * @author dblot
  */
+@Service
 @Singleton
 public class DefaultPopupMessageService implements PopupMessageService {
 

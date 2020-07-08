@@ -54,7 +54,7 @@ import java.util.Locale;
 import static org.silverpeas.core.contribution.converter.DocumentFormat.*;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * User: Yohann Chastagnier Date: 21/01/13

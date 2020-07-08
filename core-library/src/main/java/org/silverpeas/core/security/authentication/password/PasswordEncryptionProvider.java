@@ -76,4 +76,8 @@ public class PasswordEncryptionProvider {
             "' not understand by any of the available encryption in Silverpeas"));
     return encryption;
   }
+
+  private PasswordEncryptionProvider() {
+
+  }
 }

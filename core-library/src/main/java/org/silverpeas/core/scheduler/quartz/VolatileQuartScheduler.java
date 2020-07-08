@@ -26,6 +26,7 @@ package org.silverpeas.core.scheduler.quartz;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 
@@ -40,6 +41,7 @@ import javax.inject.Singleton;
  * scheduled again at the scheduler starting.
  */
 @Default
+@Service
 @Singleton
 public class VolatileQuartScheduler extends QuartzScheduler {
 

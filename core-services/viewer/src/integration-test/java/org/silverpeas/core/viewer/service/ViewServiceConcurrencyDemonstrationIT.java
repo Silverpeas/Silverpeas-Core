@@ -36,15 +36,19 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.model.ViewerSettings;
 
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedThreadFactory;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 @RunWith(Arquillian.class)
 public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
@@ -54,6 +58,9 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
 
   @Inject
   private ViewService viewService;
+
+  @Resource
+  private ManagedThreadFactory managedThreadFactory;
 
   @Before
   public void setup() {
@@ -95,7 +102,7 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
 
       for (int i = 0; i < LAST_REQUEST_INDEX; i++) {
         final int index = i;
-        SubThreadManager.addAndStart(new Thread(() -> {
+        SubThreadManager.addAndStart(managedThreadFactory.newThread(() -> {
           try {
             final long startThreadTime = System.currentTimeMillis();
             final DocumentView viewFirstRequest = viewService
@@ -111,9 +118,9 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
         }));
       }
 
-      SubThreadManager.addAndStart(new Thread(() -> {
+      SubThreadManager.addAndStart(managedThreadFactory.newThread(() -> {
         try {
-          Thread.sleep(500);
+          awaitUntil(500, MILLISECONDS);
 
           // Technical verification
           assertThat("At this level, the cache has 2 elements", serviceCache.size(), is(2));
@@ -125,7 +132,7 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
         }
       }));
 
-      Thread.sleep(durationToIncreaseChancesToPerformThreadBefore);
+      awaitUntil(durationToIncreaseChancesToPerformThreadBefore, MILLISECONDS);
 
       final long startLastRequestTime = System.currentTimeMillis();
       final DocumentView viewLastRequest =
@@ -188,13 +195,13 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
       final int NB_VIEW_CALLS = 100;
 
       for (int i = 0; i < NB_VIEW_CALLS; i++) {
-        SubThreadManager.addAndStart(new Thread(() -> {
+        SubThreadManager.addAndStart(managedThreadFactory.newThread(() -> {
           try {
             viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.odp")));
           } catch (Exception ignore) {
           }
         }));
-        SubThreadManager.addAndStart(new Thread(() -> {
+        SubThreadManager.addAndStart(managedThreadFactory.newThread(() -> {
           try {
             viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.pdf")));
           } catch (Exception ignore) {
@@ -202,9 +209,9 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
         }));
       }
 
-      SubThreadManager.addAndStart(new Thread(() -> {
+      SubThreadManager.addAndStart(managedThreadFactory.newThread(() -> {
         try {
-          Thread.sleep(500);
+          awaitUntil(500, MILLISECONDS);
 
           // Technical verification
           assertThat(getTemporaryPath().listFiles(), arrayWithSize(4));
@@ -240,48 +247,36 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
       final int NB_VIEW_CALLS = 100;
 
       for (int i = 0; i < NB_VIEW_CALLS; i++) {
-        SubThreadManager.addAndStart(new Thread(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.odp")));
-            } catch (Exception ignore) {
-            }
+        SubThreadManager.addAndStart(managedThreadFactory.newThread(() -> {
+          try {
+            viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.odp")));
+          } catch (Exception ignore) {
           }
         }));
-        SubThreadManager.addAndStart(new Thread(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.pdf")));
-            } catch (Exception ignore) {
-            }
+        SubThreadManager.addAndStart(managedThreadFactory.newThread(() -> {
+          try {
+            viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.pdf")));
+          } catch (Exception ignore) {
           }
         }));
-        SubThreadManager.addAndStart(new Thread(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.odt")));
-            } catch (Exception ignore) {
-            }
+        SubThreadManager.addAndStart(managedThreadFactory.newThread(() -> {
+          try {
+            viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.odt")));
+          } catch (Exception ignore) {
           }
         }));
       }
 
-      SubThreadManager.addAndStart(new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            Thread.sleep(500);
+      SubThreadManager.addAndStart(managedThreadFactory.newThread(() -> {
+        try {
+          awaitUntil(500, MILLISECONDS);
 
-            // Technical verification
-            assertThat(getTemporaryPath().listFiles(), arrayWithSize(6));
+          // Technical verification
+          assertThat(getTemporaryPath().listFiles(), arrayWithSize(6));
 
-          } catch (Throwable e) {
-            throwables.add(e);
-            SubThreadManager.killAll();
-          }
+        } catch (Throwable e) {
+          throwables.add(e);
+          SubThreadManager.killAll();
         }
       }));
 
@@ -298,7 +293,7 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
   }
 
   private static class SubThreadManager {
-    private static List<Thread> threads = new ArrayList<>();
+    private static final List<Thread> threads = new ArrayList<>();
 
     public static void add(Thread thread) {
       threads.add(thread);
@@ -307,12 +302,6 @@ public class ViewServiceConcurrencyDemonstrationIT extends AbstractViewerIT {
     public static void addAndStart(Thread thread) {
       threads.add(thread);
       thread.start();
-    }
-
-    public static void joinAll() throws Exception {
-      for (Thread thread : threads) {
-        thread.join();
-      }
     }
 
     public static void joinAll(long timeout) throws Exception {

@@ -52,8 +52,8 @@ public class ArrayLine implements SimpleGraphicElement, Comparable<ArrayLine> {
    * @see
    */
   public ArrayLine(ArrayPane pane) {
-    cells = new ArrayList<SimpleGraphicElement>();
-    sublines = new ArrayList<ArrayLine>();
+    cells = new ArrayList<>();
+    sublines = new ArrayList<>();
     this.pane = pane;
   }
 

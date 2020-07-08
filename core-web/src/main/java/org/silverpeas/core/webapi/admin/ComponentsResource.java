@@ -24,8 +24,7 @@
 package org.silverpeas.core.webapi.admin;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
@@ -47,8 +46,7 @@ import static org.silverpeas.core.webapi.admin.AdminResourceURIs.COMPONENTS_BASE
  * A REST Web resource giving components.
  * @author Nicolas EYSSERIC
  */
-@Service
-@RequestScoped
+@WebService
 @Path(COMPONENTS_BASE_URI)
 @Authenticated
 public class ComponentsResource extends AbstractAdminResource {

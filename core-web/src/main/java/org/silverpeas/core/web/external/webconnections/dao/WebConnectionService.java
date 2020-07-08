@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.external.webconnections.dao;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.web.external.webconnections.model.ConnectionDetail;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
@@ -41,6 +42,7 @@ import static org.silverpeas.core.persistence.jdbc.DBUtil.openConnection;
 /**
  * @author
  */
+@Service
 @Singleton
 public class WebConnectionService implements WebConnectionsInterface, ComponentInstanceDeletion {
   private ConnectionDAO dao;

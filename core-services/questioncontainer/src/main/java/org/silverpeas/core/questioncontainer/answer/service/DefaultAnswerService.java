@@ -24,6 +24,7 @@
 package org.silverpeas.core.questioncontainer.answer.service;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.dao.AnswerDAO;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
@@ -40,6 +41,7 @@ import java.util.Collection;
  * Stateless service to manage answer
  * @author neysseri
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.REQUIRED)
 public class DefaultAnswerService implements AnswerService {

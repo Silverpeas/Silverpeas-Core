@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.MissingResourceException;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Unit test on the access of the setting parameters in a XML file.

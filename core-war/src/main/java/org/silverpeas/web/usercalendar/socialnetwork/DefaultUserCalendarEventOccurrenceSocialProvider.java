@@ -26,6 +26,7 @@ package org.silverpeas.web.usercalendar.socialnetwork;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.VisibilityLevel;
@@ -42,7 +43,6 @@ import org.silverpeas.web.usercalendar.UserCalendarSettings;
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -73,7 +73,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * </p>
  * @author silveryocha
  */
-@Singleton
+@Provider
 @Alternative
 @Priority(APPLICATION + 10)
 public class DefaultUserCalendarEventOccurrenceSocialProvider implements SocialEventProvider {

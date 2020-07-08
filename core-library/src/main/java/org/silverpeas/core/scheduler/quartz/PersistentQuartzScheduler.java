@@ -26,6 +26,7 @@ package org.silverpeas.core.scheduler.quartz;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.core.scheduler.Job;
@@ -49,6 +50,7 @@ import java.lang.reflect.InvocationTargetException;
  * such scheduler should be use with care and only for very short-time jobs.
  * @author mmoquillon
  */
+@Service
 @Singleton
 @PersistentScheduling
 public class PersistentQuartzScheduler extends QuartzScheduler {

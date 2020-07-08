@@ -23,11 +23,14 @@
  */
 package org.silverpeas.core.admin.quota.service;
 
+import org.silverpeas.core.annotation.Service;
+
 import javax.inject.Singleton;
 
 /**
  * @author Yohann Chastagnier
  */
+@Service
 @Singleton
 public class TestQuotaService extends AbstractQuotaService<TestQuotaKey> implements
     TestQuotaServiceWithAdditionalTools {

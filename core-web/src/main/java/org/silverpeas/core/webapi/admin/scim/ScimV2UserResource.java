@@ -34,8 +34,7 @@ import edu.psu.swe.scim.spec.protocol.data.SearchRequest;
 import edu.psu.swe.scim.spec.protocol.search.SortOrder;
 import edu.psu.swe.scim.spec.resources.ScimUser;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.webapi.admin.scim.adaptation.SilverpeasPatchRequest;
@@ -69,8 +68,7 @@ import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE
  * Implementation of a user provisioning server using SCIM 2.0 protocol.
  * @author silveryocha
  */
-@Service
-@RequestScoped
+@WebService
 @Path(SCIM_2_BASE_URI + "/Users")
 @Authorized
 @Alternative

@@ -40,7 +40,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 
 /**

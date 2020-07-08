@@ -26,6 +26,7 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.JoinStatement;
@@ -56,6 +57,7 @@ import static org.silverpeas.core.util.StringUtil.isNotDefined;
  * This class represents the ContentManager API It is the gateway to all the silverpeas contents
  * (documentation, ....)
  */
+@Service
 @Singleton
 @Named("contentManager")
 public class ContentManager implements Serializable {

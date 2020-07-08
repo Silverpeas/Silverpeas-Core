@@ -37,7 +37,7 @@ import javax.enterprise.util.AnnotationLiteral;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration test on the access of beans managed by CDI.

@@ -27,6 +27,7 @@
  */
 package org.silverpeas.core.pdc.interests.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.pdc.interests.model.Interests;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
@@ -42,6 +43,7 @@ import java.util.List;
  *
  * @see InterestsService
  */
+@Service
 @Singleton
 @Transactional
 public class DefaultInterestsService implements InterestsService {

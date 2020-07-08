@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.webapi.sharing;
 
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.webapi.base.RESTWebService;
@@ -38,8 +37,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 
-@Service
-@RequestScoped
+@WebService
 @Path(SharingResource.PATH + "/{token}")
 public class SharingResource extends RESTWebService {
 

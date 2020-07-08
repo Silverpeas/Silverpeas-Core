@@ -24,6 +24,7 @@
 package org.silverpeas.core.calendar.repository;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventFilter;
@@ -41,6 +42,7 @@ import java.util.stream.Stream;
  * @author Yohann Chastagnier
  */
 @Singleton
+@Repository
 public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<CalendarEvent>
     implements CalendarEventRepository {
 

@@ -38,4 +38,8 @@ public class ICalExporterProvider {
   public static Exporter<ExportableCalendar> getICalExporter() {
     return ServiceProvider.getService(ICalExporter.class);
   }
+
+  private ICalExporterProvider() {
+
+  }
 }

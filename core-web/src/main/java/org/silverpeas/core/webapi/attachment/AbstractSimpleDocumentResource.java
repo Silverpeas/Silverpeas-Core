@@ -37,7 +37,7 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.text.MessageFormat;
 
-public class AbstractSimpleDocumentResource extends RESTWebService {
+public abstract class AbstractSimpleDocumentResource extends RESTWebService {
 
   static final String PATH = "documents";
 

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.pdc.thesaurus.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import org.silverpeas.core.pdc.thesaurus.model.Synonym;
 import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
@@ -45,6 +46,7 @@ import java.util.List;
 /**
  * Service dedicated to work on the thesaurus.
  */
+@Service
 public class ThesaurusService {
 
   private static final String ID_VOCA_EQUALS = " idVoca=";
@@ -62,7 +64,7 @@ public class ThesaurusService {
   private SilverpeasBeanDAO<Synonym> synonymDao = null;
   private SilverpeasBeanDAO<Jargon> jargonDao = null;
 
-  private ThesaurusService() {
+  protected ThesaurusService() {
   }
 
   public static ThesaurusService getInstance() {

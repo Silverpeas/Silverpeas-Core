@@ -24,6 +24,7 @@
 package org.silverpeas.core.io.media.image.thumbnail.control;
 
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.process.annotation.AbstractDummyHandledFileConverter;
 import org.silverpeas.core.process.io.file.DummyHandledFile;
 import org.silverpeas.core.ActionType;
@@ -38,6 +39,7 @@ import java.util.List;
  * User: Yohann Chastagnier
  * Date: 25/10/13
  */
+@Service
 public class ThumbnailDummyHandledFileConverter
     extends AbstractDummyHandledFileConverter<ThumbnailSimulationElement> {
 

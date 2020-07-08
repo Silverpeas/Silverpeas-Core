@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
@@ -100,6 +101,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 /**
  * Default implementation of {@code PublicationService} to manage the publications in Silverpeas.
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultPublicationService implements PublicationService, ComponentInstanceDeletion {

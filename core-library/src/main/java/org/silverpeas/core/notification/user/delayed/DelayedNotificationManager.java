@@ -24,6 +24,7 @@
 package org.silverpeas.core.notification.user.delayed;
 
 import com.ibm.icu.util.Calendar;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationData;
 import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationUserSetting;
@@ -51,6 +52,7 @@ import java.util.Set;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 @Singleton
 @Transactional
 public class DelayedNotificationManager implements DelayedNotification {

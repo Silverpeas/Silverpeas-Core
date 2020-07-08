@@ -43,4 +43,8 @@ public class JcrSystemCredentialsProvider {
   public static final SimpleCredentials getJcrSystemCredentials() {
     return new SimpleCredentials(ID, new char[0]);
   }
+
+  private JcrSystemCredentialsProvider() {
+
+  }
 }

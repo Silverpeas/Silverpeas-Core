@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server.channel.server;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
@@ -30,6 +31,7 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters
  * JPA repository of <code>ServerMessageBean</code> instances.
  * @author mmoquillon
  */
+@Repository
 public class ServerMessageBeanRepository extends BasicJpaEntityRepository<ServerMessageBean> {
 
   public ServerMessageBean findFirstMessageByUserIdAndSessionId(String userId, String sessionId) {

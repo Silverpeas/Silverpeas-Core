@@ -23,13 +23,16 @@
  */
 package org.silverpeas.core.subscription.service;
 
+import org.silverpeas.core.annotation.Service;
+
 /**
  * As the class is implementing {@link org.silverpeas.core.initialization.Initialization}, no
  * annotation appears in order to be taken into account by CDI.<br>
  * The service will be taken in charge by initialization treatments.
  * @author Yohann Chastagnier
  */
-public final class DefaultResourceSubscriptionService extends AbstractResourceSubscriptionService {
+@Service
+public class DefaultResourceSubscriptionService extends AbstractResourceSubscriptionService {
 
   public static final String DEFAULT_IMPLEMENTATION_ID = "default";
 

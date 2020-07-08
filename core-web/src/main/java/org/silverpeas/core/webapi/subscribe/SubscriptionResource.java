@@ -25,8 +25,7 @@ package org.silverpeas.core.webapi.subscribe;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.comment.CommentRuntimeException;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.subscription.Subscription;
@@ -63,8 +62,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * A REST Web resource representing a given subscription.
  * It is a web service that provides an access to a subscription referenced by its URL.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(SubscriptionResourceURIs.SUBSCRIPTION_BASE_URI + "/{componentId}")
 @Authorized
 public class SubscriptionResource extends RESTWebService {

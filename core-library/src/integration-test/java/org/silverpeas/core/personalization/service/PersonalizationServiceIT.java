@@ -32,21 +32,20 @@ import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.destination.DataSourceDestination;
 import com.ninja_squad.dbsetup.operation.Operation;
-import org.silverpeas.core.personalization.UserMenuDisplay;
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.personalization.dao.PersonalizationMatcher;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.personalization.dao.PersonalizationMatcher;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-
 import java.time.ZoneId;
 
 import static org.hamcrest.MatcherAssert.assertThat;

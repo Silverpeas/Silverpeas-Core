@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.webapi.viewer;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.SimpleDocumentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -38,6 +39,7 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
 /**
  * @author mmoquillon
  */
+@Service
 @Singleton
 @Alternative
 @Priority(APPLICATION + 10)

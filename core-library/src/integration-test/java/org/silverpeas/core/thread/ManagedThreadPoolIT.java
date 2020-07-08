@@ -46,8 +46,11 @@ import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 import static java.lang.String.valueOf;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.maxThreadPoolSizeOf;
 import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.timeoutOf;
 
@@ -55,10 +58,10 @@ import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.timeo
 public class ManagedThreadPoolIT {
 
   private final static long OFFSET_TIME = 350;
-  private final static long SLEEP_TIME_OF_1_SECOND = 1000;
+  private final static long AWAIT_TIME_OF_1_SECOND = 1000;
   private final static long MAX_DURATION_TIME_OF_PARALLEL_EXEC = 2000;
-  private final static long SHORT_TIMEOUT = SLEEP_TIME_OF_1_SECOND / 2;
-  private final static long LARGE_TIMEOUT = SLEEP_TIME_OF_1_SECOND * 5;
+  private final static long SHORT_TIMEOUT = AWAIT_TIME_OF_1_SECOND / 2;
+  private final static long LARGE_TIMEOUT = AWAIT_TIME_OF_1_SECOND * 5;
 
   private ThreadEndTag threadEndTag;
 
@@ -85,14 +88,14 @@ public class ManagedThreadPoolIT {
     Duration duration = executeInvokeRunnableTest(
         () -> managedThreadPool.invoke(runnables.toArray(new Runnable[5])));
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(100L));
-    Thread.sleep(100);
+    awaitUntil(100, MILLISECONDS);
     log("Verifying that no processes is ended...");
     assertThat(threadEndTag.getThreadIdCalls(), empty());
     log("... OK");
-    long waitingFor = (SLEEP_TIME_OF_1_SECOND + OFFSET_TIME);
+    long waitingFor = (AWAIT_TIME_OF_1_SECOND + OFFSET_TIME);
     log("Waiting for {0}ms before verifying again end of runnable processes...",
         valueOf(waitingFor));
-    Thread.sleep(waitingFor);
+    awaitUntil(waitingFor, MILLISECONDS);
     log("Verifying that all processes are ended...");
     assertThat(threadEndTag.getThreadIdCalls(), hasSize(runnables.size()));
     log("... OK");
@@ -104,9 +107,9 @@ public class ManagedThreadPoolIT {
     Duration duration =
         executeInvokeRunnableTest(() -> managedThreadPool.invokeAndAwaitTermination(runnables));
     log("Verifying that 5 processes of 1s are ended after {0}ms but before {1}ms...",
-        valueOf(SLEEP_TIME_OF_1_SECOND), valueOf(MAX_DURATION_TIME_OF_PARALLEL_EXEC));
+        valueOf(AWAIT_TIME_OF_1_SECOND), valueOf(MAX_DURATION_TIME_OF_PARALLEL_EXEC));
     assertThat(threadEndTag.getThreadIdCalls(), hasSize(runnables.size()));
-    assertThat(duration.getTimeAsLong(), greaterThanOrEqualTo(SLEEP_TIME_OF_1_SECOND));
+    assertThat(duration.getTimeAsLong(), greaterThanOrEqualTo(AWAIT_TIME_OF_1_SECOND));
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(MAX_DURATION_TIME_OF_PARALLEL_EXEC));
     log("... OK");
   }
@@ -123,18 +126,20 @@ public class ManagedThreadPoolIT {
     assertThat(duration.getTimeAsLong(), greaterThanOrEqualTo(SHORT_TIMEOUT));
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(expectedLargestDuration));
     log("... OK");
-    Thread.sleep(SLEEP_TIME_OF_1_SECOND);
-    log("Verifying that all processes have not been killed despite the effective timeout...");
-    assertThat(threadEndTag.getThreadIdCalls(), not(empty()));
-    log("... OK");
+    await().atMost(AWAIT_TIME_OF_1_SECOND, MILLISECONDS).untilAsserted(() -> {
+      log("Verifying that all processes have not been killed despite the effective timeout...");
+      assertThat(threadEndTag.getThreadIdCalls(), not(empty()));
+      log("... OK");
+    });
   }
 
   @Test
   public void invokeRunnablesAndAwaitTerminationWithShortTimeoutAndKillingRunningThreads()
       throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
-    Duration duration = executeInvokeRunnableTest(() -> managedThreadPool
-        .invokeAndAwaitTermination(runnables, timeoutOf(SHORT_TIMEOUT).killThreadsAfterTimeout()));
+    Duration duration = executeInvokeRunnableTest(
+        () -> managedThreadPool.invokeAndAwaitTermination(runnables,
+            timeoutOf(SHORT_TIMEOUT).killThreadsAfterTimeout()));
     long expectedLargestDuration = (SHORT_TIMEOUT + OFFSET_TIME);
     log("Verifying that the timeout has been performed after {0}ms but before {1}ms...",
         valueOf(SHORT_TIMEOUT), valueOf(expectedLargestDuration));
@@ -142,10 +147,11 @@ public class ManagedThreadPoolIT {
     assertThat(duration.getTimeAsLong(), greaterThanOrEqualTo(SHORT_TIMEOUT));
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(expectedLargestDuration));
     log("... OK");
-    Thread.sleep(SLEEP_TIME_OF_1_SECOND);
-    log("Verifying that all processes have been killed after the effective timeout...");
-    assertThat(threadEndTag.getThreadIdCalls(), empty());
-    log("... OK");
+    await().atMost(AWAIT_TIME_OF_1_SECOND, MILLISECONDS).untilAsserted(() -> {
+      log("Verifying that all processes have been killed after the effective timeout...");
+      assertThat(threadEndTag.getThreadIdCalls(), empty());
+      log("... OK");
+    });
   }
 
   @Test
@@ -154,8 +160,8 @@ public class ManagedThreadPoolIT {
       throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
     runnables.addAll(initializeRunnables(100, 200));
-    Duration duration = executeInvokeRunnableTest(() -> managedThreadPool
-        .invokeAndAwaitTermination(runnables, timeoutOf(SHORT_TIMEOUT).killThreadsAfterTimeout()));
+    Duration duration = executeInvokeRunnableTest(() -> managedThreadPool.invokeAndAwaitTermination(
+        runnables, timeoutOf(SHORT_TIMEOUT).killThreadsAfterTimeout()));
     long expectedLargestDuration = (SHORT_TIMEOUT + OFFSET_TIME);
     log("Verifying that the timeout has been performed after {0}ms but before {1}ms...",
         valueOf(SHORT_TIMEOUT), valueOf(expectedLargestDuration));
@@ -165,10 +171,12 @@ public class ManagedThreadPoolIT {
     log("Verifying that 2 processes have been done before the effective timeout...");
     assertThat(threadEndTag.getThreadIdCalls(), hasSize(2));
     log("... OK");
-    Thread.sleep(SLEEP_TIME_OF_1_SECOND);
-    log("Verifying that all other processes have been killed after the effective timeout...");
-    assertThat(threadEndTag.getThreadIdCalls(), hasSize(2));
-    log("... OK");
+    await().atMost(AWAIT_TIME_OF_1_SECOND, MILLISECONDS).untilAsserted(() -> {
+      log("Verifying that all other processes have been killed after the effective timeout...");
+      assertThat(threadEndTag.getThreadIdCalls(), hasSize(2));
+      log("... OK");
+    });
+
   }
 
   @Test
@@ -177,9 +185,9 @@ public class ManagedThreadPoolIT {
     Duration duration = executeInvokeRunnableTest(
         () -> managedThreadPool.invokeAndAwaitTermination(runnables, timeoutOf(LARGE_TIMEOUT)));
     log("Verifying that the timeout has not been performed after {0}ms but before {1}ms...",
-        valueOf(SLEEP_TIME_OF_1_SECOND), valueOf(MAX_DURATION_TIME_OF_PARALLEL_EXEC));
+        valueOf(AWAIT_TIME_OF_1_SECOND), valueOf(MAX_DURATION_TIME_OF_PARALLEL_EXEC));
     assertThat(threadEndTag.getThreadIdCalls(), hasSize(runnables.size()));
-    assertThat(duration.getTimeAsLong(), greaterThanOrEqualTo(SLEEP_TIME_OF_1_SECOND));
+    assertThat(duration.getTimeAsLong(), greaterThanOrEqualTo(AWAIT_TIME_OF_1_SECOND));
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(MAX_DURATION_TIME_OF_PARALLEL_EXEC));
     log("... OK");
   }
@@ -191,16 +199,16 @@ public class ManagedThreadPoolIT {
     Duration duration = executeInvokeRunnableTest(() -> managedThreadPool
         .invokeAndAwaitTermination(runnables, timeoutOf(LARGE_TIMEOUT).killThreadsAfterTimeout()));
     log("Verifying that the timeout has not been performed after {0}ms but before {1}ms...",
-        valueOf(SLEEP_TIME_OF_1_SECOND), valueOf(MAX_DURATION_TIME_OF_PARALLEL_EXEC));
+        valueOf(AWAIT_TIME_OF_1_SECOND), valueOf(MAX_DURATION_TIME_OF_PARALLEL_EXEC));
     assertThat(threadEndTag.getThreadIdCalls(), hasSize(runnables.size()));
-    assertThat(duration.getTimeAsLong(), greaterThanOrEqualTo(SLEEP_TIME_OF_1_SECOND));
+    assertThat(duration.getTimeAsLong(), greaterThanOrEqualTo(AWAIT_TIME_OF_1_SECOND));
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(MAX_DURATION_TIME_OF_PARALLEL_EXEC));
     log("... OK");
   }
 
   @Test
   public void invokeCallable() throws Exception {
-    final TestCallable callable = initializeCallables(SLEEP_TIME_OF_1_SECOND).get(0);
+    final TestCallable callable = initializeCallables(AWAIT_TIME_OF_1_SECOND).get(0);
     Pair<Duration, List<Future<Long>>> result = executeInvokeCallableTest(
         () -> Collections.singletonList(managedThreadPool.invoke(callable)));
     log("Verifying that caller of the invoke method get back the hand immediately...");
@@ -208,7 +216,7 @@ public class ManagedThreadPoolIT {
     List<Future<Long>> futures = result.getRight();
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(100L));
     assertThat(futures, hasSize(1));
-    Thread.sleep(100);
+    awaitUntil(100, MILLISECONDS);
     log("Verifying that no processes is ended...");
     assertThat(threadEndTag.getThreadIdCalls(), empty());
     log("... OK");
@@ -229,7 +237,7 @@ public class ManagedThreadPoolIT {
     List<Future<Long>> futures = result.getRight();
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(100L));
     assertThat(futures, hasSize(5));
-    Thread.sleep(100);
+    awaitUntil(100, MILLISECONDS);
     log("Verifying that no processes is ended...");
     assertThat(threadEndTag.getThreadIdCalls(), empty());
     log("... OK");
@@ -324,7 +332,7 @@ public class ManagedThreadPoolIT {
     log("Verifying that no processes is ended...");
     assertThat(threadEndTag.getThreadIdCalls(), empty());
     log("... OK");
-    Thread.sleep(SLEEP_TIME_OF_1_SECOND);
+    awaitUntil(AWAIT_TIME_OF_1_SECOND, MILLISECONDS);
     log("Verifying that all processes have not been killed after the effective timeout...");
     assertThat(threadEndTag.getThreadIdCalls(), not(empty()));
     log("... OK");
@@ -346,10 +354,11 @@ public class ManagedThreadPoolIT {
     log("Verifying that no processes is ended...");
     assertThat(threadEndTag.getThreadIdCalls(), empty());
     log("... OK");
-    Thread.sleep(SLEEP_TIME_OF_1_SECOND);
-    log("Verifying that all processes have been killed after the effective timeout...");
-    assertThat(threadEndTag.getThreadIdCalls(), empty());
-    log("... OK");
+    await().atMost(AWAIT_TIME_OF_1_SECOND, MILLISECONDS).untilAsserted(() -> {
+      log("Verifying that all processes have been killed after the effective timeout...");
+      assertThat(threadEndTag.getThreadIdCalls(), empty());
+      log("... OK");
+    });
   }
 
   /**
@@ -357,8 +366,8 @@ public class ManagedThreadPoolIT {
    * @return list of 5 TestRunnable of 1 second of treatments.
    */
   private List<TestRunnable> fiveRunnablesOf1SecondOfTreatment() {
-    return initializeRunnables(SLEEP_TIME_OF_1_SECOND, SLEEP_TIME_OF_1_SECOND + 1,
-        SLEEP_TIME_OF_1_SECOND + 2, SLEEP_TIME_OF_1_SECOND + 3, SLEEP_TIME_OF_1_SECOND + 4);
+    return initializeRunnables(AWAIT_TIME_OF_1_SECOND, AWAIT_TIME_OF_1_SECOND + 1,
+        AWAIT_TIME_OF_1_SECOND + 2, AWAIT_TIME_OF_1_SECOND + 3, AWAIT_TIME_OF_1_SECOND + 4);
   }
 
   /**
@@ -366,8 +375,8 @@ public class ManagedThreadPoolIT {
    * @return list of 5 TestCallable of 1 second of treatments.
    */
   private List<TestCallable> fiveCallablesOf1SecondOfTreatment() {
-    return initializeCallables(SLEEP_TIME_OF_1_SECOND, SLEEP_TIME_OF_1_SECOND + 1,
-        SLEEP_TIME_OF_1_SECOND + 2, SLEEP_TIME_OF_1_SECOND + 3, SLEEP_TIME_OF_1_SECOND + 4);
+    return initializeCallables(AWAIT_TIME_OF_1_SECOND, AWAIT_TIME_OF_1_SECOND + 1,
+        AWAIT_TIME_OF_1_SECOND + 2, AWAIT_TIME_OF_1_SECOND + 3, AWAIT_TIME_OF_1_SECOND + 4);
   }
 
   /**
@@ -471,7 +480,7 @@ public class ManagedThreadPoolIT {
     }
 
     @Override
-    public Long call() throws Exception {
+    public Long call() {
       try {
         Thread.sleep(sleepTime);
         threadEndTag.mark();

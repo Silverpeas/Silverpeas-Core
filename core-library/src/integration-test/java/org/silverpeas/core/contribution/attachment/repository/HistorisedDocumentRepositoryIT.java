@@ -74,7 +74,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;

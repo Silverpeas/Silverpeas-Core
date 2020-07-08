@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.chat;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.security.SecuritySettings;
@@ -32,6 +33,7 @@ import org.silverpeas.core.util.security.SecuritySettings;
  * Initializes the resources required by the Chat to work correctly.
  * @author mmoquillon
  */
+@Service
 public class ChatInitialization implements Initialization {
 
   @Override

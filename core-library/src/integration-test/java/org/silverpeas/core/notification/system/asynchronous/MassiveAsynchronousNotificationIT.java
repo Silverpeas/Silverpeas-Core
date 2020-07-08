@@ -56,7 +56,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration test on the asynchronous mode of the Silverpeas API Notification.

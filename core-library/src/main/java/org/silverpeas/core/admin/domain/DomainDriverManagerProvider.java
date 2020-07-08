@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.domain;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
@@ -30,6 +31,7 @@ import javax.inject.Inject;
 /**
  * Provider that provides a {@link DomainDriverManager} instance.
  */
+@Provider
 public class DomainDriverManagerProvider {
 
   @Inject

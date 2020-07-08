@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.process.management.interceptor;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.process.management.AbstractFileProcessCheck;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.io.file.FileBasePath;
@@ -33,6 +34,7 @@ import java.util.logging.Logger;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 public class SimulationActionTestFileCheck extends AbstractFileProcessCheck {
 
   private int callCount = 0;

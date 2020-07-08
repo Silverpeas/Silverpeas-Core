@@ -27,7 +27,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Handler of scheduling events for testing purpose.

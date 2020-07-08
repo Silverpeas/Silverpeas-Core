@@ -28,9 +28,14 @@ package org.silverpeas.core.mail.engine;
  * @author Yohann Chastagnier
  */
 public class MailSenderProvider {
+
   private static MailSender mailSender = new SmtpMailSender();
 
   public static MailSender get() {
     return mailSender;
+  }
+
+  private MailSenderProvider() {
+
   }
 }

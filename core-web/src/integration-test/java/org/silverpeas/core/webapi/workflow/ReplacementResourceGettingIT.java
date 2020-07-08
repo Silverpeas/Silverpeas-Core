@@ -41,7 +41,7 @@ import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration tests on the web service handling the replacements of users in a workflow.

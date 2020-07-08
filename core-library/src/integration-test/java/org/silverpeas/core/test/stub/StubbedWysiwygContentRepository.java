@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.test.stub;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WysiwygContent;
@@ -31,6 +32,7 @@ import org.silverpeas.core.contribution.service.WysiwygContentRepository;
 /**
  * @author mmoquillon
  */
+@Repository
 public class StubbedWysiwygContentRepository implements WysiwygContentRepository {
   @Override
   public void save(final WysiwygContent content) {

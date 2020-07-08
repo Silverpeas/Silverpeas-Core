@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.persistence.jcr.provider;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
 
 import javax.annotation.Resource;
 import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
 import javax.jcr.Repository;
 
 /**
@@ -40,7 +40,7 @@ import javax.jcr.Repository;
  * </p>
  * @author mmoquillon
  */
-@Singleton
+@Provider
 public class DefaultJcrRepositoryProvider implements JcrRepositoryProvider {
 
   @Resource(lookup = "java:/jca/jcr")

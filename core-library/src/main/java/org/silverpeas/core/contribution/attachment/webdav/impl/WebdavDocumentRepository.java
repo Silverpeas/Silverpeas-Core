@@ -23,14 +23,15 @@
  */
 package org.silverpeas.core.contribution.attachment.webdav.impl;
 
+import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.persistence.jcr.JcrDataConverter;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.persistence.jcr.JcrDataConverter;
-import org.silverpeas.core.util.StringUtil;
 
 import javax.jcr.Binary;
 import javax.jcr.Node;
@@ -49,6 +50,7 @@ import java.util.regex.Pattern;
 
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
+@Repository
 public class WebdavDocumentRepository implements WebdavRepository {
 
   @Override

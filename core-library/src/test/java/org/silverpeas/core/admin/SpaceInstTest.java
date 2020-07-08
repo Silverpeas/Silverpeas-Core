@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.test.UnitTest;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.*;
 
 @UnitTest
 public class SpaceInstTest {

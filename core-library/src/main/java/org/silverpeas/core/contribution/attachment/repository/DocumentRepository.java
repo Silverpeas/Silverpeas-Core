@@ -25,6 +25,7 @@ package org.silverpeas.core.contribution.attachment.repository;
 
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
@@ -92,6 +93,7 @@ import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
  *
  * @author ehugonnet
  */
+@Repository
 public class DocumentRepository {
 
   private static final String SIMPLE_DOCUMENT_ALIAS = "SimpleDocuments";

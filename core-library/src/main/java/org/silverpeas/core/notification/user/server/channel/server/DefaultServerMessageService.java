@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server.channel.server;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.LongText;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -33,6 +34,7 @@ import javax.transaction.Transactional;
 /**
  * @author neysseri
  */
+@Service
 @Singleton
 public class DefaultServerMessageService implements ServerMessageService {
 

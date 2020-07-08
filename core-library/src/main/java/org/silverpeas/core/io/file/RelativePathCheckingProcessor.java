@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.io.file;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -32,6 +33,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
  * It the file doesn't exist, then {@code NO_FILE} is returned.
  * @author Yohann Chastagnier
  */
+@Service
 public class RelativePathCheckingProcessor extends AbstractSilverpeasFileProcessor {
 
   private static final int PRIORITY = MAX_PRIORITY - 5;

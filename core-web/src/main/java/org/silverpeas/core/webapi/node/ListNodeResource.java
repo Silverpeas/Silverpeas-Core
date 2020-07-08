@@ -24,8 +24,7 @@
 package org.silverpeas.core.webapi.node;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.webapi.base.RESTWebService;
@@ -45,8 +44,7 @@ import java.util.List;
  * A REST Web resource representing a list of node. It is a web service that provides an access to a
  * node referenced by its URL.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(ListNodeResource.PATH + "/{instanceId}")
 @Authorized
 public class ListNodeResource extends RESTWebService {

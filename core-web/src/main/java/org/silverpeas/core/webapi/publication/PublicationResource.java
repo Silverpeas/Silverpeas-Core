@@ -23,18 +23,17 @@
  */
 package org.silverpeas.core.webapi.publication;
 
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.PublicationAccessController;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.webapi.attachment.AttachmentEntity;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.security.authorization.NodeAccessController;
+import org.silverpeas.core.security.authorization.PublicationAccessController;
+import org.silverpeas.core.webapi.attachment.AttachmentEntity;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
@@ -52,8 +51,7 @@ import java.util.List;
 /**
  * A REST Web resource providing access to publications through private mode.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(PublicationResource.PATH + "/{componentId}")
 @Authorized
 public class PublicationResource extends AbstractPublicationResource {

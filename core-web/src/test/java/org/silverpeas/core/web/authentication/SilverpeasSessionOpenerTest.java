@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
 import org.silverpeas.core.notification.user.server.channel.popup.PopupMessageService;
 import org.silverpeas.core.notification.user.server.channel.server.ServerMessageService;
@@ -51,7 +52,7 @@ import java.util.UUID;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
@@ -158,6 +159,7 @@ public class SilverpeasSessionOpenerTest {
     return user;
   }
 
+  @Service
   @Singleton
   @Alternative
   @Priority(APPLICATION + 10)
@@ -166,7 +168,7 @@ public class SilverpeasSessionOpenerTest {
     /**
      * Prevent the class from being instantiate (private)
      */
-    private SessionManagerStub() {
+    protected SessionManagerStub() {
     }
 
     @Override

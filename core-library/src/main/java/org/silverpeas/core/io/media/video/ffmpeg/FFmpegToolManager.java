@@ -24,12 +24,14 @@
 package org.silverpeas.core.io.media.video.ffmpeg;
 
 import org.apache.commons.exec.CommandLine;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.exec.ExternalExecution;
 import org.silverpeas.core.util.exec.ExternalExecution.Config;
 import org.silverpeas.core.initialization.Initialization;
 
 import java.util.Map;
 
+@Service
 public class FFmpegToolManager implements Initialization {
 
   private static boolean isActivated = false;
