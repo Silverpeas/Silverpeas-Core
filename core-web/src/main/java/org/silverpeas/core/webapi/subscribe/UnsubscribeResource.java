@@ -24,8 +24,7 @@
 package org.silverpeas.core.webapi.subscribe;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.comment.CommentRuntimeException;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodePath;
@@ -58,8 +57,7 @@ import java.util.Collections;
  * A REST Web resource representing a given subscription.
  * It is a web service that provides an access to a subscription referenced by its URL.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(UnsubscribeResource.PATH + "/{componentId}")
 @Authorized
 public class UnsubscribeResource extends RESTWebService {

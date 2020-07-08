@@ -34,4 +34,8 @@ public class PersonalizationServiceProvider {
   public static PersonalizationService getPersonalizationService() {
     return ServiceProvider.getSingleton(PersonalizationService.class);
   }
+
+  private PersonalizationServiceProvider() {
+
+  }
 }

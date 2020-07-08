@@ -28,8 +28,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.calendar.Attendee;
@@ -97,8 +96,7 @@ import static org.silverpeas.core.webapi.calendar.CalendarWebManager.assertEntit
  * A REST Web resource giving calendar data.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(CALENDAR_BASE_URI + "/{componentInstanceId}")
 @Authorized
 public class CalendarResource extends AbstractCalendarResource {

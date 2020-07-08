@@ -44,6 +44,7 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.webapi.profile.UserProfilesSearchCriteriaBuilder;
@@ -68,6 +69,7 @@ import static org.silverpeas.core.webapi.admin.scim.SilverpeasScimServerConverte
  * </p>
  * @author silveryocha
  */
+@Service
 public class ScimUserAdminService extends AbstractScimAdminService implements Provider<ScimUser> {
 
   @Override

@@ -23,17 +23,16 @@
  */
 package org.silverpeas.core.webapi.security;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.security.encryption.cipher.CryptoException;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.encryption.CipherKeyUpdateException;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
 import org.silverpeas.core.security.encryption.DefaultContentEncryptionService;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -44,13 +43,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static org.silverpeas.core.util.logging.SilverLogger.*;
+import static org.silverpeas.core.util.logging.SilverLogger.getLogger;
 
 /**
  * A WEB resource representing the cipher key used in Silverpeas to encrypt and decrypt content.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(CipherKeyResource.WEB_PATH)
 @Authorized
 public class CipherKeyResource extends RESTWebService {

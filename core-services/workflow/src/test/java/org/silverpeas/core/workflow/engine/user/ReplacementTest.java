@@ -33,7 +33,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.silverpeas.core.workflow.engine.user.TestContext.WORKFLOW_ID;
 import static org.silverpeas.core.workflow.engine.user.TestContext.aUser;
 

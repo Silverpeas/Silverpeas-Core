@@ -24,8 +24,7 @@
 
 package org.silverpeas.core.webapi.calendar;
 
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarReference;
 import org.silverpeas.core.importexport.ExportDescriptor;
@@ -53,8 +52,7 @@ import static org.silverpeas.core.webapi.calendar.CalendarWebManager.assertEntit
  * A REST Web resource giving calendar data.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(ICalendarResource.PATH)
 public class ICalendarResource extends RESTWebService {
 

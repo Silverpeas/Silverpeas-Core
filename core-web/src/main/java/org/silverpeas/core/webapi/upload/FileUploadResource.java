@@ -25,8 +25,7 @@ package org.silverpeas.core.webapi.upload;
 
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.io.upload.UploadSessionFile;
 import org.silverpeas.core.notification.message.MessageNotifier;
@@ -71,8 +70,7 @@ import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
  * </ul>
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(FileUploadResource.PATH)
 @Authenticated
 public class FileUploadResource extends RESTWebService {

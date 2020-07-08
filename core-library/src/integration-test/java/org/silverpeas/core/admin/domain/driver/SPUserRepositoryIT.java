@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration tests on the SPUserRepository JPA repository.

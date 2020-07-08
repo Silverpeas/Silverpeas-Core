@@ -123,7 +123,7 @@ public class SilverpeasJpaEntityRepositoryIT {
   @Before
   public void setup() {
     CacheServiceProvider.clearAllThreadCaches();
-    jpaEntityServiceTest = ServiceProvider.getService(JpaEntityServiceTest.class);
+    jpaEntityServiceTest = ServiceProvider.getSingleton(JpaEntityServiceTest.class);
     when(StubbedOrganizationController.getMock().getUserDetail(anyString()))
         .thenAnswer(invocation -> {
           UserDetail user = new UserDetail();

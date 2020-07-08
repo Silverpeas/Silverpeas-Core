@@ -24,6 +24,7 @@
 package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.ToPDFConverter;
 import org.silverpeas.core.thread.ManagedThreadPool;
@@ -49,6 +50,7 @@ import static org.silverpeas.core.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 @Singleton
 public class DefaultViewService extends AbstractViewerService implements ViewService {
 

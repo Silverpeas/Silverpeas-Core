@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.datereminder.persistence.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.datereminder.exception.DateReminderException;
 import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
@@ -41,6 +42,7 @@ import java.util.Date;
  *
  * @author Cécile Bonin
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultDateReminderService implements PersistentDateReminderService {

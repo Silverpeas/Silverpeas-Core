@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.viewer.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.ToPDFConverter;
 import org.silverpeas.core.contribution.converter.option.SinglePageSelection;
@@ -52,6 +53,7 @@ import static org.silverpeas.core.viewer.model.ViewerSettings.*;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 @Singleton
 public class DefaultPreviewService extends AbstractViewerService implements PreviewService {
 

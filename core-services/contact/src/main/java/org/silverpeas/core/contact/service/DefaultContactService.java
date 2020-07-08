@@ -25,6 +25,7 @@ package org.silverpeas.core.contact.service;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contact.info.InfoDAO;
 import org.silverpeas.core.contact.model.CompleteContact;
 import org.silverpeas.core.contact.model.Contact;
@@ -49,6 +50,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.List;
 
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultContactService implements ContactService, ComponentInstanceDeletion {

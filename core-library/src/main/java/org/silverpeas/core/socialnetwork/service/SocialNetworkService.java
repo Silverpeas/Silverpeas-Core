@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.socialnetwork.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.socialnetwork.connectors.SocialNetworkConnector;
 import org.silverpeas.core.socialnetwork.dao.ExternalAccountRepository;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
@@ -39,6 +40,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 @Singleton
 public class SocialNetworkService {
 

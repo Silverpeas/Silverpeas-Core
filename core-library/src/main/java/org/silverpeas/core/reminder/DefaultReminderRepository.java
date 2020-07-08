@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.reminder;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
@@ -34,6 +35,7 @@ import java.util.List;
  * Default implementation of the JPA repository that stores the reminders for Silverpeas
  * @author mmoquillon
  */
+@Repository
 @Singleton
 public class DefaultReminderRepository extends BasicJpaEntityRepository<Reminder>
     implements ReminderRepository {

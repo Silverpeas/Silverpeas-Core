@@ -23,25 +23,11 @@
  */
 package org.silverpeas.core.admin;
 
-import org.silverpeas.core.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.admin.user.dao.UserDAO;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import org.silverpeas.core.annotation.Service;
 
 /**
  * @author silveryocha
  */
+@Service
 class TransactionNotSingletonTestServiceImpl extends AbstractTransactionTestService {
 }

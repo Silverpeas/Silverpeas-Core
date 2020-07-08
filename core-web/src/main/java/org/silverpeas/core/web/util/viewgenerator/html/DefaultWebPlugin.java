@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.apache.ecs.ElementContainer;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.html.SupportedWebPlugins;
 import org.silverpeas.core.html.WebPlugin;
 import org.silverpeas.core.html.WebPluginConsumerRegistry;
@@ -40,6 +41,7 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
  * @author Yohann Chastagnier
  */
 @SuppressWarnings("Duplicates")
+@Service
 @Singleton
 public class DefaultWebPlugin implements WebPlugin, Initialization {
 

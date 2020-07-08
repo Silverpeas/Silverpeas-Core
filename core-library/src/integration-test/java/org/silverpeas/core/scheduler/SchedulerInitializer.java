@@ -29,6 +29,8 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PreDestroy;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /***
@@ -39,6 +41,14 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class SchedulerInitializer {
+
+  @Inject
+  @Default
+  private VolatileQuartScheduler defaultScheduler;
+
+  @Inject
+  @PersistentScheduling
+  private PersistentQuartzScheduler persistentScheduler;
 
   private boolean initialized = false;
 
@@ -59,13 +69,11 @@ public class SchedulerInitializer {
   public void init(final SchedulerType type) {
     if (!initialized) {
       if (type == SchedulerType.ALL || type == SchedulerType.VOLATILE) {
-        Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
-        ((VolatileQuartScheduler) scheduler).init();
+       defaultScheduler.init();
       }
 
       if (type == SchedulerType.ALL || type == SchedulerType.PERSISTENT) {
-        Scheduler scheduler = SchedulerProvider.getPersistentScheduler();
-        ((PersistentQuartzScheduler) scheduler).init();
+        persistentScheduler.init();
       }
 
       this.initialized = true;
@@ -76,11 +84,8 @@ public class SchedulerInitializer {
   public void release() {
     if (initialized) {
       try {
-        Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
-        ((VolatileQuartScheduler) scheduler).release();
-
-        scheduler = SchedulerProvider.getPersistentScheduler();
-        ((PersistentQuartzScheduler) scheduler).release();
+        defaultScheduler.release();
+        persistentScheduler.release();
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
       } finally {

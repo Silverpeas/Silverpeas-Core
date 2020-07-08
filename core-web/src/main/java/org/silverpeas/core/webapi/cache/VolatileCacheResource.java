@@ -25,8 +25,7 @@
 package org.silverpeas.core.webapi.cache;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.cache.service.VolatileIdentifierProvider;
 import org.silverpeas.core.cache.service.VolatileResourceCacheService;
 import org.silverpeas.core.webapi.base.RESTWebService;
@@ -44,8 +43,7 @@ import javax.ws.rs.core.MediaType;
  * Please consule {@link VolatileResourceCacheService}.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(VolatileCacheResource.VOLATILE_BASE_URI + "/{componentInstanceId}")
 @Authorized
 public class VolatileCacheResource extends RESTWebService {

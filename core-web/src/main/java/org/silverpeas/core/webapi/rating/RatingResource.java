@@ -24,17 +24,16 @@
 package org.silverpeas.core.webapi.rating;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.rating.service.RatingService;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.model.RaterRating;
 import org.silverpeas.core.contribution.rating.model.RaterRatingPK;
+import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -50,8 +49,7 @@ import javax.ws.rs.core.Response.Status;
  * A REST Web resource representing a given rating.
  * It is a web service that provides an access to a rating referenced by its URL.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(RatingResource.PATH + "/{componentId}/{contributionType}/{contributionId}")
 @Authorized
 public class RatingResource extends RESTWebService {

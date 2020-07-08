@@ -24,6 +24,7 @@
 package org.silverpeas.core.datereminder;
 
 import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.datereminder.exception.DateReminderException;
 import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
@@ -55,6 +56,7 @@ import java.util.Locale;
  * @see DateReminderProcess
  * @see DateReminderProcessRegistration
  */
+@Service
 public class DateReminderScheduler implements SchedulerEventListener, Initialization {
 
   public static final String DATEREMINDER_JOB_NAME_PROCESS = "A_ProcessDateReminder";

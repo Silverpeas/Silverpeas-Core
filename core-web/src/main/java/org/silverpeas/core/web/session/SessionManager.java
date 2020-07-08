@@ -27,6 +27,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.cache.service.VolatileResourceCacheService;
@@ -86,6 +87,7 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
  *
  * @author Nicolas Eysseric
  */
+@Service
 @Singleton
 public class SessionManager implements SessionManagement, Initialization {
 

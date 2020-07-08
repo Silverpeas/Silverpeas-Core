@@ -26,7 +26,6 @@ package org.silverpeas.core.contribution.attachment.webdav.impl;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -44,15 +43,13 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static javax.jcr.Property.JCR_CONTENT;
-import static javax.jcr.Property.JCR_DATA;
-import static javax.jcr.Property.JCR_ENCODING;
-import static javax.jcr.Property.JCR_LAST_MODIFIED;
-import static javax.jcr.Property.JCR_MIMETYPE;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static javax.jcr.Property.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 @RunWith(Arquillian.class)
 public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
@@ -186,7 +183,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       assertWebdavContent(session, document, "Updated webdav content.", relativeWebdavJcrPath);
 
       Date dateOfCreateOrUpdate = document.getUpdated();
-      Thread.sleep(10);
+      awaitUntil(10, MILLISECONDS);
       webdavRepository.updateAttachmentBinaryContent(session, document);
 
       getJcr().assertContent(document.getId(), "fr", null);

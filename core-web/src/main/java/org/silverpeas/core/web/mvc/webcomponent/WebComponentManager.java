@@ -114,7 +114,7 @@ public class WebComponentManager {
       try {
 
         // Instantiating, and caching into the request, the web context.
-        R webComponentContext = webComponentContextClass.newInstance();
+        R webComponentContext = webComponentContextClass.getConstructor().newInstance();
         webComponentContext.setHttpMethodClass(httpMethodClass);
         webComponentContext.setRequest(request);
         webComponentContext.setResponse(response);

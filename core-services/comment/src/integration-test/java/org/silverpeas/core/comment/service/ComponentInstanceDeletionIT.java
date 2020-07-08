@@ -38,7 +38,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration tests on the deletion of all comments belonging to a component instance.

@@ -23,25 +23,25 @@
  */
 package org.silverpeas.core.test;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;
 import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
 import javax.sql.DataSource;
 
 /**
  * A convenient provider of the data source used in the integration tests.
  * @author mmoquillon
  */
-@Singleton
+@Provider
 public class DataSourceProvider {
 
   @Resource(lookup = "java:/datasources/silverpeas")
   private DataSource dataSource;
 
   private static DataSourceProvider getInstance() {
-    return ServiceProvider.getService(DataSourceProvider.class);
+    return ServiceProvider.getSingleton(DataSourceProvider.class);
   }
 
   @Produces

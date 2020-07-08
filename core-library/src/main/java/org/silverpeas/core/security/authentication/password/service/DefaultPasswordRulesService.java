@@ -24,6 +24,7 @@
 package org.silverpeas.core.security.authentication.password.service;
 
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
 import org.silverpeas.core.security.authentication.password.rule.AtLeastXDigitPasswordRule;
 import org.silverpeas.core.security.authentication.password.rule.AtLeastXLowercasePasswordRule;
@@ -55,6 +56,7 @@ import java.util.Set;
  * User: Yohann Chastagnier
  * Date: 07/01/13
  */
+@Service
 @Singleton
 public class DefaultPasswordRulesService implements PasswordRulesService {
   protected static SettingBundle settings =

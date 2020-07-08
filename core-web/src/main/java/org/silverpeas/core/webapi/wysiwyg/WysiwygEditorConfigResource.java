@@ -26,8 +26,7 @@ package org.silverpeas.core.webapi.wysiwyg;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponent;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.cache.service.VolatileResourceCacheService;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
@@ -56,8 +55,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * Please consult {@link VolatileResourceCacheService}.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(WysiwygEditorConfigResource.WYSIWYG_CONFIG_BASE_URI + "/{componentInstanceId}")
 @Authorized
 public class WysiwygEditorConfigResource extends RESTWebService {

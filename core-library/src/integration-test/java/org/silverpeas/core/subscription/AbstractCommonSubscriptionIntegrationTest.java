@@ -50,7 +50,7 @@ public abstract class AbstractCommonSubscriptionIntegrationTest {
   protected static final String INSTANCE_ID = "kmelia60";
 
   protected final static SubscriberType[] validSubscriberTypes = SubscriberType.getValidValues()
-      .toArray(new SubscriberType[SubscriberType.getValidValues().size()]);
+      .toArray(new SubscriberType[0]);
 
   @Rule
   public DbUnitLoadingRule dbUnitLoadingRule =

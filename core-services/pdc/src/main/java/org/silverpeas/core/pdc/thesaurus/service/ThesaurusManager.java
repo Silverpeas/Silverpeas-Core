@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.pdc.thesaurus.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
@@ -39,6 +40,7 @@ import java.util.List;
 /**
  * Class ThesaurusManager Classe servant d'interface aux autres composants ayant besoin du thesaurus
  */
+@Service
 public class ThesaurusManager {
 
   @Inject

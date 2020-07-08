@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.token;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
@@ -57,6 +58,7 @@ import java.util.List;
  *
  * @author mmoquillon
  */
+@Service
 @Singleton
 public class SynchronizerTokenService {
 

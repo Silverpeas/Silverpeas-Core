@@ -25,8 +25,7 @@
 package org.silverpeas.core.webapi.workflow;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
@@ -58,8 +57,7 @@ import static org.silverpeas.core.webapi.workflow.ReplacementEntity.asWebEntity;
  * requirement of having the same role, to complete a task in the incumbent's stead.
  * @author mmoquillon
  */
-@Service
-@RequestScoped
+@WebService
 @Authorized
 @Path("workflow/{workflowId}/replacements")
 public class ReplacementResource extends RESTWebService {

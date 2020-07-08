@@ -35,7 +35,7 @@ import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.web.test.WarBuilder4WarCore;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration test on the access of beans managed by CDI.

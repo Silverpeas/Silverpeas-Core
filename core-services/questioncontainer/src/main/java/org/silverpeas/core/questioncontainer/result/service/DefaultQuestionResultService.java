@@ -24,6 +24,7 @@
 package org.silverpeas.core.questioncontainer.result.service;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.questioncontainer.result.dao.QuestionResultDAO;
@@ -42,6 +43,7 @@ import java.util.List;
  * @author neysseri
  * @see QuestionResultService
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultQuestionResultService implements QuestionResultService {

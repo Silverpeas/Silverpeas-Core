@@ -112,7 +112,7 @@ public class SilverpeasLook {
     String wallpaperURL = getWallpaperOfSpace(spaceId);
     if (!isDefined(wallpaperURL)) {
       GraphicElementFactory elementFactory =
-          new GraphicElementFactory(GraphicElementFactory.defaultLookName);
+          new GraphicElementFactory(GraphicElementFactory.DEFAULT_LOOK_NAME);
       wallpaperURL = elementFactory.getIcon(DEFAULT_WALLPAPER_PROPERTY);
       if (!isDefined(wallpaperURL)) {
         wallpaperURL = FileServerUtils.getApplicationContext() +

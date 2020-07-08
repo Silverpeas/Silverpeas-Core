@@ -25,6 +25,7 @@ package org.silverpeas.core.process.management.interceptor;
 
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.util.annotation.Action;
 import org.silverpeas.core.util.annotation.SourceObject;
@@ -36,6 +37,7 @@ import javax.inject.Singleton;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 @Singleton
 public class DefaultSimpleService implements SimpleService {
 

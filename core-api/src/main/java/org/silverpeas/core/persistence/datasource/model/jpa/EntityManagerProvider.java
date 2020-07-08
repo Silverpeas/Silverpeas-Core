@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -37,7 +37,7 @@ import javax.persistence.PersistenceContext;
  * {@link SilverpeasJpaEntityRepository}.
  * @author mmoquillon
  */
-@Singleton
+@Provider
 public class EntityManagerProvider {
 
   @PersistenceContext

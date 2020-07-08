@@ -26,8 +26,7 @@ package org.silverpeas.core.webapi.mylinks;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.util.ServiceProvider;
@@ -55,8 +54,7 @@ import java.util.List;
  * A REST Web resource representing user favorite links. It is a web service that provides an access
  * to user links referenced by its URL.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(MyLinksResource.PATH)
 @Authenticated
 public class MyLinksResource extends RESTWebService {

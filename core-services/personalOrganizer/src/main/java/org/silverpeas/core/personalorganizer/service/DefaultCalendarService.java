@@ -24,6 +24,7 @@
 package org.silverpeas.core.personalorganizer.service;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -65,6 +66,7 @@ import static java.util.Collections.emptyList;
 /**
  * Calendar service layer to manager calendars in Silverpeas
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultCalendarService implements SilverpeasCalendar, ComponentInstanceDeletion {

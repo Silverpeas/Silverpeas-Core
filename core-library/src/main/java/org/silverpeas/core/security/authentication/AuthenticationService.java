@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
@@ -74,6 +75,7 @@ import static java.util.Arrays.stream;
  * This service wraps all the mechanism to perform the authentication process itself. It uses for
  * doing an authentication server that is mapped with the user domain.
  */
+@Service
 public class AuthenticationService {
 
   public static final String ERROR_PWD_EXPIRED = "Error_PwdExpired";

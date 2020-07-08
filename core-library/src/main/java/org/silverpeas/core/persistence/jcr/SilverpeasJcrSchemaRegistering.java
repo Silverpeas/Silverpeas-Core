@@ -24,6 +24,7 @@
 package org.silverpeas.core.persistence.jcr;
 
 import org.apache.jackrabbit.commons.cnd.CndImporter;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.persistence.jcr.provider.JcrSystemCredentialsProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -32,7 +33,7 @@ import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * An initialization service whose aims is to register the Silverpeas specific schema into the
@@ -40,6 +41,7 @@ import java.nio.charset.Charset;
  * is spawned; it is no more loaded if it already exists in the underlying JCR repository.
  * @author mmoquillon
  */
+@Service
 public class SilverpeasJcrSchemaRegistering implements Initialization {
 
   private static final String SILVERPEAS_JCR_SCHEMA = "/silverpeas-jcr.cnd";
@@ -56,7 +58,7 @@ public class SilverpeasJcrSchemaRegistering implements Initialization {
       session = repository.login(JcrSystemCredentialsProvider.getJcrSystemCredentials());
       InputStreamReader reader =
           new InputStreamReader(getClass().getResourceAsStream(SILVERPEAS_JCR_SCHEMA),
-              Charset.forName("UTF-8"));
+              StandardCharsets.UTF_8);
       CndImporter.registerNodeTypes(reader, session);
     } finally {
       if (session != null) {

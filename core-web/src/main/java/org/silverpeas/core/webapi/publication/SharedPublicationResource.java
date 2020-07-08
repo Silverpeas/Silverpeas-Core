@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.webapi.publication;
 
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.util.SharingContext;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -48,8 +47,7 @@ import java.util.List;
 /**
  * A REST Web resource providing access to publications through sharing mode.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(SharedPublicationResource.PATH + "/{token}")
 public class SharedPublicationResource extends AbstractPublicationResource {
 

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.workflow.engine.instance;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -59,6 +60,7 @@ import static org.silverpeas.core.util.CollectionUtil.findNextRupture;
 /**
  * A ProcessInstanceManager implementation
  */
+@Service
 @Singleton
 public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManager {
 

@@ -24,8 +24,7 @@
 package org.silverpeas.core.webapi.node;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
@@ -38,8 +37,7 @@ import javax.ws.rs.core.MediaType;
 /**
  * A REST Web resource providing access to a node through private mode.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(NodeResource.PATH + "/{componentId}")
 @Authorized
 public class NodeResource extends AbstractNodeResource {

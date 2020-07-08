@@ -50,7 +50,7 @@ import org.silverpeas.core.i18n.I18NBean;
 import javax.inject.Inject;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.CREATION;
 
 /**

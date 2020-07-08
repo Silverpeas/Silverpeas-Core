@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.webapi.util.logging;
 
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -43,8 +42,7 @@ import javax.ws.rs.core.Response;
  * A Web resource representing the configuration of a given logger. It is a REST-based Web service.
  * @author mmoquillon
  */
-@Service
-@RequestScoped
+@WebService
 @Path(SilverLoggerConfigurationResource.LOGGING_PATH + "/{logger}/configuration")
 @Authenticated
 public class SilverLoggerConfigurationResource extends AbstractLoggingResource {

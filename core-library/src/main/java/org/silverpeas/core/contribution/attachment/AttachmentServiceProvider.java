@@ -31,4 +31,8 @@ public class AttachmentServiceProvider {
   public static AttachmentService getAttachmentService() {
     return AttachmentService.get();
   }
+
+  private AttachmentServiceProvider() {
+
+  }
 }

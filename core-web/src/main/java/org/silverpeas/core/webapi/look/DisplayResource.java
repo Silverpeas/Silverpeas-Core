@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.webapi.look;
 
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.ws.rs.GET;
@@ -39,8 +38,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
  * A REST Web resource giving space data.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(LookResourceURIs.DISPLAY_BASE_URI)
 @Authenticated
 public class DisplayResource extends AbstractLookResource {

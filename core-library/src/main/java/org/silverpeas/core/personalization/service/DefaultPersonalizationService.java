@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.personalization.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.personalization.UserMenuDisplay;
@@ -42,6 +43,7 @@ import java.util.List;
 /**
  * Class declaration
  */
+@Service
 @Singleton
 @Transactional
 public class DefaultPersonalizationService implements PersonalizationService {

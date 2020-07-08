@@ -25,6 +25,7 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.initialization.Initialization;
@@ -38,6 +39,7 @@ import java.util.List;
 /**
  * @author silveryocha
  */
+@Service
 public class CalendarIntegrityProcessor implements Initialization {
 
   @Override

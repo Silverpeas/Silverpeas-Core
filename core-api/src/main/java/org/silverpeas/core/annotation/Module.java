@@ -33,11 +33,11 @@ import java.lang.annotation.Target;
  * This annotation has to be used to the packages to define at which Silverpeas module the package
  * belongs to.
  * <p>
- * Silverpeas is made up of several modules, each of them defining either a service or an
- * application. A module is uniquely identified by a simple name. Each module in Silverpeas
- * provides a set of interfaces that can be used by others modules to realize their
- * responsibilities; codes in modules shouldn't use the classes in others modules but the
- * interfaces.
+ * Silverpeas is made up of several modules, each of them defining either a given business model, id
+ * est a functional service or an application. A module is uniquely identified by a simple name.
+ * Each module in Silverpeas provides a set of interfaces that can be used by others modules to
+ * realize their responsibilities; codes in modules shouldn't use the classes in others modules but
+ * the interfaces.
  * <p>
  * The annotation can be used by some transverse services to perform some dedicated operations
  * based upon the module a code belongs to. For example, the Silverpeas Logging API uses this

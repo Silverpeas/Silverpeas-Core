@@ -28,6 +28,7 @@ import org.apache.jackrabbit.api.management.DataStoreGarbageCollector;
 import org.apache.jackrabbit.api.management.RepositoryManager;
 import org.apache.jackrabbit.core.SilverpeasRepositoryManager;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask.LOCK_DURATION;
@@ -47,12 +48,13 @@ import javax.jcr.RepositoryException;
 import java.time.OffsetDateTime;
 
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
-import static org.silverpeas.core.util.ServiceProvider.getService;
+import static org.silverpeas.core.util.ServiceProvider.getSingleton;
 
 /**
  * This manager handles the datastore of the JCR.
  * @author silveryocha
  */
+@Service
 @Singleton
 public class JcrDatastoreManager {
 
@@ -60,7 +62,7 @@ public class JcrDatastoreManager {
   }
 
   public static JcrDatastoreManager get() {
-    return getService(JcrDatastoreManager.class);
+    return getSingleton(JcrDatastoreManager.class);
   }
 
   /**

@@ -24,16 +24,15 @@
 
 package org.silverpeas.core.web.mvc.route;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.Mutable;
 
-import javax.inject.Singleton;
-
 /**
  * @author silveryocha
  */
-@Singleton
+@Provider
 class DefaultComponentInstanceRoutingMapProviderByInstance
     implements ComponentInstanceRoutingMapProviderByInstance {
   private static String CACHE_KEY_PREFIX = ComponentInstanceRoutingMap.class.getName() + "###";

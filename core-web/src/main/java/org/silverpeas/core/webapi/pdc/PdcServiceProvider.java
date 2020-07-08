@@ -26,6 +26,7 @@ package org.silverpeas.core.webapi.pdc;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
@@ -43,7 +44,6 @@ import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +58,7 @@ import static org.silverpeas.core.webapi.pdc.UserThesaurusHolder.forUser;
  * this class are managed by the IoC container and can be then injected as dependency into the PdC
  * web resources.
  */
-@Named
+@Provider
 public class PdcServiceProvider {
 
   @Inject

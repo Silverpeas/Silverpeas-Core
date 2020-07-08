@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response.Status;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Unit tests on the deletion of a resource in Silverpeas through a REST web service.

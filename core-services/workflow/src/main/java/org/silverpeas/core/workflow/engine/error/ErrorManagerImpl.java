@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.workflow.engine.error;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.workflow.api.ErrorManager;
 import org.silverpeas.core.workflow.api.error.WorkflowError;
 import org.silverpeas.core.workflow.api.event.GenericEvent;
@@ -36,6 +37,7 @@ import java.util.List;
 /**
  * The workflow engine services relate to error management.
  */
+@Service
 @Singleton
 public class ErrorManagerImpl implements ErrorManager {
 

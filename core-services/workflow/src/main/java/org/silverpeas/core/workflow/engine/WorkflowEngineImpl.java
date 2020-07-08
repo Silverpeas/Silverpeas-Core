@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.workflow.engine;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.workflow.api.ProcessInstanceManager;
@@ -59,6 +60,7 @@ import java.util.Date;
 /**
  * One implementation of WorkflowEngine The workflow engine main services.
  */
+@Service
 @Singleton
 public class WorkflowEngineImpl implements WorkflowEngine {
 

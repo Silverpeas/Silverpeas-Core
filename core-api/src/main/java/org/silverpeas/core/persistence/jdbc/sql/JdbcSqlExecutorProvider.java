@@ -23,16 +23,16 @@
  */
 package org.silverpeas.core.persistence.jdbc.sql;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * This class provides an implementation of {@link JdbcSqlExecutor} API.
  * @author Yohann Chastagnier
  */
-@Singleton
+@Provider
 class JdbcSqlExecutorProvider {
 
   @Inject

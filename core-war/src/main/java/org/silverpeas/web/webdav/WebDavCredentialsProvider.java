@@ -26,6 +26,7 @@ package org.silverpeas.web.webdav;
 import org.apache.jackrabbit.api.security.authentication.token.TokenCredentials;
 import org.apache.jackrabbit.server.CredentialsProvider;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext;
 
@@ -41,11 +42,16 @@ import static org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext.getWebda
  * A provider of WebDav credentials for the WebDAV servlet.
  * @author mmoquillon
  */
+@Provider
 public class WebDavCredentialsProvider implements CredentialsProvider {
 
   private static final String USERID_TEMPLATE = "{0}@domain{1}";
   private static final String USERID_TOKEN_ATTRIBUTE = "UserID";
   private static final String AUTHORIZED_DOCUMENT_PATH_ATTRIBUTE = "AuthorizedDocumentPath";
+
+  protected WebDavCredentialsProvider() {
+
+  }
 
   @Override
   public Credentials getCredentials(final HttpServletRequest request)

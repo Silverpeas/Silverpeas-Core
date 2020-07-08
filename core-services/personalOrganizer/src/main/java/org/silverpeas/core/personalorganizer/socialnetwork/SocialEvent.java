@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.personalorganizer.socialnetwork;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
@@ -30,7 +31,6 @@ import org.silverpeas.core.socialnetwork.provider.SocialEventProvider;
 import org.silverpeas.core.util.DateUtil;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * @author Bensalem Nabil
  */
-@Singleton
+@Provider
 public class SocialEvent implements SocialEventProvider {
 
   @Inject

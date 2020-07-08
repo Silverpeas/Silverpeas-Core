@@ -25,6 +25,7 @@ package org.silverpeas.core.comment.socialnetwork;
 
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -37,14 +38,13 @@ import org.silverpeas.core.socialnetwork.provider.SocialPublicationCommentProvid
 import org.silverpeas.core.util.URLUtil;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-@Singleton
+@Provider
 public class SocialPublicationComment implements SocialPublicationCommentProvider {
 
   @Inject

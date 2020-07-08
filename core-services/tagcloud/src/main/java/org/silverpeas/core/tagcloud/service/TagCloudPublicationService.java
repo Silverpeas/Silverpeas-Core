@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.tagcloud.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.tagcloud.model.TagCloud;
 import org.silverpeas.core.tagcloud.dao.TagCloudPK;
 import org.silverpeas.core.tagcloud.model.TagCloudUtil;
@@ -51,6 +52,7 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
  * tag cloud capabilities.
  * @author mmoquillon
  */
+@Service
 @Singleton
 @Alternative
 @Priority(APPLICATION + 10)

@@ -23,10 +23,12 @@
  */
 package org.silverpeas.core.variables;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
 import javax.inject.Singleton;
 
+@Repository
 @Singleton
 public class DefaultVariableScheduledValueRepository
     extends SilverpeasJpaEntityRepository<VariableScheduledValue>

@@ -24,6 +24,7 @@
 package org.silverpeas.core.questioncontainer.question.service;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
@@ -49,6 +50,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
  * Stateless service to manage questions
  * @author neysseri
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.REQUIRED)
 public class DefaultQuestionService implements QuestionService {

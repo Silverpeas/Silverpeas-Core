@@ -26,6 +26,7 @@ package org.silverpeas.core.calendar;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.SilverpeasExceptionMessages.LightExceptionMessage;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.initialization.Initialization;
@@ -83,6 +84,7 @@ import static java.text.MessageFormat.format;
  * </p>
  * @author mmoquillon
  */
+@Service
 @Singleton
 public class ICalendarEventSynchronization implements Initialization {
 

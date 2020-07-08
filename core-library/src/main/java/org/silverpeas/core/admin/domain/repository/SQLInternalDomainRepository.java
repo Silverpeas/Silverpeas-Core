@@ -26,6 +26,7 @@ package org.silverpeas.core.admin.domain.repository;
 import org.silverpeas.core.admin.domain.exception.SQLDomainDAOException;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.StringUtil;
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 @Singleton
+@Repository
 public class SQLInternalDomainRepository implements SQLDomainRepository {
 
   private static final String DOMAIN_TABLE = "Domain";

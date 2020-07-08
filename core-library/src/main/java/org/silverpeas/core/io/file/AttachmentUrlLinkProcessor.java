@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.io.file;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.URLUtil;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -46,6 +47,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * This processor must have a high priority.<br>
  * @author Yohann Chastagnier
  */
+@Service
 public class AttachmentUrlLinkProcessor extends AbstractSilverpeasFileProcessor {
 
   private static final int PRIORITY = MAX_PRIORITY - 20;

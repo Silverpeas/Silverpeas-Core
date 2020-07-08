@@ -44,8 +44,8 @@ import java.util.Map;
 public class ResourceSubscriptionProvider {
 
   // Component implementations.
-  private final static Map<String, ResourceSubscriptionService> componentImplementations =
-      new HashMap<String, ResourceSubscriptionService>();
+  private static final Map<String, ResourceSubscriptionService> componentImplementations =
+      new HashMap<>();
 
   /**
    * Registers a new implementation of {@link ResourceSubscriptionService}
@@ -127,5 +127,9 @@ public class ResourceSubscriptionProvider {
           .get(DefaultResourceSubscriptionService.DEFAULT_IMPLEMENTATION_ID);
     }
     return service;
+  }
+
+  private ResourceSubscriptionProvider() {
+
   }
 }

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.backgroundprocess;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
@@ -37,6 +38,7 @@ import static java.text.MessageFormat.format;
 /**
  * This JOB is in charge of cleanup the background process contexts if necessary.
  */
+@Service
 class BackgroundProcessJobInitializer implements Initialization {
 
   private static final String JOB_NAME = "BackgroundProcessJob";

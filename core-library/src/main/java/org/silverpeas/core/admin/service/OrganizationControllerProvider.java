@@ -33,4 +33,8 @@ public class OrganizationControllerProvider {
   public static OrganizationController getOrganisationController() {
     return OrganizationController.get();
   }
+
+  private OrganizationControllerProvider() {
+
+  }
 }

@@ -24,8 +24,7 @@
 package org.silverpeas.core.webapi.pdc;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.personalization.UserPreferences;
@@ -51,8 +50,7 @@ import static org.silverpeas.core.webapi.pdc.PdcEntity.*;
  *
  * For a description of the PdC, see the documentation on {@link PdcResource}.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(FilteredPdcResource.PATH)
 @Authenticated
 public class FilteredPdcResource extends RESTWebService {

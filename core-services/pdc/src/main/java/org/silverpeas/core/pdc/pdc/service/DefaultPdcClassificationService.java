@@ -25,6 +25,7 @@ package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -55,6 +56,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * and the older business services on the PdC to find, save, update or delete some classifications
  * or some positions on the PdC.
  */
+@Service
 @Transactional
 @Singleton
 public class DefaultPdcClassificationService implements PdcClassificationService,

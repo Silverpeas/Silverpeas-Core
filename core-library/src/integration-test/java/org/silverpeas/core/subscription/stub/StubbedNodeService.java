@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.subscription.stub;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodePK;
@@ -39,6 +40,7 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
  * the data...<br>
  * @author Yohann Chastagnier
  */
+@Service
 @Singleton
 @Alternative
 @Priority(APPLICATION + 10)

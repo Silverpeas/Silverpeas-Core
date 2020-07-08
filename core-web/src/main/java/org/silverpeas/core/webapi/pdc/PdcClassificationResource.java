@@ -25,15 +25,14 @@ package org.silverpeas.core.webapi.pdc;
 
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -69,8 +68,7 @@ import static org.silverpeas.core.webapi.pdc.PdcServiceProvider.inComponentOfId;
  * position; classifications and positions are exposed in the Web by Silverpeas and are thus
  * uniquely identified by an URI in the Web.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(PdcClassificationResource.PATH + "/{componentId:[a-zA-Z]+[0-9]+}/{contentId}")
 @Authorized
 public class PdcClassificationResource extends RESTWebService {

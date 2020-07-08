@@ -26,6 +26,7 @@ package org.silverpeas.core.io.media.image.imagemagick;
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
 import org.im4java.process.ProcessStarter;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.StringUtil;
 
@@ -34,6 +35,7 @@ import java.util.Map;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 public class Im4javaManager implements Initialization {
 
   @Override

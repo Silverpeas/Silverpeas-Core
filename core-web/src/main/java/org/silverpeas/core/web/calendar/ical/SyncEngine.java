@@ -73,7 +73,7 @@ public final class SyncEngine {
     // Save content into the calendar file and write File
     try (FileOutputStream fileOutputStream = new FileOutputStream(localCalendar);
          OutputStreamWriter fileOutput = new OutputStreamWriter(fileOutputStream,
-             ImportIcalManager.charset)) {
+             ImportIcalManager.getCharset())) {
       // test if rss feed of file feed
       if (feedBytes != null) {
         if (isRssFeed(feedBytes)) {
@@ -87,7 +87,7 @@ public final class SyncEngine {
         } else {
           // file feed
           fileOutput.write(StringUtils.decodeToString(feedBytes,
-              ImportIcalManager.charset));
+              ImportIcalManager.getCharset()));
           fileOutput.flush();
         }
         returnCode = REMOTE_CONNECT_SUCCEEDED;

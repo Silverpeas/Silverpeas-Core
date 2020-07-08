@@ -24,8 +24,7 @@
 package org.silverpeas.core.webapi.attachment;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
@@ -39,8 +38,7 @@ import javax.ws.rs.core.Response;
 /**
  * A REST Web resource providing access to attachments through private mode.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(AttachmentResource.PATH + "/{componentId}")
 @Authorized
 public class AttachmentResource extends AbstractAttachmentResource {

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.server.channel.popup;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
@@ -30,6 +31,7 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters
  * JPA repository of <code>POPUPMessageBean</code> instances.
  * @author mmoquillon
  */
+@Repository
 public class POPUPMessageBeanRepository extends BasicJpaEntityRepository<POPUPMessageBean> {
 
   public POPUPMessageBean findFirstMessageByUserId(String userId) {

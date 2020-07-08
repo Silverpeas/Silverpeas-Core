@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
 import static java.time.DayOfWeek.*;
 import static java.time.Month.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;

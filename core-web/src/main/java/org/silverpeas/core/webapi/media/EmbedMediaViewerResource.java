@@ -24,8 +24,7 @@
 package org.silverpeas.core.webapi.media;
 
 import org.jboss.resteasy.plugins.providers.html.View;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -49,19 +48,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-
 import java.nio.file.Paths;
 
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
-import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
  * A common service to view document with an embed viewer.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(EmbedMediaViewerResource.PATH)
 @Authenticated
 public class EmbedMediaViewerResource extends RESTWebService {

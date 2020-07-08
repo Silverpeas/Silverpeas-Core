@@ -25,8 +25,7 @@
 package org.silverpeas.core.webapi.reminder;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -82,8 +81,7 @@ import static org.silverpeas.core.webapi.reminder.ReminderResourceURIs.REMINDER_
  * A REST Web resource giving reminder data.
  * @author silveryocha
  */
-@Service
-@RequestScoped
+@WebService
 @Path(REMINDER_BASE_URI + "/{componentInstanceId}/{type}/{localId}")
 @Authenticated
 public class ReminderResource extends RESTWebService {

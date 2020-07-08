@@ -27,6 +27,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ObjectFactory;
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.file.FileUtil;
@@ -62,6 +63,7 @@ import java.util.stream.Stream;
  * so that they are available by the core component management service.
  * @author mmoquillon
  */
+@Service
 @Singleton
 public class WAComponentRegistry implements Initialization {
 

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.search;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.index.search.PlainSearchResult;
 import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.SearchQueryProcessor;
@@ -50,6 +51,7 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 
+@Service
 @Singleton
 public class SearchService {
 

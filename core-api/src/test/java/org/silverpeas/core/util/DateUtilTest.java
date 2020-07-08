@@ -33,7 +33,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author ehugonnet

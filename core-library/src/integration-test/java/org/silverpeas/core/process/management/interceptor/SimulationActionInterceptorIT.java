@@ -28,7 +28,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -172,7 +171,7 @@ public class SimulationActionInterceptorIT {
     try {
       // the log file can contains more than this record as the tests can be ran several
       // times.
-      Assert.assertThat(Files.lines(getLogFile())
+      assertThat(Files.lines(getLogFile())
           .filter(line -> line.contains(level.name()) && line.contains(message))
           .count(), is(greaterThanOrEqualTo(1l)));
     } catch (IOException e) {

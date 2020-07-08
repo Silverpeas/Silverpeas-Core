@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.sharing.repository;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.OrderBy;
 import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
@@ -34,6 +35,7 @@ import org.silverpeas.core.util.SilverpeasList;
 /**
  * @author: ebonnet
  */
+@Repository
 public class DownloadDetailJpaRepository extends BasicJpaEntityRepository<DownloadDetail>
     implements DownloadDetailRepository {
 

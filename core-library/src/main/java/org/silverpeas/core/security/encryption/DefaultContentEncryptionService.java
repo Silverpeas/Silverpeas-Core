@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.security.encryption;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.encryption.cipher.Cipher;
 import org.silverpeas.core.security.encryption.cipher.CipherFactory;
 import org.silverpeas.core.security.encryption.cipher.CipherKey;
@@ -67,6 +68,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  * contents provided by some content iterators (they implement the {@link EncryptionContentIterator}
  * interface).
  */
+@Service
 @Named("contentEncryptionService")
 public class DefaultContentEncryptionService implements ContentEncryptionService {
 

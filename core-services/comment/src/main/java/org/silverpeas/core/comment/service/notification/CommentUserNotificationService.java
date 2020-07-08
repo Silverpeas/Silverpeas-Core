@@ -27,6 +27,7 @@ import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
@@ -61,6 +62,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * contribution.
  * @author mmoquillon
  */
+@Service
 public class CommentUserNotificationService extends CDIResourceEventListener<CommentEvent> {
 
   /**

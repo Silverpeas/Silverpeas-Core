@@ -24,16 +24,15 @@
 
 package org.silverpeas.core.contribution.content.renderer;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.util.ServiceProvider;
-
-import javax.inject.Singleton;
 
 /**
  * Default implementation of {@link ContributionContentRendererProvider}.
  * @author silveryocha
  */
-@Singleton
+@Provider
 public class DefaultContributionContentRendererProvider
     implements ContributionContentRendererProvider {
 
