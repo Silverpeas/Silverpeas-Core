@@ -42,6 +42,8 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.silverpeas.core.admin.user.constant.UserState.*;
+
 public class SynchroDomainScheduler implements SchedulerEventListener {
 
   private static final String ADMINSYNCHRODOMAIN_JOB_NAME = "AdminSynchroDomainJob";
@@ -82,10 +84,12 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
           final OrganizationController organizationController = OrganizationController.get();
           final Domain domain = organizationController.getDomain(domainId);
           UserDetailsSearchCriteria criteria = new UserDetailsSearchCriteria()
+              .onUserStatesToExclude(BLOCKED, DEACTIVATED, REMOVED)
               .onAccessLevels(UserAccessLevel.ADMINISTRATOR);
           final List<User> admins = organizationController.searchUsers(criteria);
           criteria = new UserDetailsSearchCriteria()
               .onDomainIds(domainId)
+              .onUserStatesToExclude(BLOCKED, DEACTIVATED, REMOVED)
               .onAccessLevels(UserAccessLevel.DOMAIN_ADMINISTRATOR);
           admins.addAll(organizationController.searchUsers(criteria));
           SimpleUserNotification.fromSystem()

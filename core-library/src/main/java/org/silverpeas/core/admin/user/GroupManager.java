@@ -38,11 +38,10 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.GroupAlreadyExistsAdminException;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.dao.GroupDAO;
-import org.silverpeas.core.admin.user.dao.GroupSearchCriteriaForDAO;
-import org.silverpeas.core.admin.user.dao.SearchCriteriaDAOFactory;
 import org.silverpeas.core.admin.user.dao.UserDAO;
-import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.model.GroupDetail;
+import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.notification.GroupEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -62,8 +61,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.model.Domain.MIXED_DOMAIN_ID;
-import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.likeIgnoreCase;
+import static org.silverpeas.core.util.StringUtil.*;
 
 @Singleton
 @Transactional(Transactional.TxType.MANDATORY)
@@ -93,41 +91,46 @@ public class GroupManager {
   }
 
   public static GroupManager get() {
-    return ServiceProvider.getService(GroupManager.class);
+    return ServiceProvider.getSingleton(GroupManager.class);
   }
 
   /**
    * Gets the groups that match the specified criteria.
-   *
    * @param criteria the criteria in searching of user groups.
-   * @return a slice of the list of user groups matching the criteria or an empty list of no ones are found.
+   * @return a slice of the list of user groups matching the criteria or an empty list of no ones
+   * are found.
    * @throws AdminException if an error occurs while getting the user groups.
    */
-  public SilverpeasList<GroupDetail> getGroupsMatchingCriteria(final GroupSearchCriteriaForDAO criteria) throws
-          AdminException {
-    try (Connection connection = DBUtil.openConnection()){
+  public SilverpeasList<GroupDetail> getGroupsMatchingCriteria(final GroupsSearchCriteria criteria)
+      throws AdminException {
+    try (Connection connection = DBUtil.openConnection()) {
       final GroupCriteriaFilter filter = new GroupCriteriaFilter(connection, criteria, groupDao);
       final SilverpeasList<GroupDetail> groups = filter.getFilteredGroups();
       String[] domainIdConstraint = new String[0];
-      for (final String domainId : criteria.getCriterionOnDomainIds()) {
-        if (!MIXED_DOMAIN_ID.equals(domainId)) {
-          domainIdConstraint = new String[]{domainId};
-          break;
+      if (criteria.isCriterionOnDomainIdSet()) {
+        for (final String domainId : criteria.getCriterionOnDomainIds()) {
+          if (!MIXED_DOMAIN_ID.equals(domainId)) {
+            domainIdConstraint = new String[]{domainId};
+            break;
+          }
         }
       }
-      final SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
+
       for (final GroupDetail group : groups) {
         final List<String> groupIds = filter.getAllSubGroups(group.getId())
             .stream()
             .map(GroupDetail::getId)
             .collect(Collectors.toList());
         groupIds.add(group.getId());
-        final UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
-        final UserState[] criterionOnUserStatesToExclude = criteria.getCriterionOnUserStatesToExclude();
-        final int userCount = userDao.getUserCountByCriteria(connection, criteriaOnUsers.
-            onDomainIds(domainIdConstraint).
-            onGroupIds(groupIds.toArray(new String[0])).
-            onUserStatesToExclude(criterionOnUserStatesToExclude));
+        final UserState[] criterionOnUserStatesToExclude =
+            criteria.getCriterionOnUserStatesToExclude();
+
+        final int userCount =
+            userDao.getUserCountByCriteria(connection, new UserDetailsSearchCriteria().
+                onDomainIds(domainIdConstraint).
+                onGroupIds(groupIds.toArray(new String[0])).
+                onUserStatesToExclude(criterionOnUserStatesToExclude));
+
         group.setTotalNbUsers(userCount);
       }
       return groups;
@@ -148,11 +151,9 @@ public class GroupManager {
     Connection connection = null;
     try {
       connection = DBUtil.openConnection();
-      SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
       List<String> groupIds = getAllSubGroupIdsRecursively(groupId);
       groupIds.add(groupId);
-      UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
-      return userDao.getUserCountByCriteria(connection, criteriaOnUsers.
+      return userDao.getUserCountByCriteria(connection, new UserDetailsSearchCriteria().
           onDomainIds(domainId).
           onGroupIds(groupIds.toArray(new String[0])).
           onUserStatesToExclude(UserState.REMOVED));
@@ -876,7 +877,7 @@ public class GroupManager {
 
   private static class GroupCriteriaFilter {
     private final Connection connection;
-    private final GroupSearchCriteriaForDAO criteria;
+    private final GroupsSearchCriteria criteria;
     private final GroupDAO groupDao;
     private final String nameFilter;
     private final PaginationPage paginationPage;
@@ -884,13 +885,13 @@ public class GroupManager {
     private final boolean logicalNameFiltering;
     private final Map<String, List<GroupDetail>> subGroupsOfGroupsCache = new LinkedHashMap<>();
 
-    GroupCriteriaFilter(final Connection connection, final GroupSearchCriteriaForDAO criteria,
+    GroupCriteriaFilter(final Connection connection, final GroupsSearchCriteria criteria,
         final GroupDAO groupDao) {
       this.connection = connection;
       this.criteria = criteria;
       this.groupDao = groupDao;
-      this.nameFilter = criteria.getCriterionOnName();
-      this.paginationPage = criteria.getPagination();
+      this.nameFilter = defaultStringIfNotDefined(criteria.getCriterionOnName()).replaceAll("\\*", "%");
+      this.paginationPage = criteria.getCriterionOnPagination();
       this.childrenRequired = criteria.childrenRequired();
       this.logicalNameFiltering = childrenRequired && isDefined(nameFilter);
       if (childrenRequired) {

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin.user.model;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
@@ -34,16 +33,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.silverpeas.core.util.ArrayUtil.isNotEmpty;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
- * A conjonction of criteria in the search of user groups.
+ * A conjunction of criteria in the search of user groups.
  */
 public class GroupsSearchCriteria implements SearchCriteria {
 
   private static final String USER_ACCESS_LEVELS = "userAccessLevels";
   private static final String USER_STATES_TO_EXCLUDE = "userStatesToExclude";
   private static final String GROUP_ID = "groupId";
+  private static final String USER_ID = "userId";
   private static final String SUPERGROUP_ID = "parentId";
   private static final String ROLE_NAMES = "roleIds";
   private static final String DOMAIN_IDS = "domainIds";
@@ -87,17 +88,19 @@ public class GroupsSearchCriteria implements SearchCriteria {
   }
 
   @Override
-  public GroupsSearchCriteria onRoleNames(String[] roleIds) {
-    if (roleIds != null && roleIds.length > 0) {
-      criteria.put(ROLE_NAMES, roleIds);
+  public GroupsSearchCriteria onRoleNames(String... roleIds) {
+    if (isNotEmpty(roleIds)) {
+      criteria.put(ROLE_NAMES,
+          Arrays.stream(roleIds).filter(StringUtil::isDefined).toArray(String[]::new));
     }
     return this;
   }
 
   @Override
   public GroupsSearchCriteria onGroupIds(String... groupIds) {
-    if (groupIds != null && groupIds.length > 0) {
-      criteria.put(GROUP_ID, groupIds);
+    if (isNotEmpty(groupIds)) {
+      criteria.put(GROUP_ID,
+          Arrays.stream(groupIds).filter(StringUtil::isDefined).toArray(String[]::new));
     }
     return this;
   }
@@ -125,7 +128,7 @@ public class GroupsSearchCriteria implements SearchCriteria {
 
   @Override
   public GroupsSearchCriteria onDomainIds(String... domainIds) {
-    if (domainIds != null) {
+    if (isNotEmpty(domainIds)) {
       criteria.put(DOMAIN_IDS,
           Arrays.stream(domainIds).filter(StringUtil::isDefined).toArray(String[]::new));
     }
@@ -134,13 +137,17 @@ public class GroupsSearchCriteria implements SearchCriteria {
 
   @Override
   public GroupsSearchCriteria onAccessLevels(final UserAccessLevel... accessLevels) {
-    criteria.put(USER_ACCESS_LEVELS, accessLevels);
+    if (isNotEmpty(accessLevels)) {
+      criteria.put(USER_ACCESS_LEVELS, accessLevels);
+    }
     return this;
   }
 
   @Override
   public SearchCriteria onUserStatesToExclude(final UserState... userStates) {
-    criteria.put(USER_STATES_TO_EXCLUDE, userStates);
+    if (isNotEmpty(userStates)) {
+      criteria.put(USER_STATES_TO_EXCLUDE, userStates);
+    }
     return null;
   }
 
@@ -179,7 +186,7 @@ public class GroupsSearchCriteria implements SearchCriteria {
   }
 
   public boolean isCriterionOnDomainIdSet() {
-    return getCriterionOnDomainId() != null;
+    return criteria.containsKey(DOMAIN_IDS) && isNotEmpty((String[]) criteria.get(DOMAIN_IDS));
   }
 
   public boolean isCriterionOnAccessLevelsSet() {
@@ -196,6 +203,10 @@ public class GroupsSearchCriteria implements SearchCriteria {
       return Arrays.stream(domainIds).anyMatch(Domain.MIXED_DOMAIN_ID::equals);
     }
     return false;
+  }
+
+  public boolean isCriterionOnUserIdsSet() {
+    return criteria.containsKey(USER_ID);
   }
 
   public boolean isCriterionOnNameSet() {
@@ -215,12 +226,21 @@ public class GroupsSearchCriteria implements SearchCriteria {
   }
 
   /**
-   * Gets the conjonction on the role names.
+   * Gets the conjunction on the role names.
    *
-   * @return an array with each element of the conjonction.
+   * @return an array with each element of the conjunction.
    */
   public String[] getCriterionOnRoleNames() {
     return (String[]) criteria.get(ROLE_NAMES);
+  }
+
+  /**
+   * Gets and clears the conjunction on the role names.
+   *
+   * @return an array with each element of the conjunction.
+   */
+  public String[] getAndClearCriterionOnRoleNames() {
+    return (String[]) criteria.remove(ROLE_NAMES);
   }
 
   /**
@@ -242,39 +262,38 @@ public class GroupsSearchCriteria implements SearchCriteria {
   }
 
   /**
-   * Gets the conjonction on the user identifiers.
+   * Gets the conjunction on the super group identifiers.
    *
-   * @return an array with each element of the conjonction.
+   * @return an array with each element of the conjunction.
    */
   public String getCriterionOnSuperGroupId() {
     return (String) criteria.get(SUPERGROUP_ID);
   }
 
   /**
-   * Gets the conjonction on the group identifiers.
+   * Gets the conjunction on the user identifiers.
+   * @return an array with each element of the conjunction.
+   */
+  public String[] getCriterionOnUserIds() {
+    return (String[]) criteria.get(USER_ID);
+  }
+
+  /**
+   * Gets the conjunction on the group identifiers.
    *
-   * @return an array with each element of the conjonction.
+   * @return an array with each element of the conjunction.
    */
   public String[] getCriterionOnGroupIds() {
     return (String[]) criteria.get(GROUP_ID);
   }
 
   /**
-   * Gets the domain identifier, other than the mixed domain, onto which the groups must belong.
+   * Gets the domain identifier onto which the groups must belong. It can include the mixed domain.
    *
-   * @return the identifier of the domain (other than the mixed domain).
+   * @return the identifier of the domain.
    */
-  public String getCriterionOnDomainId() {
-     String[] domainIds = (String[]) criteria.get(DOMAIN_IDS);
-     if (ArrayUtils.isNotEmpty(domainIds)) {
-       final int domainCount = 2;
-       if (domainIds.length == domainCount) {
-         return domainIds[1];
-       } else if (!Domain.MIXED_DOMAIN_ID.equals(domainIds[0])) {
-         return domainIds[0];
-       }
-     }
-     return null;
+  public String[] getCriterionOnDomainIds() {
+    return (String[]) criteria.get(DOMAIN_IDS);
   }
 
   /**
@@ -330,26 +349,6 @@ public class GroupsSearchCriteria implements SearchCriteria {
     return hash;
   }
 
-  /**
-   * Useless as by default the criteria forms a conjonction.
-   *
-   * @return itself.
-   */
-  @Override
-  public SearchCriteria and() {
-    return this;
-  }
-
-  /**
-   * Not supported. By default, the criteria form a conjonction.
-   *
-   * @return nothing, thrown an UnsupportedOperationException exception.
-   */
-  @Override
-  public SearchCriteria or() {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
   @Override
   public boolean isEmpty() {
     return criteria.isEmpty();
@@ -361,6 +360,10 @@ public class GroupsSearchCriteria implements SearchCriteria {
    */
   @Override
   public SearchCriteria onUserIds(String... userIds) {
+    if (isNotEmpty(userIds)) {
+      criteria.put(USER_ID,
+          Arrays.stream(userIds).filter(StringUtil::isDefined).toArray(String[]::new));
+    }
     return this;
   }
 
@@ -379,7 +382,9 @@ public class GroupsSearchCriteria implements SearchCriteria {
 
   @Override
   public SearchCriteria onPagination(PaginationPage page) {
-    criteria.put(PAGINATION, page);
+    if (page != null) {
+      criteria.put(PAGINATION, page);
+    }
     return this;
   }
 

@@ -88,8 +88,8 @@ public class ProfiledObjectId implements ResourceIdentifier, Serializable {
    * @return the {@link ProfiledObjectId} instance represented by the specified expression.
    */
   public static ProfiledObjectId from(final String expressionId) {
-    final ProfiledObjectType type = ProfiledObjectType.valueOf(expressionId.substring(0, 1));
-    final String id = expressionId.substring(2);
+    final ProfiledObjectType type = ProfiledObjectType.fromCode(expressionId.substring(0, 1));
+    final String id = expressionId.substring(1);
     return new ProfiledObjectId(type, id);
   }
 

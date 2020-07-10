@@ -41,16 +41,8 @@ public interface SearchCriteria {
     /**
      * The whatever value to be used as criterion value if you don't care of a given criterion.
      */
-    public static final String[] ANY = null;
+    public static final String[] ANY = new String[0];
   }
-
-  /**
-   * Appends a criteria conjunction.
-   *
-   * @return the criteria enriched with a conjunction. The conjunction will be applied with the last
-   * added criterion and the next one.
-   */
-  SearchCriteria and();
 
   /**
    * Appends a criterion on the component instance for which the search must be constrained to. The
@@ -114,6 +106,10 @@ public interface SearchCriteria {
    * Appends a criterion on the user roles for which the search must be constrained to. The
    * properties of the resources to fetch have to satisfy this criterion.
    * This criterion replaces any previous criterion on the user roles.
+   * <p>
+   * This criterion is useless without any criterion on either the component instance or on both
+   * the component instance and the resource for which the roles are defined.
+   * </p>
    * @param roleNames the name of the user roles on which the criterion has to be built.
    * @return the criteria enriched with a criterion on the role names.
    */
@@ -159,14 +155,6 @@ public interface SearchCriteria {
    * @return the criteria enriched with a criterion on the resources pagination.
    */
   SearchCriteria onPagination(final PaginationPage page);
-
-  /**
-   * Appends a criteria disjunction.
-   *
-   * @return the criteria enriched with a disjunction. The disjunction will be applied with the last
-   * added criterion and the next one.
-   */
-  SearchCriteria or();
 
   /**
    * Is this criteria empty?

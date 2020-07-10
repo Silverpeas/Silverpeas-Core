@@ -66,7 +66,7 @@ public class SCIMDriver extends AbstractDomainDriver {
   @Override
   public String[] getGroupMemberGroupIds(String groupId) {
     // In this driver, do nothing
-    return ArrayUtil.EMPTY_STRING_ARRAY;
+    return ArrayUtil.emptyStringArray();
   }
 
   /**

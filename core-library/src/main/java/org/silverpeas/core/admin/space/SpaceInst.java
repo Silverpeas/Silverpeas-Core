@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin.space;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
@@ -43,7 +42,6 @@ import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -55,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static org.silverpeas.core.admin.space.SpaceServiceProvider.getComponentSpaceQuotaService;
 import static org.silverpeas.core.admin.space.SpaceServiceProvider.getDataStorageSpaceQuotaService;
@@ -65,7 +64,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * The class SpaceInst is the representation in memory of a space
  */
 public class SpaceInst extends AbstractI18NBean<SpaceI18N>
-    implements Serializable, Cloneable {
+    implements Serializable {
 
   public static final String SPACE_KEY_PREFIX = "WA";
   public static final String PERSONAL_SPACE_ID = "-10";
@@ -122,7 +121,6 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   private ArrayList<SpaceProfileInst> spaceProfiles;
 
   /* Array of space ids that are children of this space */
-  private String[] subSpaceIds;
   private int level = 0;
   private boolean displaySpaceFirst = true;
   private boolean isPersonalSpace = false;
@@ -139,7 +137,6 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     orderNum = 0;
     components = new ArrayList<>();
     spaceProfiles = new ArrayList<>();
-    subSpaceIds = ArrayUtil.EMPTY_STRING_ARRAY;
     level = 0;
     displaySpaceFirst = true;
     isPersonalSpace = false;
@@ -319,7 +316,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    *
    * @return The components in that space
    */
-  public ArrayList<ComponentInst> getAllComponentsInst() {
+  public List<ComponentInst> getAllComponentsInst() {
     return components;
   }
 
@@ -343,7 +340,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * database, only in that spaceInst object !!!)
    */
   public void removeAllComponentsInst() {
-    components = new ArrayList<ComponentInst>();
+    components = new ArrayList<>();
   }
 
   /**
@@ -417,7 +414,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    *
    * @return The space profiles of that space
    */
-  public ArrayList<SpaceProfileInst> getAllSpaceProfilesInst() {
+  public List<SpaceProfileInst> getAllSpaceProfilesInst() {
     return spaceProfiles;
   }
 
@@ -426,7 +423,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * removed from database, only from that spaceInst object !!!)
    */
   public void removeAllSpaceProfilesInst() {
-    spaceProfiles = new ArrayList<SpaceProfileInst>();
+    spaceProfiles = new ArrayList<>();
   }
 
   /**
@@ -755,29 +752,28 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     }
     if (obj instanceof SpaceInst) {
       SpaceInst other = (SpaceInst) obj;
-      return ObjectUtils.equals(other.createDate, createDate)
-          && ObjectUtils.equals(other.id, id)
-          && ObjectUtils.equals(other.level, level)
-          && ObjectUtils.equals(other.look, look)
-          && ObjectUtils.equals(other.firstPageType, firstPageType)
-          && ObjectUtils.equals(other.orderNum, orderNum)
-          && ObjectUtils.equals(other.creatorUserId, creatorUserId)
-          && ObjectUtils.equals(other.getDescription(), getDescription())
-          && ObjectUtils.equals(other.domainFatherId, domainFatherId)
-          && ObjectUtils.equals(other.firstPageExtraParam, firstPageExtraParam)
-          && ObjectUtils.equals(other.getName(), getName());
+      return Objects.equals(other.createDate, createDate)
+          && Objects.equals(other.id, id)
+          && Objects.equals(other.level, level)
+          && Objects.equals(other.look, look)
+          && Objects.equals(other.firstPageType, firstPageType)
+          && Objects.equals(other.orderNum, orderNum)
+          && Objects.equals(other.creatorUserId, creatorUserId)
+          && Objects.equals(other.getDescription(), getDescription())
+          && Objects.equals(other.domainFatherId, domainFatherId)
+          && Objects.equals(other.firstPageExtraParam, firstPageExtraParam)
+          && Objects.equals(other.getName(), getName());
     }
     return false;
   }
 
   @Override
   public int hashCode() {
-    return ObjectUtils.hashCodeMulti(createDate, id, level, look, firstPageType, orderNum,
+    return Objects.hash(createDate, id, level, look, firstPageType, orderNum,
         creatorUserId, getDescription(), domainFatherId, firstPageExtraParam, getName());
   }
 
-  @Override
-  public SpaceInst clone() {
+  public SpaceInst copy() {
     SpaceInst clone = new SpaceInst();
 
     // clone basic information
@@ -798,7 +794,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     }
 
     for (String lang : getTranslations().keySet()) {
-      SpaceI18N translation = (SpaceI18N) getTranslation(lang);
+      SpaceI18N translation = getTranslation(lang);
       clone.addTranslation(translation);
     }
 
@@ -815,7 +811,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   public void removeInheritedProfiles() {
-    ArrayList<SpaceProfileInst> newProfiles = new ArrayList<SpaceProfileInst>();
+    ArrayList<SpaceProfileInst> newProfiles = new ArrayList<>();
     for (SpaceProfileInst profile : spaceProfiles) {
       if (!profile.isInherited()) {
         newProfiles.add(profile);

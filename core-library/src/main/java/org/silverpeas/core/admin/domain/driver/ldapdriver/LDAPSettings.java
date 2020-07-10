@@ -40,55 +40,55 @@ import org.silverpeas.core.util.StringUtil;
  */
 public class LDAPSettings implements DriverSettings {
 
-  public final static String TIME_STAMP_MSAD = "uSNChanged";
-  public final static String TIME_STAMP_MSAD_TT = "whenChanged";
-  public final static String TIME_STAMP_NDS = "modifyTimeStamp";
-  protected final LdapConfiguration configuration = new LdapConfiguration();
-  protected String LDAPImpl = null;
-  protected int LDAPProtocolVer = LDAPConnection.LDAP_V3;
-  protected boolean LDAPOpAttributesUsed = false;
-  protected String LDAPUserBaseDN = null;
-  protected boolean LDAPSearchRecurs = false;
-  protected LDAPConstraints LDAPDefaultConstraints = null;
-  protected LDAPSearchConstraints LDAPDefaultSearchConstraints = null;
-  protected int LDAPMaxMsClientTimeLimit = 0;
-  protected int LDAPMaxSecServerTimeLimit = 0;
-  protected int LDAPMaxNbEntryReturned = 5000;
-  protected int LDAPMaxNbReferrals = 0;
-  protected int LDAPBatchSize = 1;
-  protected boolean sortControlSupported = true;
-  protected boolean SYNCHROautomatic = false;
-  protected boolean SYNCHRORecursToGroups = true;
-  protected boolean SYNCHROthreaded = false;
-  protected boolean SYNCHROCacheEnabled = true;
-  protected boolean SYNCHROImportUsers = true;
-  protected String usersClassName = null;
-  protected String usersFilter = null;
+  public static final String TIME_STAMP_MSAD = "uSNChanged";
+  public static final String TIME_STAMP_MSAD_TT = "whenChanged";
+  public static final String TIME_STAMP_NDS = "modifyTimeStamp";
+  private final LdapConfiguration configuration = new LdapConfiguration();
+  private String ldapimpl = null;
+  private int ldapProtocolVer = LDAPConnection.LDAP_V3;
+  private boolean ldapOpAttributesUsed = false;
+  private String ldapUserBaseDN = null;
+  private boolean ldapSearchRecurs = false;
+  private LDAPConstraints ldapDefaultConstraints = null;
+  private LDAPSearchConstraints ldapDefaultSearchConstraints = null;
+  private int ldapMaxMsClientTimeLimit = 0;
+  private int ldapMaxSecServerTimeLimit = 0;
+  private int ldapMaxNbEntryReturned = 5000;
+  private int ldapMaxNbReferrals = 0;
+  private int ldapBatchSize = 1;
+  private boolean sortControlSupported = true;
+  private boolean synchroAutomatic = false;
+  private boolean synchroRecursToGroups = true;
+  private boolean synchroThreaded = false;
+  private boolean synchroCacheEnabled = true;
+  private boolean synchroImportUsers = true;
+  private String usersClassName = null;
+  private String usersFilter = null;
   // AdminUser
-  protected String usersType = null;
-  protected String usersIdField = null;
-  protected String usersLoginField = null;
-  protected String usersFirstNameField = null;
-  protected String usersLastNameField = null;
-  protected String usersEmailField = null;
+  private String usersType = null;
+  private String usersIdField = null;
+  private String usersLoginField = null;
+  private String usersFirstNameField = null;
+  private String usersLastNameField = null;
+  private String usersEmailField = null;
   // Account activation
-  protected String usersAccountControl = null;
-  protected String usersDisabledAccountFlag = null;
+  private String usersAccountControl = null;
+  private String usersDisabledAccountFlag = null;
   // Groups
-  protected String groupsType = null;
-  protected String groupsClassName = null;
-  protected boolean groupsInheritProfiles = false;
-  protected String groupsFilter = null;
-  protected int groupsNamingDepth = 0;
-  protected String groupsIdField = null;
-  protected boolean groupsIncludeEmptyGroups = true;
-  protected String groupsSpecificGroupsBaseDN = null;
-  protected String groupsMemberField = null;
-  protected String groupsNameField = null;
-  protected String groupsDescriptionField = null;
+  private String groupsType = null;
+  private String groupsClassName = null;
+  private boolean groupsInheritProfiles = false;
+  private String groupsFilter = null;
+  private int groupsNamingDepth = 0;
+  private String groupsIdField = null;
+  private boolean groupsIncludeEmptyGroups = true;
+  private String groupsSpecificGroupsBaseDN = null;
+  private String groupsMemberField = null;
+  private String groupsNameField = null;
+  private String groupsDescriptionField = null;
   // IHM
-  protected boolean ihmImportUsers = true;
-  protected boolean ihmImportGroups = true;
+  private boolean ihmImportUsers = true;
+  private boolean ihmImportGroups = true;
 
   /**
    * Performs initialization from a properties file. The optional properties are retreive with
@@ -99,41 +99,41 @@ public class LDAPSettings implements DriverSettings {
   public void initFromProperties(SettingBundle rs) {
     // Database Settings
     // -----------------
-    LDAPImpl = rs.getString("database.LDAPImpl", null);
+    ldapimpl = rs.getString("database.LDAPImpl", null);
     configuration.setLdapHost(rs.getString("database.LDAPHost", null));
     configuration.setLdapPort(rs.getInteger("database.LDAPPort", configuration.getLdapPort()));
-    LDAPProtocolVer = rs.getInteger("database.LDAPProtocolVer", LDAPConnection.LDAP_V3);
-    LDAPOpAttributesUsed = rs.getBoolean("database.LDAPOpAttributesUsed", LDAPOpAttributesUsed);
-    LDAPProtocolVer = LDAPConnection.LDAP_V3; // Only compatible with V3
+    ldapProtocolVer = rs.getInteger("database.LDAPProtocolVer", LDAPConnection.LDAP_V3);
+    ldapOpAttributesUsed = rs.getBoolean("database.LDAPOpAttributesUsed", ldapOpAttributesUsed);
+    ldapProtocolVer = LDAPConnection.LDAP_V3; // Only compatible with V3
     configuration.setUsername(rs.getString("database.LDAPAccessLoginDN", null));
     configuration
         .setPassword(rs.getString("database.LDAPAccessPasswd", "").getBytes(Charsets.UTF_8));
-    LDAPUserBaseDN = rs.getString("database.LDAPUserBaseDN", null);
-    LDAPMaxMsClientTimeLimit =
-        rs.getInteger("database.LDAPMaxMsClientTimeLimit", LDAPMaxMsClientTimeLimit);
-    LDAPMaxSecServerTimeLimit =
-        rs.getInteger("database.LDAPMaxSecServerTimeLimit", LDAPMaxSecServerTimeLimit);
-    LDAPMaxNbEntryReturned =
-        rs.getInteger("database.LDAPMaxNbEntryReturned", LDAPMaxNbEntryReturned);
-    LDAPMaxNbReferrals = rs.getInteger("database.LDAPMaxNbReferrals", LDAPMaxNbReferrals);
-    LDAPBatchSize = rs.getInteger("database.LDAPBatchSize", LDAPBatchSize);
-    LDAPSearchRecurs = rs.getBoolean("database.LDAPSearchRecurs", LDAPSearchRecurs);
+    ldapUserBaseDN = rs.getString("database.LDAPUserBaseDN", null);
+    ldapMaxMsClientTimeLimit =
+        rs.getInteger("database.LDAPMaxMsClientTimeLimit", ldapMaxMsClientTimeLimit);
+    ldapMaxSecServerTimeLimit =
+        rs.getInteger("database.LDAPMaxSecServerTimeLimit", ldapMaxSecServerTimeLimit);
+    ldapMaxNbEntryReturned =
+        rs.getInteger("database.LDAPMaxNbEntryReturned", ldapMaxNbEntryReturned);
+    ldapMaxNbReferrals = rs.getInteger("database.LDAPMaxNbReferrals", ldapMaxNbReferrals);
+    ldapBatchSize = rs.getInteger("database.LDAPBatchSize", ldapBatchSize);
+    ldapSearchRecurs = rs.getBoolean("database.LDAPSearchRecurs", ldapSearchRecurs);
     configuration.setSecure(rs.getBoolean("database.LDAPSecured", false));
     if (configuration.isSecure()) {
       configuration.setLdapPort(rs.getInteger("database.LDAPPortSecured", 636));
     }
     sortControlSupported = rs.getBoolean("database.SortControlSupported", !"openldap".
-        equalsIgnoreCase(LDAPImpl));
-    LDAPDefaultSearchConstraints = getSearchConstraints(true);
-    LDAPDefaultConstraints = getConstraints(true);
+        equalsIgnoreCase(ldapimpl));
+    ldapDefaultSearchConstraints = getSearchConstraints(true);
+    ldapDefaultConstraints = getConstraints(true);
 
     // Synchro parameters
     // -------------------
-    SYNCHROautomatic = rs.getBoolean("synchro.Automatic", SYNCHROautomatic);
-    SYNCHRORecursToGroups = rs.getBoolean("synchro.RecursToGroups", SYNCHRORecursToGroups);
-    SYNCHROthreaded = rs.getBoolean("synchro.Threaded", SYNCHROthreaded);
-    SYNCHROCacheEnabled = rs.getBoolean("synchro.CacheEnabled", SYNCHROCacheEnabled);
-    SYNCHROImportUsers = rs.getBoolean("synchro.importUsers", true);
+    synchroAutomatic = rs.getBoolean("synchro.Automatic", synchroAutomatic);
+    synchroRecursToGroups = rs.getBoolean("synchro.RecursToGroups", synchroRecursToGroups);
+    synchroThreaded = rs.getBoolean("synchro.Threaded", synchroThreaded);
+    synchroCacheEnabled = rs.getBoolean("synchro.CacheEnabled", synchroCacheEnabled);
+    synchroImportUsers = rs.getBoolean("synchro.importUsers", true);
 
     // Users Settings
     // --------------
@@ -173,27 +173,27 @@ public class LDAPSettings implements DriverSettings {
   // HOST FIELDS
   // -----------
   public boolean isSynchroAutomatic() {
-    return SYNCHROautomatic;
+    return synchroAutomatic;
   }
 
   public boolean isSynchroRecursToGroups() {
-    return SYNCHRORecursToGroups;
+    return synchroRecursToGroups;
   }
 
   public boolean isSynchroThreaded() {
-    return SYNCHROthreaded;
+    return synchroThreaded;
   }
 
   public boolean isSynchroCacheEnabled() {
-    return SYNCHROCacheEnabled;
+    return synchroCacheEnabled;
   }
 
   public boolean mustImportUsers() {
-    return SYNCHROImportUsers;
+    return synchroImportUsers;
   }
 
   public String getLDAPImpl() {
-    return LDAPImpl;
+    return ldapimpl;
   }
 
   public String getLDAPHost() {
@@ -205,11 +205,11 @@ public class LDAPSettings implements DriverSettings {
   }
 
   public int getLDAPProtocolVer() {
-    return LDAPProtocolVer;
+    return ldapProtocolVer;
   }
 
   public boolean isLDAPOpAttributesUsed() {
-    return LDAPOpAttributesUsed;
+    return ldapOpAttributesUsed;
   }
 
   public String getLDAPAccessLoginDN() {
@@ -221,11 +221,11 @@ public class LDAPSettings implements DriverSettings {
   }
 
   public String getLDAPUserBaseDN() {
-    return LDAPUserBaseDN;
+    return ldapUserBaseDN;
   }
 
   public boolean getLDAPSearchRecurs() {
-    return LDAPSearchRecurs;
+    return ldapSearchRecurs;
   }
 
   public boolean isLDAPSecured() {
@@ -233,7 +233,7 @@ public class LDAPSettings implements DriverSettings {
   }
 
   public int getScope() {
-    if (LDAPSearchRecurs) {
+    if (ldapSearchRecurs) {
       return LDAPConnection.SCOPE_SUB;
     }
     return LDAPConnection.SCOPE_ONE;
@@ -242,25 +242,25 @@ public class LDAPSettings implements DriverSettings {
   public LDAPSearchConstraints getSearchConstraints(boolean allocateNew) {
     if (allocateNew) {
       boolean doReferrals = true;
-      if (LDAPMaxNbReferrals == 0) {
+      if (ldapMaxNbReferrals == 0) {
         doReferrals = false;
       }
-      return new LDAPSearchConstraints(LDAPMaxMsClientTimeLimit, LDAPMaxSecServerTimeLimit,
-          LDAPSearchConstraints.DEREF_NEVER, LDAPMaxNbEntryReturned, doReferrals, LDAPBatchSize,
-          null, LDAPMaxNbReferrals);
+      return new LDAPSearchConstraints(ldapMaxMsClientTimeLimit, ldapMaxSecServerTimeLimit,
+          LDAPSearchConstraints.DEREF_NEVER, ldapMaxNbEntryReturned, doReferrals, ldapBatchSize,
+          null, ldapMaxNbReferrals);
     }
-    return LDAPDefaultSearchConstraints;
+    return ldapDefaultSearchConstraints;
   }
 
   public LDAPConstraints getConstraints(boolean allocateNew) {
     if (allocateNew) {
       boolean doReferrals = true;
-      if (LDAPMaxNbReferrals == 0) {
+      if (ldapMaxNbReferrals == 0) {
         doReferrals = false;
       }
-      return new LDAPConstraints(LDAPMaxMsClientTimeLimit, doReferrals, null, LDAPMaxNbReferrals);
+      return new LDAPConstraints(ldapMaxMsClientTimeLimit, doReferrals, null, ldapMaxNbReferrals);
     }
-    return LDAPDefaultConstraints;
+    return ldapDefaultConstraints;
   }
 
   // USER FIELDS
@@ -268,7 +268,7 @@ public class LDAPSettings implements DriverSettings {
   public LDAPUser newLDAPUser() throws AdminException {
     try {
       if (usersType != null) {
-        return (LDAPUser) Class.forName(usersType).newInstance();
+        return (LDAPUser) Class.forName(usersType).getConstructor().newInstance();
       }
       return new LDAPUser();
     } catch (Exception e) {
@@ -354,7 +354,7 @@ public class LDAPSettings implements DriverSettings {
   // ------------
   public AbstractLDAPGroup newLDAPGroup() throws AdminException {
     try {
-      return (AbstractLDAPGroup) Class.forName(groupsType).newInstance();
+      return (AbstractLDAPGroup) Class.forName(groupsType).getConstructor().newInstance();
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
     }
@@ -389,7 +389,7 @@ public class LDAPSettings implements DriverSettings {
 
   public String getGroupsSpecificGroupsBaseDN() {
     if (!StringUtil.isDefined(groupsSpecificGroupsBaseDN)) {
-      return LDAPUserBaseDN;
+      return ldapUserBaseDN;
     }
     if (groupsSpecificGroupsBaseDN.equalsIgnoreCase("root")) {
       return "";
@@ -458,7 +458,7 @@ public class LDAPSettings implements DriverSettings {
       }
       return attrs;
     }
-    return ArrayUtil.EMPTY_STRING_ARRAY;
+    return ArrayUtil.emptyStringArray();
   }
 
   protected String[] getGroupAttributes() {
@@ -470,7 +470,7 @@ public class LDAPSettings implements DriverSettings {
       attrs[3] = getGroupsNameField();
       return attrs;
     }
-    return ArrayUtil.EMPTY_STRING_ARRAY;
+    return ArrayUtil.emptyStringArray();
   }
 
   public boolean displayImportUsers() {
