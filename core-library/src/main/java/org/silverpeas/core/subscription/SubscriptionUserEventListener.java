@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.subscription;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.admin.user.notification.UserEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
@@ -32,6 +33,7 @@ import javax.inject.Inject;
 /**
  * @author mmoquillon
  */
+@Bean
 public class SubscriptionUserEventListener extends CDIResourceEventListener<UserEvent> {
 
   @Inject

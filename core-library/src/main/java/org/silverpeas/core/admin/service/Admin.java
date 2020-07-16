@@ -69,6 +69,7 @@ import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
@@ -117,6 +118,7 @@ import static org.silverpeas.core.util.StringUtil.isLong;
  * component instances, and the user/group roles on that spaces and component instances.
  * </p>
  */
+@Service
 @Singleton
 @Transactional(rollbackOn = AdminException.class)
 class Admin implements Administration {

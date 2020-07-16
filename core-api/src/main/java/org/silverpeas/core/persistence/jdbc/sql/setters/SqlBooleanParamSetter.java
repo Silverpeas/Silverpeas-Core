@@ -24,6 +24,9 @@
 
 package org.silverpeas.core.persistence.jdbc.sql.setters;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -33,6 +36,8 @@ import java.util.List;
  * A setter of SQL parameters of type {@link Boolean}.
  * @author mmoquillon
  */
+@Technical
+@Bean
 public class SqlBooleanParamSetter implements SqlTypedParameterSetter {
 
   @Override

@@ -34,14 +34,12 @@ import org.silverpeas.core.socialnetwork.qualifiers.LinkedIn;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Singleton
 public class SocialNetworkService {
 
   private static final String AUTHORIZATION_TOKEN_SESSION_ATTR =

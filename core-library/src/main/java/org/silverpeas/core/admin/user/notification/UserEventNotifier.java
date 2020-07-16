@@ -24,12 +24,14 @@
 package org.silverpeas.core.admin.user.notification;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
 /** A notifier of an event concerning the life-cycle of a user account in Silverpeas.
  * @author mmoquillon
  */
+@Bean
 public class UserEventNotifier extends CDIResourceEventNotifier<UserDetail, UserEvent> {
 
   private UserEventNotifier() {

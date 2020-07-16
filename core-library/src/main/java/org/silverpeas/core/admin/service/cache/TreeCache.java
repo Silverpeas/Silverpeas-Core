@@ -27,6 +27,8 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.model.Space;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
@@ -43,6 +45,8 @@ import java.util.concurrent.ConcurrentMap;
  * made up of spaces that can contain other spaces or applications and of component instances (aka
  * applications).
  */
+@Technical
+@Bean
 @Singleton
 public class TreeCache {
 

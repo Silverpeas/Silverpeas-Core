@@ -24,13 +24,13 @@
 
 package org.silverpeas.core.contribution.attachment;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.LinkUrlDataSource;
 import org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 
 import javax.activation.FileDataSource;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +42,7 @@ import static org.silverpeas.core.util.StringDataExtractor.from;
 /**
  * @author silveryocha
  */
-@Singleton
+@Service
 public class SimpleDocumentUrlToDataSourceScanner implements LinkUrlDataSourceScanner {
 
   private static final List<Pattern> ATTACHMENT_LINK_PATTERNS = Arrays

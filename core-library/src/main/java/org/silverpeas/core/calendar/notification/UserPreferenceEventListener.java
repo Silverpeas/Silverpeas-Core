@@ -26,6 +26,7 @@ package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.persistence.Transaction;
@@ -35,6 +36,7 @@ import org.silverpeas.core.personalization.notification.UserPreferenceEvent;
 /**
  * @author Yohann Chastagnier
  */
+@Bean
 public class UserPreferenceEventListener extends CDIResourceEventListener<UserPreferenceEvent> {
 
   @Override

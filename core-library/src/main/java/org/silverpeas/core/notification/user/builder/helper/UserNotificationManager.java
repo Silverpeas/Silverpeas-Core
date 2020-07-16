@@ -23,16 +23,15 @@
  */
 package org.silverpeas.core.notification.user.builder.helper;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.constant.BuiltInNotifAddress;
 
-import javax.inject.Singleton;
-
 /**
  * @author: Yohann Chastagnier
  */
-@Singleton
+@Service
 public class UserNotificationManager {
 
   protected UserNotificationManager() {

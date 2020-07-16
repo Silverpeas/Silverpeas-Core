@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.model;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Singleton
+@Repository
 public class ThumbnailDAO {
 
   private static final String THUMBNAIL_TABLE = "sb_thumbnail_thumbnail";

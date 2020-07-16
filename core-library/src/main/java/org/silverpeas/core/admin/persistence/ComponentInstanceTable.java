@@ -24,6 +24,7 @@
 package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import java.sql.Connection;
@@ -39,6 +40,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 /**
  * A ComponentInstanceTable object manages the ST_ComponentInstance table.
  */
+@Repository
 public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
   private static final String INSTANCE_COLUMNS =

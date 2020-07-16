@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.admin.persistence;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
-@Singleton
+@Repository
 public class OrganizationSchema {
 
   @Inject

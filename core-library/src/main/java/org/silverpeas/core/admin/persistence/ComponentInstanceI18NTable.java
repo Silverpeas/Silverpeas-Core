@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.persistence;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.MapUtil;
 
@@ -37,6 +38,7 @@ import java.util.Map;
 /**
  * A ComponentInstanceI18NTable object manages the ST_ComponentInstance table.
  */
+@Repository
 public class ComponentInstanceI18NTable extends Table<ComponentInstanceI18NRow> {
 
   public ComponentInstanceI18NTable() {

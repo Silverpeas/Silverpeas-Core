@@ -40,7 +40,6 @@ import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -54,7 +53,6 @@ import java.util.Objects;
  * @author
  */
 @Service
-@Singleton
 public class DefaultPdcUtilizationService implements PdcUtilizationService,
     ComponentInstanceDeletion {
 

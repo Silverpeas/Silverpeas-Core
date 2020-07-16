@@ -24,16 +24,15 @@
 
 package org.silverpeas.core.contribution.attachment;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageUrlAccordingToHtmlSizeDirective;
-
-import javax.inject.Singleton;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author silveryocha
  */
-@Singleton
+@Service
 public class SimpleDocumentUrlAccordingToHtmlSizeDirectiveTranslator
     implements ImageUrlAccordingToHtmlSizeDirective.SrcTranslator {
 

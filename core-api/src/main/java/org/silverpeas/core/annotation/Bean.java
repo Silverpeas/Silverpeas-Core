@@ -38,7 +38,7 @@ import java.lang.annotation.Target;
  * following default life-cycle: for each ask for such a bean, a newly instance is created and that
  * object is bound to the life-cycle of the client object. Therefore, any instance of the bean
  * injected into an object that is being created by the container is bound to the lifecycle of the
- * newly created object.
+ * newly created object. This annotation can be both to annotate business or technical objects.
  *
  * The annotation is an abstraction above the IoC container used by Silverpeas so that it is can
  * possible to change the IoC container (Spring or CDI for example) by changing the wrapped

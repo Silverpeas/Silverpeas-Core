@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 /**
- * The singleton ImportReportManager
+ * The ImportReportManager
  */
 public class ImportReportManager {
 

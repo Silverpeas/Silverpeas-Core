@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.personalization.notification;
 
-import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.personalization.UserPreferences;
@@ -33,6 +33,7 @@ import org.silverpeas.core.util.ServiceProvider;
 /**
  * @author Yohann Chastagnier
  */
+@Bean
 public class UserPreferenceEventNotifier
     extends CDIResourceEventNotifier<UserPreferences, UserPreferenceEvent> {
 

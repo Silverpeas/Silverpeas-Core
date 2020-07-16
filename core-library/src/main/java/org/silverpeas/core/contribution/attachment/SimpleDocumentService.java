@@ -29,6 +29,7 @@ import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.VolatileResourceCleaner;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
@@ -65,7 +66,6 @@ import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.BufferedInputStream;
@@ -90,7 +90,7 @@ import static org.silverpeas.core.util.StringUtil.normalize;
 /**
  * @author ehugonnet
  */
-@Singleton
+@Service
 public class SimpleDocumentService
     implements AttachmentService, ComponentInstanceDeletion, VolatileResourceCleaner {
 

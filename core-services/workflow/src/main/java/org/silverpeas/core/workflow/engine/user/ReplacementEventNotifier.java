@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.workflow.engine.user;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.workflow.api.user.Replacement;
@@ -33,6 +34,7 @@ import org.silverpeas.core.workflow.api.user.Replacement;
  * methods to fire such events for services on replacements.
  * @author mmoquillon
  */
+@Bean
 public class ReplacementEventNotifier
     extends CDIResourceEventNotifier<Replacement, ReplacementEvent> {
 

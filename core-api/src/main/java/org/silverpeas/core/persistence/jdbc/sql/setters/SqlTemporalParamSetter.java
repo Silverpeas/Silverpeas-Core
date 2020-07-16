@@ -24,6 +24,9 @@
 
 package org.silverpeas.core.persistence.jdbc.sql.setters;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Instant;
@@ -33,6 +36,8 @@ import java.time.Instant;
  * concrete setter of temporal parameters.
  * @author mmoquillon
  */
+@Technical
+@Bean
 public abstract class SqlTemporalParamSetter implements SqlTypedParameterSetter {
 
   protected Instant toInstant(final Object value) {

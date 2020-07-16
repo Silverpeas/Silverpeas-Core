@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.admin.persistence;
 
+import org.silverpeas.core.annotation.Repository;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,6 +33,7 @@ import java.util.List;
 /**
  * A DomainTable object manages the ST_Domain table.
  */
+@Repository
 public class DomainTable extends Table<DomainRow> {
 
   DomainTable() {

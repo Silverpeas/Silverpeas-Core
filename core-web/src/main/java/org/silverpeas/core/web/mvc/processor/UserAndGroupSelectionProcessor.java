@@ -23,19 +23,22 @@
  */
 package org.silverpeas.core.web.mvc.processor;
 
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.web.selection.Selection;
 
-import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
+
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Processor of the selection of some users and user groups with a dedicated form. This processor
  * both prepares the required resources required by the selection form and provides to the selection
  * caller (a component instance) the users and group users that were selected throught the form.
  */
-@Singleton
+@Technical
+@Bean
 public class UserAndGroupSelectionProcessor {
   // resource provided to the selection form
 

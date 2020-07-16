@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.system.synchronous;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.system.GenericTestResource;
@@ -32,6 +33,7 @@ import javax.inject.Singleton;
 /**
  * @author mmoquillon
  */
+@Bean
 @Singleton
 public class SynchronousGenericResourceEventListener
     extends CDIResourceEventListener<AbstractResourceEvent<? extends GenericTestResource>> {

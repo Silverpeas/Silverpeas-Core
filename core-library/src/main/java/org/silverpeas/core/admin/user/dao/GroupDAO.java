@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.user.dao;
 
 import org.silverpeas.core.admin.user.model.GroupCache;
 import org.silverpeas.core.admin.user.model.GroupDetail;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
@@ -33,7 +34,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
-@Singleton
+@Repository
 public class GroupDAO {
 
   private static final String GROUP_TABLE = "ST_Group";

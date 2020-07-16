@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.UnitUtil;
@@ -44,6 +45,7 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getDirectorySi
 /**
  * @author Yohann Chastagnier
  */
+@Service
 @Singleton
 public class DefaultDataStorageSpaceQuotaService
     extends AbstractSpaceQuotaService<DataStorageSpaceQuotaKey>

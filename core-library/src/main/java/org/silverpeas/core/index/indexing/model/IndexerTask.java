@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 
@@ -31,6 +33,8 @@ import javax.inject.Inject;
 /**
  * This task is in charge of processing indexation requests.
  */
+@Technical
+@Bean
 public class IndexerTask extends AbstractRequestTask<IndexerTask.IndexerProcessContext> {
 
   private static final int QUEUE_LIMIT = 200;

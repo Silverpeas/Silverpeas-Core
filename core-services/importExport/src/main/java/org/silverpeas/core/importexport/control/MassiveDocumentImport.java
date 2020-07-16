@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.importexport.control;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.importexport.report.ImportReportManager;
@@ -33,6 +34,7 @@ import org.silverpeas.core.util.file.FileFolderManager;
 
 import javax.inject.Inject;
 
+@Service
 public class MassiveDocumentImport {
 
   @Inject

@@ -24,6 +24,7 @@
 package org.silverpeas.core.subscription.service;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.subscription.Subscription;
@@ -38,7 +39,6 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,7 +54,7 @@ import java.util.Set;
  * Class declaration
  * @author
  */
-@Singleton
+@Repository
 public class SubscriptionDao {
 
   private static final String SUBSCRIBE_COLUMNS =

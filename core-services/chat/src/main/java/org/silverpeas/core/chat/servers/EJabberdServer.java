@@ -24,6 +24,7 @@
 package org.silverpeas.core.chat.servers;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.chat.ChatServerException;
 import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.chat.ChatUser;
@@ -40,6 +41,7 @@ import java.util.function.UnaryOperator;
  * @author mmoquillon
  */
 @DefaultChatServer
+@Service
 public class EJabberdServer implements ChatServer {
 
   private static final String HOST_ATTR = "host";

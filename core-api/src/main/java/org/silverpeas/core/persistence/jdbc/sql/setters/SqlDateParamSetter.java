@@ -24,6 +24,9 @@
 
 package org.silverpeas.core.persistence.jdbc.sql.setters;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -36,6 +39,8 @@ import java.util.List;
  * {@link java.util.Date} and {@link LocalDate}.
  * @author mmoquillon
  */
+@Technical
+@Bean
 public class SqlDateParamSetter extends SqlTemporalParamSetter {
 
   @Override

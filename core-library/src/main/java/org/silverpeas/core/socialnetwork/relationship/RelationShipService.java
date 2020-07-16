@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.socialnetwork.relationship;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
@@ -30,7 +31,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-@Singleton
+@Service
 @Transactional
 public class RelationShipService {
 

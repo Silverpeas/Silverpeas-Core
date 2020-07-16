@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.subscription;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.notification.NodeEvent;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
@@ -35,6 +36,7 @@ import javax.inject.Singleton;
  * on that node.
  * @author mmoquillon
  */
+@Bean
 @Singleton
 public class SubscriptionNodeEventListener
     extends AbstractProfiledResourceSubscriptionListener<NodeDetail, NodeEvent> {

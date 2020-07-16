@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.socialnetwork.connectors;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.socialnetwork.qualifiers.Facebook;
 import org.silverpeas.core.socialnetwork.service.AccessToken;
 import org.silverpeas.core.util.URLUtil;
@@ -35,6 +36,7 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
 @Facebook
+@Service
 @Singleton
 public class FacebookConnector extends AbstractSocialNetworkConnector {
 

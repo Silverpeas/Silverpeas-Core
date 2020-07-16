@@ -23,12 +23,15 @@
  */
 package org.silverpeas.core.notification.sse;
 
+import org.silverpeas.core.annotation.Bean;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
  * @author Yohann Chastagnier
  */
+@Bean
 @Singleton
 public class TestServerEventListenerDefault extends CDIServerEventListener<AbstractServerEvent> {
 

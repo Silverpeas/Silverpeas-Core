@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.contribution.publication.datereminder;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.ContributionDeletion;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -35,6 +36,7 @@ import javax.inject.Inject;
  * Deleter of date reminder related to publications.
  * @author mmoquillon
  */
+@Service
 public class PublicationDateReminderDeleter implements ContributionDeletion {
 
   @Inject

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.mail.engine;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.mail.MailToSend;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.thread.task.RequestTaskManager;
@@ -36,6 +37,7 @@ import java.util.concurrent.Semaphore;
  * mail sending request.<br>
  * Priority is given to synchronous mail sending request.
  */
+@Bean
 public class MailSenderTask extends AbstractRequestTask<MailSenderTask.MailProcessContext> {
 
   /**

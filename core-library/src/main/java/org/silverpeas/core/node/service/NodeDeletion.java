@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.node.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.node.dao.NodeDAO;
@@ -35,7 +36,6 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -47,7 +47,7 @@ import java.util.Collection;
  * node deletion whatever the context in which it occurs. It is intended to by used both by the EJB
  * context and by the Silverpeas instanciator context (legacy code that should be later cleaned up).
  */
-@Singleton
+@Service
 public class NodeDeletion {
   
   @Inject

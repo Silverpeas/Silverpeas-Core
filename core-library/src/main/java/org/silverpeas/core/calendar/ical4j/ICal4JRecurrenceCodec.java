@@ -34,6 +34,8 @@ import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Recurrence;
@@ -60,6 +62,8 @@ import static org.silverpeas.core.calendar.Recurrence.NO_RECURRENCE_COUNT;
 /**
  * A codec to encode/decode iCal4J recurrence with Silverpeas event recurrence.
  */
+@Technical
+@Bean
 @Singleton
 public class ICal4JRecurrenceCodec {
 

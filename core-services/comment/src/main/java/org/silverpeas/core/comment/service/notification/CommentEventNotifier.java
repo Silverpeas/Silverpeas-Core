@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.comment.service.notification;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -32,6 +33,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
  * the CDI event mechanism.
  * @author mmoquillon
  */
+@Bean
 public class CommentEventNotifier extends CDIResourceEventNotifier<Comment, CommentEvent> {
 
   private CommentEventNotifier() {

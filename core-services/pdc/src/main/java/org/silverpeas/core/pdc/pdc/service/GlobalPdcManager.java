@@ -25,6 +25,7 @@ package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
@@ -54,7 +55,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -76,7 +76,7 @@ import static org.silverpeas.core.admin.component.model.SilverpeasComponentInsta
 import static org.silverpeas.core.security.authorization.AccessControlOperation.search;
 import static org.silverpeas.core.util.CollectionUtil.isEmpty;
 
-@Singleton
+@Service
 public class GlobalPdcManager implements PdcManager {
 
   private static final String UNKNOWN = "unknown";

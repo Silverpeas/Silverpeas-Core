@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
@@ -38,7 +39,6 @@ import org.silverpeas.core.security.session.SessionValidationContext;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -56,7 +56,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * to the incoming HTTP request as well to the current user session if any. In order to delegate
  * externally the validation triggering,
  */
-@Singleton
+@Service
 public class UserPrivilegeValidator implements UserPrivilegeValidation {
 
   @Inject

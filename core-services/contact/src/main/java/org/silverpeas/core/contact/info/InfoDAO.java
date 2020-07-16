@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.contact.info;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.contact.info.model.InfoPK;
 import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,7 +35,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Singleton
+@Repository
 public class InfoDAO {
 
   private static final String UNKNOWN = "unknown";

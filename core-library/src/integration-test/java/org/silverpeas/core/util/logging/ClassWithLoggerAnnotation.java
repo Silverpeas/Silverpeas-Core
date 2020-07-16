@@ -24,7 +24,10 @@
 
 package org.silverpeas.core.util.logging;
 
+import org.silverpeas.core.annotation.Bean;
+
 @Logger("silverpeas.core.tartempion")
+@Bean
 public class ClassWithLoggerAnnotation {
 
   public void logMeAMessage(final String message) {

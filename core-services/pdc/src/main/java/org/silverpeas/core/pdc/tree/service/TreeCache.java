@@ -26,14 +26,15 @@
 
 package org.silverpeas.core.pdc.tree.service;
 
-import java.util.Hashtable;
-import java.util.List;
-
+import org.ehcache.impl.internal.concurrent.ConcurrentHashMap;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 
+import java.util.List;
+import java.util.Map;
+
 public class TreeCache {
-  private static Hashtable<String, List<TreeNode>> allTrees =
-      new Hashtable<String, List<TreeNode>>();
+  
+  private static final Map<String, List<TreeNode>> allTrees = new ConcurrentHashMap<>();
 
   protected TreeCache() {
   }

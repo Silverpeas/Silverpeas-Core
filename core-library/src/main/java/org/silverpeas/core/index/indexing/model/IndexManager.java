@@ -36,7 +36,8 @@ import org.apache.lucene.index.LogDocMergePolicy;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.parser.Parser;
@@ -69,7 +70,8 @@ import static org.silverpeas.core.index.indexing.model.IndexProcessor.doRemoveAl
  * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
  * an IndexManager between several threads use an IndexerThread.
  */
-@Service
+@Technical
+@Bean
 @Singleton
 public class IndexManager {
 

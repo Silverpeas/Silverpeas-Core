@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.contribution.converter.openoffice;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.ToPDFConverter;
 import org.silverpeas.core.util.MimeTypes.MimeTypeRegistry;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.io.File;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.pdf;
@@ -41,7 +41,7 @@ import static org.silverpeas.core.util.file.FileUtil.getMimeType;
  * Implementation of the ToPDFConverter interface by using the OpenOffice API to perform its job.
  * @author Yohann Chastagnier
  */
-@Singleton
+@Service
 @Named("toPDFConverter")
 public class OpenOfficeToPDFConverter extends OpenOfficeConverter implements ToPDFConverter {
 

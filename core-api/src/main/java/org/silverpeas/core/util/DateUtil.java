@@ -28,7 +28,6 @@ import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Singleton;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -48,10 +47,11 @@ import static java.util.Calendar.*;
  * DateUtil is an helper class for date manipulation.
  * @author squere
  */
-@Singleton
 public class DateUtil {
   public static final Date MINIMUM_DATE = java.sql.Date.valueOf("1900-01-01");
   public static final Date MAXIMUM_DATE = java.sql.Date.valueOf("2999-12-31");
+
+  private static final DateUtil instance = new DateUtil();
 
   private static final long MILLIS_PER_HOUR = 60l * 60l * 1000l;
   private static final long MILLIS_PER_MINUTE = 60l * 1000l;
@@ -369,7 +369,7 @@ public class DateUtil {
   }
 
   private static DateUtil getDateUtil() {
-    return ServiceProvider.getSingleton(DateUtil.class);
+    return instance;
   }
 
   public static LocalDate toLocalDate(String date) {

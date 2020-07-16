@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.admin.user.model;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
+
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +36,8 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Cache of user groups.
  */
+@Technical
+@Bean
 @Singleton
 public class GroupCache {
 

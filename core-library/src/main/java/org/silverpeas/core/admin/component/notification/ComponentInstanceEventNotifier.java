@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.component.notification;
 
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.util.ServiceProvider;
@@ -39,6 +40,7 @@ import org.silverpeas.core.util.ServiceProvider;
  * </p>
  * @author mmoquillon
  */
+@Bean
 public class ComponentInstanceEventNotifier
     extends CDIResourceEventNotifier<ComponentInst, ComponentInstanceEvent> {
 

@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeRuntimeException;
@@ -55,6 +56,7 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
  * Check the access to a node for a user.
  * @author ehugonnet
  */
+@Service
 @Singleton
 public class NodeAccessController extends AbstractAccessController<NodePK>
     implements NodeAccessControl {

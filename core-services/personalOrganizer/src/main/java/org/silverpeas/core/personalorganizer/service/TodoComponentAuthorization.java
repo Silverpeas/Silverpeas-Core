@@ -24,13 +24,13 @@
 
 package org.silverpeas.core.personalorganizer.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.util.Pair;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +49,7 @@ import static java.util.Collections.emptyList;
  * involved in this task.
  * @author mmoquillon
  */
-@Named
+@Service
 public class TodoComponentAuthorization implements ComponentAuthorization {
 
   private static final Pattern PATTERN = Pattern.compile("user@\\d+_todo");

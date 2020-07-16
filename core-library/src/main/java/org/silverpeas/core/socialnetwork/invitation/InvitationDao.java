@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.socialnetwork.invitation;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.persistence.jdbc.sql.SelectResultRowProcess;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -35,7 +35,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
-@Singleton
+@Repository
 public class InvitationDao {
 
   private static final String INSERT_INVITATION =

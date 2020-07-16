@@ -25,6 +25,7 @@ package org.silverpeas.core.chat.servers;
 
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.chat.ChatServerException;
 import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.chat.ChatUser;
@@ -38,6 +39,7 @@ import javax.ws.rs.core.Response;
  * <p>It implements the access mechanism to the XMPP server OpenFire.</p>
  * @author remipassmoilesel
  */
+@Service
 public class OpenfireServer implements ChatServer {
 
   private static final String XMPP_USER = "XMPP user";

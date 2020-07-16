@@ -24,6 +24,9 @@
 
 package org.silverpeas.core.persistence.jdbc.sql.setters;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -34,6 +37,8 @@ import java.util.List;
  * that is set.
  * @author mmoquillon
  */
+@Technical
+@Bean
 public class SqlEnumParamSetter implements SqlTypedParameterSetter {
 
   @Override

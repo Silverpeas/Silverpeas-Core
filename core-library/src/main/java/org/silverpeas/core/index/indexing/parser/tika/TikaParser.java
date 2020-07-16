@@ -24,6 +24,8 @@
 package org.silverpeas.core.index.indexing.parser.tika;
 
 import org.apache.tika.Tika;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.index.indexing.parser.DefaultParser;
 import org.silverpeas.core.index.indexing.parser.Parser;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -35,6 +37,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+@Technical
+@Bean
 @Named("tikaParser")
 @DefaultParser
 public class TikaParser implements Parser {

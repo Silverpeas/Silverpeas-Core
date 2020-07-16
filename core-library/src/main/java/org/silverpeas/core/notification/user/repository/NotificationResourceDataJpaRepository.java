@@ -28,11 +28,9 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
-import javax.inject.Singleton;
 import java.util.List;
 
 @Repository
-@Singleton
 public class NotificationResourceDataJpaRepository
     extends BasicJpaEntityRepository<NotificationResourceData>
     implements NotificationResourceDataRepository {

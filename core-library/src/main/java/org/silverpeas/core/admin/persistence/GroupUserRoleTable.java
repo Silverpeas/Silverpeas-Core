@@ -26,6 +26,7 @@ package org.silverpeas.core.admin.persistence;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.user.dao.GroupDAO;
 import org.silverpeas.core.admin.user.dao.UserDAO;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 
@@ -41,6 +42,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 /**
  * A GroupUserRoleTable object manages the ST_GroupUserRole table.
  */
+@Repository
 public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
 
   private static final String SELECT = "select ";

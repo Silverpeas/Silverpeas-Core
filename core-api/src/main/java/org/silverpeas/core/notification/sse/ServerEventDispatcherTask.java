@@ -24,6 +24,8 @@
 package org.silverpeas.core.notification.sse;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.notification.sse.behavior.AfterSentToAllContexts;
 import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
 import org.silverpeas.core.notification.sse.behavior.KeepAlwaysLastStored;
@@ -56,6 +58,8 @@ import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.defau
  * {@link javax.servlet.Servlet} implementation must call
  * {@link #registerAsyncContext(SilverpeasAsyncContext)} to be taken into account.
  */
+@Technical
+@Bean
 public class ServerEventDispatcherTask extends AbstractRequestTask {
 
   private static final int MIN_LIFE_TIME = 40000;

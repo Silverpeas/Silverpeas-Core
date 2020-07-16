@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.client.model;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.AbstractTable;
 
 import java.sql.PreparedStatement;
@@ -30,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+@Repository
 public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
 
   /**

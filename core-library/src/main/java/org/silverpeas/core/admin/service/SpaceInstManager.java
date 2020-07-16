@@ -36,6 +36,7 @@ import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.SpaceProfileInstManager;
 import org.silverpeas.core.admin.space.dao.SpaceDAO;
 import org.silverpeas.core.admin.space.notification.SpaceEventNotifier;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -55,6 +56,7 @@ import java.util.Map;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
+@Service
 @Singleton
 @Transactional(Transactional.TxType.MANDATORY)
 public class SpaceInstManager {

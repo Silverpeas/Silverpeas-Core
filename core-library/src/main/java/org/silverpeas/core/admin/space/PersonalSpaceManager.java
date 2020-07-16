@@ -32,6 +32,7 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
+@Service
 public class PersonalSpaceManager {
 
   private static final String MESSAGES_LOCATION =

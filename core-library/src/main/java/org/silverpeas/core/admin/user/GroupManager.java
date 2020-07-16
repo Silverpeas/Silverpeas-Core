@@ -43,6 +43,7 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.notification.GroupEventNotifier;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ServiceProvider;
@@ -63,6 +64,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.model.Domain.MIXED_DOMAIN_ID;
 import static org.silverpeas.core.util.StringUtil.*;
 
+@Service
 @Singleton
 @Transactional(Transactional.TxType.MANDATORY)
 public class GroupManager {
