@@ -232,6 +232,12 @@ if (!String.prototype.asInteger) {
   };
 }
 
+if (!String.prototype.normalizeByRemovingAccent) {
+  String.prototype.normalizeByRemovingAccent = function() {
+    return this.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+  };
+}
+
 if (!Number.prototype.roundDown) {
   Number.prototype.roundDown = function(digit) {
     if (digit || digit === 0) {
@@ -307,7 +313,7 @@ if (!window.StringUtil) {
     };
     this.normalizeByRemovingAccent = function(aString) {
       if(_self.isDefined(aString)) {
-        return aString.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+        return aString.normalizeByRemovingAccent();
       }
       return aString;
     };

@@ -278,6 +278,11 @@
           this.$onInit = function() {
             this.events = CalendarEventOccurrence.occurrences(this.uri);
             this.isSynchronized = StringUtil.isDefined(this.externalUrl);
+            SilverpeasCalendarTools.applyCalendarEntityAttributeWrappers(this);
+            if (context.component !== this.componentInstanceId()) {
+              this.canBeModified = false;
+              this.canBeDeleted = false;
+            }
           }
         };
 

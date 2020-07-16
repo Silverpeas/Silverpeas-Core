@@ -38,9 +38,14 @@ public class BodyPartLayoutTag extends SilverpeasLayout {
   private static final long serialVersionUID = 7740509977305998444L;
 
   private String cssClass;
+  private String ngController;
 
   public void setCssClass(final String cssClass) {
     this.cssClass = cssClass;
+  }
+
+  public void setNgController(final String ngController) {
+    this.ngController = ngController;
   }
 
   @Override
@@ -52,6 +57,9 @@ public class BodyPartLayoutTag extends SilverpeasLayout {
     if (isDefined(cssClass)) {
       body.setClass(cssClass);
     }
+    if (isDefined(ngController)) {
+      body.addAttribute("ng-controller", ngController);
+    }
     body.addElement(getBodyContent().getString());
     renderAngularJs(body);
     body.output(pageContext.getOut());
@@ -60,7 +68,7 @@ public class BodyPartLayoutTag extends SilverpeasLayout {
 
   private void renderAngularJs(final body body) {
     final String angularJsAppName = getParent().getAngularJsAppName();
-    if (isDefined(angularJsAppName)) {
+    if (isDefined(angularJsAppName) && !getParent().isAngularJsAppInitializedManually()) {
       // declare the module myapp and its dependencies (here in the silverpeas module)
       body.addElement(scriptContent("var myapp = angular.module('" + angularJsAppName + "', ['silverpeas.services', 'silverpeas.directives'])"));
     }

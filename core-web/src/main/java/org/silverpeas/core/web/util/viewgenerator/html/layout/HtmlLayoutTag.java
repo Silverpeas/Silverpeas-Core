@@ -52,12 +52,22 @@ public class HtmlLayoutTag extends SilverpeasLayout {
 
   private String angularJsAppName;
 
+  private boolean angularJsAppInitializedManually;
+
   public void setAngularJsAppName(final String angularJsAppName) {
     this.angularJsAppName = angularJsAppName;
   }
 
   String getAngularJsAppName() {
     return angularJsAppName;
+  }
+
+  public void setAngularJsAppInitializedManually(final boolean angularJsAppInitializedManually) {
+    this.angularJsAppInitializedManually = angularJsAppInitializedManually;
+  }
+
+  boolean isAngularJsAppInitializedManually() {
+    return angularJsAppInitializedManually;
   }
 
   @Override

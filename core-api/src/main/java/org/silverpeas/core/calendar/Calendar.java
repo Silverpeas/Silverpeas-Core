@@ -25,6 +25,7 @@ package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
@@ -60,9 +61,11 @@ import java.time.ZoneId;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.text.MessageFormat.format;
 import static java.time.Month.DECEMBER;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
 
 /**
  * A calendar is a particular system for scheduling and organizing events and activities that occur
@@ -543,8 +546,13 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
       if (isMain()) {
         return false;
       }
-      return ComponentAccessControl.get().isUserAuthorized(u.getId(), getComponentInstanceId(),
-          AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+      final ComponentAccessControl componentAccessControl = ComponentAccessControl.get();
+      final Set<SilverpeasRole> roles = componentAccessControl
+          .getUserRoles(u.getId(), getComponentInstanceId(),
+              AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+      return componentAccessControl.isUserAuthorized(roles) &&
+          Optional.ofNullable(SilverpeasRole.getHighestFrom(roles))
+              .filter(r -> r.isGreaterThanOrEquals(admin)).isPresent();
     });
   }
 }

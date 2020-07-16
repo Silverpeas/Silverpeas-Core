@@ -29,7 +29,7 @@
 </silverpeas-calendar-management>
 <div class="calendars">
   <ul ng-if="$ctrl.calendars && $ctrl.calendars.length">
-    <li ng-repeat="calendar in $ctrl.calendars | orderBy: 'createdDate' track by calendar.id">
+    <li ng-repeat="calendar in $ctrl.calendars | sortedCalendars track by calendar.id" ng-class="calendar.__cssListClasses">
       <silverpeas-calendar-list-item calendar="calendar"
                                      calendar-potential-colors="$ctrl.calendarPotentialColors"
                                      on-calendar-color-select="$ctrl.onCalendarColorSelect({calendar:calendar,color:color})"
