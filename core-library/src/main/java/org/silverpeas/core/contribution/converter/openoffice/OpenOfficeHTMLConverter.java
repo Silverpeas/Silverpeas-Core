@@ -24,19 +24,20 @@
 package org.silverpeas.core.contribution.converter.openoffice;
 
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.HTMLConverter;
-import java.io.File;
-import javax.inject.Named;
-import javax.inject.Singleton;
 
-import static org.silverpeas.core.contribution.converter.DocumentFormat.*;
-import static org.silverpeas.core.util.StringUtil.*;
+import javax.inject.Named;
+import java.io.File;
+
+import static org.silverpeas.core.contribution.converter.DocumentFormat.odt;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Implementation of the HTMLConverter interface by using the OpenOffice API to perform its job.
  */
-@Singleton
+@Service
 @Named("htmlConverter")
 public class OpenOfficeHTMLConverter extends OpenOfficeConverter implements HTMLConverter {
 

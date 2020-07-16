@@ -34,7 +34,6 @@ import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 
 /**
@@ -43,7 +42,6 @@ import java.util.List;
  * replacements so that services can be hooks on such events to perform additional treatments.
  * @author mmoquillon
  */
-@Singleton
 @Repository
 public class ReplacementRepository extends SilverpeasJpaEntityRepository<ReplacementImpl>
     implements Replacement.Repository {

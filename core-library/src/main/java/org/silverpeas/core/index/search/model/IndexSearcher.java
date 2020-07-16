@@ -31,6 +31,8 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.BytesRef;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.ExternalComponent;
@@ -66,6 +68,8 @@ import static org.silverpeas.core.util.StringUtil.getBooleanValue;
  * The IndexSearcher class implements search over all the indexes. A IndexSearcher
  * manages a set of cached lucene IndexSearcher.
  */
+@Technical
+@Bean
 @Singleton
 public class IndexSearcher {
 

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.notification;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -32,6 +33,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
  * asynchronously.
  * @author mmoquillon
  */
+@Bean
 public class WysiwygEventNotifier extends CDIResourceEventNotifier<WysiwygContent, WysiwygEvent> {
 
   private WysiwygEventNotifier() {

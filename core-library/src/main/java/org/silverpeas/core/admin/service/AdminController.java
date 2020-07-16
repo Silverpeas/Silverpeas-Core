@@ -40,6 +40,7 @@ import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine;
@@ -58,6 +59,7 @@ import java.util.Optional;
  * It provides access functions to query and modify the domains as well as the company organization
  * It should be used only by a client that has the administrator rights
  */
+@Service
 @Transactional
 public class AdminController implements java.io.Serializable {
 

@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.persistence.jdbc.sql;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.persistence.jdbc.ConnectionPool;
 import org.silverpeas.core.persistence.jdbc.sql.setters.SqlStatementParameterSetter;
 import org.silverpeas.core.util.ListSlice;
@@ -44,6 +46,8 @@ import java.util.List;
 /**
  * @author Yohann Chastagnier
  */
+@Technical
+@Bean
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {

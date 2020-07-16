@@ -34,6 +34,7 @@ import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.importexport.admin.AdminImportExport;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
@@ -76,7 +77,6 @@ import org.xml.sax.SAXException;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -105,10 +105,10 @@ import static java.io.File.separator;
 import static org.silverpeas.core.util.Charsets.UTF_8;
 
 /**
- * Classe devant être instanciée au niveau controleur pour utiliser le moteur d'import export.
+ * Import/export of resources managed in Silverpeas
  * @author sDevolder.
  */
-@Singleton
+@Service
 public class ImportExport extends AbstractExportProcess {
 
   private static final SettingBundle settings =

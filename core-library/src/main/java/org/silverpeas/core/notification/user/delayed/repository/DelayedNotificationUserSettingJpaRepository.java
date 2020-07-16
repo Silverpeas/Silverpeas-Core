@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.notification.user.delayed.repository;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationUserSetting;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
-import javax.inject.Singleton;
 import java.util.List;
 
-@Singleton
+@Repository
 public class DelayedNotificationUserSettingJpaRepository
     extends BasicJpaEntityRepository<DelayedNotificationUserSetting>
     implements DelayedNotificationUserSettingManager {

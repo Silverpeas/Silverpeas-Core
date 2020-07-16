@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.persistence.jdbc;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;
@@ -38,6 +40,8 @@ import java.sql.SQLException;
  * Currently, it wraps the connection pool spawned by the JEE application server for the data
  * source used by Silverpeas.
  */
+@Technical
+@Bean
 @Singleton
 public class ConnectionPool {
 

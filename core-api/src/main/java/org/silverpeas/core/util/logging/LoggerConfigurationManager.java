@@ -24,6 +24,8 @@
 package org.silverpeas.core.util.logging;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
@@ -58,6 +60,8 @@ import java.util.stream.Collector;
  * be located in the <code>SILVERPEAS_HOME/properties/org/silverpeas/util/logging</code> directory.
  * @author miguel
  */
+@Technical
+@Bean
 @Singleton
 public class LoggerConfigurationManager {
 

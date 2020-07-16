@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.admin.persistence;
 
+import org.silverpeas.core.annotation.Repository;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,6 +32,7 @@ import java.sql.SQLException;
 /**
  * A KeyStoreTable object manages the ST_KeyStore table.
  */
+@Repository
 public class KeyStoreTable extends Table<KeyStoreRow> {
 
   KeyStoreTable() {

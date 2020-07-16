@@ -32,7 +32,6 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIde
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
-import javax.inject.Singleton;
 import javax.persistence.TemporalType;
 import java.util.Collection;
 import java.util.Date;
@@ -41,11 +40,9 @@ import java.util.Set;
 
 import static org.apache.commons.lang3.time.DateUtils.addSeconds;
 import static org.silverpeas.core.notification.user.client.constant.NotifChannel.toIds;
-import static org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency
-    .toCodes;
+import static org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency.toCodes;
 
 @Repository
-@Singleton
 public class DelayedNotificationDataJpaRepository
     extends BasicJpaEntityRepository<DelayedNotificationData>
     implements DelayedNotificationDataRepository {

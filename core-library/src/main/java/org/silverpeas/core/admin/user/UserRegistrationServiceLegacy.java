@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -54,6 +55,7 @@ import java.util.Random;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnAdding;
 import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 
+@Service
 @Singleton
 public class UserRegistrationServiceLegacy implements UserRegistrationService {
 

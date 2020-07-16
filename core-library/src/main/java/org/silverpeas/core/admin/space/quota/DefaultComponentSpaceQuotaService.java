@@ -26,6 +26,7 @@ package org.silverpeas.core.admin.space.quota;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -34,6 +35,7 @@ import javax.inject.Singleton;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 @Singleton
 public class DefaultComponentSpaceQuotaService
     extends AbstractSpaceQuotaService<ComponentSpaceQuotaKey>

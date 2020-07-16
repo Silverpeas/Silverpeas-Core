@@ -39,7 +39,6 @@ import org.silverpeas.core.viewer.util.JsonPdfUtil;
 import org.silverpeas.core.viewer.util.SwfUtil;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 
@@ -51,7 +50,6 @@ import static org.silverpeas.core.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
  * @author Yohann Chastagnier
  */
 @Service
-@Singleton
 public class DefaultViewService extends AbstractViewerService implements ViewService {
 
   private static final String PROCESS_NAME = "VIEW";

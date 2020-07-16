@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.notification;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -31,6 +32,7 @@ import org.silverpeas.core.util.ServiceProvider;
 /**
  * A service to notify about the events which occurs on attachment.
  */
+@Bean
 public class AttachmentEventNotifier
     extends CDIResourceEventNotifier<SimpleDocument, AttachmentEvent> {
 

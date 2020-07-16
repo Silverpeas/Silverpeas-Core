@@ -35,6 +35,8 @@ import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.Uid;
 import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
@@ -46,7 +48,6 @@ import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -65,7 +66,8 @@ import java.util.stream.Collectors;
  * An implementation of the {@link CalendarEventOccurrenceGenerator} by using the iCal4J library.
  * @author mmoquillon
  */
-@Singleton
+@Technical
+@Bean
 public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccurrenceGenerator {
 
   private final ICal4JDateCodec iCal4JDateCodec;

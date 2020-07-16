@@ -39,6 +39,7 @@ import net.fortuna.ical4j.model.property.*;
 import net.fortuna.ical4j.util.CompatibilityHints;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
@@ -72,6 +73,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * the serialization of the events of a calendar in text in the iCalendar format.
  * @author mmoquillon
  */
+@Service
 public class ICal4JExporter implements ICalendarExporter {
 
   private static final String MAIL_TO = "mailto:";

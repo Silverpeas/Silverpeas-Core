@@ -27,6 +27,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
@@ -55,6 +56,7 @@ import java.nio.file.Files;
 import java.util.Date;
 import java.util.List;
 
+@Service
 public class ThumbnailController implements ComponentInstanceDeletion {
 
   private static final SettingBundle publicationSettings = ResourceLocator.getSettingBundle(

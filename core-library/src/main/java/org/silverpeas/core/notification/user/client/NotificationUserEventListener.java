@@ -25,6 +25,7 @@ package org.silverpeas.core.notification.user.client;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.notification.UserEvent;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.user.client.model.NotificationSchema;
 
@@ -37,6 +38,7 @@ import java.sql.SQLException;
  * A listener of events about a given user account in Silverpeas.
  * @author mmoquillon
  */
+@Bean
 @Singleton
 public class NotificationUserEventListener extends CDIResourceEventListener<UserEvent> {
 

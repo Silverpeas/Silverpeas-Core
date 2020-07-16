@@ -36,6 +36,7 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -63,6 +64,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
  * specific tasks to the correct domain driver for a given domain identifier for which the
  * operation is performed.
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.MANDATORY)
 public class DomainDriverManager extends AbstractDomainDriver {

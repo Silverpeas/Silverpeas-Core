@@ -28,12 +28,14 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
 
+@Service
 @Singleton
 public class RightRecover {
 

@@ -47,7 +47,6 @@ import org.silverpeas.core.util.ResourceLocator;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -61,7 +60,6 @@ import java.util.List;
  * injection.
  */
 @Service
-@Singleton
 @Named("commentService")
 public class DefaultCommentService implements CommentService, ComponentInstanceDeletion {
 

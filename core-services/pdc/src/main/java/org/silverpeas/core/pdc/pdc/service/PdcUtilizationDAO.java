@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,7 +39,7 @@ import java.util.StringTokenizer;
 /**
  * @author
  */
-@Singleton
+@Repository
 public class PdcUtilizationDAO {
 
   private static final String PDC_UTILIZATION_TABLE = "SB_Pdc_Utilization";

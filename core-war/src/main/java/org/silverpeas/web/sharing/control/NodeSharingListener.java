@@ -23,20 +23,20 @@
  */
 package org.silverpeas.web.sharing.control;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.notification.NodeEvent;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingTicketService;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  *
  * @author ehugonnet
  */
-@Named
+@Bean
 public class NodeSharingListener extends CDIResourceEventListener<NodeEvent> {
 
   @Inject

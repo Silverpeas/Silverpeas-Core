@@ -25,6 +25,7 @@ package org.silverpeas.core.chat.listeners;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.notification.UserEvent;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.chat.servers.DefaultChatServer;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
@@ -36,6 +37,7 @@ import javax.inject.Inject;
  *
  * @author remipassmoilesel
  */
+@Service
 public class ChatUserEventListener extends CDIResourceEventListener<UserEvent> {
 
   @Inject

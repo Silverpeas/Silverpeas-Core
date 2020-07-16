@@ -24,6 +24,9 @@
 
 package org.silverpeas.core.persistence.jdbc.sql.setters;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.PreparedStatement;
@@ -35,6 +38,8 @@ import java.util.List;
  * Setter of SQL parameters of type {@link BigInteger}.
  * @author mmoquillon
  */
+@Technical
+@Bean
 public class SqlBigIntegerParamSetter implements SqlTypedParameterSetter {
 
   @Override

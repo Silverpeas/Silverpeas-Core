@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import java.sql.Connection;
@@ -44,6 +45,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 /**
  * A SpaceTable object manages the ST_SPACE table.
  */
+@Repository
 public class SpaceTable extends Table<SpaceRow> {
 
   SpaceTable() {

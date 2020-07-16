@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.util.logging;
 
+import org.silverpeas.core.annotation.Bean;
+
+@Bean
 public class AnObjectWithAnnotatedMethods {
 
   @Log

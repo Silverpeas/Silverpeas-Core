@@ -23,6 +23,18 @@
  */
 package org.silverpeas.core.personalorganizer.service;
 
+import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.personalorganizer.model.JournalHeader;
+import org.silverpeas.core.personalorganizer.model.ParticipationStatus;
+import org.silverpeas.core.personalorganizer.model.SchedulableCount;
+import org.silverpeas.core.personalorganizer.socialnetwork.SocialInformationEvent;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,17 +45,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.core.personalorganizer.model.JournalHeader;
-import org.silverpeas.core.personalorganizer.model.ParticipationStatus;
-import org.silverpeas.core.personalorganizer.model.SchedulableCount;
-import org.silverpeas.core.personalorganizer.socialnetwork.SocialInformationEvent;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.util.logging.SilverLogger;
-
+@Repository
 public class JournalDAO {
 
   public static final String COLUMNNAMES =

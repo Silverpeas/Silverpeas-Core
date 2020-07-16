@@ -26,6 +26,8 @@ package org.silverpeas.core.web.authentication;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -53,11 +55,9 @@ import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.webapi.base.HTTPAuthentication;
 
-import javax.inject.Singleton;
 import javax.servlet.http.HttpSession;
 
-import static org.silverpeas.core.admin.service.OrganizationControllerProvider
-    .getOrganisationController;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 
 /**
  * Service used to open an HTTP session in the Silverpeas platform.
@@ -67,7 +67,8 @@ import static org.silverpeas.core.admin.service.OrganizationControllerProvider
  *
  * @author ehugonnet
  */
-@Singleton
+@Technical
+@Bean
 public class SilverpeasSessionOpener {
 
   private static final int HTTP_DEFAULT_PORT = 80;

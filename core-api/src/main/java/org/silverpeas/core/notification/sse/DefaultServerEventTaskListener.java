@@ -23,10 +23,13 @@
  */
 package org.silverpeas.core.notification.sse;
 
+import org.silverpeas.core.annotation.Bean;
+
 /**
  * A common implementation that handles a common BUS of server event dispatching.
  * @author Yohann Chastagnier
  */
+@Bean
 public class DefaultServerEventTaskListener extends CDIServerEventListener<AbstractServerEvent> {
 
   @Override

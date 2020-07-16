@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.UserManager;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
@@ -38,6 +39,7 @@ import java.util.List;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
+@Service
 @Singleton
 @Transactional(Transactional.TxType.MANDATORY)
 public class SpaceProfileInstManager {

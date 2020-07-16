@@ -25,6 +25,8 @@ package org.silverpeas.core.notification.user.delayed;
 
 import com.ibm.icu.util.Calendar;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationData;
 import org.silverpeas.core.notification.user.delayed.model.DelayedNotificationUserSetting;
@@ -32,14 +34,11 @@ import org.silverpeas.core.notification.user.delayed.repository.DelayedNotificat
 import org.silverpeas.core.notification.user.delayed.repository.DelayedNotificationUserSettingJpaRepository;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.repository.NotificationResourceDataRepository;
-import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
-import org.silverpeas.core.notification.user.client.constant.NotifChannel;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MapUtil;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Date;
@@ -53,7 +52,6 @@ import java.util.Set;
  * @author Yohann Chastagnier
  */
 @Service
-@Singleton
 @Transactional
 public class DelayedNotificationManager implements DelayedNotification {
 

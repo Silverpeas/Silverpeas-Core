@@ -27,9 +27,9 @@ import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 
-@Singleton
+@Repository
 public class RoleDAO {
 
   private static final String USERROLE_COLUMNS =

@@ -25,6 +25,7 @@
 package org.silverpeas.core.webapi.reminder;
 
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.util.ServiceProvider;
@@ -38,7 +39,8 @@ import java.net.URI;
  * Base URIs from which the REST-based resources representing reminder are defined.
  * @author silveryocha
  */
-public final class ReminderResourceURIs {
+@Bean
+public class ReminderResourceURIs {
 
   static final String REMINDER_BASE_URI = "reminder";
 

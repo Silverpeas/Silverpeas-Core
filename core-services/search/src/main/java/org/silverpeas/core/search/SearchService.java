@@ -36,7 +36,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +51,6 @@ import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHM
 import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 
 @Service
-@Singleton
 public class SearchService {
 
   @Inject

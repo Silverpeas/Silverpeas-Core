@@ -45,7 +45,6 @@ import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -67,7 +66,6 @@ import static java.util.Collections.emptyList;
  * Calendar service layer to manager calendars in Silverpeas
  */
 @Service
-@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultCalendarService implements SilverpeasCalendar, ComponentInstanceDeletion {
 

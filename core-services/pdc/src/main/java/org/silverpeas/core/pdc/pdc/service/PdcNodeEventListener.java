@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.node.notification.NodeEvent;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
@@ -34,6 +35,7 @@ import javax.inject.Inject;
  * classification on the PdC.
  * @author mmoquillon
  */
+@Bean
 public class PdcNodeEventListener extends CDIResourceEventListener<NodeEvent> {
 
   @Inject

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailRuntimeException;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDAO;
@@ -32,13 +33,12 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
-@Singleton
+@Service
 @Default
 public class ThumbnailServiceImpl implements ThumbnailService {
 

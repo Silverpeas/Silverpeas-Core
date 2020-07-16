@@ -24,6 +24,8 @@
 package org.silverpeas.core.notification.system;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Resource;
@@ -84,6 +86,8 @@ import javax.jms.JMSContext;
  * </p>
  * @author Yohann Chastagnier
  */
+@Technical
+@Bean
 @Singleton
 public class JMSOperation {
 

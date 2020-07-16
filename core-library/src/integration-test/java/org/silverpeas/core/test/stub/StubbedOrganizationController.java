@@ -26,6 +26,7 @@ package org.silverpeas.core.test.stub;
 import org.silverpeas.core.admin.service.DefaultOrganizationController;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.Priority;
@@ -38,6 +39,7 @@ import static org.mockito.Mockito.mock;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 @Singleton
 @Alternative
 @Priority(APPLICATION + 10)

@@ -85,7 +85,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -102,7 +101,6 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
  * Default implementation of {@code PublicationService} to manage the publications in Silverpeas.
  */
 @Service
-@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultPublicationService implements PublicationService, ComponentInstanceDeletion {
 

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.sse;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
@@ -31,6 +32,7 @@ import org.silverpeas.core.util.ServiceProvider;
  * event.
  * @author Yohann Chastagnier
  */
+@Bean
 public class DefaultServerEventNotifier extends CDIServerEventNotifier<AbstractServerEvent> {
 
   /**

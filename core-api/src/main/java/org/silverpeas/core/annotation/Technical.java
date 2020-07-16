@@ -22,33 +22,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.persistence.jdbc.sql.setters;
+package org.silverpeas.core.annotation;
 
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A setter of SQL parameters of type {@link String}.
+ * This annotation is to tag an object as being a technical object and that such object shouldn't
+ * be used directly but only to implement technical mechanism for business or other technical
+ * features.
  * @author mmoquillon
  */
-@Technical
-@Bean
-public class SqlTextSetter implements SqlTypedParameterSetter {
-
-  @Override
-  public List<Class<?>> getSupportedTypes() {
-    return Collections.singletonList(String.class);
-  }
-
-  @Override
-  public void setParameter(final PreparedStatement statement, final int idx, final Object value)
-      throws SQLException {
-    statement.setString(idx, (String) value);
-  }
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+public @interface Technical {
 }
-  

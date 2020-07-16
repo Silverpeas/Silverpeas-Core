@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.node.importexport;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
@@ -37,6 +38,7 @@ import java.util.List;
  *
  * @author sdevolder
  */
+@Service
 public class NodeImportExport {
 
   @Inject

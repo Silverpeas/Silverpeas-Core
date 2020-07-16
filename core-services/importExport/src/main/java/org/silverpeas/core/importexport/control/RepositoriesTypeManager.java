@@ -30,6 +30,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
@@ -73,7 +74,6 @@ import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import java.io.File;
@@ -91,7 +91,7 @@ import static org.silverpeas.core.contribution.attachment.model.DocumentType.att
  *
  * @author sdevolder
  */
-@Singleton
+@Service
 public class RepositoriesTypeManager {
 
   public static final CharSequenceTranslator ESCAPE_ISO8859_1 = new LookupTranslator(

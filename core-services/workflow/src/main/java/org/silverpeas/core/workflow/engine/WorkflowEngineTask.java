@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.workflow.engine;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -35,9 +37,11 @@ import org.silverpeas.core.workflow.api.event.TimeoutEvent;
 /**
  * @author ebonnet
  */
+@Technical
+@Bean
 public class WorkflowEngineTask extends AbstractRequestTask {
 
-  private WorkflowEngineTask() {
+  protected WorkflowEngineTask() {
     super();
   }
 

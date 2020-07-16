@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.pdc.pdc.importexport;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
@@ -34,7 +35,6 @@ import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -46,7 +46,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * Classe gérant la manipulation des axes du pdc pour le module d'importExport.
  * @author sdevolder
  */
-@Singleton
+@Service
 public class PdcImportExport {
 
   @Inject

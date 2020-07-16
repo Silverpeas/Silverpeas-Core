@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -91,6 +92,7 @@ import static java.io.File.separator;
  * Classe manager des importations unitaires du moteur d'importExport de silverPeas
  * @author sdevolder
  */
+@Service
 public class PublicationsTypeManager {
 
   @Inject

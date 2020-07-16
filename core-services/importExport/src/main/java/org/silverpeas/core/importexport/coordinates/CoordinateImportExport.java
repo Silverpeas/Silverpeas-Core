@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.importexport.coordinates;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.node.coordinates.model.CoordinatePK;
 import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
 import org.silverpeas.core.node.coordinates.model.CoordinateRuntimeException;
@@ -46,6 +47,7 @@ import java.util.StringTokenizer;
  *
  * @author dlesimple
  */
+@Service
 public class CoordinateImportExport {
 
   private static final String NODE_SETTINGS_PATH = "org.silverpeas.node.nodeSettings";

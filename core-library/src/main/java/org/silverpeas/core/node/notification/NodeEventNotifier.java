@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.node.notification;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -30,6 +31,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 /**
  * @author mmoquillon
  */
+@Bean
 public class NodeEventNotifier extends CDIResourceEventNotifier<NodeDetail, NodeEvent> {
 
   private NodeEventNotifier() {

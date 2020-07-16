@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.chat;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
@@ -37,6 +38,7 @@ import javax.inject.Singleton;
  * all the settings required by the Silverpeas Chat to work correctly.
  * @author mmoquillon
  */
+@Bean
 @Singleton
 public class ChatSettings {
 

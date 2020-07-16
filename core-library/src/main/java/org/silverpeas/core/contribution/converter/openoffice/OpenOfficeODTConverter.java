@@ -24,20 +24,20 @@
 package org.silverpeas.core.contribution.converter.openoffice;
 
 import org.apache.commons.io.FilenameUtils;
-import java.io.File;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.converter.ODTConverter;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
+import java.io.File;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.*;
-import static org.silverpeas.core.util.StringUtil.*;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Implementation of the ODTConverter interface by using the OpenOffice API to perform its job.
  */
-@Singleton
+@Service
 @Named("odtConverter")
 public class OpenOfficeODTConverter extends OpenOfficeConverter implements ODTConverter {
 

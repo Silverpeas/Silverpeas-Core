@@ -26,6 +26,7 @@ package org.silverpeas.core.workflow.engine.user;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.user.User;
@@ -33,7 +34,6 @@ import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
 import org.silverpeas.core.workflow.engine.exception.UnknownUserException;
 
-import javax.inject.Singleton;
 import java.util.stream.Stream;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
@@ -42,7 +42,7 @@ import static org.silverpeas.core.admin.service.OrganizationControllerProvider.g
 /**
  * A UserManager implementation built upon the silverpeas user management system.
  */
-@Singleton
+@Service
 public class UserManagerImpl implements UserManager {
 
   /**

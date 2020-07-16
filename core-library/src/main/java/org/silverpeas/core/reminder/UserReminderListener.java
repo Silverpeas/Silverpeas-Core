@@ -25,12 +25,14 @@
 package org.silverpeas.core.reminder;
 
 import org.silverpeas.core.admin.user.notification.UserEvent;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * @author Yohann Chastagnier
  */
+@Bean
 public class UserReminderListener extends CDIResourceEventListener<UserEvent> {
 
   @Override

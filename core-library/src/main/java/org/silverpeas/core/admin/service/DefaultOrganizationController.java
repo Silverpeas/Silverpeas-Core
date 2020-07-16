@@ -50,6 +50,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.Pair;
@@ -87,6 +88,7 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
  * name 'organizationController' so that the initialization of the static Admin instance can be
  * performed correctly within the execution context of IoC container.
  */
+@Service
 @Singleton
 public class DefaultOrganizationController implements OrganizationController {
 

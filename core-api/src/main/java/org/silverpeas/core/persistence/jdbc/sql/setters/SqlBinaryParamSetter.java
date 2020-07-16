@@ -24,6 +24,9 @@
 
 package org.silverpeas.core.persistence.jdbc.sql.setters;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
+
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.PreparedStatement;
@@ -36,6 +39,8 @@ import java.util.List;
  * {@link Clob} and {@link Blob}.
  * @author mmoquillon
  */
+@Technical
+@Bean
 public class SqlBinaryParamSetter implements SqlTypedParameterSetter {
 
   @Override

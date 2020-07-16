@@ -45,6 +45,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.user.notification.UserEventNotifier;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.notification.user.delayed.delegate.DelayedNotificationDelegate;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -67,6 +68,7 @@ import java.util.stream.Collectors;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_X509_USER;
 
+@Service
 @Singleton
 @Transactional(Transactional.TxType.MANDATORY)
 public class UserManager {

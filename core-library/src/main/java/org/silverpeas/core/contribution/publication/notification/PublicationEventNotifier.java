@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.notification;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -31,6 +32,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
  * An synchronous notifier of change on a publication in Silverpeas.
  * @author mmoquillon
  */
+@Bean
 public class PublicationEventNotifier
     extends CDIResourceEventNotifier<PublicationDetail, PublicationEvent> {
 

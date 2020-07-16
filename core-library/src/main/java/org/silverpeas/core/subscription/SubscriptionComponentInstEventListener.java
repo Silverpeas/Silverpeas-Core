@@ -27,6 +27,7 @@ package org.silverpeas.core.subscription;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.notification.ComponentInstanceEvent;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.util.StringUtil;
 
@@ -38,6 +39,7 @@ import javax.inject.Singleton;
  * the subscriptions on that component instance (and hence on its resources).
  * @author mmoquillon
  */
+@Bean
 @Singleton
 public class SubscriptionComponentInstEventListener
     extends AbstractProfiledResourceSubscriptionListener<ComponentInst, ComponentInstanceEvent> {

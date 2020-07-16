@@ -24,12 +24,14 @@
 package org.silverpeas.core.admin.space.notification;
 
 import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
 /**
  * @author mmoquillon
  */
+@Bean
 public class SpaceEventNotifier extends CDIResourceEventNotifier<SpaceInst, SpaceEvent> {
 
   private SpaceEventNotifier() {

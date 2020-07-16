@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.admin.persistence;
 
+import org.silverpeas.core.annotation.Repository;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,6 +33,7 @@ import java.util.List;
 /**
  * A SpaceTable object manages the ST_SPACE table.
  */
+@Repository
 public class SpaceI18NTable extends Table<SpaceI18NRow> {
 
   SpaceI18NTable() {

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.permalinks;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -33,11 +34,10 @@ import org.silverpeas.core.contribution.attachment.permalinks.repository.Version
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 
 @Default
-@Singleton
+@Service
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
 public class PermalinkCompatibilityServiceImpl implements PermalinkCompatibilityService {
 

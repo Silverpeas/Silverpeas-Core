@@ -24,6 +24,8 @@
 package org.silverpeas.core.persistence;
 
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.util.Process;
 
 import javax.annotation.Resource;
@@ -36,6 +38,8 @@ import javax.transaction.Transactional;
  * A transaction. All processes it performs will be in charge by the JPA transaction manager.
  * @author mmoquillon
  */
+@Technical
+@Bean
 public class Transaction {
 
   @Resource(mappedName = "java:/TransactionManager")

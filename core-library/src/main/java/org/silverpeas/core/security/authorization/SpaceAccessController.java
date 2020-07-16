@@ -24,6 +24,7 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.annotation.Service;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -32,6 +33,7 @@ import javax.inject.Singleton;
  * Check the access to a space for a user.
  * @author Yohann Chastagnier
  */
+@Service
 @Singleton
 public class SpaceAccessController extends AbstractAccessController<String>
     implements SpaceAccessControl {

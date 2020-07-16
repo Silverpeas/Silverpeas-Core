@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contact.service;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.contact.model.CompleteContact;
 import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.core.contact.model.ContactDetail;
@@ -32,7 +33,6 @@ import org.silverpeas.core.contact.model.ContactRuntimeException;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.DateUtil;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -47,7 +47,7 @@ import java.util.List;
  * This is the Contact Data Access Object.
  * @author Nicolas Eysseric
  */
-@Singleton
+@Repository
 public class ContactDAO {
 
   private static final String DELETE_FROM = "delete from ";

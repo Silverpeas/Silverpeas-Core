@@ -24,6 +24,7 @@
 package org.silverpeas.core.admin.user.notification;
 
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
@@ -31,6 +32,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
  * A notifier of an event concerning the life-cycle of a user group in Silverpeas.
  * @author mmoquillon
  */
+@Bean
 public class GroupEventNotifier extends CDIResourceEventNotifier<Group, GroupEvent> {
 
   private GroupEventNotifier() {

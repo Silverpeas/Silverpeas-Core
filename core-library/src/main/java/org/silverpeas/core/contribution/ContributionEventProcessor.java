@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.contribution;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
@@ -36,6 +38,8 @@ import javax.ejb.Singleton;
  * or updating the resources that allocated for the contribution (like the attachments for example).
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Singleton
 public class ContributionEventProcessor
     extends CDIResourceEventListener<AbstractResourceEvent<? extends Contribution>> {

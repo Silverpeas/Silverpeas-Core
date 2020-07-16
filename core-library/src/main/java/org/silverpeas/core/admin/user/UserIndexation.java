@@ -24,6 +24,8 @@
 package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
@@ -40,6 +42,8 @@ import java.util.List;
  * Indexation of the users in Silverpeas. It uses the indexer and searcher API to provide a way to
  * index and to search in a transparently way the users.
  */
+@Technical
+@Bean
 public class UserIndexation {
 
   @Inject

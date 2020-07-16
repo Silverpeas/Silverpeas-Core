@@ -38,6 +38,7 @@ import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.util.CompatibilityHints;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
@@ -83,6 +84,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * the deserialization of calendar events in the iCalendar format.
  * @author mmoquillon
  */
+@Service
 public class ICal4JImporter implements ICalendarImporter {
 
   private static final String CALENDAR_SETTINGS = "org.silverpeas.calendar.settings.calendar";

@@ -23,19 +23,18 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
-import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
-import javax.inject.Singleton;
 import java.util.List;
 
 /**
  * DAO that handles the persistence of PdcClassification beans.
  */
-@Singleton
+@Repository
 public class PdcClassificationRepository
     extends BasicJpaEntityRepository<PdcClassification> {
 

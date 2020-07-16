@@ -24,6 +24,8 @@
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.PersistOperation;
@@ -42,7 +44,9 @@ import java.util.Optional;
  * @author mmoquillon
  */
 @PersistOperation
+@Technical
 @JPA
+@Bean
 public class JpaPersistOperation extends PersistenceOperation {
 
   private List<SilverpeasJpaEntity> entities = new ArrayList<>();

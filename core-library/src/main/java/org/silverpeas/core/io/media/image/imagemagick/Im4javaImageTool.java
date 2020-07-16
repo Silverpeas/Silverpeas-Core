@@ -30,6 +30,7 @@ import org.im4java.core.IdentifyCmd;
 import org.im4java.core.MogrifyCmd;
 import org.im4java.process.ArrayListOutputConsumer;
 import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.io.media.image.AbstractImageTool;
 import org.silverpeas.core.io.media.image.ImageInfoType;
 import org.silverpeas.core.io.media.image.ImageTool;
@@ -38,7 +39,6 @@ import org.silverpeas.core.io.media.image.option.*;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -53,7 +53,7 @@ import static org.silverpeas.core.io.media.image.ImageInfoType.*;
 /**
  * @author Yohann Chastagnier
  */
-@Singleton
+@Service
 public class Im4javaImageTool extends AbstractImageTool {
 
   private static final String FIRST_PAGE_ONLY = "[0]";

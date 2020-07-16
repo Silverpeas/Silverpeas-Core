@@ -26,6 +26,7 @@ package org.silverpeas.core.comment.dao.jdbc;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.comment.dao.CommentDAO;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
@@ -43,6 +44,7 @@ import java.util.List;
 
 import static org.silverpeas.core.persistence.jdbc.DBUtil.openConnection;
 
+@Repository
 @Named("commentDAO")
 public class JDBCCommentDAO implements CommentDAO {
 

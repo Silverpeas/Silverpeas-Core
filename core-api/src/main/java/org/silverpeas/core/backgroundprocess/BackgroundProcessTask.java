@@ -26,6 +26,8 @@ package org.silverpeas.core.backgroundprocess;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -65,6 +67,8 @@ import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
  * </p>
  * @author silveryocha
  */
+@Technical
+@Bean
 public class BackgroundProcessTask extends AbstractRequestTask {
 
   static final Map<String, RequestContext> synchronizedContexts =

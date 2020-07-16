@@ -24,6 +24,7 @@
 package org.silverpeas.core.webapi.notification.user;
 
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.web.SilverpeasWebResource;
 
@@ -37,7 +38,8 @@ import static java.lang.String.valueOf;
  * defined.
  * @author silveryocha
  */
-public final class InboxUserNotificationResourceURIs {
+@Bean
+public class InboxUserNotificationResourceURIs {
 
   public static final String BASE_URI = "usernotifications/inbox";
 

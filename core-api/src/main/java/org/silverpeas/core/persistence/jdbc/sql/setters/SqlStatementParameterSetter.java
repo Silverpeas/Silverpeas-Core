@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.persistence.jdbc.sql.setters;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.annotation.PostConstruct;
@@ -41,6 +43,8 @@ import java.util.Set;
  * the value with which the parameter has to be set.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Singleton
 public class SqlStatementParameterSetter {
 
