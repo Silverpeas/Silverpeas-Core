@@ -26,6 +26,8 @@ package org.silverpeas.core.admin.domain;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.util.ServiceProvider;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * @author ehugonnet
  */
@@ -46,13 +48,14 @@ public class DomainDriverProvider {
 
   @SuppressWarnings("unchecked")
   public static DomainDriver getDriver(String name)
-      throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+      throws IllegalAccessException, InstantiationException, ClassNotFoundException,
+      NoSuchMethodException, InvocationTargetException {
 
     DomainDriver domainDriver = loadDomainDriver(name);
     if (domainDriver == null) {
       Class<? extends DomainDriver> driverClass =
           (Class<? extends DomainDriver>) Class.forName(name);
-      domainDriver = driverClass.newInstance();
+      domainDriver = driverClass.getConstructor().newInstance();
     }
     return domainDriver;
   }
