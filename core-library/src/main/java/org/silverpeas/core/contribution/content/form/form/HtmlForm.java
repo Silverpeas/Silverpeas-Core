@@ -152,7 +152,7 @@ public class HtmlForm extends AbstractForm {
       return printBeforeTag(out);
     } else {
       // tag found in the read line
-      out.println(currentLine.substring(0, pos));
+      out.print(currentLine.substring(0, pos));
       currentLine = currentLine.substring(pos, currentLine.length());
       return false;
     }
