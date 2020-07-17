@@ -48,6 +48,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -766,7 +767,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
     try {
       domainDriver = DomainDriverProvider.getDriver(dr.className);
       domainDriver.init(idAsInt(domainId), dr.propFileName, dr.authenticationServer);
-    } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+    } catch (ClassNotFoundException | IllegalAccessException | InstantiationException |
+        NoSuchMethodException | InvocationTargetException e) {
       throw new AdminException(failureOnGetting("driver of domain", domainId), e);
     }
     return domainDriver;

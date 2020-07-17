@@ -192,7 +192,7 @@ public class ActifyDocumentProcessor {
     }
   }
 
-  private ActifyDocumentProcessor() {
+  protected ActifyDocumentProcessor() {
     prepareActifyDirectories();
   }
 

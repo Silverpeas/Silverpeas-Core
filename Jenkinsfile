@@ -124,7 +124,7 @@ def checkParentPOMVersion(version) {
   int idx = pom.parent.version.indexOf('-SNAPSHOT')
   if (idx > 0) {
     String[] snapshot = version.split('-')
-    String parentVersion = pom.parent.version.substring(0, idx) + '-' + snapshot[0]
+    String parentVersion = pom.parent.version.substring(0, idx) + '-' + snapshot[snapshot.length - 1]
     echo "Update parent POM to ${parentVersion}"
     sh """
 mvn versions:update-parent -DgenerateBackupPoms=false -DparentVersion="[${parentVersion}]"
