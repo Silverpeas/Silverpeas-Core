@@ -62,6 +62,7 @@
 <c:set var="groups" value="${requestScope.Groups}"/>
 <c:set var="sources" value="${requestScope.DirectorySources}"/>
 <c:set var="exportEnabled" value="${requestScope.ExportEnabled}"/>
+<c:set var="referer" value="${requestScope.Referer}"/>
 
 <c:set var="currentSource" value=""/>
 <c:set var="currentSourceCSS" value=""/>
@@ -205,8 +206,8 @@
         }
       });
 
-      $("#searchField").keypress(function(e) {
-        if (e.which == 13) {
+      $("#search").keypress(function(e) {
+        if (e.which === 13) {
           e.preventDefault();
           search();
           return false;
@@ -256,7 +257,7 @@
 
 </head>
 
-<body id="directory" class="${currentSourceCSS}">
+<body id="directory" class="${referer} ${currentSourceCSS}">
 <view:browseBar extraInformations="${breadcrumb}"/>
 <view:operationPane>
   <view:operation action="javascript:window.print()" altText="${labelPrint}"/>

@@ -95,6 +95,9 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         String doNotUseContactsComponents = request.getParameter("DoNotUseContacts");
         directorySC.setDoNotUseContacts(StringUtil.getBooleanValue(doNotUseContactsComponents));
 
+        String useQuickUserSelection = request.getParameter("UseQuickUserSelection");
+        directorySC.setUseQuickUserSelection(useQuickUserSelection);
+
         directorySC.setReferer(request.getParameter("Referer"));
 
         if (CollectionUtil.isNotEmpty(groupIds)) {
@@ -252,6 +255,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     request.setAttribute("Sort", directorySC.getCurrentSort());
     request.setAttribute("ShowHelp", false);
     request.setAttribute("QuickUserSelectionEnabled", directorySC.isQuickUserSelectionEnabled());
+    request.setAttribute("Referer", directorySC.getReferer());
     if (directorySC.getCurrentDirectory() == DirectorySessionController.DIRECTORY_DEFAULT ||
         directorySC.getCurrentDirectory() == DirectorySessionController.DIRECTORY_DOMAIN ||
         directorySC.getCurrentDirectory() == DirectorySessionController.DIRECTORY_CONTACTS) {

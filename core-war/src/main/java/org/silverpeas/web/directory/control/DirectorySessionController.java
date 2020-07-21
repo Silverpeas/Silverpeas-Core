@@ -177,6 +177,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private transient List<DirectorySource> directorySources = new ArrayList<>();
   private boolean doNotUseContactsComponents = false;
+  private boolean useQuickUserSelection = true;
 
   // used when directory is set up through an hyperlink application
   private String referer;
@@ -904,8 +905,16 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public boolean isQuickUserSelectionEnabled() {
-    return getCurrentDirectory() == DIRECTORY_DEFAULT ||
-        getCurrentDirectory() == DIRECTORY_DOMAIN || getCurrentDirectory() == DIRECTORY_GROUP;
+    return useQuickUserSelection && (getCurrentDirectory() == DIRECTORY_DEFAULT ||
+        getCurrentDirectory() == DIRECTORY_DOMAIN || getCurrentDirectory() == DIRECTORY_GROUP);
+  }
+
+  public void setUseQuickUserSelection(String value) {
+    if (StringUtil.isDefined(value)) {
+      useQuickUserSelection = StringUtil.getBooleanValue(value);
+    } else {
+      useQuickUserSelection = true;
+    }
   }
 
   private SilverpeasTemplate getFragmentTemplate() {
@@ -1062,7 +1071,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     this.referer = referer;
   }
 
-  private String getReferer() {
+  public String getReferer() {
     return referer;
   }
 
