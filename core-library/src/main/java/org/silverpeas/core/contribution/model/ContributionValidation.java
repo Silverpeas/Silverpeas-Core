@@ -158,6 +158,15 @@ public class ContributionValidation implements Serializable {
 
   /**
    * Sets the validator of the contribution.
+   * @param validatedBy the identifier of the validator of the contribution.
+   */
+  public void setValidationBy(final String validatedBy) {
+    this.validator = null;
+    validationBy = validatedBy;
+  }
+
+  /**
+   * Sets the validator of the contribution.
    * @param validator the validator of the contribution.
    */
   public void setValidator(final User validator) {
