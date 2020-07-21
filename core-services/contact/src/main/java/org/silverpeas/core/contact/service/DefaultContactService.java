@@ -38,6 +38,7 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -453,12 +454,14 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
       if (contact != null) {
         FullIndexEntry indexEntry = new FullIndexEntry(contact.getPK().getComponentName(),
             "Contact", contact.getPK().getId());
-        indexEntry.setTitle(contact.getFirstName() + " " + contact.getLastName());
+        String fullName = contact.getFirstName() + " " + contact.getLastName();
+        indexEntry.setTitle(fullName);
         indexEntry.setLang(I18NHelper.defaultLanguage);
         indexEntry.setCreationDate(contact.getCreationDate());
         indexEntry.setCreationUser(contact.getCreatorId());
         indexEntry.addTextContent(contact.getPhone());
         indexEntry.addTextContent(contact.getEmail());
+        indexEntry.addTextContent(StringUtil.normalizeByRemovingAccent(fullName));
 
         if (contact instanceof CompleteContact) {
           CompleteContact completeContact = (CompleteContact) contact;

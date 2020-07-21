@@ -29,6 +29,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.search.model.IndexSearcher;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -64,6 +65,7 @@ public class UserIndexation {
         indexEntry.setLastModificationDate(new Date());
         indexEntry.setTitle(user.getDisplayedName());
         indexEntry.setPreview(user.geteMail());
+        indexEntry.addTextContent(StringUtil.normalizeByRemovingAccent(user.getDisplayedName()));
 
         // index some usefull informations
         indexEntry.addField("FirstName", user.getFirstName());
