@@ -45,7 +45,7 @@ public class UserGroupsSearchCriteriaBuilder {
 
   public UserGroupsSearchCriteriaBuilder withName(String name) {
     if (isDefined(name)) {
-      String filterByName = name.replaceAll("\\*", "%");
+      String filterByName = name.replace('*', '%');
       searchCriteria.onName(filterByName);
     }
     return this;

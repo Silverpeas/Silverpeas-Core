@@ -183,7 +183,7 @@ public class ResourceLocator {
   public static synchronized void saveSettingBundle(SettingBundle settings,
       Properties properties) {
     try {
-      final String bundleName = "/" + settings.getBaseBundleName().replaceAll("\\.", "/") + ".properties";
+      final String bundleName = "/" + settings.getBaseBundleName().replace('.', '/') + ".properties";
       properties.store(new FileOutputStream(new File(
           Objects.requireNonNull(loader.getResource(bundleName)).toURI())), null);
       ResourceBundle.clearCache(loader);
@@ -243,7 +243,7 @@ public class ResourceLocator {
     Properties properties = new Properties();
     try {
       checkBundleName(name);
-      final String bundleName = "/" + name.replaceAll("\\.", "/") + ".properties";
+      final String bundleName = "/" + name.replace('.', '/') + ".properties";
       properties.load(loadResourceBundleAsStream(bundleName));
     } catch (IOException e) {
       throw new MissingResourceException(e.getMessage(), name, "");

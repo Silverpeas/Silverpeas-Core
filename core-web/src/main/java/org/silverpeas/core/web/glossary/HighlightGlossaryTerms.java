@@ -97,7 +97,7 @@ public class HighlightGlossaryTerms {
   private String highlight(String term, String content, String definition, String className,
       boolean onlyFirst) {
     // escape HTML character
-    String escapedTerm = WebEncodeHelper.convertHTMLEntities(term).replaceAll("'", "&#39;");
+    String escapedTerm = WebEncodeHelper.convertHTMLEntities(term).replace("'", "&#39;");
     String groupName = "realTerm";
     // regular expression which allows to search all the term except the HTML tag Searches the
     // exact term
@@ -105,7 +105,7 @@ public class HighlightGlossaryTerms {
 
     // highlights the term
     String template = "<span class=\"" + className + "\" title=\"" +
-        definition.replaceAll("\"", "&quot;").replaceAll("'", "''") + "\">{0}</span>";
+        definition.replace("\"", "&quot;").replace("'", "''") + "\">{0}</span>";
 
     StringBuilder sb = new StringBuilder();
     Matcher matcher = pattern.matcher(content);

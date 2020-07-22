@@ -55,10 +55,7 @@ public class LdapField extends TextField {
    * The ldap field dynamic variable login.
    */
   public static final String VARIABLE_LOGIN = "$$login";
-  /**
-   * The ldap field dynamic variable login for regex.
-   */
-  private static final String VARIABLE_REGEX_LOGIN = "\\$\\$login";
+
   private String value = "";
 
   public LdapField() {
@@ -169,7 +166,7 @@ public class LdapField extends TextField {
       try {
         String valueLogin = OrganizationControllerProvider.getOrganisationController()
             .getUserDetail(currentUserId).getLogin();
-        filter = filter.replaceAll(VARIABLE_REGEX_LOGIN, valueLogin);
+        filter = filter.replace(VARIABLE_LOGIN, valueLogin);
       } catch (Exception e) {
         throw new FormException("LdapField.searchLdap",
             "form.EX_CANT_SEARCH_LDAP", "Can't get login of the currentUser", e);

@@ -85,7 +85,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -542,7 +542,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
       setBeginHour(null);
     } else {
       final Date periodStart = asDate(asOffsetDateTime(period.getStartDate())
-              .atZoneSameInstant(ZoneOffset.systemDefault()));
+              .atZoneSameInstant(ZoneId.systemDefault()));
       setBeginDate(periodStart);
       setBeginHour(DateUtil.formatTime(periodStart));
     }
@@ -551,7 +551,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
       setEndHour(null);
     } else {
       final Date periodEnd = asDate(asOffsetDateTime(period.getEndDate())
-          .atZoneSameInstant(ZoneOffset.systemDefault()));
+          .atZoneSameInstant(ZoneId.systemDefault()));
       setEndDate(periodEnd);
       setEndHour(DateUtil.formatTime(periodEnd));
     }

@@ -50,9 +50,9 @@ public class JdbcField extends TextField {
    */
   public static final String TYPE = "jdbc";
   /**
-   * The jdbc field dynamic variable userId for regex.
+   * The jdbc field dynamic variable userId.
    */
-  private static final String VARIABLE_REGEX_USER_ID = "\\$\\$userId";
+  private static final String VARIABLE_USER_ID = "$$userId";
   private String value = "";
 
   /**
@@ -119,7 +119,7 @@ public class JdbcField extends TextField {
     Collection<String> result = new ArrayList<>();
 
     // parsing query -> dynamic variable
-    query = query.replaceAll(VARIABLE_REGEX_USER_ID, currentUserId);
+    query = query.replace(VARIABLE_USER_ID, currentUserId);
 
     if (connection != null) {
       final String sqlQuery = (query.toLowerCase().startsWith("select") ? query: "select " + query);

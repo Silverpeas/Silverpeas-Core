@@ -31,13 +31,14 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.SettingBundle;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Optional.empty;
 
-public interface DomainDriver {
+public interface DomainDriver extends Serializable {
 
   class ActionConstants {
 

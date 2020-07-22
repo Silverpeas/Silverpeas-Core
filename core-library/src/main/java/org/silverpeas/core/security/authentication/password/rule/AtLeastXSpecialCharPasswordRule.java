@@ -50,8 +50,8 @@ public class AtLeastXSpecialCharPasswordRule extends AbstractPasswordRule {
     nb = getIntegerFromSettings(getType().getSettingKey() + ".X", 0);
     value = settings.getString("password.rule.specialChars", "%*!?$-+#&=.,;");
     regexValue = "[" +
-        value.replaceAll("\\^", "\\\\^").replaceAll("\\-", "\\\\-").replaceAll("\\[]", "\\\\[")
-            .replaceAll("\\]", "\\\\]") + "]";
+        value.replace("^", "\\^").replace("-", "\\-").replace("[]", "\\[")
+            .replace("]", "\\]") + "]";
     if (nb == 0) {
       required = false;
       combined = false;

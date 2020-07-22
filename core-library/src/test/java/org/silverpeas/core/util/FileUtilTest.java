@@ -159,16 +159,6 @@ public class FileUtilTest {
     assertTrue(FileUtil.isArchive("toto.tgz"));
   }
 
-  @Disabled("This test is not multi-platform compliant")
-  @Test
-  public void testConvertFilePath() {
-    String result = FileUtil.convertFilePath(new File("/", "file\r \\' - '' .pdf"));
-    assertThat(result, is("/file\\ \\ \\\\\\'\\ -\\ \\'\\'\\ .pdf"));
-
-    result = FileUtil.convertFilePath(new File("/", "test {linux}[4 ever].pdf"));
-    assertThat(result, is("/test\\ \\{linux\\}\\[4\\ ever\\].pdf"));
-  }
-
   @Test
   public void testCheckPathNotRelative() throws RelativeFileAccessException {
     FileUtil.assertPathNotRelative(null);

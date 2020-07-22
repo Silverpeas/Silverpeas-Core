@@ -135,7 +135,7 @@ public class DataRecordUtil {
           value = WysiwygFCKFieldDisplayer
               .getContentFromFile(data.getResourceReference().getComponentInstanceId(), fileName);
           // replacing non HTML End-Of-Line
-          value = value.replaceAll("\r\n", "");
+          value = value.replace("\r\n", "");
         }
       }
       if (value == null) {

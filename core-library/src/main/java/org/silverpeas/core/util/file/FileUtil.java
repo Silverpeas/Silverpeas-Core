@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.util.file;
 
-import org.apache.commons.exec.util.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -364,28 +363,6 @@ public class FileUtil {
     String localPath = undeterminedOsPath;
     localPath = localPath.replace('\\', File.separatorChar).replace('/', File.separatorChar);
     return localPath;
-  }
-
-  public static String convertFilePath(File file) {
-    if (OsEnum.getOS().isWindows()) {
-      return StringUtils.quoteArgument(file.getAbsolutePath());
-    }
-    String path = file.getAbsolutePath();
-    path = path.replaceAll("\\\\", "\\\\\\\\");
-    path = path.replaceAll("\\s", "\\\\ ");
-    path = path.replaceAll("<", "\\\\<");
-    path = path.replaceAll(">", "\\\\>");
-    path = path.replaceAll("'", "\\\\'");
-    path = path.replaceAll("\"", "\\\\\"");
-    path = path.replaceAll("\\{", "\\\\{");
-    path = path.replaceAll("}", "\\\\}");
-    path = path.replaceAll("\\(", "\\\\(");
-    path = path.replaceAll("\\)", "\\\\)");
-    path = path.replaceAll("\\[", "\\\\[");
-    path = path.replaceAll("\\]", "\\\\]");
-    path = path.replaceAll("\\&", "\\\\&");
-    path = path.replaceAll("\\|", "\\\\|");
-    return path;
   }
 
   public static boolean deleteEmptyDir(File directory) {
