@@ -39,7 +39,7 @@ public class UserFull extends UserDetail {
 
   private static final long serialVersionUID = 1L;
   private HashMap<String, String> infos = null;
-  private DomainDriver domainDriver = null;
+  private transient DomainDriver domainDriver = null;
   private String password = "";
   private boolean isPasswordValid = false;
   private boolean isPasswordAvailable = false;
