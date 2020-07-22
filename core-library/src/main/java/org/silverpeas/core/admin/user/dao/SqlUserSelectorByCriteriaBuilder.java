@@ -114,16 +114,16 @@ public class SqlUserSelectorByCriteriaBuilder {
   private void applyCriteriaOnUserName(final JdbcSqlQuery query,
       final UserDetailsSearchCriteria criteria) {
     if (criteria.isCriterionOnNameSet()) {
-      final String normalizedName = criteria.getCriterionOnName().replaceAll("\\*", "%");
+      final String normalizedName = criteria.getCriterionOnName().replace('*', '%');
       query.and("(lower(st_user.firstName) like lower(?) OR lower(st_user.lastName) like lower(?))",
           normalizedName, normalizedName);
     } else {
       if (criteria.isCriterionOnFirstNameSet()) {
-        final String normalizedName = criteria.getCriterionOnFirstName().replaceAll("\\*", "%");
+        final String normalizedName = criteria.getCriterionOnFirstName().replace('*', '%');
         query.and("lower(st_user.firstName) like lower(?)", normalizedName);
       }
       if (criteria.isCriterionOnLastNameSet()) {
-        final String normalizedName = criteria.getCriterionOnLastName().replaceAll("\\*", "%");
+        final String normalizedName = criteria.getCriterionOnLastName().replace('*', '%');
         query.and("lower(st_user.lastName) like lower(?)", normalizedName);
       }
     }

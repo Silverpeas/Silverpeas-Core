@@ -88,7 +88,7 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
   protected <U> WarBuilder(Class<U> classOfTest) {
     this.classOfTest = classOfTest;
     testCoreClassMavenTargetDirectoryRule = new MavenTargetDirectoryRule(WarBuilder.class);
-    String resourcePath = classOfTest.getPackage().getName().replaceAll("\\.", "/");
+    String resourcePath = classOfTest.getPackage().getName().replace('.', '/');
     logInfo("Adding resources from path: " + resourcePath);
     war.addAsResource(resourcePath);
     war.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");

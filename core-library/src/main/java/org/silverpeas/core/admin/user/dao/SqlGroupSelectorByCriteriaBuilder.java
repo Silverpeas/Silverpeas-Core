@@ -110,7 +110,7 @@ public class SqlGroupSelectorByCriteriaBuilder {
   private void applyCriteriaOnGroupName(final JdbcSqlQuery query,
       final GroupsSearchCriteria criteria) {
     if (criteria.isCriterionOnNameSet()) {
-      final String normalizedName = criteria.getCriterionOnName().replaceAll("\\*", "%");
+      final String normalizedName = criteria.getCriterionOnName().replace('*', '%');
       query.and("lower(st_group.name) like lower(?)", normalizedName);
     }
   }

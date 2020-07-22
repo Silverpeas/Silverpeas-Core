@@ -274,9 +274,9 @@ public class XmlSettingBundle implements SilverpeasBundle {
       if (theName.toLowerCase().endsWith(".xml")) {
         int suffixIdx = theName.lastIndexOf('.');
         theName =
-            theName.substring(0, suffixIdx).replaceAll("\\.", "/") + theName.substring(suffixIdx);
+            theName.substring(0, suffixIdx).replace('.', '/') + theName.substring(suffixIdx);
       } else {
-        theName = theName.replaceAll("\\.", "/") + ".xml";
+        theName = theName.replace('.', '/') + ".xml";
       }
       try (InputStream stream = this.loader.apply(theName)) {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();

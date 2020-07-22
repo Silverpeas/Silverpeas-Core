@@ -2820,7 +2820,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         "componentDescriptor.parameterLabel"));
     spParameter.getHelp().put(I18NHelper.defaultLanguage, "");
     spParameter.getWarning().put(I18NHelper.defaultLanguage, "");
-    spParameter.setValue(processModelFileName.replaceAll("\\\\", "/"));
+    spParameter.setValue(processModelFileName.replace("\\\\", "/"));
     spParameter.setMandatory(true);
     spParameter.setUpdatable("always");
     spParameter.setType("text");
@@ -2920,7 +2920,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   private String findComponentDescriptor(String strProcessModelFileName) {
     Collection<WAComponent> waComponents = WAComponent.getAll();
     if (strProcessModelFileName != null) {
-      strProcessModelFileName = strProcessModelFileName.replaceAll("\\\\", "/");
+      strProcessModelFileName = strProcessModelFileName.replace("\\\\", "/");
       // Look for the descriptor in the cache, return the key if found.
       for (WAComponent waComponent : waComponents) {
         if (waComponent.getParameters() != null) {

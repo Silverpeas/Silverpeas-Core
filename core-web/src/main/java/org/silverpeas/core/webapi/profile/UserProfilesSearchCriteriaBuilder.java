@@ -57,7 +57,7 @@ public class UserProfilesSearchCriteriaBuilder {
    */
   public UserProfilesSearchCriteriaBuilder withName(String name) {
     if (isDefined(name)) {
-      String filterByName = name.replaceAll("\\*", "%");
+      String filterByName = name.replace('*', '%');
       searchCriteria.onName(filterByName);
     }
     return this;

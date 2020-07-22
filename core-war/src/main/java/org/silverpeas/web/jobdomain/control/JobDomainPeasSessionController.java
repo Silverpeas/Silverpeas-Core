@@ -627,22 +627,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
       // Login
       String login = csvValues[i][2].getValueString();
-      String loginError = checkCSVData(login, lineNumber, 3,true, 50);
-      if (StringUtil.isDefined(loginError)) {
-        listErrors.append(loginError);
-      } else if (login.length() < JobDomainSettings.m_MinLengthLogin) {// verifier
-        listErrors.append(getErrorMessage(lineNumber, 3, login));
-        listErrors.append(getString("JDP.nbCarMin")).append(" ").append(
-            JobDomainSettings.m_MinLengthLogin).append(" ").append(getString("JDP.caracteres")).
-            append(BR_ELEMENT);
-      } else {
-        // verif login unique
-        String existingLogin = adminCtrl.getUserIdByLoginAndDomain(login, targetDomainId);
-        if (existingLogin != null) {
-          listErrors.append(getErrorMessage(lineNumber, 3, login));
-          listErrors.append(getString("JDP.existingLogin")).append(BR_ELEMENT);
-        }
-      }
+      checkLoginDuringCSVImport(login, lineNumber, listErrors);
 
       // Email
       String email = csvValues[i][3].getValueString();
@@ -650,29 +635,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
       // Droits
       String droits = csvValues[i][4].getValueString();
-      if (!"".equals(droits) && !USERTYPES.contains(droits)) {
-        listErrors.append(getErrorMessage(lineNumber, 5, droits));
-        listErrors.append(getString("JDP.valeursPossibles")).append(BR_ELEMENT);
-      }
+      checkUserTypeDuringCSVImport(droits, lineNumber, listErrors);
 
       // MotDePasse
       String motDePasse = csvValues[i][5].getValueString();
-      // password is not mandatory
-      if (isDefined(motDePasse)) {
-        // Cheking password
-        String passwordError = checkCSVData(motDePasse, lineNumber, 6, false, 32);
-        if (StringUtil.isDefined(passwordError)) {
-          listErrors.append(passwordError);
-        } else {
-          PasswordCheck passwordCheck =
-              PasswordRulesServiceProvider.getPasswordRulesService().check(motDePasse);
-          if (!passwordCheck.isCorrect()) {
-            listErrors.append(getErrorMessage(lineNumber, 6, motDePasse))
-                .append(passwordCheck.getFormattedErrorMessage(getLanguage()));
-            listErrors.append(BR_ELEMENT);
-          }
-        }
-      }
+      checkPasswordDuringCSVImport(motDePasse, lineNumber, listErrors);
 
       if (csvReader.getSpecificNbCols() > 0) {
         for (int j = 0; j < csvReader.getSpecificNbCols(); j++) {
@@ -693,6 +660,51 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           SilverpeasException.ERROR, ERROR_CSV_FILE, listErrors.toString());
       jdpe.setGoBackPage("displayUsersCsvImport");
       throw jdpe;
+    }
+  }
+
+  private void checkLoginDuringCSVImport(String login, int lineNumber, StringBuilder listErrors) {
+    String loginError = checkCSVData(login, lineNumber, 3,true, 50);
+    if (StringUtil.isDefined(loginError)) {
+      listErrors.append(loginError);
+    } else if (login.length() < JobDomainSettings.m_MinLengthLogin) {// verifier
+      listErrors.append(getErrorMessage(lineNumber, 3, login));
+      listErrors.append(getString("JDP.nbCarMin")).append(" ").append(
+          JobDomainSettings.m_MinLengthLogin).append(" ").append(getString("JDP.caracteres")).
+          append(BR_ELEMENT);
+    } else {
+      // verif login unique
+      String existingLogin = adminCtrl.getUserIdByLoginAndDomain(login, targetDomainId);
+      if (existingLogin != null) {
+        listErrors.append(getErrorMessage(lineNumber, 3, login));
+        listErrors.append(getString("JDP.existingLogin")).append(BR_ELEMENT);
+      }
+    }
+  }
+
+  private void checkPasswordDuringCSVImport(String pwd, int lineNumber, StringBuilder listErrors) {
+    // password is not mandatory
+    if (isDefined(pwd)) {
+      // Cheking password
+      String passwordError = checkCSVData(pwd, lineNumber, 6, false, 32);
+      if (StringUtil.isDefined(passwordError)) {
+        listErrors.append(passwordError);
+      } else {
+        PasswordCheck passwordCheck =
+            PasswordRulesServiceProvider.getPasswordRulesService().check(pwd);
+        if (!passwordCheck.isCorrect()) {
+          listErrors.append(getErrorMessage(lineNumber, 6, pwd))
+              .append(passwordCheck.getFormattedErrorMessage(getLanguage()));
+          listErrors.append(BR_ELEMENT);
+        }
+      }
+    }
+  }
+
+  private void checkUserTypeDuringCSVImport(String type, int lineNumber, StringBuilder listErrors) {
+    if (!"".equals(type) && !USERTYPES.contains(type)) {
+      listErrors.append(getErrorMessage(lineNumber, 5, type));
+      listErrors.append(getString("JDP.valeursPossibles")).append(BR_ELEMENT);
     }
   }
 

@@ -105,7 +105,7 @@ public class DidYouMeanSearcher {
         while (tokens.hasMoreTokens()) {
           SpellChecker spellCheck = new SpellChecker(FSDirectory.open(uploadIndexDir.toPath()));
           spellCheckers.add(spellCheck);
-          String token = tokens.nextToken().replaceAll("\"", "");
+          String token = tokens.nextToken().replace("\"", "");
           for (String path : spellIndexPaths) {
 
             // create a file object with given path
@@ -167,7 +167,7 @@ public class DidYouMeanSearcher {
     }
 
     return new String[]{
-        currentSentence.toString().replaceAll("\\+", "").replaceAll("-", "").replaceAll("  ", " ")
+        currentSentence.toString().replace("+", "").replace("-", "").replace("  ", " ")
             .trim()};
 
   }

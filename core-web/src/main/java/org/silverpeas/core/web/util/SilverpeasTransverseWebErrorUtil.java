@@ -60,6 +60,6 @@ public class SilverpeasTransverseWebErrorUtil extends SilverpeasTransverseErrorU
    */
   public static String performAppletAlertExceptionMessage(Exception exception, String language) {
     return WebEncodeHelper.htmlStringToJavaString(performExceptionMessage(exception, language))
-        .replaceAll("(</?b|</?i|</?p)[a-zA-Z=\"'${}\\.0-9 ]*/?>", "").replaceAll("\\n", "\\\\n");
+        .replaceAll("(</?b|</?i|</?p)[a-zA-Z=\"'${}\\.0-9 ]*/?>", "").replace("\\n", "\\\\n");
   }
 }

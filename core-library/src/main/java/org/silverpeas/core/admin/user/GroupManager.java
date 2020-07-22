@@ -890,7 +890,7 @@ public class GroupManager {
       this.connection = connection;
       this.criteria = criteria;
       this.groupDao = groupDao;
-      this.nameFilter = defaultStringIfNotDefined(criteria.getCriterionOnName()).replaceAll("\\*", "%");
+      this.nameFilter = defaultStringIfNotDefined(criteria.getCriterionOnName()).replace('*', '%');
       this.paginationPage = criteria.getCriterionOnPagination();
       this.childrenRequired = criteria.childrenRequired();
       this.logicalNameFiltering = childrenRequired && isDefined(nameFilter);

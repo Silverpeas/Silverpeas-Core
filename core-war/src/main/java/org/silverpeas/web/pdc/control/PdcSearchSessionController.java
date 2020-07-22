@@ -2150,7 +2150,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         if (fieldValue.contains("##")) {
           String operator = FileUploadUtil.getParameter(items, fieldName + "Operator");
           pageContext.setSearchOperator(fieldName, operator);
-          fieldQuery = fieldQuery.replaceAll("##", " "+operator+" ");
+          fieldQuery = fieldQuery.replace("##", " "+operator+" ");
         }
         getQueryParameters().addXmlSubQuery(templateName + "$$" + fieldName, fieldQuery);
       }
