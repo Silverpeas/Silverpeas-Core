@@ -349,10 +349,7 @@ public class TemplateDesignerRequestRouter extends
 
     String paramSpaceIds = request.getParameter("Visibility_Spaces");
     if (StringUtil.isDefined(paramSpaceIds)) {
-      String[] spaceIds = paramSpaceIds.split(" ");
-      if (spaceIds != null) {
-        template.setSpaces(Arrays.asList(spaceIds));
-      }
+      template.setSpaces(Arrays.asList(paramSpaceIds.split(" ")));
     }
 
     String[] applications = request.getParameterValues("Visibility_Applications");
@@ -362,11 +359,19 @@ public class TemplateDesignerRequestRouter extends
 
     String paramInstances = request.getParameter("Visibility_Instances");
     if (StringUtil.isDefined(paramInstances)) {
-      String[] instanceIds = paramInstances.split(" ");
-      if (instanceIds != null) {
-        template.setInstances(Arrays.asList(instanceIds));
-      }
+      template.setInstances(Arrays.asList(paramInstances.split(" ")));
     }
+
+    String paramDomainIds = request.getParameter("Visibility_Domains");
+    if (StringUtil.isDefined(paramDomainIds)) {
+      template.setDomains(Arrays.asList(paramDomainIds.split(" ")));
+    }
+
+    String paramGroupIds = request.getParameter("Visibility_Groups");
+    if (StringUtil.isDefined(paramGroupIds)) {
+      template.setGroups(Arrays.asList(paramGroupIds.split(" ")));
+    }
+
     return template;
   }
 

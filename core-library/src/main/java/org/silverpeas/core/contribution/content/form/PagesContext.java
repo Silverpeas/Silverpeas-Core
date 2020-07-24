@@ -67,6 +67,9 @@ public class PagesContext {
   boolean designMode;
   SharingContext sharingContext;
   Map<String, String> searchOperators = new HashMap();
+  boolean formSkippable = false;
+  String elementToHideWhenSkipping;
+  String domainId;
 
   public PagesContext() {
   }
@@ -93,6 +96,9 @@ public class PagesContext {
     setCreation(pc.isCreation());
     setSharingContext(pc.getSharingContext());
     searchOperators = pc.searchOperators;
+    setFormSkippable(pc.isFormSkippable());
+    setElementToHideWhenSkipping(pc.getElementToHideWhenSkipping());
+    setDomainId(pc.getDomainId());
   }
 
   public PagesContext(String formIndex, String language) {
@@ -363,4 +369,27 @@ public class PagesContext {
     return searchOperators.getOrDefault(fieldName, defaultOperator);
   }
 
+  public boolean isFormSkippable() {
+    return formSkippable;
+  }
+
+  public void setFormSkippable(final boolean formSkippable) {
+    this.formSkippable = formSkippable;
+  }
+
+  public String getElementToHideWhenSkipping() {
+    return elementToHideWhenSkipping;
+  }
+
+  public void setElementToHideWhenSkipping(final String elementToHideWhenSkipping) {
+    this.elementToHideWhenSkipping = elementToHideWhenSkipping;
+  }
+
+  public String getDomainId() {
+    return domainId;
+  }
+
+  public void setDomainId(final String domainId) {
+    this.domainId = domainId;
+  }
 }

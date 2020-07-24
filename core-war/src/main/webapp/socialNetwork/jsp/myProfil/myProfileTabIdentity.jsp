@@ -178,7 +178,7 @@
     </fieldset>
   </c:if>
 
-  <view:directoryExtraForm userId="<%=userFull.getId()%>" edition="true"/>
+  <view:directoryExtraForm userId="<%=userFull.getId()%>" edition="true" skippable="false"/>
 
  </form>
  </div>

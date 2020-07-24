@@ -261,6 +261,8 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     this.template.setSpaces(updatedTemplate.getSpaces());
     this.template.setApplications(updatedTemplate.getApplications());
     this.template.setInstances(updatedTemplate.getInstances());
+    this.template.setDomains(updatedTemplate.getDomains());
+    this.template.setGroups(updatedTemplate.getGroups());
 
     updateInProgress = true;
 
