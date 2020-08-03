@@ -472,7 +472,7 @@ out.println(window.printBefore());
       </fieldset>
     </c:if>
 
-    <view:directoryExtraForm userId="${userObject.id}" edition="true"/>
+    <view:directoryExtraForm userId="${userObject.id}" edition="true" skippable="true" domainId="<%=domObject.getId()%>"/>
 
     <div class="legend">
 	<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>

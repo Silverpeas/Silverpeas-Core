@@ -24,6 +24,8 @@
 package org.silverpeas.core.contribution.template.publication;
 
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.AbstractForm;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -43,6 +45,7 @@ import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.contribution.content.form.record.ParameterValue;
 import org.silverpeas.core.contribution.content.form.record.Repeatable;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -58,6 +61,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -97,6 +101,12 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   @XmlElementWrapper(name = "instances")
   @XmlElement(name = "instance")
   private List<String> instances;
+  @XmlElementWrapper(name = "domains")
+  @XmlElement(name = "domain")
+  private List<String> domains;
+  @XmlElementWrapper(name = "groups")
+  @XmlElement(name = "group")
+  private List<String> groups;
   @XmlElement
   private String viewFileName = "";
   @XmlElement
@@ -660,6 +670,8 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     cloneTemplate.setSpaces(getSpaces());
     cloneTemplate.setApplications(getApplications());
     cloneTemplate.setInstances(getInstances());
+    cloneTemplate.setDomains(getDomains());
+    cloneTemplate.setGroups(getGroups());
     cloneTemplate.setDirectoryUsage(isDirectoryUsage());
     cloneTemplate.setViewLayerFileName(getViewLayerFileName());
     cloneTemplate.setUpdateLayerFileName(getUpdateLayerFileName());
@@ -740,6 +752,38 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   public void setInstances(List<String> instances) {
     this.instances = instances;
+  }
+
+  public void setDomains(List<String> domains) {
+    this.domains = domains;
+  }
+
+  @Override
+  public List<String> getDomains() {
+    return domains;
+  }
+
+  public void setGroups(List<String> groups) {
+    this.groups = groups;
+  }
+
+  @Override
+  public List<String> getGroups() {
+    return groups;
+  }
+
+  @Override
+  public boolean isVisibleToDomain(String domainId) {
+    return CollectionUtil.isEmpty(getDomains()) || getDomains().contains(domainId) ;
+  }
+
+  @Override
+  public boolean isVisibleToUser(String userId) {
+    if (CollectionUtil.isEmpty(getGroups())) {
+      return isVisibleToDomain(User.getById(userId).getDomainId());
+    }
+    String[] groupIds = OrganizationController.get().getAllGroupIdsOfUser(userId);
+    return !CollectionUtil.intersection(getGroups(), Arrays.asList(groupIds)).isEmpty();
   }
 
   @Override

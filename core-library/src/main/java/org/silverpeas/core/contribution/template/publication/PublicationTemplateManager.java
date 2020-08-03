@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -53,6 +54,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.UtilException;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -554,7 +556,9 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
           "Context is not complete ! ComponentId, ObjectId, Language and UserId must be " +
               "defined...");
     }
-    if (StringUtil.isDefined(xmlFormName)) {
+
+    String ignoreThisForm = FileUploadUtil.getParameter(items, "ignoreThisForm");
+    if (StringUtil.isDefined(xmlFormName) && !StringUtil.getBooleanValue(ignoreThisForm)) {
       PublicationTemplate pub = getTemplateAndRegisterIt(xmlFormName, context);
       try {
         RecordSet set = pub.getRecordSet();
@@ -637,16 +641,37 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     List<PublicationTemplate> directoryTemplates = getDirectoryTemplates();
     if (CollectionUtil.isNotEmpty(directoryTemplates)) {
       PublicationTemplate template = directoryTemplates.get(0);
-      String shortName = getShortName(template.getFileName());
-      String externalId = "directory" + ":" + shortName;
-      template.setExternalId(externalId);
+      setExternalId(template);
       return template;
     }
     return null;
   }
 
+  public PublicationTemplate getDirectoryTemplate(PagesContext context) {
+    String domainId = context.getDomainId();
+    String userId = context.getObjectId();
+    if (StringUtil.isDefined(userId)) {
+      domainId = User.getById(userId).getDomainId();
+    }
+    List<PublicationTemplate> directoryTemplates = getDirectoryTemplates();
+    for (PublicationTemplate template : directoryTemplates) {
+      if ((StringUtil.isDefined(userId) && template.isVisibleToUser(userId)) ||
+          (StringUtil.isNotDefined(userId) && template.isVisibleToDomain(domainId))) {
+        setExternalId(template);
+        return template;
+      }
+    }
+    return null;
+  }
+
+  private void setExternalId(PublicationTemplate template) {
+    String shortName = getShortName(template.getFileName());
+    String externalId = "directory" + ":" + shortName;
+    template.setExternalId(externalId);
+  }
+
   public Form getDirectoryForm(PagesContext context, boolean viewMode) {
-    PublicationTemplate template = getDirectoryTemplate();
+    PublicationTemplate template = getDirectoryTemplate(context);
     if (template != null) {
       try {
         return getFormAndData(template.getFileName(), context, viewMode);

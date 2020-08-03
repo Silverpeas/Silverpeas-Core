@@ -312,12 +312,13 @@ public class HtmlForm extends AbstractForm {
    * @return the string to be displayed
    */
   @Override
-  public String toString(PagesContext PagesContext, DataRecord record) {
+  public String toString(PagesContext pageContext, DataRecord record) {
     this.record = record;
-    this.pagesContext = PagesContext;
+    this.pagesContext = pageContext;
     ByteArrayOutputStream buffer = new ByteArrayOutputStream(2048);
     try {
       PrintWriter out = new PrintWriter(new OutputStreamWriter(buffer, Charsets.UTF_8), true);
+      out.println(getSkippableSnippet(pageContext));
       out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId() + "\"/>");
       parseFile(out);
       out.flush();

@@ -134,6 +134,14 @@ public interface PublicationTemplate {
 
   boolean isRestrictedVisibilityToInstance();
 
+  List<String> getDomains();
+
+  List<String> getGroups();
+
+  boolean isVisibleToUser(String userId);
+
+  boolean isVisibleToDomain(String domainId);
+
   boolean isDataEncrypted();
 
   boolean isViewLayerExist();

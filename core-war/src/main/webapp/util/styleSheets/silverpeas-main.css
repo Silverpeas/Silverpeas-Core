@@ -5738,6 +5738,27 @@ span.sp-variable.cke_widget_element {
   padding: 10px 0px 0px 10px;
 }
 
+.forms .buttonPanel {
+  width: auto;
+  display:inline-block;
+  position:absolute;
+  right:7px;
+  top:-11px;
+}
+
+.forms .ignoreForm {
+  background-color: #f4f4f4;
+  background-image: url(/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  color: #4c4c4c;
+  font-size: 100%;
+  padding: 5px 10px;
+  width: auto;
+  display: inline-block;
+  margin-left: 5px;
+}
+
 .forms .fields .fieldInput {
   padding: 0 2em 0 2em;
   flex: 4;

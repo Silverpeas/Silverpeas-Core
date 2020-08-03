@@ -106,9 +106,9 @@ public class XmlForm extends AbstractForm {
 
     out.println("<div class=\"forms " + getFormName() + " " + mode + "\">");
 
-    if (record != null) {
-      out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId() + "\"/>");
-    }
+    out.println(getSkippableSnippet(pageContext));
+
+    out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId() + "\"/>");
 
     if (pageContext.getPrintTitle() && StringUtil.isDefined(getTitle())) {
       out.println("<h2 class=\"form-title\">");

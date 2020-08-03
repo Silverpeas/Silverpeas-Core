@@ -243,10 +243,10 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   private void processDataOfExtraTemplate(HttpRequest request) {
     PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
-    PublicationTemplate template = templateManager.getDirectoryTemplate();
+    PagesContext context = getTemplateContext();
+    PublicationTemplate template = templateManager.getDirectoryTemplate(context);
     if (template != null) {
       try {
-        PagesContext context = getTemplateContext();
         templateManager.saveData(template.getFileName(), context, request.getFileItems());
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);

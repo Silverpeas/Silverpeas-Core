@@ -24,6 +24,9 @@
 package org.silverpeas.core.contribution.content.form;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.ecs.html.A;
+import org.apache.ecs.html.Div;
+import org.apache.ecs.html.Input;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
@@ -151,12 +154,17 @@ public abstract class AbstractForm implements Form {
           .append("}\n")
           .append("function getXMLField(fieldName) {\n")
           .append("	return document.getElementById(fieldName);\n")
-          .append("}\n")
-          .append("function ifCorrectFormExecute(callback) {\n")
+          .append("}\n");
+
+      printJavascriptSkippableSnippet(out);
+
+      out.append("function ifCorrectFormExecute(callback) {\n")
           .append("	errorMsg = \"\";\n")
           .append("	errorNb = 0;\n")
           .append("	var field;\n")
           .append("	\n\n");
+
+      out.append("if (ignoreForm) {\n").append("callback.call(this);return;\n").append("}\n");
 
       for (FieldTemplate fieldTemplate : fieldTemplates) {
         if (fieldTemplate != null) {
@@ -505,6 +513,37 @@ public abstract class AbstractForm implements Form {
   @Override
   public String toString(PagesContext pageContext) {
     return toString(pageContext, getData());
+  }
+
+  protected String getSkippableSnippet(PagesContext pageContext) {
+    if (!pageContext.isFormSkippable()) {
+      return "";
+    }
+    Div div = new Div();
+    div.setClass("buttonPanel");
+    A a = new A();
+    a.addElement(Util.getString("form.skip.label", pageContext.language));
+    a.setHref("#");
+    a.setClass("ignoreForm");
+    a.setOnClick(
+        "ignoringForm('" + pageContext.getElementToHideWhenSkipping() + "');return false;");
+    div.addElement(a);
+
+    Input input = new Input();
+    input.setType(Input.hidden);
+    input.setName("ignoreThisForm");
+    input.setID("ignoreThisForm");
+
+    return div.toString() + input.toString();
+  }
+
+  private void printJavascriptSkippableSnippet(PrintWriter out) {
+    out.append("var ignoreForm = false;\n")
+        .append("function ignoringForm(idToHide) {\n")
+        .append("ignoreForm = true;\n")
+        .append("$('#'+idToHide).hide();\n")
+        .append("$('#ignoreThisForm').val('true');\n")
+        .append("}\n");
   }
 
 }

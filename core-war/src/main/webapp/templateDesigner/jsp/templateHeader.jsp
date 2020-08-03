@@ -61,6 +61,8 @@ String encrypted = "";
 String searchable = "";
 String action = "AddTemplate";
 String directoryUsage = "";
+List<String> visibilityDomains = null;
+List<String> visibilityGroups = null;
 List<String> visibilitySpaces = null;
 List<String> visibilityApplications = null;
 List<String> visibilityInstances = null;
@@ -85,6 +87,8 @@ if (template != null) {
 	visibilitySpaces = template.getSpaces();
 	visibilityApplications = template.getApplications();
 	visibilityInstances = template.getInstances();
+	visibilityDomains = template.getDomains();
+  visibilityGroups = template.getGroups();
 	action = "UpdateTemplate";
 }
 
@@ -134,6 +138,8 @@ function sendData() {
 	}
 	$("#Visibility_Spaces").val(getTags($("#template-spaces-visibility").tagit("tags")));
 	$("#Visibility_Instances").val(getTags($("#template-instances-visibility").tagit("tags")));
+  $("#Visibility_Domains").val(getTags($("#template-domains-visibility").tagit("tags")));
+  $("#Visibility_Groups").val(getTags($("#template-groups-visibility").tagit("tags")));
 	switch(errorNb) {
 	  case 0 :
       document.templateForm.submit();
@@ -189,12 +195,18 @@ $(function () {
 
 	$('#template-spaces-visibility').tagit({triggerKeys:tagTriggerKeys});
 	$('#template-instances-visibility').tagit({triggerKeys:tagTriggerKeys});
+  $('#template-domains-visibility').tagit({triggerKeys:tagTriggerKeys});
+  $('#template-groups-visibility').tagit({triggerKeys:tagTriggerKeys});
 
-	<%if (template != null && template.isDirectoryUsage()) { %>
+  <%if (template != null && template.isDirectoryUsage()) { %>
     $(".notApplicableToDirectory").hide();
+    $(".applicableToDirectory").show();
+  <% } else { %>
+  $(".applicableToDirectory").hide();
   <% } %>
   $("#DirectoryUsage").click(function() {
     $(".notApplicableToDirectory").toggle();
+    $(".applicableToDirectory").toggle();
   });
 
   <c:if test="${not creationMode and template.locked}">
@@ -292,6 +304,32 @@ $(function () {
 <tr>
   <td class="txtlibform"><fmt:message key="templateDesigner.header.directory"/></td>
   <td><input type="checkbox" name="DirectoryUsage" id="DirectoryUsage" value="true" <%=directoryUsage%>/></td>
+</tr>
+<tr id="domains-visibility" class="applicableToDirectory">
+  <td class="txtlibform"><fmt:message key="templateDesigner.header.visible.domains"/> </td>
+  <td>
+    <ul id="template-domains-visibility">
+      <% if (visibilityDomains != null)  { %>
+      <% for (String domain : visibilityDomains) { %>
+      <li data-value="<%=domain%>"><%=domain%></li>
+      <% } %>
+      <% } %>
+    </ul>
+    <input type="hidden" id="Visibility_Domains" name="Visibility_Domains"/>
+  </td>
+</tr>
+<tr id="groups-visibility" class="applicableToDirectory">
+  <td class="txtlibform"><fmt:message key="templateDesigner.header.visible.groups"/> </td>
+  <td>
+    <ul id="template-groups-visibility">
+      <% if (visibilityGroups != null)  { %>
+      <% for (String groupId : visibilityGroups) { %>
+      <li data-value="<%=groupId%>"><%=groupId%></li>
+      <% } %>
+      <% } %>
+    </ul>
+    <input type="hidden" id="Visibility_Groups" name="Visibility_Groups"/>
+  </td>
 </tr>
 <tr id="spaces-visibility" class="notApplicableToDirectory">
 	<td class="txtlibform"><fmt:message key="templateDesigner.header.visible.spaces"/> </td>
