@@ -156,6 +156,7 @@ public abstract class AbstractForm implements Form {
           .append("	return document.getElementById(fieldName);\n")
           .append("}\n");
 
+      printJavascriptIgnoreMandatorySnippet(out);
       printJavascriptSkippableSnippet(out);
 
       out.append("function ifCorrectFormExecute(callback) {\n")
@@ -543,6 +544,13 @@ public abstract class AbstractForm implements Form {
         .append("ignoreForm = true;\n")
         .append("$('#'+idToHide).hide();\n")
         .append("$('#ignoreThisForm').val('true');\n")
+        .append("}\n");
+  }
+
+  private void printJavascriptIgnoreMandatorySnippet(PrintWriter out) {
+    out.append("var ignoreMandatory = false;\n");
+    out.append("function ifCorrectFormAndIgnoringMandatoryExecute(callback) {\n")
+        .append("ignoreMandatory = true;\n").append("ifCorrectFormExecute(callback);\n")
         .append("}\n");
   }
 

@@ -38,7 +38,6 @@ import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,25 +70,14 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
    * <li>the fieldName is unknown by the template.</li>
    * <li>the field type is not a managed type.</li>
    * </ul>
-   * @throws java.io.IOException
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
-    String language = pageContext.getLanguage();
-    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
     if (!ExplorerField.TYPE.equals(template.getTypeName())) {
       SilverLogger.getLogger(this).warn("The expected type of the explorer field is invalid: "
         + template.getTypeName());
     }
-    if (template.isMandatory() && pageContext.useMandatory()) {
-      out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("      errorMsg+=\"  - '" +
-          label + "' " +
-          Util.getString("GML.MustBeFilled", language) + "\\n \";");
-      out.println("      errorNb++;");
-      out.println("   }");
-    }
-
+    produceMandatoryCheck(out, template, pageContext);
     Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
   }
 

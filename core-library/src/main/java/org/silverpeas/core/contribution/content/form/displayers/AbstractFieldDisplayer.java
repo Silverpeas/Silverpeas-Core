@@ -55,9 +55,11 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.StringUtil;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,10 +87,24 @@ public abstract class AbstractFieldDisplayer<T extends Field> implements FieldDi
     if (field != null) {
       String value = field.getStringValue();
       if (value != null) {
-        value = value.trim().replaceAll("##", " ");
+        value = value.trim().replace("##", " ");
         indexEntry.addField(key, value, language, stored); // add data in dedicated field
         indexEntry.addTextContent(value, language); // add data in global field
       }
+    }
+  }
+
+  static void produceMandatoryCheck(PrintWriter out, FieldTemplate template,
+      PagesContext pagesContext) {
+    if (template.isMandatory() && pagesContext.useMandatory()) {
+      String language = pagesContext.getLanguage();
+      String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
+      out.println(
+          "   if (!ignoreMandatory && isWhitespace(stripInitialWhitespace(field.value))) {\n");
+      out.println((new StringBuilder()).append("      errorMsg+=\"  - '").append(label).append("' ")
+          .append(Util.getString("GML.MustBeFilled", language)).append("\\n\";\n").toString());
+      out.println("      errorNb++;\n");
+      out.println("   }\n");
     }
   }
 }

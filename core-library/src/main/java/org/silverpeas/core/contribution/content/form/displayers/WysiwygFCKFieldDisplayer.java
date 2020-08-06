@@ -113,7 +113,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
    * @param out
    * @param template
    * @param pageContext
-   * @throws java.io.IOException
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
@@ -125,7 +124,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       out.println("var thecode = oEditor.getData();");
       if (template.isMandatory() && pageContext.useMandatory()) {
         out.println(
-            " if (isWhitespace(stripInitialWhitespace(thecode)) || thecode == \"<P>&nbsp;</P>\") {");
+            " if (!ignoreMandatory && isWhitespace(stripInitialWhitespace(thecode))) {");
         out.println(" errorMsg+=\" - '" + label + "' "
             + Util.getString("GML.MustBeFilled", language) + "\\n\";");
         out.println(" errorNb++;");
@@ -334,7 +333,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         indexEntry.addTextContent(fieldValueIndex, language);
       } else {
         indexEntry.addTextContent(fieldValue.trim(), language);
-        fieldValueIndex = fieldValue.trim().replaceAll("##", " ");
+        fieldValueIndex = fieldValue.trim().replace("##", " ");
       }
       indexEntry.addField(key, fieldValueIndex, language, false);
 

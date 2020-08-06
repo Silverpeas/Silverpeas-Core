@@ -71,23 +71,16 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
    * <LI>the fieldName is unknown by the template.
    * <LI>the field type is not a managed type.
    * </UL>
-   * @throws java.io.IOException
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext) {
-    String language = PagesContext.getLanguage();
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
+    String language = pagesContext.getLanguage();
     String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
 
     out.println("var " + template.getFieldName()
         + "Empty = isWhitespace(stripInitialWhitespace(field.value));");
 
-    if (template.isMandatory() && PagesContext.useMandatory()) {
-      out.println("	if (" + template.getFieldName() + "Empty) {");
-      out.println("		errorMsg+=\"  - '" + label + "' "
-          + Util.getString("GML.MustBeFilled", language) + "\\n\";");
-      out.println("		errorNb++;");
-      out.println("	}");
-    }
+    produceMandatoryCheck(out, template, pagesContext);
 
     out.println(" if (!" + template.getFieldName() + "Empty) {");
     out.println("var reg=new RegExp(\"^([01][0-9]|2[0-3]):([0-5][0-9])$\",\"g\");");
@@ -98,7 +91,7 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     out.println("}");
     out.println("}");
 
-    Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
+    Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
   /**

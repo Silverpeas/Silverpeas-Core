@@ -33,7 +33,6 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.html.plugin.UserGroupSelectProducer;
-import org.silverpeas.core.util.WebEncodeHelper;
 
 import java.io.PrintWriter;
 import java.util.Collections;
@@ -57,28 +56,6 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
 
   private static final int NB_HTML_ELEMENTS = 2;
-
-  /**
-   * The production is done from a static method because some other fields need to perform
-   * exactly the same check.
-   * @param out the writer into which the javascript is written.
-   * @param template the field template data.
-   * @param pagesContext the page context.
-   */
-  static void produceMandatoryCheck(final PrintWriter out, final FieldTemplate template,
-      final PagesContext pagesContext) {
-    final String language = pagesContext.getLanguage();
-    String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
-    if (template.isMandatory() && pagesContext.useMandatory()) {
-      out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("      errorMsg+=\"  - '"
-          + label
-          + "' " + Util.getString("GML.MustBeFilled", language)
-          + "\\n\";");
-      out.println("      errorNb++;");
-      out.println("   }");
-    }
-  }
 
   /**
    * Returns the name of the managed types.

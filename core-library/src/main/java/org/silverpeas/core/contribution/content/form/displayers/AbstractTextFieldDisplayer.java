@@ -46,18 +46,6 @@ public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<
     return MANAGED_TYPES;
   }
 
-  protected void addMandatoryScript(StringBuilder script, FieldTemplate template, PagesContext pageContext) {
-    if (template.isMandatory() && pageContext.useMandatory()) {
-      String language = pageContext.getLanguage();
-      String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
-      script.append("   if (isWhitespace(stripInitialWhitespace(field.value))) {\n");
-      script.append("     errorMsg+=\"  - '").append(label).append("' ").
-          append(Util.getString("GML.MustBeFilled", language)).append("\\n\";\n");
-      script.append("     errorNb++;\n");
-      script.append("   }\n");
-    }
-  }
-
   protected void addSpecificScript(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
 
   }
@@ -79,8 +67,7 @@ public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<
 
     StringBuilder script = new StringBuilder(10000);
 
-    addMandatoryScript(script, template, pagesContext);
-
+    produceMandatoryCheck(out, template, pagesContext);
     addSpecificScript(out, template, pagesContext);
 
     Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());

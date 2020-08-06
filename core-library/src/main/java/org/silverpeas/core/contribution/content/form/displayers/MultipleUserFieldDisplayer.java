@@ -44,8 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.silverpeas.core.contribution.content.form.displayers.UserFieldDisplayer
-    .produceMandatoryCheck;
 import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.SelectionType.USER;
 import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.withContainerId;
 
@@ -80,8 +78,7 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
    * </UL>
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-      throws java.io.IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     produceMandatoryCheck(out, template, pagesContext);
   }
 

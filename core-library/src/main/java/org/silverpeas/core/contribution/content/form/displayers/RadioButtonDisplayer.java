@@ -77,20 +77,15 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer<TextField> {
    * </UL>
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-      throws java.io.IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
 
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
 
-    if (!TextField.TYPE.equals(template.getTypeName())) {
-
-    }
-
     if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println(" var checked = $('input[type=radio][name=" + fieldName
           + "]:checked').length == 1;\n");
-      out.println(" if(checked == false) {");
+      out.println(" if(!ignoreMandatory && checked == false) {");
       out.println("   errorMsg+=\"  - '" + template.getLabel(language) + "' " + Util.getString(
           "GML.MustBeFilled", language) + "\\n\";\n");
       out.println("   errorNb++;");
