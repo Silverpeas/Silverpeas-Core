@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.web.calendar.ical;
 
+import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.Exporter;
 import org.silverpeas.core.importexport.ical.ExportableCalendar;
@@ -63,16 +63,16 @@ import java.util.TimeZone;
  */
 public class ExportIcalManager {
 
-  private SilverpeasCalendar calendarBm;
-  private static final String firstDate = "1970/01/01";
-  private static final String lastDate = "2050/01/01";
+  private SilverpeasCalendar calendar;
+  private static final String FIRST_DATE = "1970/01/01";
+  private static final String LAST_DATE = "2050/01/01";
   private String userId;
   private String language = "fr";
 
   public ExportIcalManager(AgendaSessionController agendaSessionController) {
     this.userId = agendaSessionController.getUserId();
     this.language = agendaSessionController.getLanguage();
-    setCalendarBm();
+    setCalendarService();
   }
 
   /**
@@ -82,7 +82,7 @@ public class ExportIcalManager {
    */
   public ExportIcalManager(String userId) {
     this.userId = userId;
-    setCalendarBm();
+    setCalendarService();
   }
 
   /**
@@ -136,8 +136,7 @@ public class ExportIcalManager {
       } catch (org.silverpeas.core.util.UtilException ex1) {
         SilverLogger.getLogger(this).error(ex1);
       }
-      throw new AgendaException("ExportIcalManager.exportIcalAgenda()",
-          SilverpeasException.ERROR, "agenda.EXPORT_ICAL_FAILED", ex);
+      throw new AgendaException(ex);
     }
 
     return returnCode;
@@ -184,8 +183,7 @@ public class ExportIcalManager {
       } catch (org.silverpeas.core.util.UtilException ex1) {
         SilverLogger.getLogger(this).error(ex1);
       }
-      throw new AgendaException("ExportIcalManager.exportIcalAgendaForSynchro()",
-          SilverpeasException.ERROR, "agenda.EXPORT_ICAL_FAILED", ex);
+      throw new AgendaException(ex);
     }
 
     return filePath;
@@ -202,7 +200,7 @@ public class ExportIcalManager {
    */
   private Collection<JournalHeader> getSchedulableCalendar(String startDate, String endDate)
       throws ParseException {
-    return calendarBm.getPeriodSchedulablesForUser(DateUtil.date2SQLDate(
+    return calendar.getPeriodSchedulablesForUser(DateUtil.date2SQLDate(
         startDate, getLanguage()), DateUtil.date2SQLDate(endDate, getLanguage()), getUserId(),
         null,
         new ParticipationStatus(ParticipationStatus.ACCEPTED).getString());
@@ -221,8 +219,8 @@ public class ExportIcalManager {
   private List<CalendarEvent> getCalendarEvents(String startDate, String endDate) throws
       ParseException {
     List<CalendarEvent> events = new ArrayList<>();
-    String fromDate = at(startDate, or(firstDate));
-    String toDate = at(endDate, or(lastDate));
+    String fromDate = at(startDate, or(FIRST_DATE));
+    String toDate = at(endDate, or(LAST_DATE));
 
     Collection<JournalHeader> schedulables = getSchedulableCalendar(fromDate, toDate);
     for (JournalHeader schedulable : schedulables) {
@@ -234,13 +232,7 @@ public class ExportIcalManager {
           TimeZone.getDefault().toZoneId());
       boolean allDay = StringUtil.isDefined(schedulable.getStartHour()) &&
           StringUtil.isDefined(schedulable.getEndHour());
-      CalendarEvent event;
-      if (allDay) {
-        event = CalendarEvent.on(
-            Period.between(startDateTime.toLocalDate(), endDateTime.toLocalDate()));
-      } else {
-        event = CalendarEvent.on(Period.between(startDateTime, endDateTime));
-      }
+      CalendarEvent event = getCalendarEvent(startDateTime, endDateTime, allDay);
       event.identifiedBy("event", schedulable.getId()).
           withTitle(schedulable.getName()).
           withDescription(schedulable.getDescription());
@@ -251,13 +243,13 @@ public class ExportIcalManager {
       event.withPriority(Priority.valueOf(schedulable.getPriority().getValue()));
 
       // set the categories in which the event is
-      Collection<Category> categories = calendarBm.getJournalCategories(schedulable.getId());
+      Collection<Category> categories = calendar.getJournalCategories(schedulable.getId());
       for (Category category : categories) {
         event.getCategories().add(category.getName());
       }
 
       // set the attendees to the event
-      Collection<Attendee> attendees = calendarBm.getJournalAttendees(schedulable.getId());
+      Collection<Attendee> attendees = calendar.getJournalAttendees(schedulable.getId());
       for (Attendee attendee : attendees) {
         UserDetail user = OrganizationControllerProvider
             .getOrganisationController().getUserDetail(attendee.getUserId());
@@ -276,16 +268,28 @@ public class ExportIcalManager {
     return events;
   }
 
+  @NotNull
+  private CalendarEvent getCalendarEvent(final OffsetDateTime startDateTime,
+      final OffsetDateTime endDateTime, final boolean allDay) {
+    CalendarEvent event;
+    if (allDay) {
+      event = CalendarEvent.on(
+          Period.between(startDateTime.toLocalDate(), endDateTime.toLocalDate()));
+    } else {
+      event = CalendarEvent.on(Period.between(startDateTime, endDateTime));
+    }
+    return event;
+  }
+
   /**
    * Gets the remote EJB that provides an access to the user calendar.
    */
-  private void setCalendarBm() {
-    if (calendarBm == null) {
+  private void setCalendarService() {
+    if (calendar == null) {
       try {
-        calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
+        calendar = ServiceProvider.getService(SilverpeasCalendar.class);
       } catch (Exception e) {
-        throw new AgendaRuntimeException("ExportIcalManager.setCalendarBm()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        throw new AgendaRuntimeException(e);
       }
     }
   }

@@ -23,17 +23,15 @@
  */
 package org.silverpeas.core.web.tools.agenda.model;
 
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.tools.agenda.control.AgendaException;
+
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.tools.agenda.control.AgendaException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-
-import javax.inject.Singleton;
 
 @Singleton
 public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao {
@@ -69,8 +67,7 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
         settings.setCharset(rs.getString("charset"));
       }
     } catch (Exception e) {
-      SilverTrace.error("agenda", "CalendarImportSettingsDaoJdbc",
-          "agenda.EX_CANT_GET_USER_SETTINGS", e);
+      SilverLogger.getLogger(this).error(e);
     } finally {
       DBUtil.close(rs, st);
       close(connection);
@@ -106,10 +103,7 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
       st.setString(8, settings.getCharset());
       st.executeUpdate();
     } catch (Exception e) {
-      throw new AgendaException(
-          "CalendarImportSettingsDaoJdbc.saveUserSettings",
-          SilverpeasException.ERROR, "agenda.EX_CANT_SAVE_USER_SETTINGS",
-          "user id = " + settings.getUserId(), e);
+      throw new AgendaException(e);
     } finally {
       DBUtil.close(rs, st);
       close(connection);
@@ -143,10 +137,7 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
       st.setInt(8, settings.getUserId());
       st.executeUpdate();
     } catch (Exception e) {
-      throw new AgendaException(
-          "CalendarImportSettingsDaoJdbc.updateUserSettings",
-          SilverpeasException.ERROR, "agenda.EX_CANT_UPDATE_USER_SETTINGS",
-          "user id = " + settings.getUserId(), e);
+      throw new AgendaException(e);
     } finally {
       DBUtil.close(rs, st);
       close(connection);
@@ -159,11 +150,12 @@ public class CalendarImportSettingsDaoJdbc implements CalendarImportSettingsDao 
       try {
         connection.close();
       } catch (SQLException e) {
+        SilverLogger.getLogger(this).silent(e);
       }
   }
 
   // Recuperation de la connection
-  private Connection getConnection() throws Exception {
+  private Connection getConnection() throws SQLException {
     return DBUtil.openConnection();
   }
 

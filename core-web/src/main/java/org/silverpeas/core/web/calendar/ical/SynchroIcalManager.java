@@ -23,12 +23,11 @@
  */
 package org.silverpeas.core.web.calendar.ical;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
-import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
+import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 
 import java.io.File;
 import java.net.URL;
@@ -38,7 +37,7 @@ import java.net.URL;
  */
 public class SynchroIcalManager {
 
-  public final static String SYNCHRO_SUCCEEDED = "0";
+  public static final String SYNCHRO_SUCCEEDED = "0";
   private AgendaSessionController agendaSessionController;
   private SilverpeasCalendar calendarBm;
 
@@ -81,8 +80,7 @@ public class SynchroIcalManager {
         returnCodeSynchro = remoteConnect;
       }
     } catch (Exception e) {
-      SilverTrace
-          .error("agenda", "SynchroIcalManager.synchroIcalAgenda()", "", e.fillInStackTrace());
+      SilverLogger.getLogger(this).error(e);
     }
     return returnCodeSynchro;
   }
@@ -96,8 +94,7 @@ public class SynchroIcalManager {
       try {
         calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
       } catch (Exception e) {
-        throw new AgendaRuntimeException("ImportIcalManager.setCalendarBm()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        throw new AgendaRuntimeException(e);
       }
     }
   }

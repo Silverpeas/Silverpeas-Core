@@ -23,14 +23,6 @@
  */
 package org.silverpeas.core.contribution.content.form.record;
 
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
@@ -40,8 +32,16 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.TypeManager;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A GenericDataRecord use a Field[] and a GenericRecordTemplate.
@@ -52,7 +52,7 @@ public class GenericDataRecord implements DataRecord, Serializable {
   private int id = -1;
   private String externalId;
   private Field[] fields;
-  private RecordTemplate template;
+  private transient RecordTemplate template;
   private String language;
   private Map<String, List<Field>> fieldsByName;
 
@@ -122,9 +122,8 @@ public class GenericDataRecord implements DataRecord, Serializable {
     }
 
     if (field == null) {
-      SilverTrace.warn("form", "GenericDataRecord.getField",
-          "form.EXP_UNKNOWN_FIELD", "fieldName '" + fieldName
-          + "' in DB not found in XML descriptor");
+      SilverLogger.getLogger(this)
+          .warn("Unknown field {0}: not found in the XML descriptor", fieldName);
     }
 
     return field;
@@ -195,7 +194,7 @@ public class GenericDataRecord implements DataRecord, Serializable {
         Field field = getField(fieldName);
         GenericFieldTemplate fieldTemplate =
             (GenericFieldTemplate) template.getFieldTemplate(fieldName);
-        FieldDisplayer fieldDisplayer =
+        FieldDisplayer<Field> fieldDisplayer =
             TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
         if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
           fieldTemplate.setReadOnly(true);
@@ -214,15 +213,15 @@ public class GenericDataRecord implements DataRecord, Serializable {
           }
         }
       } catch (Exception e) {
-        SilverTrace.warn("form", "GenericDataRecord.getValues", "CANT_GET_FIELD_VALUE",
-            "objectId = " + externalId + "fieldName = " + fieldName, e);
+        SilverLogger.getLogger(this)
+            .error("Cannot get value of field " + fieldName + " of the object " + externalId, e);
       }
     }
     return formValues;
   }
 
   private String getRepeatableFieldDisplayableValues(Field field, FieldTemplate fieldTemplate,
-      FieldDisplayer fieldDisplayer, PagesContext pageContext) throws FormException {
+      FieldDisplayer<Field> fieldDisplayer, PagesContext pageContext) throws FormException {
     int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
     StringBuilder fieldValues = new StringBuilder();
     for (int occ = 0; occ < maxOccurrences; occ++) {

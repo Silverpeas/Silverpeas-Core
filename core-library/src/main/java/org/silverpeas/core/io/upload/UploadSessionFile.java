@@ -26,6 +26,7 @@ package org.silverpeas.core.io.upload;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -80,14 +81,11 @@ public class UploadSessionFile {
   public void write(InputStream uploadedInputStream) throws IOException {
     getUploadSession().markFileWritingInProgress(this);
     try {
-      FileOutputStream fOS = FileUtils.openOutputStream(getServerFile());
-      try {
-        IOUtils.copy(uploadedInputStream, fOS);
-      } finally {
-        IOUtils.closeQuietly(fOS);
+      try(BufferedInputStream bIs = new BufferedInputStream(uploadedInputStream);
+          FileOutputStream fOS = FileUtils.openOutputStream(getServerFile())) {
+        IOUtils.copy(bIs, fOS);
       }
     } finally {
-      IOUtils.closeQuietly(uploadedInputStream);
       getUploadSession().markFileWritingDone(this);
     }
   }

@@ -23,36 +23,21 @@
  */
 package org.silverpeas.core.web.tools.agenda.control;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 public class AgendaException extends SilverpeasException {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 2563713634173217404L;
 
-  public AgendaException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public AgendaException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public AgendaException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public AgendaException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public AgendaException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public AgendaException(final Throwable cause) {
+    super(cause);
   }
-
-  public AgendaException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * method of interface FromModule
-   */
-  public String getModule() {
-    return "agenda";
-  }
-
 }

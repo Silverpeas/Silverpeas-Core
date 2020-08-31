@@ -303,7 +303,7 @@ public class AuthenticationLDAP extends Authentication {
   }
 
   @NotNull
-  private LDAPConnection openLDAPConnection(final AuthenticationConnection connection)
+  private LDAPConnection openLDAPConnection(final AuthenticationConnection<LDAPConnection> connection)
       throws AuthenticationHostException {
     final LDAPConnection ldapConnection = getLDAPConnection(connection);
     try {
@@ -508,7 +508,7 @@ public class AuthenticationLDAP extends Authentication {
     }
   }
 
-  private static LDAPConnection getLDAPConnection(AuthenticationConnection connection) {
-    return (LDAPConnection) connection.getConnector();
+  private static LDAPConnection getLDAPConnection(AuthenticationConnection<LDAPConnection> connection) {
+    return connection.getConnector();
   }
 }

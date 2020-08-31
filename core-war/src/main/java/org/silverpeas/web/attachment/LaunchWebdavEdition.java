@@ -47,8 +47,10 @@ import java.net.URLEncoder;
 import static org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext.createWebdavContext;
 
 /**
+ * @deprecated
  * @author ehugonnet
  */
+@Deprecated
 public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
 
   private static final SettingBundle resources =

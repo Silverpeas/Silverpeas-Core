@@ -28,23 +28,22 @@ import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.Date;
-import net.fortuna.ical4j.model.DateList;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.component.CalendarComponent;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Priority;
 import net.fortuna.ical4j.model.property.RRule;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.personalorganizer.model.Category;
 import org.silverpeas.core.personalorganizer.model.Schedulable;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 
@@ -78,7 +77,7 @@ public class ImportIcalManager {
    * @return
    * @throws Exception
    */
-  public String importIcalAgenda(File file) throws Exception {
+  public String importIcalAgenda(File file) {
     String returnCode = AgendaSessionController.IMPORT_FAILED;
     InputStreamReader inputStream = null;
     XmlReader xr = null;
@@ -97,7 +96,7 @@ public class ImportIcalManager {
       CalendarBuilder builder = new CalendarBuilder();
       Calendar calendar = builder.build(inputStream);
       // Get all EVENTS
-      for (Object o : calendar.getComponents(Component.VEVENT)) {
+      for (CalendarComponent o : calendar.getComponents(Component.VEVENT)) {
         VEvent eventIcal = (VEvent) o;
         String name = getFieldEvent(eventIcal.getProperty(Property.SUMMARY));
 
@@ -191,7 +190,7 @@ public class ImportIcalManager {
       }
       returnCode = AgendaSessionController.IMPORT_SUCCEEDED;
     } catch (Exception e) {
-      SilverTrace.error("agenda", "ImportIcalManager.importIcalAgenda()", e.getCause().toString());
+      SilverLogger.getLogger(this).error(e);
       returnCode = AgendaSessionController.IMPORT_FAILED;
     } finally {
       IOUtils.closeQuietly(inputStream);
@@ -304,8 +303,7 @@ public class ImportIcalManager {
       try {
         calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
       } catch (Exception e) {
-        throw new AgendaRuntimeException("ImportIcalManager.setCalendarBm()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        throw new AgendaRuntimeException(e);
       }
     }
   }
@@ -371,8 +369,7 @@ public class ImportIcalManager {
         interval *= 5;
       }
       DateTime endDate = new DateTime(startDate.getTime() + (interval));
-      DateList dates = recur.getDates(startDate, endDate, Value.DATE_TIME);
-      return dates;
+      return recur.getDates(startDate, endDate, Value.DATE_TIME);
     }
     return Collections.emptyList();
   }

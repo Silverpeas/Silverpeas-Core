@@ -23,27 +23,13 @@
  */
 package org.silverpeas.core.web.tools.agenda.control;
 
-import org.silverpeas.core.web.calendar.ical.ExportIcalManager;
-import org.silverpeas.core.web.calendar.ical.ImportIcalManager;
-import org.silverpeas.core.web.calendar.ical.SynchroIcalManager;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings;
-import org.silverpeas.core.web.tools.agenda.model.CalendarImportSettingsDao;
-import org.silverpeas.core.web.tools.agenda.notification.AgendaUserNotification;
-import org.silverpeas.core.web.tools.agenda.view.AgendaHtmlView;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.personalorganizer.service.CalendarException;
-import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.Category;
 import org.silverpeas.core.personalorganizer.model.HolidayDetail;
@@ -51,17 +37,31 @@ import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.personalorganizer.model.ParticipationStatus;
 import org.silverpeas.core.personalorganizer.model.Schedulable;
 import org.silverpeas.core.personalorganizer.model.SchedulableCount;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.personalorganizer.service.CalendarException;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.URLEncoder;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.calendar.ical.ExportIcalManager;
+import org.silverpeas.core.web.calendar.ical.ImportIcalManager;
+import org.silverpeas.core.web.calendar.ical.SynchroIcalManager;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.core.web.tools.agenda.model.CalendarImportSettings;
+import org.silverpeas.core.web.tools.agenda.model.CalendarImportSettingsDao;
+import org.silverpeas.core.web.tools.agenda.notification.AgendaUserNotification;
+import org.silverpeas.core.web.tools.agenda.view.AgendaHtmlView;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.text.ParseException;
@@ -73,6 +73,7 @@ import java.util.List;
 
 public class AgendaSessionController extends AbstractComponentSessionController {
 
+  private static final String RAGENDA_JSP_MAIN = "/Ragenda/jsp/Main";
   private int currentDisplayType = AgendaHtmlView.BYDAY;
   private boolean calendarVisible = true;
   private Calendar currentCalendar;
@@ -90,17 +91,17 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   private UserDetail agendaUserDetail = getUserDetail();
   private final CalendarImportSettingsDao importSettingsDao =
       CalendarImportSettingsDao.getInstance();
-  public final static String ICALENDAR_MIME_TYPE = "text/calendar";
-  public final static String EXPORT_SUCCEEDED = "0";
-  public final static String EXPORT_FAILED = "1";
-  public final static String EXPORT_EMPTY = "2";
-  public final static String IMPORT_SUCCEEDED = "0";
-  public final static String IMPORT_FAILED = "1";
-  public final static String SYNCHRO_SUCCEEDED = "0";
-  public final static String SYNCHRO_FAILED = "1";
-  public final static String AGENDA_FILENAME_PREFIX = "agenda";
-  public final static int WORKING_DAY = 0;
-  public final static int HOLIDAY_DAY = 1;
+  public static final String ICALENDAR_MIME_TYPE = "text/calendar";
+  public static final String EXPORT_SUCCEEDED = "0";
+  public static final String EXPORT_FAILED = "1";
+  public static final String EXPORT_EMPTY = "2";
+  public static final String IMPORT_SUCCEEDED = "0";
+  public static final String IMPORT_FAILED = "1";
+  public static final String SYNCHRO_SUCCEEDED = "0";
+  public static final String SYNCHRO_FAILED = "1";
+  public static final String AGENDA_FILENAME_PREFIX = "agenda";
+  public static final int WORKING_DAY = 0;
+  public static final int HOLIDAY_DAY = 1;
 
   public AgendaSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
     super(mainSessionCtrl, context, "org.silverpeas.agenda.multilang.agenda");
@@ -146,8 +147,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       try {
         calendarBm = ServiceProvider.getService(SilverpeasCalendar.class);
       } catch (Exception e) {
-        throw new AgendaRuntimeException("AgendaSessionController.setCalendarBm()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        throw new AgendaRuntimeException(e);
       }
     }
   }
@@ -169,16 +169,14 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    */
   public String addJournal(String name, String description, String priority, String classification,
-      Date startDay, String startHour, Date endDay, String endHour) throws RemoteException {
+      Date startDay, String startHour, Date endDay, String endHour) {
     JournalHeader journal = new JournalHeader(name, getUserId());
 
     journal.setDescription(description);
     try {
       journal.getPriority().setValue(Integer.parseInt(priority));
     } catch (Exception e) {
-      SilverTrace.warn("agenda", "AgendaSessionController.addJournal(String name, " +
-          "String description, String priority, String classification, Date startDay, String " +
-          "startHour, Date endDay, String endHour)", "agenda.MSG_CANT_GET_PRIORITY", "", e);
+      SilverLogger.getLogger(this).error(e);
 
     }
     try {
@@ -188,13 +186,9 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       journal.setEndDay(DateUtil.date2SQLDate(endDay));
       journal.setEndHour(endHour);
     } catch (java.text.ParseException pe) {
-      throw new AgendaRuntimeException("AgendaSessionController.addJournal(String name, String " +
-          "description, String priority, String classification, Date startDay, String startHour, " +
-          "Date endDay, String endHour)", SilverpeasException.ERROR, "agenda.EX_CANT_ADD_JOURNAL",
-          pe);
+      throw new AgendaRuntimeException(pe);
     }
-    String result = calendarBm.addJournal(journal);
-    return result;
+    return calendarBm.addJournal(journal);
   }
 
   /**
@@ -204,14 +198,11 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    */
   protected void notifyAttendees(final String id, final NotifAction action) {
     try {
-
       UserNotificationHelper
           .buildAndSend(new AgendaUserNotification(action, getUserDetail(), getJournalHeader(id)));
 
     } catch (Exception e) {
-      SilverTrace
-          .warn("agenda", "AgendaSessionController.notifyAttendees()", "agenda.MSG_CANT_SEND_MAILS",
-              e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -227,8 +218,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
           .buildAndSend(new AgendaUserNotification(getUserDetail(), getJournalHeader(id), attend));
 
     } catch (Exception e) {
-      SilverTrace.warn("agenda", "AgendaSessionController.notifyFromAttendee()",
-          "agenda.MSG_CANT_SEND_MAILS", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -248,8 +238,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    *
    */
   public void updateJournal(String id, String name, String description, String priority,
-      String classification, Date startDay, String startHour, Date endDay, String endHour)
-      throws RemoteException, CalendarException {
+      String classification, Date startDay, String startHour, Date endDay, String endHour) {
     boolean changed = false;
     JournalHeader journal = getJournalHeader(id);
 
@@ -258,9 +247,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     try {
       journal.getPriority().setValue(Integer.parseInt(priority));
     } catch (Exception e) {
-      SilverTrace.warn("agenda", "AgendaSessionController.updateJournal(String name, String " +
-          "description, String priority, String classification, Date startDay, String startHour, " +
-          "Date endDay, String endHour)", "agenda.MSG_CANT_GET_PRIORITY", "", e);
+      SilverLogger.getLogger(this).error(e);
     }
     try {
       changed = eventHasChanged(journal, startDay, startHour, endDay, endHour);
@@ -270,10 +257,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       journal.setEndDay(DateUtil.date2SQLDate(endDay));
       journal.setEndHour(endHour);
     } catch (java.text.ParseException pe) {
-      throw new AgendaRuntimeException("AgendaSessionController.updateJournal(String name, " +
-          "String description, String priority, String classification, Date startDay, " +
-          "String startHour, Date endDay, String endHour)", SilverpeasException.ERROR,
-          "agenda.EX_CANT_UPDATE_JOURNAL", pe);
+      throw new AgendaRuntimeException(pe);
     }
 
     calendarBm.updateJournal(journal);
@@ -284,17 +268,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   private boolean eventHasChanged(JournalHeader journal, Date startDay, String startHour,
       Date endDay, String endHour) {
-    boolean hasChanged = true;
-
-    if (DateUtil.datesAreEqual(journal.getStartDate(), startDay) &&
-        DateUtil.datesAreEqual(journal.getEndDate(), endDay)) {
-      if (journal.getStartHour() != null && journal.getStartHour().equals(startHour)) {
-        if (journal.getEndHour() != null && journal.getEndHour().equals(endHour)) {
-          hasChanged = false;
-        }
-      }
-    }
-    return hasChanged;
+    return DateUtil.datesAreEqual(journal.getStartDate(), startDay) &&
+        DateUtil.datesAreEqual(journal.getEndDate(), endDay) &&
+        (journal.getStartHour() != null && journal.getStartHour().equals(startHour)) &&
+        (journal.getEndHour() != null && journal.getEndHour().equals(endHour));
   }
 
   /**
@@ -302,9 +279,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @param id
    * @throws CalendarException
    * @throws RemoteException
-   *
    */
-  public void removeJournal(String id) throws RemoteException, CalendarException {
+  public void removeJournal(String id) {
     notifyAttendees(id, NotifAction.DELETE);
     calendarBm.removeJournal(id);
   }
@@ -316,7 +292,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    *
    */
-  public JournalHeader getJournalHeader(String journalId) throws RemoteException {
+  public JournalHeader getJournalHeader(String journalId) {
     return calendarBm.getJournalHeader(journalId);
   }
 
@@ -327,8 +303,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     try {
       return calendarBm.getJournalAttendees(journalId);
     } catch (Exception e) {
-      throw new AgendaException("AgendaSessionController.getJournalAttendees(String journalId)",
-          SilverpeasException.ERROR, "agenda.EX_CANT_GET_ATTENDEES", "journalId=" + journalId, e);
+      throw new AgendaException(e);
     }
 
   }
@@ -345,9 +320,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       calendarBm.setJournalAttendees(journalId, userIds);
       notifyAttendees(journalId, NotifAction.CREATE);
     } catch (Exception e) {
-      throw new AgendaException(
-          "AgendaSessionController.setJournalAttendees(String journalId, String[] userIds)",
-          SilverpeasException.ERROR, "agenda.EX_CANT_SET_ATTENDEES", "journalId=" + journalId, e);
+      throw new AgendaException(e);
     }
   }
 
@@ -365,10 +338,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       calendarBm.setJournalParticipationStatus(journalId, userId, status);
       notifyFromAttendee(journalId, status);
     } catch (Exception e) {
-      throw new AgendaException(
-          "AgendaSessionController.setJournalParticipationStatus(String journalId, String userId," +
-              " String status)", SilverpeasException.ERROR, "agenda.EX_CANT_SET_STATUS",
-          "journalId=" + journalId + " ,userId=" + getUserId() + ",status=" + status, e);
+      throw new AgendaException(e);
     }
   }
 
@@ -379,8 +349,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     try {
       return calendarBm.getAllCategories();
     } catch (Exception e) {
-      throw new AgendaException("AgendaSessionController. getAllCategories()",
-          SilverpeasException.ERROR, "agenda.EX_CANT_GET_CATEGORIES", e);
+      throw new AgendaException(e);
     }
   }
 
@@ -395,8 +364,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     try {
       return calendarBm.getCategory(categoryId);
     } catch (Exception e) {
-      throw new AgendaException("AgendaSessionController. getCategory(String categoryId)",
-          SilverpeasException.ERROR, "agenda.EX_CANT_GET_CATEGORY", "categoryId=" + categoryId, e);
+      throw new AgendaException(e);
     }
   }
 
@@ -411,9 +379,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     try {
       return calendarBm.getJournalCategories(journalId);
     } catch (Exception e) {
-      throw new AgendaException("AgendaSessionController. getJournalCategories(String journalId)",
-          SilverpeasException.ERROR, "agenda.EX_CANT_GET_JOURNAL_CATEGORY",
-          "journalId=" + journalId, e);
+      throw new AgendaException(e);
     }
   }
 
@@ -428,9 +394,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     try {
       calendarBm.setJournalCategories(journalId, categoryIds);
     } catch (Exception e) {
-      throw new AgendaException("setJournalCategories(String journalId, String[] categoryIds)",
-          SilverpeasException.ERROR, "agenda.EX_CANT_SET_JOURNAL_CATEGORY",
-          "journalId=" + journalId, e);
+      throw new AgendaException(e);
     }
 
   }
@@ -671,7 +635,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    *
    */
-  public Collection<JournalHeader> getDaySchedulables() throws RemoteException {
+  public Collection<JournalHeader> getDaySchedulables() {
     String categoryId = null;
     if (getCategory() != null) {
       categoryId = getCategory().getId();
@@ -688,7 +652,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    *
    */
-  public Collection<JournalHeader> getMonthSchedulables(Date date) throws RemoteException {
+  public Collection<JournalHeader> getMonthSchedulables(Date date) {
     Date begin = getMonthFirstDay(date);
     Date end = getMonthLastDay(date);
 
@@ -697,9 +661,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       categoryId = getCategory().getId();
     }
 
-    return calendarBm
-        .getPeriodSchedulablesForUser(DateUtil.date2SQLDate(begin), DateUtil.date2SQLDate(end),
-            agendaUserId, categoryId, getParticipationStatus().getString());
+    return calendarBm.getPeriodSchedulablesForUser(DateUtil.date2SQLDate(begin),
+        DateUtil.date2SQLDate(end), agendaUserId, categoryId, getParticipationStatus().getString());
   }
 
   /**
@@ -708,7 +671,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    *
    */
-  public Collection<JournalHeader> getWeekSchedulables() throws RemoteException {
+  public Collection<JournalHeader> getWeekSchedulables() {
     Date begin = getWeekFirstDay(getCurrentDay());
     Date end = getWeekLastDay(getCurrentDay());
 
@@ -717,9 +680,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       categoryId = getCategory().getId();
     }
 
-    return calendarBm
-        .getPeriodSchedulablesForUser(DateUtil.date2SQLDate(begin), DateUtil.date2SQLDate(end),
-            agendaUserId, categoryId, getParticipationStatus().getString());
+    return calendarBm.getPeriodSchedulablesForUser(DateUtil.date2SQLDate(begin),
+        DateUtil.date2SQLDate(end), agendaUserId, categoryId, getParticipationStatus().getString());
   }
 
   /**
@@ -728,7 +690,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    *
    */
-  public Collection<SchedulableCount> countMonthSchedulables() throws RemoteException {
+  public Collection<SchedulableCount> countMonthSchedulables() {
     String month = (DateUtil.date2SQLDate(getCurrentDay())).substring(0, 8);
     String categoryId = null;
     if (getCategory() != null) {
@@ -754,7 +716,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
             ParticipationStatus.ACCEPTED);
 
     if (!userId.equals(getUserId())) {
-      Collection<JournalHeader> subResult = new ArrayList<JournalHeader>();
+      Collection<JournalHeader> subResult = new ArrayList<>();
 
       for (JournalHeader schedule : result) {
         boolean toView = false;
@@ -788,17 +750,11 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @return isDayHasEvents
    * @throws RemoteException
    */
-  public boolean isDayHasEvents(String userId, Date day) throws RemoteException {
-    boolean isDayHasEvents = false;
-    Collection<JournalHeader> result = calendarBm
-        .getDaySchedulablesForUser(DateUtil.date2SQLDate(day), userId, null,
+  public boolean isDayHasEvents(String userId, Date day) {
+    Collection<JournalHeader> result =
+        calendarBm.getDaySchedulablesForUser(DateUtil.date2SQLDate(day), userId, null,
             ParticipationStatus.ACCEPTED);
-    if (result != null) {
-      if (result.size() > 0) {
-        isDayHasEvents = true;
-      }
-    }
-    return isDayHasEvents;
+    return result != null && !result.isEmpty();
   }
 
   /**
@@ -821,9 +777,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     try {
       return calendarBm.getTentativeSchedulablesForUser(getUserId());
     } catch (Exception e) {
-      throw new AgendaException("AgendaSessionController.getTentativeSchedulables()",
-          SilverpeasException.ERROR, "agenda.EX_CANT_GET_TENTATIVE_SCHEDULABLES",
-          "userId=" + getUserId(), e);
+      throw new AgendaException(e);
     }
   }
 
@@ -992,8 +946,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       currentCalendar.setTime(date);
       viewByDay();
     } catch (Exception e) {
-      SilverTrace.warn("agenda", "AgendaSessionController.selectDay(String day)",
-          "agenda.MSG_CANT_CHANGE_DAY", "", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -1001,7 +954,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * Method declaration
    *
    */
-  public void next() throws RemoteException {
+  public void next() {
     if (currentDisplayType == AgendaHtmlView.BYDAY) {
       nextDay();
     } else if (currentDisplayType == AgendaHtmlView.BYWEEK) {
@@ -1017,7 +970,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * Method declaration
    *
    */
-  public void nextDay() throws RemoteException {
+  public void nextDay() {
     if (currentCalendar == null) {
       return;
     }
@@ -1163,7 +1116,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @return
    *
    */
-  static public Date getMonthFirstDay(Date date) {
+  public static Date getMonthFirstDay(Date date) {
     Calendar calendar = Calendar.getInstance();
 
     calendar.setTime(date);
@@ -1192,7 +1145,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @return
    *
    */
-  static public Date getYearFirstDay(Date date) {
+  public static Date getYearFirstDay(Date date) {
     Calendar calendar = Calendar.getInstance();
 
     calendar.setTime(date);
@@ -1206,14 +1159,13 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @return
    */
   public String initSelectionPeas() {
-    String m_context = URLUtil.getApplicationURL();
+    String ctx = URLUtil.getApplicationURL();
     Pair<String, String> hostComponentName =
-        new Pair<>(getString("agenda"), m_context + "/Ragenda/jsp/Main");
+        new Pair<>(getString(AGENDA_FILENAME_PREFIX), ctx + RAGENDA_JSP_MAIN);
     Pair<String, String>[] hostPath = new Pair[1];
-    hostPath[0] =
-        new Pair<>(getString("editionListeDiffusion"), m_context + "/Ragenda/jsp/Main");
-    String hostUrl = m_context + "/Ragenda/jsp/saveMembers";
-    String cancelUrl = m_context + "/Ragenda/jsp/saveMembers";
+    hostPath[0] = new Pair<>(getString("editionListeDiffusion"), ctx + RAGENDA_JSP_MAIN);
+    String hostUrl = ctx + "/Ragenda/jsp/saveMembers";
+    String cancelUrl = ctx + "/Ragenda/jsp/saveMembers";
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -1253,7 +1205,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    */
   public Collection<Attendee> getUserSelected() throws AgendaException {
     Selection sel = getSelection();
-    List<Attendee> attendees = new ArrayList<Attendee>();
+    List<Attendee> attendees = new ArrayList<>();
     Collection<Attendee> oldAttendees = null;
 
     JournalHeader journal = getCurrentJournalHeader();
@@ -1292,7 +1244,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    */
   public List<Date> getNonSelectableDays() {
     if (nonSelectableDays == null) {
-      nonSelectableDays = new ArrayList<Date>();
+      nonSelectableDays = new ArrayList<>();
     }
     return nonSelectableDays;
   }
@@ -1308,7 +1260,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * Get Holidays dates in personal agenda (YYYY/MM/JJ)
    * @return
    */
-  public List<String> getHolidaysDates() throws RemoteException {
+  public List<String> getHolidaysDates() {
     if (holidaysDates == null) {
       holidaysDates = getHolidaysDatesInDb();
     }
@@ -1330,15 +1282,14 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    *
    */
   public String initUserPanelOtherAgenda() {
-    String m_context = URLUtil.getApplicationURL();
+    String ctx = URLUtil.getApplicationURL();
     Pair<String, String> hostComponentName =
-        new Pair<>(getString("agenda"), m_context + "/Ragenda/jsp/Main");
+        new Pair<>(getString(AGENDA_FILENAME_PREFIX), ctx + RAGENDA_JSP_MAIN);
     Pair<String, String>[] hostPath = new Pair[1];
     hostPath[0] = new Pair<>(getString("viewOtherAgenda"),
-        m_context + URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "Main");
-    String hostUrl =
-        m_context + URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "ViewOtherAgenda";
-    String cancelUrl = m_context + URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "Main";
+        ctx + URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "Main");
+    String hostUrl = ctx + URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "ViewOtherAgenda";
+    String cancelUrl = ctx + URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "Main";
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -1439,18 +1390,16 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @return ReturnCode (0=ok, 1=Empty)
    * @throws Exception
    */
-  public String exportIcalAgenda(String startDate, String endDate) throws Exception {
-    String returnCode = new ExportIcalManager(this).exportIcalAgenda(startDate, endDate);
-    return returnCode;
+  public String exportIcalAgenda(String startDate, String endDate) throws AgendaException {
+    return new ExportIcalManager(this).exportIcalAgenda(startDate, endDate);
   }
 
-  public String exportIcalAgenda() throws Exception {
+  public String exportIcalAgenda() throws AgendaException {
     return exportIcalAgenda(null, null);
   }
 
-  public String importIcalAgenda(File fileCalendar) throws Exception {
-    String returnCode = new ImportIcalManager(this).importIcalAgenda(fileCalendar);
-    return returnCode;
+  public String importIcalAgenda(File fileCalendar) {
+    return new ImportIcalManager(this).importIcalAgenda(fileCalendar);
   }
 
   /**
@@ -1462,11 +1411,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @throws Exception
    */
   public String synchroIcalAgenda(String urlICalendar, String loginIcalendar, String pwdIcalendar)
-      throws Exception {
+      throws MalformedURLException {
     URL iCalendarServerUrl = new URL(urlICalendar);
-    String returnCodeSynchro = new SynchroIcalManager(this)
-        .synchroIcalAgenda(iCalendarServerUrl, getIcalendarFile(), loginIcalendar, pwdIcalendar);
-    return returnCodeSynchro;
+    return new SynchroIcalManager(this).synchroIcalAgenda(iCalendarServerUrl, getIcalendarFile(),
+        loginIcalendar, pwdIcalendar);
   }
 
   /**
@@ -1475,7 +1423,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @return ReturnCode
    * @throws Exception
    */
-  public String synchroIcalAgenda(String urlICalendar) throws Exception {
+  public String synchroIcalAgenda(String urlICalendar) throws MalformedURLException {
     return synchroIcalAgenda(urlICalendar, null, null);
   }
 
@@ -1490,7 +1438,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @return List of HolidayDetail (yyyy/mm/dd, userId)
    * @throws RemoteException
    */
-  public List<String> getHolidaysDatesInDb() throws RemoteException {
+  public List<String> getHolidaysDatesInDb() {
     return calendarBm.getHolidayDates(getAgendaUserId());
   }
 
@@ -1536,7 +1484,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     HolidayDetail holidayDate = new HolidayDetail(date, getUserId());
     boolean isHoliday = calendarBm.isHolidayDate(holidayDate);
 
-    List<HolidayDetail> holidayDates = new ArrayList<HolidayDetail>();
+    List<HolidayDetail> holidayDates = new ArrayList<>();
     while (currentCalendar.get(Calendar.MONTH) == iMonth) {
       holidayDates.add(new HolidayDetail(currentCalendar.getTime(), getUserId()));
       currentCalendar.add(Calendar.DATE, 7);
@@ -1597,12 +1545,10 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @return String
    */
   public String getMyAgendaUrl() {
-    String url =
-        "/SubscribeAgenda/" + AGENDA_FILENAME_PREFIX + "?userId=" + getUserId() + "&amp;login=" +
-            URLEncoder.encodePathParamValue(getUserDetail().getLogin()) + "&amp;password=" +
-            URLEncoder.encodePathParamValue(OrganizationControllerProvider.
-                getOrganisationController().getUserFull(getUserId()).getPassword());
-    return url;
+    return "/SubscribeAgenda/" + AGENDA_FILENAME_PREFIX + "?userId=" + getUserId() + "&amp;login=" +
+        URLEncoder.encodePathParamValue(getUserDetail().getLogin()) + "&amp;password=" +
+        URLEncoder.encodePathParamValue(OrganizationControllerProvider.
+            getOrganisationController().getUserFull(getUserId()).getPassword());
   }
 
   /**
@@ -1610,7 +1556,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @return
    */
   public String getCurrentViewType() {
-    String viewType = "Main";
+    String viewType;
     switch (getCurrentDisplayType()) {
       case AgendaHtmlView.BYDAY:
         viewType = "Main";
@@ -1623,6 +1569,9 @@ public class AgendaSessionController extends AbstractComponentSessionController 
         break;
       case AgendaHtmlView.BYYEAR:
         viewType = "ViewByYear";
+        break;
+      default:
+        viewType = "Main";
         break;
     }
     return viewType;

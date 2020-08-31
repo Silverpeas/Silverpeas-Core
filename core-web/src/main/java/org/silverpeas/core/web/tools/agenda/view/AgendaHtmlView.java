@@ -29,11 +29,10 @@ import org.silverpeas.core.personalorganizer.model.Schedulable;
 import org.silverpeas.core.personalorganizer.model.SchedulableCount;
 import org.silverpeas.core.personalorganizer.model.SchedulableGroup;
 import org.silverpeas.core.personalorganizer.model.SchedulableList;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
@@ -443,9 +442,7 @@ public class AgendaHtmlView {
         thisHour.setStartHour(hour);
         thisHour.setEndHour(nextHour);
       } catch (Exception e) {
-        throw new AgendaRuntimeException(
-            "AgendaHtmView.getHtmlViewByDay(String today)",
-            SilverpeasException.ERROR, "agenda.EX_CANT_GET_VIEW_DAY", e);
+        throw new AgendaRuntimeException(e);
       }
 
       dayList.getStartingSchedules(hour, nextHour);
@@ -473,9 +470,7 @@ public class AgendaHtmlView {
             tmpThisHour.setStartHour(tmpHour);
             tmpThisHour.setEndHour(tmpNextHour);
           } catch (Exception e) {
-            throw new AgendaRuntimeException(
-                "AgendaHtmView.getHtmlViewByDay(String today)",
-                SilverpeasException.ERROR, "agenda.EX_CANT_GET_VIEW_DAY", e);
+            throw new AgendaRuntimeException(e);
           }
           countColumns = 0;
           for (int iterator = 0; iterator < schedules.size(); iterator++) {
@@ -546,9 +541,7 @@ public class AgendaHtmlView {
                 tmpThisHour.setStartHour(tmpHour);
                 tmpThisHour.setEndHour(tmpNextHour);
               } catch (Exception e) {
-                throw new AgendaRuntimeException(
-                    "AgendaHtmView.getHtmlViewByDay(String today)",
-                    SilverpeasException.ERROR, "agenda.EX_CANT_GET_VIEW_DAY", e);
+                throw new AgendaRuntimeException(e);
               }
             } while (tmpThisHour.isOver(schedule));
 

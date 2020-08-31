@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.contribution.attachment.webdav.impl;
 
-import org.silverpeas.core.persistence.jcr.JcrDataConverter;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.persistence.jcr.JcrDataConverter;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.jcr.Binary;
 import javax.jcr.Node;
@@ -228,14 +228,10 @@ public class WebdavDocumentRepository implements WebdavRepository {
     Node rootNode = session.getRootNode();
     Node webdavFileNode = rootNode.getNode(attachment.getWebdavJcrPath());
     Binary webdavBinary = webdavFileNode.getNode(JCR_CONTENT).getProperty(JCR_DATA).getBinary();
-    InputStream in = webdavBinary.getStream();
-    OutputStream out = null;
-    try {
-      out = FileUtils.openOutputStream(new File(attachment.getAttachmentPath()));
+    try (InputStream in = webdavBinary.getStream();
+         OutputStream out = FileUtils.openOutputStream(new File(attachment.getAttachmentPath()))) {
       IOUtils.copy(in, out);
     } finally {
-      IOUtils.closeQuietly(out);
-      IOUtils.closeQuietly(in);
       webdavBinary.dispose();
     }
   }
@@ -313,12 +309,9 @@ public class WebdavDocumentRepository implements WebdavRepository {
 
   private void setContent(Node fileNode, SimpleDocument attachment)
       throws RepositoryException, IOException {
-    InputStream in = FileUtils.openInputStream(new File(attachment.getAttachmentPath()));
-    try {
+    try(InputStream in = FileUtils.openInputStream(new File(attachment.getAttachmentPath()))) {
       Binary attachmentBinary = fileNode.getSession().getValueFactory().createBinary(in);
       fileNode.getNode(JCR_CONTENT).setProperty(JCR_DATA, attachmentBinary);
-    } finally {
-      IOUtils.closeQuietly(in);
     }
   }
 

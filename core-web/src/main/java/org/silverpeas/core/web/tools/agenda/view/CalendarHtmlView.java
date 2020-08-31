@@ -23,15 +23,13 @@
  */
 package org.silverpeas.core.web.tools.agenda.view;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
-import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.personalorganizer.model.SchedulableCount;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
+import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
 
-import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -180,7 +178,7 @@ public class CalendarHtmlView {
    * classique.
    * @param date
    * @param agendaSessionController
-   * @param forPDA
+   * @param forPda
    * @return
    * @see
    */
@@ -194,9 +192,8 @@ public class CalendarHtmlView {
     List<String> hiddenDays = null;
     try {
       hiddenDays = agendaSessionController.getHolidaysDates();
-    } catch (RemoteException e) {
-      throw new AgendaRuntimeException("CalendarView.getHtmlView()",
-          SilverpeasException.ERROR, "agenda.MSG_GET_DAYS_OFF_FAILED", e);
+    } catch (Exception e) {
+      throw new AgendaRuntimeException(e);
     }
 
     int firstDayOfWeek = Integer.parseInt(agendaSessionController
@@ -328,10 +325,8 @@ public class CalendarHtmlView {
         }
       }
       dayStyle = monthDayStyleEvent;
-    } catch (RemoteException e) {
-      throw new AgendaRuntimeException("CalendarView.getHtmlView()",
-          SilverpeasException.ERROR, "agenda.MSG_GET_USER_EVENT_BYDAY_FAILED",
-          e);
+    } catch (Exception e) {
+      throw new AgendaRuntimeException(e);
     }
 
     boolean isSelectableDate = true;

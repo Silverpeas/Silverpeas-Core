@@ -49,7 +49,7 @@ public class Space {
   }
 
   public List<ComponentInstLight> getComponents() {
-    List list = new ArrayList<>(components.values());
+    List<ComponentInstLight> list = new ArrayList<>(components.values());
     list.sort(comparator);
     return list;
   }

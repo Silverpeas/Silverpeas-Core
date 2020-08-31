@@ -23,12 +23,11 @@
  */
 package org.silverpeas.core.web.tools.agenda.control;
 
-import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.personalorganizer.model.ParticipationStatus;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.util.Collection;
 import java.util.Date;
@@ -37,13 +36,15 @@ public class AgendaAccess {
 
   private static SilverpeasCalendar silverpeasCalendar = null;
 
+  private AgendaAccess() {
+  }
+
   private static SilverpeasCalendar getSilverpeasCalendar() throws AgendaException {
     if (silverpeasCalendar == null) {
       try {
         silverpeasCalendar = ServiceProvider.getService(SilverpeasCalendar.class);
       } catch (Exception e) {
-        throw new AgendaException("AgendaAccess.getSilverpeasCalendar()", SilverpeasException.ERROR,
-            "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        throw new AgendaException(e);
       }
     }
     return silverpeasCalendar;
@@ -57,50 +58,46 @@ public class AgendaAccess {
    * @throws AgendaException
    *
    */
-  static public boolean hasTentativeSchedulables(String userId) throws AgendaException {
+  public static boolean hasTentativeSchedulables(String userId) throws AgendaException {
     try {
       return getSilverpeasCalendar().hasTentativeSchedulablesForUser(userId);
     } catch (Exception e) {
-      throw new AgendaException("AgendaAccess.hasTentativeSchedulables()", SilverpeasException.ERROR,
-          "agenda.EX_CANT_GET_TENTATIVE_SCHEDULABLES", "userId=" + userId, e);
+      throw new AgendaException(e);
     }
   }
 
-  static public Date getCurrentDay() {
+  public static Date getCurrentDay() {
     return new Date();
   }
 
-  static public Collection<JournalHeader> getDaySchedulables(String userId) throws AgendaException {
+  public static Collection<JournalHeader> getDaySchedulables(String userId) throws AgendaException {
     try {
       return getSilverpeasCalendar().getDaySchedulablesForUser(
           DateUtil.date2SQLDate(getCurrentDay()), userId,
           null, ParticipationStatus.ACCEPTED);
     } catch (Exception e) {
-      throw new AgendaException("AgendaAccess.getDaySchedulables()", SilverpeasException.ERROR,
-          "agenda.EX_CANT_GET_TENTATIVE_SCHEDULABLES", "userId=" + userId, e);
+      throw new AgendaException(e);
     }
   }
 
-  static public Collection<JournalHeader> getNextDaySchedulables(String userId) throws
+  public static Collection<JournalHeader> getNextDaySchedulables(String userId) throws
       AgendaException {
     try {
       return getSilverpeasCalendar().getNextDaySchedulablesForUser(
           DateUtil.date2SQLDate(getCurrentDay()), userId,
           null, ParticipationStatus.ACCEPTED);
     } catch (Exception e) {
-      throw new AgendaException("AgendaAccess.getDaySchedulables()", SilverpeasException.ERROR,
-          "agenda.EX_CANT_GET_TENTATIVE_SCHEDULABLES", "userId=" + userId, e);
+      throw new AgendaException(e);
     }
   }
 
-  static public Collection<JournalHeader> getJournalHeadersForUserAfterDate(String userIdAgenda,
+  public static Collection<JournalHeader> getJournalHeadersForUserAfterDate(String userIdAgenda,
       Date startDate, int nbReturned) throws AgendaException {
     try {
       return getSilverpeasCalendar().getJournalHeadersForUserAfterDate(userIdAgenda, startDate,
           nbReturned);
     } catch (Exception e) {
-      throw new AgendaException("AgendaAccess.getJournalHeadersForUserAfterDate()",
-          SilverpeasException.ERROR, "agenda.EX_CANT_GET_JOURNAL", "userId=" + userIdAgenda, e);
+      throw new AgendaException(e);
     }
   }
 }
