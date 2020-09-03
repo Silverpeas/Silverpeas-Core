@@ -50,9 +50,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.util.Optional.ofNullable;
 import static javax.jcr.Property.JCR_FROZEN_PRIMARY_TYPE;
 import static javax.jcr.Property.JCR_LAST_MODIFIED_BY;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.defaultValueOfDisplayableAsContentBehavior;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
@@ -216,8 +218,7 @@ class DocumentConverter extends AbstractJcrConverter {
       doc.addRolesForWhichDownloadIsForbidden(SilverpeasRole.listFrom(forbiddenDownloadForRoles));
     }
     // Displayable as content
-    doc.setDisplayableAsContent(
-        getBooleanProperty(node, SLV_PROPERTY_DISPLAYABLE_AS_CONTENT, true));
+    ofNullable(getBooleanProperty(node, SLV_PROPERTY_DISPLAYABLE_AS_CONTENT, null)).ifPresent(doc::setDisplayableAsContent);
     return doc;
   }
 
@@ -285,14 +286,14 @@ class DocumentConverter extends AbstractJcrConverter {
   }
 
   /**
-   * Adding or removing the [slv:forbiddenDownloadForRoles] optional property.
+   * Adding or removing the [slv:displayableAsContent] optional property.
    * @param document
    * @param documentNode
    * @throws RepositoryException
    */
   void setDisplayableAsContentOptionalNodeProperty(SimpleDocument document, Node
       documentNode) throws RepositoryException {
-    if (!document.isDisplayableAsContent()) {
+    if (document.isDisplayableAsContent() != defaultValueOfDisplayableAsContentBehavior()) {
       // Adding the mixin (no impact when it is already existing)
       documentNode.addMixin(SLV_VIEWABLE_MIXIN);
       documentNode.setProperty(SLV_PROPERTY_DISPLAYABLE_AS_CONTENT, document.isDisplayableAsContent());
