@@ -77,7 +77,7 @@ function SubmitWithVerif() {
     errorMsg = "<%=resource.getString("JDP.missingFieldStart")+resource.getString("JDP.csvFile")+resource.getString("JDP.missingFieldEnd")%>";
   } else {
     const ext = csvFilefld.substring(csvFilefld.length - 4);
-    if (ext.toLowerCase() !== ".csv") {
+    if (ext.toLowerCase() !== ".ssv") {
       errorMsg = "<%=resource.getString("JDP.errorCsvFile")%>";
     }
   }
@@ -136,7 +136,7 @@ $(document).ready(function(){
       <div class="field" id="form-row-ignoreFirstLine">
         <label class="txtlibform" for="ignoreFirstLineId"><%=resource.getString("JDP.csvImport.ignoreFirstLine") %></label>
         <div class="champs">
-          <input type="checkbox" name="ignoreFirstLine" id="ignoreFirstLineId" value="true" />&nbsp;<span class="yesno">${noLabel}</span>
+          <input type="checkbox" name="ignoreFirstLine" id="ignoreFirstLineId" value="true" />&nbsp;<span class="yesno">${yesLabel}</span>
         </div>
       </div>
       <c:if test="${not empty personalizedFieldLabels}">
@@ -150,7 +150,7 @@ $(document).ready(function(){
       <div class="field" id="sendEmailTRid">
         <label class="txtlibform" for="sendEmailId"><fmt:message key="JDP.sendEmail" /></label>
         <div class="champs">
-          <input type="checkbox" name="sendEmail" id="sendEmailId" value="true" />&nbsp;<span class="yesno">${noLabel}</span>
+          <input type="checkbox" name="sendEmail" id="sendEmailId" value="true" />&nbsp;<span class="yesno">${yesLabel}</span>
         </div>
       </div>
       <div class="field" id="form-row-extra-message" style="display: none">
