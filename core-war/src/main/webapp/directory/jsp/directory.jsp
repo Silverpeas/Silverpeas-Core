@@ -81,13 +81,8 @@
   PagesContext extraFormContext = (PagesContext) request.getAttribute("ExtraFormContext");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title></title>
-  <view:looknfeel/>
-  <view:includePlugin name="popup"/>
+<view:sp-page>
+<view:sp-head-part>
   <link type="text/css" rel="stylesheet" href='<c:url value="/directory/jsp/css/print.css" />' media="print"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.cookie.js"/>"></script>
   <% if (extraForm != null) {
@@ -101,23 +96,23 @@
     }
 
     function isTermOK(term) {
-      var firstCharacter = term.substring(0, 1);
-      var lastChar = term.substring(term.length-1, term.length);
+      const firstCharacter = term.substring(0, 1);
+      const lastChar = term.substring(term.length - 1, term.length);
       // Lucene cannot parse a query starting with '*' or '?'. This characters are not allowed as first character in WildcardQuery.
       // Lucene cannot parse a query ending with '!'. This characters are not allowed as last character in WildcardQuery.
       return firstCharacter != "*" && firstCharacter != "?" && lastChar != "!";
     }
 
     function search() {
-      var query = $("#select-user-group-directory input").val();
+      let query = $("#select-user-group-directory input").val();
       if (!query) {
         // in case of quick user selection is not enabled
         query = $("#searchField").val();
       }
-      var queryOK = true;
+      let queryOK = true;
       if (query) {
-        var terms = query.split(" ");
-        for (var i = 0; queryOK && i < terms.length; i++) {
+        const terms = query.split(" ");
+        for (let i = 0; queryOK && i < terms.length; i++) {
           queryOK = isTermOK(terms[i]);
         }
       }
@@ -130,7 +125,7 @@
     }
 
     function jumpToUser(selectionUserAPI) {
-      var userIds = selectionUserAPI.getSelectedUserIds();
+      const userIds = selectionUserAPI.getSelectedUserIds();
       if (userIds.length) {
         location.href = webContext+"/Rprofil/jsp/Main?userId="+userIds[0];
       }
@@ -147,8 +142,8 @@
     }
 
     function showAutoHelp() {
-      var helpCookieName = "Silverpeas_Directory_Help";
-      var helpCookieValue = $.cookie(helpCookieName);
+      const helpCookieName = "Silverpeas_Directory_Help";
+      const helpCookieValue = $.cookie(helpCookieName);
       if ("IKnowIt" != helpCookieValue) {
         $("#help-message").dialog({
           modal : true,
@@ -220,7 +215,7 @@
         location.href = "LimitTo?SourceId="+$(this).val();
       });
 
-      var flip = 0;
+      let flip = 0;
 
       $(document).ready(function() {
         <c:if test="${showHelp}">
@@ -252,12 +247,24 @@
           flip++;
         });
       });
+      <c:if test="${VIEW_CONNECTED eq view}">
+      const $top = top.window;
+      if (sp.promise.isOne($top.USERSESSION_PROMISE)) {
+        $top.USERSESSION_PROMISE.then(function() {
+          let refreshTimeout = -1;
+          $top.spUserSession.addEventListener('connectedUsersChanged', function() {
+            clearTimeout(refreshTimeout);
+            refreshTimeout = setTimeout(function() {
+              sp.ajaxRequest('${VIEW_CONNECTED}').loadTarget('#myContacts', true);
+            }, 2000);
+          }, 'connectedUsersChanged@directory');
+        });
+      }
+      </c:if>
     });
   </script>
-
-</head>
-
-<body id="directory" class="${referer} ${currentSourceCSS}">
+</view:sp-head-part>
+<view:sp-body-part id="directory" cssClass="${referer} ${currentSourceCSS}">
 <view:browseBar extraInformations="${breadcrumb}"/>
 <view:operationPane>
   <view:operation action="javascript:window.print()" altText="${labelPrint}"/>
@@ -390,15 +397,12 @@
     </div>
   </view:frame>
 </view:window>
-
 <view:progressMessage/>
-
 <div id="dialog-message" title="<fmt:message key="directory.query.error.title"/>">
   <fmt:message key="directory.query.error.msg"/>
 </div>
-
 <div id="help-message" title="<fmt:message key="directory.help.title"/>" style="display: none;" class="help-modal-message">
   <view:applyTemplate locationBase="core:directory" name="help"/>
 </div>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
