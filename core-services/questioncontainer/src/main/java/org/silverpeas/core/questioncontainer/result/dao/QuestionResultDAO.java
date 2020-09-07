@@ -24,6 +24,7 @@
 package org.silverpeas.core.questioncontainer.result.dao;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
@@ -35,10 +36,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class is made to access database only (table SB_Question_Answer)
@@ -49,10 +50,14 @@ public class QuestionResultDAO {
   public static final String QUESTIONRESULTCOLUMNNAMES =
       "qrId, questionId, userId, answerId, qrOpenAnswer, qrNbPoints, qrPollDate, qrElapsedTime, " +
           "qrParticipationId";
-  private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
   private static final String DELETE_ALL_QUESTION_RESULTS =
       "DELETE FROM SB_Question_QuestionResult  WHERE questionId in (SELECT questionId FROM " +
           "SB_Question_Question WHERE instanceId = ?)";
+  private static final String SELECT = "select ";
+  private static final String FROM = " from ";
+  private static final String WHERE_QUESTION_ID_EQUALITY = " where questionId = ? ";
+
+  private static final FastDateFormat formatter = FastDateFormat.getInstance("yyyy/MM/dd");
 
   /**
    * Hidden constructor.
@@ -81,158 +86,122 @@ public class QuestionResultDAO {
 
   public static Collection<QuestionResult> getUserQuestionResultsToQuestion(Connection con,
       String userId, ResourceReference questionPK) throws SQLException {
-
-    ResultSet rs = null;
-    QuestionResult questionResult;
     String tableName = new QuestionResultPK("", questionPK).getTableName();
 
     String selectStatement =
-        "select " + QUESTIONRESULTCOLUMNNAMES + " from " + tableName + " where questionId = ? " +
+        SELECT + QUESTIONRESULTCOLUMNNAMES + FROM + tableName + WHERE_QUESTION_ID_EQUALITY +
             " and userId = ? order By answerId";
 
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
+    try (PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
       prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.setString(2, userId);
-      rs = prepStmt.executeQuery();
-      List<QuestionResult> result = new ArrayList<>();
-      while (rs.next()) {
-        questionResult = getQuestionResultFromResultSet(rs, questionPK);
-        result.add(questionResult);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        List<QuestionResult> result = new ArrayList<>();
+        while (rs.next()) {
+          QuestionResult questionResult = getQuestionResultFromResultSet(rs, questionPK);
+          result.add(questionResult);
+        }
+        return result;
       }
-      return result;
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
   }
 
   public static Collection<String> getUsersByAnswer(Connection con, String answerId)
       throws SQLException {
-
-    ResultSet rs = null;
     String tableName = "SB_Question_QuestionResult";
 
     String selectStatement = "select userId from " + tableName + " where answerId = ? ";
-    PreparedStatement prepStmt = null;
 
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
+    try (PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
       prepStmt.setInt(1, Integer.parseInt(answerId));
-      rs = prepStmt.executeQuery();
-      List<String> result = new ArrayList<>();
-      String userId;
-      while (rs.next()) {
-        userId = rs.getString(1);
-        result.add(userId);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        List<String> result = new ArrayList<>();
+        while (rs.next()) {
+          String userId = rs.getString(1);
+          result.add(userId);
+        }
+        return result;
       }
-      return result;
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
   }
 
   public static Collection<QuestionResult> getUserQuestionResultsToQuestionByParticipation(
       Connection con, String userId, ResourceReference questionPK, int participationId)
       throws SQLException {
-    ResultSet rs = null;
-    QuestionResult questionResult;
     String tableName = new QuestionResultPK("", questionPK).getTableName();
 
     String selectStatement =
-        "select " + QUESTIONRESULTCOLUMNNAMES + " from " + tableName + " where questionId = ? " +
+        SELECT + QUESTIONRESULTCOLUMNNAMES + FROM + tableName + WHERE_QUESTION_ID_EQUALITY +
             " and userId = ? " + " and qrParticipationId = ? ";
 
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
+    try (PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
       prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.setString(2, userId);
       prepStmt.setInt(3, participationId);
-      rs = prepStmt.executeQuery();
-      List<QuestionResult> result = new ArrayList<>();
-      while (rs.next()) {
-        questionResult = getQuestionResultFromResultSet(rs, questionPK);
-        result.add(questionResult);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        List<QuestionResult> result = new ArrayList<>();
+        while (rs.next()) {
+          QuestionResult questionResult = getQuestionResultFromResultSet(rs, questionPK);
+          result.add(questionResult);
+        }
+        return result;
       }
-      return result;
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
   }
 
   public static Collection<QuestionResult> getQuestionResultToQuestion(Connection con,
       ResourceReference questionPK) throws SQLException {
 
-    ResultSet rs = null;
-    QuestionResult questionResult;
     String tableName = new QuestionResultPK("", questionPK).getTableName();
 
     String selectStatement =
-        "select " + QUESTIONRESULTCOLUMNNAMES + " from " + tableName + " where questionId = ? ";
+        SELECT + QUESTIONRESULTCOLUMNNAMES + FROM + tableName + WHERE_QUESTION_ID_EQUALITY;
 
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
+    try(PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
       prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
-      rs = prepStmt.executeQuery();
-      List<QuestionResult> result = new ArrayList<>();
-      while (rs.next()) {
-        questionResult = getQuestionResultFromResultSet(rs, questionPK);
-        result.add(questionResult);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        List<QuestionResult> result = new ArrayList<>();
+        while (rs.next()) {
+          QuestionResult questionResult = getQuestionResultFromResultSet(rs, questionPK);
+          result.add(questionResult);
+        }
+        return result;
       }
-      return result;
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
   }
 
   public static Collection<QuestionResult> getQuestionResultToQuestionByParticipation(
       Connection con, ResourceReference questionPK, int participationId) throws SQLException {
-    ResultSet rs = null;
-    QuestionResult questionResult;
     String tableName = new QuestionResultPK("", questionPK).getTableName();
 
     String selectStatement =
-        "select " + QUESTIONRESULTCOLUMNNAMES + " from " + tableName + " where questionId = ? " +
+        SELECT + QUESTIONRESULTCOLUMNNAMES + FROM + tableName + WHERE_QUESTION_ID_EQUALITY +
             " and qrParticipationId = ? ";
 
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
+    try(PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
       prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.setInt(2, participationId);
-      rs = prepStmt.executeQuery();
-      List<QuestionResult> result = new ArrayList<>();
-      while (rs.next()) {
-        questionResult = getQuestionResultFromResultSet(rs, questionPK);
-        result.add(questionResult);
+      try(ResultSet rs = prepStmt.executeQuery()) {
+        List<QuestionResult> result = new ArrayList<>();
+        while (rs.next()) {
+          QuestionResult questionResult = getQuestionResultFromResultSet(rs, questionPK);
+          result.add(questionResult);
+        }
+        return result;
       }
-      return result;
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
   }
 
   public static void setQuestionResultToUser(Connection con, QuestionResult result)
       throws SQLException {
-
-
     int newId;
     String questionId = result.getQuestionPK().getId();
     String answerId = result.getAnswerPK().getId();
     String userId = result.getUserId();
     String openAnswer = result.getOpenedAnswer();
     int nbPoints = result.getNbPoints();
-    String voteDate = result.getVoteDate();
-
-    if (voteDate == null) {
-      voteDate = formatter.format(new java.util.Date());
-    }
+    String voteDate = result.getVoteDate() == null ? formatter.format(new java.util.Date()) :
+        result.getVoteDate();
     int elapsedTime = result.getElapsedTime();
     int participationId = result.getParticipationId();
 
@@ -242,10 +211,7 @@ public class QuestionResultDAO {
     String selectStatement =
         "INSERT INTO sb_question_questionresult VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
+    try (PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
       prepStmt.setInt(1, newId);
       prepStmt.setInt(2, Integer.parseInt(questionId));
       prepStmt.setString(3, userId);
@@ -256,23 +222,15 @@ public class QuestionResultDAO {
       prepStmt.setInt(8, elapsedTime);
       prepStmt.setInt(9, participationId);
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
   public static void deleteQuestionResultToQuestion(Connection con, ResourceReference questionPK)
       throws SQLException {
-
-
     String deleteStatement = "DELETE FROM sb_question_questionresult WHERE questionId = ? ";
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(deleteStatement);
+    try (PreparedStatement prepStmt = con.prepareStatement(deleteStatement)) {
       prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
     }
   }
 
@@ -286,63 +244,43 @@ public class QuestionResultDAO {
 
   public static QuestionResult getUserAnswerToQuestion(Connection con, String userId,
       ResourceReference questionPK, AnswerPK answerPK) throws SQLException {
-
-    ResultSet rs = null;
     String tableName = "SB_Question_QuestionResult";
 
     String selectStatement =
-        "select " + QUESTIONRESULTCOLUMNNAMES + " from " + tableName + " where questionId = ? " +
+        SELECT + QUESTIONRESULTCOLUMNNAMES + FROM + tableName + WHERE_QUESTION_ID_EQUALITY +
             " and answerId = ? " + " and userId = ? ";
 
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
+    try (PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
       prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.setInt(2, Integer.parseInt(answerPK.getId()));
       prepStmt.setString(3, userId);
-      rs = prepStmt.executeQuery();
-      QuestionResult result = null;
-      if (rs.next()) {
-        result = getQuestionResultFromResultSet(rs, questionPK);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        if (rs.next()) {
+          return getQuestionResultFromResultSet(rs, questionPK);
+        }
+        return null;
       }
-      return result;
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
   }
 
   public static Results getResults(Connection con, List<ResourceReference> pks) throws SQLException {
-    ResultSet rs = null;
-    QuestionResult questionResult;
     String tableName = new QuestionResultPK("").getTableName();
     Results results = new Results();
 
-    List<String> ids = new ArrayList<>(pks.size());
-    ResourceReference firstQuestionPK = null;
-    for (ResourceReference pk : pks) {
-      if (firstQuestionPK == null) {
-        firstQuestionPK = pk;
-      }
-      ids.add(pk.getId());
-    }
+    List<String> ids = pks.stream().map(ResourceReference::getId).collect(Collectors.toList());
+    ResourceReference firstQuestionPK = pks.get(0);
 
     String selectStatement =
-        "select " + QUESTIONRESULTCOLUMNNAMES + " from " + tableName + " where questionId in (" +
+        SELECT + QUESTIONRESULTCOLUMNNAMES + FROM + tableName + " where questionId in (" +
             StringUtils.join(ids, ',') + ")";
 
-    PreparedStatement prepStmt = null;
-
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
-      rs = prepStmt.executeQuery();
+    try (PreparedStatement prepStmt = con.prepareStatement(selectStatement);
+         ResultSet rs = prepStmt.executeQuery()) {
       while (rs.next()) {
-        questionResult = getQuestionResultFromResultSet(rs, firstQuestionPK);
+        QuestionResult questionResult = getQuestionResultFromResultSet(rs, firstQuestionPK);
         results.addQuestionResult(questionResult);
       }
       return results;
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
   }
 
