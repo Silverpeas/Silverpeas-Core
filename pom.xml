@@ -38,7 +38,7 @@
   <version>6.1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
-  <url>http://www.silverpeas.org/docs/core</url>
+  <url>https://www.silverpeas.org/docs/core</url>
 
   <description>
     The foundation of Silverpeas. It defines the transverse service and the core objects of
@@ -48,7 +48,7 @@
   <scm>
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</developerConnection>
-    <url>http://github.com/Silverpeas/Silverpeas-Core</url>
+    <url>https://github.com/Silverpeas/Silverpeas-Core</url>
     <tag>HEAD</tag>
   </scm>
 
