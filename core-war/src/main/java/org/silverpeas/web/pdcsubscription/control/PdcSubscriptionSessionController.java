@@ -25,7 +25,6 @@ package org.silverpeas.web.pdcsubscription.control;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.pdc.classification.Criteria;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
@@ -50,12 +49,9 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.subscription.SubscriptionComparator;
 import org.silverpeas.core.web.subscription.bean.AbstractSubscriptionBean;
-import org.silverpeas.core.web.subscription.bean.ComponentSubscriptionBean;
-import org.silverpeas.core.web.subscription.bean.NodeSubscriptionBean;
 import org.silverpeas.core.web.subscription.bean.SubscriptionBeanProvider;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -70,9 +66,6 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
 
   /**
    * Constructor Creates new PdcSubscription Session Controller
-   *
-   * @param mainSessionCtrl
-   * @param componentContext
    */
   public PdcSubscriptionSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -138,76 +131,6 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
         })
         .collect(Collectors.toList());
       getSubscribeService().unsubscribe(subscriptionsToDeleted);
-  }
-
-  public Collection<NodeSubscriptionBean> getNodeUserSubscriptions(String userId) {
-    String currentUserId = userId;
-    final List<NodeSubscriptionBean> subscribes = new ArrayList<>();
-    if (!StringUtil.isDefined(currentUserId)) {
-      currentUserId = getUserId();
-    }
-    Collection<Subscription> list = getSubscribeService().getByUserSubscriber(currentUserId);
-    for (Subscription subscription : list) {
-      try {
-        // Subscriptions managed at this level are only those of node subscription.
-        if (NODE.equals(subscription.getResource().getType())) {
-          getOrganisationController().getComponentInstance(subscription.getResource().getInstanceId())
-              .ifPresent(i -> {
-                NodePath path = getNodeBm().getPath((NodePK) subscription.getResource().getPK());
-                subscribes.add(new NodeSubscriptionBean(subscription, path, i, getLanguage()));
-              });
-        }
-      } catch (Exception e) {
-        // User subscribed to a non existing component or topic .Do nothing. Process next
-        // subscription.
-      }
-    }
-    subscribes.sort(new SubscriptionComparator());
-    return subscribes;
-  }
-
-  public Collection<ComponentSubscriptionBean> getComponentUserSubscriptions(String userId) {
-    String currentUserId = userId;
-    final List<ComponentSubscriptionBean> subscribes = new ArrayList<>();
-    if (!StringUtil.isDefined(currentUserId)) {
-      currentUserId = getUserId();
-    }
-    Collection<Subscription> list = getSubscribeService().getByUserSubscriber(currentUserId);
-    for (Subscription subscription : list) {
-      // Subscriptions managed at this level are only those of node subscription.
-      if (COMPONENT.equals(subscription.getResource().getType())) {
-        getOrganisationController().getComponentInstance(subscription.getResource().getInstanceId())
-            .ifPresent(i -> subscribes.add(new ComponentSubscriptionBean(subscription, i, getLanguage()))); }
-    }
-    subscribes.sort(new SubscriptionComparator());
-    return subscribes;
-  }
-
-  public void deleteThemes(String[] themes) {
-    for (final String theme : themes) {
-      // convertir la chaine en NodePK
-      String[] subscribtionIdentifiers = theme.split("-");
-      String nodeId = subscribtionIdentifiers[0];
-      String instanceId = subscribtionIdentifiers[1];
-      String creatorId = subscribtionIdentifiers[2];
-      NodeSubscription subscription =
-          new NodeSubscription(UserSubscriptionSubscriber.from(getUserId()),
-          new NodePK(nodeId, instanceId), creatorId);
-      getSubscribeService().unsubscribe(subscription);
-    }
-  }
-
-  public void deleteComponentSubscription(String[] subscriptions) {
-    for (final String subscribtion : subscriptions) {
-      // convertir la chaine en NodePK
-      String[] subscribtionIdentifiers = subscribtion.split("-");
-      String instanceId = subscribtionIdentifiers[0];
-      String creatorId = subscribtionIdentifiers[1];
-      ComponentSubscription subscription =
-          new ComponentSubscription(UserSubscriptionSubscriber.from(getUserId()), instanceId,
-          creatorId);
-      getSubscribeService().unsubscribe(subscription);
-    }
   }
 
   public List<PdcSubscription> getUserPDCSubscription() {
