@@ -23,23 +23,15 @@
  */
 package org.silverpeas.core.webapi.subscribe;
 
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.comment.CommentRuntimeException;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.model.NodePath;
-import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.subscription.Subscription;
-import org.silverpeas.core.subscription.SubscriptionResource;
-import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
-import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
-import org.silverpeas.core.subscription.service.NodeSubscription;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
-import org.silverpeas.core.web.subscription.bean.NodeSubscriptionBean;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.subscription.bean.SubscriptionBeanProvider;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.POST;
@@ -53,6 +45,9 @@ import javax.ws.rs.core.Response.Status;
 import java.text.MessageFormat;
 import java.util.Collections;
 
+import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
+
 /**
  * A REST Web resource representing a given subscription.
  * It is a web service that provides an access to a subscription referenced by its URL.
@@ -60,12 +55,9 @@ import java.util.Collections;
 @WebService
 @Path(UnsubscribeResource.PATH + "/{componentId}")
 @Authorized
-public class UnsubscribeResource extends RESTWebService {
+public class UnsubscribeResource extends AbstractSubscriptionResource {
 
   static final String PATH = "unsubscribe";
-
-  @PathParam("componentId")
-  private String componentId;
 
   @POST
   @Produces(MediaType.APPLICATION_JSON)
@@ -74,86 +66,62 @@ public class UnsubscribeResource extends RESTWebService {
   }
 
   @POST
-  @Path("/user/{userId}")
+  @Path("user/{userId}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response unsubscribeUserFromComponent(@PathParam("userId") String userId) {
-    return unsubscribeSubscriberFromComponent(UserSubscriptionSubscriber.from(userId));
+    return unsubscribeSubscriberFromResource(COMPONENT, UserSubscriptionSubscriber.from(userId), null);
   }
 
   @POST
-  @Path("/group/{groupId}")
+  @Path("group/{groupId}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response unsubscribeGroupFromComponent(@PathParam("groupId") String groupId) {
-    return unsubscribeSubscriberFromComponent(GroupSubscriptionSubscriber.from(groupId));
-  }
-
-  /**
-   * Centralizing component unsubscribe
-   * @param subscriber a subscription subscriber
-   * @return the response
-   */
-  private Response unsubscribeSubscriberFromComponent(SubscriptionSubscriber subscriber) {
-    try {
-      Subscription subscription =
-          new ComponentSubscription(subscriber, componentId, getUser().getId());
-      SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscription);
-      ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
-      WebMessager.getInstance().addSuccess(MessageFormat
-          .format(getBundle().getString("GML.unsubscribe.success"),
-              component.getLabel(getUser().getUserPreferences().getLanguage())));
-      return Response.ok(Collections.singletonList("OK")).build();
-    } catch (CommentRuntimeException ex) {
-      throw new WebApplicationException(ex, Status.NOT_FOUND);
-    } catch (Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
-    }
+    return unsubscribeSubscriberFromResource(COMPONENT, GroupSubscriptionSubscriber.from(groupId), null);
   }
 
   @POST
-  @Path("/topic/{id}")
+  @Path("{subscriptionType}/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response unsubscribeUserFromTopic(@PathParam("id") String topicId) {
-    return unsubscribeUserFromTopic(topicId, getUser().getId());
+  public Response unsubscribeUserFromResource(@PathParam("subscriptionType") String subscriptionType, @PathParam("id") String id) {
+    return unsubscribeUserFromResource(subscriptionType, id, getUser().getId());
   }
 
   @POST
-  @Path("/topic/{topicId}/user/{userId}")
+  @Path("{subscriptionType}/{id}/user/{userId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response unsubscribeUserFromTopic(@PathParam("topicId") String topicId,
+  public Response unsubscribeUserFromResource(
+      @PathParam("subscriptionType") String subscriptionType, @PathParam("id") String id,
       @PathParam("userId") String userId) {
-    return unsubscribeSubscriberFromTopic(topicId, UserSubscriptionSubscriber.from(userId));
+    return unsubscribeSubscriberFromResource(decodeSubscriptionResourceType(subscriptionType),
+        UserSubscriptionSubscriber.from(userId), id);
   }
 
   @POST
-  @Path("/topic/{topicId}/group/{groupId}")
+  @Path("{subscriptionType}/{id}/group/{groupId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response unsubscribeGroupFromTopic(@PathParam("topicId") String topicId,
+  public Response unsubscribeGroupFromResource(
+      @PathParam("subscriptionType") String subscriptionType, @PathParam("id") String id,
       @PathParam("groupId") String groupId) {
-    return unsubscribeSubscriberFromTopic(topicId, GroupSubscriptionSubscriber.from(groupId));
+    return unsubscribeSubscriberFromResource(decodeSubscriptionResourceType(subscriptionType),
+        GroupSubscriptionSubscriber.from(groupId), id);
   }
 
   /**
-   * Centralizing topic unsubscribe
-   * @param topicId the topic identifier
+   * Centralizing resource unsubscribe
+   * @param subscriptionResourceType the aimed subscription resource type
    * @param subscriber a subscription subscriber
+   * @param resourceId the identifier of a resource
    * @return the response
    */
-  private Response unsubscribeSubscriberFromTopic(String topicId,
-      SubscriptionSubscriber subscriber) {
+  private Response unsubscribeSubscriberFromResource(final SubscriptionResourceType subscriptionResourceType,
+      final SubscriptionSubscriber subscriber, final String resourceId) {
     try {
-      final Subscription subscription = new NodeSubscription(subscriber,
-          new NodePK(topicId, componentId), getUser().getId());
-      SubscriptionServiceProvider.getSubscribeService().unsubscribe(subscription);
-      final ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
-      final SubscriptionResource resource = subscription.getResource();
-      final NodePK nodePK = new NodePK(resource.getId(), resource.getInstanceId());
-      final NodePath path = NodeService.get().getPath(nodePK);
+      final Subscription subscription = getSubscription(subscriber, subscriptionResourceType, resourceId);
+      getSubscribeService().unsubscribe(subscription);
       final String userLanguage = getUserPreferences().getLanguage();
-      final NodeSubscriptionBean nodeSubscriptionBean = new NodeSubscriptionBean(subscription, path,
-          component, userLanguage);
-      WebMessager.getInstance().addSuccess(MessageFormat
-          .format(getBundle().getString("GML.unsubscribe.success"),
-              nodeSubscriptionBean.getPath()));
+      SubscriptionBeanProvider.getBySubscription(subscription, userLanguage).ifPresent(
+          b -> WebMessager.getInstance().addSuccess(
+              MessageFormat.format(getBundle().getString("GML.unsubscribe.success"), b.getPath())));
       return Response.ok(Collections.singletonList("OK")).build();
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
@@ -165,10 +133,5 @@ public class UnsubscribeResource extends RESTWebService {
   @Override
   protected String getResourceBasePath() {
     return PATH;
-  }
-
-  @Override
-  public String getComponentId() {
-    return this.componentId;
   }
 }

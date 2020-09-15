@@ -262,7 +262,7 @@
   <c:if test="${subscriptionManagementContext.entityStatusBeforePersistAction.validated
               and subscriptionManagementContext.entityStatusAfterPersistAction.validated
               and subscriptionManagementContext.entityPersistenceAction.update}">
-    <c:set var="handledSubscriptionType" value="${subscriptionManagementContext.linkedSubscriptionResource.type}"/>
+    <c:set var="handledSubscriptionType" value="${subscriptionManagementContext.linkedSubscriptionResource.type.name}"/>
     <c:set var="handledSubscriptionResourceId" value="${subscriptionManagementContext.linkedSubscriptionResource.id}"/>
   </c:if>
 </c:if>

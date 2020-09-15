@@ -27,6 +27,7 @@ import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +83,16 @@ public class SubscriptionBeanProvider {
         .filter(s -> s.getResource().getType() == type)
         .collect(Collectors.toList());
     return getService(type).toSubscriptionBean(list, language);
+  }
+
+  /**
+   * @see SubscriptionBeanService#toSubscriptionBean(Collection, String)
+   */
+  public static Optional<AbstractSubscriptionBean> getBySubscription(
+      final Subscription subscription, final String language) {
+    final Collection<Subscription> list = Collections.singletonList(subscription);
+    return getService(subscription.getResource().getType()).toSubscriptionBean(list, language)
+        .stream().findFirst();
   }
 
   /**
