@@ -24,18 +24,18 @@
 package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.LocalizedContribution;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
-import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfComponent;
+import static org.silverpeas.core.calendar.subscription.CalendarSubscriptionConstants.CALENDAR;
+import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfComponentAndTypedResource;
 
 /**
  * A builder of notifications to subscribers with a subscription about a calendar component to
@@ -51,12 +51,25 @@ class SubscriberNotificationBuilder extends AbstractCalendarEventUserNotificatio
   /**
    * Constructs a new builder of user notification against the subscriber(s) of a calendar
    * component.
-   * @param calendarComponent the calendar component concerned by the notification.
+   * @param calendarEvent the calendar component concerned by the notification.
    * @param action the action that was performed onto the event.
    */
-  SubscriberNotificationBuilder(final Contribution calendarComponent, final NotifAction action) {
-    super(calendarComponent, action);
-    subscriberIdsByTypes = getSubscribersOfComponent(getComponentInstanceId()).indexBySubscriberType();
+  SubscriberNotificationBuilder(final CalendarEvent calendarEvent, final NotifAction action) {
+    super(calendarEvent, action);
+    subscriberIdsByTypes = getSubscribersOfComponentAndTypedResource(getComponentInstanceId(),
+        CALENDAR, calendarEvent.getCalendar().getId()).indexBySubscriberType();
+  }
+
+  /**
+   * Constructs a new builder of user notification against the subscriber(s) of a calendar
+   * component.
+   * @param occurrence the calendar component concerned by the notification.
+   * @param action the action that was performed onto the event.
+   */
+  SubscriberNotificationBuilder(final CalendarEventOccurrence occurrence, final NotifAction action) {
+    super(occurrence, action);
+    subscriberIdsByTypes = getSubscribersOfComponentAndTypedResource(getComponentInstanceId(),
+        CALENDAR, occurrence.getCalendarEvent().getCalendar().getId()).indexBySubscriberType();
   }
 
   @Override
@@ -92,13 +105,6 @@ class SubscriberNotificationBuilder extends AbstractCalendarEventUserNotificatio
     } else {
       return "subject.default";
     }
-  }
-
-  @Override
-  protected void performTemplateData(final Contribution contribution,
-      final SilverpeasTemplate template) {
-    super.performTemplateData(contribution, template);
-    final String language = ((LocalizedContribution) contribution).getLanguage();
   }
 
   @Override

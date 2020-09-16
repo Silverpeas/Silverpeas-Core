@@ -21,46 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.core.calendar.notification;
 
-package org.silverpeas.core.webapi.base;
+import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 
 /**
+ * A lifecycle event of {@link Calendar} instances. Such an event is triggered when a change
+ * occurred in the lifecycle of a calendar and it is sent by the system notification bus.
  * @author silveryocha
  */
-public abstract class SilverpeasRequestContext {
+public class CalendarLifeCycleEvent extends AbstractResourceEvent<Calendar> {
+  private static final long serialVersionUID = -1932102009420303744L;
 
-  private HttpServletRequest request;
-  private HttpServletResponse response;
-  private User user;
-
-  protected void init(final HttpServletRequest request, final HttpServletResponse response) {
-    this.request = request;
-    this.response = response;
-    final String httpMethod = request.getMethod().toUpperCase();
-    if ("PUT".equals(httpMethod)) {
-      UserSubscriptionNotificationSendingHandler.verifyRequest(request);
-    }
-  }
-
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(final User user) {
-    this.user = user;
-  }
-
-  public HttpServletRequest getRequest() {
-    return request;
-  }
-
-  public HttpServletResponse getResponse() {
-    return response;
+  /**
+   * Constructs a new lifecycle event with the specified type and that implies the specified
+   * {@link Calendar} instances, each of them representing a different state in the lifecycle
+   * of the calendar.
+   * @param type the type of the lifecycle event (the type of the transition occurring in the
+   * calendar's lifecycle).
+   * @param calendar the states of a calendar concerned by a state transition in
+   * its lifecycle.
+   */
+  public CalendarLifeCycleEvent(final Type type,
+      @NotNull final Calendar... calendar) {
+    super(type, calendar);
   }
 }

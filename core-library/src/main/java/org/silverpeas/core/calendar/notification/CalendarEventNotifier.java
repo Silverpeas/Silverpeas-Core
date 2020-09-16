@@ -26,7 +26,6 @@ package org.silverpeas.core.calendar.notification;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 
@@ -55,13 +54,12 @@ public class CalendarEventNotifier
             .about(attendeeOperation, attendees);
     attendeeNotificationBuilder.build().send();
     // notify the subscribers (by excluding attendees already notified)
-    final UserNotification subscriberNotification =
-        new SubscriberNotificationBuilder(created, NotifAction.CREATE)
-            .from(getSender())
-            .about(CalendarOperation.EVENT_CREATE)
-            .excludingUsersIds(attendeeNotificationBuilder.getUserIdsToNotify())
-            .build();
-    subscriberNotification.send();
+    new SubscriberNotificationBuilder(created, NotifAction.CREATE)
+        .from(getSender())
+        .about(CalendarOperation.EVENT_CREATE)
+        .excludingUsersIds(attendeeNotificationBuilder.getUserIdsToNotify())
+        .build()
+        .send();
   }
 
   @Override
@@ -83,13 +81,12 @@ public class CalendarEventNotifier
               .about(operation);
       attendeeNotificationBuilder.build().send();
       // notify the subscribers (by excluding attendees already notified)
-      final UserNotification subscriberNotification =
-          new SubscriberNotificationBuilder(after, NotifAction.UPDATE)
-              .from(getSender())
-              .about(operation)
-              .excludingUsersIds(attendeeNotificationBuilder.getUserIdsToNotify())
-              .build();
-      subscriberNotification.send();
+      new SubscriberNotificationBuilder(after, NotifAction.UPDATE)
+          .from(getSender())
+          .about(operation)
+          .excludingUsersIds(attendeeNotificationBuilder.getUserIdsToNotify())
+          .build()
+          .send();
     }
     if (!after.getAttendees().isSameAs(before.getAttendees())) {
       // the update is about the attendees themselves
@@ -107,21 +104,13 @@ public class CalendarEventNotifier
         ? CalendarOperation.SINCE_EVENT_DELETION
         : CalendarOperation.EVENT_DELETION;
     // notify the attendees and the previous updater of the event deletion
-    final AttendeeNotificationBuilder attendeeNotificationBuilder =
-        new AttendeeNotificationBuilder(deleted, NotifAction.DELETE)
-            .immediately()
-            .from(getSender())
-            .to(concernedAttendeesIn(deleted.asCalendarComponent()))
-            .about(operation);
-    attendeeNotificationBuilder.build().send();
-    // notify the subscribers (by excluding attendees already notified)
-    final UserNotification subscriberNotification =
-        new SubscriberNotificationBuilder(deleted, NotifAction.DELETE)
-            .from(getSender())
-            .about(operation)
-            .excludingUsersIds(attendeeNotificationBuilder.getUserIdsToNotify())
-            .build();
-    subscriberNotification.send();
+    new AttendeeNotificationBuilder(deleted, NotifAction.DELETE)
+        .immediately()
+        .from(getSender())
+        .to(concernedAttendeesIn(deleted.asCalendarComponent()))
+        .about(operation)
+        .build()
+        .send();
   }
 
   /**

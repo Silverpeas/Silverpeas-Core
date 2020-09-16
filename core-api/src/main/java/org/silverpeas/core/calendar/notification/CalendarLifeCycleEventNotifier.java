@@ -21,46 +21,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.core.calendar.notification;
 
-package org.silverpeas.core.webapi.base;
-
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
+ * A notifier of lifecycle events of {@link Calendar} instances.
  * @author silveryocha
  */
-public abstract class SilverpeasRequestContext {
+@Bean
+public class CalendarLifeCycleEventNotifier
+    extends CDIResourceEventNotifier<Calendar, CalendarLifeCycleEvent> {
 
-  private HttpServletRequest request;
-  private HttpServletResponse response;
-  private User user;
-
-  protected void init(final HttpServletRequest request, final HttpServletResponse response) {
-    this.request = request;
-    this.response = response;
-    final String httpMethod = request.getMethod().toUpperCase();
-    if ("PUT".equals(httpMethod)) {
-      UserSubscriptionNotificationSendingHandler.verifyRequest(request);
-    }
+  public static CalendarLifeCycleEventNotifier get() {
+    return ServiceProvider.getService(CalendarLifeCycleEventNotifier.class);
   }
 
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(final User user) {
-    this.user = user;
-  }
-
-  public HttpServletRequest getRequest() {
-    return request;
-  }
-
-  public HttpServletResponse getResponse() {
-    return response;
+  @Override
+  protected CalendarLifeCycleEvent createResourceEventFrom(final ResourceEvent.Type type,
+      final Calendar... resource) {
+    return new CalendarLifeCycleEvent(type, resource);
   }
 }

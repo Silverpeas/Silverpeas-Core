@@ -33,9 +33,9 @@
    */
   angular.module('silverpeas.directives').filter('synchronized', function() {
     return function(items, value) {
-      var filteredItems = [];
+      const filteredItems = [];
       items.forEach(function(item) {
-        var isSynchronized = false;
+        let isSynchronized = false;
         if (typeof item['isSynchronized'] === 'boolean') {
           isSynchronized = item['isSynchronized'] === value;
         }
@@ -56,10 +56,10 @@
    */
   angular.module('silverpeas.directives').filter('componentInstance', function() {
     return function(items, componentInstanceId) {
-      var filteredItems = [];
+      const filteredItems = [];
       items.forEach(function(item) {
-        var itemValue = item['componentInstanceId'];
-        var typeOfItemValue = typeof itemValue;
+        let itemValue = item['componentInstanceId'];
+        let typeOfItemValue = typeof itemValue;
         if (typeOfItemValue === 'undefined') {
           itemValue = SilverpeasCalendarTools.extractComponentInstanceIdFromUri(item['uri']);
           typeOfItemValue = typeof itemValue;
@@ -83,9 +83,9 @@
    */
   angular.module('silverpeas.directives').filter('visible', function() {
     return function(items, visible) {
-      var filteredItems = [];
+      const filteredItems = [];
       items.forEach(function(item) {
-        var isVisible = true;
+        let isVisible = true;
         if (typeof item['notVisible'] === 'boolean') {
           isVisible = item['notVisible'] === false;
         } else if (typeof item['visible'] === 'boolean') {
@@ -109,9 +109,9 @@
    */
   angular.module('silverpeas.directives').filter('default', function() {
     return function(items, defaultOrNot) {
-      var filteredItems = [];
+      const filteredItems = [];
       items.forEach(function(item) {
-        var isDefault = undefined;
+        let isDefault = undefined;
         if (typeof item['default'] === 'boolean') {
           isDefault = item['default'] === defaultOrNot;
         } else if (typeof item['isDefault'] === 'boolean') {
@@ -148,7 +148,7 @@
       Array.prototype.push.apply(sortedCalendars, items);
       let instanceIdHost = typeof context === 'object' ? context.component : undefined;
       SilverpeasCalendarTools.sortCalendars(sortedCalendars, instanceIdHost);
-      var previousInstanceId = '';
+      let previousInstanceId = '';
       sortedCalendars.forEach(function(calendar) {
         if (!calendar.__cssListClasses) {
           let __cssListClasses = '';
@@ -199,7 +199,7 @@
              * SilverpeasCalendar plugin to each occurrence of the list.
              * The result is a promise which contains as a result the decoracted occurrences.
              */
-            var _decorateSpCalEventOccurrences = function(calendar, occurrences, callback) {
+            const _decorateSpCalEventOccurrences = function(calendar, occurrences, callback) {
               occurrences.forEach(function(occurrence) {
                 // FullCalendar attributes
                 occurrence.allDay = occurrence.onAllDay;
@@ -222,8 +222,8 @@
              * - color
              * - visibility
              */
-            var _decorate = function() {
-              var _allCalendars = __getAllCalendars();
+            const _decorate = function() {
+              const _allCalendars = __getAllCalendars();
               SilverpeasCalendarTools.decorateCalendars(_allCalendars);
             }.bind(this);
 
@@ -232,17 +232,17 @@
              * @param occurrence the occurrence to handle.
              * @private
              */
-            var _showEventDetails = function(occurrence) {
+            const _showEventDetails = function(occurrence) {
               _triggerEventDetails('showEventDetails', occurrence);
             };
-            var _hideEventDetails = function(occurrence) {
+            const _hideEventDetails = function(occurrence) {
               _triggerEventDetails('hideEventDetails', occurrence);
             };
-            var _destroyEventDetails = function(occurrence) {
+            const _destroyEventDetails = function(occurrence) {
               _triggerEventDetails('destroyEventDetails', occurrence);
             };
-            var _triggerEventDetails = function(trigger, occurrence) {
-              var $source;
+            const _triggerEventDetails = function(trigger, occurrence) {
+              let $source;
               if (!occurrence || !occurrence.$element) {
                 switch (trigger) {
                   case 'showEventDetails' : TipManager.showAll('.tip-occurrence'); break;
@@ -260,39 +260,39 @@
             /**
              * Handles the filtering of an event occurrence.
              */
-            var _eventOccurrenceFilter = function(occurrence) {
+            const _eventOccurrenceFilter = function(occurrence) {
               return this.api.isOccurrenceVisible(occurrence);
             }.bind(this);
 
             /**
              * Handles the rendering of an event occurrence.
              */
-            var _eventOccurrenceRender = function(occurrence, $element, view) {
+            const _eventOccurrenceRender = function(occurrence, $element, view) {
               occurrence.$element = $element;
-              var $eventDotElement = angular.element('.fc-event-dot', $element);
+              const $eventDotElement = angular.element('.fc-event-dot', $element);
               if ($eventDotElement.length) {
-                var __eventDotElement = $eventDotElement[0];
+                const __eventDotElement = $eventDotElement[0];
                 __eventDotElement.style.borderColor = __eventDotElement.style.backgroundColor;
-                var $mainContainer = jQuery('<div>', {'class':'fields'});
-                var $title = jQuery('<h2>', {'class':'occurrence-name'});
-                var $titleLink = jQuery('<a>', {'href':'#'});
+                const $mainContainer = jQuery('<div>', {'class' : 'fields'});
+                const $title = jQuery('<h2>', {'class' : 'occurrence-name'});
+                const $titleLink = jQuery('<a>', {'href' : '#'});
                 $titleLink.append(occurrence.title);
                 $title.append($titleLink);
                 $mainContainer.append($title);
                 if (occurrence.location || occurrence.externalUrl()) {
-                  var $mainExtra = jQuery('<div>', {'class':'occurrence-extra'});
+                  const $mainExtra = jQuery('<div>', {'class' : 'occurrence-extra'});
                   if (occurrence.location) {
-                    var $location = jQuery('<div>', {'class':'occurrence-location'});
-                    var $locationBloc = jQuery('<div>', {'class':'bloc'});
+                    const $location = jQuery('<div>', {'class' : 'occurrence-location'});
+                    const $locationBloc = jQuery('<div>', {'class' : 'bloc'});
                     $locationBloc.html('<span>' + occurrence.location + '</span>');
                     $location.append($locationBloc);
                     $mainExtra.append($location);
                   }
                   if (occurrence.externalUrl()) {
-                    var $externalUrl = jQuery('<div>', {'class':'occurrence-external-link'});
-                    var $locationLink = jQuery('<a>', {'target':'_blank', 'href':occurrence.externalUrl()});
+                    const $externalUrl = jQuery('<div>', {'class':'occurrence-external-link'});
+                    const $locationLink = jQuery('<a>', {'target':'_blank', 'href':occurrence.externalUrl()});
                     $locationLink.html(occurrence.externalUrl());
-                    var $externalUrlBloc = jQuery('<div>', {'class':'bloc'});
+                    const $externalUrlBloc = jQuery('<div>', {'class':'bloc'});
                     $externalUrlBloc.append($locationLink);
                     $externalUrl.append($externalUrlBloc);
                     $mainExtra.append($externalUrl);
@@ -300,26 +300,26 @@
                   $mainContainer.append($mainExtra);
                 }
                 if (occurrence.description) {
-                  var $description = jQuery('<div>', {'class':'occurrence-description'});
+                  const $description = jQuery('<div>', {'class':'occurrence-description'});
                   $description.html(occurrence.description);
                   $mainContainer.append($description);
                 }
                 $eventDotElement.parent().parent().find('.fc-list-item-title').html($mainContainer);
               }
             }.bind(this);
-            var _eventOccurrenceClick = function(occurrence) {
+            const _eventOccurrenceClick = function(occurrence) {
               if (!occurrence.canBeAccessed) {
                 return false;
               }
-              var promise  = new Promise(function(resolve, reject) {
+              const promise = new Promise(function(resolve, reject) {
                 TipManager.destroyAll(occurrence.$element);
-                var $content = _compileEventOccurrenceTip();
+                const $content = _compileEventOccurrenceTip();
                 angular.element(document.body).append($content);
                 $scope.$apply();
-                var $inheritedData = $content.inheritedData();
-                for (var $data in $inheritedData) {
+                const $inheritedData = $content.inheritedData();
+                for (let $data in $inheritedData) {
                   if ($data.endsWith('Controller')) {
-                    var data = $inheritedData[$data];
+                    const data = $inheritedData[$data];
                     data.occurrence = occurrence;
                     data.onView = function(occurrence) {
                       if (this.onEventOccurrenceView) {
@@ -365,23 +365,22 @@
                   }
                 }
                 $timeout(function() {
-                  var $occContainer = occurrence.$element;
-                  var contentWidth = $content.outerWidth() + 30;
-                  var contentLimit = $occContainer.position().left + contentWidth;
-                  var bodyLimit = angular.element(document.body).width();
-                  var $occurrenceContainer = angular.element('.silverpeas-calendar', $element);
-                  var qTipOptions = {
+                  const $occContainer = occurrence.$element;
+                  const contentWidth = $content.outerWidth() + 30;
+                  const contentLimit = $occContainer.position().left + contentWidth;
+                  const bodyLimit = angular.element(document.body).width();
+                  const $occurrenceContainer = angular.element('.silverpeas-calendar', $element);
+                  const qTipOptions = {
                     content : {
                       title : {
-                        text : occurrence.title,
-                        button : this.labels.close
+                        text : occurrence.title, button : this.labels.close
                       }
                     },
                     style : {
                       classes : 'tip-occurrence qtip-free-width'
                     },
                     show : {
-                      solo: false,
+                      solo : false,
                       event : 'showEventDetails'
                     },
                     hide : {
@@ -391,7 +390,7 @@
                       at : (contentLimit < bodyLimit ? "top left" : "top right")
                     }
                   };
-                  var $markerOfListView = angular.element('.fc-event-dot', $occContainer);
+                  const $markerOfListView = angular.element('.fc-event-dot', $occContainer);
                   if ($markerOfListView.length) {
                     qTipOptions.position.target = $markerOfListView;
                     qTipOptions.position.adjust = {x : 4};
@@ -413,13 +412,13 @@
                       container : $occurrenceContainer
                     });
                   }
-                  var $tipApi = TipManager.simpleDetails($occContainer, function() {
+                  const $tipApi = TipManager.simpleDetails($occContainer, function() {
                     return $content
                   }, qTipOptions);
                   if ($markerOfListView.length) {
                     $markerOfListView.$tip$shown = true;
-                    var $scrollContainer = angular.element('.fc-scroller', $element);
-                    var __listener = function() {
+                    const $scrollContainer = angular.element('.fc-scroller', $element);
+                    const __listener = function() {
                       if (sp.element.isInView($markerOfListView, true, $scrollContainer)) {
                         if (!$markerOfListView.$tip$shown) {
                           $tipApi.show();
@@ -445,35 +444,35 @@
               });
             }.bind(this);
 
-            var _dayClick = function(momentDate) {
-              var momentWithOffset = momentDate;
+            const _dayClick = function(momentDate) {
+              let momentWithOffset = momentDate;
               if (momentDate.hasTime()) {
                 momentWithOffset =
                     sp.moment.atZoneIdSimilarLocal(momentDate, this.timeWindowViewContext.zoneId);
               }
               this.onDayClick({startMoment : momentWithOffset});
-            }.bind(this)
+            }.bind(this);
 
-            var _occurrenceChange = function(occurrence, delta, revertFunc) {
+            const _occurrenceChange = function(occurrence, delta, revertFunc) {
               if (occurrence.editable) {
-                var previousOccurrence = angular.copy(
+                const previousOccurrence = angular.copy(
                     SilverpeasCalendarTools.extractEventOccurrenceEntityData(occurrence));
                 // New period
                 if (occurrence.allDay) {
                   occurrence.startDate = occurrence.start.stripTime().format();
                   occurrence.endDate = occurrence.end.stripTime().add(-1, 'days').format();
                 } else {
-                  var startWithOffset = sp.moment.atZoneIdSimilarLocal(occurrence.start,
-                      this.timeWindowViewContext.zoneId)
-                  var endWithOffset = sp.moment.atZoneIdSimilarLocal(occurrence.end,
-                      this.timeWindowViewContext.zoneId)
+                  const startWithOffset = sp.moment.atZoneIdSimilarLocal(occurrence.start,
+                      this.timeWindowViewContext.zoneId);
+                  const endWithOffset = sp.moment.atZoneIdSimilarLocal(occurrence.end,
+                      this.timeWindowViewContext.zoneId);
                   occurrence.startDate = startWithOffset.format();
                   occurrence.endDate = endWithOffset.format();
                 }
                 occurrence.onAllDay = occurrence.allDay;
                 // New recurrence end if any
                 if (occurrence.recurrence && occurrence.recurrence.endDate) {
-                  var $endDate;
+                  let $endDate;
                   if (occurrence.onAllDay) {
                     $endDate = sp.moment.make(occurrence.recurrence.endDate);
                     $endDate = SilverpeasCalendarTools.moment($endDate).stripTime();
@@ -497,8 +496,8 @@
             /**
              * Compile dynamically the event occurrence tip directive.
              */
-            var _compileEventOccurrenceTip = function() {
-              var html = angular.element(document.createElement(this.templates.eventOccurrence));
+            const _compileEventOccurrenceTip = function() {
+              const html = angular.element(document.createElement(this.templates.eventOccurrence));
               html.hide();
               return $compile(html)($scope);
             }.bind(this);
@@ -506,29 +505,29 @@
             /**
              * Sends the new view context
              */
-            var saveContext = function(params) {
-              var __backDay = this.timeWindowViewContext.backDay;
-              var $ajaxConfig = sp.ajaxConfig(
+            const saveContext = function(params) {
+              const __backDay = this.timeWindowViewContext.backDay;
+              const $ajaxConfig = sp.ajaxConfig(
                   context.componentUriBase + 'calendars/context').byPostMethod();
               if (angular.isObject(params)) {
                 $ajaxConfig.withParams(params);
               }
               return silverpeasAjax($ajaxConfig).then(function(request) {
-                var context = request.responseAsJson();
+                const viewContext = request.responseAsJson();
                 if (params && params.backDay) {
-                  context.backDay = params.backDay;
+                  viewContext.backDay = params.backDay;
                 } else if (__backDay && params.view) {
-                  context.backDay = __backDay;
+                  viewContext.backDay = __backDay;
                 }
-                this.api.setTimeWindowViewContext(context);
+                this.api.setTimeWindowViewContext(viewContext);
               }.bind(this));
             }.bind(this);
 
             /**
              * Gets all handled calendars into an array;
              */
-            var __getAllCalendars = function() {
-              var allCalendars = [];
+            const __getAllCalendars = function() {
+              const allCalendars = [];
               Array.prototype.push.apply(allCalendars, this.api.getCalendars());
               Array.prototype.push.apply(allCalendars, this.api.getParticipationCalendars());
               return allCalendars;
@@ -537,18 +536,18 @@
             /**
              * Gets the period of the current time window into the context of AJAX calls.
              */
-            var __getAjaxCurrentTimeWindowPeriod = function() {
-              var ref = __getCurrentDateMomentFromTimeWindowViewContext(this.timeWindowViewContext);
-              var timeUnit = this.timeWindowViewContext.viewType === 'YEARLY' ? 'year' : 'month';
-              var $dateMin = sp.moment.make(ref).startOf(timeUnit).add(-1, 'weeks');
-              var $dateMax = sp.moment.make(ref).endOf(timeUnit).add(2, 'weeks');
+            const __getAjaxCurrentTimeWindowPeriod = function() {
+              const ref = __getCurrentDateMomentFromTimeWindowViewContext(this.timeWindowViewContext);
+              const timeUnit = this.timeWindowViewContext.viewType === 'YEARLY' ? 'year' : 'month';
+              const $dateMin = sp.moment.make(ref).startOf(timeUnit).add(-1, 'weeks');
+              const $dateMax = sp.moment.make(ref).endOf(timeUnit).add(2, 'weeks');
               return {startDateTime : $dateMin, endDateTime : $dateMax};
             }.bind(this);
 
             /**
              * The exposed API.
              */
-            var _partipationCalendarsChangedInternally = false;
+            let _partipationCalendarsChangedInternally = false;
             this.api = {
 
               //
@@ -721,7 +720,7 @@
                * (Data reload by Ajax Requests)
                */
               loadCalendarEventOccurrences : function(calendar) {
-                var period = __getAjaxCurrentTimeWindowPeriod();
+                const period = __getAjaxCurrentTimeWindowPeriod();
                 return calendar.events.between(period).then(function(occurrences) {
                   return _decorateSpCalEventOccurrences(calendar, occurrences);
                 }.bind(this));
@@ -732,9 +731,12 @@
                */
               refetchCalendars : function() {
                 _destroyEventDetails();
-                this.calendars.forEach(function(calendar) {
-                  this.api.refetchCalendar(calendar);
+                const promises = this.calendars.map(function(calendar) {
+                  return this.api.refetchCalendar(calendar);
                 }.bind(this));
+                if (window.spProgressMessage) {
+                  sp.promise.whenAllResolved(promises).then(spProgressMessage.hide);
+                }
               }.bind(this),
               /**
                * Refetches the calendars directly linked to the component instance.
@@ -742,7 +744,7 @@
                * Returns a promise.
                */
               refetchCalendar : function(calendar) {
-                var promise = this.api.loadCalendarEventOccurrences(calendar);
+                const promise = this.api.loadCalendarEventOccurrences(calendar);
                 if (this.spCalendar) {
                   if (!calendar.notVisible) {
                     this.spCalendar.setEventSource(calendar, promise);
@@ -761,23 +763,23 @@
                 if (!this.api.isCalendarView()) {
                   return;
                 }
-                var _eventId = event.id;
-                var _eventUri = event.uri;
+                const _eventId = event.id;
+                const _eventUri = event.uri;
 
-                var occurrencesToRefresh = [];
+                const occurrencesToRefresh = [];
                 this.spCalendar.forEachEvent(function(occurrence) {
                   if (occurrence.eventId === _eventId) {
                     occurrencesToRefresh.push(occurrence);
                   }
                 }.bind(this));
 
-                var period = __getAjaxCurrentTimeWindowPeriod();
-                var _sp_ui_version = new Date().getTime();
+                const period = __getAjaxCurrentTimeWindowPeriod();
+                const _sp_ui_version = new Date().getTime();
                 CalendarService.getEventOccurrencesBetween(_eventUri, period).then(
                     function(occurrences) {
                       occurrences.forEach(function(occurrence) {
-                        for (var i = 0; i < occurrencesToRefresh.length; i++) {
-                          var occurrenceToRefresh = occurrencesToRefresh[i];
+                        for (let i = 0; i < occurrencesToRefresh.length; i++) {
+                          const occurrenceToRefresh = occurrencesToRefresh[i];
                           if (occurrenceToRefresh.id === occurrence.id) {
                             extendsObject(occurrenceToRefresh, occurrence);
                             occurrenceToRefresh._sp_ui_version = _sp_ui_version;
@@ -794,18 +796,18 @@
                 if (!this.api.isNextEventView()) {
                   return;
                 }
-                var toExclude = [];
+                const toExclude = [];
                 visibleFilter(this.api.getCalendars(), false).forEach(function(calendar) {
                   toExclude.push(calendar.id)
                 });
-                var userIds = [];
+                const userIds = [];
                 visibleFilter(this.api.getParticipationCalendars(), true).forEach(function(participant) {
                   userIds.push(participant.userId);
                 });
-                var parameters = {
+                const parameters = {
                   userIds : userIds,
                   calendarIdsToExclude : toExclude
-                }
+                };
                 CalendarService.getNextOccurrences(parameters).then(function(occurrences) {
                   this.nextOccurrences = occurrences.filter(_eventOccurrenceFilter);
                 }.bind(this));
@@ -822,7 +824,7 @@
                * Indicates if an event is visible or not (from UI point of view).
                */
               isOccurrenceVisible : function(occurrence) {
-                var noEventIdFilter = !this.filterOnEventIds || !this.filterOnEventIds.length;
+                const noEventIdFilter = !this.filterOnEventIds || !this.filterOnEventIds.length;
                 return noEventIdFilter ||
                     this.filterOnEventIds.indexOfElement(occurrence.eventId) >= 0;
               }.bind(this),
@@ -844,14 +846,14 @@
                * (Data reload by Ajax Requests)
                */
               loadParticipationCalendars : function(userIds) {
-                var period = __getAjaxCurrentTimeWindowPeriod();
+                const period = __getAjaxCurrentTimeWindowPeriod();
                 if (userIds && userIds.length) {
                   return CalendarService.getParticipationCalendarsBetween(
                       this.participationUserIds, period).then(
                       function(partipationCalendars) {
-                        var _promises = [];
-                        for (var i = 0; i < partipationCalendars.length; i++) {
-                          var participationCalendar = partipationCalendars[i];
+                        const _promises = [];
+                        for (let i = 0; i < partipationCalendars.length; i++) {
+                          const participationCalendar = partipationCalendars[i];
                           participationCalendar.uri = participationCalendar.id;
                           participationCalendar.canBeRemoved = true;
                           _promises.push(_decorateSpCalEventOccurrences(participationCalendar,
@@ -899,7 +901,7 @@
              * @param twvc a time window view context.
              */
             function initializeCalendar(twvc) {
-              var calendarOptions = {
+              const calendarOptions = {
                 allDaySlot : true,
                 view : twvc.viewType,
                 listMode : twvc.listViewMode,
@@ -914,7 +916,7 @@
                 oneventdrop : _occurrenceChange,
                 oneventresize : _occurrenceChange
               };
-              var spCalendarDomContainer = angular.element('.silverpeas-calendar-container',
+              const spCalendarDomContainer = angular.element('.silverpeas-calendar-container',
                   $element)[0];
               return initializeSilverpeasCalendar(spCalendarDomContainer, calendarOptions);
             }
@@ -922,8 +924,7 @@
             /**
              * A listener on changes about time window view context.
              */
-
-            var __deferredCalendarLoad = sp.promise.deferred();
+            const __deferredCalendarLoad = sp.promise.deferred();
             $scope.$watch('$ctrl.timeWindowViewContext', function(twvc, oldTwvc) {
               if (!this.calendars && twvc.viewType) {
                 CalendarService.list().then(function(calendars) {
@@ -973,7 +974,7 @@
             $scope.$watchCollection('$ctrl.participationUserIds', function() {
               if (!_partipationCalendarsChangedInternally) {
                 __deferredCalendarLoad.promise.then(function() {
-                  var promise = this.api.refetchParticipationCalendars();
+                  const promise = this.api.refetchParticipationCalendars();
                   if (this.api.isNextEventView()) {
                     promise.then(function() {
                       this.api.refetchNextOccurrences();
@@ -1022,7 +1023,7 @@
           bindToController : true,
           controller : ['$element', function($element) {
             this.referenceDayChanged = function() {
-              var referenceDay = sp.moment.make(this.timeWindowViewContext.formattedReferenceDay, 'L');
+              const referenceDay = sp.moment.make(this.timeWindowViewContext.formattedReferenceDay, 'L');
               this.timeWindow({type : 'referenceDay', day : referenceDay.format()});
             }
             this.chooseReferenceDay = function() {
@@ -1076,9 +1077,9 @@
                   this.$todayButton.click();
                 }.bind(this));
                 function __viewNavigation(buttons) {
-                  var selected;
-                  for (var i = 0; i < buttons.length; i++) {
-                    var button = angular.element(buttons[i]);
+                  let selected;
+                  for (let i = 0; i < buttons.length; i++) {
+                    const button = angular.element(buttons[i]);
                     if (!selected) {
                       selected = button.hasClass('selected');
                     } else {
@@ -1088,7 +1089,7 @@
                   }
                 }
                 Mousetrap.bind('shift+left', function() {
-                  var buttons = [];
+                  const buttons = [];
                   Array.prototype.push.apply(buttons, this.$viewButtons);
                   buttons.reverse()
                   __viewNavigation(buttons);
@@ -1122,7 +1123,7 @@
           controller : ['$scope', function($scope) {
 
             $scope.$watchCollection('$ctrl.calendars', function() {
-              var visibleCalendars = [];
+              let visibleCalendars = [];
               if (this.calendars) {
                 visibleCalendars = visibleFilter(this.calendars, true);
                 if (visibleCalendars && !visibleCalendars.length) {

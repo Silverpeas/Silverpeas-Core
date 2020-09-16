@@ -318,6 +318,7 @@
       params = {componentInstanceId : params};
     }
     const __context = extendsObject({
+      actionLabelContainerSuffixId : '',
       state : this.STATE.SUBSCRIBED,
       componentInstanceId : undefined,
       subscriptionResourceType : $.subscription.subscriptionType.COMPONENT,
@@ -334,12 +335,12 @@
     }
     sp.ajaxRequest(sp.url.format(url, {userId : 'me'})).sendAndPromiseJsonResponse().then(function(userSubscriptions) {
       whenSilverpeasReady(function() {
-        __context.$menuLabel = $("#subscriptionMenuLabel");
+        __context.$menuLabel = $("#subscriptionMenuLabel" + __context.actionLabelContainerSuffixId);
         __context.state = userSubscriptions.length ? this.STATE.SUBSCRIBED : this.STATE.NOT_SUBSCRIBED;
         __updateUI();
       }.bind(this));
     }.bind(this));
-    var __updateUI = function() {
+    const __updateUI = function() {
       let label;
       if (__context.state === this.STATE.SUBSCRIBED) {
         label = __context.labels.unsubscribe;

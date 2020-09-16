@@ -39,6 +39,8 @@ import org.silverpeas.core.subscription.constant.SubscriptionMethod;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.NodeSubscription;
+import org.silverpeas.core.subscription.service.PKSubscription;
+import org.silverpeas.core.subscription.service.PKSubscriptionResource;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionList;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
@@ -52,6 +54,7 @@ import org.silverpeas.core.web.subscription.SubscriptionContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
@@ -141,34 +144,51 @@ public class SubscriptionSessionController extends AbstractComponentSessionContr
     Group[] groups = SelectionUsersGroups.getGroups(sel.getSelectedSets());
 
     // Initializing necessary subscriptions
-    SubscriptionResource resource = getContext().getResource();
-    Collection<Subscription> subscriptions = new ArrayList<>(users.length + groups.length);
+    final SubscriptionResource resource = getContext().getResource();
+    final Collection<Subscription> subscriptions = new ArrayList<>(users.length + groups.length);
     for (UserDetail user : users) {
       if (!isSameVisibilityAsTheCurrentRequester(user, getUserDetail())) {
         continue;
       }
-      SubscriptionResourceType type = resource.getType();
-      if (NODE.equals(type)) {
-        subscriptions.add(new NodeSubscription(UserSubscriptionSubscriber.from(user.getId()),
-            resource.getPK(), getUserId()));
-      } else if (COMPONENT.equals(type)) {
-        subscriptions.add(new ComponentSubscription(UserSubscriptionSubscriber.from(user.getId()),
-            resource.getInstanceId(), getUserId()));
-      }
+      Optional.of(resource)
+          .filter(PKSubscriptionResource.class::isInstance)
+          .map(PKSubscriptionResource.class::cast)
+          .ifPresentOrElse(
+              p -> subscriptions.add(new PKSubscription(UserSubscriptionSubscriber.from(user.getId()), p, getUserId())),
+              () -> {
+                final SubscriptionResourceType type = resource.getType();
+                if (NODE.equals(type)) {
+                  subscriptions.add(
+                      new NodeSubscription(UserSubscriptionSubscriber.from(user.getId()),
+                          resource.getPK(), getUserId()));
+                } else if (COMPONENT.equals(type)) {
+                  subscriptions.add(
+                      new ComponentSubscription(UserSubscriptionSubscriber.from(user.getId()),
+                          resource.getInstanceId(), getUserId()));
+                }
+              });
     }
     for (Group group : groups) {
       if (!isSameVisibilityAsTheCurrentRequester(group, getUserDetail())) {
         continue;
       }
-      SubscriptionResourceType type = resource.getType();
-      if (NODE.equals(type)) {
-        subscriptions.add(
-            new NodeSubscription(GroupSubscriptionSubscriber.from(group.getId()), resource.getPK(),
-                getUserId()));
-      } else if (COMPONENT.equals(type)) {
-        subscriptions.add(new ComponentSubscription(GroupSubscriptionSubscriber.from(group.getId()),
-            resource.getInstanceId(), getUserId()));
-      }
+      Optional.of(resource)
+          .filter(PKSubscriptionResource.class::isInstance)
+          .map(PKSubscriptionResource.class::cast)
+          .ifPresentOrElse(
+              p -> subscriptions.add(new PKSubscription(GroupSubscriptionSubscriber.from(group.getId()), p, getUserId())),
+              () -> {
+                final SubscriptionResourceType type = resource.getType();
+                if (NODE.equals(type)) {
+                  subscriptions.add(
+                      new NodeSubscription(GroupSubscriptionSubscriber.from(group.getId()),
+                          resource.getPK(), getUserId()));
+                } else if (COMPONENT.equals(type)) {
+                  subscriptions.add(
+                      new ComponentSubscription(GroupSubscriptionSubscriber.from(group.getId()),
+                          resource.getInstanceId(), getUserId()));
+                }
+              });
     }
 
     // Getting all existing subscriptions and selecting those that have to be deleted

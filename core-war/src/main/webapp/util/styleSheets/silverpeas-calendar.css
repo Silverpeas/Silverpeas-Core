@@ -345,6 +345,15 @@ silverpeas-calendar-list ul li .synchronized {
   background-color: #eee;
 }
 
+.silverpeas-calendar-list-item-menu li.separator {
+  border-top: 1px solid #e2e2e2;
+  height: 0;
+  padding: 0;
+  margin-top: 5px;
+  margin-bottom: 4px;
+  width: 100%;
+}
+
 silverpeas-calendar-event-occurrence-tip-actions {
   text-align: center;
 }

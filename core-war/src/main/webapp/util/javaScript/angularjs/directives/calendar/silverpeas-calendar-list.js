@@ -68,11 +68,24 @@
           controllerAs : '$ctrl',
           bindToController : true,
           controller : ['$element', function($element) {
-
             /**
              * Just after template compilation
              */
             this.$postLink = function() {
+              if (sp.promise.isOne(window.SUBSCRIPTION_PROMISE)) {
+                SUBSCRIPTION_PROMISE.then(function() {
+                  $timeout(function() {
+                    if (!this.calendar.userPersonal && typeof this.calendar.componentInstanceId === 'function') {
+                      this.spSubManager = new SilverpeasSubscriptionManager({
+                        actionLabelContainerSuffixId : this.calendar.id,
+                        subscriptionResourceType : jQuery.subscription.subscriptionType.CALENDAR,
+                        componentInstanceId : this.calendar.componentInstanceId(),
+                        resourceId : this.calendar.id
+                      });
+                    }
+                  }.bind(this));
+                }.bind(this));
+              }
               $timeout(function() {
                 this.dom = {
                   colorContainer : angular.element(angular.element('silverpeas-color-picker', $element)),
@@ -101,7 +114,7 @@
                   clearTimeout(__timeout);
                 });
               }.bind(this), 200);
-            }
+            };
           }]
         };
       }]);

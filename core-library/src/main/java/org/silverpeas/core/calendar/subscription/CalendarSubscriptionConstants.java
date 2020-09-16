@@ -22,45 +22,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.webapi.base;
+package org.silverpeas.core.calendar.subscription;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
 
 /**
  * @author silveryocha
  */
-public abstract class SilverpeasRequestContext {
+public class CalendarSubscriptionConstants {
 
-  private HttpServletRequest request;
-  private HttpServletResponse response;
-  private User user;
+  private CalendarSubscriptionConstants() {
+    // Constant class
+  }
 
-  protected void init(final HttpServletRequest request, final HttpServletResponse response) {
-    this.request = request;
-    this.response = response;
-    final String httpMethod = request.getMethod().toUpperCase();
-    if ("PUT".equals(httpMethod)) {
-      UserSubscriptionNotificationSendingHandler.verifyRequest(request);
+  /**
+   * The resource is a calendar. Used by services handling calendars.
+   */
+  public static final SubscriptionResourceType CALENDAR = new SubscriptionResourceType() {
+    private static final long serialVersionUID = 3236120504338259771L;
+
+    @Override
+    public int priority() {
+      return 20;
     }
-  }
 
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(final User user) {
-    this.user = user;
-  }
-
-  public HttpServletRequest getRequest() {
-    return request;
-  }
-
-  public HttpServletResponse getResponse() {
-    return response;
-  }
+    @Override
+    public String getName() {
+      return "CALENDAR";
+    }
+  };
 }

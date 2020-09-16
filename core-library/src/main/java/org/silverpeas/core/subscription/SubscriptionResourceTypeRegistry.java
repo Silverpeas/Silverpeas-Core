@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.subscription;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -42,6 +43,7 @@ import static org.silverpeas.core.subscription.constant.CommonSubscriptionResour
  * By default, all {@link CommonSubscriptionResourceConstants} constants are registered.
  * </p>
  */
+@Provider
 @Singleton
 public class SubscriptionResourceTypeRegistry {
 

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,25 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.subscription.bean;
 
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.subscription.SubscriptionResourceType;
+package org.silverpeas.core.calendar.subscription;
 
-import java.util.Collections;
-import java.util.List;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.calendar.notification.CalendarLifeCycleEvent;
+import org.silverpeas.core.subscription.AbstractProfiledResourceSubscriptionListener;
+import org.silverpeas.core.subscription.SubscriptionResource;
+
+import javax.inject.Singleton;
 
 /**
- * This class is implementing {@link org.silverpeas.core.initialization.Initialization}, no
- * annotation appears in order to be taken into account by CDI.<br>
- * The service will be taken in charge by initialization treatments.
- * @author silveryocha
+ * Listener of events on the deletion of a node in a component instance to delete all subscriptions
+ * on that node.
+ * @author mmoquillon
  */
-@Service
-public final class DefaultSubscriptionBeanService extends AbstractSubscriptionBeanService {
+@Bean
+@Singleton
+public class SubscriptionCalendarEventListener
+    extends AbstractProfiledResourceSubscriptionListener<Calendar, CalendarLifeCycleEvent> {
 
   @Override
-  protected List<SubscriptionResourceType> getHandledSubscriptionResourceTypes() {
-    return Collections.emptyList();
+  protected SubscriptionResource getSubscriptionResource(final Calendar resource) {
+    return new CalendarSubscriptionResource(resource);
+  }
+
+  @Override
+  protected boolean isSubscriptionEnabled(final Calendar resource) {
+    return true;
   }
 }
+  

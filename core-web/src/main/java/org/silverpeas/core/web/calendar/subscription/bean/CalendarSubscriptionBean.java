@@ -22,45 +22,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.webapi.base;
+package org.silverpeas.core.web.calendar.subscription.bean;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
+import org.silverpeas.core.web.subscription.bean.AbstractSubscriptionBean;
 
 /**
  * @author silveryocha
  */
-public abstract class SilverpeasRequestContext {
+public class CalendarSubscriptionBean extends AbstractSubscriptionBean {
 
-  private HttpServletRequest request;
-  private HttpServletResponse response;
-  private User user;
+  private final Calendar calendar;
 
-  protected void init(final HttpServletRequest request, final HttpServletResponse response) {
-    this.request = request;
-    this.response = response;
-    final String httpMethod = request.getMethod().toUpperCase();
-    if ("PUT".equals(httpMethod)) {
-      UserSubscriptionNotificationSendingHandler.verifyRequest(request);
-    }
+  protected CalendarSubscriptionBean(final Subscription subscription, final Calendar calendar,
+      final SilverpeasComponentInstance component, final String language) {
+    super(subscription, component, language);
+    this.calendar = calendar;
   }
 
-  public User getUser() {
-    return user;
+  @Override
+  public String getPath() {
+    final String path = super.getPath();
+    return calendar.isMain() ? path : path + " > " + calendar.getTitle();
   }
 
-  public void setUser(final User user) {
-    this.user = user;
-  }
-
-  public HttpServletRequest getRequest() {
-    return request;
-  }
-
-  public HttpServletResponse getResponse() {
-    return response;
+  @Override
+  public String getLink() {
+    return ComponentInstanceRoutingMapProviderByInstance.get()
+        .getByInstanceId(calendar.getComponentInstanceId()).relativeToSilverpeas().getHomePage()
+        .toString();
   }
 }

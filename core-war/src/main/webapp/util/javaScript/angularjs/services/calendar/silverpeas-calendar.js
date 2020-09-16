@@ -173,15 +173,18 @@
           /**
            * Updates an event occurrence.
            * @param occurrence the occurrence to update.
+           * @param actionMethodType the action method type to observe (ALL, SINCE, etc.).
+           * @param subscriptionParams optional additional parameters concerning the subscription management.
            * @returns {promise|a.fn.promise|*}
            */
-          this.updateOccurrence = function(occurrence, actionMethodType) {
-            var occurrenceCopy = angular.copy(occurrence);
+          this.updateOccurrence = function(occurrence, actionMethodType, subscriptionParams) {
+            const occurrenceCopy = angular.copy(occurrence);
             occurrenceCopy.calendar = occurrence.calendar;
             occurrenceCopy.updateMethodType = actionMethodType;
-            var adapter = RESTAdapter.get(
-                occurrence.occurrenceUri + '?zoneid=' + context.zoneId,
-                CalendarEvent);
+            const explodedUrl = sp.url.explode(occurrence.occurrenceUri);
+            explodedUrl.parameters['zoneId'] = context.zoneId;
+            extendsObject(false, explodedUrl.parameters, subscriptionParams);
+            const adapter = RESTAdapter.get(sp.url.formatFromExploded(explodedUrl), CalendarEvent);
             return adapter.put(occurrenceCopy);
           };
 
@@ -436,11 +439,13 @@
         /**
          * Updates an occurrence.
          * @param occurrence the coccurrence to update which contains all necessary data.
+         * @param actionMethodType the action method type to observe (ALL, SINCE, etc.).
+         * @param subscriptionParams optional additional parameters concerning the subscription management.
          */
-        this.updateEventOccurrence = function(occurrence, actionMethodType) {
+        this.updateEventOccurrence = function(occurrence, actionMethodType, subscriptionParams) {
           var occurrenceEntity = SilverpeasCalendarTools.extractEventOccurrenceEntityData(
               occurrence);
-          return CalendarEventOccurrence.updateOccurrence(occurrenceEntity, actionMethodType);
+          return CalendarEventOccurrence.updateOccurrence(occurrenceEntity, actionMethodType, subscriptionParams);
         };
 
         /**

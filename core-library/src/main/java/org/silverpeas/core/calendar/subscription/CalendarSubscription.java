@@ -9,37 +9,29 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.subscription.bean;
+package org.silverpeas.core.calendar.subscription;
 
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.subscription.SubscriptionResourceType;
-
-import java.util.Collections;
-import java.util.List;
+import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.subscription.service.PKSubscription;
 
 /**
- * This class is implementing {@link org.silverpeas.core.initialization.Initialization}, no
- * annotation appears in order to be taken into account by CDI.<br>
- * The service will be taken in charge by initialization treatments.
  * @author silveryocha
  */
-@Service
-public final class DefaultSubscriptionBeanService extends AbstractSubscriptionBeanService {
+public class CalendarSubscription extends PKSubscription {
 
-  @Override
-  protected List<SubscriptionResourceType> getHandledSubscriptionResourceTypes() {
-    return Collections.emptyList();
+  public CalendarSubscription(final String subscriberId, final Calendar calendar) {
+    super(subscriberId, new CalendarSubscriptionResource(calendar));
   }
 }

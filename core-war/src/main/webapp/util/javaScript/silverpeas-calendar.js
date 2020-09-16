@@ -238,6 +238,16 @@
             return __self.extractComponentInstanceIdFromUri(calendarUri);
           };
         }
+        /**
+         * Indicates if the current user is an administrator of the calendar.
+         * @param true if admin, false otherwise.
+         */
+        if (!calendar.isCurrentUserAdmin) {
+          calendar.isCurrentUserAdmin = function() {
+            // only calendar administrators have access to the private URI
+            return !!this.icalPrivateUri;
+          };
+        }
       }
     };
 
@@ -345,16 +355,23 @@
          */
         if (!occurrence.hasBeenModifiedAtEventLevel) {
           occurrence.hasBeenModifiedAtEventLevel = function(other) {
-            const dataToCompare = [{a : occurrence.visibility, b : other.visibility},
-              {a : occurrence.content, b : other.content},
-              {a : occurrence.recurrence, b : other.recurrence}];
-            for (let i = 0; i < dataToCompare.length; i++) {
-              const comparison = dataToCompare[i];
-              if (!sp.object.areExistingValuesEqual(comparison.a, comparison.b)) {
-                return true;
-              }
-            }
-            return false;
+            return !sp.object.areEachExistingValuesEqual(
+                [{a : this.visibility, b : other.visibility},
+                  {a : this.content, b : other.content},
+                  {a : this.recurrence, b : other.recurrence}]);
+          };
+        }
+        /**
+         * Indicates if it has been modified at event level. In other words on data which can not
+         * be modified at occurrence level.
+         * @param other an other occurrence instance.
+         */
+        if (!occurrence.hasBeenModifiedOnPeriod) {
+          occurrence.hasBeenModifiedOnPeriod = function(other) {
+            return !sp.object.areEachExistingValuesEqual(
+                [{a : this.onAllDay, b : other.onAllDay},
+                  {a : sp.moment.displayAsDateTime(this.startDate), b : sp.moment.displayAsDateTime(other.startDate)},
+                  {a : sp.moment.displayAsDateTime(this.endDate), b : sp.moment.displayAsDateTime(other.endDate)}]);
           };
         }
       }

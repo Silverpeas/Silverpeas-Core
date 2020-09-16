@@ -37,8 +37,4 @@ public class SubscriptionServiceProvider {
   public static SubscriptionService getSubscribeService() {
     return ServiceProvider.getService(SubscriptionService.class);
   }
-
-  private SubscriptionServiceProvider() {
-
-  }
 }
