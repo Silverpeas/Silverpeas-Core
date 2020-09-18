@@ -49,10 +49,10 @@ public interface SilverpeasList<T> extends List<T> {
    * @return a {@link Collector} which collects all the input elements into a {@link
    * SilverpeasList}, in encounter order.
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "rawtypes"})
   static <C, R extends SilverpeasList<C>> Collector<C, R, R> collector(List<?> source) {
     final Supplier<R> supplier;
-    if (source instanceof SilverpeasList) {
+    if (source instanceof SilverpeasList && ((SilverpeasList<?>) source).isSlice()) {
       supplier = () -> (R) ((SilverpeasList) source).newEmptyListWithSameProperties();
     } else {
       supplier = () -> (R) new SilverpeasArrayList<>();

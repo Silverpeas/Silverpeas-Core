@@ -30,6 +30,7 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.MimeBodyPart;
@@ -208,5 +209,39 @@ public class MailContent {
   @Override
   public String toString() {
     return getValue().toString();
+  }
+
+  /**
+   * Representation of an attached file.
+   */
+  public interface AttachedFile {
+    /**
+     * The name of the attached file.
+     * @return a string.
+     */
+    String getName();
+
+    /**
+     * The full path to the file content.
+     * @return a string.
+     */
+    String getPath();
+
+    /**
+     * Gets the corresponding body part.
+     * @return a {@link MimeBodyPart} instance.
+     */
+    default MimeBodyPart toBodyPart() throws MessagingException {
+      // create the second message part
+      final MimeBodyPart mbp = new MimeBodyPart();
+      // attach the file to the message
+      final FileDataSource fds = new FileDataSource(getPath());
+      mbp.setDataHandler(new DataHandler(fds));
+      // For Displaying images in the mail
+      mbp.setFileName(getName());
+      mbp.setHeader("Content-ID", "<" + getName() + ">");
+      // create the Multipart and its parts to it
+      return mbp;
+    }
   }
 }

@@ -38,24 +38,16 @@ import java.util.Map;
 public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
   private static final String[] MANAGED_TYPES = new String[]{TextField.TYPE};
+  private static final String ERROR_MSG_WITH_HYPHEN = "     errorMsg+=\"  - '";
+  private static final String JS_NB_ERROR_INCREMENT = "     errorNb++;\n";
+  private static final String JS_CARRIAGE_RETURN = "\\n\";\n";
+  private static final String JS_CLOSING_BRACE = "   }\n";
 
   /**
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
     return MANAGED_TYPES;
-  }
-
-  protected void addMandatoryScript(StringBuilder script, FieldTemplate template, PagesContext pageContext) {
-    if (template.isMandatory() && pageContext.useMandatory()) {
-      String language = pageContext.getLanguage();
-      String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
-      script.append("   if (isWhitespace(stripInitialWhitespace(field.value))) {\n");
-      script.append("     errorMsg+=\"  - '").append(label).append("' ").
-          append(Util.getString("GML.MustBeFilled", language)).append("\\n\";\n");
-      script.append("     errorNb++;\n");
-      script.append("   }\n");
-    }
   }
 
   protected void addSpecificScript(PrintWriter out, FieldTemplate template, PagesContext pageContext) {
@@ -79,8 +71,7 @@ public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<
 
     StringBuilder script = new StringBuilder(10000);
 
-    addMandatoryScript(script, template, pagesContext);
-
+    produceMandatoryCheck(out, template, pagesContext);
     addSpecificScript(out, template, pagesContext);
 
     Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
@@ -88,30 +79,29 @@ public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<
     if (contentType != null) {
       if (contentType.equals(TextField.CONTENT_TYPE_INT)) {
         script.append("   if (field.value != \"\" && !(/^-?\\d+$/.test(field.value))) {\n");
-        script.append("     errorMsg+=\"  - '").append(label).append("' ").
-            append(Util.getString("GML.MustContainsNumber", language)).append(
-            "\\n\";\n");
-        script.append("     errorNb++;\n");
-        script.append("   }\n");
+        script.append(ERROR_MSG_WITH_HYPHEN).append(label).append("' ").
+            append(Util.getString("GML.MustContainsNumber", language)).append(JS_CARRIAGE_RETURN);
+        script.append(JS_NB_ERROR_INCREMENT);
+        script.append(JS_CLOSING_BRACE);
       } else if (contentType.equals(TextField.CONTENT_TYPE_FLOAT)) {
         script.append("   field.value = field.value.replace(\",\", \".\")\n");
         script.append("   if (field.value != \"\" && !(/^([+-]?(((\\d+(\\.)?)|(\\d*\\.\\d+))");
         script.append("([eE][+-]?\\d+)?))$/.test(field.value))) {\n");
-        script.append("     errorMsg+=\"  - '").append(label).append("' ");
-        script.append(Util.getString("GML.MustContainsFloat", language)).append("\\n\";\n");
-        script.append("     errorNb++;\n");
-        script.append("   }\n");
+        script.append(ERROR_MSG_WITH_HYPHEN).append(label).append("' ");
+        script.append(Util.getString("GML.MustContainsFloat", language)).append(JS_CARRIAGE_RETURN);
+        script.append(JS_NB_ERROR_INCREMENT);
+        script.append(JS_CLOSING_BRACE);
       }
     }
 
     String nbMaxCar = (parameters.containsKey(TextField.PARAM_MAXLENGTH) ? parameters.get(TextField.PARAM_MAXLENGTH) : Util.
         getSetting("nbMaxCar"));
     script.append("   if (! isValidText(field, ").append(nbMaxCar).append(")) {\n");
-    script.append("     errorMsg+=\"  - '").append(label).append("' ").
+    script.append(ERROR_MSG_WITH_HYPHEN).append(label).append("' ").
         append(Util.getString("ContainsTooLargeText", language)).append(nbMaxCar).append(" ").
-        append(Util.getString("Characters", language)).append("\\n\";\n");
-    script.append("     errorNb++;\n");
-    script.append("   }\n");
+        append(Util.getString("Characters", language)).append(JS_CARRIAGE_RETURN);
+    script.append(JS_NB_ERROR_INCREMENT);
+    script.append(JS_CLOSING_BRACE);
     out.print(script.toString());
 
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
@@ -129,14 +119,14 @@ public abstract class AbstractTextFieldDisplayer extends AbstractFieldDisplayer<
 
   @Override
   public List<String> update(String newValue, TextField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+      PagesContext pagesContext) throws FormException {
     if (!TextField.TYPE.equals(field.getTypeName())) {
       throw new FormException("AbstractTextFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
 
-    if (field.acceptValue(newValue, PagesContext.getLanguage())) {
-      field.setValue(newValue, PagesContext.getLanguage());
+    if (field.acceptValue(newValue, pagesContext.getLanguage())) {
+      field.setValue(newValue, pagesContext.getLanguage());
     } else {
       throw new FormException("AbstractTextFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
           TextField.TYPE);

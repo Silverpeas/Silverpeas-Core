@@ -67,40 +67,45 @@ public enum NotifAction {
   /**
    * The publishing of a contribution has been refused.
    */
-  REFUSE(8, 8),
+  REFUSE(8, 9),
 
   /**
    * The publishing of a contribution has been validated.
    */
-  VALIDATE(9, 9),
+  VALIDATE(9, 10),
 
   /**
    * In waiting of response.
    */
-  RESPONSE(10, 10),
+  RESPONSE(10, 11),
 
   /**
    * A contribution has been classified.
    */
-  CLASSIFIED(11, 11),
+  CLASSIFIED(11, 12),
 
   /**
    * A contribution has been unclassified.
    */
-  DECLASSIFIED(12, 12),
+  DECLASSIFIED(12, 13),
 
   /**
    * A contribution has been published.
    */
-  PUBLISHED(13, 13),
+  PUBLISHED(13, 14),
 
   /**
    * A container has been populated.
    */
-  POPULATED(14, 14);
+  POPULATED(14, 15),
 
-  private int id;
-  private int priority;
+  /**
+   * A contribution has been canceled.
+   */
+  CANCELED(15, 8);
+
+  private final int id;
+  private final int priority;
 
   NotifAction(final int id, final int priority) {
     this.id = id;

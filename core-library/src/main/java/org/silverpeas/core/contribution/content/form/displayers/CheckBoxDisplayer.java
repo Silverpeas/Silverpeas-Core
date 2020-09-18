@@ -35,7 +35,6 @@ import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -79,11 +78,9 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
    * @param out
    * @param template
    * @param pagesContext
-   * @throws IOException
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-      throws IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
     if (template.isMandatory() && pagesContext.useMandatory()) {
@@ -94,7 +91,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer<TextField> {
       out.println("     checked = true;\n");
       out.println("   }\n");
       out.println(" }\n");
-      out.println(" if(checked == false) {\n");
+      out.println(" if(!ignoreMandatory && checked == false) {\n");
       out.println("   errorMsg+=\"  - '" + template.getLabel(language) + "' " +
           Util.getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("   errorNb++;");

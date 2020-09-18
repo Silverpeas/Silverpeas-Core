@@ -83,14 +83,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
     String language = pagesContext.getLanguage();
     String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
-    if (template.isMandatory() && pagesContext.useMandatory()) {
-      out.println("		if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("			errorMsg+=\"  - '"
-          + label + "' "
-          + Util.getString("GML.MustBeFilled", language) + "\\n\";");
-      out.println("			errorNb++;");
-      out.println("		}");
-    }
+    produceMandatoryCheck(out, template, pagesContext);
     out.println("		if (! isWhitespace(stripInitialWhitespace(field.value))) {");
     out.println("			if (! isCorrectDate(extractYear(field.value, '" + language
         + "'), extractMonth(field.value, '" + language + "'), extractDay(field.value, '" + language

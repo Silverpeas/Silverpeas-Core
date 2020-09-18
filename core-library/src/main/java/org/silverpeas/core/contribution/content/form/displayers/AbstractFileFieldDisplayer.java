@@ -124,7 +124,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
     String fieldName = template.getFieldName();
     String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
     if (template.isMandatory() && pageContext.useMandatory()) {
-      out.append("  if (isWhitespace(stripInitialWhitespace(field.value))) {\n")
+      out.append("  if (!ignoreMandatory && isWhitespace(stripInitialWhitespace(field.value))) {\n")
           .append("   var ").append(fieldName).append("Value = document.getElementById('")
           .append(fieldName).append(FileField.PARAM_ID_SUFFIX).append("').value;\n")
           .append("   var ").append(fieldName).append("Operation = document.")
