@@ -1044,9 +1044,10 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
    *     resolving.
    */
   window.whenSilverpeasReady = function(callback) {
-    var deferred = sp.promise.deferred();
+    const deferred = sp.promise.deferred();
+    let promise = deferred.promise;
     if (typeof callback === 'function') {
-      deferred.promise.then(callback);
+      promise = promise.then(callback);
     }
     if (document.readyState !== 'interactive' &&
         document.readyState !== 'loaded' &&
@@ -1057,20 +1058,58 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
     } else {
       deferred.resolve();
     }
-    return deferred.promise;
+    return promise;
+  };
+
+  /**
+   * It permits to manage technical UI loading with delaying.
+   * A treatment that handles DOM modification (AngularJS directive for example) which are also
+   * processed by other treatments can register to this timer by calling register method.
+   * The returned value of register method is a deferred promise which can be resolved or rejected.
+   * When the DOM modification is done, the treatment resolve the deferred promise.
+   * The other treatment MUST use whenSilverpeasReady or whenSilverpeasEntirelyLoaded in order to
+   * get benefit of this timer behaviour.
+   * BE CAREFULLY, the treatment that handles DOM modification MUST NOT user whenSilverpeasReady or
+   * whenSilverpeasEntirelyLoaded
+   */
+  window.silverpeasEntirelyLoadedDelayer = new function() {
+    let __deferredList = [];
+    this.register = function() {
+      const deferred = sp.promise.deferred();
+      __deferredList.push(deferred);
+      return deferred;
+    }
+    this.whenReady = function() {
+      let __safeCleaner = setTimeout(function() {
+        __deferredList.forEach(function(d) {
+          return d.resolve();
+        });
+      }, 5000);
+      return sp.promise.whenAllResolved(__deferredList.map(function(d) {
+        return d.promise;
+      }))
+      .then(function() {
+        return clearTimeout(__safeCleaner);
+      });
+    };
   };
 
   /**
    * The given callback is called after the document and all sub-resources have finished loading.
    * The state indicates that the load event is about to fire.
+   * This method depends on silverpeasEntirelyLoadedDelayer mechanism.
    * @param callback an optional callback
    * @returns {*|Promise} a promise including if any the execution of given callback on promise
    *     resolving.
    */
   window.whenSilverpeasEntirelyLoaded = function(callback) {
-    var deferred = sp.promise.deferred();
+    const deferred = sp.promise.deferred();
+    let promise = deferred.promise;
+    promise = promise.then(function() {
+      return silverpeasEntirelyLoadedDelayer.whenReady();
+    });
     if (typeof callback === 'function') {
-      deferred.promise.then(callback);
+      promise = promise.then(callback);
     }
     if (document.readyState !== 'complete') {
       document.addEventListener('readystatechange', function() {
@@ -1081,7 +1120,7 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
     } else {
       deferred.resolve();
     }
-    return deferred.promise;
+    return promise;
   };
 
   /**
@@ -1369,7 +1408,7 @@ if (typeof window.sp === 'undefined') {
          * Returning a new queue instance
          */
         return new function() {
-          var deferredList = [];
+          const deferredList = [];
           /**
            * Pushes into queue the given callback.
            * If callback returns a promise, then the next callback is processed
@@ -1380,18 +1419,18 @@ if (typeof window.sp === 'undefined') {
            * @returns {*} the promise after successful callback processing.
            */
           this.push = function(callback) {
-            var currentIndex = deferredList.length - 1;
+            const currentIndex = deferredList.length - 1;
             deferredList.push(sp.promise.deferred());
-            var nextDeferred = deferredList[currentIndex + 1];
-            var __currentPromise;
+            const nextDeferred = deferredList[currentIndex + 1];
+            let __currentPromise;
             if (currentIndex >= 0) {
               __currentPromise = deferredList[currentIndex].promise;
             } else {
               __currentPromise = sp.promise.resolveDirectlyWith();
             }
             return __currentPromise.then(function() {
-              var result = callback();
-              var nextPromise = function() {
+              const result = callback();
+              const nextPromise = function() {
                 nextDeferred.resolve();
                 return result;
               };

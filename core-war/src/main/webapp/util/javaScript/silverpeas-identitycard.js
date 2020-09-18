@@ -22,41 +22,68 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function activateIDCards() {
-  jQuery(document).ready(function() {
-    jQuery('.user-card').each(function() {
-      var $this = jQuery(this);
-      $.ajax({
-        type : "GET",
-        url : '/silverpeas/services/profile/users/' + $this.attr('rel') + '?extended=true',
-        dataType : "json",
-        cache : false,
-        success : function(user, status, jqXHR) {
-          $this.find('.userToZoom').text(user.firstName + ' ' + user.lastName);
-          jQuery.each(user, function(key, val) {
-            if (key == 'avatar') {
-              $this.find('.' + key + ' img:first').get(0).setAttribute('src', val);
-            } else if (key == 'moreData') {
-              jQuery.each(val, function(keyMore, valMore) {
-                $this.find('.' + keyMore).text(valMore);
-              });
-            } else  {
-              $this.find('.' + key).text(val);
-            }
+(function(){
+  function activateIDCards() {
+    whenSilverpeasEntirelyLoaded(function() {
+      const promises = [];
+      sp.element.querySelectorAll('.user-card')
+          .filter(function($userCard) {
+            return !$userCard.__userCardActivated;
+          }).forEach(function($userCard) {
+              clearTimeout(__timer);
+              $userCard.__userCardActivated = true;
+              promises.push(User.getExtended($userCard.getAttribute('rel')).then(function(user) {
+                const nodeToUpdate = [{
+                  element : sp.element.querySelector('.userToZoom', $userCard),
+                  textValue : user.firstName + ' ' + user.lastName
+                }];
+                for (let key in user) {
+                  if (user.hasOwnProperty(key)) {
+                    const val = user[key];
+                    if (key === 'avatar') {
+                      nodeToUpdate.push({
+                        element : sp.element.querySelector('.' + key + ' img', $userCard),
+                        srcValue : val
+                      });
+                    } else if (key === 'moreData') {
+                      for (let keyMore in val) {
+                        if (val.hasOwnProperty(keyMore)) {
+                          nodeToUpdate.push({
+                            element : sp.element.querySelector('.' + keyMore, $userCard),
+                            textValue : val[keyMore]
+                          });
+                        }
+                      }
+                    } else {
+                      nodeToUpdate.push({
+                        element : sp.element.querySelector('.' + key, $userCard),
+                        textValue : user[key]
+                      });
+                    }
+                  }
+                }
+                nodeToUpdate.filter(function(data) {
+                  return !!data.element;
+                }).forEach(function(data) {
+                  if (data.srcValue) {
+                    data.element.setAttribute('src', data.srcValue);
+                  } else if (data.element.childNodes.length) {
+                    data.element.childNodes[0].textContent = data.textValue;
+                  } else {
+                    data.element.innerText = data.textValue;
+                  }
+                });
+              }));
           });
-
-          //activate user zoom present in user card
-          activateUserZoom();
-        },
-        error : function(jqXHR, status) {
-          // do nothing
-        }
-      });
+      if (promises.length) {
+        sp.promise.whenAllResolved(promises).then(activateUserZoom);
+      }
     });
-  });
-}
+  }
 
-/**
- * Populate all identity card in page.
- */
-activateIDCards();
+  /**
+   * Populate all identity card in page.
+   */
+  const __timer = setTimeout(activateIDCards, 1000);
+  setTimeout(activateIDCards, 100);
+})();
