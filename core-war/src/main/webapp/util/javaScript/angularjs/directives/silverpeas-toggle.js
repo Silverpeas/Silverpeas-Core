@@ -45,14 +45,17 @@
         originalClass : '@'
       },
       replace: true,
-      link : function postLink(scope, element, attrs) {
+      controller : function() {
+        this.__spTimerPromise = silverpeasEntirelyLoadedDelayer.register();
+      },
+      link : function postLink(scope, element, attrs, controller) {
         $timeout(function() {
           scope.originalClass = attrs.originalclass;
-          var myContainer;
-          var myMoreLink;
-          var myLessLink;
-          var maxHeight;
-          var height;
+          let myContainer;
+          let myMoreLink;
+          let myLessLink;
+          let maxHeight;
+          let height;
           scope.more = function() {
             myContainer.css('max-height', 'none');
             myMoreLink.hide();
@@ -72,6 +75,7 @@
             if (maxHeight !== height) {
               myMoreLink.hide();
             }
+            controller.__spTimerPromise.resolve();
           }, 0);
         }, 0);
       }
