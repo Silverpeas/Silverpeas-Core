@@ -131,6 +131,7 @@ public class Admin {
   private static ResourceLocator roleMapping = null;
   private static boolean useProfileInheritance = false;
   private static transient boolean cacheLoaded = false;
+  private static int maxGroupDelete = 20;
 
   @Inject
   @Named("adminNotificationService")
@@ -152,6 +153,9 @@ public class Admin {
     m_domainSynchroCron = resources.getString("DomainSynchroCron", "* 4 * * *");
     m_groupSynchroCron = resources.getString("GroupSynchroCron", "* 5 * * *");
     delUsersOnDiffSynchro = resources.getBoolean("DelUsersOnThreadedSynchro", true);
+
+    maxGroupDelete = resources.getInteger("MaxGroupDelete", 20);
+
     // Cache management
     cache.setCacheAvailable(StringUtil.getBooleanValue(resources.getString("UseCache", "1")));
     componentInstanciator = new Instanciateur();
@@ -6521,6 +6525,7 @@ public class Admin {
     int iNbGroupsAdded = 0;
     int iNbGroupsMaj = 0;
     int iNbGroupsDeleted = 0;
+    HashMap<String, Group> groupToDelete = new HashMap<String, Group>();
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
         getCurrentDomainDriverManager();
     SynchroReport.warn("admin.synchronizeGroups", "Starting groups synchronization...", null);
@@ -6555,24 +6560,22 @@ public class Admin {
 
         // if found, do nothing, else delete
         if (!bFound) {
-          try {
-            SilverTrace.info("admin", "admin.synchronizeGroups", PARAM_MSG_KEY,
-                "%%%%FULLSYNCHRO%%%%>Delete group : " + silverpeasGroup.getId() + " - "
-                + specificId);
-            groupManager.deleteGroupById(domainDriverManager, silverpeasGroup, true);
-            iNbGroupsDeleted++;
-            sReport += "deleting group " + silverpeasGroup.getName() + "(id:" + specificId + ")\n";
-            SynchroReport.warn("admin.synchronizeGroups", "Group " + silverpeasGroup.getName()
-                + " deleted (SpecificId:" + specificId + ")", null);
-          } catch (AdminException aeDel) {
-            SilverTrace.info("admin", "admin.synchronizeGroups", PARAM_MSG_KEY,
-                "%%%%FULLSYNCHRO%%%%>PB deleting group ! " + specificId, aeDel);
-            sReport += "problem deleting group " + silverpeasGroup.getName() + " (specificId:"
-                + specificId + ") - " + aeDel.getMessage() + "\n";
-            sReport += "group has not been deleted\n";
-          }
+          groupToDelete.put(specificId, silverpeasGroup);
         }
       }
+
+      // Effective delete
+      if (groupToDelete.entrySet().size() > maxGroupDelete) {
+        SynchroReport.warn("admin.synchronizeGroups", "Too many groups to delete => the deletion is canceled", null);
+      } else {
+        for (Map.Entry<String, Group> entry : groupToDelete.entrySet()) {
+          specificId = entry.getKey();
+          Group silverpeasGroup = entry.getValue();
+          int d = deleteGroup(silverpeasGroup, specificId, domainDriverManager, sReport);
+          iNbGroupsDeleted = iNbGroupsDeleted + d;
+        }
+      }
+
       sReport += "Groups synchronization terminated\n";
       SynchroReport.info("admin.synchronizeGroups",
           "# of groups updated : " + iNbGroupsMaj + ", added : " + iNbGroupsAdded
@@ -6585,6 +6588,26 @@ public class Admin {
       throw new AdminException("admin.synchronizeGroups", SilverpeasException.ERROR,
           "admin.EX_ERR_SYNCHRONIZE_DOMAIN_GROUPS",
           "domain id : '" + domainId + "'\nReport:" + sReport, e);
+    }
+  }
+
+  private int deleteGroup(Group silverpeasGroup, String specificId, DomainDriverManager domainDriverManager, String sReport) {
+    try {
+      SilverTrace.info("admin", "admin.synchronizeGroups", PARAM_MSG_KEY,
+          "%%%%FULLSYNCHRO%%%%>Delete group : " + silverpeasGroup.getId() + " - "
+              + specificId);
+      groupManager.deleteGroupById(domainDriverManager, silverpeasGroup, true);
+      sReport += "deleting group " + silverpeasGroup.getName() + "(id:" + specificId + ")\n";
+      SynchroReport.warn("admin.synchronizeGroups", "Group " + silverpeasGroup.getName()
+          + " deleted (SpecificId:" + specificId + ")", null);
+      return 1;
+    } catch (AdminException aeDel) {
+      SilverTrace.info("admin", "admin.synchronizeGroups", PARAM_MSG_KEY,
+          "%%%%FULLSYNCHRO%%%%>PB deleting group ! " + specificId, aeDel);
+      sReport += "problem deleting group " + silverpeasGroup.getName() + " (specificId:"
+          + specificId + ") - " + aeDel.getMessage() + "\n";
+      sReport += "group has not been deleted\n";
+      return 0;
     }
   }
 
