@@ -128,9 +128,9 @@ public class UserNotificationSessionController extends AbstractComponentSessionC
         .setContent(context.getContent().replaceAll("[\\n\\r\\t]", ""))
         .setAttachmentLinksFor(contributionId)
         .setSender(getUserDetail())
-        .setRecipientUsers(context.getAsList("recipientUsers"))
-        .setRecipientGroups(context.getAsList("recipientGroups"))
-        .setAsManual(context.getAsBoolean("manual"))
+        .setRecipientUsers(context.getAsList(NotificationContext.RECIPIENT_USERS))
+        .setRecipientGroups(context.getAsList(NotificationContext.RECIPIENT_GROUPS))
+        .setAsManual(context.getAsBoolean(NotificationContext.MANUAL))
         .send();
     WebMessager.getInstance().addSuccess(getString("notification.user.send.success"));
   }

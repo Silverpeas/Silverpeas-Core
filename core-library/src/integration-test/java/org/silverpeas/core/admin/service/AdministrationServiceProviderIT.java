@@ -59,7 +59,7 @@ public class AdministrationServiceProviderIT {
   @Test
   public void getAdminService() {
     Administration administrationInstance = AdministrationServiceProvider.getAdminService();
-    assertThat(administrationInstance, instanceOf(Admin.class));
+    assertThat(administrationInstance, instanceOf(DefaultAdministration.class));
     assertThat(administrationInstance, sameInstance(administration));
   }
 

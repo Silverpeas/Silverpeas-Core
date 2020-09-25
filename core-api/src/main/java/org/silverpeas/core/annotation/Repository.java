@@ -24,7 +24,6 @@
 package org.silverpeas.core.annotation;
 
 import javax.enterprise.inject.Stereotype;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -49,7 +48,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Named
 @Singleton
 @Stereotype
 public @interface Repository {

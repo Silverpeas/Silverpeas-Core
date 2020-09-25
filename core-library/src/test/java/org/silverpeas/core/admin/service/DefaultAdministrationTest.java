@@ -30,12 +30,12 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.silverpeas.core.admin.service.Admin.mergeDistantUserIntoSilverpeasUser;
+import static org.silverpeas.core.admin.service.DefaultAdministration.mergeDistantUserIntoSilverpeasUser;
 
 /**
  * @author silveryocha
  */
-class AdminTest {
+class DefaultAdministrationTest {
 
   @Test
   void mergeDistantUserIntoSilverpeasUserWithoutChange() {

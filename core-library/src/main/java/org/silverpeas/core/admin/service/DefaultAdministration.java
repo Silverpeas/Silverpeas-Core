@@ -121,7 +121,7 @@ import static org.silverpeas.core.util.StringUtil.isLong;
 @Service
 @Singleton
 @Transactional(rollbackOn = AdminException.class)
-class Admin implements Administration {
+class DefaultAdministration implements Administration {
 
   /**
    * The unique identifier of the main administrator (root) in Silverpeas. It is hard configured in
@@ -220,7 +220,7 @@ class Admin implements Administration {
     cache.setCacheAvailable(StringUtil.getBooleanValue(resources.getString("UseCache", "1")));
   }
 
-  protected Admin() {
+  protected DefaultAdministration() {
     // Hidden constructor
   }
 

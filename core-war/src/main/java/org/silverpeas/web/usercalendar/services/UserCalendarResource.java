@@ -50,7 +50,7 @@ public class UserCalendarResource extends CalendarResource {
 
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) {
-    if (!PersonalComponentInstance.from(getComponentId()).isPresent() ||
+    if (PersonalComponentInstance.from(getComponentId()).isEmpty() ||
         User.getCurrentRequester() == null || User.getCurrentRequester().isAnonymous()) {
       throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }

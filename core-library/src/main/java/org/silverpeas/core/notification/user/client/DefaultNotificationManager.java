@@ -1049,7 +1049,7 @@ public class DefaultNotificationManager extends AbstractNotification
   /**
    * @see NotificationManagerSettings#getDefaultChannels()
    */
-  List<NotifChannel> getDefaultNotificationChannels() {
+  protected List<NotifChannel> getDefaultNotificationChannels() {
     return NotificationManagerSettings.getDefaultChannels();
   }
 }

@@ -43,6 +43,7 @@ public class LinkedInConnector extends AbstractSocialNetworkConnector {
   private String secretKey = null;
 
   @PostConstruct
+  @Override
   void init() {
     super.init();
     consumerKey = getSettings().getString("linkedIn.consumerKey");
