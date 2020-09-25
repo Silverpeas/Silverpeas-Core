@@ -166,15 +166,17 @@ public class HtmlExportPublicationGenerator {
       Form formView = template.getViewForm();
       RecordSet recordSet = template.getRecordSet();
       DataRecord dataRecord = recordSet.getRecord(publicationDetail.getPK().getId());
-      PagesContext context = new PagesContext();
-      context.setComponentId(publicationDetail.getPK().getInstanceId());
-      context.setObjectId(publicationDetail.getPK().getId());
-      String htmlResult = formView.toString(context, dataRecord);
-      htmlResult = replaceImagesPathForExport(htmlResult);
-      htmlResult = replaceFilesPathForExport(htmlResult);
-      htmlResult =
-          WysiwygContentTransformer.on(htmlResult).resolveVariablesDirective().transform();
-      return htmlResult;
+      if (dataRecord != null) {
+        PagesContext context = new PagesContext();
+        context.setComponentId(publicationDetail.getPK().getInstanceId());
+        context.setObjectId(publicationDetail.getPK().getId());
+        String htmlResult = formView.toString(context, dataRecord);
+        htmlResult = replaceImagesPathForExport(htmlResult);
+        htmlResult = replaceFilesPathForExport(htmlResult);
+        htmlResult =
+            WysiwygContentTransformer.on(htmlResult).resolveVariablesDirective().transform();
+        return htmlResult;
+      }
     } catch (Exception e) {
       SilverTrace.error("form", "HtmlExportPublicationGenerator.toHtmlXMLModel",
           "root.MSG_GEN_PARAM_VALUE", e);

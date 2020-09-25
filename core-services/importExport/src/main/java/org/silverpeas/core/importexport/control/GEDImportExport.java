@@ -779,19 +779,17 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @param pubId the publication identifier
    * @param componentId the component instance identifier
    * @return
-   * @throws ImportExportException
    */
-  public PublicationType getPublicationCompleteById(String pubId, String componentId)
-      throws ImportExportException {
+  public PublicationType getPublicationCompleteById(String pubId, String componentId) {
     PublicationType publicationType = new PublicationType();
-    try {
       CompletePublication pubComplete =
           getCompletePublication(new PublicationPK(pubId, getCurrentComponentId()));
 
-      // Recuperation de l'objet PublicationDetail
-      PublicationDetail publicationDetail = pubComplete.getPublicationDetail();
+    // Recuperation de l'objet PublicationDetail
+    PublicationDetail publicationDetail = pubComplete.getPublicationDetail();
 
-      PublicationContentType pubContent = null;
+    PublicationContentType pubContent = null;
+    try {
       if (!StringUtil.isInteger(publicationDetail.getInfoId())) {
         // la publication a un contenu de type XMLTemplate (formTemplate)
         pubContent = new PublicationContentType();
@@ -801,8 +799,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         XMLModelContentType xmlModel = new XMLModelContentType(publicationDetail.getInfoId());
         xmlModel.setFields(xmlFields);
         pubContent.setXMLModelContentType(xmlModel);
-      } else if (WysiwygController.haveGotWysiwyg(publicationDetail.getPK().getInstanceId(), pubId,
-          I18NHelper.checkLanguage(publicationDetail.getLanguage()))) {
+      } else if (WysiwygController
+          .haveGotWysiwyg(publicationDetail.getPK().getInstanceId(), pubId, I18NHelper.checkLanguage(publicationDetail.getLanguage()))) {
         pubContent = new PublicationContentType();
         WysiwygContentType wysiwygContentType = new WysiwygContentType();
         String wysiwygFileName = WysiwygController
@@ -810,19 +808,19 @@ public abstract class GEDImportExport extends ComponentImportExport {
         wysiwygContentType.setPath(wysiwygFileName);
         pubContent.setWysiwygContentType(wysiwygContentType);
       }
-      publicationType.setPublicationContentType(pubContent);
-      publicationType.setPublicationDetail(publicationDetail);
-      publicationType.setId(Integer.parseInt(pubId));
-      publicationType.setComponentId(componentId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error("Can't export content of publication #"+pubId);
+    }
+    publicationType.setPublicationContentType(pubContent);
+    publicationType.setPublicationDetail(publicationDetail);
+    publicationType.setId(Integer.parseInt(pubId));
+    publicationType.setComponentId(componentId);
 
-      // Recherche du nom et du prenom du createur de la pub pour le marschalling
-      User creator = publicationDetail.getCreator();
-      if (creator != null) {
-        String nomPrenomCreator = creator.getDisplayedName();
-        publicationDetail.setCreatorName(nomPrenomCreator);
-      }
-    } catch (Exception ex) {
-      throw new ImportExportException("importExport", "", "", ex);
+    // Recherche du nom et du prenom du createur de la pub pour le marschalling
+    User creator = publicationDetail.getCreator();
+    if (creator != null) {
+      String nomPrenomCreator = creator.getDisplayedName();
+      publicationDetail.setCreatorName(nomPrenomCreator);
     }
     return publicationType;
   }

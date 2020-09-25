@@ -72,8 +72,6 @@ public class DefaultFormTemplateService implements FormTemplateService {
 
   @Override
   public List<XMLField> getXMLFieldsForExport(String externalId, String id, String language) {
-
-
     PublicationTemplateImpl template = (PublicationTemplateImpl) getPublicationTemplate(externalId);
     DataRecord data = getRecord(id, template, language);
     List<XMLField> fields = new ArrayList<>();
@@ -82,22 +80,19 @@ public class DefaultFormTemplateService implements FormTemplateService {
         String[] fieldNames = template.getRecordTemplate().getFieldNames();
         for (int f = 0; fieldNames != null && f < fieldNames.length; f++) {
           String fieldName = fieldNames[f];
-          Field field = data.getField(fieldName);
-          if (field != null) {
-            String fieldValue = field.getStringValue();
-            if (field.getTypeName().equals(FileField.TYPE)) {
-              FieldTemplate fieldTemplate =
-                  template.getRecordTemplate().getFieldTemplate(fieldName);
-              if (fieldTemplate != null) {
-                if ("image".equals(fieldTemplate.getDisplayerName())) {
-                  fieldValue = "image_" + fieldValue;
-                } else {
-                  fieldValue = "file_" + fieldValue;
-                }
+          FieldTemplate fieldTemplate =
+              template.getRecordTemplate().getFieldTemplate(fieldName);
+          if (fieldTemplate != null) {
+            if (!fieldTemplate.isRepeatable()) {
+              Field field = data.getField(fieldName);
+              XMLField xmlField = getXMLField(field, fieldTemplate);
+              if (xmlField != null) {
+                fields.add(xmlField);
               }
+            } else {
+              List<XMLField> xmlFields = getRepeatableXMLField(data, fieldTemplate);
+              fields.addAll(xmlFields);
             }
-            XMLField xmlField = new XMLField(fieldName, fieldValue);
-            fields.add(xmlField);
           }
         }
       } catch (Exception e) {
@@ -107,6 +102,34 @@ public class DefaultFormTemplateService implements FormTemplateService {
       }
     }
     return fields;
+  }
+
+  private XMLField getXMLField(Field field, FieldTemplate fieldTemplate) {
+    XMLField xmlField = null;
+    if (field != null) {
+      String fieldValue = field.getStringValue();
+      if (field.getTypeName().equals(FileField.TYPE)) {
+        if ("image".equals(fieldTemplate.getDisplayerName())) {
+          fieldValue = "image_" + fieldValue;
+        } else {
+          fieldValue = "file_" + fieldValue;
+        }
+      }
+      xmlField = new XMLField(field.getName(), fieldValue);
+    }
+    return xmlField;
+  }
+
+  private List<XMLField> getRepeatableXMLField(DataRecord dataRecord, FieldTemplate fieldTemplate) {
+    int maxOccurrences = fieldTemplate.getMaximumNumberOfOccurrences();
+    List<XMLField> xmlFields = new ArrayList<>();
+    for (int occ = 0; occ < maxOccurrences; occ++) {
+      Field fieldOcc = dataRecord.getField(fieldTemplate.getFieldName(), occ);
+      if (fieldOcc != null && !fieldOcc.isNull()) {
+        xmlFields.add(getXMLField(fieldOcc, fieldTemplate));
+      }
+    }
+    return xmlFields;
   }
 
   @Override
