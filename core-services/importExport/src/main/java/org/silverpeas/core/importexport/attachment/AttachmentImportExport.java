@@ -232,11 +232,17 @@ public class AttachmentImportExport {
 
         if (extensionFilter == null || FileRepositoryManager.getFileExtension(attachment.
             getFilename()).equalsIgnoreCase(extensionFilter)) {
-          copyAttachment(attachment, exportPath);
-          String physicalName = relativeExportPath + File.separator + FileServerUtils.
-              replaceAccentChars(attachment.getFilename());
-          AttachmentDetail attachDetail = new AttachmentDetail(attachment, physicalName);
-          listToReturn.add(attachDetail);
+          try {
+            copyAttachment(attachment, exportPath);
+            String physicalName = relativeExportPath + File.separator + FileServerUtils.
+                replaceAccentChars(attachment.getFilename());
+            AttachmentDetail attachDetail = new AttachmentDetail(attachment, physicalName);
+            listToReturn.add(attachDetail);
+          } catch (Exception e) {
+            SilverLogger.getLogger(this).error(
+                "Can't export document #" + attachment.getId() + " of publication #" +
+                    attachment.getForeignId());
+          }
         }
       }
     }
