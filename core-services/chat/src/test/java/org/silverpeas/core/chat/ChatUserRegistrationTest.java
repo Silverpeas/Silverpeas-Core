@@ -25,7 +25,10 @@
 package org.silverpeas.core.chat;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.stubbing.Answer;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.UserRegistrationService;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -38,6 +41,7 @@ import org.silverpeas.core.test.extention.TestManagedMocks;
 import org.silverpeas.core.test.extention.TestedBean;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,6 +57,9 @@ import static org.mockito.Mockito.*;
 @EnableSilverTestEnv
 @TestManagedMocks(UserRegistrationService.class)
 public class ChatUserRegistrationTest {
+
+  @TestManagedMock
+  private OrganizationController controller;
 
   @TestManagedMock(stubbed = false)
   private ChatSettings settings;
@@ -73,12 +80,11 @@ public class ChatUserRegistrationTest {
     userProvider = UserProvider.get();
     assertThat(userProvider, notNullValue());
     assertThat(registration, notNullValue());
+    assertThat(controller, notNullValue());
   }
 
-  /**
-   * A user should be registered only if the chat is enabled for Silverpeas.
-   */
   @Test
+  @DisplayName("A user should be registered only if the chat is enabled for Silverpeas")
   public void registerAUserWhereasTheChatIsNotEnabledShouldNotSucceed() {
     User aUser = aUser();
     when(settings.isChatEnabled()).thenReturn(false);
@@ -88,10 +94,8 @@ public class ChatUserRegistrationTest {
     verify(chatServer, times(0)).createUser(aUser);
   }
 
-  /**
-   * A user should be registered only if this isn't already done.
-   */
   @Test
+  @DisplayName("A user should be registered only if this isn't already done")
   public void registerAUserAlreadyRegisteredShouldNotSucceed() {
     User aUser = aUser();
     when(settings.isChatEnabled()).thenReturn(true);
@@ -102,10 +106,9 @@ public class ChatUserRegistrationTest {
     verify(chatServer, times(0)).createUser(aUser);
   }
 
-  /**
-   * A user shouldn't be registered if the domain he belongs to isn't mapped to an XMPP domain.
-   */
   @Test
+  @DisplayName(
+      "A user shouldn't be registered if the domain he belongs to isn't mapped to an XMPP domain.")
   public void registerAUserInANonExplicitMappedDomainAndWithoutDefaultMappingShouldNotSucceed() {
     final User aUser = aUser();
     when(settings.isChatEnabled()).thenReturn(true);
@@ -117,10 +120,24 @@ public class ChatUserRegistrationTest {
     verify(chatServer, times(0)).createUser(aUser);
   }
 
-  /**
-   * A user should be registered if the domain he belongs to is mapped to an XMPP domain.
-   */
   @Test
+  @DisplayName(
+      "A user shouldn't be registered if he isn't in a group allowed to use the chat service")
+  public void registerAUserInAMappedDomainButNotInAnAllowedGroupShouldNotSucceed() {
+    final User aUser = aUser();
+    when(settings.isChatEnabled()).thenReturn(true);
+    when(chatServer.isUserExisting(aUser)).thenReturn(false);
+    when(settings.getExplicitMappedXmppDomain(aUser.getDomainId())).thenReturn("im.silverpeas.net");
+    when(settings.getAllowedUserGroups()).thenReturn(Collections.singletonList("42"));
+    when(controller.getAllGroupIdsOfUser(aUser.getId())).thenReturn(new String[]{"12"});
+
+    registration.registerUser(aUser);
+    verify(chatServer, times(0)).createUser(aUser);
+  }
+
+  @Test
+  @DisplayName(
+      "A user should be registered if the domain he belongs to is mapped to an XMPP domain")
   public void registerAUserInAnExplicitMappedDomainShouldSucceed() {
     final User aUser = aUser();
     when(settings.isChatEnabled()).thenReturn(true);
@@ -133,11 +150,10 @@ public class ChatUserRegistrationTest {
     verify(chatServer, times(1)).createUser(aUser);
   }
 
-  /**
-   * A user should be registered if the domain he belongs to isn't mapped to an XMPP domain but a
-   * default mapping to an XMPP domain exists.
-   */
   @Test
+  @DisplayName(
+      "A user should be registered if the domain he belongs to isn't mapped to an XMPP domain but" +
+          " a default mapping to an XMPP domain exists")
   public void registerAUserInANonExplicitMappedDomainButWithADefaultMappingShouldSucceed() {
     final User aUser = aUser();
     when(settings.isChatEnabled()).thenReturn(true);
@@ -152,6 +168,23 @@ public class ChatUserRegistrationTest {
   }
 
   @Test
+  @DisplayName(
+      "A user should be registered if his domain is mapped to an XMPP domain and if he's in a " +
+          "group allowed to use the chat service")
+  public void registerAUserInAMappedDomainAndInAnAllowedGroupShouldSucceed() {
+    final User aUser = aUser();
+    when(settings.isChatEnabled()).thenReturn(true);
+    when(chatServer.isUserExisting(aUser)).thenReturn(false);
+    when(settings.getExplicitMappedXmppDomain(aUser.getDomainId())).thenReturn("im.silverpeas.net");
+    when(settings.getAllowedUserGroups()).thenReturn(Arrays.asList("2", "42"));
+    when(controller.getAllGroupIdsOfUser(aUser.getId())).thenReturn(new String[]{"12", "42"});
+
+    registration.registerUser(aUser);
+    verify(chatServer, times(1)).createUser(aUser);
+  }
+
+  @Test
+  @DisplayName("The contacts of a user in the same domain should be registered with him")
   public void registerAUserInMappedDomainWithItsContactsInSameDomainShouldSucceed() {
     final User aUser = aUser();
     final List<String> theConnections = connections(1, aUser);
@@ -170,6 +203,7 @@ public class ChatUserRegistrationTest {
   }
 
   @Test
+  @DisplayName("The contacts of a user in a mapped domain should be registered with him")
   public void registerAUserInMappedDomainWithItsContactsInMappedDomainShouldSucceed() {
     final User aUser = aUser();
     final List<String> theConnections = connections(3, aUser);
@@ -189,6 +223,33 @@ public class ChatUserRegistrationTest {
   }
 
   @Test
+  @DisplayName(
+      "The contacts of a user in a mapped domain and in a group allowed to access the chat " +
+          "service should be registered with him")
+  public void registerAUserAndHisContactsInTheAllowedGroupsShouldBeRegistered() {
+    final User aUser = aUser();
+    final List<String> theConnections = connections(3, aUser);
+    when(settings.isChatEnabled()).thenReturn(true);
+    when(chatServer.isUserExisting(aUser)).thenReturn(false);
+    when(settings.getExplicitMappedXmppDomain(aUser.getDomainId())).thenReturn("im.silverpeas.net");
+    when(settings.getDefaultXmppDomain()).thenReturn("foo.silverpeas.net");
+    when(settings.getAllowedUserGroups()).thenReturn(Arrays.asList("42", "12"));
+    when(controller.getAllGroupIdsOfUser(anyString())).thenReturn(new String[]{"42"});
+    when(relationShip.getMyContactsIds(Integer.parseInt(aUser.getId()))).thenReturn(theConnections);
+
+    registration.registerUser(aUser);
+
+    verify(chatServer, times(1)).createUser(aUser);
+    theConnections.stream().map(c -> userProvider.getUser(c)).forEach(c -> {
+      verify(chatServer, times(1)).createUser(c);
+      verify(chatServer, times(1)).createRelationShip(aUser, c);
+    });
+  }
+
+  @Test
+  @DisplayName(
+      "Some contacts of a user in a mapped same domain should be registered with him; Not his " +
+          "others contacts")
   public void registerAUserInMappedDomainWithItsContactsNotAllInMappedDomainsShouldSucceed() {
     final User aUser = aUser();
     final List<String> theConnections = connections(3, aUser);
@@ -202,6 +263,37 @@ public class ChatUserRegistrationTest {
     verify(chatServer, times(1)).createUser(aUser);
     theConnections.stream().map(c -> userProvider.getUser(c)).forEach(c -> {
       final int invocationCount = c.getDomainId().equals(aUser.getDomainId()) ? 1 : 0;
+      verify(chatServer, times(invocationCount)).createUser(c);
+      verify(chatServer, times(invocationCount)).createRelationShip(aUser, c);
+    });
+  }
+
+  @Test
+  @DisplayName(
+      "Some contacts of a user in a mapped domain and in a group allowed to use the chat service " +
+          "should be registered with him; Not his others contacts")
+  public void registerAUserAndHisContactsInAMappedDomainAndSomeInAnAllowedGroupsShouldSucceed() {
+    final User aUser = aUser();
+    final List<String> theConnections = connections(5, aUser);
+    final List<String> allowed =
+        Arrays.asList(theConnections.get(0), theConnections.get(2), theConnections.get(4));
+    when(settings.isChatEnabled()).thenReturn(true);
+    when(chatServer.isUserExisting(aUser)).thenReturn(false);
+    when(settings.getExplicitMappedXmppDomain(aUser.getDomainId())).thenReturn("im.silverpeas.net");
+    when(settings.getAllowedUserGroups()).thenReturn(Arrays.asList("42", "12"));
+    when(controller.getAllGroupIdsOfUser(anyString())).thenAnswer((Answer<String[]>) i -> {
+      String userId = i.getArgument(0);
+      return allowed.contains(userId) || userId.equals(aUser.getId()) ? new String[]{"42"} :
+          new String[0];
+    });
+    when(relationShip.getMyContactsIds(Integer.parseInt(aUser.getId()))).thenReturn(theConnections);
+
+    registration.registerUser(aUser);
+
+    verify(chatServer, times(1)).createUser(aUser);
+    theConnections.stream().map(c -> userProvider.getUser(c)).forEach(c -> {
+      final int invocationCount =
+          c.getDomainId().equals(aUser.getDomainId()) && allowed.contains(c.getId()) ? 1 : 0;
       verify(chatServer, times(invocationCount)).createUser(c);
       verify(chatServer, times(invocationCount)).createRelationShip(aUser, c);
     });

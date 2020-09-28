@@ -31,6 +31,10 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Setting properties of the chat service. It loads the
@@ -145,7 +149,7 @@ public class ChatSettings {
   public String getExplicitMappedXmppDomain(final String silverpeasDomainId) {
     String xmppDomain = "";
     if (StringUtil.isDefined(silverpeasDomainId)) {
-      xmppDomain = settings.getString("chat.xmpp.domain." + silverpeasDomainId, "");
+      xmppDomain = settings.getString("chat.xmpp.domain." + silverpeasDomainId, "").trim();
     }
     return xmppDomain;
   }
@@ -158,7 +162,7 @@ public class ChatSettings {
    * @return
    */
   public String getDefaultXmppDomain() {
-    return settings.getString("chat.xmpp.domain.default", "");
+    return settings.getString("chat.xmpp.domain.default", "").trim();
   }
 
   /**
@@ -172,11 +176,23 @@ public class ChatSettings {
    * returns an empty string.
    */
   public String getMappedXmppDomain(final String silverpeasDomainId) {
-    String xmppDomain = getExplicitMappedXmppDomain(silverpeasDomainId);
+    String xmppDomain = getExplicitMappedXmppDomain(silverpeasDomainId).trim();
     if (xmppDomain.isEmpty()) {
       return getDefaultXmppDomain();
     }
     return xmppDomain;
+  }
+
+  /**
+   * Gets all the user groups in Silverpeas that are allowed to use the chat service, id est the
+   * groups for which the chat is enabled. If no groups of users is defined, then an empty string
+   * is returned and the chat is enabled for all the groups in Silverpeas (default behaviour).
+   * @return an array of group identifiers or an empty array if all the groups are allowed.
+   */
+  public List<String> getAllowedUserGroups() {
+    String groups = settings.getString("chat.xmpp.domain.groups", "");
+    return groups.trim().isEmpty() ? Collections.emptyList() :
+        Stream.of(groups.split(",")).map(String::trim).collect(Collectors.toList());
   }
 
   /**
