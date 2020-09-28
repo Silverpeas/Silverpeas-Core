@@ -23,15 +23,17 @@
  */
 package org.silverpeas.core.chat;
 
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.util.StringUtil;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * A Silverpeas user with an account in a Chat service. The Silverpeas Chat Engine uses the services
@@ -112,8 +114,9 @@ public class ChatUser extends UserDetail {
    * The chat domain is read from the property file
    * {@code org/silverpeas/chat/settings/chat.properties} and it depends on the Silverpeas domain of
    * the user. If no chat domain is mapped to the Silverpeas domain of the user, then the default
-   * one (the one mapped with the Silverpeas domain with the unique identifier 0) is returned.
-   * @return the chat domain of the user.
+   * one (the one set by the {@code chat.xmpp.domain.default} property) is returned.
+   * @return the name of the chat domain of the user or an empty string if no chat domain is mapped
+   * to the Silverpeas domain of the user.
    */
   public String getChatDomain() {
     ChatSettings settings = ChatServer.getChatSettings();
@@ -122,13 +125,23 @@ public class ChatUser extends UserDetail {
 
   /**
    * Is the chat service is enabled for this user? It is enabled if both the chat service is enabled
-   * in Silverpeas and the user domain he belongs to is mapped to a chat domain in the chat
+   * in Silverpeas, the user domain he belongs to is mapped to a chat domain in the chat
+   * service and he belongs to a group of users in Silverpeas that is allowed to access the chat
    * service.
    * @return true if the chat is enabled for the user. False otherwise.
    */
   public boolean isChatEnabled() {
     ChatSettings settings = ChatServer.getChatSettings();
-    return settings.isChatEnabled() && StringUtil.isDefined(getChatDomain());
+    String domainId = getChatDomain();
+    if (!settings.isChatEnabled() || domainId.isEmpty()) {
+      return false;
+    }
+    List<String> allowedGroupIds = settings.getAllowedUserGroups();
+    if (!allowedGroupIds.isEmpty()) {
+      String[] groupIds = OrganizationController.get().getAllGroupIdsOfUser(user.getId());
+      return Stream.of(groupIds).anyMatch(allowedGroupIds::contains);
+    }
+    return true;
   }
 
   @Override

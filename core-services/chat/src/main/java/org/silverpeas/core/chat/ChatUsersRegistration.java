@@ -71,31 +71,36 @@ public class ChatUsersRegistration {
   /**
    * Registers the specified user into the remote chat server. If the user is already registered
    * into the remote chat server, then nothing is performed. If the chat service isn't enabled then
-   * nothing is performed.
-   *
+   * nothing is performed. If the Silverpeas domain of the user isn't mapped to a chat domain, then
+   * nothing is performed. If the specified user hasn't the right to access the chat service (id
+   * est if he doesn't belong to a group allowed to access the chat service in the case this
+   * feature is enabled), then nothing is performed.
+   * <p>
    * With the user registration, his relationships are also browsed in order to create each of them
    * into the remote chat server. If a user targeted by a relationship hasn't yet an account in
    * the chat server, then he's registered before creating the relationship in the server.
-   *
    * @param user the user to register if not yet done.
    * @throws ChatServerException a runtime exception if the registration fails.
    */
   public void registerUser(final User user) {
-    if (isChatServiceEnabled() && isDomainMapped(user) && !isAlreadyRegistered(user)) {
+    if (isChatServiceAllowed(user) && !isAlreadyRegistered(user)) {
       logger.debug("Register user {0}", user.getDisplayedName());
       chatServer.createUser(user);
       final List<String> contactIds =
           relationShipService.getMyContactsIds(Integer.parseInt(user.getId()));
-      contactIds.stream().map(User::getById).filter(this::isDomainMapped).forEach(c -> {
+      contactIds.stream().map(User::getById).filter(this::isChatServiceAllowed).forEach(c -> {
         registerUser(c);
         logger.debug("Register relationship {0} - {1}", user.getDisplayedName(),
             c.getDisplayedName());
         chatServer.createRelationShip(user, c);
       });
+    } else {
+      logger.debug("The user {0} isn't allowed to access the chat service",
+          user.getDisplayedName());
     }
   }
 
-  private boolean isDomainMapped(final User user) {
-    return chatServer.isUserDomainSupported(user.getDomainId());
+  private boolean isChatServiceAllowed(final User user) {
+    return chatServer.isAllowed(user);
   }
 }
