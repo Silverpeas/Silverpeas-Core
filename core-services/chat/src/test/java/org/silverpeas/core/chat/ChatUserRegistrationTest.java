@@ -56,7 +56,7 @@ import static org.mockito.Mockito.*;
  */
 @EnableSilverTestEnv
 @TestManagedMocks(UserRegistrationService.class)
-public class ChatUserRegistrationTest {
+class ChatUserRegistrationTest {
 
   @TestManagedMock
   private OrganizationController controller;
@@ -76,7 +76,7 @@ public class ChatUserRegistrationTest {
   private UserProvider userProvider;
 
   @BeforeEach
-  public void setUpMocks() {
+  void setUpMocks() {
     userProvider = UserProvider.get();
     assertThat(userProvider, notNullValue());
     assertThat(registration, notNullValue());
@@ -85,7 +85,7 @@ public class ChatUserRegistrationTest {
 
   @Test
   @DisplayName("A user should be registered only if the chat is enabled for Silverpeas")
-  public void registerAUserWhereasTheChatIsNotEnabledShouldNotSucceed() {
+  void registerAUserWhereasTheChatIsNotEnabledShouldNotSucceed() {
     User aUser = aUser();
     when(settings.isChatEnabled()).thenReturn(false);
     assertThat(registration.isChatServiceEnabled(), is(false));
@@ -96,7 +96,7 @@ public class ChatUserRegistrationTest {
 
   @Test
   @DisplayName("A user should be registered only if this isn't already done")
-  public void registerAUserAlreadyRegisteredShouldNotSucceed() {
+  void registerAUserAlreadyRegisteredShouldNotSucceed() {
     User aUser = aUser();
     when(settings.isChatEnabled()).thenReturn(true);
     when(chatServer.isUserExisting(aUser)).thenReturn(true);
@@ -109,7 +109,7 @@ public class ChatUserRegistrationTest {
   @Test
   @DisplayName(
       "A user shouldn't be registered if the domain he belongs to isn't mapped to an XMPP domain.")
-  public void registerAUserInANonExplicitMappedDomainAndWithoutDefaultMappingShouldNotSucceed() {
+  void registerAUserInANonExplicitMappedDomainAndWithoutDefaultMappingShouldNotSucceed() {
     final User aUser = aUser();
     when(settings.isChatEnabled()).thenReturn(true);
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
@@ -123,7 +123,7 @@ public class ChatUserRegistrationTest {
   @Test
   @DisplayName(
       "A user shouldn't be registered if he isn't in a group allowed to use the chat service")
-  public void registerAUserInAMappedDomainButNotInAnAllowedGroupShouldNotSucceed() {
+  void registerAUserInAMappedDomainButNotInAnAllowedGroupShouldNotSucceed() {
     final User aUser = aUser();
     when(settings.isChatEnabled()).thenReturn(true);
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
@@ -138,7 +138,7 @@ public class ChatUserRegistrationTest {
   @Test
   @DisplayName(
       "A user should be registered if the domain he belongs to is mapped to an XMPP domain")
-  public void registerAUserInAnExplicitMappedDomainShouldSucceed() {
+  void registerAUserInAnExplicitMappedDomainShouldSucceed() {
     final User aUser = aUser();
     when(settings.isChatEnabled()).thenReturn(true);
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
@@ -154,7 +154,7 @@ public class ChatUserRegistrationTest {
   @DisplayName(
       "A user should be registered if the domain he belongs to isn't mapped to an XMPP domain but" +
           " a default mapping to an XMPP domain exists")
-  public void registerAUserInANonExplicitMappedDomainButWithADefaultMappingShouldSucceed() {
+  void registerAUserInANonExplicitMappedDomainButWithADefaultMappingShouldSucceed() {
     final User aUser = aUser();
     when(settings.isChatEnabled()).thenReturn(true);
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
@@ -171,7 +171,7 @@ public class ChatUserRegistrationTest {
   @DisplayName(
       "A user should be registered if his domain is mapped to an XMPP domain and if he's in a " +
           "group allowed to use the chat service")
-  public void registerAUserInAMappedDomainAndInAnAllowedGroupShouldSucceed() {
+  void registerAUserInAMappedDomainAndInAnAllowedGroupShouldSucceed() {
     final User aUser = aUser();
     when(settings.isChatEnabled()).thenReturn(true);
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
@@ -185,7 +185,7 @@ public class ChatUserRegistrationTest {
 
   @Test
   @DisplayName("The contacts of a user in the same domain should be registered with him")
-  public void registerAUserInMappedDomainWithItsContactsInSameDomainShouldSucceed() {
+  void registerAUserInMappedDomainWithItsContactsInSameDomainShouldSucceed() {
     final User aUser = aUser();
     final List<String> theConnections = connections(1, aUser);
     when(settings.isChatEnabled()).thenReturn(true);
@@ -204,7 +204,7 @@ public class ChatUserRegistrationTest {
 
   @Test
   @DisplayName("The contacts of a user in a mapped domain should be registered with him")
-  public void registerAUserInMappedDomainWithItsContactsInMappedDomainShouldSucceed() {
+  void registerAUserInMappedDomainWithItsContactsInMappedDomainShouldSucceed() {
     final User aUser = aUser();
     final List<String> theConnections = connections(3, aUser);
     when(settings.isChatEnabled()).thenReturn(true);
@@ -226,7 +226,7 @@ public class ChatUserRegistrationTest {
   @DisplayName(
       "The contacts of a user in a mapped domain and in a group allowed to access the chat " +
           "service should be registered with him")
-  public void registerAUserAndHisContactsInTheAllowedGroupsShouldBeRegistered() {
+  void registerAUserAndHisContactsInTheAllowedGroupsShouldBeRegistered() {
     final User aUser = aUser();
     final List<String> theConnections = connections(3, aUser);
     when(settings.isChatEnabled()).thenReturn(true);
@@ -250,7 +250,7 @@ public class ChatUserRegistrationTest {
   @DisplayName(
       "Some contacts of a user in a mapped same domain should be registered with him; Not his " +
           "others contacts")
-  public void registerAUserInMappedDomainWithItsContactsNotAllInMappedDomainsShouldSucceed() {
+  void registerAUserInMappedDomainWithItsContactsNotAllInMappedDomainsShouldSucceed() {
     final User aUser = aUser();
     final List<String> theConnections = connections(3, aUser);
     when(settings.isChatEnabled()).thenReturn(true);
@@ -272,7 +272,7 @@ public class ChatUserRegistrationTest {
   @DisplayName(
       "Some contacts of a user in a mapped domain and in a group allowed to use the chat service " +
           "should be registered with him; Not his others contacts")
-  public void registerAUserAndHisContactsInAMappedDomainAndSomeInAnAllowedGroupsShouldSucceed() {
+  void registerAUserAndHisContactsInAMappedDomainAndSomeInAnAllowedGroupsShouldSucceed() {
     final User aUser = aUser();
     final List<String> theConnections = connections(5, aUser);
     final List<String> allowed =

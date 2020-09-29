@@ -88,12 +88,14 @@ public class ChatUsersRegistration {
       chatServer.createUser(user);
       final List<String> contactIds =
           relationShipService.getMyContactsIds(Integer.parseInt(user.getId()));
-      contactIds.stream().map(User::getById).filter(this::isChatServiceAllowed).forEach(c -> {
-        registerUser(c);
-        logger.debug("Register relationship {0} - {1}", user.getDisplayedName(),
-            c.getDisplayedName());
-        chatServer.createRelationShip(user, c);
-      });
+      contactIds.stream().map(User::getById)
+          .filter(this::isChatServiceAllowed)
+          .forEach(c -> {
+            registerUser(c);
+            logger.debug("Register relationship {0} - {1}", user.getDisplayedName(),
+                c.getDisplayedName());
+            chatServer.createRelationShip(user, c);
+          });
     } else {
       logger.debug("The user {0} isn't allowed to access the chat service",
           user.getDisplayedName());
