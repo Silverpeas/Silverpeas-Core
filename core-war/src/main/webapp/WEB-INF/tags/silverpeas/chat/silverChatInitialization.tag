@@ -78,7 +78,7 @@
       }).start();
       </c:when>
       <c:otherwise>
-      sp.log.error('${silfn:escapeJs(chatBundle.getString("chat.server.notAvailable"))}');
+      sp.log.warning('${silfn:escapeJs(chatBundle.getString("chat.server.notAvailable"))}');
       </c:otherwise>
       </c:choose>
     });

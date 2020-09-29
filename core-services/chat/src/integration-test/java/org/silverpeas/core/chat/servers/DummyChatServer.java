@@ -22,33 +22,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.chat.listeners;
+package org.silverpeas.core.chat.servers;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.notification.GroupUserLinkEvent;
-import org.silverpeas.core.chat.ChatUsersRegistration;
-import org.silverpeas.core.notification.system.CDIAfterSuccessfulTransactionResourceEventListener;
 
-import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import static org.mockito.Mockito.mock;
 
 /**
- * Listen for the deletion of a group of users. If the deleted group is the one for which the users
- * are allowed to access the chat server, and in the condition the users don't belong to another
- * group through which they can have access the chat server, then the account of those users in the
- * chat server is deleted.
+ *
  * @author mmoquillon
  */
-public class ChatGroupUserLinkEventListener extends
-    CDIAfterSuccessfulTransactionResourceEventListener<GroupUserLinkEvent> {
+@DefaultChatServer
+@Singleton
+public class DummyChatServer implements ChatServer {
 
-  @Inject
-  private ChatUsersRegistration registration;
+  private final ChatServer mock = mock(ChatServer.class);
+
+  public ChatServer getMock() {
+    return mock;
+  }
 
   @Override
-  public void onCreation(final GroupUserLinkEvent event) {
-    final String userId = event.getTransition().getAfter().getUserId();
-    final User user = User.getById(userId);
-    registration.registerUser(user);
+  public void createUser(final User user) {
+    mock.createUser(user);
   }
+
+  @Override
+  public void deleteUser(final User user) {
+    mock.deleteUser(user);
+  }
+
+  @Override
+  public void createRelationShip(final User user1, final User user2) {
+    mock.createRelationShip(user1, user2);
+  }
+
+  @Override
+  public void deleteRelationShip(final User user1, final User user2) {
+    mock.createRelationShip(user1, user2);
+  }
+
+  @Override
+  public boolean isUserExisting(final User user) {
+    return mock.isUserExisting(user);
+  }
+
 }
   
