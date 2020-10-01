@@ -37,7 +37,8 @@ import javax.enterprise.util.AnnotationLiteral;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Integration test on the access of beans managed by CDI.
@@ -58,6 +59,9 @@ public class ServiceProviderIT {
         .addClass(org.silverpeas.core.util.Test.class)
         .addClass(TestManagedBean.class)
         .addClass(TestManagedAndQualifiedBean.class)
+        .addClass(TestApplicationScopedBean.class)
+        .addClasses(TestNamedAndScopedManagedBean.class, TestFirstNamedAndScopedManagedBean.class,
+            TestSecondNamedAndScopedManagedBean.class)
         .addClasses(AnotherTest.class, TestAnotherManagedBean1.class, TestAnotherManagedBean2.class)
         .addAsManifestResource("META-INF/services/test-org.silverpeas.core.util.BeanContainer",
             "services/org.silverpeas.core.util.BeanContainer")
@@ -102,5 +106,31 @@ public class ServiceProviderIT {
     AnotherTest bean2 = ServiceProvider.getService("name2ManagedBean");
     assertThat(bean2, instanceOf(AnotherTest.class));
     assertThat(bean2, instanceOf(TestAnotherManagedBean2.class));
+  }
+
+  @Test
+  public void fetchAnApplicationScopedBeanByTheServiceProviderShouldSucceed() {
+    TestApplicationScopedBean bean1 = ServiceProvider.getService(TestApplicationScopedBean.class);
+    assertThat(bean1, notNullValue());
+    bean1.setName("coucou");
+
+    TestApplicationScopedBean bean2 = ServiceProvider.getService(TestApplicationScopedBean.class);
+    assertThat(bean2, notNullValue());
+    assertThat(bean2.getName(), is(bean1.getName()));
+  }
+
+  @Test
+  public void fetchAnAnInheritedApplicationScopedBeanByTheServiceProviderShouldSucceed() {
+    final String prefix1 = "first";
+    TestNamedAndScopedManagedBean bean1 =
+        ServiceProvider.getService(prefix1 + TestNamedAndScopedManagedBean.NAME_SUFFIX);
+    assertThat(bean1, notNullValue());
+    assertThat(bean1, instanceOf(TestFirstNamedAndScopedManagedBean.class));
+
+    final String prefix2 = "second";
+    TestNamedAndScopedManagedBean bean2 =
+        ServiceProvider.getService(prefix2 + TestNamedAndScopedManagedBean.NAME_SUFFIX);
+    assertThat(bean2, notNullValue());
+    assertThat(bean2, instanceOf(TestSecondNamedAndScopedManagedBean.class));
   }
 }
