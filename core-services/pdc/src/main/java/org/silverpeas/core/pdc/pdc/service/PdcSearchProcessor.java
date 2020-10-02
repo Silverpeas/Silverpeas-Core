@@ -24,6 +24,7 @@
 package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.index.search.SearchQueryProcessor;
 import org.silverpeas.core.index.search.model.QueryDescription;
@@ -34,7 +35,6 @@ import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * @author Nicolas Eysseric
  */
-@Singleton
+@Service
 @TaxonomySearch
 public class PdcSearchProcessor implements SearchQueryProcessor {
 

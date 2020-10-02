@@ -25,6 +25,7 @@ package org.silverpeas.core.importexport.control;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.initialization.Initialization;
@@ -45,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
+@Service
 public class ScheduledImport implements SchedulerEventListener, Initialization {
 
   public static final String IMPORTENGINE_JOB_NAME = "ImportEngineJob";

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.sharing.repository;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.OrderBy;
 import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
@@ -36,6 +37,7 @@ import java.util.List;
 /**
  * @author: ebonnet
  */
+@Repository
 public class TicketJpaRepository extends BasicJpaEntityRepository<Ticket>
     implements TicketRepository {
 

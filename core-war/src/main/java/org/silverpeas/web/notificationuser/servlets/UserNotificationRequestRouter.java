@@ -46,8 +46,8 @@ public class UserNotificationRequestRouter
   private static final long serialVersionUID = -5858231857279380747L;
   private static final String RECIPIENT_EDITION_PARAM = "recipientEdition";
   private static final String SIMPLE_DETAILS_PARAM = "simpleDetailsWhenRecipientTotalExceed";
-  private static final String RECIPIENT_USERS = "recipientUsers";
-  private static final String RECIPIENT_GROUPS = "recipientGroups";
+  private static final String RECIPIENT_USERS = NotificationContext.RECIPIENT_USERS;
+  private static final String RECIPIENT_GROUPS = NotificationContext.RECIPIENT_GROUPS;
   private static final String MESSAGE_TITLE = "title";
   private static final String MAIN_FUNCTION = "Main";
   private static final String SENDING_FUNCTION = "SendNotif";

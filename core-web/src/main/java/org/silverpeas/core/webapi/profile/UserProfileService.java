@@ -25,6 +25,7 @@ package org.silverpeas.core.webapi.profile;
 
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -38,6 +39,7 @@ import java.util.logging.Logger;
  * users and the user groups.
  *
  */
+@Service
 class UserProfileService {
 
   /**

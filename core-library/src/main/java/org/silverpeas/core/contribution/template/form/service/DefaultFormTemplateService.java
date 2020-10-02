@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.template.form.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -41,6 +42,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultFormTemplateService implements FormTemplateService {

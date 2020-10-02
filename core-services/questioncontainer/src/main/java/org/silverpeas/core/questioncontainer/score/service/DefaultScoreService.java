@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.score.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.score.dao.ScoreDAO;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
@@ -37,6 +38,7 @@ import java.util.Collection;
 /**
  * Default implementation of Score service
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultScoreService implements ScoreService {

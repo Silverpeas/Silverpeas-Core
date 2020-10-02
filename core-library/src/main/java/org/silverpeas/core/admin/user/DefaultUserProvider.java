@@ -26,13 +26,12 @@ package org.silverpeas.core.admin.user;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
-
-import javax.inject.Singleton;
+import org.silverpeas.core.annotation.Provider;
 
 /**
  * @author Yohann Chastagnier
  */
-@Singleton
+@Provider
 public class DefaultUserProvider implements UserProvider {
 
   @Override

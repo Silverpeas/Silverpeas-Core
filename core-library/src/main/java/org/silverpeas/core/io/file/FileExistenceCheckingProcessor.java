@@ -23,11 +23,14 @@
  */
 package org.silverpeas.core.io.file;
 
+import org.silverpeas.core.annotation.Service;
+
 /**
  * A processor to check the existence of a {@link SilverpeasFile}. It the
  * file doesn't exist, then {@code NO_FILE} is returned.
  * @author mmoquillon
  */
+@Service
 public class FileExistenceCheckingProcessor extends AbstractSilverpeasFileProcessor{
 
   @Override

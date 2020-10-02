@@ -38,6 +38,7 @@ import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
@@ -53,6 +54,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Date;
@@ -809,6 +811,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       if (!isPersisted()) {
         CalendarEventRepository repository = CalendarEventRepository.get();
         setCalendar(calendar);
+        normalize();
         CalendarEvent savedEvent = repository.save(this);
         savedEvent.getContent().ifPresent(WysiwygContent::save);
         return savedEvent;
@@ -817,6 +820,19 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     });
     notify(ResourceEvent.Type.CREATION, event);
     return event;
+  }
+
+  private void normalize() {
+    if (isRecurrent()) {
+      // in the case the start date of the event doesn't match its recurrence rule
+      ZonedDateTime startDate = TemporalConverter.asZonedDateTime(getStartDate());
+      Optional<CalendarEventOccurrence> firstOccurrence =
+          CalendarEventOccurrence.getNextOccurrence(this, startDate.minusDays(1));
+      firstOccurrence.filter(o -> !o.getStartDate().equals(this.getStartDate())).ifPresent(o -> {
+        this.getRecurrence().startingAt(o.getStartDate());
+        this.component.setPeriod(Period.between(o.getStartDate(), o.getEndDate()));
+      });
+    }
   }
 
   @Override
@@ -1325,6 +1341,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       deleteAllOccurrencesFromPersistence();
     }
 
+    normalize();
     if (this.isModifiedSince(previousState)) {
       // force the update in the case of change(s) only in the event's component
       this.component.markAsModified();

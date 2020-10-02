@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
@@ -50,6 +51,7 @@ import java.util.Set;
 import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 
 @Singleton
+@Service
 public class SilverpeasDriver extends AbstractDomainDriver implements SilverpeasDomainDriver {
 
   private static final String TITLE = "title";

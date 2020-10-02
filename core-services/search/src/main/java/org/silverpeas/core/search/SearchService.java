@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.search;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.index.search.PlainSearchResult;
 import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.SearchQueryProcessor;
@@ -35,7 +36,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 
-@Singleton
+@Service
 public class SearchService {
 
   @Inject

@@ -24,6 +24,7 @@
 package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.admin.user.notification.UserEvent;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 /**
  * @author mmoquillon
  */
+@Bean
 public class PdcUserEventListener extends CDIResourceEventListener<UserEvent> {
 
   @Inject

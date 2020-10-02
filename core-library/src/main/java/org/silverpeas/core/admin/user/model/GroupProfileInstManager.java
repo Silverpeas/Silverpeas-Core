@@ -28,18 +28,18 @@ import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.dao.GroupDAO;
 import org.silverpeas.core.admin.user.dao.UserDAO;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.List;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
-@Singleton
+@Service
 @Transactional(Transactional.TxType.MANDATORY)
 public class GroupProfileInstManager {
 

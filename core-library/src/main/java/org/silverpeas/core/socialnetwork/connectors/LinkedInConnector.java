@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.socialnetwork.connectors;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.socialnetwork.qualifiers.LinkedIn;
 import org.silverpeas.core.socialnetwork.service.AccessToken;
 import org.springframework.social.linkedin.api.impl.LinkedInTemplate;
@@ -34,6 +35,7 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
 @LinkedIn
+@Service
 @Singleton
 public class LinkedInConnector extends AbstractSocialNetworkConnector {
   private LinkedInConnectionFactory connectionFactory = null;
@@ -41,6 +43,7 @@ public class LinkedInConnector extends AbstractSocialNetworkConnector {
   private String secretKey = null;
 
   @PostConstruct
+  @Override
   void init() {
     super.init();
     consumerKey = getSettings().getString("linkedIn.consumerKey");

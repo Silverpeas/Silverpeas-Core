@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.web.mvc.route;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.initialization.Initialization;
 
@@ -33,6 +34,7 @@ import javax.inject.Named;
  * A default implementation of {@link ComponentInstanceRoutingMap} interface.
  * @author silveryocha
  */
+@Service
 @Named
 public final class DefaultComponentInstanceRoutingMap extends AbstractComponentInstanceRoutingMap
     implements Initialization {

@@ -43,7 +43,7 @@ import java.time.Instant;
 import java.util.Date;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration test on the synchronous mode Silverpeas API Notification.

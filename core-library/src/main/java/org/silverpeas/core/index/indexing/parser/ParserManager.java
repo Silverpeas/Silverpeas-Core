@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.index.indexing.parser;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
@@ -39,6 +41,8 @@ import java.util.Set;
 /**
  * The ParserManager class manages all the parsers which will be used to parse the indexed files.
  */
+@Technical
+@Bean
 @Singleton
 public final class ParserManager {
 

@@ -25,6 +25,7 @@ package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
@@ -45,7 +46,6 @@ import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -53,7 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Singleton
+@Service
 public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentInstanceDeletion {
 
   @Inject

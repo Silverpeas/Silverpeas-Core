@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
-import org.silverpeas.core.pdc.pdc.model.AxisHeaderI18N;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.pdc.pdc.model.AxisHeaderI18N;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,7 +40,7 @@ import java.util.List;
  * Class declaration
  * @author
  */
-@Singleton
+@Repository
 public class AxisHeaderI18NDAO {
 
   private static String PdcAxisI18NTable = "SB_Pdc_AxisI18N";

@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.webapi.thesaurus;
 
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.pdc.thesaurus.model.Synonym;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusService;
 import org.silverpeas.core.util.ResourceLocator;
@@ -48,10 +47,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static org.silverpeas.core.util.StringUtil.isDefined;
 
-@Service
-@RequestScoped
+@WebService
 @Path(ThesaurusResource.PATH)
 @Authorized
 public class ThesaurusResource extends RESTWebService {

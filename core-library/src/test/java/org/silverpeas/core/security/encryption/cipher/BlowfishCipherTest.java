@@ -32,8 +32,8 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Unit tests on the Blowfish cipher as implemented in Silverpeas.

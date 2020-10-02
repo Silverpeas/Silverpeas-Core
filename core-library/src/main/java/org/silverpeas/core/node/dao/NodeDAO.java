@@ -24,6 +24,7 @@
 package org.silverpeas.core.node.dao;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodeI18NDetail;
@@ -37,7 +38,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ejb.NoSuchEntityException;
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -60,7 +60,7 @@ import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHM
  * This is the Node Data Access Object.
  * @author Nicolas Eysseric
  */
-@Singleton
+@Repository
 public class NodeDAO {
 
   private static final String NODE_TABLE = "SB_Node_Node";

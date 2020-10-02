@@ -25,19 +25,24 @@ package org.silverpeas.core.io.temp;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
@@ -45,61 +50,29 @@ import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPa
 /**
  * @author Yohann Chastagnier
  */
-@UnitTest
+@EnableSilverTestEnv
 public class TestLastModifiedDateFileTask {
-  private File tempPath;
+  private Path tempPath;
 
-  @Rule
-  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
-
-  @After
+  @AfterEach
   public void cleanTest() {
-    FileUtils.deleteQuietly(new File(getTemporaryPath()));
+    FileUtils.deleteQuietly(tempPath.toFile());
   }
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  public void setup() throws IOException {
+    tempPath = Paths.get(getTemporaryPath());
     cleanTest();
-    tempPath = new File(getTemporaryPath());
+    Files.createDirectories(tempPath);
     assertThat(LastModifiedDateFileTask.isRunning(), is(false));
   }
 
-  @SuppressWarnings("ConstantConditions")
   @Test
   public void verifyLastModifiedDate() throws Exception {
-    List<File> files = new ArrayList<File>();
-    File fileTest = new File(tempPath, "file.txt");
-    FileUtils.touch(fileTest);
-    files.add(fileTest);
+    List<File> files = createFilesForTest();
+    long currentTime = System.currentTimeMillis();
 
-    fileTest = new File(tempPath, "folder");
-    fileTest.mkdirs();
-    files.add(fileTest);
-
-    fileTest = new File(fileTest, "file1.txt");
-    FileUtils.touch(fileTest);
-    files.add(fileTest);
-
-    fileTest = new File(fileTest.getParentFile(), "file2.txt");
-    FileUtils.touch(fileTest);
-    files.add(fileTest);
-
-    fileTest = new File(fileTest.getParentFile(), "otherFolder");
-    fileTest.mkdirs();
-    files.add(fileTest);
-
-    fileTest = new File(fileTest, "otherFile1.txt");
-    FileUtils.touch(fileTest);
-    files.add(fileTest);
-
-    fileTest = new File(fileTest.getParentFile(), "otherFile2.txt");
-    FileUtils.touch(fileTest);
-    files.add(fileTest);
-
-    Thread.sleep(200);
-    long oneSecondAfterFileCreation = System.currentTimeMillis();
-
-    List<Pair<File, Long>> fileLastModifiedDate = new ArrayList<Pair<File, Long>>();
+    List<Pair<File, Long>> fileLastModifiedDate = new ArrayList<>();
     for (File file : files) {
       fileLastModifiedDate.add(Pair.of(file, file.lastModified()));
     }
@@ -108,11 +81,10 @@ public class TestLastModifiedDateFileTask {
       assertThat(fileOrFolder.getKey().getName(), fileOrFolder.getKey().lastModified(),
           is(fileOrFolder.getValue()));
       assertThat(fileOrFolder.getKey().getName(), fileOrFolder.getKey().lastModified(),
-          lessThan(oneSecondAfterFileCreation));
+          lessThan(currentTime));
     }
 
-    Thread.sleep(1001);
-    File[] tempRootFiles = tempPath.listFiles();
+    File[] tempRootFiles = tempPath.toFile().listFiles();
     assertThat(tempRootFiles, arrayWithSize(2));
     for (File tempRootFile : tempRootFiles) {
       LastModifiedDateFileTask.addFile(tempRootFile);
@@ -125,14 +97,35 @@ public class TestLastModifiedDateFileTask {
     assertThat("This assertion shows that the thread stops after all the files are performed", l,
         greaterThan(0l));
 
-    Logger.getAnonymousLogger().info(MessageFormat
-        .format("Calling LastModifiedDateFileThread.isRunning() {0} times", String.valueOf(l)));
+    Logger.getAnonymousLogger()
+        .info(MessageFormat.format("Calling LastModifiedDateFileThread.isRunning() {0} times",
+            String.valueOf(l)));
 
     for (Pair<File, Long> fileOrFolder : fileLastModifiedDate) {
       assertThat(fileOrFolder.getKey().getName(), fileOrFolder.getKey().lastModified(),
           greaterThan(fileOrFolder.getValue()));
       assertThat(fileOrFolder.getKey().getName(), fileOrFolder.getKey().lastModified(),
-          greaterThan(oneSecondAfterFileCreation));
+          greaterThan(currentTime));
     }
+  }
+
+  @NotNull
+  private List<File> createFilesForTest() throws IOException {
+    final List<File> files = new ArrayList<>();
+    final Path folder1 = tempPath.resolve("folder");
+    final Path folder2 = folder1.resolve("otherFolder");
+
+    files.add(Files.createFile(tempPath.resolve("file.txt")).toFile());
+    files.add(Files.createDirectory(folder1).toFile());
+    files.add(Files.createFile(folder1.resolve("file1.txt")).toFile());
+    files.add(Files.createFile(folder1.resolve("file2.txt")).toFile());
+    files.add(Files.createDirectory(folder2).toFile());
+    files.add(Files.createFile(folder2.resolve("otherFile1.txt")).toFile());
+    File lastCreatedFile = Files.createFile(folder2.resolve("otherFile2.txt")).toFile();
+    files.add(lastCreatedFile);
+
+    await().atMost(1, TimeUnit.SECONDS).until(lastCreatedFile::exists);
+
+    return files;
   }
 }

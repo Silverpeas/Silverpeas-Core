@@ -25,8 +25,7 @@ package org.silverpeas.core.webapi.attachment;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -56,8 +55,7 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.user;
 import static org.silverpeas.core.io.media.image.ImageInfoType.HEIGHT_IN_PIXEL;
 import static org.silverpeas.core.io.media.image.ImageInfoType.WIDTH_IN_PIXEL;
 
-@Service
-@RequestScoped
+@WebService
 @Path(AbstractSimpleDocumentResource.PATH + "/{componentId}/resource/{id}")
 @Authorized
 public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {

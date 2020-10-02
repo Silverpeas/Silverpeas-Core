@@ -24,6 +24,7 @@
 package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
+import org.silverpeas.core.annotation.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,6 +38,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 /**
  * A SpaceUserRoleTable object manages the ST_SpaceUserRole table.
  */
+@Repository
 public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
 
   public static final String REQUEST_MSG = ", requête : ";

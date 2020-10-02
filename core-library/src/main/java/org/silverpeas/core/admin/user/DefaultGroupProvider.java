@@ -26,16 +26,16 @@ package org.silverpeas.core.admin.user;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.service.GroupProvider;
+import org.silverpeas.core.annotation.Provider;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author mmoquillon
  */
-@Singleton
+@Provider
 public class DefaultGroupProvider implements GroupProvider {
 
   @Inject

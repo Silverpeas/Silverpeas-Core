@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.admin.domain.model;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
+
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +36,8 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Cache with all the Silverpeas domains being used.
  */
+@Technical
+@Bean
 @Singleton
 public class DomainCache {
 

@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
 import static java.time.DayOfWeek.*;
 import static java.time.Month.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
@@ -119,7 +119,7 @@ public class CalendarEventOccurrenceGenerationTest {
     List<CalendarEventOccurrence> occurrences =
         generator.generateOccurrencesOf(calendarEventsForTest(), in(Year.of(2016)));
     assertThat(occurrences.isEmpty(), is(false));
-    assertThat(occurrences.size(), is(103));
+    assertThat(occurrences.size(), is(102));
 
     // compute the occurrence count both per month and per event
     int[] occurrenceCountPerMonth = new int[12];
@@ -138,7 +138,7 @@ public class CalendarEventOccurrenceGenerationTest {
     assertThat(occurrenceCountPerMonth[JUNE.ordinal()], is(10));
     assertThat(occurrenceCountPerMonth[JULY.ordinal()], is(4));
     assertThat(occurrenceCountPerMonth[AUGUST.ordinal()], is(5));
-    assertThat(occurrenceCountPerMonth[SEPTEMBER.ordinal()], is(18));
+    assertThat(occurrenceCountPerMonth[SEPTEMBER.ordinal()], is(17));
     assertThat(occurrenceCountPerMonth[OCTOBER.ordinal()], is(17));
     assertThat(occurrenceCountPerMonth[NOVEMBER.ordinal()], is(17));
     assertThat(occurrenceCountPerMonth[DECEMBER.ordinal()], is(12));
@@ -148,7 +148,7 @@ public class CalendarEventOccurrenceGenerationTest {
     assertThat(occurrenceCountPerEvent[Integer.parseInt("2") - 1], is(1));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("3") - 1], is(42));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("4") - 1], is(1));
-    assertThat(occurrenceCountPerEvent[Integer.parseInt("5") - 1], is(46));
+    assertThat(occurrenceCountPerEvent[Integer.parseInt("5") - 1], is(45));
     assertThat(occurrenceCountPerEvent[Integer.parseInt("6") - 1], is(12));
   }
 
@@ -620,13 +620,13 @@ public class CalendarEventOccurrenceGenerationTest {
     assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 3, 29, 1, 0)));
     assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 3, 29, 2, 30)));
 
-    from = ZonedDateTime.parse("2018-03-29T02:59:59+01:00[Europe/Paris]");
+    from = ZonedDateTime.parse("2018-03-29T02:59:59+02:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
     assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 3, 29, 1, 0)));
     assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 3, 29, 2, 30)));
 
-    from = ZonedDateTime.parse("2018-03-29T03:00:00+01:00[Europe/Paris]");
+    from = ZonedDateTime.parse("2018-03-29T03:00:00+02:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
     assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 4, 29, 1, 0)));

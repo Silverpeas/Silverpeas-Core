@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Base;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
 import org.silverpeas.core.calendar.Calendar;
@@ -60,7 +61,6 @@ import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
@@ -89,10 +89,11 @@ import static org.silverpeas.core.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.ALL;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.UNIQUE;
 
+
 /**
  * @author Yohann Chastagnier
  */
-@Singleton
+@Service
 @Base
 @Named("default" + CalendarWebManager.NAME_SUFFIX)
 public class CalendarWebManager {
@@ -291,7 +292,7 @@ public class CalendarWebManager {
    * @param calendar the calendar to save.
    * @return the calendar.
    */
-  Calendar saveCalendar(Calendar calendar) {
+  protected Calendar saveCalendar(Calendar calendar) {
     User owner = User.getCurrentRequester();
     String successfulMessageKey = calendar.isPersisted() ? "calendar.message.calendar.updated" :
         "calendar.message.calendar.created";
@@ -312,7 +313,7 @@ public class CalendarWebManager {
    * deleted (from a controller, a WEB service...)
    * @param calendar the calendar to delete.
    */
-  void deleteCalendar(Calendar calendar) {
+  protected void deleteCalendar(Calendar calendar) {
     User owner = User.getCurrentRequester();
     if (!calendar.canBeDeletedBy(User.getCurrentRequester())) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -329,7 +330,7 @@ public class CalendarWebManager {
    * @param descriptor the export descriptor.
    * @throws ExportException on export exception.
    */
-  void exportCalendarAsICalendarFormat(final Calendar calendar, final ExportDescriptor descriptor)
+  protected void exportCalendarAsICalendarFormat(final Calendar calendar, final ExportDescriptor descriptor)
       throws ExportException {
     final Mutable<User> currentUser = Mutable.ofNullable(User.getCurrentRequester());
     if (!currentUser.isPresent()) {
@@ -350,7 +351,7 @@ public class CalendarWebManager {
    * <p>Throws a forbidden WEB application exception if the calendar is not a synchronized one</p>
    * @param calendar the calendar to synchronize.
    */
-  void synchronizeCalendar(final Calendar calendar) throws ImportException {
+  protected void synchronizeCalendar(final Calendar calendar) throws ImportException {
     if (calendar.getExternalCalendarUrl() == null) {
       throw new WebApplicationException("aimed calendar is not a synchronized one",
           Response.Status.FORBIDDEN);
@@ -373,7 +374,7 @@ public class CalendarWebManager {
    * Imports the calendar events into the specified calendar from the specified input stream.
    * @param inputStream an input stream from which the serialized calendar events can be imported.
    */
-  void importEventsAsICalendarFormat(final Calendar calendar, final InputStream inputStream)
+  protected void importEventsAsICalendarFormat(final Calendar calendar, final InputStream inputStream)
       throws ImportException {
     final String calendarTitle = calendar.getTitle();
     final String calendarId = calendar.getId();
@@ -397,7 +398,7 @@ public class CalendarWebManager {
    * @param zoneId the zoneId into which dates are displayed (optional).  @return the calendar
    * event.
    */
-  List<CalendarEvent> saveOccurrence(final CalendarEventOccurrence occurrence,
+  protected List<CalendarEvent> saveOccurrence(final CalendarEventOccurrence occurrence,
       OccurrenceEventActionMethodType updateMethodType, final ZoneId zoneId) {
     if (!occurrence.getCalendarEvent().canBeModifiedBy(User.getCurrentRequester())) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -463,7 +464,7 @@ public class CalendarWebManager {
    * @param deleteMethodType indicates the method of the occurrence deletion.
    * @param zoneId the zoneId into which dates are displayed (optional).
    */
-  CalendarEvent deleteOccurrence(CalendarEventOccurrence occurrence,
+  protected CalendarEvent deleteOccurrence(CalendarEventOccurrence occurrence,
       OccurrenceEventActionMethodType deleteMethodType, final ZoneId zoneId) {
     if (!occurrence.getCalendarEvent().canBeDeletedBy(User.getCurrentRequester())) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -515,7 +516,7 @@ public class CalendarWebManager {
    * @param answerMethodType indicates the method of the occurrence deletion.
    * @param zoneId the zoneId into which dates are displayed (optional).
    */
-  CalendarEvent updateOccurrenceAttendeeParticipation(CalendarEventOccurrence occurrence,
+  protected CalendarEvent updateOccurrenceAttendeeParticipation(CalendarEventOccurrence occurrence,
       String attendeeId, ParticipationStatus participationStatus,
       OccurrenceEventActionMethodType answerMethodType, final ZoneId zoneId) {
     OccurrenceEventActionMethodType methodType = answerMethodType == null ? ALL : answerMethodType;

@@ -24,10 +24,10 @@
 
 package org.silverpeas.core.contribution;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 
-import javax.inject.Singleton;
 import java.util.Optional;
 
 import static org.silverpeas.core.contribution.ComponentInstanceContributionManager.getByInstanceId;
@@ -35,7 +35,7 @@ import static org.silverpeas.core.contribution.ComponentInstanceContributionMana
 /**
  * @author silveryocha
  */
-@Singleton
+@Service
 public class DefaultContributionManager implements ContributionManager {
 
   @Override

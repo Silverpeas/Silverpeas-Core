@@ -24,6 +24,7 @@
 package org.silverpeas.core.admin.component;
 
 import org.silverpeas.core.admin.component.model.Tool;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
@@ -42,6 +43,7 @@ import java.util.stream.Stream;
  * The {@code Tool} available in Silverpeas are defined by a simple property file.
  * @author silveryocha
  */
+@Service
 @Singleton
 public class ToolRegistry implements Initialization {
 

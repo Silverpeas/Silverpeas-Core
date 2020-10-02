@@ -25,6 +25,7 @@ package org.silverpeas.core.contribution.publication.social;
 
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
@@ -32,14 +33,13 @@ import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialPublicationProvider;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-@Singleton
+@Provider
 public class SocialPublications implements SocialPublicationProvider {
 
   @Inject

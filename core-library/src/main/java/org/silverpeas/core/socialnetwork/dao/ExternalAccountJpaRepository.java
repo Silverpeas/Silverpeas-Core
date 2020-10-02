@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.socialnetwork.dao;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 
@@ -31,6 +32,7 @@ import java.util.List;
 /**
  * @author: ebonnet
  */
+@Repository
 public class ExternalAccountJpaRepository extends BasicJpaEntityRepository<ExternalAccount>
     implements ExternalAccountRepository {
   @Override

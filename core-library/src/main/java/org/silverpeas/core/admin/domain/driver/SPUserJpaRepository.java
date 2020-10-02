@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.domain.driver;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.List;
 /**
  * @author: ebonnet
  */
+@Repository
 public class SPUserJpaRepository extends BasicJpaEntityRepository<SPUser>
     implements SPUserRepository {
 

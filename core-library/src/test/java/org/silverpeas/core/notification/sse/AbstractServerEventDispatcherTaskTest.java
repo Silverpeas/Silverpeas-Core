@@ -24,7 +24,6 @@
 package org.silverpeas.core.notification.sse;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.awaitility.Duration;
 import org.awaitility.core.ThrowingRunnable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -145,7 +144,7 @@ abstract class AbstractServerEventDispatcherTaskTest {
   void afterSomeTimesCheck(final ThrowingRunnable assertions) {
     with().pollInterval(400, TimeUnit.MILLISECONDS)
         .await()
-        .atMost(Duration.TWO_SECONDS)
+        .atMost(1, TimeUnit.SECONDS)
         .untilAsserted(assertions);
   }
 }

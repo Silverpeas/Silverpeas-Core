@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.reminder;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.persistence.Transaction;
@@ -40,6 +41,7 @@ import static org.silverpeas.core.reminder.BackgroundReminderProcess.Constants.P
  * The process to send a notification to the user aimed by a reminder.
  * @author mmoquillon
  */
+@Service
 @Singleton
 public class ReminderProcess implements SchedulerEventListener {
 

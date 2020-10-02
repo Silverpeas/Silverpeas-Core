@@ -26,9 +26,9 @@ package org.silverpeas.core.web.http;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -72,7 +72,7 @@ public class RequestFile {
     try {
       return fileItem.getString(Charsets.UTF_8.toString());
     } catch (UnsupportedEncodingException e) {
-      SilverTrace.warn("servlet", "RequestFile", "Encoding error", e);
+      SilverLogger.getLogger(this).error(e);
       return fileItem.getString();
     }
   }
@@ -81,11 +81,9 @@ public class RequestFile {
     fileItem.write(file);
   }
 
-  public void writeTo(OutputStream outputStream) throws Exception {
-    try {
-      IOUtils.copy(getInputStream(), outputStream);
-    } finally {
-      IOUtils.closeQuietly(getInputStream());
+  public void writeTo(OutputStream outputStream) throws IOException {
+    try(InputStream input = getInputStream()) {
+      IOUtils.copy(input, outputStream);
     }
   }
 }

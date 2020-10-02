@@ -38,7 +38,6 @@ public class ResultDisplayerProvider {
   private static final String BEAN_NAME_POSTFIX = "ResultDisplayer";
 
   private ResultDisplayerProvider() {
-    throw new IllegalStateException("ResultDisplayerProvider can not be instantiated");
   }
 
   /**

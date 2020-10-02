@@ -24,14 +24,14 @@
 
 package org.silverpeas.core.admin.component.model;
 
-import javax.inject.Singleton;
+import org.silverpeas.core.annotation.Provider;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * @author silveryocha
  */
-@Singleton
+@Provider
 public class DefaultSilverpeasComponentDataProvider implements SilverpeasComponentDataProvider {
 
   @Override

@@ -238,8 +238,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
         request.setAttribute("ExportReturnCode", returnCode);
         destination = getDestination("ToExportIcal", scc, request);
       } else if (function.equals("ImportIcal")) {
-        ImportIcalManager.charset = scc.getSettings().getString(
-            "defaultCharset");
+        ImportIcalManager.setCharset(scc.getSettings().getString("defaultCharset"));
         String returnCode = AgendaSessionController.IMPORT_FAILED;
         File fileUploaded = processFormUpload(scc, request);
         if (fileUploaded != null) {
@@ -268,7 +267,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
         request.setAttribute("Charset", charset);
         destination = "/agenda/jsp/synchroIcal.jsp";
       } else if (function.equals("SynchroIcal")) {
-        ImportIcalManager.charset = scc.getSettings().getString("defaultCharset");
+        ImportIcalManager.setCharset(scc.getSettings().getString("defaultCharset"));
         // get updated imports settings for user
         boolean newSettings = false;
         boolean authNeeded = false;
@@ -292,7 +291,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
         importSettings.setHostName("");
         if (StringUtil.isDefined(charset)) {
           importSettings.setCharset(charset);
-          ImportIcalManager.charset = charset;
+          ImportIcalManager.setCharset(charset);
         }
         if (newSettings) {
           scc.saveUserSettings(importSettings);

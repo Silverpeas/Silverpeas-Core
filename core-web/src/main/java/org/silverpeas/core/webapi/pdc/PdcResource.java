@@ -24,8 +24,7 @@
 package org.silverpeas.core.webapi.pdc;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
@@ -64,8 +63,7 @@ import static org.silverpeas.core.webapi.pdc.PdcServiceProvider.inComponentOfId;
  * identified by an unique URI in which the identifier of the Silverpeas component instance is
  * referenced.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(PdcResource.PATH)
 @Authenticated
 public class PdcResource extends RESTWebService {

@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration tests on the notification sent when some actions were operated in a calendar event:

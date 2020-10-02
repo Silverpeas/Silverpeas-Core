@@ -36,6 +36,7 @@ import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.user.ProfileInstManager;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -65,6 +66,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.DELETION;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.UPDATE;
 
+@Service
 @Singleton
 @Transactional(value = Transactional.TxType.MANDATORY)
 public class ComponentInstManager {

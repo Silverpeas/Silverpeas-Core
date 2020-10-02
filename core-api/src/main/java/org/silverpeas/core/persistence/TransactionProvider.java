@@ -34,4 +34,8 @@ public class TransactionProvider {
   public static Transaction getTransaction() {
     return ServiceProvider.getService(Transaction.class);
   }
+
+  private TransactionProvider() {
+
+  }
 }

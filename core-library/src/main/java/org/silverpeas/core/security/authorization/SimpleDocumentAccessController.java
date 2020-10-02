@@ -25,6 +25,7 @@ package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -40,6 +41,7 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
 /**
  * @author ehugonnet
  */
+@Service
 @Singleton
 public class SimpleDocumentAccessController extends AbstractAccessController<SimpleDocument>
     implements SimpleDocumentAccessControl {

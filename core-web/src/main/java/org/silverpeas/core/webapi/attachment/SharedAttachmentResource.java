@@ -26,8 +26,7 @@ package org.silverpeas.core.webapi.attachment;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -59,8 +58,7 @@ import java.util.UUID;
 /**
  * A REST Web resource providing access to attachments through sharing mode.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(SharedAttachmentResource.PATH + "/{componentId}/{token}")
 public class SharedAttachmentResource extends AbstractAttachmentResource {
 

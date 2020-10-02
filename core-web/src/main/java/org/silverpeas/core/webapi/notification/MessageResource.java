@@ -23,11 +23,10 @@
  */
 package org.silverpeas.core.webapi.notification;
 
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.notification.message.MessageManager;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -41,8 +40,7 @@ import javax.ws.rs.core.Response.Status;
  * A REST Web resource giving gallery data.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(MessageResourceURIs.MESSAGE_BASE_URI)
 @Authenticated
 public class MessageResource extends AbstractMessageResource {

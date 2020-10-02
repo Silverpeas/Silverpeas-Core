@@ -26,6 +26,7 @@ package org.silverpeas.core.contribution.attachment;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -58,6 +59,7 @@ import java.util.Date;
  *
  * @author mmoquillon
  */
+@Service
 public class ActifyDocumentProcessScheduler implements SchedulerEventListener, Initialization {
 
   @Override

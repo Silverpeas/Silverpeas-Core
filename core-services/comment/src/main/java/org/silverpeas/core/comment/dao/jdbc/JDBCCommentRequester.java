@@ -26,6 +26,8 @@ package org.silverpeas.core.comment.dao.jdbc;
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
@@ -36,7 +38,6 @@ import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,7 +57,8 @@ import static org.silverpeas.core.util.DateUtil.parseDate;
 /**
  * A specific JDBC requester dedicated on the comments persisted in the underlying data source.
  */
-@Singleton
+@Technical
+@Bean
 public class JDBCCommentRequester {
 
   private static final int INITIAL_CAPACITY = 1000;

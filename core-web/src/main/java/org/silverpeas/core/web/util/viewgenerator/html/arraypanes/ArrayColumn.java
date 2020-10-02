@@ -41,8 +41,8 @@ public class ArrayColumn implements SimpleGraphicElement {
    * around the title of the column.
    * @see #setBehaviour(int behaviour)
    */
-  final static public int COLUMN_BEHAVIOUR_NO_TRIGGER = 1;
-  final static public int COLUMN_BEHAVIOUR_DEFAULT = 0;
+  public static final int COLUMN_BEHAVIOUR_NO_TRIGGER = 1;
+  public static final int COLUMN_BEHAVIOUR_DEFAULT = 0;
   protected String title;
   protected String alignement;
   protected int columnNumber;
@@ -50,6 +50,7 @@ public class ArrayColumn implements SimpleGraphicElement {
   protected int m_Behaviour = COLUMN_BEHAVIOUR_DEFAULT;
   protected String width = null;
   private BiFunction compareOn;
+
   /**
    * In some cases, it may be preferable to specify the routing address (via
    * {@link #setRoutingAddress(String address)}) If not the {@link #print()} method defaults to an
@@ -133,12 +134,15 @@ public class ArrayColumn implements SimpleGraphicElement {
    * @param behaviour
    * @deprecated
    */
+  @Deprecated
   public void setBehaviour(int behaviour) {
     switch (behaviour) {
       case COLUMN_BEHAVIOUR_NO_TRIGGER:
       case COLUMN_BEHAVIOUR_DEFAULT:
         m_Behaviour = behaviour;
-        return;
+        break;
+      default:
+        break;
     }
   }
 
@@ -224,14 +228,12 @@ public class ArrayColumn implements SimpleGraphicElement {
     result.append("<th scope=\"col\"");
 
     // column alignement. By default, alignement is on the left
-    if (alignement != null) {
-      if (alignement.equalsIgnoreCase("center")
-          || alignement.equalsIgnoreCase("right")) {
-        if (alignement.equalsIgnoreCase("center")) {
-          result.append(" align=\"center\"");
-        } else {
-          result.append(" align=\"right\"");
-        }
+    if (alignement != null &&
+        (alignement.equalsIgnoreCase("center") || alignement.equalsIgnoreCase("right"))) {
+      if (alignement.equalsIgnoreCase("center")) {
+        result.append(" align=\"center\"");
+      } else {
+        result.append(" align=\"right\"");
       }
     }
 

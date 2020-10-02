@@ -25,8 +25,7 @@ package org.silverpeas.core.webapi.attachment;
 
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.WebdavServiceProvider;
@@ -70,8 +69,7 @@ import java.util.List;
 import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
 import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
 
-@Service
-@RequestScoped
+@WebService
 @Path(AbstractSimpleDocumentResource.PATH + "/{componentId}/document/{id}")
 @Authorized
 public class SimpleDocumentResource extends AbstractSimpleDocumentResource {

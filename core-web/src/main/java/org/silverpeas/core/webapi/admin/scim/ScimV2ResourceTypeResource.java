@@ -25,8 +25,7 @@
 package org.silverpeas.core.webapi.admin.scim;
 
 import edu.psu.swe.scim.server.rest.ResourceTypesResourceImpl;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.annotation.PostConstruct;
@@ -51,8 +50,7 @@ import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE
  * Implementation of a Client using SCIM 2.0 protocol.
  * @author silveryocha
  */
-@Service
-@RequestScoped
+@WebService
 @Path(SCIM_2_BASE_URI + "/ServiceProviderConfig")
 @Authorized
 @Alternative

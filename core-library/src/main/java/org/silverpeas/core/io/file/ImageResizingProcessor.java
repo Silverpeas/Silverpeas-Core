@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.io.file;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
 import org.silverpeas.core.io.media.image.option.OrientationOption;
@@ -44,6 +45,7 @@ import static org.silverpeas.core.util.CollectionUtil.asSet;
  *
  * @author mmoquillon
  */
+@Service
 public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
 
   protected static final String IMAGE_CACHE_PATH = FileRepositoryManager.getAbsolutePath("cache");

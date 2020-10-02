@@ -61,6 +61,24 @@ public class NotificationContext extends HashMap<String, Object> {
    */
   public static final String NODE_ID = "nodeId";
 
+  /**
+   * The predefined key in the context mapped with the list of user identifiers separated by
+   * comma. Used to specify automatically the user receivers of a notification.
+   */
+  public static final String RECIPIENT_USERS = "recipientUsers";
+
+  /**
+   * The predefined key in the context mapped with the list of group identifiers separated by
+   * comma. Used to specify automatically the group receivers of a notification.
+   */
+  public static final String RECIPIENT_GROUPS = "recipientGroups";
+
+  /**
+   * The predefined key in the context mapped with a boolean. Used to specify a manual
+   * notification of not.
+   */
+  public static final String MANUAL = "manual";
+
   private final User sender;
 
   public NotificationContext(final User sender) {

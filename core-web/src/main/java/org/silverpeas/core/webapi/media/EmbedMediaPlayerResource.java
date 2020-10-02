@@ -24,8 +24,7 @@
 package org.silverpeas.core.webapi.media;
 
 import org.jboss.resteasy.plugins.providers.html.View;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.webapi.base.RESTWebService;
@@ -44,8 +43,7 @@ import static org.silverpeas.core.util.StringUtil.isNotDefined;
  * A common service to play video or sound (for now) with an embed player.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(EmbedMediaPlayerResource.PATH)
 public class EmbedMediaPlayerResource extends RESTWebService {
 

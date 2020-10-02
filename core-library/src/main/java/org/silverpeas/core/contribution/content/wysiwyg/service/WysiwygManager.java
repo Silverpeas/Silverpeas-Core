@@ -30,6 +30,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -79,6 +80,7 @@ import java.util.regex.Pattern;
  * Central service to manage Wysiwyg.
  */
 @Singleton
+@Service
 public class WysiwygManager implements WysiwygContentRepository {
 
   protected WysiwygManager() {

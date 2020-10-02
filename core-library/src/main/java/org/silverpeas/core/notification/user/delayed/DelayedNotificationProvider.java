@@ -37,4 +37,8 @@ public class DelayedNotificationProvider {
   public static DelayedNotification getDelayedNotification() {
     return ServiceProvider.getSingleton(DelayedNotification.class);
   }
+
+  private DelayedNotificationProvider() {
+
+  }
 }

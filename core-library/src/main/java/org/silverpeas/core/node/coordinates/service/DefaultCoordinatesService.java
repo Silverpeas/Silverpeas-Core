@@ -25,6 +25,7 @@ package org.silverpeas.core.node.coordinates.service;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.node.coordinates.model.Coordinate;
 import org.silverpeas.core.node.coordinates.model.CoordinatePK;
 import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
@@ -45,6 +46,7 @@ import java.util.List;
  * @author
  * @version %I%, %G%
  */
+@Service
 @Transactional
 public class DefaultCoordinatesService implements CoordinatesService, ComponentInstanceDeletion {
 

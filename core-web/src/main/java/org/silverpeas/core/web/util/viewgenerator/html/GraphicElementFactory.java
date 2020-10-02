@@ -105,7 +105,7 @@ public class GraphicElementFactory {
   private LocalizationBundle multilang = null;
   private String currentLookName = null;
   private MainSessionController mainSessionController = null;
-  public static final String defaultLookName = "Initial";
+  public static final String DEFAULT_LOOK_NAME = "Initial";
   static final String MOMENT_JS = "moment-with-locales.min.js";
   static final String MOMENT_TIMEZONE_JS = "moment-timezone-with-data.min.js";
   public static final String STANDARD_CSS = "/util/styleSheets/silverpeas-main.css";
@@ -215,7 +215,7 @@ public class GraphicElementFactory {
         return aLookName;
       }
     }
-    return defaultLookName;
+    return DEFAULT_LOOK_NAME;
   }
 
   private static boolean isLookExist(String lookName) {
@@ -279,7 +279,7 @@ public class GraphicElementFactory {
    * @return HTML header fragment
    * @deprecated
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public String getLookStyleSheet(final HttpRequest request) {
     return WebCommonLookAndFeel.getInstance().getCommonHeader(request);
   }
@@ -329,7 +329,7 @@ public class GraphicElementFactory {
     Button button = null;
     String buttonClassName = getFavoriteLookSettings().getString("Button");
     try {
-      button = (Button) Class.forName(buttonClassName).newInstance();
+      button = (Button) Class.forName(buttonClassName).getConstructor().newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       button = new ButtonSilverpeasV5();
@@ -350,7 +350,7 @@ public class GraphicElementFactory {
     String frameClassName = getFavoriteLookSettings().getString("Frame");
 
     try {
-      frame = (Frame) Class.forName(frameClassName).newInstance();
+      frame = (Frame) Class.forName(frameClassName).getConstructor().newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       frame = new FrameSilverpeasV5();
@@ -367,7 +367,7 @@ public class GraphicElementFactory {
     String boardClassName = getFavoriteLookSettings().getString("Board");
 
     try {
-      board = (Board) Class.forName(boardClassName).newInstance();
+      board = (Board) Class.forName(boardClassName).getConstructor().newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       board = new BoardSilverpeasV5();
@@ -384,7 +384,8 @@ public class GraphicElementFactory {
     String navigationListClassName = getFavoriteLookSettings().getString("NavigationList");
 
     try {
-      navigationList = (NavigationList) Class.forName(navigationListClassName).newInstance();
+      navigationList =
+          (NavigationList) Class.forName(navigationListClassName).getConstructor().newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       navigationList = new NavigationListSilverpeasV5();
@@ -403,7 +404,7 @@ public class GraphicElementFactory {
    * @return returns an object implementing the FormButton interface. That's the new button to use.
    * @deprecated
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public Button getFormButton(String label, String action, boolean disabled, String imagePath) {
     return getFormButton(label, action, disabled);
   }
@@ -416,7 +417,7 @@ public class GraphicElementFactory {
     String tabbedPaneClassName = getFavoriteLookSettings().getString("TabbedPane");
     TabbedPane tabbedPane = null;
     try {
-      tabbedPane = (TabbedPane) Class.forName(tabbedPaneClassName).newInstance();
+      tabbedPane = (TabbedPane) Class.forName(tabbedPaneClassName).getConstructor().newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       tabbedPane = new TabbedPaneSilverpeasV5();
@@ -434,7 +435,7 @@ public class GraphicElementFactory {
    * @return An object implementing the ArrayPane interface.
    * @deprecated
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public ArrayPane getArrayPane(String name, javax.servlet.jsp.PageContext pageContext) {
     String arrayPaneClassName = getFavoriteLookSettings().getString(ARRAY_PANE);
     ArrayPane arrayPane = null;
@@ -462,7 +463,7 @@ public class GraphicElementFactory {
    * @return An object implementing the ArrayPane interface.
    * @deprecated
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public ArrayPane getArrayPane(String name, ServletRequest request, HttpSession session) {
     String arrayPaneClassName = getFavoriteLookSettings().getString(ARRAY_PANE);
     ArrayPane arrayPane = null;
@@ -495,7 +496,7 @@ public class GraphicElementFactory {
     String arrayPaneClassName = getFavoriteLookSettings().getString(ARRAY_PANE);
     ArrayPane arrayPane = null;
     try {
-      arrayPane = (ArrayPane) Class.forName(arrayPaneClassName).newInstance();
+      arrayPane = (ArrayPane) Class.forName(arrayPaneClassName).getConstructor().newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       arrayPane = new ArrayPaneSilverpeasV5();
@@ -515,7 +516,7 @@ public class GraphicElementFactory {
     String windowClassName = getFavoriteLookSettings().getString("Window");
     Window window = null;
     try {
-      window = (Window) Class.forName(windowClassName).newInstance();
+      window = (Window) Class.forName(windowClassName).getConstructor().newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       window = new WindowWeb20V5();
@@ -535,7 +536,7 @@ public class GraphicElementFactory {
     String buttonPaneClassName = getFavoriteLookSettings().getString("ButtonPane");
 
     try {
-      return (ButtonPane) Class.forName(buttonPaneClassName).newInstance();
+      return (ButtonPane) Class.forName(buttonPaneClassName).getConstructor().newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new ButtonPaneWA2();
@@ -549,7 +550,7 @@ public class GraphicElementFactory {
   public IconPane getIconPane() {
     String iconPaneClassName = getFavoriteLookSettings().getString("IconPane");
     try {
-      return (IconPane) Class.forName(iconPaneClassName).newInstance();
+      return (IconPane) Class.forName(iconPaneClassName).getConstructor().newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new IconPaneWA();
@@ -564,7 +565,8 @@ public class GraphicElementFactory {
     String operationPaneClassName = getFavoriteLookSettings().getString("OperationPane");
     OperationPane operationPane;
     try {
-      operationPane = (OperationPane) Class.forName(operationPaneClassName).newInstance();
+      operationPane =
+          (OperationPane) Class.forName(operationPaneClassName).getConstructor().newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       operationPane = new OperationPaneSilverpeasV5Web20();
@@ -580,7 +582,8 @@ public class GraphicElementFactory {
   public BrowseBar getBrowseBar() {
     String browseBarClassName = getFavoriteLookSettings().getString("BrowseBar");
     try {
-      BrowseBar browseBar = (BrowseBar) Class.forName(browseBarClassName).newInstance();
+      BrowseBar browseBar =
+          (BrowseBar) Class.forName(browseBarClassName).getConstructor().newInstance();
       browseBar.setComponentId(getComponentIdOfCurrentRequest());
       browseBar.setMainSessionController(mainSessionController);
       return browseBar;
@@ -615,7 +618,7 @@ public class GraphicElementFactory {
       paginationClassName = "org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationSP";
     }
     try {
-      pagination = (Pagination) Class.forName(paginationClassName).newInstance();
+      pagination = (Pagination) Class.forName(paginationClassName).getConstructor().newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       pagination = new PaginationSP();
@@ -632,7 +635,7 @@ public class GraphicElementFactory {
           "org.silverpeas.core.web.util.viewgenerator.html.progressmessage.ProgressMessageSilverpeasV5";
     }
     try {
-      progress = (ProgressMessage) Class.forName(progressClassName).newInstance();
+      progress = (ProgressMessage) Class.forName(progressClassName).getConstructor().newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       progress = new ProgressMessageSilverpeasV5();
@@ -703,7 +706,7 @@ public class GraphicElementFactory {
       userLookStyle = mainSessionController.getPersonalization().getLook();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      userLookStyle = defaultLookName;
+      userLookStyle = DEFAULT_LOOK_NAME;
     }
     return userLookStyle;
   }

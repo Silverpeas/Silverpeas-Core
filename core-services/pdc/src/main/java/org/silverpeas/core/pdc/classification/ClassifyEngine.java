@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.pdc.classification;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentPostUpdate;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
@@ -51,6 +52,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * unclassifying and searching SilverObjetIds Assumption : The SilverObjetIds processed are int
  * values from 0 to n The axis processed are int values from 0 to n
  */
+@Service
 @Singleton
 @Transactional
 public class ClassifyEngine implements SilverContentPostUpdate {

@@ -34,7 +34,7 @@ import javax.inject.Inject;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Arquillian.class)
 public class AdministrationServiceProviderIT {
@@ -59,7 +59,7 @@ public class AdministrationServiceProviderIT {
   @Test
   public void getAdminService() {
     Administration administrationInstance = AdministrationServiceProvider.getAdminService();
-    assertThat(administrationInstance, instanceOf(Admin.class));
+    assertThat(administrationInstance, instanceOf(DefaultAdministration.class));
     assertThat(administrationInstance, sameInstance(administration));
   }
 

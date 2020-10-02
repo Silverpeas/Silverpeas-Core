@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.icalendar.ICalendarImporter;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
@@ -35,7 +36,6 @@ import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.Date;
@@ -67,7 +67,7 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
  * </p>
  * @author mmoquillon
  */
-@Singleton
+@Service
 public class ICalendarEventImportProcessor {
 
   @Inject

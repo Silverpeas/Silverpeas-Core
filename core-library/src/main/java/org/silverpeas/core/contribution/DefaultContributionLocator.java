@@ -25,6 +25,7 @@
 package org.silverpeas.core.contribution;
 
 import org.silverpeas.core.SilverpeasExceptionMessages;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.ServiceProvider;
@@ -41,6 +42,7 @@ import java.util.Optional;
 /**
  * @author silveryocha
  */
+@Service
 @Singleton
 public class DefaultContributionLocator implements ContributionLocator {
 

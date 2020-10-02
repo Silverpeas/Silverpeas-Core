@@ -23,24 +23,24 @@
  */
 package org.silverpeas.core.webapi.publication;
 
-import org.silverpeas.core.webapi.attachment.AttachmentEntity;
+import org.owasp.encoder.Encode;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.util.SharingContext;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.webapi.profile.UserProfileEntity;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.webapi.base.WebEntity;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.owasp.encoder.Encode;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.util.SharingContext;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.webapi.attachment.AttachmentEntity;
+import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.webapi.profile.UserProfileEntity;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -180,8 +180,7 @@ public class PublicationEntity implements WebEntity {
         }
       } catch (Exception e) {
         content = "Error while getting content !";
-        SilverTrace.error("kmelia", "PublicationEntity.withContent", "root.EX_IGNORED",
-            "pk = " + pubDetail.getPK().toString(), e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
     return this;

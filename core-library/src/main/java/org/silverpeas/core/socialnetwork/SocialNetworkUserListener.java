@@ -25,6 +25,7 @@ package org.silverpeas.core.socialnetwork;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.notification.UserEvent;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.socialnetwork.invitation.InvitationService;
 import org.silverpeas.core.socialnetwork.relationship.RelationShip;
@@ -40,6 +41,7 @@ import java.util.List;
  * to the deleted user in the Silverpeas social network service.
  * @author mmoquillon
  */
+@Service
 public class SocialNetworkUserListener extends CDIResourceEventListener<UserEvent> {
 
   @Inject

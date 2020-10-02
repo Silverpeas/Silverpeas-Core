@@ -28,7 +28,7 @@ import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.ExecutionAttempts.Job;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.silverpeas.core.util.ExecutionAttempts.retry;
 

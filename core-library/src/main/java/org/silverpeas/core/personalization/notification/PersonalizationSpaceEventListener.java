@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.personalization.notification;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.notification.SpaceEvent;
@@ -33,6 +34,7 @@ import javax.inject.Inject;
 /**
  * @author mmoquillon
  */
+@Bean
 public class PersonalizationSpaceEventListener extends CDIResourceEventListener<SpaceEvent> {
 
   @Inject

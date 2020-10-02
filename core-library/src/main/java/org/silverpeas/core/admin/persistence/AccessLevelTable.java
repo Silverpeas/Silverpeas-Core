@@ -23,10 +23,13 @@
  */
 package org.silverpeas.core.admin.persistence;
 
+import org.silverpeas.core.annotation.Repository;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Repository
 public class AccessLevelTable extends Table<AccessLevelRow> {
 
   public AccessLevelTable() {

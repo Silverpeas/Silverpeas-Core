@@ -39,7 +39,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Arquillian.class)
 public class DomainServiceProviderIT {

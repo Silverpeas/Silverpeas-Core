@@ -25,6 +25,7 @@ package org.silverpeas.core.node.service;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
@@ -63,6 +64,7 @@ import java.util.Objects;
  *
  * @author Nicolas Eysseric
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultNodeService implements NodeService, ComponentInstanceDeletion {

@@ -23,20 +23,19 @@
  */
 package org.silverpeas.core.webapi.admin;
 
-import org.silverpeas.core.web.WebResourceUri;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.WebResourceUri;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -61,8 +60,7 @@ import static org.silverpeas.core.webapi.admin.AdminResourceURIs.*;
  * A REST Web resource giving component data.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(COMPONENTS_BASE_URI + "/{componentId}")
 @Authorized
 public class ComponentResource extends AbstractAdminResource {

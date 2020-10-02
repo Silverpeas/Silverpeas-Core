@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -61,7 +62,6 @@ import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.text.ParseException;
@@ -79,7 +79,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * Stateless service to manage question container.
  * @author neysseri
  */
-@Singleton
+@Service
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
 public class DefaultQuestionContainerService
     implements QuestionContainerService, ComponentInstanceDeletion {

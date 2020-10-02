@@ -23,13 +23,12 @@
  */
 package org.silverpeas.core.webapi.password;
 
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -47,8 +46,7 @@ import static org.silverpeas.core.security.authentication.password.service.Passw
  * A REST Web resource giving gallery data.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(PasswordResourceURIs.PASSWORD_BASE_URI)
 @Authenticated
 public class PasswordResource extends AbstractPasswordResource {

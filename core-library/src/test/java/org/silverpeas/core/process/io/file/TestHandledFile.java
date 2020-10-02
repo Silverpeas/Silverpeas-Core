@@ -47,8 +47,6 @@ import static org.apache.commons.io.FileUtils.*;
 import static org.apache.commons.io.IOUtils.write;
 import static org.apache.commons.io.IOUtils.*;
 import static org.awaitility.Awaitility.*;
-import static org.awaitility.Duration.ONE_SECOND;
-import static org.awaitility.Duration.TWO_SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -447,7 +445,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
       return true;
     });
 
-    await().atMost(ONE_SECOND).until(() -> getHandledFile(realComponentPath, "file").waitFor(1));
+    await().atMost(1, TimeUnit.SECONDS).until(() -> getHandledFile(realComponentPath, "file").waitFor(1));
 
     assertThat(getFile(sessionComponentPath, "file").exists(), is(true));
   }
@@ -463,7 +461,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
       assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
     });
 
-    given().pollThread(Thread::new).with().pollDelay(TWO_SECONDS).await().until(() -> {
+    given().pollThread(Thread::new).with().pollDelay(2, TimeUnit.SECONDS).await().until(() -> {
       touch(getFile(sessionComponentPath, "file"));
       return true;
     });
@@ -818,7 +816,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     final File file2 = getFile(sessionComponentPath, "file2");
 
     touch(file1); // to create it
-    with().pollDelay(400, TimeUnit.MILLISECONDS).await().atMost(ONE_SECOND).untilAsserted(() -> {
+    with().pollDelay(400, TimeUnit.MILLISECONDS).await().atMost(1, TimeUnit.SECONDS).untilAsserted(() -> {
       touch(file2);
       assertThat(getHandledFile(real1).isFileNewer(file2), is(false));
       assertThat(getHandledFile(real1).isFileNewer(getHandledFile(file2)), is(false));
@@ -833,11 +831,11 @@ public class TestHandledFile extends AbstractHandledFileTest {
     final File file2 = getFile(sessionComponentPath, "file2");
 
     touch(file2); // to create it
-    with().pollDelay(ONE_SECOND).await().until(() -> {
+    with().pollDelay(1, TimeUnit.SECONDS).await().until(() -> {
       writeStringToFile(file1, "toto", Charsets.UTF_8);
       return true;
     });
-    await().atMost(ONE_SECOND).untilAsserted(() -> {
+    await().atMost(1, TimeUnit.SECONDS).untilAsserted(() -> {
       assertThat(getHandledFile(real1).isFileNewer(file2), is(true));
       assertThat(getHandledFile(real1).isFileNewer(getHandledFile(file2)), is(true));
     });
@@ -848,7 +846,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     writeStringToFile(file1, "toto", Charsets.UTF_8);
-    await().atMost(ONE_SECOND).untilAsserted(() -> {
+    await().atMost(1, TimeUnit.SECONDS).untilAsserted(() -> {
       final Date date = new Date();
       assertThat(getHandledFile(real1).isFileNewer(date), is(false));
     });
@@ -859,7 +857,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     writeStringToFile(file1, "toto", Charsets.UTF_8);
-    await().atMost(ONE_SECOND).untilAsserted(() -> {
+    await().atMost(1, TimeUnit.SECONDS).untilAsserted(() -> {
       final long time = System.currentTimeMillis();
       assertThat(getHandledFile(real1).isFileNewer(time), is(false));
     });
@@ -872,7 +870,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
 
     final Date date = new Date();
     final long time = System.currentTimeMillis();
-    with().pollDelay(ONE_SECOND).await().untilAsserted(() -> {
+    with().pollDelay(1, TimeUnit.SECONDS).await().untilAsserted(() -> {
       writeStringToFile(file1, "titi", Charsets.UTF_8);
       assertThat(getHandledFile(real1).isFileNewer(date), is(true));
       assertThat(getHandledFile(real1).isFileNewer(time), is(true));
@@ -889,7 +887,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     final File file2 = getFile(sessionComponentPath, "file2");
 
     touch(file1); // to create it
-    with().pollDelay(ONE_SECOND).await().until(() -> {
+    with().pollDelay(1, TimeUnit.SECONDS).await().until(() -> {
       System.out.println("TOUCH AT " + LocalDateTime.now());
       touch(file2);
       return true;
@@ -907,7 +905,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     final File file2 = getFile(sessionComponentPath, "file2");
 
     touch(file2); // to create it
-    await().atMost(ONE_SECOND).untilAsserted(() -> {
+    await().atMost(1, TimeUnit.SECONDS).untilAsserted(() -> {
       writeStringToFile(file1, "toto", Charsets.UTF_8);
       assertThat(getHandledFile(real1).isFileOlder(file2), is(false));
       assertThat(getHandledFile(real1).isFileOlder(getHandledFile(file2)), is(false));
@@ -919,7 +917,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     writeStringToFile(file1, "toto", Charsets.UTF_8);
-    await().atMost(ONE_SECOND).untilAsserted(() -> {
+    await().atMost(1, TimeUnit.SECONDS).untilAsserted(() -> {
       final Date date = new Date();
       assertThat(getHandledFile(real1).isFileOlder(date), is(true));
     });
@@ -930,7 +928,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     writeStringToFile(file1, "toto", Charsets.UTF_8);
-    await().atMost(ONE_SECOND).untilAsserted(() -> {
+    await().atMost(1, TimeUnit.SECONDS).untilAsserted(() -> {
       final long time = System.currentTimeMillis();
       assertThat(getHandledFile(real1).isFileOlder(time), is(true));
     });
@@ -943,7 +941,7 @@ public class TestHandledFile extends AbstractHandledFileTest {
 
     final Date date = new Date();
     final long time = System.currentTimeMillis();
-    with().pollDelay(ONE_SECOND).await().untilAsserted(() -> {
+    with().pollDelay(1, TimeUnit.SECONDS).await().untilAsserted(() -> {
       writeStringToFile(file1, "titi", Charsets.UTF_8);
       assertThat(getHandledFile(real1).isFileOlder(date), is(false));
       assertThat(getHandledFile(real1).isFileOlder(time), is(false));

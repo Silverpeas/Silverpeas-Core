@@ -28,6 +28,7 @@ import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.dao.CommentDAO;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
@@ -46,7 +47,6 @@ import org.silverpeas.core.util.ResourceLocator;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -59,7 +59,7 @@ import java.util.List;
  * engine. This service is managed by an IoC container and this be retrieved by dependency
  * injection.
  */
-@Singleton
+@Service
 @Named("commentService")
 public class DefaultCommentService implements CommentService, ComponentInstanceDeletion {
 

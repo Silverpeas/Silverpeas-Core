@@ -24,6 +24,7 @@
 package org.silverpeas.core.chat.listeners;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.chat.servers.DefaultChatServer;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
@@ -37,6 +38,7 @@ import java.util.stream.Stream;
  * Listen relationship modifications to clone them in the Chat server
  * @author remipassmoilesel
  */
+@Service
 public class RelationShipListener extends CDIResourceEventListener<RelationShipEvent> {
 
   @Inject

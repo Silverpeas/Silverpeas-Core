@@ -25,6 +25,7 @@
 package org.silverpeas.core.io.media.image.thumbnail.control;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.ContributionDeletion;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.WithThumbnail;
@@ -36,6 +37,7 @@ import static org.silverpeas.core.util.StringUtil.isInteger;
  * Deleter of the thumbnail associated with the contribution that has been deleted.
  * @author mmoquillon
  */
+@Service
 public class ThumbnailDeleter implements ContributionDeletion {
 
   @Override

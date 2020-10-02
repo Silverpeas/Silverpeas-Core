@@ -25,6 +25,7 @@
 package org.silverpeas.core.contribution.template.publication;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -40,6 +41,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 /**
  * @author silveryocha
  */
+@Service
 public class PublicationTemplateIntegrityProcessor implements Initialization {
 
   @Override

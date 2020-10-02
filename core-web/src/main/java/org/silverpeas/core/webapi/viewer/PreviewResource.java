@@ -23,8 +23,7 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -74,8 +73,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 /**
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(PreviewResource.PATH + "/{componentId}")
 @Authorized
 public class PreviewResource extends RESTWebService {

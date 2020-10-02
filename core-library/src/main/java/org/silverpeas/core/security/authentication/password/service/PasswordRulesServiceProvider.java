@@ -37,4 +37,7 @@ public class PasswordRulesServiceProvider {
     return ServiceProvider.getService(PasswordRulesService.class);
   }
 
+  private PasswordRulesServiceProvider() {
+
+  }
 }

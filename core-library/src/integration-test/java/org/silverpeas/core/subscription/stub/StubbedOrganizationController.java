@@ -26,6 +26,7 @@ package org.silverpeas.core.subscription.stub;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.DefaultOrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
@@ -38,6 +39,7 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 @Singleton
 @Alternative
 @Priority(APPLICATION + 10)

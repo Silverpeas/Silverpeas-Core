@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.control;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
@@ -38,6 +39,7 @@ import java.util.List;
 /**
  * @author Bensalem Nabil;
  */
+@Service
 @Singleton
 public class SocialInformationService {
 

@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
@@ -64,7 +65,7 @@ import static org.silverpeas.core.silverstatistics.access.dao.HistoryObjectDAO.c
 /**
  * Default implementation of Statistic service layer which manage statistics
  */
-
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultStatisticService implements StatisticService, ComponentInstanceDeletion {

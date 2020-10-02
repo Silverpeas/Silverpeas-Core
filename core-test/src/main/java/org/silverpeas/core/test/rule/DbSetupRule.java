@@ -31,7 +31,6 @@ import com.ninja_squad.dbsetup.operation.Operation;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
@@ -50,9 +49,7 @@ import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -61,7 +58,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+
 
 /**
  * A rule to set up the database before any integration tests implying the persistence engine of
@@ -321,11 +320,9 @@ public class DbSetupRule implements TestRule {
             " - {2} already closed,\n" +
             " - {3} closed in error",
         new Object[]{total, nbCloseSuccessfully, nbAlreadyClosed, nbCloseErrors});
-    if (nbCloseSuccessfully > 0) {
-      fail(
-          nbCloseSuccessfully + " connection(s) not closed, please review the test performed by: " +
-              description.getTestClass() + "#" + description.getMethodName());
-    }
+    final String reason = nbCloseSuccessfully + " connection(s) not closed, please review the test performed by: " +
+        description.getTestClass() + "#" + description.getMethodName();
+    assertThat(reason, nbCloseSuccessfully, lessThanOrEqualTo(0));
   }
 
   /*

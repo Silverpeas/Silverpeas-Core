@@ -27,7 +27,6 @@ package org.silverpeas.core.util;
 import com.pholser.junit.quickcheck.Property;
 import com.pholser.junit.quickcheck.When;
 import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.quickcheck.generators.SimpleStringGenerator.SpSimpleString;
@@ -43,7 +42,7 @@ public class WebEncodeHelperTest {
 
   @Test
   public void empty() {
-    Assert.assertTrue(true);
+    assertThat(true, is(true));
   }
 
   @Test

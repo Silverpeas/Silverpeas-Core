@@ -24,6 +24,7 @@
 package org.silverpeas.core.admin.quota.repository;
 
 import org.silverpeas.core.admin.quota.model.Quota;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 import javax.inject.Singleton;
@@ -32,6 +33,7 @@ import javax.inject.Singleton;
  * @author Yohann Chastagnier
  */
 @Singleton
+@Repository
 public class QuotaJPARepository extends BasicJpaEntityRepository<Quota> implements QuotaRepository {
 
   @Override

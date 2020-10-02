@@ -44,6 +44,7 @@ package org.silverpeas.core.socialnetwork.relationship;
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
@@ -52,6 +53,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
  * <p>Notifier about creation or deletion of relationship between users.</p>
  * @author remipassmoilesel
  */
+@Bean
 public class RelationShipEventNotifier
     extends CDIResourceEventNotifier<RelationShip, RelationShipEvent> {
 

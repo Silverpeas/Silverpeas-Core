@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.thread;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -54,6 +56,8 @@ import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.defau
  * </p>
  * @author Yohann Chastagnier
  */
+@Technical
+@Bean
 @Singleton
 public class ManagedThreadPool {
 

@@ -29,6 +29,8 @@ import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
@@ -42,6 +44,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * The class Store and manage all the Admin's cache
  */
+@Technical
+@Bean
 @Singleton
 public class AdminCache {
   // Cache management

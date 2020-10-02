@@ -23,7 +23,10 @@
  */
 package org.silverpeas.core.util.logging;
 
+import org.silverpeas.core.annotation.Bean;
+
 @Log
+@Bean
 public class AnAnnotatedObject {
 
   public void doSomething() throws InterruptedException {

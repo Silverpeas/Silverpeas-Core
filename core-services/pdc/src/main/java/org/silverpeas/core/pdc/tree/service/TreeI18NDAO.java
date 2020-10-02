@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.pdc.tree.service;
 
+import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.pdc.tree.model.TreeNodeI18N;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,17 +35,11 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
-import org.silverpeas.core.pdc.tree.model.TreeNodeI18N;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.UtilException;
-
-import javax.inject.Singleton;
-
 /**
  * Class declaration
  * @author
  */
-@Singleton
+@Repository
 public class TreeI18NDAO {
 
   private static String treeI18NTable = "SB_Tree_TreeI18N";

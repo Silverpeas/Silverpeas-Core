@@ -23,10 +23,9 @@
  */
 package org.silverpeas.core.webapi.preferences;
 
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
@@ -41,8 +40,7 @@ import javax.ws.rs.core.MediaType;
  * to change its preferences. Currently, only the change of the language is implemented.
  * @author mmoquillon
  */
-@Service
-@RequestScoped
+@WebService
 @Path(MyPreferencesResource.PATH)
 @Authenticated
 public class MyPreferencesResource extends RESTWebService {

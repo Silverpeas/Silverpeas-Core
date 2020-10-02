@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.dao.RoleDAO;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -50,6 +51,7 @@ import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.*;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
+@Service
 @Singleton
 @Transactional(Transactional.TxType.MANDATORY)
 public class ProfileInstManager {

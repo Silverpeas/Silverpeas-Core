@@ -34,10 +34,11 @@ public abstract class AbstractSilverpeasFileProcessor
   private static final int PRIORITY = MAX_PRIORITY - 50;
 
   /**
-   * Registers itself among the SilverpeasFileFactory instance.
+   * Registers itself among the SilverpeasFileFactory instance. If overridden, don't forget to
+   * invoke before <code>super.init()</code> otherwise you wont encounter the expected behaviour.
    */
   @Override
-  public final void init() {
+  public void init() {
     SilverpeasFileProvider.addProcessor(this);
   }
 

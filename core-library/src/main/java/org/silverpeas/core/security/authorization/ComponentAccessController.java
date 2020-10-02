@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -54,6 +55,7 @@ import static org.silverpeas.core.util.StringUtil.getBooleanValue;
  * personal tool or an administrative tool.
  * @author ehugonnet
  */
+@Service
 @Singleton
 public class ComponentAccessController extends AbstractAccessController<String>
     implements ComponentAccessControl {

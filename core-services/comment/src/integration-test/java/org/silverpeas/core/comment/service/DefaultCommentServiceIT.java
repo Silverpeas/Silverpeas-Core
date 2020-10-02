@@ -41,7 +41,8 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * Integration tests on the DefaultCommentService behaviour.
@@ -71,8 +72,8 @@ public class DefaultCommentServiceIT {
 
   @Before
   public void setUp() {
-    assertNotNull(listener);
-    assertNotNull(commentService);
+    assertThat(listener, notNullValue());
+    assertThat(commentService, notNullValue());
     listener.reset();
   }
 
@@ -86,7 +87,7 @@ public class DefaultCommentServiceIT {
    */
   @Test
   public void emptyTest() {
-    assertTrue(true);
+    assertThat(true, is(true));
   }
 
   /**
@@ -98,9 +99,9 @@ public class DefaultCommentServiceIT {
     getCommentService()
         .createComment(CommentBuilder.getBuilder().buildWith("Toto", "Vu à la télé"));
     assertThat(listener.isInvoked(), is(true));
-    assertEquals(1, listener.getInvocationCount());
-    assertTrue(listener.isCommentAdded());
-    assertFalse(listener.isCommentRemoved());
+    assertThat(1, is(listener.getInvocationCount()));
+    assertThat(listener.isCommentAdded(), is(true));
+    assertThat(listener.isCommentRemoved(), is(false));
   }
 
   /**
@@ -114,9 +115,9 @@ public class DefaultCommentServiceIT {
         CommentBuilder.getResourcePrimaryPK());
     commentController.deleteComment(allComments.get(0).getCommentPK());
     assertThat(listener.isInvoked(), is(true));
-    assertEquals(1, listener.getInvocationCount());
-    assertFalse(listener.isCommentAdded());
-    assertTrue(listener.isCommentRemoved());
+    assertThat(1, is(listener.getInvocationCount()));
+    assertThat(listener.isCommentAdded(), is(false));
+    assertThat(listener.isCommentRemoved(), is(true));
   }
 
   /**
@@ -132,9 +133,9 @@ public class DefaultCommentServiceIT {
     service.deleteAllCommentsOnPublication(TEST_RESOURCE_TYPE,
         CommentBuilder.getResourcePrimaryPK());
     assertThat(listener.isInvoked(), is(true));
-    assertEquals(allComments.size(), listener.getInvocationCount());
-    assertFalse(listener.isCommentAdded());
-    assertTrue(listener.isCommentRemoved());
+    assertThat(allComments.size(), is(listener.getInvocationCount()));
+    assertThat(listener.isCommentAdded(), is(false));
+    assertThat(listener.isCommentRemoved(), is(true));
   }
 
   /**

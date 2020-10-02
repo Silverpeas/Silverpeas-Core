@@ -24,6 +24,7 @@
 package org.silverpeas.core.tagcloud.service;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.tagcloud.model.TagCloud;
 import org.silverpeas.core.tagcloud.dao.TagCloudDAO;
 import org.silverpeas.core.tagcloud.dao.TagCloudPK;
@@ -45,6 +46,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultTagCloudService implements TagCloudService, ComponentInstanceDeletion {

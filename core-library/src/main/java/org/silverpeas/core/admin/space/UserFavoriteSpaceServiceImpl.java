@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.space;
 
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Service
 @Singleton
 @Default
 public class UserFavoriteSpaceServiceImpl implements UserFavoriteSpaceService {

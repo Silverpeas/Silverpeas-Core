@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.socialnetwork.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.socialnetwork.connectors.SocialNetworkConnector;
 import org.silverpeas.core.socialnetwork.dao.ExternalAccountRepository;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
@@ -33,13 +34,12 @@ import org.silverpeas.core.socialnetwork.qualifiers.LinkedIn;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-@Singleton
+@Service
 public class SocialNetworkService {
 
   private static final String AUTHORIZATION_TOKEN_SESSION_ATTR =

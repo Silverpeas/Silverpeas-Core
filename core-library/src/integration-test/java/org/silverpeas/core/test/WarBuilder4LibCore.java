@@ -599,6 +599,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(NotifChannel.class)) {
       addPackages(true, "org.silverpeas.core.notification.user.client");
       addPackages(true, "org.silverpeas.core.notification.user.server");
+      addPackages(true, "org.silverpeas.core.notification.user.builder");
       addAsResource("org/silverpeas/notificationManager");
       addClasses(AbstractTable.class, UserSubscriptionNotificationSendingHandler.class,
           AttachmentLink.class);

@@ -36,4 +36,7 @@ public class AuthenticationServiceProvider {
     return ServiceProvider.getService(AuthenticationService.class);
   }
 
+  private AuthenticationServiceProvider() {
+
+  }
 }

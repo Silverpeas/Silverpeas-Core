@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.system.synchronous;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.notification.system.TestResource;
@@ -31,6 +32,7 @@ import org.silverpeas.core.notification.system.TestResourceEvent;
 /**
  * @author mmoquillon
  */
+@Bean
 public class SynchronousTestResourceEventNotifier extends
     CDIResourceEventNotifier<TestResource, TestResourceEvent> {
 

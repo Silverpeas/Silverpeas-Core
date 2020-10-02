@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar.notification;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -32,6 +33,7 @@ import org.silverpeas.core.util.ServiceProvider;
  * A notifier of lifecycle events of {@link CalendarEvent} instances.
  * @author mmoquillon
  */
+@Bean
 public class CalendarEventLifeCycleEventNotifier
     extends CDIResourceEventNotifier<CalendarEvent, CalendarEventLifeCycleEvent> {
 

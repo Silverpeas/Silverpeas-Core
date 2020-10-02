@@ -24,8 +24,7 @@
 package org.silverpeas.core.webapi.notification.user;
 
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.util.SilverpeasList;
@@ -54,8 +53,7 @@ import static org.silverpeas.core.notification.user.server.channel.silvermail.Si
  * A REST Web resource giving gallery data.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(InboxUserNotificationResourceURIs.BASE_URI)
 @Authenticated
 public class InboxUserNotificationResource extends RESTWebService {

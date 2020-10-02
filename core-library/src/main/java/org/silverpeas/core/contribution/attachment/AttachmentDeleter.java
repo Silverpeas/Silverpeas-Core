@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.ContributionDeletion;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.WithAttachment;
@@ -31,6 +32,7 @@ import org.silverpeas.core.contribution.model.WithAttachment;
  * Deleter of attachments relative to a contribution that has been deleted.
  * @author mmoquillon
  */
+@Service
 public class AttachmentDeleter implements ContributionDeletion {
 
   @Override

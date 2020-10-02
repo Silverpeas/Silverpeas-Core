@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.notification.NotificationException;
@@ -84,6 +85,7 @@ import static org.silverpeas.core.notification.user.client.NotificationParameter
  * @author Eric BURGEL
  * @version 1.0
  */
+@Service
 @Transactional
 public class DefaultNotificationManager extends AbstractNotification
     implements ComponentInstanceDeletion, NotificationManager {
@@ -1047,7 +1049,7 @@ public class DefaultNotificationManager extends AbstractNotification
   /**
    * @see NotificationManagerSettings#getDefaultChannels()
    */
-  List<NotifChannel> getDefaultNotificationChannels() {
+  protected List<NotifChannel> getDefaultNotificationChannels() {
     return NotificationManagerSettings.getDefaultChannels();
   }
 }

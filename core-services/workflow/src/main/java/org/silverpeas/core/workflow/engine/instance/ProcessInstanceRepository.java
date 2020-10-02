@@ -1,5 +1,6 @@
 package org.silverpeas.core.workflow.engine.instance;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.util.SilverpeasList;
 
@@ -10,6 +11,7 @@ import java.util.Collection;
 /**
  * Created by Nicolas on 05/06/2017.
  */
+@Repository
 @Singleton
 public class ProcessInstanceRepository extends BasicJpaEntityRepository<ProcessInstanceImpl> {
 

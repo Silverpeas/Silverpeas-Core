@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.process.check.exception.DataStorageQuotaException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.process.io.IOAccess;
@@ -52,6 +53,7 @@ import java.util.Set;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
   private static boolean dataStorageInSpaceQuotaActivated;
 

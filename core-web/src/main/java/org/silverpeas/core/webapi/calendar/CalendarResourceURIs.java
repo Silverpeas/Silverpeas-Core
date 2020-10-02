@@ -25,6 +25,7 @@
 package org.silverpeas.core.webapi.calendar;
 
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
@@ -34,6 +35,7 @@ import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Base64;
@@ -43,6 +45,8 @@ import java.util.Base64;
  * defined.
  * @author Yohann Chastagnier
  */
+@Bean
+@Singleton
 public final class CalendarResourceURIs {
 
   static final String CALENDAR_EVENT_URI_PART = "events";

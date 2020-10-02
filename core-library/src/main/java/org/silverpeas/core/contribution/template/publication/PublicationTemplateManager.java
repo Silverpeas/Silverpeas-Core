@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -78,6 +79,7 @@ import java.util.Map;
  * The PublicationTemplateManager manages all the PublicationTemplate for all the Job'Peas. It is a
  * singleton.
  */
+@Service
 @Singleton
 public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
@@ -111,7 +113,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
    * @return the single instance of PublicationTemplateManager.
    */
   public static PublicationTemplateManager getInstance() {
-    return ServiceProvider.getService(PublicationTemplateManager.class);
+    return ServiceProvider.getSingleton(PublicationTemplateManager.class);
   }
 
   /**

@@ -37,6 +37,7 @@ import edu.psu.swe.scim.spec.protocol.search.PageRequest;
 import edu.psu.swe.scim.spec.protocol.search.SortRequest;
 import edu.psu.swe.scim.spec.resources.ScimExtension;
 import edu.psu.swe.scim.spec.resources.ScimGroup;
+import org.silverpeas.core.annotation.Service;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +57,7 @@ import static org.silverpeas.core.webapi.admin.scim.ScimLogger.logger;
  * </p>
  * @author silveryocha
  */
+@Service
 public class ScimGroupAdminService extends AbstractScimAdminService implements Provider<ScimGroup> {
 
   @Override

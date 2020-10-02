@@ -28,11 +28,14 @@ import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.WeekDay;
+import net.fortuna.ical4j.model.WeekDayList;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Recurrence;
@@ -43,7 +46,6 @@ import org.silverpeas.core.date.TimeZoneUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -60,10 +62,11 @@ import static org.silverpeas.core.calendar.Recurrence.NO_RECURRENCE_COUNT;
 /**
  * A codec to encode/decode iCal4J recurrence with Silverpeas event recurrence.
  */
+@Technical
+@Bean
 @Singleton
 public class ICal4JRecurrenceCodec {
 
-  private static final String ICAL_FREQ = "FREQ=";
   private final ICal4JDateCodec iCal4JDateCodec;
 
   @Inject
@@ -114,29 +117,28 @@ public class ICal4JRecurrenceCodec {
     if (eventRecurrence == NO_RECURRENCE) {
       throw new IllegalArgumentException("Event recurrence missing!");
     }
-    try {
-      Recur recur = new Recur(asICal4JFrequency(eventRecurrence.getFrequency()));
-      if (eventRecurrence.getFrequency().getInterval() > 1) {
-        recur.setInterval(eventRecurrence.getFrequency().getInterval());
-      }
-
-      final Optional<Temporal> reccurrenceEndDate = eventRecurrence.getRecurrenceEndDate();
-      if (eventRecurrence.getRecurrenceCount() != NO_RECURRENCE_COUNT) {
-        recur.setCount(eventRecurrence.getRecurrenceCount());
-      } else if (reccurrenceEndDate.isPresent()) {
-        final Temporal endDate = reccurrenceEndDate.get();
-        TemporalConverter.consumeByType(endDate,
-            date -> recur.setUntil(iCal4JDateCodec.encode(date)),
-            dateTime -> recur.setUntil(iCal4JDateCodec.encode(dateTime)));
-      }
-      eventRecurrence.getDaysOfWeek().stream()
-          .sorted(Comparator.comparing(DayOfWeekOccurrence::dayOfWeek))
-          .forEach(dayOfWeekOccurrence ->
-              recur.getDayList().add(encode(dayOfWeekOccurrence)));
-      return recur;
-    } catch (ParseException ex) {
-      throw new SilverpeasRuntimeException(ex.getMessage(), ex);
+    Recur.Builder recurBuilder =
+        new Recur.Builder().frequency(asICal4JFrequency(eventRecurrence.getFrequency()));
+    if (eventRecurrence.getFrequency().getInterval() > 1) {
+      recurBuilder.interval(eventRecurrence.getFrequency().getInterval());
     }
+
+    final Optional<Temporal> recurrenceEndDate = eventRecurrence.getRecurrenceEndDate();
+    if (eventRecurrence.getRecurrenceCount() != NO_RECURRENCE_COUNT) {
+      recurBuilder.count(eventRecurrence.getRecurrenceCount());
+    } else if (recurrenceEndDate.isPresent()) {
+      final Temporal endDate = recurrenceEndDate.get();
+      TemporalConverter.consumeByType(endDate,
+          date -> recurBuilder.until(iCal4JDateCodec.encode(date)),
+          dateTime -> recurBuilder.until(iCal4JDateCodec.encode(dateTime)));
+    }
+    WeekDayList daysOfWeek = eventRecurrence.getDaysOfWeek()
+        .stream()
+        .sorted(Comparator.comparing(DayOfWeekOccurrence::dayOfWeek))
+        .map(this::encode)
+        .collect(Collectors.toCollection(WeekDayList::new));
+    recurBuilder.dayList(daysOfWeek);
+    return recurBuilder.build();
   }
 
   public WeekDay encode(final DayOfWeek dayOfWeek) {
@@ -206,7 +208,7 @@ public class ICal4JRecurrenceCodec {
       Deleting following forEach after fix of EXDATE UTC management (iCal4J)
       cf. https://github.com/ical4j/ical4j/issues/113 for example
       */
-    vEvent.getProperties(ExDate.EXDATE).forEach(e -> ((ExDate) e).getDates().forEach(exDate -> {
+    vEvent.getProperties(Property.EXDATE).forEach(e -> ((ExDate) e).getDates().forEach(exDate -> {
       final boolean isOnAllDay = !(vEvent.getStartDate().getDate() instanceof DateTime);
       final LocalDate dateToExclude;
       if (isOnAllDay) {
@@ -225,32 +227,33 @@ public class ICal4JRecurrenceCodec {
     }));
   }
 
-  private String asICal4JFrequency(final RecurrencePeriod period) {
-    String freq = ICAL_FREQ;
+  private Recur.Frequency asICal4JFrequency(final RecurrencePeriod period) {
+    Recur.Frequency freq;
     switch (period.getUnit()) {
       case SECOND:
-        freq += Recur.SECONDLY;
+        freq = Recur.Frequency.SECONDLY;
         break;
       case MINUTE:
-        freq += Recur.MINUTELY;
+        freq = Recur.Frequency.MINUTELY;
         break;
       case HOUR:
-        freq += Recur.HOURLY;
+        freq = Recur.Frequency.HOURLY;
         break;
       case DAY:
-        freq += Recur.DAILY;
+        freq = Recur.Frequency.DAILY;
         break;
       case WEEK:
-        freq += Recur.WEEKLY;
+        freq = Recur.Frequency.WEEKLY;
         break;
       case MONTH:
-        freq += Recur.MONTHLY;
+        freq = Recur.Frequency.MONTHLY;
         break;
       case YEAR:
-        freq += Recur.YEARLY;
+        freq = Recur.Frequency.YEARLY;
         break;
       default:
-        throw new SilverpeasRuntimeException("Recurrence frequency not supported: " + freq);
+        throw new SilverpeasRuntimeException("Recurrence frequency not supported: " +
+            period.getUnit());
     }
     return freq;
   }
@@ -267,25 +270,25 @@ public class ICal4JRecurrenceCodec {
     final RecurrencePeriod recurrencePeriod;
     int interval = recur.getInterval() == -1 ? 1 : recur.getInterval();
     switch (recur.getFrequency()) {
-      case Recur.SECONDLY:
+      case SECONDLY:
         recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.SECOND);
         break;
-      case Recur.MINUTELY:
+      case MINUTELY:
         recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.MINUTE);
         break;
-      case Recur.HOURLY:
+      case HOURLY:
         recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.HOUR);
         break;
-      case Recur.DAILY:
+      case DAILY:
         recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.DAY);
         break;
-      case Recur.WEEKLY:
+      case WEEKLY:
         recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.WEEK);
         break;
-      case Recur.MONTHLY:
+      case MONTHLY:
         recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.MONTH);
         break;
-      case Recur.YEARLY:
+      case YEARLY:
         recurrencePeriod = RecurrencePeriod.every(interval, TimeUnit.YEAR);
         break;
       default:

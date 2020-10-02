@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.process.management.interceptor;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.process.io.file.DummyHandledFile;
 import org.silverpeas.core.process.annotation.AbstractDummyHandledFileConverter;
 import org.silverpeas.core.ActionType;
@@ -34,6 +35,7 @@ import java.util.List;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 public class SimulationActionTestDummyFileElementConverter
     extends AbstractDummyHandledFileConverter<InterceptorTestSimulationElement> {
 

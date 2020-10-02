@@ -28,6 +28,7 @@ import org.apache.commons.io.filefilter.AgeFileFilter;
 import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
@@ -38,6 +39,7 @@ import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
+import javax.inject.Singleton;
 import java.io.File;
 import java.util.Collection;
 
@@ -46,6 +48,8 @@ import static org.apache.commons.io.FileUtils.*;
 /**
  * @author Yohann Chastagnier
  */
+@Service
+@Singleton
 public class TemporaryDataCleanerSchedulerInitializer implements Initialization {
 
   protected static final String JOB_NAME = "TemporayDataCleanerJob";

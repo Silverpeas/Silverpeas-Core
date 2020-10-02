@@ -24,16 +24,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
-             http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
-             version="2.0">
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
+             version="2.2">
   <persistence-unit name="silverpeas" transaction-type="JTA">
     <jta-data-source>java:/datasources/silverpeas</jta-data-source>
+    <shared-cache-mode>NONE</shared-cache-mode>
     <!-- @JAR_FILES@ -->
     <properties>
-      <!-- JPA 2.1 properties for database schema generation -->
+      <!-- JPA 2.2 properties for database schema generation -->
       <!--
       <property name="javax.persistence.schema-generation.scripts.action" value="create"/>
       <property name="javax.persistence.schema-generation.scripts.create-target"
@@ -42,7 +43,9 @@
       <!-- Properties for Hibernate (default provider for JBoss AS, must be installed on GlassFish) -->
       <property name="hibernate.show_sql" value="true"/>
       <property name="hibernate.format_sql" value="false"/>
-      <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
+      <property name="hibernate.cache.use_second_level_cache" value="false"/>
+      <property name="hibernate.cache.region.factory_class"
+                value="org.hibernate.cache.internal.NoCachingRegionFactory"/>
     </properties>
   </persistence-unit>
 </persistence>

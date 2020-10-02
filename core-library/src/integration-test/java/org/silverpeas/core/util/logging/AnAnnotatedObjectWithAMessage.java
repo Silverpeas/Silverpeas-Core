@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.util.logging;
 
+import org.silverpeas.core.annotation.Bean;
+
+@Bean
 @Log(message = "I love to do anything for you")
 public class AnAnnotatedObjectWithAMessage {
 

@@ -25,12 +25,12 @@ package org.silverpeas.core.util.logging;
 
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,7 +46,7 @@ import static org.silverpeas.core.util.file.ReversedFileLineReader.readLastLines
  * An accessor to the logs of Silverpeas.
  * @author mmoquillon
  */
-@Singleton
+@Service
 public class LogsAccessor {
 
   /**

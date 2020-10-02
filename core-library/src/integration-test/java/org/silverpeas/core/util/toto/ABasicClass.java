@@ -24,8 +24,10 @@
 
 package org.silverpeas.core.util.toto;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+@Bean
 public class ABasicClass {
 
   public void logMeAMessage(final String message) {

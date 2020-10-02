@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.contribution.attachment.permalinks.repository;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.contribution.attachment.permalinks.model.VersionPermalink;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 /**
  * @author: ebonnet
  */
+@Repository
 public class VersionPermalinkJpaRepository extends BasicJpaEntityRepository<VersionPermalink>
     implements VersionPermalinkRepository {
 }

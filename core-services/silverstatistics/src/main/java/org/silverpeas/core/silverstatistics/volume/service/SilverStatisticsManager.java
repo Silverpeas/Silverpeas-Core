@@ -24,6 +24,7 @@
 package org.silverpeas.core.silverstatistics.volume.service;
 
 import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
@@ -58,6 +59,7 @@ import static org.silverpeas.core.silverstatistics.volume.model.StatType.*;
  * <code>initSilverStatisticsManager()</code> method for initializing it.
  * @author Marc Guillemin
  */
+@Service
 @Singleton
 public class SilverStatisticsManager implements Initialization {
 

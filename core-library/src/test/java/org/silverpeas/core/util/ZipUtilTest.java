@@ -41,7 +41,7 @@ import java.util.zip.ZipEntry;
 
 import static java.io.File.separatorChar;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author ehugonnet

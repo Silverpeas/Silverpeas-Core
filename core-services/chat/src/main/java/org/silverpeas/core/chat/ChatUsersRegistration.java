@@ -24,13 +24,13 @@
 package org.silverpeas.core.chat;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.chat.servers.DefaultChatServer;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 
 /**
@@ -38,7 +38,7 @@ import java.util.List;
  * If the user is already registered then nothing is performed.
  * @author mmoquillon
  */
-@Singleton
+@Service
 public class ChatUsersRegistration {
 
   @Inject

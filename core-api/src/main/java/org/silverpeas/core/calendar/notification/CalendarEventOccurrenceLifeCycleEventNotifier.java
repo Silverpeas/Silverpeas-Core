@@ -47,6 +47,7 @@
  */
 package org.silverpeas.core.calendar.notification;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -56,6 +57,7 @@ import org.silverpeas.core.util.ServiceProvider;
  * A notifier of a change in the life-cycle of one or several occurrences of a given calendar event.
  * @author mmoquillon
  */
+@Bean
 public class CalendarEventOccurrenceLifeCycleEventNotifier extends
     CDIResourceEventNotifier<CalendarEventOccurrence, CalendarEventOccurrenceLifeCycleEvent> {
 

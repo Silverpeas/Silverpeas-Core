@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.index.indexing;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ResourceLocator;
@@ -33,6 +34,7 @@ import java.io.File;
 /**
  * Initializes the indexation engine of Silverpeas.
  */
+@Service
 public class IndexEngineInitialize implements Initialization {
 
   public IndexEngineInitialize() {

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar.notification;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.AttendeeSet;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -37,6 +38,7 @@ import java.util.Set;
  * A notifier of lifecycle events of {@link Attendee}s.
  * @author mmoquillon
  */
+@Bean
 public class AttendeeLifeCycleEventNotifier
     extends CDIResourceEventNotifier<Attendee, AttendeeLifeCycleEvent> {
 

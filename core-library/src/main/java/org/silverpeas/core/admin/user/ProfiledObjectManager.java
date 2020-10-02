@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.dao.RoleDAO;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.Pair;
@@ -51,6 +52,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.*;
 
+@Service
 @Singleton
 @Transactional(Transactional.TxType.MANDATORY)
 public class ProfiledObjectManager {

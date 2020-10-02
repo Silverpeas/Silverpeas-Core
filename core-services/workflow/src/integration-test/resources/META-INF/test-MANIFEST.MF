@@ -6,4 +6,5 @@ Dependencies: org.jboss.as.naming,
   com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider,
   org.antlr,
   org.apache.lucene-7,
-  deployment.jackrabbit-jca.rar
+  deployment.jackrabbit-jca.rar,
+  jdk.unsupported

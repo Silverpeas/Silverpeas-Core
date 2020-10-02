@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.notification.NotificationException;
@@ -49,6 +50,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
+@Service
 public class ScheduledReservedFile implements Initialization {
 
   public static final String ATTACHMENT_JOB_NAME_PROCESS = "A_ProcessReservedFileAttachment";

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.datereminder;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
 import org.silverpeas.core.datereminder.provider.DateReminderProcess;
@@ -43,6 +44,7 @@ import java.text.MessageFormat;
  * @see DateReminderProcessRegistration
  * @see PublicationDateReminderUserNotification
  */
+@Service
 public class PublicationDateReminderProcess implements DateReminderProcess, Initialization {
 
   @Override

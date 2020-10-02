@@ -23,16 +23,16 @@
  */
 package org.silverpeas.core.comment.test;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.comment.service.notification.CommentEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
  * The listener of actions on comments to use within the unit tests.
  */
-@Named
+@Bean
 @Singleton
 public class MyCommentActionListener extends CDIResourceEventListener<CommentEvent> {
 

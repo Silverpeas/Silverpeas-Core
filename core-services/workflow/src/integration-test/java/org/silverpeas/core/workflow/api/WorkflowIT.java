@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.test.BasicWarBuilder;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.*;
 
 /**
  * @author ebonnet

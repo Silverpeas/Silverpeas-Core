@@ -28,12 +28,15 @@ import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.PeriodList;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.WeekDay;
+import net.fortuna.ical4j.model.WeekDayList;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.Uid;
 import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
@@ -45,7 +48,6 @@ import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -58,12 +60,14 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * An implementation of the {@link CalendarEventOccurrenceGenerator} by using the iCal4J library.
  * @author mmoquillon
  */
-@Singleton
+@Technical
+@Bean
 public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccurrenceGenerator {
 
   private final ICal4JDateCodec iCal4JDateCodec;
@@ -213,47 +217,46 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
 
   private RRule generateRecurrenceRule(final CalendarEvent event) {
     Recurrence recurrence = event.getRecurrence();
-    String recurrenceType = getRecurrentType(recurrence.getFrequency().getUnit());
-    Recur recur;
+    Recur.Frequency recurrenceType = getRecurrentType(recurrence.getFrequency().getUnit());
+    Recur.Builder builder = new Recur.Builder().frequency(recurrenceType);
     final Optional<Temporal> endDate = recurrence.getRecurrenceEndDate();
     if (endDate.isPresent()) {
-      recur = new Recur(recurrenceType,
-          TemporalConverter.applyByType(endDate.get(), iCal4JDateCodec::encode,
-              iCal4JDateCodec::encode));
+      builder.until(TemporalConverter.applyByType(endDate.get(), iCal4JDateCodec::encode,
+          iCal4JDateCodec::encode));
     } else if (recurrence.getRecurrenceCount() != Recurrence.NO_RECURRENCE_COUNT) {
-      recur = new Recur(recurrenceType, recurrence.getRecurrenceCount());
-    } else {
-      recur = new Recur(recurrenceType, null);
+      builder.count(recurrence.getRecurrenceCount());
     }
-    recur.setInterval(recurrence.getFrequency().getInterval());
+    builder.interval(recurrence.getFrequency().getInterval());
 
-    recurrence.getDaysOfWeek().
-        forEach(dayOfWeekOccurrence -> {
-          WeekDay weekDay = iCal4JRecurrenceCodec.encode(dayOfWeekOccurrence.dayOfWeek());
-          if (recurrence.getFrequency().isWeekly() || recurrence.getFrequency().isDaily() ||
-              dayOfWeekOccurrence.nth() == 0) {
-            recur.getDayList().add(weekDay);
-          } else {
-            recur.getDayList().add(new WeekDay(weekDay, dayOfWeekOccurrence.nth()));
-          }
-        });
-    return new RRule(recur);
+    WeekDayList dayList = recurrence.getDaysOfWeek().stream().
+        map(dayOfWeekOccurrence -> {
+      WeekDay weekDay = iCal4JRecurrenceCodec.encode(dayOfWeekOccurrence.dayOfWeek());
+      if (recurrence.getFrequency().isWeekly() || recurrence.getFrequency().isDaily() ||
+          dayOfWeekOccurrence.nth() == 0) {
+        return weekDay;
+      } else {
+        return new WeekDay(weekDay, dayOfWeekOccurrence.nth());
+      }
+    }).
+        collect(Collectors.toCollection(WeekDayList::new));
+    builder.dayList(dayList);
+    return new RRule(builder.build());
   }
 
-  private String getRecurrentType(final TimeUnit recurrenceUnit) {
-    String recurrenceType;
+  private Recur.Frequency getRecurrentType(final TimeUnit recurrenceUnit) {
+    final Recur.Frequency recurrenceType;
     switch (recurrenceUnit) {
       case DAY:
-        recurrenceType = Recur.DAILY;
+        recurrenceType = Recur.Frequency.DAILY;
         break;
       case WEEK:
-        recurrenceType = Recur.WEEKLY;
+        recurrenceType = Recur.Frequency.WEEKLY;
         break;
       case MONTH:
-        recurrenceType = Recur.MONTHLY;
+        recurrenceType = Recur.Frequency.MONTHLY;
         break;
       case YEAR:
-        recurrenceType = Recur.YEARLY;
+        recurrenceType = Recur.Frequency.YEARLY;
         break;
       default:
         throw new NotSupportedException("Recurrence unit not yet supported: " + recurrenceUnit);

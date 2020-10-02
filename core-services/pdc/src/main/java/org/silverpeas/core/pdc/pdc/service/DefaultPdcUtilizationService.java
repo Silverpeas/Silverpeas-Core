@@ -25,6 +25,7 @@ package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.AxisHeaderPersistence;
@@ -39,7 +40,6 @@ import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -52,7 +52,7 @@ import java.util.Objects;
 /**
  * @author
  */
-@Singleton
+@Service
 public class DefaultPdcUtilizationService implements PdcUtilizationService,
     ComponentInstanceDeletion {
 

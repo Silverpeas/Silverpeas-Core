@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.workflow.engine.user;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.workflow.api.user.Replacement;
@@ -35,6 +36,7 @@ import java.util.Objects;
  * Implementation of the constructor of {@link Replacement} objects.
  * @author mmoquillon
  */
+@Service
 public class ReplacementConstructor implements Replacement.Constructor {
 
   private ReplacementImpl replacement;

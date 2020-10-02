@@ -1,7 +1,6 @@
 package org.silverpeas.core.webapi.variables;
 
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.variables.Variable;
 import org.silverpeas.core.variables.VariableScheduledValue;
 import org.silverpeas.core.webapi.base.RESTWebService;
@@ -20,8 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-@RequestScoped
+@WebService
 @Path(VariablesResource.PATH)
 @Authenticated
 public class VariablesResource extends RESTWebService {

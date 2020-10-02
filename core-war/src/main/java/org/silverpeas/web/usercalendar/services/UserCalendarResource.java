@@ -26,8 +26,7 @@ package org.silverpeas.web.usercalendar.services;
 
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.webapi.calendar.CalendarResource;
@@ -42,8 +41,7 @@ import static org.silverpeas.web.usercalendar.services.UserCalendarResource.USER
  * A REST Web resource giving calendar data.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(USER_CALENDAR_BASE_URI + "/{componentInstanceId}")
 @Authorized
 public class UserCalendarResource extends CalendarResource {
@@ -52,7 +50,7 @@ public class UserCalendarResource extends CalendarResource {
 
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) {
-    if (!PersonalComponentInstance.from(getComponentId()).isPresent() ||
+    if (PersonalComponentInstance.from(getComponentId()).isEmpty() ||
         User.getCurrentRequester() == null || User.getCurrentRequester().isAnonymous()) {
       throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }

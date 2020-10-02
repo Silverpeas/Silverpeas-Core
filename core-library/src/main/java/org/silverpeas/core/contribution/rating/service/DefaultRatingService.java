@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.rating.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.contribution.rating.model.Rating;
@@ -38,6 +39,7 @@ import java.util.Map;
 
 @Transactional
 @Singleton
+@Service
 public class DefaultRatingService implements RatingService, ComponentInstanceDeletion {
 
   @Inject

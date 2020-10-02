@@ -1,29 +1,11 @@
-/*
- * Copyright (C) 2000 - 2020 Silverpeas
+/* @(#)CMYJKJPEGImageReader.java
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (c) 2010-2011 Werner Randelshofer, Switzerland.
+ * You may only use this file in compliance with the accompanying license terms.
  */
 package org.monte.media.jpeg;
 
-import com.sun.imageio.plugins.jpeg.JPEGImageReader;
+import org.monte.media.color.ICCPackedColorModel;
 import org.monte.media.io.ByteArrayImageInputStream;
 import org.monte.media.io.ImageInputStreamAdapter;
 
@@ -39,9 +21,9 @@ import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
 import java.awt.image.ColorModel;
-import java.awt.image.DataBuffer;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
 import java.awt.image.DirectColorModel;
 import java.awt.image.PixelInterleavedSampleModel;
@@ -52,25 +34,44 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.IntStream;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 /**
  * Reads a JPEG image with colors in the CMYK color space.
  *
  * @author Werner Randelshofer
- * @version $Id: CMYKJPEGImageReader.java 176 2012-03-15 13:02:19Z werner $
+ * @version $Id: CMYKJPEGImageReader.java 351 2016-10-23 15:15:55Z werner $
  */
 public class CMYKJPEGImageReader extends ImageReader {
 
-  private boolean isYCCKInversed = true;
-  private static DirectColorModel RGB = new DirectColorModel(24, 0xff0000, 0xff00, 0xff, 0x0);
+  private boolean isIgnoreICCProfile = false;
+  /**
+   * In JPEG files, YCCK and CMYK values are typically stored as inverted
+   * values.
+   */
+  private boolean isInvertColors = true;
+  private static final DirectColorModel RGB = new DirectColorModel(24, 0xff0000, 0xff00, 0xff);
   /**
    * When we read the header, we read the whole image.
    */
   private BufferedImage image;
+
+  /**
+   * This value is set to true, when we returned the image.
+   */
+  private boolean didReturnImage;
+
+  public CMYKJPEGImageReader() {
+    this(new CMYKJPEGImageReaderSpi());
+  }
 
   public CMYKJPEGImageReader(ImageReaderSpi originatingProvider) {
     super(originatingProvider);
@@ -97,8 +98,7 @@ public class CMYKJPEGImageReader extends ImageReader {
   public Iterator<ImageTypeSpecifier> getImageTypes(int imageIndex) throws IOException {
     readHeader();
     LinkedList<ImageTypeSpecifier> l = new LinkedList<ImageTypeSpecifier>();
-    l.add(new ImageTypeSpecifier(RGB, RGB.createCompatibleSampleModel(image.getWidth(), image
-      .getHeight())));
+    l.add(new ImageTypeSpecifier(RGB, RGB.createCompatibleSampleModel(image.getWidth(), image.getHeight())));
     return l.iterator();
   }
 
@@ -118,6 +118,7 @@ public class CMYKJPEGImageReader extends ImageReader {
       throw new IndexOutOfBoundsException();
     }
     readHeader();
+    didReturnImage = true;
     return image;
   }
 
@@ -129,6 +130,11 @@ public class CMYKJPEGImageReader extends ImageReader {
 
       ImageInputStream iis = null;
       Object in = getInput();
+      /* No need for JMF support in CMYKJPEGImageReader.
+             if (in instanceof Buffer) {
+             in = ((Buffer) in).getData();
+             }*/
+
       if (in instanceof byte[]) {
         iis = new ByteArrayImageInputStream((byte[]) in);
       } else if (in instanceof ImageInputStream) {
@@ -138,29 +144,36 @@ public class CMYKJPEGImageReader extends ImageReader {
       } else {
         throw new IOException("Can't handle input of type " + in);
       }
-      image = read(iis, isYCCKInversed);
+      didReturnImage = false;
+      image = read(iis, isInvertColors, isIgnoreICCProfile);
     }
   }
 
   /**
    * @return the YCCKInversed property.
    */
-  public boolean isYCCKInversed() {
-    return isYCCKInversed;
+  public boolean isInvertColors() {
+    return isInvertColors;
   }
 
   /**
    * @param newValue the new value
    */
-  public void setYCCKInversed(boolean newValue) {
-    this.isYCCKInversed = newValue;
+  public void setInvertColors(boolean newValue) {
+    this.isInvertColors = newValue;
   }
 
-  public static BufferedImage read(ImageInputStream in, boolean inverseYCCKColors) throws
-    IOException {
+  public boolean isIgnoreICCProfile() {
+    return isIgnoreICCProfile;
+  }
+
+  public void setIgnoreICCProfile(boolean newValue) {
+    this.isIgnoreICCProfile = newValue;
+  }
+
+  public static BufferedImage read(ImageInputStream in, boolean inverseYCCKColors, boolean isIgnoreColorProfile) throws IOException {
     // Seek to start of input stream
     in.seek(0);
-
 
     // Extract metadata from the JFIF stream.
     // --------------------------------------
@@ -174,12 +187,11 @@ public class CMYKJPEGImageReader extends ImageReader {
     // Browse for marker segments, and extract data from those
     // which are of interest.
     JFIFInputStream fifi = new JFIFInputStream(new ImageInputStreamAdapter(in));
-    for (JFIFInputStream.Segment seg = fifi.getNextSegment(); seg != null; seg = fifi
-        .getNextSegment()) {
+    for (JFIFInputStream.Segment seg = fifi.getNextSegment(); seg != null; seg = fifi.getNextSegment()) {
       if (0xffc0 <= seg.marker && seg.marker <= 0xffc3
-        || 0xffc5 <= seg.marker && seg.marker <= 0xffc7
-        || 0xffc9 <= seg.marker && seg.marker <= 0xffcb
-        || 0xffcd <= seg.marker && seg.marker <= 0xffcf) {
+          || 0xffc5 <= seg.marker && seg.marker <= 0xffc7
+          || 0xffc9 <= seg.marker && seg.marker <= 0xffcb
+          || 0xffcd <= seg.marker && seg.marker <= 0xffcf) {
         // SOF0 - SOF15: Start of Frame Header marker segment
         DataInputStream dis = new DataInputStream(fifi);
         samplePrecision = dis.readUnsignedByte();
@@ -187,7 +199,7 @@ public class CMYKJPEGImageReader extends ImageReader {
         numberOfSamplesPerLine = dis.readUnsignedShort();
         numberOfComponentsInFrame = dis.readUnsignedByte();
         // ...the rest of SOF header is not important to us.
-        // In fact, by encounterint a SOF header, we have reached
+        // In fact, by encountering a SOF header, we have reached
         // the end of the metadata section we are interested in.
         // Thus we can abort here.
         break;
@@ -203,7 +215,7 @@ public class CMYKJPEGImageReader extends ImageReader {
 
             // Read Adobe ICC_PROFILE int buffer. The profile is split up over
             // multiple APP2 marker segments.
-            byte[] b = new byte[512];
+            byte[] b = new byte[1024];
             for (int count = dis.read(b); count != -1; count = dis.read(b)) {
               app2ICCProfile.write(b, 0, count);
             }
@@ -228,45 +240,53 @@ public class CMYKJPEGImageReader extends ImageReader {
     // Read the image data
     BufferedImage img = null;
     if (numberOfComponentsInFrame != 4) {
-      // Read image with YUV color encoding.
+      // Read image with YCC color encoding.
       in.seek(0);
-      img = readImageFromYUVorGray(in);
+//            img = readImageFromYCCorGray(in);
+      img = readRGBImageFromYCC(new ImageInputStreamAdapter(in), null);
     } else if (numberOfComponentsInFrame == 4) {
 
       // Try to instantiate an ICC_Profile from the app2ICCProfile
       ICC_Profile profile = null;
-      if (app2ICCProfile.size() > 0) {
+      if (!isIgnoreColorProfile && app2ICCProfile.size() > 0) {
         try {
           profile = ICC_Profile.getInstance(new ByteArrayInputStream(app2ICCProfile.toByteArray()));
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
           // icc profile is corrupt
-          Logger.getLogger(CMYKJPEGImageReader.class.getName())
-              .log(Level.SEVERE, ex.getMessage(), ex);
+          ex.printStackTrace();
         }
       }
 
-      // In case of failure, use a Generic CMYK profile
-      if (profile == null) {
-        profile = ICC_Profile.getInstance(CMYKJPEGImageReader.class.getResourceAsStream(
-          "Generic CMYK Profile.icc"));
-      }
       switch (app14AdobeColorTransform) {
         case 0:
         default:
-          // Read image with RGBA color encoding.
+          // Read image with RGBW color encoding.
           in.seek(0);
-          img = readRGBAImageFromRGBA(new ImageInputStreamAdapter(in), profile);
+
+          if (inverseYCCKColors) {
+            img = readImageFromInvertedCMYK(new ImageInputStreamAdapter(in), profile);
+          } else {
+            img = readImageFromCMYK(new ImageInputStreamAdapter(in), profile);
+          }
           break;
         case 1:
           throw new IOException("YCbCr not supported");
         case 2:
           // Read image with inverted YCCK color encoding.
-          // FIXME - How do we determine from the JFIF file whether YCCK colors are inverted?
+          // FIXME - How do we determine from the JFIF file whether
+          // YCCK colors are inverted?
+
+          // We must have a color profile in order to perform a
+          // conersion from CMYK to RGB.
+          // I case none has been supplied, we create a default one here.
+          if (profile == null) {
+            profile = ICC_Profile.getInstance(CMYKJPEGImageReader.class.getResourceAsStream("Generic CMYK Profile.icc"));
+          }
           in.seek(0);
           if (inverseYCCKColors) {
-            img = readRGBImageFromInvertedYCCK(new ImageInputStreamAdapter(in), profile);
+            img = readImageFromInvertedYCCK(new ImageInputStreamAdapter(in), profile);
           } else {
-            img = readRGBImageFromYCCK(new ImageInputStreamAdapter(in), profile);
+            img = readImageFromYCCK(new ImageInputStreamAdapter(in), profile);
           }
           break;
       }
@@ -276,219 +296,234 @@ public class CMYKJPEGImageReader extends ImageReader {
   }
 
   private static ImageReader createNativeJPEGReader() {
-    return new JPEGImageReader(new CMYKJPEGImageReaderSpi());
+    for (ImageReader r : (Iterable<ImageReader>) () -> ImageIO.getImageReadersByFormatName("jpeg")) {
+      if ("com.sun.imageio.plugins.jpeg.JPEGImageReader".equals(r.getClass().getName())) {
+        return r;
+      }
+    }
+    throw new InternalError("could not find native JPEG Reader");
   }
 
   /**
-   * Reads a CMYK JPEG image from the provided InputStream, converting the colors to RGB using the
-   * provided CMYK ICC_Profile. The image data must be in the CMYK color space. <p> Use this method,
-   * if you have already determined that the input stream contains a CMYK JPEG image.
+   * Reads a CMYK JPEG image from the provided InputStream, converting the
+   * colors to RGB using the provided CMYK ICC_Profile. The image data must be
+   * in the CMYK color space.
+   * <p>
+   * Use this method, if you have already determined that the input stream
+   * contains a CMYK JPEG image.
    *
-   * @param in An InputStream, preferably an ImageInputStream, in the JPEG File Interchange Format
-   * (JFIF).
-   * @param cmykProfile An ICC_Profile for conversion from the CMYK color space to the RGB color
-   * space. If this parameter is null, a default profile is used.
-   * @return a BufferedImage containing the decoded image converted into the RGB color space.
-   * @throws java.io.IOException on error while reading the image
+   * @param in An InputStream, preferably an ImageInputStream, in the JPEG File
+   * Interchange Format (JFIF).
+   * @param cmykProfile An ICC_Profile for conversion from the CMYK color space
+   * to the RGB color space. If this parameter is null, a default profile is
+   * used.
+   * @return a BufferedImage containing the decoded image converted into the RGB
+   * color space.
+   * @throws java.io.IOException
    */
-  public static BufferedImage readRGBImageFromCMYK(InputStream in, ICC_Profile cmykProfile) throws
-    IOException {
+  public static BufferedImage readImageFromCMYK(InputStream in, ICC_Profile cmykProfile) throws IOException {
     ImageInputStream inputStream = null;
     ImageReader reader = createNativeJPEGReader();
-    inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO
-      .createImageInputStream(in);
-    reader.setInput(inputStream);
-    Raster raster = reader.readRaster(0, null);
-    BufferedImage image = createRGBImageFromCMYK(raster, cmykProfile);
-    return image;
+    try {
+      inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO.createImageInputStream(in);
+      reader.setInput(inputStream);
+      Raster raster = reader.readRaster(0, null);
+      BufferedImage image = createImageFromCMYK(raster, cmykProfile);
+      return image;
+    } finally {
+      reader.dispose();
+    }
   }
 
   /**
-   * Reads a RGBA JPEG image from the provided InputStream, converting the colors to RGBA using the
-   * provided RGBA ICC_Profile. The image data must be in the RGBA color space. <p> Use this method,
-   * if you have already determined that the input stream contains a RGBA JPEG image.
+   * Reads a RGBA JPEG image from the provided InputStream, converting the
+   * colors to RGBA using the provided RGBA ICC_Profile. The image data must be
+   * in the RGBA color space.
+   * <p>
+   * Use this method, if you have already determined that the input stream
+   * contains a RGBA JPEG image.
    *
-   * @param in An InputStream, preferably an ImageInputStream, in the JPEG File Interchange Format
-   * (JFIF).
-   * @param rgbaProfile An ICC_Profile for conversion from the RGBA color space to the RGBA color
-   * space. If this parameter is null, a default profile is used.
-   * @return a BufferedImage containing the decoded image converted into the RGB color space.
-   * @throws java.io.IOException on error while reading the image
+   * @param in An InputStream, preferably an ImageInputStream, in the JPEG File
+   * Interchange Format (JFIF).
+   * @param rgbaProfile An ICC_Profile for conversion from the RGBA color space
+   * to the RGBA color space. If this parameter is null, a default profile is
+   * used.
+   * @return a BufferedImage containing the decoded image converted into the RGB
+   * color space.
+   * @throws java.io.IOException
    */
-  public static BufferedImage readRGBAImageFromRGBA(InputStream in, ICC_Profile rgbaProfile) throws
-    IOException {
+  public static BufferedImage readImageFromInvertedCMYK(InputStream in, ICC_Profile rgbaProfile) throws IOException {
+    ImageInputStream inputStream = null;
     ImageReader reader = createNativeJPEGReader();
-    ImageInputStream inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO
-      .createImageInputStream(in);
-    reader.setInput(inputStream);
-    Raster raster = reader.readRaster(0, null);
-    BufferedImage image = createRGBAImageFromRGBA(raster, rgbaProfile);
-    return image;
+    try {
+      inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO.createImageInputStream(in);
+      reader.setInput(inputStream);
+      Raster raster = reader.readRaster(0, null);
+      BufferedImage image = createImageFromInvertedCMYK(raster, rgbaProfile);
+      return image;
+    } finally {
+      reader.dispose();
+    }
+  }
+
+  public static BufferedImage readImageFromRGB(InputStream in, ICC_Profile rgbaProfile) throws IOException {
+    ImageInputStream inputStream = null;
+    ImageReader reader = createNativeJPEGReader();
+    try {
+      inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO.createImageInputStream(in);
+      reader.setInput(inputStream);
+      Raster raster = reader.readRaster(0, null);
+      BufferedImage image = createImageFromRGB(raster, rgbaProfile);
+      return image;
+    } finally {
+      reader.dispose();
+    }
+  }
+
+  public static BufferedImage readRGBImageFromYCC(InputStream in, ICC_Profile rgbaProfile) throws IOException {
+    ImageInputStream inputStream = null;
+    ImageReader reader = createNativeJPEGReader();
+    try {
+      inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO.createImageInputStream(in);
+      reader.setInput(inputStream);
+      Raster raster = reader.readRaster(0, null);
+      BufferedImage image = createImageFromYCC(raster, rgbaProfile);
+      return image;
+    } finally {
+      reader.dispose();
+    }
   }
 
   /**
-   * Reads a YCCK JPEG image from the provided InputStream, converting the colors to RGB using the
-   * provided CMYK ICC_Profile. The image data must be in the YCCK color space. <p> Use this method,
-   * if you have already determined that the input stream contains a YCCK JPEG image.
+   * Reads a YCCK JPEG image from the provided InputStream, converting the
+   * colors to RGB using the provided CMYK ICC_Profile. The image data must be
+   * in the YCCK color space.
+   * <p>
+   * Use this method, if you have already determined that the input stream
+   * contains a YCCK JPEG image.
    *
-   * @param in An InputStream, preferably an ImageInputStream, in the JPEG File Interchange Format
-   * (JFIF).
-   * @param cmykProfile An ICC_Profile for conversion from the CMYK color space to the RGB color
-   * space. If this parameter is null, a default profile is used.
-   * @return a BufferedImage containing the decoded image converted into the RGB color space.
-   * @throws java.io.IOException on error while reading the image
+   * @param in An InputStream, preferably an ImageInputStream, in the JPEG File
+   * Interchange Format (JFIF).
+   * @param cmykProfile An ICC_Profile for conversion from the CMYK color space
+   * to the RGB color space. If this parameter is null, a default profile is
+   * used.
+   * @return a BufferedImage containing the decoded image converted into the RGB
+   * color space.
+   * @throws java.io.IOException
    */
-  public static BufferedImage readRGBImageFromYCCK(InputStream in, ICC_Profile cmykProfile) throws
-    IOException {
+  public static BufferedImage readImageFromYCCK(InputStream in, ICC_Profile cmykProfile) throws IOException {
+    ImageInputStream inputStream = null;
     ImageReader reader = createNativeJPEGReader();
-    ImageInputStream inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO
-      .createImageInputStream(in);
-    reader.setInput(inputStream);
-    Raster raster = reader.readRaster(0, null);
-    BufferedImage image = createRGBImageFromYCCK(raster, cmykProfile);
-    return image;
+    try {
+      inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO.createImageInputStream(in);
+      reader.setInput(inputStream);
+      Raster raster = reader.readRaster(0, null);
+      BufferedImage image = createImageFromYCCK(raster, cmykProfile);
+      return image;
+    } finally {
+      reader.dispose();
+    }
   }
 
   /**
-   * Reads an inverted-YCCK JPEG image from the provided InputStream, converting the colors to RGB
-   * using the provided CMYK ICC_Profile. The image data must be in the inverted-YCCK color space.
-   * <p> Use this method, if you have already determined that the input stream contains an
-   * inverted-YCCK JPEG image.
+   * Reads an inverted-YCCK JPEG image from the provided InputStream, converting
+   * the colors to RGB using the provided CMYK ICC_Profile. The image data must
+   * be in the inverted-YCCK color space.
+   * <p>
+   * Use this method, if you have already determined that the input stream
+   * contains an inverted-YCCK JPEG image.
    *
-   * @param in An InputStream, preferably an ImageInputStream, in the JPEG File Interchange Format
-   * (JFIF).
-   * @param cmykProfile An ICC_Profile for conversion from the CMYK color space to the RGB color
-   * space. If this parameter is null, a default profile is used.
-   * @return a BufferedImage containing the decoded image converted into the RGB color space.
-   * @throws java.io.IOException on error while reading the image
+   * @param in An InputStream, preferably an ImageInputStream, in the JPEG File
+   * Interchange Format (JFIF).
+   * @param cmykProfile An ICC_Profile for conversion from the CMYK color space
+   * to the RGB color space. If this parameter is null, a default profile is
+   * used.
+   * @return a BufferedImage containing the decoded image converted into the RGB
+   * color space.
+   * @throws java.io.IOException
    */
-  public static BufferedImage readRGBImageFromInvertedYCCK(InputStream in, ICC_Profile cmykProfile)
-    throws IOException {
+  public static BufferedImage readImageFromInvertedYCCK(InputStream in, ICC_Profile cmykProfile) throws IOException {
+    ImageInputStream inputStream = null;
     ImageReader reader = createNativeJPEGReader();
-    ImageInputStream inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO
-      .createImageInputStream(in);
-    reader.setInput(inputStream);
-    Raster raster = reader.readRaster(0, null);
-    raster = convertInvertedYCCKToCMYK(raster);
-    BufferedImage image = createRGBImageFromCMYK(raster, cmykProfile);
-    return image;
+    try {
+      inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO.createImageInputStream(in);
+      reader.setInput(inputStream);
+      Raster raster = reader.readRaster(0, null);
+      BufferedImage image = createImageFromInvertedYCCK(raster, cmykProfile);
+      return image;
+    } finally {
+      reader.dispose();
+    }
   }
 
   /**
-   * Creates a buffered image from a raster in the YCCK color space, converting the colors to RGB
-   * using the provided CMYK ICC_Profile.
+   * Creates a buffered image from a raster in the YCCK color space, converting
+   * the colors to RGB using the provided CMYK ICC_Profile.
    *
    * @param ycckRaster A raster with (at least) 4 bands of samples.
-   * @param cmykProfile An ICC_Profile for conversion from the CMYK color space to the RGB color
-   * space. If this parameter is null, a default profile is used.
+   * @param cmykProfile An ICC_Profile for conversion from the CMYK color space
+   * to the RGB color space. If this parameter is null, a default profile is
+   * used.
    * @return a BufferedImage in the RGB color space.
-   * @throws NullPointerException on error while creating the image
+   * @throws NullPointerException
    */
-  public static BufferedImage createRGBImageFromYCCK(Raster ycckRaster, ICC_Profile cmykProfile) {
-    BufferedImage image;
-    if (cmykProfile != null) {
-      ycckRaster = convertYCCKtoCMYK(ycckRaster);
-      image = createRGBImageFromCMYK(ycckRaster, cmykProfile);
-    } else {
-      int w = ycckRaster.getWidth(), h = ycckRaster.getHeight();
-      int[] rgb = new int[w * h];
-      int[] Y = ycckRaster.getSamples(0, 0, w, h, 0, (int[]) null);
-      int[] Cb = ycckRaster.getSamples(0, 0, w, h, 1, (int[]) null);
-      int[] Cr = ycckRaster.getSamples(0, 0, w, h, 2, (int[]) null);
-      int[] K = ycckRaster.getSamples(0, 0, w, h, 3, (int[]) null);
-      float vr, vg, vb;
-      for (int i = 0, imax = Y.length; i < imax; i++) {
-        float k = K[i], y = Y[i], cb = Cb[i], cr = Cr[i];
-        vr = y + 1.402f * (cr - 128) - k;
-        vg = y - 0.34414f * (cb - 128) - 0.71414f * (cr - 128) - k;
-        vb = y + 1.772f * (cb - 128) - k;
-        rgb[i] = (0xff & (vr < 0.0f ? 0 : vr > 255.0f ? 0xff : (int) (vr + 0.5f))) << 16
-          | (0xff & (vg < 0.0f ? 0 : vg > 255.0f ? 0xff : (int) (vg + 0.5f))) << 8
-          | (0xff & (vb < 0.0f ? 0 : vb > 255.0f ? 0xff : (int) (vb + 0.5f)));
-      }
-      Raster rgbRaster = Raster.createPackedRaster(new DataBufferInt(rgb, rgb.length),
-        w, h, w, new int[]{0xff0000, 0xff00, 0xff}, null);
-      ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-      ColorModel cm = new DirectColorModel(cs, 24, 0xff0000, 0xff00, 0xff, 0x0, false,
-        DataBuffer.TYPE_INT);
-
-      image = new BufferedImage(cm, (WritableRaster) rgbRaster, true, null);
-    }
-    return image;
+  public static BufferedImage createImageFromYCCK(Raster ycckRaster, ICC_Profile cmykProfile) {
+    return createImageFromCMYK(convertYCCKtoCMYK(ycckRaster), cmykProfile);
   }
 
   /**
-   * Creates a buffered image from a raster in the inverted YCCK color space, converting the colors
-   * to RGB using the provided CMYK ICC_Profile.
+   * Creates a buffered image from a raster in the inverted YCCK color space,
+   * converting the colors to RGB using the provided CMYK ICC_Profile.
    *
    * @param ycckRaster A raster with (at least) 4 bands of samples.
-   * @param cmykProfile An ICC_Profile for conversion from the CMYK color space to the RGB color
-   * space. If this parameter is null, a default profile is used.
+   * @param cmykProfile An ICC_Profile for conversion from the CMYK color space
+   * to the RGB color space. If this parameter is null, a default profile is
+   * used.
    * @return a BufferedImage in the RGB color space.
    */
-  public static BufferedImage createRGBImageFromInvertedYCCK(Raster ycckRaster,
-    ICC_Profile cmykProfile) {
-    BufferedImage image;
-    if (cmykProfile != null) {
-      ycckRaster = convertInvertedYCCKToCMYK(ycckRaster);
-      image = createRGBImageFromCMYK(ycckRaster, cmykProfile);
-    } else {
-      int w = ycckRaster.getWidth(), h = ycckRaster.getHeight();
-      int[] rgb = new int[w * h];
-
-      PixelInterleavedSampleModel pix;
-      // if (Adobe_APP14 and transform==2) then YCCK else CMYK
-      int[] Y = ycckRaster.getSamples(0, 0, w, h, 0, (int[]) null);
-      int[] Cb = ycckRaster.getSamples(0, 0, w, h, 1, (int[]) null);
-      int[] Cr = ycckRaster.getSamples(0, 0, w, h, 2, (int[]) null);
-      int[] K = ycckRaster.getSamples(0, 0, w, h, 3, (int[]) null);
-      float vr, vg, vb;
-      for (int i = 0, imax = Y.length; i < imax; i++) {
-        float k = 255 - K[i], y = 255 - Y[i], cb = 255 - Cb[i], cr = 255 - Cr[i];
-        vr = y + 1.402f * (cr - 128) - k;
-        vg = y - 0.34414f * (cb - 128) - 0.71414f * (cr - 128) - k;
-        vb = y + 1.772f * (cb - 128) - k;
-        rgb[i] = (0xff & (vr < 0.0f ? 0 : vr > 255.0f ? 0xff : (int) (vr + 0.5f))) << 16
-          | (0xff & (vg < 0.0f ? 0 : vg > 255.0f ? 0xff : (int) (vg + 0.5f))) << 8
-          | (0xff & (vb < 0.0f ? 0 : vb > 255.0f ? 0xff : (int) (vb + 0.5f)));
-      }
-
-      Raster rgbRaster = Raster.createPackedRaster(new DataBufferInt(rgb, rgb.length),
-        w, h, w, new int[]{0xff0000, 0xff00, 0xff}, null);
-      ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-      ColorModel cm = new DirectColorModel(cs, 24, 0xff0000, 0xff00, 0xff, 0x0, false,
-        DataBuffer.TYPE_INT);
-      image = new BufferedImage(cm, (WritableRaster) rgbRaster, true, null);
-    }
-    return image;
+  public static BufferedImage createImageFromInvertedYCCK(Raster ycckRaster, ICC_Profile cmykProfile) {
+    return createImageFromCMYK(convertInvertedYCCKToCMYK(ycckRaster), cmykProfile);
   }
 
   /**
-   * Creates a buffered image from a raster in the CMYK color space, converting the colors to RGB
-   * using the provided CMYK ICC_Profile.
+   * Creates a buffered image from a raster in the color space specified by the
+   * given ICC_Profile.
    *
-   * As seen from a comment made by 'phelps' at
-   * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4799903
-   *
-   * @param cmykRaster A raster with (at least) 4 bands of samples.
-   * @param cmykProfile An ICC_Profile for conversion from the CMYK color space to the RGB color
-   * space. If this parameter is null, a default profile is used.
-   * @return a BufferedImage in the RGB color space.
+   * @param raster A raster.
+   * @param profile An ICC_Profile specifying the color space of the raster.
+   * @return a BufferedImage in the color space specified by the profile.
    */
-  public static BufferedImage createRGBImageFromCMYK(Raster cmykRaster, ICC_Profile cmykProfile) {
-    BufferedImage image;
-    int w = cmykRaster.getWidth();
-    int h = cmykRaster.getHeight();
+  public static BufferedImage createImageFromICCProfile(Raster raster, ICC_Profile profile) {
+    ICC_ColorSpace cs = new ICC_ColorSpace(profile);
+    WritableRaster r = (WritableRaster) raster;
+
+    ColorModel cm;
+    if (raster.getSampleModel() instanceof PixelInterleavedSampleModel) {
+      cm = new ComponentColorModel(cs, false, false, ColorModel.OPAQUE, raster.getTransferType());
+
+    } else {
+      cm = new ICCPackedColorModel(cs, raster);
+    }
+    return new BufferedImage(cm, (WritableRaster) raster, cm.isAlphaPremultiplied(), null);
+  }
+
+  public static BufferedImage createImageFromCMYK(Raster cmykRaster, ICC_Profile cmykProfile) {
+    if (cmykProfile == null) {
+      try {
+        cmykProfile = ICC_Profile.getInstance(CMYKJPEGImageReader.class.getResourceAsStream("Generic CMYK Profile.icc"));
+      } catch (IOException ex) {
+        System.err.println("" + CMYKJPEGImageReader.class + " resource missing: Generic CMYK Profile.icc");
+      }
+    }
 
     if (cmykProfile != null) {
-      ColorSpace cmykCS = new ICC_ColorSpace(cmykProfile);
-      image = new BufferedImage(w, h,
-        BufferedImage.TYPE_INT_RGB);
-      WritableRaster rgbRaster = image.getRaster();
-      ColorSpace rgbCS = image.getColorModel().getColorSpace();
-      ColorConvertOp cmykToRgb = new ColorConvertOp(cmykCS, rgbCS, null);
-      cmykToRgb.filter(cmykRaster, rgbRaster);
+      return createImageFromICCProfile(cmykRaster, cmykProfile);
     } else {
+      // => There is no color profile.
+      // Convert image to RGB using a simple conversion algorithm.
+
+      int w = cmykRaster.getWidth();
+      int h = cmykRaster.getHeight();
 
       int[] rgb = new int[w * h];
 
@@ -497,74 +532,167 @@ public class CMYKJPEGImageReader extends ImageReader {
       int[] Y = cmykRaster.getSamples(0, 0, w, h, 2, (int[]) null);
       int[] K = cmykRaster.getSamples(0, 0, w, h, 3, (int[]) null);
 
-      for (int i = 0, imax = C.length; i < imax; i++) {
-        int k = K[i];
-        rgb[i] = (255 - Math.min(255, C[i] + k)) << 16
-          | (255 - Math.min(255, M[i] + k)) << 8
-          | (255 - Math.min(255, Y[i] + k));
-      }
-
-      Raster rgbRaster = Raster.createPackedRaster(new DataBufferInt(rgb, rgb.length),
-        w, h, w, new int[]{0xff0000, 0xff00, 0xff}, null);
+      // Split the rgb array into bands and process each band in parallel.
+      // for (int i=0;i<rgb.length;i++) {
+      final int BSIZE = 4096;
+      IntStream.range(0, (rgb.length + BSIZE - 1) / BSIZE).parallel().parallel().forEach(band -> {
+        for (int i = band * BSIZE, m = Math.min(band * BSIZE + BSIZE, rgb.length); i < m; i++) {
+          int k = K[i];
+          rgb[i] = (255 - min(255, C[i] + k)) << 16
+              | (255 - min(255, M[i] + k)) << 8
+              | (255 - min(255, Y[i] + k));
+        }
+      });
+      Hashtable<Object, Object> properties = new Hashtable<Object, Object>();
+      Raster rgbRaster = Raster.createPackedRaster(
+          new DataBufferInt(rgb, rgb.length),
+          w, h, w, new int[]{0xff0000, 0xff00, 0xff}, null);
       ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-      ColorModel cm = new DirectColorModel(cs, 24, 0xff0000, 0xff00, 0xff, 0x0, false,
-        DataBuffer.TYPE_INT);
-      image = new BufferedImage(cm, (WritableRaster) rgbRaster, true, null);
+      ColorModel cm = RGB;//new DirectColorModel(cs, 24, 0xff0000, 0xff00, 0xff, 0x0, false, DataBuffer.TYPE_INT);
+      return new BufferedImage(cm, (WritableRaster) rgbRaster, cm.isAlphaPremultiplied(), properties);
     }
-    return image;
   }
 
   /**
-   * Creates a buffered image from a raster in the RGBA color space, converting the colors to RGB
-   * using the provided CMYK ICC_Profile.
+   * Creates a buffered image from a raster in the RGBW color space.
    *
    * As seen from a comment made by 'phelps' at
    * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4799903
    *
-   * @param rgbaRaster A raster with (at least) 4 bands of samples.
-   * @param rgbaProfile An ICC_Profile for conversion from the CMYK color space to the RGB color
-   * space. If this parameter is null, a default profile is used.
+   * @param rgbwRaster A raster with inverted CMYK values (=RGBW).
+   * @param cmykProfile An ICC_Profile. If this parameter is null, a default
+   * profile is used.
    * @return a BufferedImage in the RGB color space.
    */
-  public static BufferedImage createRGBAImageFromRGBA(Raster rgbaRaster, ICC_Profile rgbaProfile) {
-    BufferedImage image;
-    int w = rgbaRaster.getWidth();
-    int h = rgbaRaster.getHeight();
+  public static BufferedImage createImageFromInvertedCMYK(Raster rgbwRaster, ICC_Profile cmykProfile) {
+    int w = rgbwRaster.getWidth();
+    int h = rgbwRaster.getHeight();
 
-    // ICC_Profile currently not supported
-    rgbaProfile = null;
-    if (rgbaProfile != null) {
-      ColorSpace rgbaCS = new ICC_ColorSpace(rgbaProfile);
-      image = new BufferedImage(w, h,
-        BufferedImage.TYPE_INT_RGB);
-      WritableRaster rgbRaster = image.getRaster();
-      ColorSpace rgbCS = image.getColorModel().getColorSpace();
-      ColorConvertOp cmykToRgb = new ColorConvertOp(rgbaCS, rgbCS, null);
-      cmykToRgb.filter(rgbaRaster, rgbRaster);
-    } else {
-
+    try {
+      CompletableFuture<int[]> cfR = CompletableFuture.supplyAsync(() -> rgbwRaster.getSamples(0, 0, w, h, 0, (int[]) null));
+      CompletableFuture<int[]> cfG = CompletableFuture.supplyAsync(() -> rgbwRaster.getSamples(0, 0, w, h, 1, (int[]) null));
+      CompletableFuture<int[]> cfB = CompletableFuture.supplyAsync(() -> rgbwRaster.getSamples(0, 0, w, h, 2, (int[]) null));
+      CompletableFuture<int[]> cfW = CompletableFuture.supplyAsync(() -> rgbwRaster.getSamples(0, 0, w, h, 3, (int[]) null));
       int[] rgb = new int[w * h];
+      int[] R = cfR.get();
+      int[] G = cfG.get();
+      int[] B = cfB.get();
+      int[] W = cfW.get();
 
-      int[] R = rgbaRaster.getSamples(0, 0, w, h, 0, (int[]) null);
-      int[] G = rgbaRaster.getSamples(0, 0, w, h, 1, (int[]) null);
-      int[] B = rgbaRaster.getSamples(0, 0, w, h, 2, (int[]) null);
-      int[] A = rgbaRaster.getSamples(0, 0, w, h, 3, (int[]) null);
+      // Split the rgb array into bands and process each band in parallel.
+      // for (int i=0;i<rgb.length;i++) {
+      final int BSIZE = 4096;
+      IntStream.range(0, (rgb.length + BSIZE - 1) / BSIZE).parallel().parallel().forEach(band -> {
+        for (int i = band * BSIZE, m = Math.min(band * BSIZE + BSIZE, rgb.length); i < m; i++) {
+          rgb[i] = (255 - W[i]) << 24 | (255 - R[i]) << 16 | (255 - G[i]) << 8 | (255 - B[i]) << 0;
+        }
+      });
 
-      for (int i = 0, imax = R.length; i < imax; i++) {
-        rgb[i] = A[i] << 24 | R[i] << 16 | G[i] << 8 | B[i];
-      }
-
-      Raster rgbRaster = Raster.createPackedRaster(new DataBufferInt(rgb, rgb.length),
-        w, h, w, new int[]{0xff0000, 0xff00, 0xff, 0xff000000}, null);
-      ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-      ColorModel cm = new DirectColorModel(cs, 32, 0xff0000, 0xff00, 0xff, 0x0ff000000, false,
-        DataBuffer.TYPE_INT);
-      image = new BufferedImage(cm, (WritableRaster) rgbRaster, true, null);
+      Raster packedRaster = Raster.createPackedRaster(
+          new DataBufferInt(rgb, rgb.length),
+          w, h, w, new int[]{0xff0000, 0xff00, 0xff, 0xff000000}, null);
+      return createImageFromCMYK(packedRaster, cmykProfile);
+    } catch (ExecutionException | InterruptedException e) {
+      throw new InternalError(e);
     }
-    return image;
+  }
+
+  public static BufferedImage createImageFromRGB(Raster rgbRaster, ICC_Profile rgbProfile) {
+    if (rgbProfile != null) {
+      return createImageFromICCProfile(rgbRaster, rgbProfile);
+    } else {
+      BufferedImage image;
+      int w = rgbRaster.getWidth();
+      int h = rgbRaster.getHeight();
+
+      try {
+        CompletableFuture<int[]> cfR = CompletableFuture.supplyAsync(() -> rgbRaster.getSamples(0, 0, w, h, 0, (int[]) null));
+        CompletableFuture<int[]> cfG = CompletableFuture.supplyAsync(() -> rgbRaster.getSamples(0, 0, w, h, 1, (int[]) null));
+        CompletableFuture<int[]> cfB = CompletableFuture.supplyAsync(() -> rgbRaster.getSamples(0, 0, w, h, 2, (int[]) null));
+        int[] rgb = new int[w * h];
+        int[] R = cfR.get();
+        int[] G = cfG.get();
+        int[] B = cfB.get();
+
+        // Split the rgb array into bands and process each band in parallel.
+        // for (int i=0;i<rgb.length;i++) {
+        final int BSIZE = 4096;
+        IntStream.range(0, (rgb.length + BSIZE - 1) / BSIZE).parallel().parallel().forEach(band -> {
+          for (int i = band * BSIZE, m = Math.min(band * BSIZE + BSIZE, rgb.length); i < m; i++) {
+            rgb[i] = 0xff << 24 | R[i] << 16 | G[i] << 8 | B[i];
+          }
+        });
+
+        WritableRaster packedRaster = Raster.createPackedRaster(
+            new DataBufferInt(rgb, rgb.length),
+            w, h, w, new int[]{0xff0000, 0xff00, 0xff, 0xff000000}, null);
+        ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        ColorModel cm = ColorModel.getRGBdefault();//new DirectColorModel(cs, 32, 0xff0000, 0xff00, 0xff, 0x0ff000000, false, DataBuffer.TYPE_INT);
+        Hashtable<Object, Object> properties = new Hashtable<Object, Object>();
+        return new BufferedImage(cm, packedRaster, cm.isAlphaPremultiplied(), properties);
+      } catch (ExecutionException | InterruptedException e) {
+        throw new InternalError(e);
+      }
+    }
+  }
+
+  public static BufferedImage createImageFromYCC(Raster yccRaster, ICC_Profile yccProfile) {
+    if (yccProfile != null) {
+      return createImageFromICCProfile(yccRaster, yccProfile);
+    } else {
+      BufferedImage image;
+      int w = yccRaster.getWidth();
+      int h = yccRaster.getHeight();
+
+      try {
+        CompletableFuture<int[]> cfY = CompletableFuture.supplyAsync(() -> yccRaster.getSamples(0, 0, w, h, 0, (int[]) null));
+        CompletableFuture<int[]> cfCb = CompletableFuture.supplyAsync(() -> yccRaster.getSamples(0, 0, w, h, 1, (int[]) null));
+        CompletableFuture<int[]> cfCr = CompletableFuture.supplyAsync(() -> yccRaster.getSamples(0, 0, w, h, 2, (int[]) null));
+        int[] rgb = new int[w * h];
+        int[] Y = cfY.get();
+        int[] Cb = cfCb.get();
+        int[] Cr = cfCr.get();
+
+        // Split the rgb array into bands and process each band in parallel.
+        // for (int i=0;i<rgb.length;i++) {
+        final int BSIZE = 4096;
+        IntStream.range(0, (rgb.length + BSIZE - 1) / BSIZE).parallel().parallel().forEach(band -> {
+          for (int i = band * BSIZE, m = Math.min(band * BSIZE + BSIZE, rgb.length); i < m; i++) {
+            int Yi, Cbi, Cri;
+            int R, G, B;
+
+            //RGB can be computed directly from YCbCr (256 levels) as follows:
+            //R = Y + 1.402 (Cr-128)
+            //G = Y - 0.34414 (Cb-128) - 0.71414 (Cr-128)
+            //B = Y + 1.772 (Cb-128)
+            Yi = Y[i];
+            Cbi = Cb[i];
+            Cri = Cr[i];
+            R = (1000 * Yi + 1402 * (Cri - 128)) / 1000;
+            G = (100000 * Yi - 34414 * (Cbi - 128) - 71414 * (Cri - 128)) / 100000;
+            B = (1000 * Yi + 1772 * (Cbi - 128)) / 1000;
+
+            R = min(255, max(0, R));
+            G = min(255, max(0, G));
+            B = min(255, max(0, B));
+
+            rgb[i] = 0xff << 24 | R << 16 | G << 8 | B;
+          }
+        });
+        Hashtable<Object, Object> properties = new Hashtable<>();
+        Raster rgbRaster = Raster.createPackedRaster(
+            new DataBufferInt(rgb, rgb.length),
+            w, h, w, new int[]{0xff0000, 0xff00, 0xff, 0xff000000}, null);
+        ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        ColorModel cm = ColorModel.getRGBdefault();//new DirectColorModel(cs, 32, 0xff0000, 0xff00, 0xff, 0x0ff000000, false, DataBuffer.TYPE_INT);
+        return new BufferedImage(cm, (WritableRaster) rgbRaster, cm.isAlphaPremultiplied(), properties);
+      } catch (ExecutionException | InterruptedException e) {
+        throw new InternalError(e);
+      }
+    }
   }
   /**
-   * Define tables for YCC->RGB colorspace conversion.
+   * Define tables for YCC->RGB color space conversion.
    */
   private final static int SCALEBITS = 16;
   private final static int MAXJSAMPLE = 255;
@@ -581,16 +709,16 @@ public class CMYKJPEGImageReader extends ImageReader {
   private static synchronized void buildYCCtoRGBtable() {
     if (Cr_r_tab[0] == 0) {
       for (int i = 0, x = -CENTERJSAMPLE; i <= MAXJSAMPLE; i++, x++) {
-        /* i is the actual input pixel value, in the range 0..MAXJSAMPLE */
-        /* The Cb or Cr value we are thinking of is x = i - CENTERJSAMPLE */
-        /* Cr=>R value is nearest int to 1.40200 * x */
+        // i is the actual input pixel value, in the range 0..MAXJSAMPLE/
+        // The Cb or Cr value we are thinking of is x = i - CENTERJSAMPLE
+        // Cr=>R value is nearest int to 1.40200 * x
         Cr_r_tab[i] = (int) ((1.40200 * (1 << SCALEBITS) + 0.5) * x + ONE_HALF) >> SCALEBITS;
-        /* Cb=>B value is nearest int to 1.77200 * x */
+        // Cb=>B value is nearest int to 1.77200 * x
         Cb_b_tab[i] = (int) ((1.77200 * (1 << SCALEBITS) + 0.5) * x + ONE_HALF) >> SCALEBITS;
-        /* Cr=>G value is scaled-up -0.71414 * x */
+        // Cr=>G value is scaled-up -0.71414 * x
         Cr_g_tab[i] = -(int) (0.71414 * (1 << SCALEBITS) + 0.5) * x;
-        /* Cb=>G value is scaled-up -0.34414 * x */
-        /* We also add in ONE_HALF so that need not do it in inner loop */
+        // Cb=>G value is scaled-up -0.34414 * x
+        // We also add in ONE_HALF so that need not do it in inner loop
         Cb_g_tab[i] = -(int) ((0.34414) * (1 << SCALEBITS) + 0.5) * x + ONE_HALF;
       }
     }
@@ -598,91 +726,237 @@ public class CMYKJPEGImageReader extends ImageReader {
 
   /*
    * Adobe-style YCCK->CMYK conversion.
-   * We convert YCbCr to R=1-C, G=1-M, and B=1-Y using the same
-   * conversion as above, while passing K (black) unchanged.
+   * We convert YCbCr to C, M, Y, while passing K (black) unchanged.
    * We assume build_ycc_rgb_table has been called.
    */
   private static Raster convertInvertedYCCKToCMYK(Raster ycckRaster) {
+    return convertInvertedYCCKToCMYK_byBytes(ycckRaster);
+  }
+
+  /**
+   * Fastest method but may not always work.
+   *
+   * @param ycckRaster a YCCK raster
+   * @return a CMYK raster
+   */
+  private static Raster convertInvertedYCCKToCMYK_byBytes(Raster ycckRaster) {
     buildYCCtoRGBtable();
-
     int w = ycckRaster.getWidth(), h = ycckRaster.getHeight();
-    int[] ycckY = ycckRaster.getSamples(0, 0, w, h, 0, (int[]) null);
-    int[] ycckCb = ycckRaster.getSamples(0, 0, w, h, 1, (int[]) null);
-    int[] ycckCr = ycckRaster.getSamples(0, 0, w, h, 2, (int[]) null);
-    int[] ycckK = ycckRaster.getSamples(0, 0, w, h, 3, (int[]) null);
-    int[] cmyk = new int[ycckY.length];
 
-    for (int i = 0; i < ycckY.length; i++) {
-      int y = 255 - ycckY[i];
-      int cb = 255 - ycckCb[i];
-      int cr = 255 - ycckCr[i];
-      int cmykC, cmykM, cmykY;
-      // Range-limiting is essential due to noise introduced by DCT losses.
-      cmykC = MAXJSAMPLE - (y + Cr_r_tab[cr]);	// red
-      cmykM = MAXJSAMPLE - (y + // green
-        (Cb_g_tab[cb] + Cr_g_tab[cr]
-        >> SCALEBITS));
-      cmykY = MAXJSAMPLE - (y + Cb_b_tab[cb]);	// blue
-      /* K passes through unchanged */
-      cmyk[i] = (cmykC < 0 ? 0 : (cmykC > 255) ? 255 : cmykC) << 24
-        | (cmykM < 0 ? 0 : (cmykM > 255) ? 255 : cmykM) << 16
-        | (cmykY < 0 ? 0 : (cmykY > 255) ? 255 : cmykY) << 8
-        | 255 - ycckK[i];
+    if (!(ycckRaster.getDataBuffer() instanceof DataBufferByte)) {
+      return convertInvertedYCCKToCMYK_byPixels(ycckRaster);
     }
 
-    Raster cmykRaster = Raster.createPackedRaster(new DataBufferInt(cmyk, cmyk.length),
-      w, h, w, new int[]{0xff000000, 0xff0000, 0xff00, 0xff}, null);
+    // XXX foolishly assume that raster width = w, raster height=h, and scanline stride = 4*w
+    byte[] ycck = ((DataBufferByte) ycckRaster.getDataBuffer()).getData();
+    int[] cmyk = new int[w * h];
+
+    // Split the cmyk array into bands and process each band in parallel.
+    // for (int i=0;i<cmyk.length;i++) {
+    final int BSIZE = 4096;
+    IntStream.range(0, (cmyk.length + BSIZE - 1) / BSIZE).parallel().parallel().forEach(band -> {
+          for (int i = band * BSIZE, m = Math.min(band * BSIZE + BSIZE, cmyk.length); i < m; i++) {
+            int j = i * 4;
+            int y = 255 - (ycck[j] & 0xff);
+            int cb = 255 - (ycck[j + 1] & 0xff);
+            int cr = 255 - (ycck[j + 2] & 0xff);
+            int k = 255 - (ycck[j + 3] & 0xff);
+            // Range-limiting is essential due to noise introduced by DCT losses.
+            int cmykC = MAXJSAMPLE - (y + Cr_r_tab[cr]);
+            int cmykM = MAXJSAMPLE - (y + (Cb_g_tab[cb] + Cr_g_tab[cr] >> SCALEBITS));
+            int cmykY = MAXJSAMPLE - (y + Cb_b_tab[cb]);
+            // k passes through unchanged
+            cmyk[i] = (cmykC < 0 ? 0 : (cmykC > 255) ? 255 : cmykC) << 24
+                | (cmykM < 0 ? 0 : (cmykM > 255) ? 255 : cmykM) << 16
+                | (cmykY < 0 ? 0 : (cmykY > 255) ? 255 : cmykY) << 8
+                | k;
+          }
+        }
+    );
+
+    Raster cmykRaster = Raster.createPackedRaster(
+        new DataBufferInt(cmyk, cmyk.length),
+        w, h, w, new int[]{0xff000000, 0xff0000, 0xff00, 0xff}, null);
     return cmykRaster;
 
+  }
+
+  /**
+   * This is slightly faster than _bySamples and does not use any internal APIs.
+   */
+  private static Raster convertInvertedYCCKToCMYK_byPixels(Raster ycckRaster) {
+    buildYCCtoRGBtable();
+    int w = ycckRaster.getWidth(), h = ycckRaster.getHeight();
+
+    int[] ycck = ycckRaster.getPixels(0, 0, w, h, (int[]) null);
+
+    int[] cmyk = new int[w * h];
+
+    // Split the cmyk array into bands and process each band in parallel.
+    // for (int i=0;i<cmyk.length;i++) {
+    final int BSIZE = 4096;
+    IntStream.range(0, (cmyk.length + BSIZE - 1) / BSIZE).parallel().parallel().forEach(band -> {
+      for (int i = band * BSIZE, m = Math.min(band * BSIZE + BSIZE, cmyk.length); i < m; i++) {
+        int j = i * 4;
+        int y = 255 - ycck[j];
+        int cb = 255 - ycck[j + 1];
+        int cr = 255 - ycck[j + 2];
+        int cmykC, cmykM, cmykY;
+        // Range-limiting is essential due to noise introduced by DCT losses.
+        cmykC = MAXJSAMPLE - (y + Cr_r_tab[cr]);
+        cmykM = MAXJSAMPLE - (y + (Cb_g_tab[cb] + Cr_g_tab[cr] >> SCALEBITS));
+        cmykY = MAXJSAMPLE - (y + Cb_b_tab[cb]);
+        // K passes through unchanged
+        cmyk[i] = (cmykC < 0 ? 0 : (cmykC > 255) ? 255 : cmykC) << 24
+            | (cmykM < 0 ? 0 : (cmykM > 255) ? 255 : cmykM) << 16
+            | (cmykY < 0 ? 0 : (cmykY > 255) ? 255 : cmykY) << 8
+            | 255 - ycck[j + 3];
+      }
+    });
+//      }
+    Raster cmykRaster = Raster.createPackedRaster(
+        new DataBufferInt(cmyk, cmyk.length),
+        w, h, w, new int[]{0xff000000, 0xff0000, 0xff00, 0xff}, null);
+    return cmykRaster;
+  }
+
+  /**
+   * This is slower but does not use any internal APIs.
+   */
+  private static Raster convertInvertedYCCKToCMYK_bySamples(Raster ycckRaster) {
+    buildYCCtoRGBtable();
+    int w = ycckRaster.getWidth(), h = ycckRaster.getHeight();
+
+    try {
+      CompletableFuture<int[]> cfY = CompletableFuture.supplyAsync(() -> ycckRaster.getSamples(0, 0, w, h, 0, (int[]) null));
+      CompletableFuture<int[]> cfCb = CompletableFuture.supplyAsync(() -> ycckRaster.getSamples(0, 0, w, h, 1, (int[]) null));
+      CompletableFuture<int[]> cfCr = CompletableFuture.supplyAsync(() -> ycckRaster.getSamples(0, 0, w, h, 2, (int[]) null));
+      CompletableFuture<int[]> cfK = CompletableFuture.supplyAsync(() -> ycckRaster.getSamples(0, 0, w, h, 3, (int[]) null));
+      int[] cmyk = new int[w * h];
+      int[] ycckY = cfY.get();
+      int[] ycckCb = cfCb.get();
+      int[] ycckCr = cfCr.get();
+      int[] ycckK = cfK.get();
+
+      // Split the cmyk array into bands and process each band in parallel.
+      // for (int i=0;i<cmyk.length;i++) {
+      final int BSIZE = 4096;
+      IntStream.range(0, (cmyk.length + BSIZE - 1) / BSIZE).parallel().parallel().forEach(band -> {
+        for (int i = band * BSIZE, m = Math.min(band * BSIZE + BSIZE, cmyk.length); i < m; i++) {
+          int y = 255 - ycckY[i];
+          int cb = 255 - ycckCb[i];
+          int cr = 255 - ycckCr[i];
+          int cmykC, cmykM, cmykY;
+          // Range-limiting is essential due to noise introduced by DCT losses.
+          cmykC = MAXJSAMPLE - (y + Cr_r_tab[cr]);	// red
+          cmykM = MAXJSAMPLE - (y
+              + // green
+              (Cb_g_tab[cb] + Cr_g_tab[cr]
+                  >> SCALEBITS));
+          cmykY = MAXJSAMPLE - (y + Cb_b_tab[cb]);	// blue
+          // K passes through unchanged
+          cmyk[i] = (cmykC < 0 ? 0 : (cmykC > 255) ? 255 : cmykC) << 24
+              | (cmykM < 0 ? 0 : (cmykM > 255) ? 255 : cmykM) << 16
+              | (cmykY < 0 ? 0 : (cmykY > 255) ? 255 : cmykY) << 8
+              | 255 - ycckK[i];
+        }
+      });
+
+      Raster cmykRaster = Raster.createPackedRaster(
+          new DataBufferInt(cmyk, cmyk.length),
+          w, h, w, new int[]{0xff000000, 0xff0000, 0xff00, 0xff}, null);
+      return cmykRaster;
+    } catch (InterruptedException | ExecutionException ex) {
+      throw new InternalError(ex);
+    }
   }
 
   private static Raster convertYCCKtoCMYK(Raster ycckRaster) {
     buildYCCtoRGBtable();
 
     int w = ycckRaster.getWidth(), h = ycckRaster.getHeight();
-    int[] ycckY = ycckRaster.getSamples(0, 0, w, h, 0, (int[]) null);
-    int[] ycckCb = ycckRaster.getSamples(0, 0, w, h, 1, (int[]) null);
-    int[] ycckCr = ycckRaster.getSamples(0, 0, w, h, 2, (int[]) null);
-    int[] ycckK = ycckRaster.getSamples(0, 0, w, h, 3, (int[]) null);
+    try {
+      CompletableFuture<int[]> cfY = CompletableFuture.supplyAsync(() -> ycckRaster.getSamples(0, 0, w, h, 0, (int[]) null));
+      CompletableFuture<int[]> cfCb = CompletableFuture.supplyAsync(() -> ycckRaster.getSamples(0, 0, w, h, 1, (int[]) null));
+      CompletableFuture<int[]> cfCr = CompletableFuture.supplyAsync(() -> ycckRaster.getSamples(0, 0, w, h, 2, (int[]) null));
+      CompletableFuture<int[]> cfK = CompletableFuture.supplyAsync(() -> ycckRaster.getSamples(0, 0, w, h, 3, (int[]) null));
+      int[] cmyk = new int[w * h];
+      int[] ycckY = cfY.get();
+      int[] ycckCb = cfCb.get();
+      int[] ycckCr = cfCr.get();
+      int[] ycckK = cfK.get();
 
-    int[] cmyk = new int[ycckY.length];
+      // Split the cmyk array into bands and process each band in parallel.
+      // for (int i=0;i<cmyk.length;i++) {
+      final int BSIZE = 4096;
+      IntStream.range(0, (cmyk.length + BSIZE - 1) / BSIZE).parallel().parallel().forEach(band -> {
+        for (int i = band * BSIZE, m = Math.min(band * BSIZE + BSIZE, cmyk.length); i < m; i++) {
+          int y = ycckY[i];
+          int cb = ycckCb[i];
+          int cr = ycckCr[i];
+          int cmykC, cmykM, cmykY;
+          // Range-limiting is essential due to noise introduced by DCT losses.
+          cmykC = MAXJSAMPLE - (y + Cr_r_tab[cr]);	// red
+          cmykM = MAXJSAMPLE - (y
+              + // green
+              (Cb_g_tab[cb] + Cr_g_tab[cr]
+                  >> SCALEBITS));
+          cmykY = MAXJSAMPLE - (y + Cb_b_tab[cb]);	// blue
+          // K passes through unchanged
+          cmyk[i] = (cmykC < 0 ? 0 : (cmykC > 255) ? 255 : cmykC) << 24
+              | (cmykM < 0 ? 0 : (cmykM > 255) ? 255 : cmykM) << 16
+              | (cmykY < 0 ? 0 : (cmykY > 255) ? 255 : cmykY) << 8
+              | ycckK[i];
+        }
+      });
 
-    for (int i = 0; i < ycckY.length; i++) {
-      int y = ycckY[i];
-      int cb = ycckCb[i];
-      int cr = ycckCr[i];
-      int cmykC, cmykM, cmykY;
-      // Range-limiting is essential due to noise introduced by DCT losses.
-      cmykC = MAXJSAMPLE - (y + Cr_r_tab[cr]);	// red
-      cmykM = MAXJSAMPLE - (y + // green
-        (Cb_g_tab[cb] + Cr_g_tab[cr]
-        >> SCALEBITS));
-      cmykY = MAXJSAMPLE - (y + Cb_b_tab[cb]);	// blue
-      /* K passes through unchanged */
-      cmyk[i] = (cmykC < 0 ? 0 : (cmykC > 255) ? 255 : cmykC) << 24
-        | (cmykM < 0 ? 0 : (cmykM > 255) ? 255 : cmykM) << 16
-        | (cmykY < 0 ? 0 : (cmykY > 255) ? 255 : cmykY) << 8
-        | ycckK[i];
+      return Raster.createPackedRaster(
+          new DataBufferInt(cmyk, cmyk.length),
+          w, h, w, new int[]{0xff000000, 0xff0000, 0xff00, 0xff}, null);
+    } catch (InterruptedException | ExecutionException e) {
+      throw new InternalError(e);
     }
-
-    return Raster.createPackedRaster(new DataBufferInt(cmyk, cmyk.length),
-      w, h, w, new int[]{0xff000000, 0xff0000, 0xff00, 0xff}, null);
   }
 
   /**
-   * Reads a JPEG image from the provided InputStream. The image data must be in the YUV or the Gray
-   * color space. <p> Use this method, if you have already determined that the input stream contains
-   * a YUV or Gray JPEG image.
+   * Reads a JPEG image from the provided InputStream. The image data must be in
+   * the YUV or the Gray color space.
+   * <p>
+   * Use this method, if you have already determined that the input stream
+   * contains a YCC or Gray JPEG image.
    *
-   * @param in An InputStream, preferably an ImageInputStream, in the JPEG File Interchange Format
-   * (JFIF).
-   * @return a BufferedImage containing the decoded image converted into the RGB color space.
-   * @throws java.io.IOException on error while reading the image
+   * @param in An InputStream, preferably an ImageInputStream, in the JPEG File
+   * Interchange Format (JFIF).
+   * @return a BufferedImage containing the decoded image converted into the RGB
+   * color space.
+   * @throws java.io.IOException
    */
-  public static BufferedImage readImageFromYUVorGray(ImageInputStream in) throws IOException {
+  public static BufferedImage readImageFromYCCorGray(ImageInputStream in) throws IOException {
     ImageReader r = createNativeJPEGReader();
-    r.setInput(in);
-    BufferedImage img = r.read(0);
-    return img;
+    try {
+      r.setInput(in);
+      BufferedImage img = r.read(0);
+      return img;
+    } finally {
+      r.dispose();
+    }
   }
+
+  /**
+   * Disposes of resources held internally by the reader.
+   */
+  @Override
+  public void dispose() {
+    try {
+      if (image != null && !didReturnImage) {
+        image.flush();
+      }
+    } catch (Throwable ex) {
+      // consume the exception
+      ex.printStackTrace();
+    } finally {
+      image = null;
+    }
+  }
+
 }

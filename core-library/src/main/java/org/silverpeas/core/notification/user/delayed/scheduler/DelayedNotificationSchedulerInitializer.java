@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.delayed.scheduler;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.notification.user.client.AbstractNotification;
@@ -37,6 +38,7 @@ import static org.silverpeas.core.notification.user.client.NotificationManagerSe
 /**
  * @author Yohann Chastagnier
  */
+@Service
 public class DelayedNotificationSchedulerInitializer extends AbstractNotification
     implements Initialization {
 

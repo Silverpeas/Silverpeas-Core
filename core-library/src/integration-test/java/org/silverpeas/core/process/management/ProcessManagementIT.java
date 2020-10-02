@@ -40,15 +40,20 @@ import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.process.util.ProcessList;
 import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ResourceLocator;
 
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedThreadFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.apache.commons.io.FileUtils.*;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 /**
  * @author Yohann Chastagnier
@@ -63,6 +68,9 @@ public class ProcessManagementIT {
   private File testResultFile;
   private File testSuccessfulFile;
   private File testSecondFile;
+
+  @Resource
+  private ManagedThreadFactory managedThreadFactory;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -85,7 +93,7 @@ public class ProcessManagementIT {
     testSecondFile =
         getFile(new File(BASE_PATH_TEST.getPath()), componentInstanceId, "testSecondResult");
 
-    FileUtils.writeStringToFile(testSecondFile, "File check in has not been done.");
+    FileUtils.writeStringToFile(testSecondFile, "File check in has not been done.", Charsets.UTF_8);
   }
 
   @After
@@ -125,7 +133,7 @@ public class ProcessManagementIT {
     };
 
     assertThat(testResultFile.exists(), is(false));
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent));
     try {
       executeTest(test, test3);
     } catch (final Exception e) {
@@ -133,12 +141,12 @@ public class ProcessManagementIT {
     }
     assertThat(testResultFile.exists(), is(true));
     assertThat(testSuccessfulFile.exists(), is(false));
-    assertThat(readFileToString(testResultFile), is(" onFailure(A_A) onFailure(A)"));
+    assertThat(readFileToString(testResultFile, Charsets.UTF_8), is(" onFailure(A_A) onFailure(A)"));
     assertThat(test.getErrorType(), is(ProcessErrorType.DURING_MAIN_PROCESSING));
     assertThat(test.getException(), instanceOf(FileNotFoundException.class));
     assertThat(test2.getErrorType(), is(ProcessErrorType.OTHER_PROCESS_FAILED));
     assertThat(test2.getException(), instanceOf(FileNotFoundException.class));
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent));
   }
 
   @Test
@@ -173,7 +181,7 @@ public class ProcessManagementIT {
     };
 
     assertThat(testResultFile.exists(), is(false));
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent));
     try {
       executeTest(test);
     } catch (final Exception e) {
@@ -181,13 +189,13 @@ public class ProcessManagementIT {
     }
     assertThat(testResultFile.exists(), is(true));
     assertThat(testSuccessfulFile.exists(), is(false));
-    assertThat(readFileToString(testResultFile),
+    assertThat(readFileToString(testResultFile, Charsets.UTF_8),
         is(" onFailure(A_A_A) onFailure(A_A) onFailure(A)"));
     assertThat(test.getErrorType(), is(ProcessErrorType.OTHER_PROCESS_FAILED));
     assertThat(test.getException(), instanceOf(FileNotFoundException.class));
     assertThat(test2.getErrorType(), is(ProcessErrorType.DURING_MAIN_PROCESSING));
     assertThat(test2.getException(), instanceOf(FileNotFoundException.class));
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent));
   }
 
   @Test
@@ -238,7 +246,7 @@ public class ProcessManagementIT {
     };
 
     assertThat(testResultFile.exists(), is(false));
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent));
     try {
       executeTest(test, test2);
     } catch (final Exception e) {
@@ -246,14 +254,14 @@ public class ProcessManagementIT {
     }
     assertThat(testResultFile.exists(), is(true));
     assertThat(testSuccessfulFile.exists(), is(false));
-    assertThat(readFileToString(testResultFile),
+    assertThat(readFileToString(testResultFile, Charsets.UTF_8),
         is(" onFailure(B_B) onFailure(B_A) onFailure(A_B) onFailure(A_A) onFailure(B) onFailure" +
             "(A)"));
     assertThat(test.getErrorType(), is(ProcessErrorType.OTHER_PROCESS_FAILED));
     assertThat(test.getException(), instanceOf(FileNotFoundException.class));
     assertThat(test2.getErrorType(), is(ProcessErrorType.DURING_MAIN_PROCESSING));
     assertThat(test2.getException(), instanceOf(FileNotFoundException.class));
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent));
   }
 
   @Test
@@ -305,7 +313,7 @@ public class ProcessManagementIT {
     check.init();
     try {
       assertThat(testResultFile.exists(), is(false));
-      assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+      assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent));
       try {
         executeTest(test, test2);
       } catch (final Exception e) {
@@ -313,14 +321,14 @@ public class ProcessManagementIT {
       }
       assertThat(testResultFile.exists(), is(true));
       assertThat(testSuccessfulFile.exists(), is(false));
-      assertThat(readFileToString(testResultFile),
+      assertThat(readFileToString(testResultFile, Charsets.UTF_8),
           is(" onFailure(B_B) onFailure(B_A) onFailure(A_B) onFailure(A_A) onFailure(B) onFailure" +
               "(A)"));
       assertThat(test.getErrorType(), is(ProcessErrorType.DURING_CHECKS_PROCESSING));
       assertThat(test.getException(), instanceOf(SilverpeasRuntimeException.class));
       assertThat(test2.getErrorType(), is(ProcessErrorType.DURING_CHECKS_PROCESSING));
       assertThat(test2.getException(), instanceOf(SilverpeasRuntimeException.class));
-      assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+      assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent));
     } finally {
       check.release();
     }
@@ -338,19 +346,19 @@ public class ProcessManagementIT {
     };
 
     assertThat(testResultFile.exists(), is(false));
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent));
     try {
       executeTest(test);
     } catch (final Exception e) {
       // Nothing to do
     }
     assertThat(testResultFile.exists(), is(true));
-    assertThat(readFileToString(testResultFile), is(" processFiles(A)"));
+    assertThat(readFileToString(testResultFile, Charsets.UTF_8), is(" processFiles(A)"));
     assertThat(testSuccessfulFile.exists(), is(true));
-    assertThat(readFileToString(testSuccessfulFile), is(" onSuccessful(A)"));
+    assertThat(readFileToString(testSuccessfulFile, Charsets.UTF_8), is(" onSuccessful(A)"));
     assertThat(test.getErrorType(), nullValue());
     assertThat(test.getException(), nullValue());
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent + LINE_SEPARATOR +
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent + LINE_SEPARATOR +
         "File check in has been done.(A)"));
   }
 
@@ -366,21 +374,21 @@ public class ProcessManagementIT {
     };
 
     assertThat(testResultFile.exists(), is(false));
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent));
     try {
       executeTest(test, test2);
     } catch (final Exception e) {
       // Nothing to do
     }
     assertThat(testResultFile.exists(), is(true));
-    assertThat(readFileToString(testResultFile), is(" processFiles(A) processFiles(B)"));
+    assertThat(readFileToString(testResultFile, Charsets.UTF_8), is(" processFiles(A) processFiles(B)"));
     assertThat(testSuccessfulFile.exists(), is(true));
-    assertThat(readFileToString(testSuccessfulFile), is(" onSuccessful(A)"));
+    assertThat(readFileToString(testSuccessfulFile, Charsets.UTF_8), is(" onSuccessful(A)"));
     assertThat(test.getErrorType(), nullValue());
     assertThat(test.getException(), nullValue());
     assertThat(test2.getErrorType(), nullValue());
     assertThat(test2.getException(), nullValue());
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent + LINE_SEPARATOR +
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent + LINE_SEPARATOR +
         "File check in has been done.(A)" + LINE_SEPARATOR + "File check in has been done.(B)"));
   }
 
@@ -412,25 +420,25 @@ public class ProcessManagementIT {
           }
         });
 
-        Thread.sleep(500);
+        awaitUntil(500, MILLISECONDS);
       }
     };
 
     assertThat(testResultFile.exists(), is(false));
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent));
     try {
       executeTest(test);
     } catch (final Exception e) {
       // Nothing to do
     }
     assertThat(testResultFile.exists(), is(true));
-    assertThat(readFileToString(testResultFile), is(" processFiles(A) processFiles(A_A)"));
+    assertThat(readFileToString(testResultFile, Charsets.UTF_8), is(" processFiles(A) processFiles(A_A)"));
     assertThat(testSuccessfulFile.exists(), is(true));
-    assertThat(readFileToString(testSuccessfulFile),
+    assertThat(readFileToString(testSuccessfulFile, Charsets.UTF_8),
         is(" onSuccessful(A_B) onSuccessful(A_A) onSuccessful(A)"));
     assertThat(test.getErrorType(), nullValue());
     assertThat(test.getException(), nullValue());
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent + LINE_SEPARATOR +
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent + LINE_SEPARATOR +
         "File check in has been done.(A)" + LINE_SEPARATOR + "File check in has been done.(A_A)"));
   }
 
@@ -460,21 +468,21 @@ public class ProcessManagementIT {
     };
 
     assertThat(testResultFile.exists(), is(false));
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent));
     try {
       executeTest(test);
     } catch (final Exception e) {
       // Nothing to do
     }
     assertThat(testResultFile.exists(), is(true));
-    assertThat(readFileToString(testResultFile),
+    assertThat(readFileToString(testResultFile, Charsets.UTF_8),
         is(" processFiles(A) processFiles(A_A) processFiles(A_B)"));
     assertThat(testSuccessfulFile.exists(), is(true));
-    assertThat(readFileToString(testSuccessfulFile),
+    assertThat(readFileToString(testSuccessfulFile, Charsets.UTF_8),
         is(" onSuccessful(A_A) onSuccessful(A_B) onSuccessful(A)"));
     assertThat(test.getErrorType(), nullValue());
     assertThat(test.getException(), nullValue());
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent + LINE_SEPARATOR +
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent + LINE_SEPARATOR +
         "File check in has been done.(A)" + LINE_SEPARATOR + "File check in has been done.(A_A)" +
         LINE_SEPARATOR + "File check in has been done.(A_B)"));
   }
@@ -484,21 +492,21 @@ public class ProcessManagementIT {
     final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {};
 
     assertThat(testResultFile.exists(), is(false));
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent));
     try {
       executeTest(test, new AbstractFileProcessTest("B") {}, new AbstractFileProcessTest("C") {});
     } catch (final Exception e) {
       // Nothing to do
     }
     assertThat(testResultFile.exists(), is(true));
-    assertThat(readFileToString(testResultFile),
+    assertThat(readFileToString(testResultFile, Charsets.UTF_8),
         is(" processFiles(A) processFiles(B) processFiles(C)"));
     assertThat(testSuccessfulFile.exists(), is(true));
-    assertThat(readFileToString(testSuccessfulFile),
+    assertThat(readFileToString(testSuccessfulFile, Charsets.UTF_8),
         is(" onSuccessful(A) onSuccessful(B) onSuccessful(C)"));
     assertThat(test.getErrorType(), nullValue());
     assertThat(test.getException(), nullValue());
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent + LINE_SEPARATOR +
+    assertThat(readFileToString(testSecondFile, Charsets.UTF_8), is(testSecondResultContent + LINE_SEPARATOR +
         "File check in has been done.(A)" + LINE_SEPARATOR + "File check in has been done.(B)" +
         LINE_SEPARATOR + "File check in has been done.(C)"));
   }
@@ -518,7 +526,7 @@ public class ProcessManagementIT {
   private void executeTest(final boolean newThread, final AbstractFileProcessTest... processes)
       throws Exception {
     if (newThread) {
-      final Thread thread = new Thread(() -> {
+      final Thread thread = managedThreadFactory.newThread(() -> {
         try {
           ProcessProvider.getProcessManagement()
               .execute(new ProcessList<>(processes), new ProcessExecutionContextTest());
@@ -527,6 +535,7 @@ public class ProcessManagementIT {
         }
       });
       thread.start();
+      thread.join(2000);
     } else {
       ProcessProvider.getProcessManagement()
           .execute(new ProcessList<>(processes), new ProcessExecutionContextTest());
@@ -578,7 +587,7 @@ public class ProcessManagementIT {
       } finally {
         this.errorType = errorType;
         this.exception = exception;
-        writeStringToFile(testResultFile, " onFailure" + "(" + id + ")", true);
+        writeStringToFile(testResultFile, " onFailure" + "(" + id + ")", Charsets.UTF_8, true);
       }
     }
 
@@ -603,7 +612,7 @@ public class ProcessManagementIT {
      */
     @Override
     public void onSuccessful() throws Exception {
-      writeStringToFile(testSuccessfulFile, " onSuccessful" + "(" + id + ")", true);
+      writeStringToFile(testSuccessfulFile, " onSuccessful" + "(" + id + ")", Charsets.UTF_8, true);
       super.onSuccessful();
     }
   }

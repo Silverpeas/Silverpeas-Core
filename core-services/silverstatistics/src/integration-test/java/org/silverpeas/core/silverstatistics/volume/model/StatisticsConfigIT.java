@@ -38,9 +38,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author ehugonnet
@@ -76,7 +75,7 @@ public class StatisticsConfigIT {
   public void testGetAllKeys() throws Exception {
     StatType typeOfStats = StatType.Connexion;
     Collection<String> keys = instance.getAllKeys(typeOfStats);
-    assertNotNull(keys);
+    assertThat(keys, notNullValue());
     assertThat(keys, hasSize(4));
     assertThat(keys, hasItems("dateStat", "userId", "countConnection", "duration"));
   }
@@ -87,9 +86,9 @@ public class StatisticsConfigIT {
   @Test
   public void testGetKeyType() throws Exception {
     String result = instance.getKeyType(StatType.Connexion, "userId");
-    assertEquals(StatDataType.INTEGER.name(), result);
+    assertThat(StatDataType.INTEGER.name(), is(result));
     result = instance.getKeyType(StatType.Connexion, "dateStat");
-    assertEquals(StatDataType.VARCHAR.name(), result);
+    assertThat(StatDataType.VARCHAR.name(), is(result));
   }
 
   /**
@@ -98,9 +97,9 @@ public class StatisticsConfigIT {
   @Test
   public void testGetTableName() throws Exception {
     String result = instance.getTableName(StatType.Connexion);
-    assertEquals("SB_Stat_Connection", result);
+    assertThat("SB_Stat_Connection", is(result));
     result = instance.getTableName(StatType.Volume);
-    assertEquals("SB_Stat_Volume", result);
+    assertThat("SB_Stat_Volume", is(result));
   }
 
   /**
@@ -110,10 +109,10 @@ public class StatisticsConfigIT {
   public void testGetModeCumul() throws Exception {
     StatType typeOfStats = StatType.Connexion;
     StatisticMode result = instance.getModeCumul(typeOfStats);
-    assertEquals(StatisticMode.Add, result);
+    assertThat(StatisticMode.Add, is(result));
     typeOfStats = StatType.Size;
     result = instance.getModeCumul(typeOfStats);
-    assertEquals(StatisticMode.Replace, result);
+    assertThat(StatisticMode.Replace, is(result));
   }
 
   /**
@@ -122,9 +121,9 @@ public class StatisticsConfigIT {
   @Test
   public void testIsRun() throws Exception {
     boolean result = instance.isRun(StatType.Connexion);
-    assertTrue(result);
+    assertThat(result, is(true));
     result = instance.isRun(StatType.Access);
-    assertFalse(result);
+    assertThat(result, is(false));
   }
 
   /**
@@ -133,9 +132,9 @@ public class StatisticsConfigIT {
   @Test
   public void testIsAsynchron() throws Exception {
     boolean result = instance.isAsynchron(StatType.Connexion);
-    assertTrue(result);
+    assertThat(result, is(true));
     result = instance.isAsynchron(StatType.Volume);
-    assertFalse(result);
+    assertThat(result, is(false));
   }
 
   /**
@@ -145,7 +144,7 @@ public class StatisticsConfigIT {
   public void testGetNumberOfStatsType() {
     int expResult = 4;
     int result = instance.getNumberOfStatsType();
-    assertEquals(expResult, result);
+    assertThat(expResult, is(result));
   }
 
   /**
@@ -155,10 +154,10 @@ public class StatisticsConfigIT {
   public void testIsExist() {
     StatType idFamilyStats = StatType.Connexion;
     boolean result = instance.isExist(idFamilyStats);
-    assertTrue(result);
+    assertThat(result, is(true));
     idFamilyStats = StatType.Volume;
     result = instance.isExist(idFamilyStats);
-    assertTrue(result);
+    assertThat(result, is(true));
   }
 
   /**
@@ -169,11 +168,11 @@ public class StatisticsConfigIT {
     StatType idFamilyStats = StatType.Connexion;
     int expResult = 4;
     int result = instance.getNumberOfKeys(idFamilyStats);
-    assertEquals(expResult, result);
+    assertThat(expResult, is(result));
     idFamilyStats = StatType.Access;
     expResult = 6;
     result = instance.getNumberOfKeys(idFamilyStats);
-    assertEquals(expResult, result);
+    assertThat(expResult, is(result));
   }
 
   /**
@@ -184,16 +183,16 @@ public class StatisticsConfigIT {
     StatType typeOfStats = StatType.Connexion;
     String cumulKeyName = "countConnection";
     boolean result = instance.isCumulKey(typeOfStats, cumulKeyName);
-    assertTrue(result);
+    assertThat(result, is(true));
     cumulKeyName = "duration";
     result = instance.isCumulKey(typeOfStats, cumulKeyName);
-    assertTrue(result);
+    assertThat(result, is(true));
     String notCumulKeyName = "userId";
     result = instance.isCumulKey(typeOfStats, notCumulKeyName);
-    assertFalse(result);
+    assertThat(result, is(false));
     notCumulKeyName = RandomStringUtils.random(32, true, true);
     result = instance.isCumulKey(typeOfStats, notCumulKeyName);
-    assertFalse(result);
+    assertThat(result, is(false));
   }
 
   /**
@@ -204,10 +203,10 @@ public class StatisticsConfigIT {
     StatType typeOfStats = StatType.Connexion;
     String existingKeyName = "countConnection";
     int result = instance.indexOfKey(typeOfStats, existingKeyName);
-    assertEquals(2, result);
+    assertThat(2, is(result));
     String notExistingKeyName = RandomStringUtils.random(32, true, true);
     result = instance.indexOfKey(typeOfStats, notExistingKeyName);
-    assertEquals(-1, result);
+    assertThat(-1, is(result));
   }
 
   /**
@@ -215,9 +214,9 @@ public class StatisticsConfigIT {
    */
   @Test
   public void testGetAllTypes() throws Exception {
-    assertNotNull(instance);
+    assertThat(instance, notNullValue());
     Collection<StatType> types = instance.getAllTypes();
-    assertNotNull(types);
+    assertThat(types, notNullValue());
     assertThat(types, hasSize(4));
     assertThat(types,
         hasItems(StatType.Connexion, StatType.Size, StatType.Access, StatType.Volume));
@@ -231,11 +230,11 @@ public class StatisticsConfigIT {
     StatType typeOfStats = StatType.Connexion;
     int expResult = 120;
     int result = instance.getPurge(typeOfStats);
-    assertEquals(expResult, result);
+    assertThat(expResult, is(result));
     typeOfStats = StatType.Volume;
     expResult = 80;
     result = instance.getPurge(typeOfStats);
-    assertEquals(expResult, result);
+    assertThat(expResult, is(result));
   }
 
   /**
@@ -243,7 +242,7 @@ public class StatisticsConfigIT {
    */
   @Test
   public void testIsValidConfigFile() {
-    assertTrue(instance.isValidConfigFile());
+    assertThat(instance.isValidConfigFile(), is(true));
   }
 
   /**
@@ -257,9 +256,9 @@ public class StatisticsConfigIT {
     dataArray.add(RandomStringUtils.random(32, true, true));
     dataArray.add(RandomStringUtils.random(32, true, true));
     dataArray.add(RandomStringUtils.random(32, true, true));
-    assertFalse("Should not have only 3 data elements",
-        instance.isGoodDatas(typeOfStats, dataArray));
+    assertThat("Should not have only 3 data elements",
+        instance.isGoodDatas(typeOfStats, dataArray), is(false));
     typeOfStats = StatType.Connexion;
-    assertTrue(instance.isGoodDatas(typeOfStats, dataArray));
+    assertThat(instance.isGoodDatas(typeOfStats, dataArray), is(true));
   }
 }

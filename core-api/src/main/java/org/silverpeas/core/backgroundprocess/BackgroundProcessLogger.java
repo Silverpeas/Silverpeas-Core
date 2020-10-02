@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.backgroundprocess;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * @author silveryocha
  */
+@Service
 public class BackgroundProcessLogger implements Initialization {
 
   private static SilverLogger silverLogger;

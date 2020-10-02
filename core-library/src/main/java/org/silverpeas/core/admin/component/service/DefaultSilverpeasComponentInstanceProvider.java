@@ -30,15 +30,15 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.util.StringUtil;
 
-import javax.inject.Singleton;
 import java.util.Optional;
 
 /**
  * @author Yohann Chastagnier
  */
-@Singleton
+@Provider
 public class DefaultSilverpeasComponentInstanceProvider
     implements SilverpeasComponentInstanceProvider {
 

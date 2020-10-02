@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.service;
 
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
@@ -43,6 +44,7 @@ import static org.silverpeas.core.util.DateUtil.toLocalDate;
  * Batch in charge of the deletion of removed users.
  * @author silveryocha
  */
+@Service
 public class DeleteRemovedUsersScheduler implements Initialization {
 
   protected static final String JOB_NAME = "DeleteRemovedUsersJob";

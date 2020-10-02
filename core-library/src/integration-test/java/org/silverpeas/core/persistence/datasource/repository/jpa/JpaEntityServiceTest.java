@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Animal;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.AnimalType;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Equipment;
@@ -41,6 +42,7 @@ import java.util.List;
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class JpaEntityServiceTest {

@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
-import org.silverpeas.core.pdc.pdc.model.PdcAxisValuePk;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
@@ -34,6 +34,7 @@ import java.util.List;
 /**
  * DAO that handles the persistence of PdcAxisValue beans.
  */
+@Repository
 @Singleton
 public class PdcAxisValueRepository extends BasicJpaEntityRepository<PdcAxisValue> {
 

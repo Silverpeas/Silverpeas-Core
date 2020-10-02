@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.component.exception.ComponentFileFilterExceptio
 import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.process.io.IOAccess;
@@ -47,6 +48,7 @@ import java.util.Set;
 /**
  * @author Yohann Chastagnier
  */
+@Service
 public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
 
   @Inject

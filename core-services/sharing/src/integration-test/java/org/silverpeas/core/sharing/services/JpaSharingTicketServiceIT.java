@@ -54,7 +54,7 @@ import java.util.concurrent.TimeUnit;
 import static java.util.Collections.emptyList;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author ehugonnet

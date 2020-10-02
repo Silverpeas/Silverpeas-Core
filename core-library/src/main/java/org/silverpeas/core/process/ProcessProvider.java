@@ -39,4 +39,8 @@ public class ProcessProvider {
   public static ProcessManagement getProcessManagement() {
     return ServiceProvider.getService(ProcessManagement.class);
   }
+
+  private ProcessProvider() {
+
+  }
 }

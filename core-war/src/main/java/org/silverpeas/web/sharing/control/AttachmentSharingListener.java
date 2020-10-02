@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.sharing.control;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentEvent;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
@@ -34,6 +35,7 @@ import javax.inject.Inject;
 /**
  * @author neysseri
  */
+@Bean
 public class AttachmentSharingListener extends CDIResourceEventListener<AttachmentEvent> {
 
   @Inject

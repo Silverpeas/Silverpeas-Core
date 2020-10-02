@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.reminder;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.notification.UserPreferenceEvent;
@@ -35,6 +36,7 @@ import java.util.List;
 /**
  * @author Yohann Chastagnier
  */
+@Bean
 public class UserPreferenceReminderListener extends CDIResourceEventListener<UserPreferenceEvent> {
 
   @Override

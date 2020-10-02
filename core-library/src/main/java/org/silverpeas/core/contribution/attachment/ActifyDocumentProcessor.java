@@ -25,15 +25,15 @@ package org.silverpeas.core.contribution.attachment;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 
@@ -45,7 +45,7 @@ import java.io.IOException;
  *
  * @author mmoquillon
  */
-@Singleton
+@Service
 public class ActifyDocumentProcessor {
 
   private static final SettingBundle settings =
@@ -192,7 +192,7 @@ public class ActifyDocumentProcessor {
     }
   }
 
-  private ActifyDocumentProcessor() {
+  protected ActifyDocumentProcessor() {
     prepareActifyDirectories();
   }
 

@@ -31,7 +31,7 @@ import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfigu
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Unit test on the loading of the logging configurations (stored in properties files).

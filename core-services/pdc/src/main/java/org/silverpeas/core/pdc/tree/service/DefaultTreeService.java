@@ -24,6 +24,7 @@
 package org.silverpeas.core.pdc.tree.service;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
@@ -51,6 +52,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+@Service
 @Singleton
 public class DefaultTreeService implements TreeService {
 

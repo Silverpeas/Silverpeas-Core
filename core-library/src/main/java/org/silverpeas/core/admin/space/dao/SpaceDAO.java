@@ -25,9 +25,9 @@ package org.silverpeas.core.admin.space.dao;
 
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.util.StringUtil;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,7 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Singleton
+@Repository
 public class SpaceDAO {
 
   private static final String SPACE_COLUMNS =

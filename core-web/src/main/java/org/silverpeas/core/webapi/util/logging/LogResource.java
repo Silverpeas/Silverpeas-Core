@@ -25,8 +25,7 @@ package org.silverpeas.core.webapi.util.logging;
 
 import org.apache.ecs.xhtml.span;
 import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.logging.LogsAccessor;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -49,8 +48,7 @@ import java.util.stream.Collectors;
  * A Web resource representing a given log used by Silverpeas. It is a REST-based Web service.
  * @author mmoquillon
  */
-@Service
-@RequestScoped
+@WebService
 @Authorized
 @Path(LogResource.LOGS_PATH + "/{logName}")
 public class LogResource extends AbstractLoggingResource {

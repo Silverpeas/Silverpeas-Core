@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.notification.system.asynchronous;
 
-import org.awaitility.Duration;
 import org.awaitility.core.ThrowingRunnable;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -46,17 +45,18 @@ import org.silverpeas.core.util.ServiceProvider;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import javax.inject.Inject;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration test on the asynchronous mode of the Silverpeas API Notification.
@@ -192,11 +192,11 @@ public class MassiveAsynchronousNotificationIT {
   }
 
   private Duration delay(int nbSend) {
-    return new Duration(2000 + (nbSend * 10), TimeUnit.MILLISECONDS);
+    return Duration.of(2000 + (nbSend * 10), ChronoUnit.MILLIS);
   }
 
   private Duration timeout(int nbSend) {
-    return new Duration(3000 + (nbSend * 10), TimeUnit.MILLISECONDS);
+    return Duration.of(3000 + (nbSend * 10), ChronoUnit.MILLIS);
   }
 
   private void assertThatEventIsWellReceived(int nbListeners,
@@ -234,11 +234,11 @@ public class MassiveAsynchronousNotificationIT {
     }
 
     private Duration delay() {
-      return new Duration(this.base, TimeUnit.MILLISECONDS);
+      return Duration.of(this.base, ChronoUnit.MILLIS);
     }
 
     private Duration timeout() {
-      return new Duration(this.base + 4000, TimeUnit.MILLISECONDS);
+      return Duration.of(this.base + 4000, ChronoUnit.MILLIS);
     }
 
     void awaitUntil(final ThrowingRunnable assertion) {

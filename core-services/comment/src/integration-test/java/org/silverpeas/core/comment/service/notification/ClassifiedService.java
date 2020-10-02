@@ -24,6 +24,7 @@
 package org.silverpeas.core.comment.service.notification;
 
 import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -34,6 +35,7 @@ import java.util.Map;
 /**
  * A Silverpeas component service to use in tests.
  */
+@Service
 public class ClassifiedService implements ApplicationService<Classified> {
 
   public static final String COMPONENT_NAME = "classifieds";

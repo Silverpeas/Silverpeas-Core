@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.datereminder.persistence.repository;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
@@ -35,6 +36,7 @@ import java.util.Date;
  * @author Cécile Bonin
  */
 @Singleton
+@Repository
 public class PersistentResourceDateReminderRepository extends
     SilverpeasJpaEntityRepository<PersistentResourceDateReminder> {
 

@@ -1,6 +1,7 @@
 package org.silverpeas.core.workflow.engine.user;
 
 import org.silverpeas.core.SilverpeasExceptionMessages;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -19,6 +20,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Created by Nicolas on 30/05/2017.
  */
+@Service
 @Singleton
 public class DefaultUserSettingsService implements UserSettingsService {
 

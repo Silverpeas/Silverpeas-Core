@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.PreparedStatement;
@@ -40,6 +41,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 /**
  * A UserRoleTable object manages the ST_UserRole table.
  */
+@Repository
 public class UserRoleTable extends Table<UserRoleRow> {
 
   public static final String REQUEST_MSG = ", requête : ";

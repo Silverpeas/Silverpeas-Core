@@ -33,8 +33,7 @@ import edu.psu.swe.scim.spec.protocol.data.PatchRequest;
 import edu.psu.swe.scim.spec.protocol.data.SearchRequest;
 import edu.psu.swe.scim.spec.protocol.search.SortOrder;
 import edu.psu.swe.scim.spec.resources.ScimGroup;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.annotation.PostConstruct;
@@ -59,8 +58,7 @@ import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE
  * Implementation of a Client using SCIM 2.0 protocol.
  * @author silveryocha
  */
-@Service
-@RequestScoped
+@WebService
 @Path(SCIM_2_BASE_URI + "/Groups")
 @Authorized
 @Alternative

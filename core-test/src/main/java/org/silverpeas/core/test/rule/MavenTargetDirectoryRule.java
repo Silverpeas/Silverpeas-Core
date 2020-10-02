@@ -34,7 +34,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * This rule permits to get some technical path information about maven target directory during a
@@ -138,9 +139,8 @@ public class MavenTargetDirectoryRule implements TestRule {
    */
   private static String getMavenProperty(Properties mavenProperties, String key) {
     String mavenPropertyValue = mavenProperties.getProperty(key, null);
-    if (mavenPropertyValue == null) {
-      fail("The maven.properties file from resource tests is not complete...");
-    }
+    assertThat("The maven.properties file from resource tests is not complete...",
+        mavenPropertyValue, notNullValue());
     return mavenPropertyValue;
   }
 

@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.notification.user.server;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.notification.system.JMSOperation;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -32,6 +34,8 @@ import javax.jms.TextMessage;
 import java.util.HashMap;
 import java.util.Map;
 
+@Technical
+@Bean
 public class NotificationServer {
 
   private static final String JMS_HEADER_CHANNEL = "CHANNEL";

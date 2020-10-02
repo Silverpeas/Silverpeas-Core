@@ -26,6 +26,7 @@ package org.silverpeas.core.admin.user.dao;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
@@ -33,7 +34,6 @@ import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.StringUtil;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -50,7 +50,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.silverpeas.core.admin.user.model.UserDetail.BLANK_NAME;
 
-@Singleton
+@Repository
 public class UserDAO {
 
   private static final String USER_TABLE = "st_user";

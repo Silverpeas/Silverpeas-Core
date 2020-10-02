@@ -24,8 +24,7 @@
 package org.silverpeas.core.webapi.profile;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.webapi.base.HTTPAuthentication;
 import org.silverpeas.core.webapi.base.HTTPAuthentication.AuthenticationContext;
@@ -55,8 +54,7 @@ import javax.ws.rs.core.MediaType;
  * (login/domain/password).
  * </p>
  */
-@Service
-@RequestScoped
+@WebService
 @Path(AuthenticationResource.PATH)
 public class AuthenticationResource extends RESTWebService {
 

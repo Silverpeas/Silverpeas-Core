@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.io.file;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
@@ -42,6 +43,7 @@ import java.util.List;
  * A scheduled job to clean up all the resized images for non existent original images.
  * @author mmoquillon
  */
+@Service
 public class ResizedImageCacheCleaner extends Job implements Initialization {
 
   private static final String CRON_PROPERTY = "image.cleaner.cron";

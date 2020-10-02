@@ -24,6 +24,8 @@
 package org.silverpeas.core.web.token;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
@@ -39,7 +41,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 
-import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Arrays;
@@ -57,7 +58,8 @@ import java.util.List;
  *
  * @author mmoquillon
  */
-@Singleton
+@Technical
+@Bean
 public class SynchronizerTokenService {
 
   public static final String SESSION_TOKEN_KEY = "X-STKN";

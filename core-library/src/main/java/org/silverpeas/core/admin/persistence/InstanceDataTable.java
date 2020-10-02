@@ -24,6 +24,7 @@
 package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.component.model.Parameter;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.Mutable;
@@ -44,6 +45,7 @@ import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 /**
  * A InstanceData object manages component parameters
  */
+@Repository
 public class InstanceDataTable extends Table<InstanceDataRow> {
 
   private static final String INSTANCE_DATA_TABLE = "ST_Instance_Data";

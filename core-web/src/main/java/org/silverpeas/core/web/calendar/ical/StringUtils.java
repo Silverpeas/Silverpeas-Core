@@ -30,7 +30,6 @@
 //
 package org.silverpeas.core.web.calendar.ical;
 
-import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.util.Charsets;
 
 import javax.xml.bind.DatatypeConverter;
@@ -38,11 +37,16 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Common String utilities (formatters, converters, etc).
  */
 public final class StringUtils {
+
+  private StringUtils() {
+
+  }
 
   public static byte[] encodeString(String string, Charset encoding)
       throws CharacterCodingException {
@@ -55,7 +59,7 @@ public final class StringUtils {
 
   static byte[] encodeArray(char[] chars, Charset encoding)
       throws CharacterCodingException {
-    if (CharEncoding.US_ASCII.equals(encoding.name())) {
+    if (StandardCharsets.US_ASCII.equals(encoding)) {
       byte[] array = new byte[chars.length];
       for (int i = 0; i < array.length; i++) {
         array[i] = (byte) chars[i];
@@ -78,7 +82,7 @@ public final class StringUtils {
   }
 
   static char[] decodeToArray(byte[] bytes, Charset encoding) {
-    if (CharEncoding.US_ASCII.equals(encoding.name())) {
+    if (StandardCharsets.US_ASCII.equals(encoding)) {
       char[] array = new char[bytes.length];
       for (int i = 0; i < array.length; i++) {
         array[i] = (char) bytes[i];
@@ -95,94 +99,9 @@ public final class StringUtils {
     }
   }
 
-  public static String decodePassword(String encodedPassword) throws Exception {
+  public static String decodePassword(String encodedPassword) {
     StringBuilder buffer = new StringBuilder(encodedPassword.substring(3));
     return decodeBASE64(buffer.reverse().toString().replace('$', '=')).trim();
-  }
-  public static long stringToLong(String string) throws NumberFormatException {
-    StringBuffer buffer = new StringBuffer(string.toLowerCase());
-    long unit = resolveUnit(buffer);
-    long value = Long.parseLong(buffer.toString().trim());
-    if (unit != 1) {
-      value *= unit;
-    }
-    return value;
-  }
-
-  private static long resolveUnit(StringBuffer buffer) {
-    long unit = 1;
-    int i = -1;
-    for (;;) {
-      i = buffer.indexOf("msec", 0);
-      if (i != -1) {
-        break;
-      }
-      i = buffer.indexOf("mill", 0);
-      if (i != -1) {
-        break;
-      }
-      i = buffer.indexOf("sec", 0);
-      if (i != -1) {
-        unit = 1000L;
-        break;
-      }
-      i = buffer.indexOf("min", 0);
-      if (i != -1) {
-        unit = 1000L * 60;
-        break;
-      }
-      i = buffer.indexOf("hour", 0);
-      if (i != -1) {
-        unit = 1000L * 60 * 60;
-        break;
-      }
-      i = buffer.indexOf("day", 0);
-      if (i != -1) {
-        unit = 1000L * 60 * 60 * 24;
-        break;
-      }
-      i = buffer.indexOf("week", 0);
-      if (i != -1) {
-        unit = 1000L * 60 * 60 * 24 * 7;
-        break;
-      }
-      i = buffer.indexOf("month", 0);
-      if (i != -1) {
-        unit = 1000L * 60 * 60 * 24 * 30;
-        break;
-      }
-      i = buffer.indexOf("year", 0);
-      if (i != -1) {
-        unit = 1000L * 60 * 60 * 24 * 365;
-        break;
-      }
-      i = buffer.indexOf("kbyte", 0);
-      if (i != -1) {
-        unit = 1024L;
-        break;
-      }
-      i = buffer.indexOf("mbyte", 0);
-      if (i != -1) {
-        unit = 1024L * 1024;
-        break;
-      }
-      i = buffer.indexOf("gbyte", 0);
-      if (i != -1) {
-        unit = 1024L * 1024 * 1024;
-        break;
-      }
-      i = buffer.indexOf("tbyte", 0);
-      if (i != -1) {
-        unit = 1024L * 1024 * 1024 * 1024;
-        break;
-      }
-      i = buffer.indexOf("byte", 0);
-      break;
-    }
-    if (i != -1) {
-      buffer.setLength(i);
-    }
-    return unit;
   }
 
   /**
@@ -191,7 +110,7 @@ public final class StringUtils {
    * @return String the decoded bytes
    */
   public static String decodeBASE64(String string) {
-    return decodeToString(DatatypeConverter.parseBase64Binary(string), CharEncoding.UTF_8);
+    return decodeToString(DatatypeConverter.parseBase64Binary(string), StandardCharsets.UTF_8);
   }
 
   /**

@@ -24,6 +24,7 @@
 package org.silverpeas.core.silverstatistics.volume.service;
 
 import org.apache.commons.text.StringTokenizer;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.volume.dao.SilverStatisticsDAO;
 import org.silverpeas.core.silverstatistics.volume.dao.SilverStatisticsManagerDAO;
@@ -45,6 +46,7 @@ import static org.silverpeas.core.silverstatistics.volume.model.SilverStatistics
  *
  * @author SLR
  */
+@Service
 @Singleton
 public class SilverStatisticsService implements SilverStatistics {
 
