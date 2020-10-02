@@ -143,6 +143,7 @@ class ChatUserRegistrationTest {
     when(settings.isChatEnabled()).thenReturn(true);
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
     when(settings.getExplicitMappedXmppDomain(aUser.getDomainId())).thenReturn("im.silverpeas.net");
+    when(settings.getAllowedUserGroups()).thenReturn(Collections.emptyList());
     when(relationShip.getMyContactsIds(Integer.parseInt(aUser.getId()))).thenReturn(
         Collections.emptyList());
 
@@ -160,6 +161,7 @@ class ChatUserRegistrationTest {
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
     when(settings.getExplicitMappedXmppDomain(aUser.getDomainId())).thenReturn("");
     when(settings.getDefaultXmppDomain()).thenReturn("im.silverpeas.net");
+    when(settings.getAllowedUserGroups()).thenReturn(Collections.emptyList());
     when(relationShip.getMyContactsIds(Integer.parseInt(aUser.getId()))).thenReturn(
         Collections.emptyList());
 
@@ -191,6 +193,7 @@ class ChatUserRegistrationTest {
     when(settings.isChatEnabled()).thenReturn(true);
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
     when(settings.getExplicitMappedXmppDomain(aUser.getDomainId())).thenReturn("im.silverpeas.net");
+    when(settings.getAllowedUserGroups()).thenReturn(Collections.emptyList());
     when(relationShip.getMyContactsIds(Integer.parseInt(aUser.getId()))).thenReturn(theConnections);
 
     registration.registerUser(aUser);
@@ -211,6 +214,7 @@ class ChatUserRegistrationTest {
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
     when(settings.getExplicitMappedXmppDomain(aUser.getDomainId())).thenReturn("im.silverpeas.net");
     when(settings.getDefaultXmppDomain()).thenReturn("foo.silverpeas.net");
+    when(settings.getAllowedUserGroups()).thenReturn(Collections.emptyList());
     when(relationShip.getMyContactsIds(Integer.parseInt(aUser.getId()))).thenReturn(theConnections);
 
     registration.registerUser(aUser);
@@ -256,6 +260,7 @@ class ChatUserRegistrationTest {
     when(settings.isChatEnabled()).thenReturn(true);
     when(chatServer.isUserExisting(aUser)).thenReturn(false);
     when(settings.getExplicitMappedXmppDomain(aUser.getDomainId())).thenReturn("im.silverpeas.net");
+    when(settings.getAllowedUserGroups()).thenReturn(Collections.emptyList());
     when(relationShip.getMyContactsIds(Integer.parseInt(aUser.getId()))).thenReturn(theConnections);
 
     registration.registerUser(aUser);

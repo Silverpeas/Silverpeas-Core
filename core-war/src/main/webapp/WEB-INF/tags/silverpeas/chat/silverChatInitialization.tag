@@ -41,6 +41,7 @@
 
 <c:set var="chatUrl" value="${chatSettings.BOSHServiceUrl}"/>
 <c:set var="chatIceServer" value="${chatSettings.ICEServer}"/>
+<c:set var="chatACL" value="${chatSettings.ACL}"/>
 
 <script type="text/javascript">
   (function() {
@@ -58,6 +59,11 @@
           auth: true
         },
         </c:if>
+        acl : {
+          groupchat : {
+             creation: ${chatUser.isAtLeastInOneGroup(chatSettings.ACL.aclOnGroupChat.groupsAllowedToCreate)}
+          }
+        },
         language : '${chatUser.userPreferences.language}',
         avatar: webContext + '/display/avatar/60x/',
         notificationLogo: (window.SilverChatSettings ? window.SilverChatSettings.get('un.d.i.u') : ''),

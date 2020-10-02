@@ -189,7 +189,7 @@ public class GroupManager {
       throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       groupDao.addUsersInGroup(connection, userIds, groupId);
-      userIds.forEach(u -> notifyUserInGroup(ResourceEvent.Type.CREATION, groupId, u));
+      userIds.forEach(u -> notifyUserInGroup(ResourceEvent.Type.CREATION, u, groupId));
     } catch (SQLException e) {
       throw new AdminException(e.getMessage(), e);
     }

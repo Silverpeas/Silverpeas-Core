@@ -41,10 +41,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -117,6 +120,9 @@ public class LogAnnotationIT {
     try {
       // the log file can contains more than these two records as the tests can be ran several
       // times.
+      await().pollDelay(1, TimeUnit.SECONDS)
+          .atMost(2, TimeUnit.SECONDS)
+          .untilTrue(new AtomicBoolean(true));
       assertThat(Files.lines(getLogFile())
           .filter(line -> line.contains(record1) || line.contains(record2))
           .count(), is(greaterThanOrEqualTo(2l)));
@@ -131,6 +137,9 @@ public class LogAnnotationIT {
     try {
       // the log file can contains more than this record as the tests can be ran several
       // times.
+      await().pollDelay(1, TimeUnit.SECONDS)
+          .atMost(2, TimeUnit.SECONDS)
+          .untilTrue(new AtomicBoolean(true));
       assertThat(Files.lines(getLogFile()).filter(line -> line.contains(record))
           .count(), is(greaterThanOrEqualTo(1l)));
     } catch (IOException e) {
