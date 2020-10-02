@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.ChatServerException;
 import org.silverpeas.core.chat.ChatSettings;
 import org.silverpeas.core.chat.ChatUser;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
 /**
@@ -38,6 +39,10 @@ import org.silverpeas.core.util.StringUtil;
  * @author remipassmoilesel
  */
 public interface ChatServer {
+
+  static ChatServer get() {
+    return ServiceProvider.getService(ChatServer.class, DefaultChatServer.Literal.INSTANCE);
+  }
 
   /**
    * Gets the settings on the chat service. These settings provide the endpoint definitions as well

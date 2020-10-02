@@ -83,7 +83,11 @@ public class ChatUsersRegistration {
    * @throws ChatServerException a runtime exception if the registration fails.
    */
   public void registerUser(final User user) {
-    if (!isAlreadyRegistered(user) && isChatServiceAllowed(user)) {
+    if (!isChatServiceAllowed(user)) {
+      logger.debug("The user {0} isn't allowed to access the chat service", user.getDisplayedName());
+    } else if (isAlreadyRegistered(user)) {
+      logger.debug("The user {0} is already registered to access the chat service", user.getDisplayedName());
+    } else {
       logger.debug("Register user {0}", user.getDisplayedName());
       chatServer.createUser(user);
       final List<String> contactIds =
@@ -96,9 +100,6 @@ public class ChatUsersRegistration {
                 c.getDisplayedName());
             chatServer.createRelationShip(user, c);
           });
-    } else {
-      logger.debug("The user {0} isn't allowed to access the chat service",
-          user.getDisplayedName());
     }
   }
 
