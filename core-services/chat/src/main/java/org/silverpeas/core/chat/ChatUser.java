@@ -144,6 +144,17 @@ public class ChatUser extends UserDetail {
     return true;
   }
 
+  /**
+   * Is the user at least in one of the following groups of users in Silverpeas? This method is
+   * mainly used to check the ACL on the chat client functionalities when bootstrapping later.
+   * @param groupIds a list of unique identifiers of group of users in Silverpeas.
+   * @return true if the user is at least in one of the specified groups.
+   */
+  public boolean isAtLeastInOneGroup(final List<String> groupIds) {
+    String[] actualGroupIds = getOrganisationController().getAllGroupIdsOfUser(getId());
+    return Stream.of(actualGroupIds).anyMatch(groupIds::contains);
+  }
+
   @Override
   public String getId() {
     return user.getId();

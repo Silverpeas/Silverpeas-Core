@@ -27,11 +27,13 @@ package org.silverpeas.core.chat.listeners;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.GroupManager;
+import org.silverpeas.core.admin.user.model.GroupCache;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.UserRegistrationIT;
 import org.silverpeas.core.chat.servers.DefaultChatServer;
@@ -43,8 +45,7 @@ import org.silverpeas.core.test.rule.DbSetupRule;
 import javax.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -72,6 +73,9 @@ public class ChatGroupUserLinkEventListenerIT {
   @Inject
   private GroupManager groupManager;
 
+  @Inject
+  private GroupCache cache;
+
   private String mappedDomainId = "0";
   private String nonMappedDomainId = "1";
   private String[] allowedGroups = new String[] {"1", "3"};
@@ -91,18 +95,23 @@ public class ChatGroupUserLinkEventListenerIT {
     when(server.getMock().isUserExisting(any(User.class))).thenReturn(false);
   }
 
+  @After
+  public void cleanUpCache() {
+    cache.clearCache();
+  }
+
   @Test
   public void emptyTest() {
     assertThat(true, is(true));
   }
 
   @Test
-  public void aUserHasBeenAddedIntoANotAllowedGroup() {
+  public void aUserHasBeenAddedIntoANotAllowedGroup() throws Exception {
     final String userId = "1";
     final String groupId = notAllowedGroups[0];
-    Transaction.performInNew(() -> {
+    doInTransaction(() -> {
+      assertThat(groupManager.getAllGroupsOfUser(userId), empty());
       groupManager.addUserInGroup(userId, groupId);
-      return null;
     });
 
     final User user = User.getById(userId);
@@ -110,16 +119,29 @@ public class ChatGroupUserLinkEventListenerIT {
   }
 
   @Test
-  public void aUserHasBeenAddedIntoAnAllowedGroup() {
-    final String userId = "1";
+  public void aUserHasBeenAddedIntoAnAllowedGroup() throws Exception {
+    final String userId = "2";
     final String groupId = allowedGroups[0];
-    Transaction.performInNew(() -> {
+    doInTransaction(() -> {
+      assertThat(groupManager.getAllGroupsOfUser(userId), empty());
       groupManager.addUserInGroup(userId, groupId);
-      return null;
     });
 
     final User user = User.getById(userId);
     verify(server.getMock()).createUser(user);
+  }
+
+  private void doInTransaction(final MyFunction function) throws Exception {
+    Transaction.performInNew(() -> {
+      function.apply();
+      return null;
+    });
+  }
+
+  @FunctionalInterface
+  private interface MyFunction {
+
+    void apply() throws Exception;
   }
 }
   

@@ -60,6 +60,70 @@ CREATE TABLE IF NOT EXISTS ST_Domain
     CONSTRAINT PK_ST_Domain PRIMARY KEY (id)
 );
 
+CREATE TABLE ST_Space
+(
+    id                   int             NOT NULL,
+    domainFatherId       int,
+    name                 varchar(100)    NOT NULL,
+    description          varchar(400),
+    createdBy            int,
+    firstPageType        int             NOT NULL,
+    firstPageExtraParam  varchar(400),
+    orderNum             int DEFAULT (0) NOT NULL,
+    createTime           varchar(20),
+    updateTime           varchar(20),
+    removeTime           varchar(20),
+    spaceStatus          char(1),
+    updatedBy            int,
+    removedBy            int,
+    lang                 char(2),
+    isInheritanceBlocked int default (0) NOT NULL,
+    look                 varchar(50),
+    displaySpaceFirst    smallint,
+    isPersonal           smallint,
+    CONSTRAINT PK_Space PRIMARY KEY (id),
+    CONSTRAINT UN_Space_1 UNIQUE(domainFatherId, name)
+);
+
+CREATE TABLE ST_SpaceI18N
+(
+    id          int          NOT NULL,
+    spaceId     int          NOT NULL,
+    lang        char(2)      NOT NULL,
+    name        varchar(100) NOT NULL,
+    description varchar(400)
+);
+
+CREATE TABLE ST_ComponentInstance
+(
+    id                   int             NOT NULL,
+    spaceId              int             NOT NULL,
+    name                 varchar(100)    NOT NULL,
+    componentName        varchar(100)    NOT NULL,
+    description          varchar(400),
+    createdBy            int,
+    orderNum             int DEFAULT (0) NOT NULL,
+    createTime           varchar(20),
+    updateTime           varchar(20),
+    removeTime           varchar(20),
+    componentStatus      char(1),
+    updatedBy            int,
+    removedBy            int,
+    isPublic             int DEFAULT (0) NOT NULL,
+    isHidden             int DEFAULT (0) NOT NULL,
+    lang                 char(2),
+    isInheritanceBlocked int default (0) NOT NULL
+);
+
+CREATE TABLE ST_ComponentInstanceI18N
+(
+    id          int          NOT NULL,
+    componentId int          NOT NULL,
+    lang        char(2)      NOT NULL,
+    name        varchar(100) NOT NULL,
+    description varchar(400)
+);
+
 CREATE TABLE IF NOT EXISTS ST_GroupUserRole
 (
     id       INT          NOT NULL,
@@ -175,4 +239,37 @@ CREATE TABLE ST_UserRole_Group_Rel
     CONSTRAINT PK_UserRole_Group_Rel PRIMARY KEY (userRoleId, groupId),
     CONSTRAINT FK_UserRole_Group_Rel_1 FOREIGN KEY (userRoleId) REFERENCES ST_UserRole (id),
     CONSTRAINT FK_UserRole_Group_Rel_2 FOREIGN KEY (groupId) REFERENCES ST_Group (id)
+);
+
+CREATE TABLE SB_ContentManager_Instance
+(
+    instanceId    int          NOT NULL,
+    componentId   varchar(100) NOT NULL,
+    containerType varchar(100) NOT NULL,
+    contentType   varchar(100) NOT NULL,
+    CONSTRAINT PK_ContentManager_Instance PRIMARY KEY (instanceId)
+);
+
+CREATE TABLE SB_ContentManager_Content
+(
+    silverContentId   int          NOT NULL,
+    internalContentId varchar(100) NOT NULL,
+    contentInstanceId int          NOT NULL,
+    authorId          int          NOT NULL,
+    creationDate      date         NOT NULL,
+    beginDate         varchar(10)  NULL,
+    endDate           varchar(10)  NULL,
+    isVisible         int          NULL,
+    CONSTRAINT PK_ContentManager_Content PRIMARY KEY (silverContentId)
+);
+
+create table sb_sn_relationship
+(
+    id                 int       not null,
+    user1id            int       not null,
+    user2id            int       not null,
+    typerelationshipid int,
+    acceptancedate     timestamp not null,
+    inviterid          int       not null,
+    CONSTRAINT pk_sb_sn_relationship PRIMARY KEY (id)
 );

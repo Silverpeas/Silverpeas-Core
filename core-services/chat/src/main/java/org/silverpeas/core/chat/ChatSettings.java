@@ -190,9 +190,16 @@ public class ChatSettings {
    * @return an array of group identifiers or an empty array if all the groups are allowed.
    */
   public List<String> getAllowedUserGroups() {
-    String groups = settings.getString("chat.xmpp.domain.groups", "");
-    return groups.trim().isEmpty() ? Collections.emptyList() :
-        Stream.of(groups.split(",")).map(String::trim).collect(Collectors.toList());
+    return getListProperty("chat.xmpp.domain.groups");
+  }
+
+  /**
+   * Gets the ACL on the chat client.
+   * @return a {@link ChatACL} instance representing the ACL configured in the use of the chat
+   * client.
+   */
+  public ChatACL getACL() {
+    return new ChatACL();
   }
 
   /**
@@ -205,6 +212,44 @@ public class ChatSettings {
     final String rest = settings.getString("chat.xmpp.rest", "");
     final String bosh = settings.getString("chat.xmpp.httpBind", "");
     return enabled && !rest.isEmpty() && !bosh.isEmpty();
+  }
+
+  private List<String> getListProperty(final String property) {
+    String groups = settings.getString(property, "");
+    return groups.trim().isEmpty() ? Collections.emptyList() :
+        Stream.of(groups.split(",")).map(String::trim).collect(Collectors.toList());
+  }
+
+  /**
+   * ACL on the behaviour of the chat client.
+   */
+  public class ChatACL {
+
+    /**
+     * ACL on the behaviour of the group chats
+     */
+    public class GroupChat {
+
+      private GroupChat() {
+      }
+
+      /**
+       * Gets the list of identifiers of the groups of users in Silverpeas that are allowed to
+       * create a group chat and then to invite others users in that group chat.
+       * @return a list of Silverpeas group identifiers.
+       */
+      public List<String> getGroupsAllowedToCreate() {
+        return getListProperty("chat.acl.groupchat.creation");
+      }
+
+    }
+
+    private ChatACL() {
+    }
+
+    public GroupChat getAclOnGroupChat() {
+      return new GroupChat();
+    }
   }
 }
   
