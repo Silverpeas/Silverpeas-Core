@@ -25,6 +25,7 @@ package org.silverpeas.core.importexport.control;
 
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasExceptionMessages.LightExceptionMessage;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
@@ -87,6 +88,7 @@ import java.util.Date;
 import java.util.List;
 
 import static java.io.File.separator;
+import static java.text.MessageFormat.format;
 
 /**
  * Classe manager des importations unitaires du moteur d'importExport de silverPeas
@@ -307,8 +309,10 @@ public class PublicationsTypeManager {
             attachment = AttachmentServiceProvider.getAttachmentService()
                 .searchDocumentById(new SimpleDocumentPK(imageId, publicationPk.getInstanceId()),
                     null);
-          } catch (RuntimeException e1) {
-            SilverLogger.getLogger(this).silent(e1).warn("Cannot get file: {0}", e1.getMessage());
+          } catch (Exception e1) {
+            SilverLogger.getLogger(this).error(new LightExceptionMessage(this, e1).singleLineWith(
+                format("Cannot get file #{0} of publication #{1} on instanceId #{2} ({3})", imageId,
+                    publicationPk.getId(), publicationPk.getInstanceId(), e1.getMessage())));
           }
 
           if (attachment != null) {
@@ -317,7 +321,10 @@ public class PublicationsTypeManager {
               FileRepositoryManager
                   .copyFile(fromPath, exportPublicationPath + separator + attachment.getFilename());
             } catch (Exception e) {
-              SilverLogger.getLogger(this).silent(e).warn("Cannot write file: {0}", e.getMessage());
+              SilverLogger.getLogger(this).error(new LightExceptionMessage(this, e).singleLineWith(
+                  format("Cannot write file #{0} ({1}) of publication #{2} on instanceId #{3} ({4})",
+                      imageId, attachment.getNodeName(), publicationPk.getId(),
+                      publicationPk.getInstanceId(), e.getMessage())));
             }
             xmlField.setValue(exportPublicationRelativePath + separator + attachment.getFilename());
           }
@@ -329,10 +336,10 @@ public class PublicationsTypeManager {
             attachment = AttachmentServiceProvider.getAttachmentService()
                 .searchDocumentById(new SimpleDocumentPK(fileId, publicationPk.getInstanceId()),
                     null);
-          } catch (RuntimeException e1) {
-            SilverLogger.getLogger(this)
-                .silent(e1)
-                .warn("Cannot get attachment: {0}", e1.getMessage());
+          } catch (Exception e1) {
+            SilverLogger.getLogger(this).error(new LightExceptionMessage(this, e1).singleLineWith(
+                format("Cannot get file #{0} of publication #{1} on instanceId #{2} ({3})", fileId,
+                    publicationPk.getId(), publicationPk.getInstanceId(), e1.getMessage())));
           }
           if (attachment != null) {
             xmlField.setValue(exportPublicationRelativePath + separator + attachment.getFilename());
@@ -373,7 +380,10 @@ public class PublicationsTypeManager {
     if (!dir.exists()) {
       boolean creationOK = dir.mkdirs();
       if (!creationOK) {
-        throw new IOException();
+        final IOException ioException = new IOException(format("Cannot create folder {0}", dir));
+        SilverLogger.getLogger(this).error(
+            new LightExceptionMessage(this, ioException).singleLineWith(ioException.getMessage()));
+        throw ioException;
       }
     }
     return pathToCreateAscii;

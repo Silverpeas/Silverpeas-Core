@@ -26,6 +26,7 @@ package org.silverpeas.core.importexport.attachment;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasExceptionMessages.LightExceptionMessage;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -51,6 +52,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import static java.text.MessageFormat.format;
 import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.StringUtil.normalize;
@@ -239,9 +241,10 @@ public class AttachmentImportExport {
             AttachmentDetail attachDetail = new AttachmentDetail(attachment, physicalName);
             listToReturn.add(attachDetail);
           } catch (Exception e) {
-            SilverLogger.getLogger(this).error(
-                "Can't export document #" + attachment.getId() + " of publication #" +
-                    attachment.getForeignId());
+            SilverLogger.getLogger(this).error(new LightExceptionMessage(this, e).singleLineWith(
+                format("Cannot export document #{0} ({1}) of publication #{2} ({3})",
+                    attachment.getId(), attachment.getNodeName(), attachment.getForeignId(),
+                    e.getMessage())));
           }
         }
       }
