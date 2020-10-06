@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.security.encryption;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,12 +36,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.stream.Stream;
 
 /**
  * This is our own implementation of X509TrustManager using the default one but specifying our own
@@ -48,28 +49,29 @@ public class SilverpeasX509TrustManager implements X509TrustManager {
   private X509TrustManager defaultTrustManager;
 
   public SilverpeasX509TrustManager(String trustStoreFile, char[] password) {
-    InputStream fis = null;
     try {
-      KeyStore trustore = KeyStore.getInstance(KeyStore.getDefaultType());
-      fis = new FileInputStream(trustStoreFile);
-      trustore.load(fis, password);
-      TrustManagerFactory tmf = TrustManagerFactory.getInstance("PKIX");
-      tmf.init(trustore);
-      TrustManager tms[] = tmf.getTrustManagers();
-      for (TrustManager trustManager : tms) {
-        if (trustManager instanceof X509TrustManager) {
-          defaultTrustManager = (X509TrustManager) trustManager;
-          return;
-        }
-      }
-    } catch (IOException ioex) {
-      logger.error("Couldn't load trustore " + trustStoreFile, ioex);
+      KeyStore truststore = KeyStore.getInstance(KeyStore.getDefaultType());
+      initTrustManager(trustStoreFile, truststore, password);
     } catch (GeneralSecurityException secEx) {
-      logger.error("Couldn't create trustore " + trustStoreFile, secEx);
-    } finally {
-      IOUtils.closeQuietly(fis);
+      logger.error(String.format("Couldn't create truststore %s", trustStoreFile), secEx);
     }
+  }
 
+  private void initTrustManager(final String trustStoreFile, final KeyStore keyStore,
+      final char[] password) throws GeneralSecurityException {
+    try (InputStream fis = new FileInputStream(trustStoreFile)) {
+      keyStore.load(fis, password);
+      TrustManagerFactory tmf = TrustManagerFactory.getInstance("PKIX");
+      tmf.init(keyStore);
+      TrustManager[] tms = tmf.getTrustManagers();
+      defaultTrustManager = Stream.of(tms)
+          .filter(t -> t instanceof X509TrustManager)
+          .map(t -> (X509TrustManager) t)
+          .findFirst()
+          .orElseThrow(() -> new GeneralSecurityException("No X509 TrustStore Manager found!"));
+    } catch (IOException ioex) {
+      logger.error(String.format("Couldn't load truststore %s", trustStoreFile), ioex);
+    }
   }
 
   @Override

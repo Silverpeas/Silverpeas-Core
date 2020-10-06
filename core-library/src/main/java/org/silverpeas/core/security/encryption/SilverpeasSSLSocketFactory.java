@@ -24,13 +24,14 @@
 package org.silverpeas.core.security.encryption;
 
 import org.silverpeas.core.util.StringUtil;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
+
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 
 /**
  * This is our own implementation of SSLSocketFactory using the default one but specifying our own
@@ -44,7 +45,7 @@ public class SilverpeasSSLSocketFactory extends SSLSocketFactory {
   public static final String TRUSTSTORE_PASSWORD_KEY = "javax.net.ssl.trustStorePassword";
   private SSLSocketFactory factory;
 
-  private char[] getTrustorePassword() {
+  private char[] getTrustStorePassword() {
     char[] password = new char[0];
     if (StringUtil.isDefined(System.getProperty(TRUSTSTORE_PASSWORD_KEY))) {
       password = System.getProperty(TRUSTSTORE_PASSWORD_KEY).toCharArray();
@@ -57,7 +58,7 @@ public class SilverpeasSSLSocketFactory extends SSLSocketFactory {
       SSLContext sslcontext = SSLContext.getInstance("TLS");
       sslcontext.init(null,
           new TrustManager[] { new SilverpeasX509TrustManager(System.getProperty(TRUSTSTORE_KEY),
-          getTrustorePassword()) }, null);
+          getTrustStorePassword()) }, null);
       factory = sslcontext.getSocketFactory();
     } catch (Exception ex) {
       // ignore

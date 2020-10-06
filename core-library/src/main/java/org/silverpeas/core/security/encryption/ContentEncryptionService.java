@@ -175,8 +175,7 @@ public interface ContentEncryptionService {
    * @throws CryptoException if an error while renewing the cipher of the encrypted contents with
    * the new cipher key.
    */
-  void renewCipherOfContents(final EncryptionContentIterator... iterators) throws
-      CipherKeyUpdateException, CryptoException;
+  void renewCipherOfContents(final EncryptionContentIterator... iterators) throws CryptoException;
 
   /**
    * Updates the key to use to encrypt and to decrypt the enciphered content. The key must be in
@@ -199,7 +198,7 @@ public interface ContentEncryptionService {
    * @throws CryptoException if an error while renewing the cipher of the encrypted contents with
    * the new cipher key.
    */
-  void updateCipherKey(final String key) throws CipherKeyUpdateException, CryptoException;
+  void updateCipherKey(final String key) throws CryptoException;
 
   /**
    * Checks if a key is defined and so if content can be encrypted

@@ -62,7 +62,7 @@ import static org.mockito.Mockito.*;
 @EnableSilverTestEnv
 @TestManagedMocks({Scheduler.class, SilverStatistics.class, DefaultServerEventNotifier.class,
     ServerMessageService.class, PopupMessageService.class})
-public class SilverpeasSessionOpenerTest {
+class SilverpeasSessionOpenerTest {
 
   @TestedBean
   private SessionManagement sessionManagement = new SessionManagerStub();
@@ -92,7 +92,7 @@ public class SilverpeasSessionOpenerTest {
    * Test of isAnonymousUser method, of class SilverpeasSessionOpenener.
    */
   @Test
-  public void testIsAnonymousUser() {
+  void testIsAnonymousUser() {
     boolean result = httpRequest.isWithinAnonymousUserSession();
     assertThat(result, is(false));
     UserDetail user = mock(UserDetail.class);
@@ -109,7 +109,7 @@ public class SilverpeasSessionOpenerTest {
    * Test of getErrorPageUrl method, of class SilverpeasSessionOpenener.
    */
   @Test
-  public void testGetErrorPageUrl() {
+  void testGetErrorPageUrl() {
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
     String url = instance.getAbsoluteUrl(httpRequest);
     assertThat(url, is("http://www.silverpeas.org:80/silverpeas/"));
@@ -121,7 +121,7 @@ public class SilverpeasSessionOpenerTest {
    * Test of getAbsoluteUrl method, of class SilverpeasSessionOpenener.
    */
   @Test
-  public void testGetAbsoluteUrl() {
+  void testGetAbsoluteUrl() {
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
     String url = instance.getAbsoluteUrl(httpRequest);
     assertThat(url, is("http://www.silverpeas.org:80/silverpeas/"));
@@ -140,7 +140,7 @@ public class SilverpeasSessionOpenerTest {
    * Test of closeSession method, of class SilverpeasSessionOpenener.
    */
   @Test
-  public void testUnauthenticate() {
+  void testUnauthenticate() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     when(request.getSession()).thenReturn(session);
     when(session.getAttributeNames()).thenReturn(Collections.enumeration(CollectionUtil.asList(

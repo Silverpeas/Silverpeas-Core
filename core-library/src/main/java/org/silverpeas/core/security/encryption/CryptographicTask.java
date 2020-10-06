@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.security.encryption;
 
-import java.util.Map;
 import org.silverpeas.core.security.encryption.cipher.Cipher;
 import org.silverpeas.core.security.encryption.cipher.CipherKey;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
+
+import java.util.Map;
 
 /**
  * A cryptographic task the DefaultContentEncryptionService instances can perform on the contents
@@ -44,12 +45,12 @@ import org.silverpeas.core.security.encryption.cipher.CryptoException;
  */
 class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask {
 
-  private static enum Type {
-
+  private enum Type {
     ENCRYPTION,
     DECRYPTION,
     RENEW;
   }
+
   private final Type task;
   private EncryptionContentIterator[] iterators;
   private boolean privileged = false;
@@ -127,7 +128,7 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
     theContents.init();
     Map<String, String> content = null;
     try {
-      for (; theContents.hasNext();) {
+      while (theContents.hasNext()) {
         content = theContents.next();
         switch (task) {
           case ENCRYPTION:

@@ -24,21 +24,20 @@
 package org.silverpeas.core.security.encryption;
 
 import net.sourceforge.jcetaglib.lib.X509Cert;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.security.authentication.password.encryption.UnixDESEncryption;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
@@ -57,11 +56,13 @@ public class X509Factory {
 
   static {
     SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.util.security");
+    String home = SystemWrapper.get().getenv("SILVERPEAS_HOME");
+    Path defaultTrustStorePath = Path.of(home, "configuration", "security", "servercert");
+    Path defaultP12DirPath = Path.of(home, "configuration", "security", "p12");
+
     truststoreFile = settings
-        .getString(
-        "x509.TruststoreFile",
-        "C:\\Silverpeas\\KMEdition\\Tools\\jboss403\\server\\default\\conf\\server.truststore");
-    truststorePwd = settings.getString("x509.TruststorePwd", "servercert");
+        .getString("x509.TruststoreFile", "server.truststore");
+    truststorePwd = settings.getString("x509.TruststorePwd", defaultTrustStorePath.toString());
 
     String ou = settings.getString("x509.DN_OU", "silverpeas.com"); // Organizational
     // Unit
@@ -70,58 +71,49 @@ public class X509Factory {
     String l = settings.getString("x509.DN_L", "Grenoble"); // City or Locality
     String c = settings.getString("x509.DN_C", "FR"); // Two-letter country code
 
-    // subjectDNSuffix = "OU="+ou+", O="+o+", L="+l+", C="+c;
     subjectDNSuffix = "C=" + c + ", L=" + l + ", O=" + o + ", OU=" + ou;
 
     validity = Integer.parseInt(settings.getString("x509.Validity", "365"));
 
-    p12Dir = settings.getString("p12.dir",
-        "C:\\Silverpeas\\KMEdition\\Tools\\jboss403\\server\\default\\conf\\");
+    p12Dir = settings.getString("p12.dir", defaultP12DirPath.toString());
     p12Salt = settings.getString("p12.salt", "SP");
   }
 
+  private X509Factory() {
+  }
+
   public static void buildP12(String userId, String login, String userLastName,
-      String userFirstName, String domainId) throws UtilException {
+      String userFirstName, String domainId) {
     // Create self signed public/private key pair for client
-    KeyPair keyPair = null;
+    KeyPair keyPair;
     try {
       keyPair = X509Cert.generateKeyPair("RSA", 1024, new byte[0]);
     } catch (Exception e) {
-      throw new UtilException("X509Factory.buildP12",
-          SilverpeasException.ERROR, "util.CANT_GENERATE_KEYPAIR", e);
+      throw new SilverpeasRuntimeException("Cannot generate key pair", e);
     }
 
     PrivateKey privateKey = keyPair.getPrivate();
     PublicKey publicKey = keyPair.getPublic();
 
-    // String subjectDN = "CN="+userLastName+","+subjectDNSuffix;
-    if (userFirstName == null)
-      userFirstName = "";
-
-    String subjectDN = subjectDNSuffix + ", CN=" + userFirstName + " "
-        + userLastName;
+    String firstName = userFirstName == null ? "" : userFirstName;
+    String subjectDN = subjectDNSuffix + ", CN=" + firstName + " " + userLastName;
 
     // Generate certificate
-    X509Certificate myCert = null;
+    X509Certificate myCert;
     try {
       myCert = X509Cert.selfsign(privateKey, publicKey, "MD5WithRSAEncryption",
           validity, subjectDN, false, "client");
     } catch (CertificateException e) {
-      throw new UtilException("X509Factory.buildP12",
-          SilverpeasException.ERROR,
-          "util.CANT_CREATE_SELFSIGNED_X509_CERTIFICATE", e);
+      throw new SilverpeasRuntimeException("Cannot create self-signed X509 certificate", e);
     }
 
     KeyStore keyStore = getKeyStore();
 
     String alias = userId;
-
     try {
       keyStore.setCertificateEntry(alias, myCert);
     } catch (KeyStoreException e) {
-      throw new UtilException("X509Factory.buildP12",
-          SilverpeasException.ERROR,
-          "util.CANT_STORE_X509_CERTIFICATE_INTO_TRUSTSTORE", e);
+      throw new SilverpeasRuntimeException("Cannot store X509 certificate into the truststore", e);
     }
 
     writeKeyStore(keyStore);
@@ -135,61 +127,37 @@ public class X509Factory {
       X509Cert.saveAsP12(myCert, null, privateKey, p12File, alias,
           new StringBuffer(password));
     } catch (Exception e) {
-      throw new UtilException("X509Factory.buildP12",
-          SilverpeasException.ERROR, "util.CANT_CREATE_PKCS12_FILE", e);
+      throw new SilverpeasRuntimeException("Cannot create PKCS12 file", e);
     }
   }
 
-  public static void revocateUserCertificate(String userId)
-      throws UtilException {
+  public static void revocateUserCertificate(String userId) {
     KeyStore keyStore = getKeyStore();
 
     if (keyStore != null) {
       try {
         keyStore.deleteEntry(userId);
       } catch (KeyStoreException e) {
-        throw new UtilException("X509Factory.revocateUserCertificate",
-            SilverpeasException.ERROR,
-            "util.CANT_DELETE_X509_CERTIFICATE_FROM_TRUSTSTORE", e);
+        throw new SilverpeasRuntimeException("Cannot delete X509 certificate from the truststore",
+            e);
       }
 
       writeKeyStore(keyStore);
     }
   }
 
-  private static KeyStore getKeyStore() throws UtilException {
-    KeyStore keyStore = null;
+  private static KeyStore getKeyStore() {
+    KeyStore keyStore;
     try {
       keyStore = KeyStore.getInstance("jks");
     } catch (KeyStoreException e) {
-      throw new UtilException("X509Factory.getKeyStore",
-          SilverpeasException.ERROR, "util.CANT_GET_KEYSTORE_INSTANCE", e);
+      throw new SilverpeasRuntimeException("Cannot get a Keystore", e);
     }
 
     // Get KeyStore objet from file (the truststore)
-    FileInputStream fis = null;
-    try {
-      fis = new FileInputStream(truststoreFile);
-    } catch (FileNotFoundException e) {
-      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
-    }
-    try {
+    try(InputStream fis = new FileInputStream(truststoreFile)) {
       keyStore.load(fis, truststorePwd.toCharArray());
-    } catch (NoSuchAlgorithmException e) {
-      
-      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
-    } catch (CertificateException e) {
-      
-      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
-    } catch (IOException e) {
-      
-      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
-    }
-    try {
-      if (fis != null)
-        fis.close();
-    } catch (IOException e) {
-      
+    } catch (Exception e) {
       SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
     }
 
@@ -198,34 +166,10 @@ public class X509Factory {
 
   private static void writeKeyStore(KeyStore keyStore) {
     // Writing Keystore back to file
-    FileOutputStream fos = null;
-    try {
-      fos = new FileOutputStream(truststoreFile);
-    } catch (FileNotFoundException e) {
-      
-      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
-    }
-    try {
+    try (FileOutputStream fos = new FileOutputStream(truststoreFile)) {
       keyStore.store(fos, truststorePwd.toCharArray());
-    } catch (KeyStoreException e) {
-      
+    } catch (Exception e) {
       SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
-    } catch (NoSuchAlgorithmException e) {
-      
-      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
-    } catch (CertificateException e) {
-      
-      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
-    } catch (IOException e) {
-      
-      SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
-    }
-    if (fos != null) {
-      try {
-        fos.close();
-      } catch (IOException e) {
-        SilverLogger.getLogger(X509Factory.class).error(e.getMessage(), e);
-      }
     }
   }
 }

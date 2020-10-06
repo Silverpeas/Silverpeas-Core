@@ -40,6 +40,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -546,8 +547,9 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
         byte[] encryptedKey = cipher.encrypt(key, encryptionKey);
         String encryptedContent = StringUtil.asBase64(encryptionKey.getRawKey()) + KEY_SEP
             + StringUtil.asBase64(encryptedKey);
-        Files.copy(new ByteArrayInputStream(encryptedContent.getBytes()), keyFile.toPath(),
-            REPLACE_EXISTING);
+        try(InputStream contentStream = new ByteArrayInputStream(encryptedContent.getBytes())) {
+          Files.copy(contentStream, keyFile.toPath(), REPLACE_EXISTING);
+        }
         keyFile.setReadOnly();
         setHidden(ACTUAL_KEY_FILE_PATH);
 
