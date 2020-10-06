@@ -24,6 +24,7 @@
 package org.silverpeas.core.importexport.control;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasExceptionMessages.LightExceptionMessage;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -88,6 +89,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+
+import static java.text.MessageFormat.format;
 
 /**
  * Classe metier de creation d'entites silverpeas utilisee par le moteur d'importExport.
@@ -799,8 +802,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         XMLModelContentType xmlModel = new XMLModelContentType(publicationDetail.getInfoId());
         xmlModel.setFields(xmlFields);
         pubContent.setXMLModelContentType(xmlModel);
-      } else if (WysiwygController
-          .haveGotWysiwyg(publicationDetail.getPK().getInstanceId(), pubId, I18NHelper.checkLanguage(publicationDetail.getLanguage()))) {
+      } else if (WysiwygController.haveGotWysiwyg(publicationDetail.getPK().getInstanceId(), pubId,
+          I18NHelper.checkLanguage(publicationDetail.getLanguage()))) {
         pubContent = new PublicationContentType();
         WysiwygContentType wysiwygContentType = new WysiwygContentType();
         String wysiwygFileName = WysiwygController
@@ -809,7 +812,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
         pubContent.setWysiwygContentType(wysiwygContentType);
       }
     } catch (Exception e) {
-      SilverLogger.getLogger(this).error("Can't export content of publication #"+pubId);
+      SilverLogger.getLogger(this).error(new LightExceptionMessage(this, e).singleLineWith(
+          format("Cannot export content of publication #{0} on instanceId #{1} ({2})", pubId,
+              publicationDetail.getPK().getInstanceId(), e.getMessage())));
     }
     publicationType.setPublicationContentType(pubContent);
     publicationType.setPublicationDetail(publicationDetail);
