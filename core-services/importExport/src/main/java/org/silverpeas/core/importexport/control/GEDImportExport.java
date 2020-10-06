@@ -24,6 +24,7 @@
 package org.silverpeas.core.importexport.control;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasExceptionMessages.LightExceptionMessage;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -88,6 +89,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+
+import static java.text.MessageFormat.format;
 
 /**
  * Classe metier de creation d'entites silverpeas utilisee par le moteur d'importExport.
@@ -779,19 +782,17 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @param pubId the publication identifier
    * @param componentId the component instance identifier
    * @return
-   * @throws ImportExportException
    */
-  public PublicationType getPublicationCompleteById(String pubId, String componentId)
-      throws ImportExportException {
+  public PublicationType getPublicationCompleteById(String pubId, String componentId) {
     PublicationType publicationType = new PublicationType();
-    try {
       CompletePublication pubComplete =
           getCompletePublication(new PublicationPK(pubId, getCurrentComponentId()));
 
-      // Recuperation de l'objet PublicationDetail
-      PublicationDetail publicationDetail = pubComplete.getPublicationDetail();
+    // Recuperation de l'objet PublicationDetail
+    PublicationDetail publicationDetail = pubComplete.getPublicationDetail();
 
-      PublicationContentType pubContent = null;
+    PublicationContentType pubContent = null;
+    try {
       if (!StringUtil.isInteger(publicationDetail.getInfoId())) {
         // la publication a un contenu de type XMLTemplate (formTemplate)
         pubContent = new PublicationContentType();
@@ -810,19 +811,21 @@ public abstract class GEDImportExport extends ComponentImportExport {
         wysiwygContentType.setPath(wysiwygFileName);
         pubContent.setWysiwygContentType(wysiwygContentType);
       }
-      publicationType.setPublicationContentType(pubContent);
-      publicationType.setPublicationDetail(publicationDetail);
-      publicationType.setId(Integer.parseInt(pubId));
-      publicationType.setComponentId(componentId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(new LightExceptionMessage(this, e).singleLineWith(
+          format("Cannot export content of publication #{0} on instanceId #{1} ({2})", pubId,
+              publicationDetail.getPK().getInstanceId(), e.getMessage())));
+    }
+    publicationType.setPublicationContentType(pubContent);
+    publicationType.setPublicationDetail(publicationDetail);
+    publicationType.setId(Integer.parseInt(pubId));
+    publicationType.setComponentId(componentId);
 
-      // Recherche du nom et du prenom du createur de la pub pour le marschalling
-      User creator = publicationDetail.getCreator();
-      if (creator != null) {
-        String nomPrenomCreator = creator.getDisplayedName();
-        publicationDetail.setCreatorName(nomPrenomCreator);
-      }
-    } catch (Exception ex) {
-      throw new ImportExportException("importExport", "", "", ex);
+    // Recherche du nom et du prenom du createur de la pub pour le marschalling
+    User creator = publicationDetail.getCreator();
+    if (creator != null) {
+      String nomPrenomCreator = creator.getDisplayedName();
+      publicationDetail.setCreatorName(nomPrenomCreator);
     }
     return publicationType;
   }
