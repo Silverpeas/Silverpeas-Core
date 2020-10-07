@@ -38,7 +38,7 @@ public class SpaceI18N extends BeanTranslation {
   }
 
   public SpaceI18N(SpaceI18NRow row) {
-    super(row.id, row.lang, row.name, row.description);
+    super(String.valueOf(row.getId()), row.getLang(), row.getName(), row.getDescription());
   }
 
   public String getSpaceId() {

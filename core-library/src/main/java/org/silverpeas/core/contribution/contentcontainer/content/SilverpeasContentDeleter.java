@@ -40,18 +40,18 @@ import java.sql.Connection;
 public class SilverpeasContentDeleter implements ContributionDeletion {
 
   @Inject
-  private ContentManager contentManager;
+  private ContentManagementEngine contentMgtEngine;
 
   @Override
   public void delete(final Contribution contribution) {
     final ContributionIdentifier contributionId = contribution.getContributionId();
     try {
-      int contentId = contentManager
+      int contentId = contentMgtEngine
           .getSilverContentId(contributionId.getLocalId(), contributionId.getComponentInstanceId());
       if (contentId != -1) {
         Transaction.performInOne(() -> {
           try (Connection connection = DBUtil.openConnection()) {
-            contentManager.removeSilverContent(connection, contentId);
+            contentMgtEngine.removeSilverContent(connection, contentId);
           }
           return null;
         });

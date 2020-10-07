@@ -71,16 +71,6 @@ public class ProfiledObjectId implements ResourceIdentifier, Serializable {
   }
 
   /**
-   * Constructs from the specified node identifier a {@link ProfiledObjectId} instance that
-   * refers the node as an access right profiled object.
-   * @param nodeId the unique identifier of a node.
-   * @return the {@link ProfiledObjectId} instance representation of the node identifier.
-   */
-  public static ProfiledObjectId fromNode(final int nodeId) {
-    return fromNode(String.valueOf(nodeId));
-  }
-
-  /**
    * Constructs from its specified serialized expression a {@link ProfiledObjectId}  instance.
    * The expression must be formed with a code defining its type and of its local identifier.
    * For knowing possible types, please see {@link ProfiledObjectType} enumeration.

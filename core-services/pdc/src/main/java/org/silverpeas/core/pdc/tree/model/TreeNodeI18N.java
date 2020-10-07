@@ -36,9 +36,9 @@ public class TreeNodeI18N extends BeanTranslation implements java.io.Serializabl
   public TreeNodeI18N() {
   }
 
-  public TreeNodeI18N(int nodeId, String lang, String name, String description) {
+  public TreeNodeI18N(String nodeId, String lang, String name, String description) {
     super(lang, name, description);
-    setObjectId(Integer.toString(nodeId));
+    setObjectId(nodeId);
   }
 
   public TreeNodeI18N(final AxisHeaderI18N otherTranslation) {

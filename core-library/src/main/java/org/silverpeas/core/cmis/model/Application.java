@@ -41,7 +41,7 @@ public class Application extends CmisFolder {
   public static final TypeId CMIS_TYPE = TypeId.SILVERPEAS_APPLICATION;
 
   public static List<TypeId> getAllAllowedChildrenTypes() {
-    return Collections.emptyList();
+    return Collections.singletonList(TypeId.SILVERPEAS_FOLDER);
   }
 
   Application(final String id, final String name, final String language) {
@@ -51,7 +51,7 @@ public class Application extends CmisFolder {
   @Override
   public String getPath() {
     final OrganizationController controller = OrganizationController.get();
-    return CmisFolder.PATH_SEPARATOR + controller.getPathToComponent(getId())
+    return PATH_SEPARATOR + controller.getPathToComponent(getId())
         .stream()
         .map(s -> s.getName(getLanguage()))
         .collect(Collectors.joining(PATH_SEPARATOR)) + PATH_SEPARATOR + getName();

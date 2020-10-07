@@ -23,7 +23,10 @@
  */
 package org.silverpeas.core.node.model;
 
+import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.AccessControlContext;
@@ -39,6 +42,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * This object contains the description of a node (own attributes and children attributes)
@@ -47,17 +51,19 @@ import java.util.Collection;
  */
 @XmlRootElement(name = "xmlField")
 @XmlAccessorType(XmlAccessType.NONE)
-public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Serializable,
-    Securable {
+public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Identifiable,
+    I18nContribution, Serializable, Securable {
 
   private static final long serialVersionUID = -1401884517616404337L;
   private static final String UNKNOWN = "unknown";
   public static final String DEFAULT_TYPE = "default";
+  public static final String TYPE = "Node";
   public static final String FILE_LINK_TYPE = "file_link";
   public static final String STATUS_VISIBLE = "Visible";
   public static final String STATUS_INVISIBLE = "Invisible";
+  public static final String NO_RIGHTS_DEPENDENCY = "-1";
   private NodePK nodePK;
-  private String creationDate = "";
+  private Date creationDate;
   private String creatorId = "";
   private String path = "";
   private String fullPath;
@@ -69,7 +75,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
   private Collection<NodeDetail> childrenDetails;
   private String type = DEFAULT_TYPE;
   private int order = 0;
-  private int rightsDependsOn = -1;
+  private String rightsDependsOn = NO_RIGHTS_DEPENDENCY;
   // No persistence - useful to store nb objects contained by this node
   private int nbObjects = -1;
   // No persistence - useful to store user role
@@ -159,9 +165,18 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
     this.nodePK = nodePK;
   }
 
-  @XmlAttribute
-  public int getId() {
-    return Integer.parseInt(getNodePK().getId());
+  public String getId() {
+    return getNodePK().getId();
+  }
+
+  @XmlAttribute(name = "id")
+  public int getLocalId() {
+    return Integer.parseInt(getId());
+  }
+
+  @Override
+  public String getContributionType() {
+    return getType().equals(DEFAULT_TYPE) ? TYPE : getType();
   }
 
   /**
@@ -173,12 +188,73 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
   }
 
   /**
+   * Is this node a bin of contributions?
+   * @return true if this node represents a bin. False otherwise.
+   */
+  public boolean isBin() {
+    return getNodePK().isTrash();
+  }
+
+  /**
+   * Is this node unclassified? A node is unclassified if it is an orphan, it isn't attached to an
+   * existing classification tree.
+   * @return true if the node isn't yet classified among other nodes. False otherwise.
+   */
+  public boolean isUnclassified() {
+    return getNodePK().isUnclassed();
+  }
+
+  /**
+   * Is this node a child of another node? A node is a child of another node if the following
+   * conditions are satisfied:
+   * <ul>
+   *   <li>the node isn't the root one,</li>
+   *   <li>the node isn't a bin,</li>
+   *   <li>the node isn't unclassified (orphaned).</li>
+   * </ul>
+   * @return
+   */
+  public boolean isChild() {
+    return getLocalId() > 2;
+  }
+
+  @Override
+  public ContributionIdentifier getContributionId() {
+    return ContributionIdentifier.from(getNodePK().getInstanceId(), getNodePK().getId(),
+        getContributionType());
+  }
+
+  @Override
+  public User getCreator() {
+    return User.getById(creatorId);
+  }
+
+  /**
    * Get the creation date
    * @return the creation date
    * @since 1.0
    */
-  public String getCreationDate() {
+  @Override
+  public Date getCreationDate() {
     return creationDate;
+  }
+
+  /**
+   * No modification is traced for nodes. Returns the creator.
+   * @return the creator of the node
+   */
+  @Override
+  public User getLastModifier() {
+    return getCreator();
+  }
+
+  /**
+   * No modification is traced for nodes. Returns the date of this node creation.
+   * @return the creation date.
+   */
+  @Override
+  public Date getLastModificationDate() {
+    return getCreationDate();
   }
 
   /**
@@ -248,7 +324,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
    * @param date A string representing a date
    * @since 1.0
    */
-  public void setCreationDate(String date) {
+  public void setCreationDate(Date date) {
     this.creationDate = date;
   }
 
@@ -399,20 +475,20 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
     this.nbObjects = nbObjects;
   }
 
-  public int getRightsDependsOn() {
+  public String getRightsDependsOn() {
     return rightsDependsOn;
   }
 
-  public void setRightsDependsOn(int rightsDependsOn) {
+  public void setRightsDependsOn(String rightsDependsOn) {
     this.rightsDependsOn = rightsDependsOn;
   }
 
   public void setRightsDependsOnMe() {
-    this.rightsDependsOn = Integer.parseInt(this.nodePK.getId());
+    this.rightsDependsOn = this.nodePK.getId();
   }
 
   public boolean haveLocalRights() {
-    return Integer.parseInt(getNodePK().getId()) == rightsDependsOn;
+    return getNodePK().getId().equals(rightsDependsOn);
   }
 
   public boolean haveInheritedRights() {
@@ -420,7 +496,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
   }
 
   public boolean haveRights() {
-    return rightsDependsOn != -1;
+    return !rightsDependsOn.equals(NO_RIGHTS_DEPENDENCY);
   }
 
   public String getUserRole() {
@@ -481,5 +557,10 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
   public boolean canBeSharedBy(final User user) {
     final AccessControlContext context = AccessControlContext.init().onOperationsOf(AccessControlOperation.SHARING);
     return NodeAccessControl.get().isUserAuthorized(user.getId(), this, context);
+  }
+
+  @Override
+  public NodeI18NDetail getTranslation(final String language) {
+    return super.getTranslation(language);
   }
 }

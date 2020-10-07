@@ -27,6 +27,10 @@ package org.silverpeas.cmis;
 import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,10 +46,11 @@ import java.util.Set;
  * @author mmoquillon
  */
 public class TreeNode {
-  final Map<String, TreeNode> cache;
-  final Identifiable object;
-  final Set<TreeNode> children = new HashSet<>();
-  final TreeNode parent;
+  private final Map<String, TreeNode> cache;
+  private final Identifiable object;
+  private final Set<TreeNode> children = new HashSet<>();
+  private final TreeNode parent;
+  private final String id;
 
   /**
    * Constructs a new node of a tree with the specified object as node value. The node has no parent
@@ -68,15 +73,19 @@ public class TreeNode {
     this.cache = cache;
     this.object = object;
     this.parent = parent;
+    this.id =
+        object instanceof Contribution ? ((Contribution) object).getContributionId().asString() :
+            object.getId();
   }
 
   /**
-   * Gets the unique identifier of the node. The identifier of the node is the identifier of the
-   * object wrapped by the node.
+   * Gets the unique identifier of the node. The identifier of the node is computed from the
+   * identifier of the underlying object by using the
+   * {@link org.silverpeas.core.contribution.model.ContributionIdentifier} class.
    * @return the unique identifier of the wrapped object (node value).
    */
   public String getId() {
-    return object.getId();
+    return id;
   }
 
   /**
@@ -132,10 +141,10 @@ public class TreeNode {
    * @param spaceInstLight an instance of a space in Silverpeas.
    * @return itself.
    */
-  public TreeNode addChildren(final SpaceInstLight spaceInstLight) {
+  public TreeNode addChild(final SpaceInstLight spaceInstLight) {
     if (object instanceof SpaceInstLight) {
       spaceInstLight.setFatherId(((SpaceInstLight) object).getLocalId());
-      return addChildrenNode(spaceInstLight);
+      return addChildNode(spaceInstLight);
     } else {
       throw new IllegalArgumentException("A space can be a child only to another space");
     }
@@ -146,16 +155,38 @@ public class TreeNode {
    * @param componentInstLight an instance of an application in Silverpeas.
    * @return itself.
    */
-  public TreeNode addChildren(final ComponentInstLight componentInstLight) {
+  public TreeNode addChild(final ComponentInstLight componentInstLight) {
     if (object instanceof SpaceInstLight) {
       componentInstLight.setDomainFatherId(object.getId());
-      return addChildrenNode(componentInstLight);
+      return addChildNode(componentInstLight);
     } else {
-      throw new IllegalArgumentException("A component instance can be a child only to another space");
+      throw new IllegalArgumentException("A component instance can be a child only to a space");
     }
   }
 
-  private TreeNode addChildrenNode(final Identifiable child) {
+  public TreeNode addChild(final NodeDetail nodeDetail) {
+    if (object instanceof NodeDetail) {
+      nodeDetail.setFatherPK(((NodeDetail) object).getNodePK());
+      return addChildNode(nodeDetail);
+    } else if (object instanceof ComponentInstLight) {
+      NodePK pk = new NodePK(nodeDetail.getNodePK().getId(), object.getId());
+      nodeDetail.setNodePK(pk);
+      return addChildNode(nodeDetail);
+    } else {
+      throw new IllegalArgumentException("A node can be a child only to another node or to " +
+          "a component instance");
+    }
+  }
+
+  public TreeNode addChild(final PublicationDetail publiDetail) {
+    if (object instanceof NodeDetail) {
+      return addChildNode(publiDetail);
+    } else {
+      throw new IllegalArgumentException("A publication can be a child only to a node");
+    }
+  }
+
+  private TreeNode addChildNode(final Identifiable child) {
     TreeNode node = new TreeNode(cache, child, this);
     getChildren().add(node);
     cache.put(node.getId(), node);

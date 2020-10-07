@@ -39,6 +39,6 @@ public class ComponentI18N extends BeanTranslation {
   }
 
   public ComponentI18N(ComponentInstanceI18NRow row) {
-    super(row.id, row.lang, row.name, row.description);
+    super(String.valueOf(row.id), row.lang, row.name, row.description);
   }
 }

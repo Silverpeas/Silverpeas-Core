@@ -24,10 +24,8 @@
 package org.silverpeas.core.pdc.pdc.service;
 
 import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.pdc.pdc.model.AxisHeaderI18N;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -43,9 +41,9 @@ import java.util.List;
 @Repository
 public class AxisHeaderI18NDAO {
 
-  private static String PdcAxisI18NTable = "SB_Pdc_AxisI18N";
+  private static String pdcAxisI18NTable = "SB_Pdc_AxisI18N";
 
-  static final private String COLUMNS = "id,AxisId,Lang,Name,Description";
+  private static final String COLUMNS = "id,AxisId,Lang,Name,Description";
 
   /**
    * Constructor declaration
@@ -55,27 +53,24 @@ public class AxisHeaderI18NDAO {
 
   }
 
-  /*
-	 *
-	 */
-  public List<AxisHeaderI18N> getTranslations(Connection con, int axisId)
-      throws PersistenceException, SQLException {
-    String selectQuery = "select * from " + PdcAxisI18NTable
+  public List<AxisHeaderI18N> getTranslations(Connection con, String axisId)
+      throws SQLException {
+    String selectQuery = "select * from " + pdcAxisI18NTable
         + " where AxisId = ?";
-    List<AxisHeaderI18N> allTranslations = new ArrayList<AxisHeaderI18N>();
+    List<AxisHeaderI18N> allTranslations = new ArrayList<>();
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(selectQuery);
-      prepStmt.setInt(1, axisId);
+      prepStmt.setInt(1, Integer.parseInt(axisId));
 
       rs = prepStmt.executeQuery();
 
-      AxisHeaderI18N translation = null;
       while (rs.next()) {
+        AxisHeaderI18N translation;
         translation = new AxisHeaderI18N();
-        translation.setId(rs.getInt(1));
+        translation.setId(String.valueOf(rs.getInt(1)));
         translation.setObjectId(java.lang.Integer.toString(rs.getInt(2)));
         translation.setLanguage(rs.getString(3));
         translation.setName(rs.getString(4));
@@ -92,13 +87,13 @@ public class AxisHeaderI18NDAO {
 
   public void createTranslation(Connection con, AxisHeaderI18N translation)
       throws SQLException {
-    String selectQuery = "insert into " + PdcAxisI18NTable + "(" + COLUMNS
+    String selectQuery = "insert into " + pdcAxisI18NTable + "(" + COLUMNS
         + ") values  (?, ?, ?, ?, ?)";
     PreparedStatement prepStmt = null;
     int id = -1;
     try {
       prepStmt = con.prepareStatement(selectQuery);
-      id = DBUtil.getNextId(PdcAxisI18NTable, "id");
+      id = DBUtil.getNextId(pdcAxisI18NTable, "id");
       prepStmt.setInt(1, id);
       prepStmt.setInt(2, Integer.parseInt(translation.getObjectId()));
       prepStmt.setString(3, translation.getLanguage());
@@ -112,8 +107,8 @@ public class AxisHeaderI18NDAO {
   }
 
   public void updateTranslation(Connection con, AxisHeaderI18N translation)
-      throws SQLException, UtilException {
-    String selectQuery = "update " + PdcAxisI18NTable
+      throws SQLException {
+    String selectQuery = "update " + pdcAxisI18NTable
         + " set name = ?, description = ? where id = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -121,7 +116,7 @@ public class AxisHeaderI18NDAO {
       prepStmt = con.prepareStatement(selectQuery);
       prepStmt.setString(1, translation.getName());
       prepStmt.setString(2, translation.getDescription());
-      prepStmt.setInt(3, translation.getId());
+      prepStmt.setInt(3, Integer.parseInt(translation.getId()));
 
       prepStmt.executeUpdate();
     } finally {
@@ -129,13 +124,13 @@ public class AxisHeaderI18NDAO {
     }
   }
 
-  public void deleteTranslation(Connection con, int translationId)
-      throws SQLException, UtilException {
-    String selectQuery = "delete from " + PdcAxisI18NTable + " where id = ?";
+  public void deleteTranslation(Connection con, String translationId)
+      throws SQLException {
+    String selectQuery = "delete from " + pdcAxisI18NTable + " where id = ?";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(selectQuery);
-      prepStmt.setInt(1, translationId);
+      prepStmt.setInt(1, Integer.parseInt(translationId));
 
       prepStmt.executeUpdate();
     } finally {
@@ -143,14 +138,14 @@ public class AxisHeaderI18NDAO {
     }
   }
 
-  public void deleteTranslations(Connection con, int axisId)
-      throws SQLException, UtilException {
-    String selectQuery = "delete from " + PdcAxisI18NTable
+  public void deleteTranslations(Connection con, String axisId)
+      throws SQLException {
+    String selectQuery = "delete from " + pdcAxisI18NTable
         + " where axisId = ?";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(selectQuery);
-      prepStmt.setInt(1, axisId);
+      prepStmt.setInt(1, Integer.parseInt(axisId));
 
       prepStmt.executeUpdate();
     } finally {

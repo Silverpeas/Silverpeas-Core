@@ -31,7 +31,6 @@ import org.silverpeas.core.node.coordinates.service.CoordinatesService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -39,6 +38,7 @@ import javax.inject.Inject;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -281,12 +281,10 @@ public class CoordinateImportExport {
    */
   public NodeDetail addPosition(NodeDetail position, String axisId, String componentId) {
     position.getNodePK().setComponentName(componentId);
-    position.setCreationDate(DateUtil.today2SQLDate());
-    NodeDetail fatherDetail = null;
-    NodePK positionPK = null;
-    NodeDetail positionDetail = null;
-
-    fatherDetail = getNodeHeader(axisId, componentId);
+    position.setCreationDate(new Date());
+    NodeDetail fatherDetail;
+    NodePK positionPK;
+    NodeDetail positionDetail;
     try {
       fatherDetail = getNodeHeader(axisId, componentId);
       positionPK = getNodeService().createNode(position, fatherDetail);

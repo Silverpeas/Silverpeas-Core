@@ -26,11 +26,8 @@ package org.silverpeas.cmis.walkers;
 
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
-import org.apache.chemistry.opencmis.commons.data.ObjectInFolderData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderContainerImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderListImpl;
 import org.jetbrains.annotations.NotNull;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
@@ -45,11 +42,8 @@ import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -60,19 +54,24 @@ import java.util.stream.Stream;
  */
 @Service
 @Singleton
-public class TreeWalkerForSpaceInst extends CmisObjectsTreeWalker {
+public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
 
   protected TreeWalkerForSpaceInst() {
   }
 
   @Override
-  public SpaceInstLight getSilverpeasObjectById(final String objectId) {
+  protected SpaceInstLight getSilverpeasObjectById(final String objectId) {
     return getController().getSpaceInstLightById(objectId);
   }
 
   @Override
-  public Space createCmisObject(final Object space, final String language) {
+  protected Space createCmisObject(final Object space, final String language) {
     return getObjectFactory().createSpace((SpaceInstLight) space, language);
+  }
+
+  @Override
+  protected boolean isSupported(final String objectId) {
+    return Space.isSpace(objectId);
   }
 
   @Override
@@ -86,7 +85,7 @@ public class TreeWalkerForSpaceInst extends CmisObjectsTreeWalker {
     }
     return Stream.of(childrenIds)
         .map(id -> {
-          CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.selectInstance(id);
+          AbstractCmisObjectsTreeWalker walker = AbstractCmisObjectsTreeWalker.selectInstance(id);
           return walker.getSilverpeasObjectById(id);
         });
   }
@@ -148,10 +147,10 @@ public class TreeWalkerForSpaceInst extends CmisObjectsTreeWalker {
 
   @Override
   protected List<ObjectInFolderContainer> browseObjectsInFolderTree(final Identifiable object,
-      final Filtering filter, final long depth) {
-    User user = filter.getCurrentUser();
+      final Filtering filtering, final long depth) {
+    User user = filtering.getCurrentUser();
     String[] ids = getAllowedChildrenOfSpace(object.getId(), user);
-    return browseObjectsInFolderSubTrees(ids, filter, depth);
+    return browseObjectsInFolderSubTrees(ids, filtering, depth);
   }
 
   @NotNull
@@ -160,17 +159,18 @@ public class TreeWalkerForSpaceInst extends CmisObjectsTreeWalker {
     String[] compInstIds = getController().getAvailCompoIds(spaceId, user.getId());
     // we browse first the subspaces and then the component instances that are supported by our CMIS
     // implementation
-    return Stream.concat(Stream.of(subSpaceIds), Stream.of(compInstIds).filter(this::isSupported))
+    return Stream.concat(Stream.of(subSpaceIds),
+        Stream.of(compInstIds).filter(AbstractCmisObjectsTreeWalker::supports))
         .toArray(String[]::new);
   }
 
   @Override
   protected ObjectInFolderList browseObjectsInFolder(final Identifiable object,
-      final Filtering filter, final Paging paging) {
-    User user = filter.getCurrentUser();
+      final Filtering filtering, final Paging paging) {
+    User user = filtering.getCurrentUser();
     SpaceInstLight space = (SpaceInstLight) object;
     String[] ids = getAllowedChildrenOfSpace(space.getId(), user);
-    return buildObjectInFolderList(ids, filter, paging);
+    return buildObjectInFolderList(ids, filtering, paging);
   }
 
   @Override
@@ -188,47 +188,6 @@ public class TreeWalkerForSpaceInst extends CmisObjectsTreeWalker {
     }
     final ObjectParentData parentData = buildObjectParentData(cmisParent, cmisChild, filtering);
     return Collections.singletonList(parentData);
-  }
-
-  private List<ObjectInFolderContainer> browseObjectsInFolderSubTrees(final String[] objectIds,
-      final Filtering filtering, final long depth) {
-    List<ObjectInFolderContainer> tree = new ArrayList<>();
-    for (String objectId : objectIds) {
-      final CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.selectInstance(objectId);
-      final Identifiable object = walker.getSilverpeasObjectById(objectId);
-      final CmisFolder child = walker.createCmisObject(object, filtering.getLanguage());
-      final ObjectInFolderContainerImpl objectInFolder =
-          buildObjectInFolderContainer(child, filtering);
-      tree.add(objectInFolder);
-
-      if (depth != -1) {
-        final List<ObjectInFolderContainer> children =
-            walker.browseObjectsInFolderTree(object, filtering, depth - 1);
-        objectInFolder.setChildren(children);
-      }
-    }
-    return tree;
-  }
-
-  private ObjectInFolderList buildObjectInFolderList(final String[] objectIds,
-      final Filtering filtering, final Paging paging) {
-    final List<ObjectInFolderData> children = Stream.of(objectIds)
-        .skip(paging.getSkipCount().longValue())
-        .limit(paging.getMaxItems().longValue())
-        .map(id -> {
-          CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.selectInstance(id);
-          Identifiable object = walker.getSilverpeasObjectById(id);
-          CmisFolder cmisObject = walker.createCmisObject(object, filtering.getLanguage());
-          return buildObjectInFolderData(cmisObject, filtering);
-        })
-        .collect(Collectors.toList());
-
-    final ObjectInFolderListImpl childrenInList = new ObjectInFolderListImpl();
-    childrenInList.setHasMoreItems(
-        paging.getSkipCount().longValue() + children.size() < objectIds.length);
-    childrenInList.setObjects(children);
-    childrenInList.setNumItems(BigInteger.valueOf(objectIds.length));
-    return childrenInList;
   }
 }
   

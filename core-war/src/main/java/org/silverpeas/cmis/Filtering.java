@@ -42,6 +42,7 @@ public class Filtering {
   private boolean includeAllowableActions;
   private boolean includePathSegment;
   private boolean includeAcl;
+  private IncludeCmisObjectTypes includeCmisObjectTypes = IncludeCmisObjectTypes.ALL;
   private IncludeRelationships includeRelationships = IncludeRelationships.NONE;
   private final User user = User.getCurrentRequester();
   private final String language = user.getUserPreferences().getLanguage();
@@ -208,10 +209,32 @@ public class Filtering {
    * Sets how the relationships of an object have to be included with its own description.
    * @param includeRelationships an {@link IncludeRelationships} instance indicating how the
    * relationships of an object have to be included within its own data describing it.
-   * @return
+   * @return itself
    */
   public Filtering setIncludeRelationships(final IncludeRelationships includeRelationships) {
     this.includeRelationships = includeRelationships;
+    return this;
+  }
+
+  /**
+   * Gets what types of CMIS objects have to be included. By default, all file-able object types.
+   * This filtering rule is only taken into account with subtree navigation operations.
+   * @return an {@link IncludeCmisObjectTypes} value indicating what types of file-able CMIS objects
+   * have to be taken into account.
+   */
+  public IncludeCmisObjectTypes getIncludeCmisObjectTypes() {
+    return includeCmisObjectTypes;
+  }
+
+  /**
+   * Sets the types of the CMIS objects to include. By default all the file-able object types.
+   * This filtering rule is only taken into account with subtree navigation operations.
+   * @param includeCmisObjectTypes an {@link IncludeCmisObjectTypes} value indicating what types
+   * of file-able CMIS objects have to be taken into account.
+   * @return itself.
+   */
+  public Filtering setIncludeCmisObjectTypes(final IncludeCmisObjectTypes includeCmisObjectTypes) {
+    this.includeCmisObjectTypes = includeCmisObjectTypes;
     return this;
   }
 
@@ -233,6 +256,11 @@ public class Filtering {
   public Filtering setIncludeAcl(final boolean includeAcl) {
     this.includeAcl = includeAcl;
     return this;
+  }
+
+  public enum IncludeCmisObjectTypes {
+    ALL,
+    ONLY_FOLDERS;
   }
 }
   

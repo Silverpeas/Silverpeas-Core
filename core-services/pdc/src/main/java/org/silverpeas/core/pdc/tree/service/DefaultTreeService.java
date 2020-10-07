@@ -209,14 +209,13 @@ public class DefaultTreeService implements TreeService {
     if (node.getLanguage() != null) {
       setDefaultLanguage(oldNode);
       if (!node.getLanguage().equalsIgnoreCase(oldNode.getLanguage())) {
-        TreeNodeI18N newNode = new TreeNodeI18N(Integer.parseInt(node
-            .getPK().getId()), node.getLanguage(), node.getName(), node
-            .getDescription());
+        TreeNodeI18N newNode = new TreeNodeI18N(node.getPK().getId(), node.getLanguage(),
+            node.getName(), node.getDescription());
         String translationId = node.getTranslationId();
         if (translationId != null && !translationId.equals("-1")) {
           // update translation
           if (withIdSetting) {
-            newNode.setId(Integer.parseInt(node.getTranslationId()));
+            newNode.setId(node.getTranslationId());
             treeI18NDAO.updateTranslation(con, newNode);
           } else {
             treeI18NDAO.updateTranslation(con, treeId, newNode);
@@ -254,7 +253,7 @@ public class DefaultTreeService implements TreeService {
       }
     } else {
       if (byId) {
-        treeI18NDAO.deleteTranslation(con, Integer.parseInt(node.getTranslationId()));
+        treeI18NDAO.deleteTranslation(con, node.getTranslationId());
       } else {
         treeI18NDAO.deleteTranslation(con, treeId, node.getPK().getId(), node.getLanguage());
       }
@@ -348,8 +347,8 @@ public class DefaultTreeService implements TreeService {
   private void setTranslations(Connection con, TreeNode node)
       throws TreeManagerException {
       // ajout de la traduction par defaut
-    TreeNodeI18N translation = new TreeNodeI18N(Integer.parseInt(node.getPK()
-          .getId()), node.getLanguage(), node.getName(), node.getDescription());
+    TreeNodeI18N translation = new TreeNodeI18N(node.getPK().getId(), node.getLanguage(),
+        node.getName(), node.getDescription());
     node.addTranslation(translation);
     if (I18NHelper.isI18nContentActivated) {
       // ajout des autres traductions

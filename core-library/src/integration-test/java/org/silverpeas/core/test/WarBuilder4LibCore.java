@@ -85,9 +85,9 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentPostUpdate;
@@ -341,9 +341,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(WAPrimaryKey.class, ResourceReference.class, SimpleDocumentPK.class, PasteDetail.class,
           PasteDetailFromToPK.class);
     }
-    addClasses(ContentManager.class, SilverContentPostUpdate.class);
+    addClasses(ContentManagementEngine.class, SilverContentPostUpdate.class);
     addClasses(JoinStatement.class);
-    addClasses(ContentManagerProvider.class);
+    addClasses(ContentManagementEngineProvider.class);
     addClasses(ContentPeas.class);
     addClasses(SilverContentVisibility.class);
     return this;

@@ -69,7 +69,7 @@ public class ShareableNode extends ShareableResource<NodeDetail> {
   @Override
   public String getURL() {
     if (accessedObject != null) {
-      return URLUtil.getSimpleURL(URLUtil.URL_TOPIC, String.valueOf(accessedObject.getId()),
+      return URLUtil.getSimpleURL(URLUtil.URL_TOPIC, accessedObject.getId(),
           accessedObject.getNodePK().getInstanceId(), true);
     }
     return "";

@@ -210,7 +210,9 @@ public class SilverpeasCmisRepository {
 
   /**
    * Gets the set of descendant objects contained in the specified folder or
-   * any of its child folders.
+   * any of its child folders. The difference with {
+   * @link #getFolderTree(String, BigInteger, String, Boolean, IncludeRelationships, Boolean)} is
+   * that this method returns both folders and documents.
    *
    * @param folderId
    *            the identifier for the folder
@@ -239,20 +241,15 @@ public class SilverpeasCmisRepository {
   public List<ObjectInFolderContainer> getDescendants(final String folderId, final BigInteger depth,
       final String filter, final Boolean includeAllowableActions,
       final IncludeRelationships includeRelationships, final Boolean includePathSegment) {
-    final long actualDepth = depth == null ? 1 : depth.longValue();
-    if (actualDepth == 0 || actualDepth < -1) {
-      throw new CmisInvalidArgumentException("The depth value is incorrect: " + actualDepth);
-    }
-    final Filtering filtering = new Filtering().setPropertiesFilter(filter)
-        .setIncludeAllowableActions(includeAllowableActions)
-        .setIncludePathSegment(includePathSegment)
-        .setIncludeRelationships(includeRelationships);
-    return objectManager.getDescendants(folderId, filtering, actualDepth);
+    return getObjectInFolderContainers(folderId, depth, filter, includeAllowableActions,
+        includeRelationships, includePathSegment, Filtering.IncludeCmisObjectTypes.ALL);
   }
 
   /**
    * Gets the set of descendant folder objects contained in the specified
-   * folder.
+   * folder. The difference with
+   * {@link #getDescendants(String, BigInteger, String, Boolean, IncludeRelationships, Boolean)} is
+   * that this method returns only folders and not documents.
    *
    * @param folderId
    *            the identifier for the folder
@@ -280,15 +277,8 @@ public class SilverpeasCmisRepository {
   public List<ObjectInFolderContainer> getFolderTree(String folderId, BigInteger depth, String filter,
       Boolean includeAllowableActions, IncludeRelationships includeRelationships,
       Boolean includePathSegment) {
-    final long actualDepth = depth == null ? 1 : depth.longValue();
-    if (actualDepth == 0 || actualDepth < -1) {
-      throw new CmisInvalidArgumentException("The depth value is incorrect: " + actualDepth);
-    }
-    final Filtering filtering = new Filtering().setPropertiesFilter(filter)
-        .setIncludeAllowableActions(includeAllowableActions)
-        .setIncludePathSegment(includePathSegment)
-        .setIncludeRelationships(includeRelationships);
-    return objectManager.getDescendants(folderId, filtering, actualDepth);
+    return getObjectInFolderContainers(folderId, depth, filter, includeAllowableActions,
+        includeRelationships, includePathSegment, Filtering.IncludeCmisObjectTypes.ONLY_FOLDERS);
   }
 
   /**
@@ -380,6 +370,22 @@ public class SilverpeasCmisRepository {
         .setIncludeAcl(includeAcl)
         .setIncludeRelationships(includeRelationships);
     return objectManager.getObjectByPath(path, filtering);
+  }
+
+  private List<ObjectInFolderContainer> getObjectInFolderContainers(final String folderId,
+      final BigInteger depth, final String filter, final Boolean includeAllowableActions,
+      final IncludeRelationships includeRelationships, final Boolean includePathSegment,
+      final Filtering.IncludeCmisObjectTypes includeCmisObjectTypes) {
+    final long actualDepth = depth == null ? 1 : depth.longValue();
+    if (actualDepth == 0 || actualDepth < -1) {
+      throw new CmisInvalidArgumentException("The depth value is incorrect: " + actualDepth);
+    }
+    final Filtering filtering = new Filtering().setPropertiesFilter(filter)
+        .setIncludeAllowableActions(includeAllowableActions)
+        .setIncludePathSegment(includePathSegment)
+        .setIncludeRelationships(includeRelationships)
+        .setIncludeCmisObjectTypes(includeCmisObjectTypes);
+    return objectManager.getDescendants(folderId, filtering, actualDepth);
   }
 
   private static void setAccessControl(final AclCapabilitiesDataImpl aclCapability) {

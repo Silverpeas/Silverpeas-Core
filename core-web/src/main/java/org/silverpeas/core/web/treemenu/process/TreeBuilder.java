@@ -99,7 +99,7 @@ public class TreeBuilder {
       Collection<NodeDetail> nodeDetails = getNodeBm().getChildrenDetails(nodePK);
       for (NodeDetail nodeDetail : nodeDetails) {
         // remove basket and declassified
-        if (nodeDetail.getId() == 1 || nodeDetail.getId() == 2) {
+        if (nodeDetail.isBin() || nodeDetail.isUnclassified()) {
           continue;
         }
         MenuItem menuItem =

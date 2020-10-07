@@ -793,7 +793,7 @@ public class ImportExport extends AbstractExportProcess {
         List<String> nodesIds = new ArrayList<>();
         for (Collection<NodeDetail> currentAxis : listAxisWithChildren) {
           for (NodeDetail axisNode : currentAxis) {
-            String nodeId = String.valueOf(axisNode.getId());
+            String nodeId = axisNode.getId();
             nodesIds.add(nodeId);
           }
         }
@@ -857,7 +857,7 @@ public class ImportExport extends AbstractExportProcess {
               if (!"index".equals(nodeId)) {
                 NodeDetail currentNodeDetail = coordinateImportExport
                     .getNodeHeader(new NodePK(String.valueOf(nodeId), componentId));
-                nodeIds.add(String.valueOf(currentNodeDetail.getId()));
+                nodeIds.add(currentNodeDetail.getId());
                 if (currentNodeDetail.getLevel() >= 3) {
                   // if subvalue of axis, add this node
                   nodeIds = addNodeToList(nodeIds, currentNodeDetail);
@@ -866,7 +866,7 @@ public class ImportExport extends AbstractExportProcess {
                       coordinateImportExport.getAxisChildren(currentNodeDetail.getNodePK(), false);
                   // if Axis, add all nodes of this axis
                   for (NodeDetail nodeDetail : axisChildren) {
-                    nodeIds.add(String.valueOf(nodeDetail.getId()));
+                    nodeIds.add(nodeDetail.getId());
                   }
                 }
               }

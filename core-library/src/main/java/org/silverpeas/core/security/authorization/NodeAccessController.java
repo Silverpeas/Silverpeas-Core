@@ -240,9 +240,9 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
       final List<NodeDetail> nodeDetails = nodeService.getMinimalDataByInstances(instanceIdsWithRightsOnTopic);
       final Map<String, NodeDetail> currentNodeDetailCache = new HashMap<>(nodeDetails.size());
       nodeDetails.forEach(n -> currentNodeDetailCache.put(computeNodeCacheKey(n.getNodePK()), n));
-      final Set<Integer> nodeIds = nodeDetails.stream()
+      final Set<String> nodeIds = nodeDetails.stream()
           .map(NodeDetail::getRightsDependsOn)
-          .filter(i -> i != -1)
+          .filter(i -> !i.equals(NodeDetail.NO_RIGHTS_DEPENDENCY))
           .collect(Collectors.toSet());
       final Map<Pair<String, Integer>, Set<String>> currentUserProfiles;
       if (nodeIds.isEmpty()) {
@@ -260,7 +260,7 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     String[] getUserProfiles(final String userId, final NodeDetail node) {
       final NodePK nodePK = node.getNodePK();
       if (userProfiles != null) {
-        final Pair<String, Integer> key = Pair.of(nodePK.getInstanceId(), node.getRightsDependsOn());
+        final Pair<String, String> key = Pair.of(nodePK.getInstanceId(), node.getRightsDependsOn());
         return userProfiles.getOrDefault(key, emptySet()).toArray(new String[0]);
       }
       return controller.getUserProfiles(userId, nodePK.getInstanceId(), ProfiledObjectId.fromNode(node.getRightsDependsOn()));

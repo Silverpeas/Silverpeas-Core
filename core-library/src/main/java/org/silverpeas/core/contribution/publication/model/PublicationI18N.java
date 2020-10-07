@@ -40,7 +40,7 @@ public class PublicationI18N extends BeanTranslation implements Serializable {
     this(publi.getLanguage(), publi.getName(), publi.getDescription(), publi.getKeywords());
 
     if (publi.getTranslationId() != null) {
-      super.setId(Integer.parseInt(publi.getTranslationId()));
+      super.setId(publi.getTranslationId());
     }
     super.setObjectId(publi.getPK().getId());
   }

@@ -396,7 +396,7 @@ public interface Administration {
   Map<Pair<String, Integer>, Set<String>> getUserProfilesByComponentIdAndObjectId(
       ProfiledObjectIds profiledObjectIds, Collection<String> componentIds, String userId) throws AdminException;
 
-  Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(ProfiledObjectType profiledObjectType,
+  Map<String, List<String>> getProfilesByObjectTypeAndUserId(ProfiledObjectType profiledObjectType,
       String componentId, String userId) throws AdminException;
 
   boolean isObjectAvailableToUser(String componentId, ProfiledObjectId objectRef, String userId)

@@ -23,9 +23,9 @@
  */
 package org.silverpeas.web.pdc.servlets;
 
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.pdc.thesaurus.model.Jargon;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
 import org.silverpeas.web.pdc.control.PdcClassifySessionController;
@@ -70,8 +70,8 @@ public class PdcClassifyRequestRouter extends ComponentRequestRouter<PdcClassify
     if (isDefined(componentId)) {
       if (!isDefined(silverObjectId)) {
         String contentId = request.getParameter("ContentId");
-        ContentManager contentManager = ContentManagerProvider.getContentManager();
-        silverObjectId = String.valueOf(contentManager.getSilverContentId(contentId, componentId));
+        ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
+        silverObjectId = String.valueOf(contentMgtEngine.getSilverContentId(contentId, componentId));
       }
 
       if (isDefined(silverObjectId)) {

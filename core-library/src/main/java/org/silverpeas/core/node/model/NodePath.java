@@ -52,9 +52,8 @@ public class NodePath extends ResourcePath<NodeDetail> {
     return node.getNodePK().getInstanceId();
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  protected Integer getId(final NodeDetail node) {
+  protected String getId(final NodeDetail node) {
     return node.getId();
   }
 

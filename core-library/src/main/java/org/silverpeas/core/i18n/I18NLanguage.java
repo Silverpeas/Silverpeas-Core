@@ -25,8 +25,8 @@ package org.silverpeas.core.i18n;
 
 public class I18NLanguage {
 
-  private int translationId = -1;
-  private String code = null;
+  private String translationId = "-1";
+  private final String code;
   private String label = null;
 
   public I18NLanguage(String code) {
@@ -62,11 +62,11 @@ public class I18NLanguage {
     return hash;
   }
 
-  public int getTranslationId() {
+  public String getTranslationId() {
     return translationId;
   }
 
-  public void setTranslationId(int translationId) {
+  public void setTranslationId(String translationId) {
     this.translationId = translationId;
   }
 

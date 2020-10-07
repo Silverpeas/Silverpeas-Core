@@ -337,7 +337,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(final ProfiledObjectType profiledObjectType,
+  public Map<String, List<String>> getProfilesByObjectTypeAndUserId(final ProfiledObjectType profiledObjectType,
       final String componentId, final String userId) {
     return null;
   }

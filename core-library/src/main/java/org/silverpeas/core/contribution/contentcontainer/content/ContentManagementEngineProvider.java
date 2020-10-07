@@ -26,23 +26,22 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
- * A factory of content manager instances. This factory is managed by the underlying IoC container
- * so that is can get from it the actual instances of the ContentManager class. This factory servs
- * mainly for beans not managed by the IoC container.
+ * A factory of content management engine instances. This factory is managed by the underlying
+ * IoC container. This factory serves mainly for beans not managed by the IoC container.
  */
-public class ContentManagerProvider {
+public class ContentManagementEngineProvider {
 
   /**
    * Hidden constructor.
    */
-  private ContentManagerProvider() {
+  private ContentManagementEngineProvider() {
   }
 
   /**
-   * Gets a content manager instance.
-   * @return a ContentManager instance (managed by the IoC container).
+   * Gets a content management engine instance.
+   * @return a ContentManagementEngine instance (managed by the IoC container).
    */
-  public static ContentManager getContentManager() {
-    return ServiceProvider.getSingleton(ContentManager.class);
+  public static ContentManagementEngine getContentManagementEngine() {
+    return ServiceProvider.getSingleton(ContentManagementEngine.class);
   }
 }

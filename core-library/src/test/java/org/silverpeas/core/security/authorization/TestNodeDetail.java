@@ -30,14 +30,14 @@ import org.silverpeas.core.node.model.NodePK;
 /**
  * @author silveryocha
  */
-class NodeDetail4Test extends NodeDetail {
+class TestNodeDetail extends NodeDetail {
 
-  NodeDetail4Test(final String nodeId, final String instanceId) {
+  TestNodeDetail(final String nodeId, final String instanceId) {
     super();
     setNodePK(new NodePK(nodeId, instanceId));
   }
 
-  NodeDetail4Test(final String nodeId, final String instanceId, final boolean rightsOnTopic) {
+  TestNodeDetail(final String nodeId, final String instanceId, final boolean rightsOnTopic) {
     this(nodeId, instanceId);
     if (rightsOnTopic) {
       setRightsDependsOn(getId());

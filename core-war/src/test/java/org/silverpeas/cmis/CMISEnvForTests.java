@@ -24,27 +24,48 @@
 
 package org.silverpeas.cmis;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.core.cmis.model.CmisFolder;
-import org.silverpeas.core.cmis.model.CmisObjectFactory;
 import org.silverpeas.cmis.security.AccessControllerRegister;
+import org.silverpeas.cmis.walkers.CmisObjectTreeWalkerDelegator;
 import org.silverpeas.cmis.walkers.TreeWalkerForComponentInst;
+import org.silverpeas.cmis.walkers.TreeWalkerForNodeDetail;
+import org.silverpeas.cmis.walkers.TreeWalkerForPublicationDetail;
 import org.silverpeas.cmis.walkers.TreeWalkerForSpaceInst;
 import org.silverpeas.cmis.walkers.TreeWalkerSelector;
 import org.silverpeas.core.Identifiable;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentDataProvider;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
+import org.silverpeas.core.cmis.CmisContributionsProvider;
+import org.silverpeas.core.cmis.model.CmisFolder;
+import org.silverpeas.core.cmis.model.CmisObjectFactory;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.publication.model.Location;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePath;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.LoggerExtension;
@@ -55,14 +76,17 @@ import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.logging.Level;
 
+import javax.inject.Named;
 import java.time.ZoneId;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -77,6 +101,9 @@ import static org.mockito.Mockito.when;
 @EnableSilverTestEnv
 public abstract class CMISEnvForTests {
 
+  // date at which a user account has been created or saved in Silverpeas
+  private final Date creationDate = new Date();
+
   // the organizational schema of Silverpeas
   protected static SilverpeasObjectsTree organization = new SilverpeasObjectsTree();
 
@@ -90,6 +117,18 @@ public abstract class CMISEnvForTests {
   @TestManagedMock
   protected OrganizationController organizationController;
 
+  @TestManagedMock
+  protected SilverpeasComponentDataProvider componentDataProvider;
+
+  @TestManagedMock
+  protected SilverpeasComponentInstanceProvider componentInstanceProvider;
+
+  @TestManagedMock
+  protected NodeService nodeService;
+
+  @TestManagedMock
+  protected PublicationService publicationService;
+
   // used to get the current user behind the request
   @TestManagedMock
   protected UserProvider userProvider;
@@ -102,38 +141,39 @@ public abstract class CMISEnvForTests {
   @TestManagedMock
   protected ComponentAccessControl componentAccessControl;
 
-  // the AccessControllerRegister is used by the CmisObjectsTreeWalker to get the correct access
-  // control according to the type of the Silverpeas object being accessed by the current user
-  @TestManagedBean
-  protected AccessControllerRegister accessControllerRegister;
+  // controller to check a user has the rights to access a given node in a component instance
+  @TestManagedMock
+  protected NodeAccessControl nodeAccessControl;
 
-  // the walker of a (sub)tree rooted to a space
-  @TestManagedBean
-  protected TreeWalkerForComponentInst treeWalkerForComponentInst;
+  // provider of contributions for a given component
+  @TestManagedMock
+  @Named("kmeliaContributionsProvider")
+  protected CmisContributionsProvider contributionsProvider;
 
-  // the walker of a subtree rooted to a component instance
   @TestManagedBean
-  protected TreeWalkerForSpaceInst treeWalkerForSpaceInst;
-
-  // the selector of the correct tree walker according to the type of the Silverpeas object being
-  // accessed by the current user. This selector is used by the CmisObjectsTreeWalker to delegate
-  // the (sub)tree walking to the correct walker.
-  @TestManagedBean
-  protected TreeWalkerSelector treeWalkerSelector;
+  Class<?>[] supplyRequiredManagedBeanTypes() {
+    return new Class<?>[]{AccessControllerRegister.class, TreeWalkerForComponentInst.class,
+        TreeWalkerForSpaceInst.class, TreeWalkerForNodeDetail.class,
+        TreeWalkerForPublicationDetail.class, TreeWalkerSelector.class,
+        CmisObjectTreeWalkerDelegator.class};
+  }
 
   /**
    * Gets the path of the specified node in the organizational schema of Silverpeas used in the
    * unit tests. The path is made up of the names of the identifiable objects wrapped by each node,
    * each of them separated by the {@link CmisFolder#PATH_SEPARATOR}
    * separator. This path is to be passed to the CMIS objects tree walker that is expected the
-   * tokens in a path to be the name of a CMIS object.
+   * tokens in a path to be the name of a CMIS object. The root node is here missed as it represents
+   * the application itself (virtual root node).
    * @param node a node in an organizational schema of Silverpeas.
    * @param language the language in which the token of the path should be.
    * @return the path of the node in the organizational schema of Silverpeas.
    */
   protected String pathToNode(final TreeNode node, final String language) {
     return CmisFolder.PATH_SEPARATOR + node.getPath().stream()
-        .map(n -> ((AbstractI18NBean<?>)n.getObject()).getName(language))
+        .map(TreeNode::getObject)
+        .filter(o -> !(o instanceof NodeDetail) || !((NodeDetail) o).isRoot())
+        .map(o -> ((AbstractI18NBean<?>) o).getName(language))
         .collect(Collectors.joining(CmisFolder.PATH_SEPARATOR));
   }
 
@@ -144,6 +184,8 @@ public abstract class CMISEnvForTests {
     currentUser.setFirstName("John");
     currentUser.setLastName("Doo");
     currentUser.setDomainId("0");
+    currentUser.setCreationDate(creationDate);
+    currentUser.setSaveDate(creationDate);
     when(personalizationService.getUserSettings("42")).thenReturn(
         new UserPreferences("42", "en", ZoneId.of("Europe/London"), "Aurora", "WA1", false, true,
             true, UserMenuDisplay.DEFAULT));
@@ -163,18 +205,27 @@ public abstract class CMISEnvForTests {
         user.setFirstName(userId.equals("0") ? null : "Toto");
         user.setLastName(userId.equals("0") ? "Administrateur" : "Tartempion" + userId);
         user.setDomainId("0");
-        user.setCreationDate(new Date());
-        user.setSaveDate(new Date());
+        user.setCreationDate(creationDate);
+        user.setSaveDate(creationDate);
         theUser = user;
       }
       return theUser;
     });
+
+    when(componentDataProvider.isWorkflow(anyString())).thenReturn(false);
+
+    when(componentInstanceProvider.getComponentName(anyString())).then(
+        (Answer<String>) invocation -> {
+          String appId = invocation.getArgument(0);
+          return ComponentInst.getComponentName(appId);
+        });
 
     when(userProvider.getMainAdministrator()).then(
         (Answer<User>) invocation -> userProvider.getUser("0"));
 
     when(spaceAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
     when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
+    when(nodeAccessControl.isUserAuthorized(anyString(), any(NodeDetail.class))).thenReturn(true);
 
     when(organizationController.getSpaceInstLightById(anyString())).then(
         (Answer<SpaceInstLight>) invocation -> {
@@ -189,9 +240,15 @@ public abstract class CMISEnvForTests {
         (Answer<ComponentInstLight>) invocation -> {
           String compInstId = invocation.getArgument(0);
           return getInTreeAndApply(compInstId, n -> {
-            Identifiable object = organization.findTreeNodeById(compInstId).getObject();
+            Identifiable object = n.getObject();
             return object instanceof ComponentInstLight ? (ComponentInstLight) object : null;
           });
+        });
+
+    when(organizationController.getComponentInstance(anyString())).then(
+        (Answer<Optional<SilverpeasComponentInstance>>) invocation -> {
+          String compInstId = invocation.getArgument(0);
+          return Optional.ofNullable(organizationController.getComponentInstLight(compInstId));
         });
 
     when(organizationController.getAvailCompoIds(anyString(), anyString())).then(
@@ -223,30 +280,158 @@ public abstract class CMISEnvForTests {
     when(organizationController.getPathToSpace(anyString())).then(
         (Answer<List<SpaceInstLight>>) invocation -> {
           String spaceId = invocation.getArgument(0);
-          return getInTreeAndApply(spaceId, n -> {
-            List<SpaceInstLight> path = new ArrayList<>();
-            TreeNode current = n;
-            do {
-              path.add(0, (SpaceInstLight) current.getObject());
-              current = current.getParent();
-            } while (current != null);
-            return path;
-          });
+          return getInTreeAndApply(spaceId, n -> n.getPath()
+              .stream()
+              .map(s -> (SpaceInstLight) s.getObject())
+              .collect(Collectors.toList()));
         });
 
     when(organizationController.getPathToComponent(anyString())).then(
         (Answer<List<SpaceInstLight>>) invocation -> {
           String compInstId = invocation.getArgument(0);
-          return getInTreeAndApply(compInstId, n -> {
-            List<SpaceInstLight> path = new ArrayList<>();
-            TreeNode current = n;
-            while (current.getParent() != null) {
-              current = current.getParent();
-              path.add((SpaceInstLight) current.getObject());
-            }
-            return path;
+          return getInTreeAndApply(compInstId, n -> n.getParent()
+              .getPath()
+              .stream()
+              .map(s -> (SpaceInstLight) s.getObject())
+              .collect(Collectors.toList()));
+        });
+
+    when(nodeService.getDetail(any(NodePK.class))).then(
+        (Answer<NodeDetail>) invocation -> {
+          NodePK nodePK = invocation.getArgument(0);
+          ContributionIdentifier id = ContributionIdentifier.from(nodePK, NodeDetail.TYPE);
+          return getInTreeAndApply(id.asString(), n -> {
+            Identifiable object = n.getObject();
+            return object instanceof NodeDetail ? (NodeDetail) object : null;
           });
         });
+
+    when(nodeService.getChildrenDetails(any(NodePK.class))).then(
+        (Answer<Collection<NodeDetail>>) invocation -> {
+          NodePK nodePK = invocation.getArgument(0);
+          ContributionIdentifier id = ContributionIdentifier.from(nodePK, NodeDetail.TYPE);
+          return getInTreeAndApply(id.asString(), n -> n.getChildren()
+                .stream()
+                .map(TreeNode::getObject)
+                .filter(o -> o instanceof NodeDetail)
+                .map(o -> (NodeDetail) o)
+                .collect(Collectors.toList())
+          );
+        });
+
+    when(nodeService.getPath(any(NodePK.class))).then((Answer<NodePath>) invocation -> {
+      NodePK nodePK = invocation.getArgument(0);
+      NodePath path = new NodePath();
+      while (nodePK != null && !nodePK.isUndefined()) {
+        NodeDetail node = nodeService.getDetail(nodePK);
+        path.add(node);
+        nodePK = node.getFatherPK();
+      }
+      return path;
+    });
+
+    when(contributionsProvider.getAllowedRootContributions(anyString(), any(User.class))).then(
+        (Answer<List<ContributionIdentifier>>) invocation -> {
+          String appId = invocation.getArgument(0);
+          ContributionIdentifier id =
+              ContributionIdentifier.from(appId, NodePK.ROOT_NODE_ID, NodeDetail.TYPE);
+          return getInTreeAndApply(id.asString(), n -> n.getChildren()
+              .stream()
+              .map(TreeNode::getObject)
+              .map(c -> ((Contribution) c).getContributionId())
+              .collect(Collectors.toList()));
+        });
+
+    when(contributionsProvider.getAllowedContributionsInFolder(any(ContributionIdentifier.class),
+        any(User.class))).then((Answer<List<ContributionIdentifier>>) invocation -> {
+      ContributionIdentifier id = invocation.getArgument(0);
+      return getInTreeAndApply(id.asString(), n ->
+        n.getChildren().stream()
+            .map(TreeNode::getObject)
+            .map(o -> ((Contribution) o).getContributionId())
+            .collect(Collectors.toList())
+      );
+    });
+
+    when(publicationService.getDetail(any(PublicationPK.class))).then(
+        (Answer<PublicationDetail>) invocation -> {
+          PublicationPK pk = invocation.getArgument(0);
+          ContributionIdentifier id = ContributionIdentifier.from(pk, PublicationDetail.TYPE);
+          return getInTreeAndApply(id.asString(), n -> {
+            Identifiable object = n.getObject();
+            return object instanceof PublicationDetail ? (PublicationDetail) object : null;
+          });
+        });
+
+    when(publicationService.getMainLocation(any(PublicationPK.class))).then(
+        (Answer<Optional<Location>>) invocation -> {
+          PublicationPK pubPk = invocation.getArgument(0);
+          ContributionIdentifier id = ContributionIdentifier.from(pubPk, PublicationDetail.TYPE);
+          return getInTreeAndApply(id.asString(), n -> {
+            Identifiable object = n.getParent().getObject();
+            Location location;
+            if (object instanceof NodeDetail) {
+              NodePK nodePk = ((NodeDetail) object).getNodePK();
+              location = new Location(nodePk.getId(), nodePk.getInstanceId());
+            } else {
+              location = null;
+            }
+            return Optional.ofNullable(location);
+          });
+        });
+  }
+
+  @BeforeAll
+  static void createOrganizationSchema() {
+    final String appType = "kmelia";
+    final int rootNodeId = Integer.parseInt(NodePK.ROOT_NODE_ID);
+    final int unclassedNodeId = Integer.parseInt(NodePK.UNCLASSED_NODE_ID);
+    final int binNodeId = Integer.parseInt(NodePK.BIN_NODE_ID);
+
+    TreeNode wa1Node = organization.addSpace(1, "", 0, "COLLABORATIVE WORKSPACE", "");
+    TreeNode wa3Node =
+        organization.addSpace(3, wa1Node.getId(), 0, "Business", "Business related works");
+    TreeNode wa4Node = organization.addSpace(4, wa1Node.getId(), 1, "Production",
+        "Production information and monitoring");
+    TreeNode wa6Node = organization.addSpace(6, wa4Node.getId(), 0, "QA", "");
+    TreeNode kmelia1 =
+        organization.addApplication(appType, 1, wa3Node.getId(), 0, "Documentation", "");
+    TreeNode rootKm1 = organization.addFolder(rootNodeId, kmelia1.getId(), 1, "Home", "The root");
+    TreeNode folder1 = organization.addFolder(3, rootKm1.getId(), 2, "Folder 1", "");
+    TreeNode folderKm1 =
+        organization.addFolder(4, rootKm1.getId(), 2, "Folder 2", "");
+    TreeNode folder21 = organization.addFolder(5, folderKm1.getId(), 3, "Folder 2.1", "");
+    organization.addPublication(1, folder1.getId(), "Smalltalk Forever", "All about this powerfull language");
+    organization.addPublication(2, folder21.getId(), "Java Magazine October 2020", "Make it simple; make it better.");
+
+    TreeNode kmelia2 =
+        organization.addApplication(appType, 2, wa4Node.getId(), 0, "Documentation", "");
+    TreeNode rootKm2 = organization.addFolder(rootNodeId, kmelia2.getId(), 1, "Home", "The root");
+    TreeNode folder1Km2 =
+        organization.addFolder(3, rootKm2.getId(), 2, "Folder 1", "");
+    organization.addFolder(4, folder1Km2.getId(), 3, "Folder 1.1", "");
+    TreeNode folder2Km2 =
+        organization.addFolder(5, rootKm2.getId(), 2, "Folder 2", "");
+    organization.addFolder(6, folder2Km2.getId(), 3, "Folder 2.1", "");
+
+    TreeNode kmelia5 = organization.addApplication(appType, 5, wa6Node.getId(), 0, "Documentation",
+        "QA documentation");
+    TreeNode rootKm5 = organization.addFolder(rootNodeId, kmelia5.getId(), 1, "Home", "The root");
+
+    TreeNode wa2Node = organization.addSpace(2, "", 1, "PROJECTS", "");
+    TreeNode wa5Node = organization.addSpace(5, wa2Node.getId(), 0, "New Manufacturing Process",
+        "A new process to improve our owns manufactures");
+    TreeNode kmelia3 =
+        organization.addApplication(appType, 3, wa2Node.getId(), 1, "Process & Standard", "");
+    TreeNode rootKm3 = organization.addFolder(rootNodeId, kmelia3.getId(), 1, "Home", "The root");
+    TreeNode kmelia4 =
+        organization.addApplication(appType, 4, wa5Node.getId(), 0, "Documentation", "");
+    TreeNode rootKm4 = organization.addFolder(rootNodeId, kmelia4.getId(), 1, "Home", "The root");
+  }
+
+  @AfterAll
+  static void clearOrganizationSchema() {
+    organization.clear();
   }
 
   private <T> T getInTreeAndApply(String id, Function<TreeNode, T> fun) {

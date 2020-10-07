@@ -35,26 +35,31 @@ import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.cmis.CMISEnvForTests;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.cmis.TreeNode;
-import org.silverpeas.core.cmis.model.CmisFolder;
-import org.silverpeas.core.cmis.model.CmisObjectFactory;
-import org.silverpeas.core.cmis.model.Space;
-import org.silverpeas.core.cmis.model.TypeId;
 import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.cmis.model.CmisFolder;
+import org.silverpeas.core.cmis.model.CmisObjectFactory;
+import org.silverpeas.core.cmis.model.Space;
+import org.silverpeas.core.cmis.model.TypeId;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.publication.model.Location;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -66,7 +71,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.silverpeas.cmis.walkers.CmisObjectsTreeWalker.millisToCalendar;
+import static org.silverpeas.cmis.walkers.AbstractCmisObjectsTreeWalker.millisToCalendar;
 
 /**
  * Unit tests about the walking of the CMIS objects tree whose each node is mapped to a given
@@ -82,9 +87,20 @@ import static org.silverpeas.cmis.walkers.CmisObjectsTreeWalker.millisToCalendar
 class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
 
   @Test
+  @DisplayName("Getting the CMIS data of a Silverpeas object not exposed through the CMIS should " +
+      "throw an exception")
+  void getObjectDataOfANonExposedResource() {
+    final String id = "Toto2";
+    Filtering filtering = new Filtering().setIncludeAllowableActions(true)
+        .setIncludeRelationships(IncludeRelationships.NONE);
+    CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
+    assertThrows(CmisObjectNotFoundException.class, () -> walker.getObjectData(id, filtering));
+  }
+
+  @Test
   @DisplayName("Getting the CMIS data of an unknown Silverpeas object should throw an exception")
   void getObjectDataOfAnUnknownResource() {
-    final String id = "Toto2";
+    final String id = "kmelia42";
     Filtering filtering = new Filtering().setIncludeAllowableActions(true)
         .setIncludeRelationships(IncludeRelationships.NONE);
     CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
@@ -166,6 +182,36 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
   }
 
   @Test
+  @DisplayName("The CMIS data of a node (topic, album, ...) in an application of Silverpeas " +
+      "should match the properties of that node")
+  void getObjectDataOfANode() {
+    final NodePK nodePK = new NodePK("3", "kmelia2");
+    final NodeDetail node = nodeService.getDetail(nodePK);
+    assertThat(node, notNullValue());
+
+    Filtering filtering = new Filtering().setIncludeAllowableActions(true)
+        .setIncludeRelationships(IncludeRelationships.NONE);
+    String folderId = node.getContributionId().asString();
+    ObjectData data = CmisObjectsTreeWalker.getInstance().getObjectData(folderId, filtering);
+    assertCMISObjectMatchesNode(data, node);
+  }
+
+  @Test
+  @DisplayName("The CMIS data of a publication in an application of Silverpeas should match the " +
+      "properties of that publication")
+  void getObjectDataOfAPublication() {
+    final PublicationPK pk = new PublicationPK("1", "kmelia1");
+    final PublicationDetail publi = publicationService.getDetail(pk);
+    assertThat(publi, notNullValue());
+
+    Filtering filtering = new Filtering().setIncludeAllowableActions(true)
+        .setIncludeRelationships(IncludeRelationships.NONE);
+    String publiId = publi.getContributionId().asString();
+    ObjectData data = CmisObjectsTreeWalker.getInstance().getObjectData(publiId, filtering);
+    assertCMISObjectMatchesPublication(data, publi);
+  }
+
+  @Test
   @DisplayName(
       "Getting the CMIS data of an unknown Silverpeas object by its path should throw an exception")
   void getObjectDataByPathOfAnUnknownResource() {
@@ -187,8 +233,8 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     String path = CmisFolder.PATH_SEPARATOR + "TOTO" + CmisFolder.PATH_SEPARATOR +
         pathToNode(organization.findTreeNodeById("kmelia3"), filtering.getLanguage());
     CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
-    assertThrows(CmisObjectNotFoundException.class, () ->
-        walker.getObjectDataByPath(path, filtering));
+    assertThrows(CmisObjectNotFoundException.class,
+        () -> walker.getObjectDataByPath(path, filtering));
   }
 
   @Test
@@ -208,7 +254,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
   @DisplayName(
       "The walk of the CMIS objects tree should match the browsing of the organizational schema " +
           "of Silverpeas resources")
-  void getObjectDataByPath() {
+  void getObjectDataOfAppByPath() {
     final String appId = "kmelia3";
     final TreeNode node = organization.findTreeNodeById(appId);
 
@@ -220,9 +266,49 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
   }
 
   @Test
+  @DisplayName("The path of a node in an application should be connected to the CMIS objects tree")
+  void getObjectDataOfFolderByPath() {
+    final String nodeId = ContributionIdentifier.from("kmelia2", "3", NodeDetail.TYPE).asString();
+    final TreeNode node = organization.findTreeNodeById(nodeId);
+
+    Filtering filtering = new Filtering().setIncludeAllowableActions(true)
+        .setIncludeRelationships(IncludeRelationships.NONE);
+    final String path = pathToNode(node, filtering.getLanguage());
+    ObjectData data = CmisObjectsTreeWalker.getInstance().getObjectDataByPath(path, filtering);
+    assertCMISObjectMatchesNode(data, (NodeDetail) node.getObject());
+  }
+
+  @Test
+  @DisplayName("The path of a publication in an application should be connected to the CMIS " +
+      "objects tree")
+  void getObjectDataOfPublicationByPath() {
+    final String publiId =
+        ContributionIdentifier.from("kmelia1", "2", PublicationDetail.TYPE).asString();
+    final TreeNode node = organization.findTreeNodeById(publiId);
+
+    Filtering filtering = new Filtering().setIncludeAllowableActions(true)
+        .setIncludeRelationships(IncludeRelationships.NONE);
+    final String path = pathToNode(node, filtering.getLanguage());
+    ObjectData data = CmisObjectsTreeWalker.getInstance().getObjectDataByPath(path, filtering);
+    assertCMISObjectMatchesPublication(data, (PublicationDetail) node.getObject());
+  }
+
+  @Test
   @DisplayName(
       "Getting the children of an non existing Silverpeas resource should throw an exception")
   void getChildrenOfANonExistingSilverpeasObject() {
+    Filtering filtering = new Filtering().setIncludeAllowableActions(true)
+        .setIncludeRelationships(IncludeRelationships.NONE);
+    CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
+    assertThrows(CmisObjectNotFoundException.class,
+        () -> walker.getChildrenData("kmelia42", filtering, Paging.NO_PAGING));
+  }
+
+  @Test
+  @DisplayName(
+      "Getting the children of a Silverpeas resource not exposed through CMIS should throw an " +
+          "exception")
+  void getChildrenOfANonExposedSilverpeasObject() {
     Filtering filtering = new Filtering().setIncludeAllowableActions(true)
         .setIncludeRelationships(IncludeRelationships.NONE);
     CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
@@ -235,7 +321,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
       "The children of a CMIS object should match the children of the Silverpeas resource related" +
           " by the CMIS object")
   void getChildrenWithoutPaging() {
-    final String spaceId = "WA2";
+    final String spaceId = "WA1";
     List<Identifiable> spaceChildren = organization.findTreeNodeById(spaceId)
         .getChildren()
         .stream()
@@ -307,15 +393,18 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
   @DisplayName("No CMIS data are returned for a Silverpeas object without any children")
   void getNoChildren() {
     final String appId = "kmelia3";
-    final TreeNode appNode = organization.findTreeNodeById(appId);
-    assertThat(appNode.getChildren().isEmpty(), is(true));
+    final String nodeId =
+        ContributionIdentifier.from(appId, NodePK.ROOT_NODE_ID, NodeDetail.TYPE).asString();
+    final TreeNode catNode = organization.findTreeNodeById(nodeId);
+    final Set<TreeNode> childrenNodes = catNode.getChildren();
+    assertThat(childrenNodes.isEmpty(), is(true));
 
     Filtering filtering = new Filtering().setIncludeAllowableActions(true)
         .setIncludePathSegment(true)
         .setIncludeRelationships(IncludeRelationships.NONE);
     Paging paging = Paging.NO_PAGING;
     ObjectInFolderList children =
-        CmisObjectsTreeWalker.getInstance().getChildrenData(appId, filtering, paging);
+        CmisObjectsTreeWalker.getInstance().getChildrenData(nodeId, filtering, paging);
     assertThat(children, notNullValue());
     assertThat(children.getNumItems().intValue(), is(0));
     assertThat(children.hasMoreItems(), is(false));
@@ -331,22 +420,73 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
         .setIncludeRelationships(IncludeRelationships.NONE);
     CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
     assertThrows(CmisObjectNotFoundException.class,
+        () -> walker.getSubTreeData("kmelia42", filtering, 0));
+  }
+
+  @Test
+  @DisplayName(
+      "Getting the subtree of children of a Silverpeas resource not exposed through CMIS should " +
+          "throw an exception")
+  void getTheSubtreeOfANonExposedObject() {
+    Filtering filtering = new Filtering().setIncludeAllowableActions(true)
+        .setIncludeRelationships(IncludeRelationships.NONE);
+    CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
+    assertThrows(CmisObjectNotFoundException.class,
         () -> walker.getSubTreeData("TOTO", filtering, 0));
+  }
+
+  @Test
+  @DisplayName(
+      "Getting the subtree of children of a Silverpeas resource with a depth lesser thant -1 " +
+          "should throw an exception")
+  void getTheSubtreeWithAnInvalidDepthValue() {
+    final String spaceId = "WA1";
+    final TreeNode spaceNode = organization.findTreeNodeById(spaceId);
+    assertThat(spaceNode.getChildren().isEmpty(), is(false));
+
+    Filtering filtering = new Filtering().setIncludeAllowableActions(true)
+        .setIncludePathSegment(true)
+        .setIncludeRelationships(IncludeRelationships.NONE);
+    int depth = -2; // no depth
+    CmisObjectsTreeWalker walker = CmisObjectsTreeWalker.getInstance();
+    assertThrows(IllegalArgumentException.class,
+        () -> walker.getSubTreeData(spaceId, filtering, depth));
+  }
+
+  @Test
+  @DisplayName(
+      "No CMIS data are returned for a Silverpeas object rooted at a subtree with a 0-depth level")
+  void getTheSubtreeWithoutAnyDepth() {
+    final String spaceId = "WA1";
+    final TreeNode spaceNode = organization.findTreeNodeById(spaceId);
+    assertThat(spaceNode.getChildren().isEmpty(), is(false));
+
+    Filtering filtering = new Filtering().setIncludeAllowableActions(true)
+        .setIncludePathSegment(true)
+        .setIncludeRelationships(IncludeRelationships.NONE);
+    int depth = 0; // no depth
+    List<ObjectInFolderContainer> subtree =
+        CmisObjectsTreeWalker.getInstance().getSubTreeData(spaceId, filtering, depth);
+    assertThat(subtree, notNullValue());
+    assertThat(subtree.isEmpty(), is(true));
   }
 
   @Test
   @DisplayName("No CMIS data are returned for a Silverpeas object without subtree")
   void getTheSubTreeOfAnObjectWithoutAnyChildren() {
     final String appId = "kmelia3";
-    final TreeNode appNode = organization.findTreeNodeById(appId);
-    assertThat(appNode.getChildren().isEmpty(), is(true));
+    final String nodeId =
+        ContributionIdentifier.from(appId, NodePK.ROOT_NODE_ID, NodeDetail.TYPE).asString();
+    final TreeNode catNode = organization.findTreeNodeById(nodeId);
+    final Set<TreeNode> childrenNodes = catNode.getChildren();
+    assertThat(childrenNodes.isEmpty(), is(true));
 
     Filtering filtering = new Filtering().setIncludeAllowableActions(true)
         .setIncludePathSegment(true)
         .setIncludeRelationships(IncludeRelationships.NONE);
-    int depth = 0; // the whole subtree
+    int depth = -1; // the whole subtree
     List<ObjectInFolderContainer> subtree =
-        CmisObjectsTreeWalker.getInstance().getSubTreeData(appId, filtering, depth);
+        CmisObjectsTreeWalker.getInstance().getSubTreeData(nodeId, filtering, depth);
     assertThat(subtree.isEmpty(), is(true));
   }
 
@@ -361,13 +501,14 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     Filtering filtering = new Filtering().setIncludeAllowableActions(true)
         .setIncludePathSegment(true)
         .setIncludeRelationships(IncludeRelationships.NONE);
-    int depth = 0; // the whole subtree
+    int depth = -1; // the whole subtree
     List<ObjectInFolderContainer> subtree =
         CmisObjectsTreeWalker.getInstance().getSubTreeData(spaceId, filtering, depth);
     assertThat(subtree, notNullValue());
     assertThat(subtree.isEmpty(), is(false));
 
-    assertChildrenMatches(spaceNode.getChildren(), subtree, depth, filtering.getLanguage());
+    Set<TreeNode> childrenNodes = spaceNode.getChildren();
+    assertChildrenMatches(childrenNodes, subtree, depth, filtering.getLanguage());
   }
 
   @Test
@@ -387,7 +528,8 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     assertThat(subtree, notNullValue());
     assertThat(subtree.isEmpty(), is(false));
 
-    assertChildrenMatches(spaceNode.getChildren(), subtree, depth, filtering.getLanguage());
+    Set<TreeNode> childrenNodes = spaceNode.getChildren();
+    assertChildrenMatches(childrenNodes, subtree, depth, filtering.getLanguage());
   }
 
   @Test
@@ -395,42 +537,20 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
       "The CMIS data of a part of a subtree should match the children of the Silverpeas " +
           "object corresponding to the root of that subtree")
   void getAPartOfASubtreeOfASpace() {
-    final String spaceId = "WA2";
+    final String spaceId = "WA1";
     final TreeNode spaceNode = organization.findTreeNodeById(spaceId);
 
     Filtering filtering = new Filtering().setIncludeAllowableActions(true)
         .setIncludePathSegment(true)
         .setIncludeRelationships(IncludeRelationships.NONE);
-    int depth = 100; // here more than the actual depth of the subtree
+    int depth = 3;
     List<ObjectInFolderContainer> subtree =
         CmisObjectsTreeWalker.getInstance().getSubTreeData(spaceId, filtering, depth);
     assertThat(subtree, notNullValue());
     assertThat(subtree.isEmpty(), is(false));
 
-    assertChildrenMatches(spaceNode.getChildren(), subtree, depth, filtering.getLanguage());
-  }
-
-  @BeforeAll
-  static void createOrganizationSchema() {
-    final String appType = "kmelia";
-    TreeNode wa1Node = organization.addSpace(1, "", 0, "COLLABORATIVE WORKSPACE", "");
-    TreeNode wa3Node =
-        organization.addSpace(3, wa1Node.getId(), 0, "Business", "Business related works");
-    TreeNode wa4Node = organization.addSpace(4, wa1Node.getId(), 1, "Production",
-        "Production information and monitoring");
-    organization.addApplication(appType, 1, wa3Node.getId(), 0, "Documentation", "");
-    organization.addApplication(appType, 2, wa4Node.getId(), 0, "Documentation", "");
-
-    TreeNode wa2Node = organization.addSpace(2, "", 1, "PROJECTS", "");
-    TreeNode wa5Node = organization.addSpace(5, wa2Node.getId(), 0, "New Manufacturing Process",
-        "A new process to improve our owns manufactures");
-    organization.addApplication(appType, 3, wa2Node.getId(), 1, "Process & Standard", "");
-    organization.addApplication(appType, 4, wa5Node.getId(), 0, "Documentation", "");
-  }
-
-  @AfterAll
-  static void clearOrganizationSchema() {
-    organization.clear();
+    Set<TreeNode> childrenNodes = spaceNode.getChildren();
+    assertChildrenMatches(childrenNodes, subtree, depth, filtering.getLanguage());
   }
 
   private void assertChildrenMatches(final Set<TreeNode> nodes,
@@ -439,19 +559,31 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     containers.forEach(c -> {
       ObjectData data = c.getObject().getObject();
       String pathSegment = c.getObject().getPathSegment();
-      Optional<TreeNode> optNode = nodes.stream()
-          .filter(n -> n.getId().equals(data.getId()))
-          .findFirst();
+      Optional<TreeNode> optNode =
+          nodes.stream().filter(n -> n.getId().equals(data.getId())).findFirst();
       assertThat(optNode.isPresent(), is(true));
       optNode.ifPresent(n -> {
         assertThat(((AbstractI18NBean<?>) n.getObject()).getName(language), is(pathSegment));
         assertCMISObjectMatchesSilverpeasObject(data, n.getObject());
-        if (depth > 1 || depth == 0) {
-          int newDepth = depth == 0 ? 0 : depth - 1;
-          assertChildrenMatches(n.getChildren(), c.getChildren(), newDepth, language);
+        if (depth > 1 || depth == -1) {
+          int newDepth = depth == -1 ? -1 : depth - 1;
+          Set<TreeNode> children = getChildrenForCMIS(n);
+          assertChildrenMatches(children, c.getChildren(), newDepth, language);
         }
       });
     });
+  }
+
+  // the root node shouldn't be exposed in the CMIS tree: it represents the application itself as
+  // a node
+  private Set<TreeNode> getChildrenForCMIS(final TreeNode node) {
+    Set<TreeNode> children = node.getChildren();
+    if (children.size() == 1 && children.stream()
+        .anyMatch(tn -> tn.getObject() instanceof NodeDetail &&
+            ((NodeDetail)tn.getObject()).isRoot())) {
+      children = children.iterator().next().getChildren();
+    }
+    return children;
   }
 
   private void assertCMISObjectMatchesSilverpeasObject(final ObjectData data,
@@ -460,6 +592,10 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
       assertCMISObjectMatchesSpace(data, (SpaceInstLight) resource);
     } else if (resource instanceof ComponentInstLight) {
       assertCMISObjectMatchesApplication(data, (ComponentInstLight) resource);
+    } else if (resource instanceof NodeDetail) {
+      assertCMISObjectMatchesNode(data, (NodeDetail) resource);
+    } else if (resource instanceof PublicationDetail) {
+      assertCMISObjectMatchesPublication(data, (PublicationDetail) resource);
     } else {
       fail("Non CMIS matching for the resource: " + resource);
     }
@@ -506,6 +642,47 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     assertProperties(data.getProperties(), application);
   }
 
+  private void assertCMISObjectMatchesNode(final ObjectData data, final NodeDetail node) {
+    assertThat(data, notNullValue());
+    assertThat(data.getAcl(), nullValue());
+    assertThat(data.getBaseTypeId(), is(BaseTypeId.CMIS_FOLDER));
+    assertThat(data.getId(), is(node.getContributionId().asString()));
+    assertThat(data.getChangeEventInfo(), nullValue());
+    assertThat(data.getPolicyIds(), nullValue());
+    assertThat(data.getRelationships(), empty());
+    assertThat(data.getRenditions(), empty());
+    assertThat(data.getAllowableActions(), notNullValue());
+    assertThat(data.getProperties(), notNullValue());
+
+    AllowableActions actions = data.getAllowableActions();
+    assertThat(actions.getAllowableActions(),
+        containsInAnyOrder(CAN_GET_FOLDER_TREE, CAN_GET_OBJECT_PARENTS, CAN_GET_FOLDER_PARENT,
+            CAN_GET_PROPERTIES, CAN_GET_DESCENDANTS, CAN_GET_CHILDREN, CAN_GET_ACL));
+
+    assertProperties(data.getProperties(), node);
+  }
+
+  private void assertCMISObjectMatchesPublication(final ObjectData data,
+      final PublicationDetail publication) {
+    assertThat(data, notNullValue());
+    assertThat(data.getAcl(), nullValue());
+    assertThat(data.getBaseTypeId(), is(BaseTypeId.CMIS_FOLDER));
+    assertThat(data.getId(), is(publication.getContributionId().asString()));
+    assertThat(data.getChangeEventInfo(), nullValue());
+    assertThat(data.getPolicyIds(), nullValue());
+    assertThat(data.getRelationships(), empty());
+    assertThat(data.getRenditions(), empty());
+    assertThat(data.getAllowableActions(), notNullValue());
+    assertThat(data.getProperties(), notNullValue());
+
+    AllowableActions actions = data.getAllowableActions();
+    assertThat(actions.getAllowableActions(),
+        containsInAnyOrder(CAN_GET_FOLDER_TREE, CAN_GET_OBJECT_PARENTS, CAN_GET_FOLDER_PARENT,
+            CAN_GET_PROPERTIES, CAN_GET_DESCENDANTS, CAN_GET_CHILDREN, CAN_GET_ACL));
+
+    assertProperties(data.getProperties(), publication);
+  }
+
   /**
    * Asserts the specified properties of a CMIS object matches the expected Silverpeas business
    * object.
@@ -540,10 +717,12 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     assertThat(props.get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS).getValues(),
         containsInAnyOrder(TypeId.SILVERPEAS_SPACE.value(), TypeId.SILVERPEAS_APPLICATION.value()));
 
-    String path = CmisFolder.PATH_SEPARATOR + organizationController.getPathToSpace(space.getId())
+    /*String path = CmisFolder.PATH_SEPARATOR + organizationController.getPathToSpace(space.getId())
         .stream()
         .map(s -> s.getName(language))
-        .collect(Collectors.joining(CmisFolder.PATH_SEPARATOR));
+        .collect(Collectors.joining(CmisFolder.PATH_SEPARATOR));*/
+    TreeNode spaceNode = organization.findTreeNodeById(space.getId());
+    String path = pathToNode(spaceNode, language);
     assertThat(props.get(PropertyIds.PATH).getFirstValue(), is(path));
   }
 
@@ -578,14 +757,101 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
 
     assertThat(props.get(PropertyIds.PARENT_ID).getFirstValue(),
         is(application.getDomainFatherId()));
-    assertThat(props.get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS).getValues(), empty());
+    assertThat(props.get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS).getValues(),
+        is(Collections.singletonList(TypeId.SILVERPEAS_FOLDER.value())));
 
-    String path = CmisFolder.PATH_SEPARATOR +
+    /*String path = CmisFolder.PATH_SEPARATOR +
         organizationController.getPathToComponent(application.getId())
             .stream()
             .map(s -> s.getName(language))
             .collect(Collectors.joining(CmisFolder.PATH_SEPARATOR)) + CmisFolder.PATH_SEPARATOR +
-        application.getName(language);
+        application.getName(language);*/
+    TreeNode appNode = organization.findTreeNodeById(application.getId());
+    String path = pathToNode(appNode, language);
+    assertThat(props.get(PropertyIds.PATH).getFirstValue(), is(path));
+  }
+
+  /**
+   * Asserts the specified properties of a CMIS object matches the expected Silverpeas business
+   * object.
+   * @param properties the CMIS properties of a CMIS object.
+   * @param node a {@link NodeDetail} instance in Silverpeas.
+   */
+  private void assertProperties(final Properties properties, final NodeDetail node) {
+    User requester = User.getCurrentRequester();
+    String language = requester.getUserPreferences().getLanguage();
+    String appId = node.getContributionId().getComponentInstanceId();
+
+    Map<String, PropertyData<?>> props = properties.getProperties();
+    assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(),
+        is(node.getContributionId().asString()));
+    assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(node.getName(language)));
+    assertThat(props.get(PropertyIds.DESCRIPTION).getFirstValue(),
+        is(node.getDescription(language)));
+    assertThat(props.get(PropertyIds.CREATED_BY).getFirstValue(),
+        is(node.getCreator().getDisplayedName()));
+    assertThat(props.get(PropertyIds.LAST_MODIFIED_BY).getFirstValue(),
+        is(node.getLastModifier().getDisplayedName()));
+    assertThat(props.get(PropertyIds.CREATION_DATE).getFirstValue(),
+        is(millisToCalendar(node.getCreationDate().getTime())));
+    assertThat(props.get(PropertyIds.LAST_MODIFICATION_DATE).getFirstValue(),
+        is(millisToCalendar(node.getLastModificationDate().getTime())));
+    assertThat(props.get(PropertyIds.BASE_TYPE_ID).getFirstValue(),
+        is(BaseTypeId.CMIS_FOLDER.value()));
+    assertThat(props.get(PropertyIds.OBJECT_TYPE_ID).getFirstValue(),
+        is(TypeId.SILVERPEAS_FOLDER.value()));
+
+    String parentId = node.getFatherPK().isRoot() ? appId :
+        ContributionIdentifier.from(node.getFatherPK(), NodeDetail.TYPE).asString();
+    assertThat(props.get(PropertyIds.PARENT_ID).getFirstValue(), is(parentId));
+    assertThat(props.get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS).getValues(),
+        containsInAnyOrder(TypeId.SILVERPEAS_FOLDER.value(),
+            TypeId.SILVERPEAS_PUBLICATION.value()));
+
+    TreeNode folderNode = organization.findTreeNodeById(node.getContributionId().asString());
+    String path = pathToNode(folderNode, language);
+    assertThat(props.get(PropertyIds.PATH).getFirstValue(), is(path));
+  }
+
+  /**
+   * Asserts the specified properties of a CMIS object matches the expected Silverpeas business
+   * object.
+   * @param properties the CMIS properties of a CMIS object.
+   * @param pub a {@link PublicationDetail} instance in Silverpeas.
+   */
+  private void assertProperties(final Properties properties, final PublicationDetail pub) {
+    User requester = User.getCurrentRequester();
+    String language = requester.getUserPreferences().getLanguage();
+
+    Map<String, PropertyData<?>> props = properties.getProperties();
+    assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(),
+        is(pub.getContributionId().asString()));
+    assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(pub.getName(language)));
+    assertThat(props.get(PropertyIds.DESCRIPTION).getFirstValue(),
+        is(pub.getDescription(language)));
+    assertThat(props.get(PropertyIds.CREATED_BY).getFirstValue(),
+        is(pub.getCreator().getDisplayedName()));
+    assertThat(props.get(PropertyIds.LAST_MODIFIED_BY).getFirstValue(),
+        is(pub.getLastModifier().getDisplayedName()));
+    assertThat(props.get(PropertyIds.CREATION_DATE).getFirstValue(),
+        is(millisToCalendar(pub.getCreationDate().getTime())));
+    assertThat(props.get(PropertyIds.LAST_MODIFICATION_DATE).getFirstValue(),
+        is(millisToCalendar(pub.getLastModificationDate().getTime())));
+    assertThat(props.get(PropertyIds.BASE_TYPE_ID).getFirstValue(),
+        is(BaseTypeId.CMIS_FOLDER.value()));
+    assertThat(props.get(PropertyIds.OBJECT_TYPE_ID).getFirstValue(),
+        is(TypeId.SILVERPEAS_PUBLICATION.value()));
+
+    Optional<Location> location = publicationService.getMainLocation(pub.getPK());
+    assertThat(location.isPresent(), is(true));
+    Location folder = location.get();
+    String folderId = folder.isRoot() ? pub.getInstanceId() :
+        ContributionIdentifier.from(folder, NodeDetail.TYPE).asString();
+    assertThat(props.get(PropertyIds.PARENT_ID).getFirstValue(), is(folderId));
+    assertThat(props.get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS).getValues(), empty());
+
+    TreeNode pubNode = organization.findTreeNodeById(pub.getContributionId().asString());
+    String path = pathToNode(pubNode, language);
     assertThat(props.get(PropertyIds.PATH).getFirstValue(), is(path));
   }
 }

@@ -45,13 +45,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Centralization of common treatments between all implementations of {@link ContentInterface}.
+ * Centralization of common treatments between all implementations of {@link SilverpeasContentManager}.
  * @author silveryocha
  */
-public abstract class AbstractContentInterface implements ContentInterface {
+public abstract class AbstractSilverpeasContentManager implements SilverpeasContentManager {
 
-  protected ContentManager getContentManager() {
-    return ContentManagerProvider.getContentManager();
+  protected ContentManagementEngine getContentManager() {
+    return ContentManagementEngineProvider.getContentManagementEngine();
   }
 
   @Override

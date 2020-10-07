@@ -72,7 +72,7 @@ import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
 import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
@@ -194,7 +194,7 @@ class DefaultAdministration implements Administration {
   @Inject
   private SpaceEventNotifier spaceEventNotifier;
   @Inject
-  private ContentManager contentManager;
+  private ContentManagementEngine contentMgtEngine;
   @Inject
   private DomainDriverManager domainDriverManager;
   @Inject
@@ -507,7 +507,7 @@ class DefaultAdministration implements Administration {
 
     // delete the subspace profiles
     List<SpaceInst> subSpaces = spaceInst.getSubSpaces();
-    for (SpaceInst subSpace : subSpaces) {
+    for (SpaceInst subSpace: subSpaces) {
       deleteSpaceProfiles(subSpace);
     }
   }
@@ -863,13 +863,13 @@ class DefaultAdministration implements Administration {
       final T componentInstance, final String componentId,
       final Supplier<T> nullComponentInstance) {
     if (componentInstance != null) {
-      if (componentInstance.getId().equals(componentId) || "-1".equals(componentInstance.getId()) ||
-          isLong(componentId)) {
+      if (componentInstance.getId().equals(componentId)
+          || "-1".equals(componentInstance.getId())
+          || isLong(componentId)) {
         return componentInstance;
       }
-      SilverLogger.getLogger(this)
-          .error("{0}. Wrong component {1} has been found!!",
-              failureOnGetting(COMPONENT, componentId), componentInstance.getId());
+      SilverLogger.getLogger(this).error("{0}. Wrong component {1} has been found!!",
+          failureOnGetting(COMPONENT, componentId), componentInstance.getId());
       return nullComponentInstance != null ? nullComponentInstance.get() : null;
     }
     return null;
@@ -940,8 +940,9 @@ class DefaultAdministration implements Administration {
     componentIds.forEach(i -> localComponentIds.put(getDriverComponentId(i), i));
     final Map<String, Map<String, String>> result = new HashMap<>(componentIds.size());
     try {
-      componentManager.getParameterValuesByComponentIdThenByParamName(localComponentIds.keySet(),
-          paramNames).forEach((k, v) -> result.put(localComponentIds.get(k), v));
+      componentManager
+          .getParameterValuesByComponentIdThenByParamName(localComponentIds.keySet(), paramNames)
+          .forEach((k, v) -> result.put(localComponentIds.get(k), v));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }
@@ -1073,7 +1074,7 @@ class DefaultAdministration implements Administration {
 
       if (isContentManagedComponent(componentName)) {
         // Call the register functions
-        contentManager.registerNewContentInstance(connection, componentId, "containerPDC",
+        contentMgtEngine.registerNewContentInstance(connection, componentId, "containerPDC",
             componentName);
       }
 
@@ -1113,12 +1114,13 @@ class DefaultAdministration implements Administration {
   /**
    * Deletes the given component instance in Silverpeas
    *
-   * @param userId      the unique identifier of the user requesting the deletion.
+   * @param userId the unique identifier of the user requesting the deletion.
    * @param componentId the client identifier of the component instance (for a kmelia instance of id
-   *                    666, the client identifier of the instance is kmelia666)
-   * @param definitive  is the component instance deletion is definitive? If not, the component
-   *                    instance is moved into the bin.
-   * @throws AdminException if an error occurs while deleting the component instance.
+   * 666, the client identifier of the instance is kmelia666)
+   * @param definitive is the component instance deletion is definitive? If not, the component
+   * instance is moved into the bin.
+   * @throws AdminException if an error occurs while deleting the
+   * component instance.
    */
   @Override
   public String deleteComponentInst(String userId, String componentId, boolean definitive)
@@ -1170,7 +1172,7 @@ class DefaultAdministration implements Administration {
 
           if (isContentManagedComponent(componentName)) {
             // Call the unregister functions
-            contentManager.unregisterNewContentInstance(connection, componentId, "containerPDC",
+            contentMgtEngine.unregisterNewContentInstance(connection, componentId, "containerPDC",
                 componentName);
           }
         }
@@ -1190,7 +1192,7 @@ class DefaultAdministration implements Administration {
       }
 
       return componentId;
-    } catch (SQLException | ContentManagerException e) {
+    } catch (SQLException|ContentManagerException e) {
       throw new AdminException(failureOnDeleting(COMPONENT, componentId), e);
     }
   }
@@ -1307,8 +1309,8 @@ class DefaultAdministration implements Administration {
    * Set space profile to a subspace. There is no persistance. The subspace object is enriched.
    *
    * @param subSpace the object to set profiles
-   * @param space    the object to get profiles
-   * @param role     the name of the profile
+   * @param space the object to get profiles
+   * @param role the name of the profile
    * @throws AdminException
    */
   private void setSpaceProfileToSubSpace(SpaceInst subSpace, SpaceInst space, SilverpeasRole role) {
@@ -1735,7 +1737,7 @@ class DefaultAdministration implements Administration {
   }
 
   @Override
-  public Map<Integer, List<String>> getProfilesByObjectTypeAndUserId(
+  public Map<String, List<String>> getProfilesByObjectTypeAndUserId(
       final ProfiledObjectType profiledObjectType, final String componentId, final String userId)
       throws AdminException {
     final List<String> groups = getAllGroupsOfUser(userId);
@@ -3212,12 +3214,11 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * @param spaces       list of authorized spaces built by this method
+   * @param spaces list of authorized spaces built by this method
    * @param componentsId list of components' id (base to get authorized spaces)
-   * @param space        a space candidate to be in authorized spaces list
+   * @param space a space candidate to be in authorized spaces list
    */
-  private void addAuthorizedSpace(Set<Integer> spaces, Set<String> componentsId,
-      SpaceInstLight space) {
+  private void addAuthorizedSpace(Set<Integer> spaces, Set<String> componentsId, SpaceInstLight space) {
     if (!SpaceInst.STATUS_REMOVED.equals(space.getStatus()) &&
         !spaces.contains(space.getLocalId())) {
       int spaceId = space.getLocalId();
@@ -3875,12 +3876,11 @@ class DefaultAdministration implements Administration {
   @Override
   public Map<String, Set<String>> getUserProfilesByComponentId(final String userId,
       final Collection<String> componentIds) throws AdminException {
-    final Map<Integer, String> localComponentIds =
-        componentIds.stream().collect(toMap(this::getDriverComponentId, i -> i));
-    return profileManager.getProfileNamesOfUser(userId, getAllGroupsOfUser(userId),
-        localComponentIds.keySet())
-        .entrySet()
-        .stream()
+    final Map<Integer, String> localComponentIds = componentIds.stream()
+        .collect(toMap(this::getDriverComponentId, i -> i));
+    return profileManager
+        .getProfileNamesOfUser(userId, getAllGroupsOfUser(userId), localComponentIds.keySet())
+        .entrySet().stream()
         .collect(toMap(e -> localComponentIds.get(e.getKey()), Map.Entry::getValue));
   }
 
@@ -4519,8 +4519,7 @@ class DefaultAdministration implements Administration {
   /**
    * Merge the data of a distant user into the data of a silverpeas user : - user identifier (the
    * distant one) - first name - last name - e-mail - login
-   *
-   * @param distantUser    {@link UserDetail} representing data on externam repository.
+   * @param distantUser {@link UserDetail} representing data on externam repository.
    * @param silverpeasUser {@link UserDetail} representing data on silverpeas.
    * @return true if a data has changed, false otherwise.
    */
@@ -4578,10 +4577,11 @@ class DefaultAdministration implements Administration {
       message = "Synchronization of users terminated";
       context.appendToReport(message).appendToReport("\n");
       SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
-      message = "# of updated users: " + context.getUpdatedUsers().size() + ", added: " +
-          context.getAddedUsers().size() + ", removed: " + context.getRemovedUsers().size() +
-          ", restored: " + context.getRestoredUsers().size() + ", deleted: " +
-          context.getDeletedUsers().size();
+      message = "# of updated users: " + context.getUpdatedUsers().size() +
+          ", added: " + context.getAddedUsers().size() +
+          ", removed: " + context.getRemovedUsers().size() +
+          ", restored: " + context.getRestoredUsers().size() +
+          ", deleted: " + context.getDeletedUsers().size();
       context.appendToReport(message).appendToReport("\n");
       SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
       context.setIndexationBackgroundProcess(
@@ -4952,8 +4952,8 @@ class DefaultAdministration implements Administration {
       }
       sReport.append("Groups synchronization terminated\n");
       SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS,
-          "# of groups updated : " + iNbGroupsMaj + ", added : " + iNbGroupsAdded + ", deleted : " +
-              iNbGroupsDeleted);
+          "# of groups updated : " + iNbGroupsMaj + ", added : " + iNbGroupsAdded
+          + ", deleted : " + iNbGroupsDeleted);
       SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS, "Groups synchronization terminated");
       return sReport.toString();
     } catch (Exception e) {
@@ -5630,8 +5630,8 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * Get all the component profiles Id for the given user without group transitivity. (component
-   * object profiles are not retrieved)
+   * Get all the component profiles Id for the given user without group transitivity.
+   * (component object profiles are not retrieved)
    */
   @SuppressWarnings("unchecked")
   private String[] getDirectComponentProfileIdsOfUser(String sUserId) throws AdminException {
@@ -5643,8 +5643,8 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * Get all the component profiles Id for the given group. (component object profiles are not
-   * retrieved)
+   * Get all the component profiles Id for the given group.
+   * (component object profiles are not retrieved)
    */
   @SuppressWarnings("unchecked")
   private String[] getDirectComponentProfileIdsOfGroup(String groupId) throws AdminException {
@@ -5656,8 +5656,8 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * Get all the component object profiles Id for the given user. (direct component profiles are not
-   * retrieved)
+   * Get all the component object profiles Id for the given user.
+   * (direct component profiles are not retrieved)
    */
   @SuppressWarnings("unchecked")
   private String[] getComponentObjectProfileIdsOfUserType(String userId) throws AdminException {
@@ -5670,8 +5670,8 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * Get all the component object profiles Id for the given group. (direct component profiles are
-   * not retrieved)
+   * Get all the component object profiles Id for the given group.
+   * (direct component profiles are not retrieved)
    */
   private String[] getComponentObjectProfileIdsOfGroupType(String sGroupId) throws AdminException {
     try {
@@ -5781,7 +5781,6 @@ class DefaultAdministration implements Administration {
 
   /**
    * Centralized method to copy or replace rights.
-   *
    * @param context the context that defined what the treatment must perform.
    * @throws AdminException
    */
@@ -5849,8 +5848,8 @@ class DefaultAdministration implements Administration {
       String sourceUserId, String targetUserId, boolean nodeAssignRights, String authorId)
       throws AdminException {
     RightAssignationContext context =
-        initializeRightAssignationContext(operationMode, nodeAssignRights, authorId).fromUserId(
-            sourceUserId).toUserId(targetUserId);
+        initializeRightAssignationContext(operationMode, nodeAssignRights, authorId)
+            .fromUserId(sourceUserId).toUserId(targetUserId);
     assignRightsFromSourceToTarget(context);
   }
 
@@ -5859,8 +5858,8 @@ class DefaultAdministration implements Administration {
       String sourceUserId, String targetGroupId, boolean nodeAssignRights, String authorId)
       throws AdminException {
     RightAssignationContext context =
-        initializeRightAssignationContext(operationMode, nodeAssignRights, authorId).fromUserId(
-            sourceUserId).toGroupId(targetGroupId);
+        initializeRightAssignationContext(operationMode, nodeAssignRights, authorId)
+            .fromUserId(sourceUserId).toGroupId(targetGroupId);
     assignRightsFromSourceToTarget(context);
   }
 
@@ -5869,8 +5868,8 @@ class DefaultAdministration implements Administration {
       String sourceGroupId, String targetUserId, boolean nodeAssignRights, String authorId)
       throws AdminException {
     RightAssignationContext context =
-        initializeRightAssignationContext(operationMode, nodeAssignRights, authorId).fromGroupId(
-            sourceGroupId).toUserId(targetUserId);
+        initializeRightAssignationContext(operationMode, nodeAssignRights, authorId)
+            .fromGroupId(sourceGroupId).toUserId(targetUserId);
     assignRightsFromSourceToTarget(context);
   }
 
@@ -5879,17 +5878,16 @@ class DefaultAdministration implements Administration {
       String sourceGroupId, String targetGroupId, boolean nodeAssignRights, String authorId)
       throws AdminException {
     RightAssignationContext context =
-        initializeRightAssignationContext(operationMode, nodeAssignRights, authorId).fromGroupId(
-            sourceGroupId).toGroupId(targetGroupId);
+        initializeRightAssignationContext(operationMode, nodeAssignRights, authorId)
+            .fromGroupId(sourceGroupId).toGroupId(targetGroupId);
     assignRightsFromSourceToTarget(context);
   }
 
   /**
    * Initializing a right assignation context.
-   *
-   * @param operationMode    : value of {@link RightAssignationContext.MODE}
+   * @param operationMode : value of {@link RightAssignationContext.MODE}
    * @param nodeAssignRights : true if you want also to add rights to nodes
-   * @param authorId         : the userId of the author of this action
+   * @param authorId : the userId of the author of this action
    * @return the initialized {@link RightAssignationContext}
    */
   private RightAssignationContext initializeRightAssignationContext(
@@ -5907,7 +5905,7 @@ class DefaultAdministration implements Administration {
   }
 
   /**
-   * @param userId   the user identifier
+   * @param userId the user identifier
    * @param domainId the domain identifier
    * @return true if user identified by given userId is the manager of given domain identifier
    */

@@ -33,19 +33,21 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The interface for all the content (filebox+, ..) Every container have to implement this
- * interface.
+ * A manager of a given type of content in Silverpeas. Every containers of
+ * {@link org.silverpeas.core.contribution.model.SilverpeasContent} objects have to implement
+ * this interface.
  */
-public interface ContentInterface {
+public interface SilverpeasContentManager {
 
-  static Optional<ContentInterface> getByInstanceId(final String componentInstanceId) {
+  static Optional<SilverpeasContentManager> getByInstanceId(final String componentInstanceId) {
     try {
-      final ContentInterface contentInterface =
-          ContentManagerProvider.getContentManager().getContentPeas(componentInstanceId)
-              .getContentInterface();
-      return Optional.ofNullable(contentInterface);
+      final SilverpeasContentManager contentManager =
+          ContentManagementEngineProvider.getContentManagementEngine()
+              .getContentPeas(componentInstanceId)
+              .getContentManager();
+      return Optional.ofNullable(contentManager);
     } catch (SilverpeasException e) {
-      SilverLogger.getLogger(ContentInterface.class).silent(e);
+      SilverLogger.getLogger(SilverpeasContentManager.class).silent(e);
     }
     return Optional.empty();
   }
@@ -86,7 +88,7 @@ public interface ContentInterface {
    * An error is thrown if it does not exists.<br>
    * Then the getting or creating of the linked silverpeas content id is performed.<br>
    * For performances, and if it knows his context, the caller can performed {@link
-   * ContentManager#getSilverContentId(String, String)} before calling this method.
+   * ContentManagementEngine#getSilverContentId(String, String)} before calling this method.
    * </p>
    * <p>
    * If no silverpeas content identifier exists, then it is created.

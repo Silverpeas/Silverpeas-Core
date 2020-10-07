@@ -163,7 +163,7 @@ class SilverpeasSessionOpenerTest {
   @Singleton
   @Alternative
   @Priority(APPLICATION + 10)
-  public static class SessionManagerStub extends SessionManager implements SessionManagement {
+  public static class SessionManagerStub extends SessionManager {
 
     /**
      * Prevent the class from being instantiate (private)

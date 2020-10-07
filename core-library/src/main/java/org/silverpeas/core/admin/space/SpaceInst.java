@@ -775,40 +775,40 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   public SpaceInst copy() {
-    SpaceInst clone = new SpaceInst();
+    SpaceInst copy = new SpaceInst();
 
     // clone basic information
-    clone.setDescription(getDescription());
-    clone.setDisplaySpaceFirst(displaySpaceFirst);
-    clone.setFirstPageExtraParam(firstPageExtraParam);
-    clone.setFirstPageType(firstPageType);
-    clone.setInheritanceBlocked(inheritanceBlocked);
-    clone.setLook(look);
-    clone.setName(getName());
-    clone.setLanguage(getLanguage());
-    clone.setPersonalSpace(isPersonalSpace);
+    copy.setDescription(getDescription());
+    copy.setDisplaySpaceFirst(displaySpaceFirst);
+    copy.setFirstPageExtraParam(firstPageExtraParam);
+    copy.setFirstPageType(firstPageType);
+    copy.setInheritanceBlocked(inheritanceBlocked);
+    copy.setLook(look);
+    copy.setName(getName());
+    copy.setLanguage(getLanguage());
+    copy.setPersonalSpace(isPersonalSpace);
 
     // clone profiles
     List<SpaceProfileInst> profiles = getProfiles();
     for (SpaceProfileInst profile : profiles) {
-      clone.addSpaceProfileInst(profile.copy());
+      copy.addSpaceProfileInst(profile.copy());
     }
 
     for (String lang : getTranslations().keySet()) {
       SpaceI18N translation = getTranslation(lang);
-      clone.addTranslation(translation);
+      copy.addTranslation(translation);
     }
 
     // clone components
     List<ComponentInst> allComponents = getAllComponentsInst();
     for (ComponentInst component : allComponents) {
-      clone.addComponentInst(component.copy());
+      copy.addComponentInst(component.copy());
     }
 
     // clone subspace ids
-    clone.setSubSpaces(getSubSpaces());
+    copy.setSubSpaces(getSubSpaces());
 
-    return clone;
+    return copy;
   }
 
   public void removeInheritedProfiles() {

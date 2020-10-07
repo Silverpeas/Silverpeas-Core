@@ -38,7 +38,7 @@ import java.io.Serializable;
  * @version 1.0
  * @deprecated
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public abstract class WAPrimaryKey implements Serializable, Cloneable {
 
   private static final long serialVersionUID = -2456912022917180222L;

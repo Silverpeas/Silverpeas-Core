@@ -47,11 +47,11 @@ public class SpaceI18NTable extends Table<SpaceI18NRow> {
    */
   protected SpaceI18NRow fetchTranslation(ResultSet rs) throws SQLException {
     SpaceI18NRow s = new SpaceI18NRow();
-    s.id = rs.getInt(1);
-    s.spaceId = rs.getInt(2);
-    s.lang = rs.getString(3);
-    s.name = rs.getString(4);
-    s.description = rs.getString(5);
+    s.setId(rs.getInt(1));
+    s.setSpaceId(rs.getInt(2));
+    s.setLang(rs.getString(3));
+    s.setName(rs.getString(4));
+    s.setDescription(rs.getString(5));
     return s;
   }
 
@@ -78,12 +78,12 @@ public class SpaceI18NTable extends Table<SpaceI18NRow> {
   @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, SpaceI18NRow row)
       throws SQLException {
-    row.id = getNextId();
-    insert.setInt(1, row.id);
-    insert.setInt(2, row.spaceId);
-    insert.setString(3, row.lang);
-    insert.setString(4, truncate(row.name, 100));
-    insert.setString(5, truncate(row.description, 500));
+    row.setId(getNextId());
+    insert.setInt(1, row.getId());
+    insert.setInt(2, row.getSpaceId());
+    insert.setString(3, row.getLang());
+    insert.setString(4, truncate(row.getName(), 100));
+    insert.setString(5, truncate(row.getDescription(), 500));
   }
 
   /**
@@ -99,9 +99,9 @@ public class SpaceI18NTable extends Table<SpaceI18NRow> {
   @Override
   protected void prepareUpdate(String updateQuery, PreparedStatement update, SpaceI18NRow row)
       throws SQLException {
-    update.setString(1, truncate(row.name, 100));
-    update.setString(2, truncate(row.description, 500));
-    update.setInt(3, row.id);
+    update.setString(1, truncate(row.getName(), 100));
+    update.setString(2, truncate(row.getDescription(), 500));
+    update.setInt(3, row.getId());
   }
 
   /**

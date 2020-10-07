@@ -39,10 +39,12 @@ import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIdDefinitionImpl;
 import org.apache.chemistry.opencmis.server.support.TypeDefinitionFactory;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.model.Application;
+import org.silverpeas.core.cmis.model.ContributionFolder;
+import org.silverpeas.core.cmis.model.Publication;
 import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.cmis.model.TypeId;
-import org.silverpeas.core.annotation.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -74,7 +76,10 @@ public class SilverpeasCmisTypeManager {
         typeDefinitionFactory.createTypeMutability(false, false, false));
 
     addBaseCMISObjectTypes();
+    addSilverpeasCmisObjectTypes();
+  }
 
+  private void addSilverpeasCmisObjectTypes() {
     // add Silverpeas collaborative space type
     MutableFolderTypeDefinition spaceType =
         typeDefinitionFactory.createFolderTypeDefinition(CmisVersion.CMIS_1_1,
@@ -102,15 +107,59 @@ public class SilverpeasCmisTypeManager {
     appType.setLocalName(Application.class.getSimpleName());
     appType.setQueryName(TypeId.SILVERPEAS_APPLICATION.value());
     appType.setDisplayName("Silverpeas Application");
-    appType.setDescription("An application to manager some kinds of your contributions");
+    appType.setDescription("An application to manage some kinds of your contributions");
     appType.setTypeMutability(typeDefinitionFactory.createTypeMutability(true, false, false));
     final MutablePropertyIdDefinition appAllowedChildTypes =
-        (MutablePropertyIdDefinition) appType.getPropertyDefinitions().get(
-            PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS);
-    appAllowedChildTypes.setDefaultValue(
-        Application.getAllAllowedChildrenTypes().stream().map(TypeId::value).collect(Collectors.toList()));
+        (MutablePropertyIdDefinition) appType.getPropertyDefinitions()
+            .get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS);
+    appAllowedChildTypes.setDefaultValue(Application.getAllAllowedChildrenTypes()
+        .stream()
+        .map(TypeId::value)
+        .collect(Collectors.toList()));
     removeQueryableAndOrderableFlags(appType);
     typeDefinitions.put(appType.getId(), appType);
+
+    // add Silverpeas contribution folder type (Node)
+    MutableFolderTypeDefinition folderType =
+        typeDefinitionFactory.createFolderTypeDefinition(CmisVersion.CMIS_1_1,
+            BaseTypeId.CMIS_FOLDER.value());
+    folderType.setId(TypeId.SILVERPEAS_FOLDER.value());
+    folderType.setLocalName(ContributionFolder.class.getSimpleName());
+    folderType.setQueryName(TypeId.SILVERPEAS_FOLDER.value());
+    folderType.setDisplayName("Silverpeas Folder");
+    folderType.setDescription(
+        "A folder to categorize and organize your contributions according to thematics");
+    folderType.setTypeMutability(typeDefinitionFactory.createTypeMutability(true, false, false));
+    final MutablePropertyIdDefinition folderAllowedChildTypes =
+        (MutablePropertyIdDefinition) folderType.getPropertyDefinitions()
+            .get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS);
+    folderAllowedChildTypes.setDefaultValue(ContributionFolder.getAllAllowedChildrenTypes()
+        .stream()
+        .map(TypeId::value)
+        .collect(Collectors.toList()));
+    removeQueryableAndOrderableFlags(folderType);
+    typeDefinitions.put(folderType.getId(), folderType);
+
+    // add publications
+    MutableFolderTypeDefinition publiType =
+        typeDefinitionFactory.createFolderTypeDefinition(CmisVersion.CMIS_1_1,
+            BaseTypeId.CMIS_FOLDER.value());
+    publiType.setId(TypeId.SILVERPEAS_PUBLICATION.value());
+    publiType.setLocalName(Publication.class.getSimpleName());
+    publiType.setQueryName(TypeId.SILVERPEAS_PUBLICATION.value());
+    publiType.setDisplayName("Publication");
+    publiType.setDescription(
+        "A publication to gathers in a single contribution about a given subject one or more contents");
+    publiType.setTypeMutability(typeDefinitionFactory.createTypeMutability(true, false, false));
+    final MutablePropertyIdDefinition publiAllowedChildTypes =
+        (MutablePropertyIdDefinition) publiType.getPropertyDefinitions()
+            .get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS);
+    publiAllowedChildTypes.setDefaultValue(Publication.getAllAllowedChildrenTypes()
+        .stream()
+        .map(TypeId::value)
+        .collect(Collectors.toList()));
+    removeQueryableAndOrderableFlags(publiType);
+    typeDefinitions.put(publiType.getId(), publiType);
   }
 
   private void addBaseCMISObjectTypes() {

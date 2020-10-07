@@ -36,7 +36,7 @@ public class ComponentInstanceI18NRow {
   }
 
   public ComponentInstanceI18NRow(ComponentI18N componentI18N) {
-    id = componentI18N.getId();
+    id = Integer.valueOf(componentI18N.getId());
     componentId = Integer.parseInt(componentI18N.getObjectId());
     lang = componentI18N.getLanguage();
     name = componentI18N.getName();

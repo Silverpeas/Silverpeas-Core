@@ -46,7 +46,7 @@ import static java.util.Collections.singletonList;
 public abstract class ResourcePath<T> extends ArrayList<T> {
   private static final long serialVersionUID = 9091158323736803705L;
 
-  protected static final String SEP = " > ";
+  public static final String DEFAULT_SEPARATOR = " > ";
   protected final transient Map<String, Pair<String, String>> lastPathByLanguage = new HashMap<>();
 
   public ResourcePath() {
@@ -63,7 +63,7 @@ public abstract class ResourcePath<T> extends ArrayList<T> {
 
   protected abstract String getInstanceId(final T resource);
 
-  protected abstract <R> R getId(final T resource);
+  protected abstract String getId(final T resource);
 
   protected abstract boolean isRoot(final T resource);
 
@@ -74,7 +74,7 @@ public abstract class ResourcePath<T> extends ArrayList<T> {
   protected abstract String getLabel(final T resource, final String language);
 
   /**
-   * Formats a path from the resource that the list contains.
+   * Formats a path from the node that the list contains.
    * @param language the aimed translation.
    * @return a string.
    */
@@ -83,14 +83,26 @@ public abstract class ResourcePath<T> extends ArrayList<T> {
   }
 
   /**
-   * Formats a path from the resource that the list contains.
+   * Formats a path from the node that the list contains by using the default path separator.
    * @param language the aimed translation.
    * @param fullSpacePath if false, the space host is taken into account, if true the space host
    * and all parents are taken into account.
    * @return a string.
    */
   public String format(final String language, final boolean fullSpacePath) {
-    final String currentResourceIdPath = stream().map(this::getId).map(String::valueOf)
+    return format(language, fullSpacePath, DEFAULT_SEPARATOR);
+  }
+
+  /**
+   * Formats a path from the node that the list contains by using the specified path separator.
+   * @param language the aimed translation.
+   * @param fullSpacePath if false, the space host is taken into account, if true the space host
+   * and all parents are taken into account.
+   * @param pathSep the path separator to use.
+   * @return a string.
+   */
+  public String format(final String language, final boolean fullSpacePath, final String pathSep) {
+    final String currentResourceIdPath = stream().map(this::getId)
         .collect(Collectors.joining(","));
     Pair<String, String> lastPath = lastPathByLanguage
         .computeIfAbsent(language, l -> Pair.of("", ""));
@@ -98,13 +110,13 @@ public abstract class ResourcePath<T> extends ArrayList<T> {
       StringBuilder result = new StringBuilder();
       for (T resource : this) {
         if (result.length() > 0) {
-          result.insert(0, SEP);
+          result.insert(0, pathSep);
         }
         if (isRoot(resource)) {
           if (!rootIsComponentInstance()) {
-            result.insert(0, SEP + getLabel(resource, language));
+            result.insert(0, pathSep + getLabel(resource, language));
           }
-          result.insert(0, getPath(resource, language, fullSpacePath));
+          result.insert(0, getPath(resource, language, fullSpacePath, pathSep));
         } else {
           result.insert(0, getLabel(resource, language));
         }
@@ -116,17 +128,17 @@ public abstract class ResourcePath<T> extends ArrayList<T> {
   }
 
   private String getPath(final T resource, final String language,
-      final boolean fullSpacePath) {
+      final boolean fullSpacePath, final String pathSep) {
     final String instanceId = getInstanceId(resource);
     final SilverpeasComponentInstance componentInstance = OrganizationController.get()
         .getComponentInstance(instanceId).orElseThrow(() -> new IllegalArgumentException(
             SilverpeasExceptionMessages.failureOnGetting("component instance", instanceId)));
-    return getPath(componentInstance, language, fullSpacePath) + SEP +
+    return getPath(componentInstance, language, fullSpacePath, pathSep) + pathSep +
         componentInstance.getLabel(language);
   }
 
   private String getPath(SilverpeasComponentInstance instance, final String language,
-      final boolean fullSpacePath) {
+      final boolean fullSpacePath, final String pathSep) {
     final List<SpaceInstLight> spaceList;
     final OrganizationController controller = OrganizationController.get();
     if (fullSpacePath) {
@@ -134,7 +146,7 @@ public abstract class ResourcePath<T> extends ArrayList<T> {
     } else {
       spaceList = singletonList(controller.getSpaceInstLightById(instance.getSpaceId()));
     }
-    return spaceList.stream().map(s -> s.getName(language)).collect(Collectors.joining(SEP));
+    return spaceList.stream().map(s -> s.getName(language)).collect(Collectors.joining(pathSep));
   }
 
   @Override

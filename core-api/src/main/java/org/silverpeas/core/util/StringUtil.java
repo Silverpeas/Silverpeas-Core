@@ -138,6 +138,29 @@ public class StringUtil extends StringUtils {
   }
 
   /**
+   * <p>Counts how many times the substring appears in the larger string.</p>
+   *
+   * <p>A {@code null} or empty ("") String input returns {@code 0}.</p>
+   *
+   * <pre>
+   * StringUtils.countMatches(null, *)       = 0
+   * StringUtils.countMatches("", *)         = 0
+   * StringUtils.countMatches("abba", null)  = 0
+   * StringUtils.countMatches("abba", "")    = 0
+   * StringUtils.countMatches("abba", "a")   = 2
+   * StringUtils.countMatches("abba", "ab")  = 1
+   * StringUtils.countMatches("abba", "xxx") = 0
+   * </pre>
+   *
+   * @param str  the text to check, may be null
+   * @param subStr  the subtext to count, may be null
+   * @return the number of occurrences, 0 if either CharSequence is {@code null}
+   */
+  public static int countMatches(final String str, final String subStr) {
+    return StringUtils.countMatches(str, subStr);
+  }
+
+  /**
    * <p>Check if a CharSequence starts with a specified prefix.</p>
    *
    * <p>{@code null}s are handled without exceptions. Two {@code null}

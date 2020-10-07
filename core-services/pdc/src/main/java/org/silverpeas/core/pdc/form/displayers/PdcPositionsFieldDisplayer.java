@@ -36,9 +36,9 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.displayers.AbstractFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.TextField;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.Value;
@@ -115,9 +115,9 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
     else {
       // get PDC positions
       try {
-        ContentManager contentManager = getContentManager();
+        ContentManagementEngine contentMgtEngine = getContentManager();
         int silverContentId =
-            contentManager.getSilverContentId(context.getObjectId(), context.getComponentId());
+            contentMgtEngine.getSilverContentId(context.getObjectId(), context.getComponentId());
         List<ClassifyPosition> positions =
             getPdcManager().getPositions(silverContentId, context.getComponentId());
 
@@ -145,8 +145,8 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
 
   }
 
-  private ContentManager getContentManager() throws ContentManagerException {
-    return ContentManagerProvider.getContentManager();
+  private ContentManagementEngine getContentManager() throws ContentManagerException {
+    return ContentManagementEngineProvider.getContentManagementEngine();
   }
 
   @Override

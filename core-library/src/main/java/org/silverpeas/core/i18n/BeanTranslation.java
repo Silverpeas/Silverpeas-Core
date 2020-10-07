@@ -32,12 +32,15 @@ import java.lang.reflect.InvocationTargetException;
 public class BeanTranslation implements Translation, Serializable {
 
   private static final long serialVersionUID = -3879515108587719162L;
-  private int id = -1;
+  private String id = "-1";
   private String objectId = null;
   private String language = I18NHelper.defaultLanguage;
   private String name = "";
   private String description = "";
 
+  /**
+   * Required for copy
+   */
   protected BeanTranslation() {
     // Nothing is done
   }
@@ -50,7 +53,7 @@ public class BeanTranslation implements Translation, Serializable {
     setDescription(description);
   }
 
-  protected BeanTranslation(int id, String lang, String name, String description) {
+  protected BeanTranslation(String id, String lang, String name, String description) {
     this(lang, name, description);
     setId(id);
   }
@@ -63,11 +66,11 @@ public class BeanTranslation implements Translation, Serializable {
     setDescription(otherTranslation.getDescription());
   }
 
-  public final int getId() {
+  public final String getId() {
     return id;
   }
 
-  public final void setId(int id) {
+  public final void setId(String id) {
     this.id = id;
   }
 
@@ -103,6 +106,12 @@ public class BeanTranslation implements Translation, Serializable {
     this.description = description;
   }
 
+  /**
+   * Copies this bean into another one. This method expects the classes extending the
+   * {@link BeanTranslation} class has a public or protected default constructor, otherwise a
+   * {@link SilverpeasRuntimeException} exception is thrown.
+   * @return a copy of this bean.
+   */
   protected BeanTranslation copy() {
     try {
       Constructor<? extends BeanTranslation> constructor = getClass().getDeclaredConstructor();

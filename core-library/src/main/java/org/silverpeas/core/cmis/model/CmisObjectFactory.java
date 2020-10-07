@@ -36,6 +36,11 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Provider;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,6 +59,15 @@ import java.util.Set;
 public class CmisObjectFactory {
 
   /**
+   * Gets an instance of the {@link CmisObjectFactory} class. This method invokes the underlying
+   * IoC system to get such an instance.
+   * @return a {@link CmisObjectFactory} instance.
+   */
+  public static CmisObjectFactory getInstance() {
+    return ServiceProvider.getSingleton(CmisObjectFactory.class);
+  }
+
+  /**
    * A generic way to creates a CMIS object corresponding to a specified Silverpeas object without
    * having to known the concrete type of the Silverpeas object and hence the concrete type of
    * the corresponding CMIS object.
@@ -68,6 +82,8 @@ public class CmisObjectFactory {
       return createSpace((SpaceInstLight) silverpeasObject, language);
     } else if (silverpeasObject.getClass().equals(ComponentInstLight.class)) {
       return createApplication((ComponentInstLight) silverpeasObject, language);
+    } else if (silverpeasObject.getClass().equals(NodeDetail.class)) {
+      return createContributionFolder((NodeDetail) silverpeasObject, language);
     } else {
       throw new NotSupportedException(
           silverpeasObject.getClass() + " isn't supported by our CMIS implementation");
@@ -146,13 +162,65 @@ public class CmisObjectFactory {
       lastModifier = User.getById(String.valueOf(component.getUpdatedBy()));
       lastModificationDate = component.getUpdateDate().getTime();
     }
-    return new Application(component.getId(), component.getName(language), language)
-        .setParentId(component.getSpaceId())
+    return new Application(component.getId(), component.getName(language), language).setParentId(
+        component.getSpaceId())
         .setDescription(component.getDescription(language))
         .setCreator(creator.getDisplayedName())
         .setCreationDate(component.getCreateDate().getTime())
         .setLastModifier(lastModifier.getDisplayedName())
         .setLastModificationDate(lastModificationDate)
+        .setAclSupplier(this::theCommonsACE)
+        .setAllowedActionsSupplier(() -> completeWithFolderActions(theCommonActions()));
+  }
+
+  /**
+   * Creates a CMIS representation of the specified node descriptor in a given Silverpeas
+   * application. A node is a technical object used in Silverpeas to categorize or organize in a
+   * generic way any user contributions. Because a node can also contain others nodes, the nodes
+   * can be linked to each of them within a tree of nodes (hence the name {@code node}).
+   * @param node a descriptor about a node.
+   * @param language the language to use in the localization of the CMIS object to construct.
+   * @return a CMIS contribution folder as a CMIS folder.
+   */
+  public ContributionFolder createContributionFolder(final NodeDetail node, final String language) {
+    String parentId;
+    if (node.getFatherPK().isRoot()) {
+      parentId = node.getContributionId().getComponentInstanceId();
+    } else {
+      parentId = ContributionIdentifier.from(node.getFatherPK(), NodeDetail.TYPE).asString();
+    }
+    return new ContributionFolder(node.getContributionId(), node.getName(language), language)
+        .setParentId(parentId)
+        .setDescription(node.getDescription(language))
+        .setCreator(node.getCreator().getDisplayedName())
+        .setCreationDate(node.getCreationDate().getTime())
+        .setLastModifier(node.getLastModifier().getDisplayedName())
+        .setLastModificationDate(node.getLastModificationDate().getTime())
+        .setAclSupplier(this::theCommonsACE)
+        .setAllowedActionsSupplier(() -> completeWithFolderActions(theCommonActions()));
+  }
+
+  /**
+   * Creates a CMIS representation of the specified publication in a given folder of a Silverpeas
+   * application. A publication in our CMIS implementation is always contained into a folder. If
+   * the application in Silverpeas doesn't organize them in folders, then the folder here should be
+   * a virtual one (a root folder).
+   * @param pub detail about the publication.
+   * @param folder the folder in which is contained this publication.
+   * @param language the language to use in the localization of the CMIS object to construct.
+   * @return a CMIS publication as a CMIS folder.
+   */
+  public Publication createPublication(final PublicationDetail pub,
+      final ContributionIdentifier folder, final String language) {
+    String parentId = folder.getLocalId().equals(NodePK.ROOT_NODE_ID) ?
+        folder.getComponentInstanceId() : folder.asString();
+    return new Publication(pub.getContributionId(), pub.getName(language), language)
+        .setParentId(parentId)
+        .setDescription(pub.getDescription(language))
+        .setCreator(pub.getCreator().getDisplayedName())
+        .setCreationDate(pub.getCreationDate().getTime())
+        .setLastModifier(pub.getLastModifier().getDisplayedName())
+        .setLastModificationDate(pub.getLastModificationDate().getTime())
         .setAclSupplier(this::theCommonsACE)
         .setAllowedActionsSupplier(() -> completeWithFolderActions(theCommonActions()));
   }

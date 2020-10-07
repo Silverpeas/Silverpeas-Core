@@ -26,8 +26,8 @@ package org.silverpeas.core.pdc.pdc.service;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContentProcessor;
@@ -102,7 +102,7 @@ public class GlobalPdcManager implements PdcManager {
   @Inject
   private PdcClassifyManager pdcClassifyManager;
   @Inject
-  private ContentManager contentManager;
+  private ContentManagementEngine contentMgtEngine;
   @Inject
   private PdcClassificationService pdcClassificationService;
   @Inject
@@ -174,7 +174,7 @@ public class GlobalPdcManager implements PdcManager {
 
   private void setTranslations(AxisHeader axisHeader) {
     // ajout de la traduction par defaut
-    int axisId = Integer.parseInt(axisHeader.getPK().getId());
+    String axisId = axisHeader.getPK().getId();
     AxisHeaderI18N translation = new AxisHeaderI18N(axisId, axisHeader.getLanguage(), axisHeader.
         getName(), axisHeader.getDescription());
     axisHeader.addTranslation(translation);
@@ -182,7 +182,8 @@ public class GlobalPdcManager implements PdcManager {
     Connection con = null;
     try {
       con = openConnection();
-      List<AxisHeaderI18N> translations = axisHeaderI18NDAO.getTranslations(con, axisId);
+      List<AxisHeaderI18N> translations =
+          axisHeaderI18NDAO.getTranslations(con, axisId);
       for (AxisHeaderI18N tr : translations) {
         axisHeader.addTranslation(tr);
       }
@@ -404,8 +405,8 @@ public class GlobalPdcManager implements PdcManager {
             oldAxisHeader.setLanguage(I18NHelper.defaultLanguage);
           }
           if (oldAxisHeader.getLanguage().equalsIgnoreCase(axisHeader.getLanguage())) {
-            List<AxisHeaderI18N> translations = axisHeaderI18NDAO.getTranslations(con, Integer.
-                parseInt(axisHeader.getPK().getId()));
+            List<AxisHeaderI18N> translations =
+                axisHeaderI18NDAO.getTranslations(con, axisHeader.getPK().getId());
 
             if (translations != null && !translations.isEmpty()) {
               AxisHeaderI18N translation = translations.get(0);
@@ -421,7 +422,7 @@ public class GlobalPdcManager implements PdcManager {
             }
           } else {
             axisHeaderI18NDAO
-                .deleteTranslation(con, Integer.parseInt(axisHeader.getTranslationId()));
+                .deleteTranslation(con, axisHeader.getTranslationId());
           }
         } else {
           if (axisHeader.getLanguage() != null) {
@@ -431,12 +432,12 @@ public class GlobalPdcManager implements PdcManager {
             }
             if (!axisHeader.getLanguage().equalsIgnoreCase(oldAxisHeader.getLanguage())) {
               AxisHeaderI18N newAxis =
-                  new AxisHeaderI18N(Integer.parseInt(axisHeader.getPK().getId()),
+                  new AxisHeaderI18N(axisHeader.getPK().getId(),
                       axisHeader.getLanguage(), axisHeader.getName(), axisHeader.getDescription());
               String translationId = axisHeader.getTranslationId();
               if (translationId != null && !translationId.equals("-1")) {
                 // update translation
-                newAxis.setId(Integer.parseInt(axisHeader.getTranslationId()));
+                newAxis.setId(axisHeader.getTranslationId());
 
                 axisHeaderI18NDAO.updateTranslation(con, newAxis);
               } else {
@@ -496,7 +497,7 @@ public class GlobalPdcManager implements PdcManager {
       axisHeaders.remove(axisId);
 
       // suppression des traductions
-      axisHeaderI18NDAO.deleteTranslations(con, Integer.parseInt(axisId));
+      axisHeaderI18NDAO.deleteTranslations(con, axisId);
     } catch (Exception e) {
       throw new PdcException(e);
     }
@@ -2255,7 +2256,7 @@ public class GlobalPdcManager implements PdcManager {
       final Map<String, GlobalSilverContentProcessor> processors = ServiceProvider
           .getAllServices(GlobalSilverContentProcessor.class).stream()
           .collect(toMap(GlobalSilverContentProcessor::relatedToComponent, p -> p));
-      return contentManager.getResourceReferencesByContentIds(silverContentIds).stream()
+      return contentMgtEngine.getResourceReferencesByContentIds(silverContentIds).stream()
           .collect(groupingBy(r -> getComponentName(r.getComponentInstanceId()),
                    mapping(r -> r, toList())))
           .entrySet().stream()
@@ -2263,11 +2264,11 @@ public class GlobalPdcManager implements PdcManager {
             final String componentName = e.getKey();
             final List<ResourceReference> references = e.getValue();
             try {
-              final ContentPeas contentP = contentManager.getContentPeasByComponentName(componentName);
+              final ContentPeas contentP = contentMgtEngine.getContentPeasByComponentName(componentName);
               if (contentP != null) {
                 // we are going to search only SilverContent of this instanceId
-                final ContentInterface contentInterface = contentP.getContentInterface();
-                final List<SilverContentInterface> localSilverContents = contentInterface.getSilverContentByReference(references, userId);
+                final SilverpeasContentManager contentManager = contentP.getContentManager();
+                final List<SilverContentInterface> localSilverContents = contentManager.getSilverContentByReference(references, userId);
                 if (localSilverContents != null) {
                   final GlobalSilverContentProcessor processor = getGlobalSilverContentProcessor(processors, componentName);
                   return processor.asGlobalSilverContent(localSilverContents);

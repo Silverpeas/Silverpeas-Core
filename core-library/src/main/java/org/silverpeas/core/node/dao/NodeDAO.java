@@ -31,6 +31,7 @@ import org.silverpeas.core.node.model.NodeI18NDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodeRuntimeException;
+import org.silverpeas.core.persistence.jdbc.AbstractDAO;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.DateUtil;
@@ -44,6 +45,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -61,7 +63,7 @@ import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHM
  * @author Nicolas Eysseric
  */
 @Repository
-public class NodeDAO {
+public class NodeDAO extends AbstractDAO {
 
   private static final String NODE_TABLE = "SB_Node_Node";
   private static final String SELECT_NODE_BY_ID = "SELECT nodeid, nodename, nodedescription, " +
@@ -402,7 +404,7 @@ public class NodeDAO {
   private void setTranslations(Connection con, Collection<NodeDetail> nodes) {
     if (nodes != null && !nodes.isEmpty()) {
       long startTime = System.currentTimeMillis();
-      final List<Integer> nodeIds = I18NHelper.isI18nContentActivated
+      final List<String> nodeIds = I18NHelper.isI18nContentActivated
           ? nodes.stream().map(NodeDetail::getId).collect(Collectors.toList())
           : emptyList();
       try {
@@ -414,7 +416,7 @@ public class NodeDAO {
               n.getDescription());
           n.addTranslation(translation);
           if (I18NHelper.isI18nContentActivated) {
-            n.setTranslations(translations.get(n.getId()));
+            n.setTranslations(translations.get(n.getLocalId()));
           }
         });
       } catch (SQLException e) {
@@ -458,7 +460,7 @@ public class NodeDAO {
         final NodePK nodePK = new NodePK(Integer.toString(r.getInt(1)), r.getString(2));
         final NodeDetail nodeDetail = new NodeDetail();
         nodeDetail.setNodePK(nodePK);
-        nodeDetail.setRightsDependsOn(r.getInt(3));
+        nodeDetail.setRightsDependsOn(String.valueOf(r.getInt(3)));
         entities.add(nodeDetail);
         return null;
       }));
@@ -606,18 +608,21 @@ public class NodeDAO {
       description = "";
     }
 
-    NodeDetail nd =
-        new NodeDetail(pk, name, description, level, fatherPK.getId());
-    nd.setCreationDate(creationDate);
-    nd.setCreatorId(creatorId);
-    nd.setPath(path);
-    nd.setModelId(modelId);
-    nd.setStatus(status);
-    nd.setType(type);
-    nd.setLanguage(language);
-    nd.setOrder(order);
-    nd.setRightsDependsOn(rightsDependsOn);
-    return (nd);
+    try {
+      NodeDetail nd = new NodeDetail(pk, name, description, level, fatherPK.getId());
+      nd.setCreationDate(DateUtil.parseDate(creationDate));
+      nd.setCreatorId(creatorId);
+      nd.setPath(path);
+      nd.setModelId(modelId);
+      nd.setStatus(status);
+      nd.setType(type);
+      nd.setLanguage(language);
+      nd.setOrder(order);
+      nd.setRightsDependsOn(String.valueOf(rightsDependsOn));
+      return (nd);
+    } catch (ParseException e) {
+      throw new NodeRuntimeException("The creation date of the node isn't correctly formatted!");
+    }
   }
 
   /**
@@ -723,15 +728,9 @@ public class NodeDAO {
    */
   public NodePK insertRow(Connection con, NodeDetail nd) throws SQLException {
     NodePK pk = nd.getNodePK();
-    int newId = 0;
+    int newId;
     String name = nd.getName();
     String description = nd.getDescription();
-    String creationDate = nd.getCreationDate();
-    if (!StringUtil.isDefined(creationDate)) {
-      // Column "nodecreationdate" is not null
-      // Adding this statement to prevent SQLException
-      creationDate = DateUtil.today2SQLDate();
-    }
     String creatorId = nd.getCreatorId();
     String path = nd.getPath();
     int level = nd.getLevel();
@@ -765,7 +764,7 @@ public class NodeDAO {
       prepStmt.setInt(1, newId);
       prepStmt.setString(2, name);
       prepStmt.setString(3, description);
-      prepStmt.setString(4, creationDate);
+      setDateParameter(prepStmt, 4, nd.getCreationDate(), DateUtil.today2SQLDate());
       prepStmt.setString(5, creatorId);
       prepStmt.setString(6, path);
       prepStmt.setInt(7, level);
@@ -776,7 +775,7 @@ public class NodeDAO {
       prepStmt.setString(12, type);
       prepStmt.setInt(13, nd.getOrder());
       prepStmt.setString(14, language);
-      prepStmt.setInt(15, nd.getRightsDependsOn());
+      prepStmt.setInt(15, Integer.parseInt(nd.getRightsDependsOn()));
       prepStmt.executeUpdate();
       pk.setId(String.valueOf(newId));
       unvalidateTree(con, nd.getNodePK());
@@ -916,7 +915,7 @@ public class NodeDAO {
       prepStmt.setString(7, nodeDetail.getStatus());
       prepStmt.setInt(8, nodeDetail.getOrder());
       prepStmt.setString(9, nodeDetail.getLanguage());
-      prepStmt.setInt(10, nodeDetail.getRightsDependsOn());
+      prepStmt.setInt(10, Integer.parseInt(nodeDetail.getRightsDependsOn()));
       prepStmt.setInt(11, Integer.parseInt(nodeDetail.getNodePK().getId()));
       prepStmt.setString(12, nodeDetail.getNodePK().getComponentName());
       rowCount = prepStmt.executeUpdate();
@@ -940,7 +939,7 @@ public class NodeDAO {
       prepStmt.setInt(3, Integer.parseInt(nodeDetail.getFatherPK().getId()));
       prepStmt.setString(4, nodeDetail.getNodePK().getInstanceId());
       prepStmt.setInt(5, nodeDetail.getOrder());
-      prepStmt.setInt(6, nodeDetail.getRightsDependsOn());
+      prepStmt.setInt(6, Integer.parseInt(nodeDetail.getRightsDependsOn()));
       prepStmt.setInt(7, Integer.parseInt(nodeDetail.getNodePK().getId()));
       rowCount = prepStmt.executeUpdate();
     }
@@ -950,12 +949,12 @@ public class NodeDAO {
     }
   }
 
-  public void updateRightsDependency(Connection con, NodePK pk, int rightsDependsOn)
+  public void updateRightsDependency(Connection con, NodePK pk, String rightsDependsOn)
       throws SQLException {
     final String updateStatement =
         UPDATE + pk.getTableName() + " set rightsDependsOn =  ? " + NODE_ID_AND_INSTANCE_ID_CLAUSE;
     try (final PreparedStatement prepStmt = con.prepareStatement(updateStatement)) {
-      prepStmt.setInt(1, rightsDependsOn);
+      prepStmt.setInt(1, Integer.parseInt(rightsDependsOn));
       prepStmt.setInt(2, Integer.parseInt(pk.getId()));
       prepStmt.setString(3, pk.getInstanceId());
       prepStmt.executeUpdate();

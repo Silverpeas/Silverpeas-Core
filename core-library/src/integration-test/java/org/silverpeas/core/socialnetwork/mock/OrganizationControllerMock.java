@@ -291,7 +291,7 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public Map<Integer, List<String>> getUserObjectProfiles(final String userId,
+  public Map<String, List<String>> getUserObjectProfiles(final String userId,
       final String componentId, final ProfiledObjectType objectType) {
     return null;
   }

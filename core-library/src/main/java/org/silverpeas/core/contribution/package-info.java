@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /**
  * Provides the interfaces and the classes that define the base resources pushed by the users
  * into Silverpeas (the contributions) and whose content carries any information that should be

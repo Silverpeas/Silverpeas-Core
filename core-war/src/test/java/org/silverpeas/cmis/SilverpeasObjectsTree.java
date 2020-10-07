@@ -28,14 +28,21 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
 import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.StringUtil;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 /**
+ * A tree of Silverpeas objects that can be exposed by our CMIS implementation.
  * @author mmoquillon
  */
 public class SilverpeasObjectsTree {
@@ -91,7 +98,7 @@ public class SilverpeasObjectsTree {
       node = addRootSpace(space);
     } else {
       TreeNode parentNode = cache.get(fatherId);
-      node = parentNode.addChildren(space);
+      node = parentNode.addChild(space);
     }
 
     return node;
@@ -111,13 +118,54 @@ public class SilverpeasObjectsTree {
     row.updateTime = row.createTime;
     row.orderNum = order;
     row.inheritanceBlocked = 0;
-    row.componentName = type;
+    row.componentName = type.toLowerCase();
     row.hidden = 0;
     row.publicAccess = 0;
     final ComponentInstLight application = new ComponentInstLight(row);
 
     TreeNode parentNode = cache.get(fatherId);
-    return parentNode.addChildren(application);
+    return parentNode.addChild(application);
+  }
+
+  public TreeNode addFolder(int localId, String fatherId, int depth, String name,
+      String description) {
+    String appId;
+    String fatherNodeId;
+    TreeNode parentNode;
+    try {
+      ContributionIdentifier fatherFolderId = ContributionIdentifier.decode(fatherId);
+      appId = fatherFolderId.getComponentInstanceId();
+      fatherNodeId = fatherFolderId.getLocalId();
+      parentNode = cache.get(fatherId);
+    } catch (IllegalArgumentException e) {
+      appId = fatherId;
+      fatherNodeId = "-1";
+      localId = Integer.parseInt(NodePK.ROOT_NODE_ID);
+      parentNode = cache.get(appId);
+    }
+
+    NodePK pk = new NodePK(String.valueOf(localId), appId);
+    NodeDetail node = new NodeDetail(pk, name, description, depth, fatherNodeId);
+    node.setCreationDate(new Date());
+    node.setCreatorId("0");
+    node.setLevel(1);
+    node.setPath("/");
+    return parentNode.addChild(node);
+  }
+
+  public TreeNode addPublication(int localId, String folderId, String name, String description) {
+    TreeNode parentNode = cache.get(folderId);
+    ContributionIdentifier folder = ContributionIdentifier.decode(folderId);
+    PublicationPK pk = new PublicationPK(String.valueOf(localId), folder.getComponentInstanceId());
+    Date today = new Date();
+    PublicationDetail pub =
+        new PublicationDetail(pk, name, description, today, today, null, "0", 1, null, "", "");
+    pub.setStatus(PublicationDetail.VALID_STATUS);
+    pub.setUpdaterId(pub.getCreatorId());
+    pub.setUpdateDate(pub.getCreationDate());
+    pub.setCloneId("-1");
+    pub.setInfoId("0");
+    return parentNode.addChild(pub);
   }
 }
   

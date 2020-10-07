@@ -29,6 +29,7 @@ import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
+import org.silverpeas.cmis.walkers.AbstractCmisObjectsTreeWalker;
 import org.silverpeas.cmis.walkers.CmisObjectsTreeWalker;
 import org.silverpeas.core.annotation.Service;
 
@@ -51,7 +52,7 @@ import java.util.List;
  * <p>
  * The walking down/up and the modification operations on the CMIS objects tree (and therefore their
  * corresponding Silverpeas resources and contributions) is performed by a
- * {@link CmisObjectsTreeWalker} instance that knows both how to walk down/up a subtree and how to
+ * {@link AbstractCmisObjectsTreeWalker} instance that knows both how to walk down/up a subtree and how to
  * perform CRUD operations on the object of that subtree by the type of the object that is passed
  * through. For example, the walking down a subtree isn't done identically when rooted to a space
  * than when rooted to an application (as they don't accept the same children type).
@@ -106,8 +107,8 @@ public class SilverpeasCmisObjectManager {
   }
 
   /**
-   * Gets the objects that are the descendents of the specified folder down to the given
-   * depth of its offspring tree.
+   * Gets the file-able objects that are the descendents of the specified folder down to the
+   * given depth of its offspring tree.
    * @param folderId the unique identifier of a folder, whatever its concrete type in Silverpeas.
    * @param filtering the filtering parameters to apply on the characteristics to include with each
    * object.

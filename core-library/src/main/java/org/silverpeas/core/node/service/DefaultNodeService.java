@@ -40,18 +40,15 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -147,7 +144,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       NodeI18NDetail nodeI18NDetail = new NodeI18NDetail(nodeDetail.getLanguage(),
           nodeDetail.getName(), nodeDetail.getDescription());
       nodeDetail.addTranslation(nodeI18NDetail);
-      List<NodeI18NDetail> translations = getTranslations(Integer.parseInt(pk.getId()));
+      List<NodeI18NDetail> translations = getTranslations(pk.getId());
       for (int t = 0; translations != null && t < translations.size(); t++) {
         nodeI18NDetail = translations.get(t);
         nodeDetail.addTranslation(nodeI18NDetail);
@@ -165,7 +162,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    * @param nodeId
    * @return List of translations
    */
-  private List<NodeI18NDetail> getTranslations(int nodeId) {
+  private List<NodeI18NDetail> getTranslations(String nodeId) {
     Connection con = getConnection();
     try {
       return NodeI18NDAO.getTranslations(con, nodeId);
@@ -387,12 +384,12 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       if (!newLanguage.equals(defaultLanguage)) {
         NodeI18NDetail translation = new NodeI18NDetail(nd.getLanguage(), nd.getName(), nd.
             getDescription());
-        translation.setNodeId(String.valueOf(nd.getId()));
+        translation.setNodeId(nd.getId());
         String translationId = nd.getTranslationId();
         if (translationId != null && !"-1".equals(translationId)) {
           // update translation
-          translation.setId(Integer.parseInt(translationId));
-          translation.setNodeId(String.valueOf(nd.getId()));
+          translation.setId(translationId);
+          translation.setNodeId(nd.getId());
           NodeI18NDAO.updateTranslation(con, translation);
         } else {
           NodeI18NDAO.saveTranslation(con, translation);
@@ -422,7 +419,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
         updateNodeDetail(con, nd);
       }
     } else {
-      NodeI18NDAO.removeTranslation(con, Integer.parseInt(nd.getTranslationId()));
+      NodeI18NDAO.removeTranslation(con, nd.getTranslationId());
     }
   }
 
@@ -605,14 +602,14 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
    * @since 1.0
    */
   private NodePK save(NodeDetail nd) {
-    NodePK newNodePK = null;
+    NodePK newNodePK;
     Connection con = getConnection();
     try {
       // insert row in the database
       newNodePK = nodeDAO.insertRow(con, nd);
-      int rightsDependsOn = nd.getRightsDependsOn();
-      if (rightsDependsOn == 0) {
-        rightsDependsOn = Integer.parseInt(newNodePK.getId());
+      String rightsDependsOn = nd.getRightsDependsOn();
+      if (rightsDependsOn.equals(NodePK.ROOT_NODE_ID)) {
+        rightsDependsOn = newNodePK.getId();
       }
       if (nd.haveRights()) {
         nodeDAO.updateRightsDependency(con, newNodePK, rightsDependsOn);
@@ -838,15 +835,10 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
   @Transactional
   public void updateRightsDependency(NodeDetail nodeDetail) {
     updateNodeDetail(nodeDetail);
-    try {
-      spreadRightsDependency(nodeDetail, nodeDetail.getRightsDependsOn());
-    } catch (SQLException e) {
-      throw new NodeRuntimeException(e);
-    }
+    spreadRightsDependency(nodeDetail, nodeDetail.getRightsDependsOn());
   }
 
-  private void spreadRightsDependency(NodeDetail currentNode, int rightsDependsOn) throws
-      SQLException {
+  private void spreadRightsDependency(NodeDetail currentNode, String rightsDependsOn) {
     Collection<NodeDetail> children = getChildrenDetails(currentNode.getNodePK());
     for (NodeDetail child : children) {
       if (!child.haveLocalRights()) {
@@ -895,11 +887,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       }
     });
 
-    try {
-      indexEntry.setCreationDate(DateUtil.parse(nodeDetail.getCreationDate()));
-    } catch (ParseException e) {
-      SilverLogger.getLogger(this).warn(e);
-    }
+    indexEntry.setCreationDate(nodeDetail.getCreationDate());
     final String userId;
     // cas d'une creation (avec creatorId, creationDate)
     if (nodeDetail.getCreatorId() != null) {
@@ -908,11 +896,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
     } else {
       // cas d'une modification
       NodeDetail node = getHeader(nodeDetail.getNodePK());
-      try {
-        indexEntry.setCreationDate(DateUtil.parse(node.getCreationDate()));
-      } catch (ParseException e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
+      indexEntry.setCreationDate(node.getCreationDate());
       userId = node.getCreatorId();
       indexEntry.setCreationUser(userId);
     }

@@ -26,7 +26,7 @@ package org.silverpeas.core.pdc.pdc.service;
 import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverpeasContentManager;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
@@ -266,7 +266,7 @@ public class DefaultPdcClassificationService implements PdcClassificationService
    * </p>
    * <p>
    * Otherwise, the silverpeas content id is get or created by using the right implementation of
-   * {@link ContentInterface}.<br>
+   * {@link SilverpeasContentManager}.<br>
    * If no implementation exists, and so that no silverpeas content id can be get or created, a
    * {@link NotSupportedException} is thrown because the process is in a case where no classification
    * should be used.
@@ -276,14 +276,14 @@ public class DefaultPdcClassificationService implements PdcClassificationService
    */
   private int getOrCreateSilverpeasContentId(final Contribution contribution) {
     if (contribution instanceof SilverpeasContent) {
-      return Integer.valueOf(((SilverpeasContent) contribution).getSilverpeasContentId());
+      return Integer.parseInt(((SilverpeasContent) contribution).getSilverpeasContentId());
     }
     final ContributionIdentifier contributionId = contribution.getContributionId();
 
-    Optional<ContentInterface> contentInterface =
-        ContentInterface.getByInstanceId(contributionId.getComponentInstanceId());
-    if (contentInterface.isPresent()) {
-      return contentInterface.get().getOrCreateSilverContentId(contribution);
+    Optional<SilverpeasContentManager> contentManager =
+        SilverpeasContentManager.getByInstanceId(contributionId.getComponentInstanceId());
+    if (contentManager.isPresent()) {
+      return contentManager.get().getOrCreateSilverContentId(contribution);
     }
 
     throw new NotSupportedException(MessageFormat

@@ -610,7 +610,7 @@ public class SpaceInstManager {
         String translationId = spaceInstNew.getTranslationId();
         if (translationId != null && !translationId.equals("-1")) {
           // update translation
-          row.id = Integer.parseInt(spaceInstNew.getTranslationId());
+          row.setId(Integer.parseInt(spaceInstNew.getTranslationId()));
 
           organizationSchema.spaceI18N().updateTranslation(row);
         } else {
@@ -633,13 +633,13 @@ public class SpaceInstManager {
       if (translations != null && !translations.isEmpty()) {
         SpaceI18NRow translation = translations.get(0);
 
-        changedSpace.lang = translation.lang;
-        changedSpace.name = translation.name;
-        changedSpace.description = translation.description;
+        changedSpace.lang = translation.getLang();
+        changedSpace.name = translation.getName();
+        changedSpace.description = translation.getDescription();
 
         organizationSchema.space().updateSpace(changedSpace);
 
-        organizationSchema.spaceI18N().removeTranslation(translation.id);
+        organizationSchema.spaceI18N().removeTranslation(translation.getId());
       }
     } else {
       organizationSchema.spaceI18N().removeTranslation(Integer.parseInt(spaceInstNew.

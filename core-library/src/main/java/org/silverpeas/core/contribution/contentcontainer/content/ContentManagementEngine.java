@@ -34,7 +34,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -54,13 +53,12 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
- * This class represents the ContentManager API It is the gateway to all the silverpeas contents
- * (documentation, ....)
+ * This class represents the old Content Management API. It is a gateway for all of the silverpeas
+ * content management (documentation, ....)
  */
 @Service
 @Singleton
-@Named("contentManager")
-public class ContentManager implements Serializable {
+public class ContentManagementEngine implements Serializable {
 
   private static final String INSTANCE_TABLE = "SB_ContentManager_Instance";
   private static final String SILVER_CONTENT_TABLE = "SB_ContentManager_Content";
@@ -73,7 +71,7 @@ public class ContentManager implements Serializable {
   // Association SilverContentId (the key) internalContentId (the value) (cache)
   private final Map<String, String> mapBetweenSilverContentIdAndInternalComponentId = new HashMap<>();
 
-  private ContentManager() {
+  private ContentManagementEngine() {
 
   }
 
@@ -120,7 +118,7 @@ public class ContentManager implements Serializable {
     // for each id of SilverContent, we get the identifier of the matching resource.
     for (Integer contentId : contentIds) {
       try {
-        String id = ContentManagerProvider.getContentManager().getInternalContentId(contentId);
+        String id = getInternalContentId(contentId);
         pks.add(id);
       } catch (ContentManagerException ignored) {
         // ignore unknown item

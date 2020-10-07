@@ -172,14 +172,14 @@ public class I18NHelperTest {
   public void testGetHTMLLinksForI18NBeanAndCurrentLanguage() {
     I18NBean bean = mock(I18NBean.class);
     BeanTranslation tradFR = new BeanTranslation();
-    tradFR.setId(1);
+    tradFR.setId("1");
     tradFR.setLanguage("fr");
     tradFR.setObjectId("18");
     BeanTranslation tradEN = new BeanTranslation();
-    tradEN.setId(2);
+    tradEN.setId("2");
     tradEN.setLanguage("en");
     tradEN.setObjectId("28");
-    Map<String, BeanTranslation> translations = new Hashtable<String, BeanTranslation>(2);
+    Map<String, BeanTranslation> translations = new Hashtable<>(2);
     translations.put("fr", tradFR);
     translations.put("en", tradEN);
     when(bean.getTranslation("fr")).thenReturn(tradFR);

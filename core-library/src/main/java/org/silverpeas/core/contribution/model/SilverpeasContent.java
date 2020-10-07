@@ -26,13 +26,13 @@ package org.silverpeas.core.contribution.model;
 import org.silverpeas.core.Identifiable;
 
 /**
- * A content managed in the Silverpeas collaborative portal. A content in Silverpeas is resource
- * with a content (that can be empty); for example, a publication in Silverpeas is a content. This
- * interface defines the common properties the different type of content in Silverpeas has to
- * support.
- * @deprecated please use instead {@code org.silverpeas.core.contribution.model.Contribution} interface.
+ * A contribution with a single content that is managed by an application of the Silverpeas
+ * collaborative portal. The content of the contribution can be empty. This interface defines the
+ * common properties the different type of content in Silverpeas has to support. It is defined
+ * for compatibility reason with the old content API (in which the contribution and content concepts
+ * are entangled). This interface links the old Content Management API with the new one
+ * represented by the {@link Contribution} and {@link ContributionContent} models.
  */
-@Deprecated
 public interface SilverpeasContent extends Identifiable, Contribution {
 
   /**

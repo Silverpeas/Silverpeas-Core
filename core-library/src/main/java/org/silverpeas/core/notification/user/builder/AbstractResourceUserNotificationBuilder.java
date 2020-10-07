@@ -81,13 +81,15 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   @Override
   protected boolean isUserCanBeNotified(final String userId) {
     final boolean isAccessible;
-    if (resource instanceof Contribution) {
+    if (resource instanceof NodeDetail) {
+      // the resource is in particularly a node
+      final NodeDetail node = (NodeDetail) resource;
+      isAccessible = NodeAccessControl.get().isUserAuthorized(userId, node);
+    } else if (resource instanceof Contribution) {
+      // for any others contributions
       final Contribution contribution = (Contribution) this.resource;
       final String instanceId = contribution.getContributionId().getComponentInstanceId();
       isAccessible = ComponentAccessControl.get().isUserAuthorized(userId, instanceId);
-    } else if (resource instanceof NodeDetail) {
-      final NodeDetail node = (NodeDetail) resource;
-      isAccessible = NodeAccessControl.get().isUserAuthorized(userId, node);
     } else {
       final String instanceId = getComponentInstanceId();
       if (isDefined(instanceId)) {
@@ -110,13 +112,13 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   @Override
   protected boolean isGroupCanBeNotified(final String groupId) {
     final boolean isAccessible;
-    if (resource instanceof Contribution) {
+    if (resource instanceof NodeDetail) {
+      final NodeDetail node = (NodeDetail) resource;
+      isAccessible = NodeAccessControl.get().isGroupAuthorized(groupId, node.getNodePK());
+    } else if (resource instanceof Contribution) {
       final Contribution contribution = (Contribution) this.resource;
       final String instanceId = contribution.getContributionId().getComponentInstanceId();
       isAccessible = ComponentAccessControl.get().isGroupAuthorized(groupId, instanceId);
-    } else if (resource instanceof NodeDetail) {
-      final NodeDetail node = (NodeDetail) resource;
-      isAccessible = NodeAccessControl.get().isGroupAuthorized(groupId, node.getNodePK());
     } else {
       final String instanceId = getComponentInstanceId();
       if (isDefined(instanceId)) {

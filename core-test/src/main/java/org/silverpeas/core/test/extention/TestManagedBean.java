@@ -58,9 +58,18 @@ import java.lang.annotation.Target;
  * passed as parameter value. By using this annotation with the parameters, you can get any
  * previously registered bean.
  * </p>
+ * <p>
+ * The annotation can also be applied to a method. In that case, the method has to return an array
+ * of concrete classes for which an instance has to be constructed and then registered into the bean
+ * container used in the test. It is then like applying the annotation on several fields but in
+ * this case, the instances are anonymous and aren't injected into the instance of the test class.
+ * Useful for tests requiring for their execution that some injections points have to be resolved
+ * in some dependencies of the tested bean without having to use explicitly those managed beans in
+ * the test class itself.
+ * </p>
  * @author mmoquillon
  */
-@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface TestManagedBean {

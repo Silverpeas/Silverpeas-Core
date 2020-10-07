@@ -177,7 +177,7 @@ public class SilverpeasCmisService extends AbstractCmisService
       final ExtensionsData extension) {
     final SilverpeasCmisRepository repository = getRepository(repositoryId);
     final List<ObjectInFolderContainer> descendants =
-        repository.getDescendants(folderId, depth, filter, includeAllowableActions,
+        repository.getFolderTree(folderId, depth, filter, includeAllowableActions,
             includeRelationships, includePathSegment);
     buildObjectInfo(repository, folderId, descendants.stream().map(c -> c.getObject().getObject()));
     return descendants;
