@@ -37,7 +37,12 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
 public class BodyPartLayoutTag extends SilverpeasLayout {
   private static final long serialVersionUID = 7740509977305998444L;
 
+  private String onLoad;
   private String cssClass;
+
+  public void setOnLoad(final String onLoad) {
+    this.onLoad = onLoad;
+  }
 
   public void setCssClass(final String cssClass) {
     this.cssClass = cssClass;
@@ -48,6 +53,9 @@ public class BodyPartLayoutTag extends SilverpeasLayout {
     final body body = new body();
     if (isDefined(getId())) {
       body.setID(getId());
+    }
+    if (isDefined(onLoad)) {
+      body.setOnLoad(onLoad);
     }
     if (isDefined(cssClass)) {
       body.setClass(cssClass);

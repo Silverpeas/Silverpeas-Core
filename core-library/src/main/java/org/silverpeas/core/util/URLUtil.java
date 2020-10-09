@@ -382,16 +382,35 @@ public class URLUtil {
     final String fingerprintedUrl;
     if (url.startsWith(getApplicationURL())) {
       // Fingerprint method
-      final int lastIndex = url.lastIndexOf('.');
-      fingerprintedUrl = url.substring(0, lastIndex) + silverpeasFingerprintVersion + url.substring(lastIndex);
+      int lastIndex = -1;
+      for (int i = 0; i < url.length(); i++) {
+        final char c = url.charAt(i);
+        if (c == '.') {
+          lastIndex = i;
+        } else if (c == '?') {
+          break;
+        }
+      }
+      if (lastIndex == -1) {
+        // Query string method
+        fingerprintedUrl = addVersionByQueryStringMethod(url);
+      } else {
+        fingerprintedUrl = url.substring(0, lastIndex) + silverpeasFingerprintVersion + url.substring(lastIndex);
+      }
     } else {
       // Query string method
-      final String param = "v=" + silverpeasVersionMin;
-      if (url.indexOf('?') == -1) {
-        fingerprintedUrl = url + "?" + param;
-      } else {
-        fingerprintedUrl = url + "&" + param;
-      }
+      fingerprintedUrl = addVersionByQueryStringMethod(url);
+    }
+    return fingerprintedUrl;
+  }
+
+  private static String addVersionByQueryStringMethod(final String url) {
+    final String fingerprintedUrl;
+    final String param = "v=" + silverpeasVersionMin;
+    if (url.indexOf('?') == -1) {
+      fingerprintedUrl = url + "?" + param;
+    } else {
+      fingerprintedUrl = url + "&" + param;
     }
     return fingerprintedUrl;
   }

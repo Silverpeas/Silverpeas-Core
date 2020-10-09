@@ -133,15 +133,8 @@ public class AutoRedirectServlet extends HttpServlet {
   }
 
   private void mainPageRedirection(final Context context) throws IOException {
-    String mainFrame = context.getGraphicElementFactory().getLookFrame();
-    if (!mainFrame.startsWith("/")) {
-      mainFrame = "admin/jsp/" + mainFrame;
-    } else if (!mainFrame.startsWith(URLUtil.getApplicationURL())) {
-      mainFrame = URLUtil.getApplicationURL() + mainFrame;
-    }
     final String componentId = defaultStringIfNotDefined(context.getComponentId());
     final String spaceId = defaultStringIfNotDefined(context.getSpaceId());
-    final String url = mainFrame + "?ComponentIdFromRedirect=" + componentId;
     if (context.isFromResponsiveWindow()) {
       final Mutable<Boolean> isPersonalComponent = Mutable.of(false);
       if (isDefined(componentId)) {
@@ -153,6 +146,13 @@ public class AutoRedirectServlet extends HttpServlet {
            .put(isPersonalComponent.get() ? "RedirectToPersonalComponentId" : REDIRECT_TO_COMPONENT_ID_ATTR, componentId)
            .put(REDIRECT_TO_SPACE_ID_ATTR, spaceId)));
     } else {
+      String mainFrame = context.getGraphicElementFactory().getLookFrame();
+      if (!mainFrame.startsWith("/")) {
+        mainFrame = "admin/jsp/" + mainFrame;
+      } else if (!mainFrame.startsWith(URLUtil.getApplicationURL())) {
+        mainFrame = URLUtil.getApplicationURL() + mainFrame;
+      }
+      final String url = mainFrame + "?RedirectToComponentId=" + componentId;
       sendHtmlRedirectResponse(context, url);
     }
   }

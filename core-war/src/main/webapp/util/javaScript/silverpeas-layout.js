@@ -81,6 +81,7 @@
           selector.replace(/sp-layout-/g, "").replace(/part/g, "").replace(/layout/g, "").replace(
               /[ -\\#]/g, "");
       this.container = $mainWindow.document.querySelector(selector);
+      this.__orginalCssClasses = StringUtil.defaultStringIfNotDefined(this.container.getAttribute('class'));
       this.lastStartLoadTime = 0;
       var transverseContext = this.getTransverseContext();
       if (typeof transverseContext.lastHideTime === 'undefined') {
@@ -115,6 +116,12 @@
     },
     getContainer : function() {
       return this.container;
+    },
+    setCssClasses : function(cssClasses) {
+      let cssClassList = this.__orginalCssClasses + ' ';
+      cssClassList += (Array.isArray(cssClasses) ? cssClasses.join(' ') : cssClasses).trim();
+      this.getContainer().setAttribute('class', cssClassList.trim());
+
     },
     hide : function(options) {
       var transverseContext = this.getTransverseContext();
@@ -174,8 +181,16 @@
     }
   });
 
+  // Root Part
+  const RootPart = Part.extend({
+    initialize : function(mainLayout, partSelector) {
+      this.name = 'rootPart';
+      this._super(mainLayout, partSelector);
+    }
+  });
+
   // Header Part
-  var HeaderPart = Part.extend({
+  const HeaderPart = Part.extend({
     initialize : function(mainLayout, partSelector) {
       this.name = 'headerPart';
       this._super(mainLayout, partSelector);
@@ -192,7 +207,7 @@
   });
 
   // Body Part
-  var BodyPart = Part.extend({
+  const BodyPart = Part.extend({
     initialize : function(mainLayout, partSelectors) {
       this.name = 'bodyPart';
       this._super(mainLayout, partSelectors.body);
@@ -300,7 +315,7 @@
   });
 
   // Toggle Part
-  var BodyTogglePart = Part.extend({
+  const BodyTogglePart = Part.extend({
     initialize : function(mainLayout, partSelector) {
       this.name = 'bodyTogglePart';
       this._super(mainLayout, partSelector);
@@ -356,7 +371,7 @@
   });
 
   // Navigation Part
-  var BodyNavigationPart = Part.extend({
+  const BodyNavigationPart = Part.extend({
     initialize : function(mainLayout, partSelector) {
       this.name = 'bodyNavigationPart';
       this._super(mainLayout, partSelector);
@@ -413,7 +428,7 @@
   }
 
   // Content Part
-  var BodyContentPart = Part.extend({
+  const BodyContentPart = Part.extend({
     initialize : function(mainLayout, partSelector) {
       this.name = 'bodyContentPart';
       this._super(mainLayout, partSelector);
@@ -471,7 +486,7 @@
   });
 
   // Footer Part
-  var FooterPart = Part.extend({
+  const FooterPart = Part.extend({
     initialize : function(mainLayout, partSelector) {
       this.name = 'footerPart';
       this._super(mainLayout, partSelector);
@@ -522,7 +537,7 @@
   });
 
   // Content Part
-  var SplashContentUrlPart = Part.extend({
+  const SplashContentUrlPart = Part.extend({
     initialize : function(mainLayout) {
       this.name = 'splashContentPart';
       var overlay = document.createElement('div');
@@ -644,7 +659,7 @@
   });
 
   // Custom Part Container
-  var CustomPartContainer = Part.extend({
+  const CustomPartContainer = Part.extend({
     initialize : function(mainLayout, partSelector, name) {
       this.name = name;
       this.customParts = [];
@@ -679,7 +694,7 @@
   });
 
   // Custom Footer Part Container
-  var CustomFooterPartContainer = CustomPartContainer.extend({
+  const CustomFooterPartContainer = CustomPartContainer.extend({
     initialize : function(mainLayout) {
       var customFooter = document.createElement('div');
       var id = 'sp-layout-custom-footer-part-container';
@@ -692,7 +707,7 @@
   });
 
   // Custom Part
-  var CustomPart = Part.extend({
+  const CustomPart = Part.extend({
     initialize : function(mainLayout, mainCustomPart, id) {
       this.name = id;
       this.mainCustomPart = mainCustomPart;
@@ -723,12 +738,15 @@
    */
   $mainWindow.SilverpeasLayout = function(partSelectors) {
     __logDebug("initializing Silverpeas Layout plugin");
-    var headerPart = new HeaderPart(this, partSelectors.header);
-    var bodyPart = new BodyPart(this, partSelectors);
-    var footerPart = new FooterPart(this, partSelectors.footer);
-    var splashContentUrlPart = new SplashContentUrlPart(this);
-    var customFooterPartContainer = '';
-
+    const rootPart = new RootPart(this, partSelectors.root);
+    const headerPart = new HeaderPart(this, partSelectors.header);
+    const bodyPart = new BodyPart(this, partSelectors);
+    const footerPart = new FooterPart(this, partSelectors.footer);
+    const splashContentUrlPart = new SplashContentUrlPart(this);
+    let customFooterPartContainer = '';
+    this.getRoot = function() {
+      return rootPart;
+    };
     this.getHeader = function() {
       return headerPart;
     };
@@ -906,7 +924,8 @@
 
 function initializeSilverpeasLayout(bodyLoadParameters) {
   if (top === window) {
-    var partSelectors = {
+    const partSelectors = {
+      "root" : "#sp-layout-main",
       "header" : "#sp-layout-header-part",
       "body" : "#sp-layout-body-part",
       "bodyToggles" : "#sp-layout-body-part-layout-toggle-part",

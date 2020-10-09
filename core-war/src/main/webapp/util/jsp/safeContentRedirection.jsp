@@ -25,25 +25,24 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%
   response.setHeader("Cache-Control","no-store"); //HTTP 1.1
   response.setHeader("Pragma","no-cache"); //HTTP 1.0
   response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title></title>
-</head>
-<body>
+<c:set var="lookContextManagerCallbackOnly"
+       value="${not silfn:booleanValue(requestScope.IsInternalLink) or silfn:booleanValue(requestScope.IsPermalink)}"/>
+<view:sp-page>
+<view:sp-head-part noLookAndFeel="true" lookContextManagerCallbackOnly="${lookContextManagerCallbackOnly}"/>
+<view:sp-body-part>
 <c:choose>
   <c:when test="${silfn:booleanValue(requestScope.IsInternalLink)}">
     <c:choose>
       <c:when test="${silfn:booleanValue(requestScope.IsPermalink)}">
         <script type="text/javascript">
-          var url = '${silfn:escapeJs(requestScope.URL)}';
+          const url = '${silfn:escapeJs(requestScope.URL)}';
           if (top.spWindow) {
             top.spWindow.loadPermalink(url);
           } else {
@@ -60,5 +59,5 @@
     <viewTags:displayExternalFullIframe url="${requestScope.URL}"/>
   </c:otherwise>
 </c:choose>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

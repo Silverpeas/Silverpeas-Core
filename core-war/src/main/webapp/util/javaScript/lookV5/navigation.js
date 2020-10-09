@@ -30,9 +30,6 @@ var currentAxisId = "-1";
 var currentValuePath = "-1";
 var displayComponentIcons = false;
 
-var currentLook = "none";
-var currentSpaceWithCSSApplied = "";
-
 var notContextualPDCDisplayed = false;
 var notContextualPDCLoaded = false;
 // User favorite space variable true/false => enable/disable
@@ -105,33 +102,16 @@ function openMySpace(options) {
   }
 }
 
-function openSpace(spaceId, spaceLevel, spaceLook, spaceWithCSSToApply) {
-  var mainFrame = "";
-  try {
-    mainFrame = getMainFrame();
-    if (!mainFrame.startsWith('/')) {
-      mainFrame = '/admin/jsp/' + mainFrame;
-    }
-  } catch (err) {
-    mainFrame = "/admin/jsp/silverpeas-main.jsp";
-  }
-
-  var safeSpaceCssToApply = StringUtil.defaultStringIfNotDefined(spaceWithCSSToApply);
-  if (spaceLook !== currentLook || safeSpaceCssToApply !== currentSpaceWithCSSApplied) {
-    top.location = getContext() + mainFrame + "?RedirectToSpaceId=" + spaceId;
-  }
-
+function openSpace(spaceId, spaceLevel) {
   closeCurrentComponent();
-
   if (currentSpaceId === spaceId) {
     closeSpace(spaceId, currentSpaceLevel, true);
-
-    //Envoi de la requete pour afficher le contenu de l'espace
+    // refreshing the space navigation menu
     ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0',
             'GetPDC=' + displayPDC(), 'SpaceId=' + spaceId);
   }
   else {
-    var closePDC = (spaceLevel === 0);
+    const closePDC = (spaceLevel === 0);
     if (currentSpaceId !== "-1" && spaceLevel === currentSpaceLevel) {
       closeSpace(currentSpaceId, currentSpaceLevel, closePDC);
 
@@ -154,16 +134,15 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWithCSSToApply) {
       currentSpacePath += "/" + spaceId;
     }
     try {
-      //Message temporaire de chargement
-      var imgSpace = document.getElementById("img" + spaceId);
+      // temporary loading message
+      const imgSpace = document.getElementById("img" + spaceId);
       imgSpace.setAttribute("src", "icons/silverpeasV5/loading.gif");
       imgSpace.setAttribute("width", "16");
       imgSpace.setAttribute("height", "22");
       imgSpace.setAttribute("align", "absmiddle");
     } catch (e) {
     }
-
-    //Envoi de la requ�te pour afficher le contenu de l'espace
+    // refreshing the space navigation menu
     ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0',
             'GetPDC=' + displayPDC(), 'SpaceId=' + spaceId);
   }
@@ -1410,15 +1389,6 @@ var spaceUpdater;
 var ajaxEngine;
 
 whenSilverpeasReady(function() {
-  // Handler for .ready() called.
-  currentLook = getLook();
-  try {
-    currentSpaceWithCSSApplied = StringUtil.defaultStringIfNotDefined(getSpaceWithCSSToApply());
-    // console.error("set currentSpaceCSS to '" + currentSpaceWithCSSApplied + "'");
-  } catch (e) {
-    // look do not provide getSpaceCSS() function
-  }
-
   hideTransverseSpace();
 
   spaceUpdater = new SpaceUpdater();

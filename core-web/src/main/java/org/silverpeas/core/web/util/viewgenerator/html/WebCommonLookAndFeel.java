@@ -23,18 +23,21 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
+import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.look.SilverpeasLook;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -42,18 +45,31 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.time.ZoneId;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static javax.ws.rs.core.UriBuilder.fromUri;
+import static org.silverpeas.core.util.JSONCodec.encodeObject;
 import static org.silverpeas.core.util.Mutable.empty;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.URLUtil.getMinifiedWebResourceUrl;
+import static org.silverpeas.core.web.look.SilverpeasLook.getSilverpeasLook;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
 
 class WebCommonLookAndFeel {
+
+  public static final String LOOK_CONTEXT_MANAGER_CALLBACK_ONLY_ATTR = "lookContextManagerCallbackOnly";
 
   private static final String SILVERPEAS_JS = "silverpeas.js";
   private static final String STANDARD_CSS = "/util/styleSheets/silverpeas-main.css";
   private static final String STR_NEW_LINE = "\n";
 
   private static final WebCommonLookAndFeel instance = new WebCommonLookAndFeel();
+  private static final String LOOK_CONTEXT_MANAGER_SPACE_ID = "LookContextManager.spaceId";
+  private static final String LOOK_CONTEXT_MANAGER_COMPONENT_ID = "LookContextManager.componentId";
 
   private WebCommonLookAndFeel() {
   }
@@ -62,19 +78,24 @@ class WebCommonLookAndFeel {
     return instance;
   }
 
-  String getCommonHeader(HttpServletRequest request) {
+  String getCommonHeader(HttpServletRequest req) {
+    final HttpRequest request = HttpRequest.decorate(req);
     HttpSession session = request.getSession();
     MainSessionController controller = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
         GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-
     // Retrieving from the request, or from GraphicElementFactory instance the current space and
     // the current component of the user
     final String spaceId;
     final String componentId;
     final String[] context = (String[]) request.getAttribute("browseContext");
-    if (isDefined(context)) {
+    final String lookContextManagerSpaceId = request.getParameter(LOOK_CONTEXT_MANAGER_SPACE_ID);
+    if (StringUtil.isDefined(lookContextManagerSpaceId)) {
+      // page of a regular component
+      spaceId = lookContextManagerSpaceId;
+      componentId = request.getParameter(LOOK_CONTEXT_MANAGER_COMPONENT_ID);
+    } else if (isDefined(context)) {
       // page of a regular component
       spaceId = context[2];
       componentId = context[3];
@@ -88,7 +109,14 @@ class WebCommonLookAndFeel {
       spaceId = gef.getSpaceIdOfCurrentRequest();
       componentId = gef.getComponentIdOfCurrentRequest();
     }
-
+    if (request.getAttributeAsBoolean(LOOK_CONTEXT_MANAGER_CALLBACK_ONLY_ATTR)) {
+      // cas of simple look context management
+      return Optional.of(generateSpWindowLookContextUpdate(controller, getLookSettings(controller, spaceId), spaceId, componentId))
+          .filter(StringUtil::isDefined)
+          .map(JavascriptPluginInclusion::scriptContent)
+          .map(Element::toString)
+          .orElse(StringUtil.EMPTY);
+    }
     return getCommonHeader(request, controller, spaceId, componentId);
   }
 
@@ -96,20 +124,19 @@ class WebCommonLookAndFeel {
     return StringUtil.isDefined(StringUtil.join(context));
   }
 
-  private String getCommonHeader(HttpServletRequest request, MainSessionController controller,
+  private String getCommonHeader(HttpRequest request, MainSessionController controller,
       String spaceId, String componentId) {
 
     String language = controller.getFavoriteLanguage();
-    SettingBundle lookSettings = getLookSettings(controller, spaceId);
+    final SettingBundle lookSettings = getLookSettings(controller, spaceId);
 
     String silverpeasUrl = URLUtil.getFullApplicationURL(request);
     String contextPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     String charset =
         ResourceLocator.getGeneralSettingBundle().getString("charset", Charsets.UTF_8.name());
-    StringBuilder code = new StringBuilder();
-    code.append("<link rel=\"icon\" href=\"")
-        .append(getLookSettings(controller, spaceId).getString("favicon",
-            request.getContextPath() + "/util/icons/favicon.ico"))
+    final StringBuilder code = new StringBuilder();
+    code.append("<link rel=\"icon\" href=\"").append(
+        lookSettings.getString("favicon", request.getContextPath() + "/util/icons/favicon.ico"))
         .append("\"/>");
     code.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=");
     code.append(charset);
@@ -138,7 +165,7 @@ class WebCommonLookAndFeel {
 
     if (StringUtil.isDefined(spaceId)) {
       // load CSS file manually uploaded
-      String cssUploadedOnSpace = SilverpeasLook.getSilverpeasLook().getCSSOfSpace(spaceId);
+      String cssUploadedOnSpace = getSilverpeasLook().getCSSOfSpace(spaceId);
       if (StringUtil.isDefined(cssUploadedOnSpace)) {
         code.append(getCSSLinkTag(cssUploadedOnSpace));
       }
@@ -181,6 +208,9 @@ class WebCommonLookAndFeel {
 
     code.append(includeLayout(new ElementContainer(),
         LookHelper.getLookHelper(controller.getHttpSession())).toString()).append(STR_NEW_LINE);
+    Optional.of(generateSpWindowLookContextUpdate(controller, lookSettings, spaceId, componentId))
+        .filter(StringUtil::isDefined)
+        .ifPresent(c -> code.append(scriptContent(c)));
 
     code.append(includeAngular(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
     code.append(includeVueJs(new ElementContainer()).toString()).append(STR_NEW_LINE);
@@ -204,6 +234,66 @@ class WebCommonLookAndFeel {
 
     code.append(includeVirtualKeyboard(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
 
+    return code.toString();
+  }
+
+  private String generateSpWindowLookContextUpdate(final MainSessionController controller,
+      final SettingBundle lookSettings, final String spaceId, final String componentId) {
+    final StringBuilder code = new StringBuilder();
+    final String mainFrameUrl = Optional.of(lookSettings.getString("FrameJSP"))
+        .map(f -> {
+          String url = f;
+          if (StringUtil.isDefined(spaceId)) {
+            url = fromUri(url).queryParam(LOOK_CONTEXT_MANAGER_SPACE_ID, spaceId).build().toString();
+          }
+          if (StringUtil.isDefined(componentId)) {
+            url = fromUri(url).queryParam(LOOK_CONTEXT_MANAGER_COMPONENT_ID, componentId).build().toString();
+          }
+          if (!url.startsWith(URLUtil.getApplicationURL())) {
+            url = URLUtil.getApplicationURL() + url;
+          }
+          return url;
+        })
+        .orElse(null);
+    final String look;
+    final String defaultLook = controller.getFavoriteLook();
+    final String css;
+    final String wallpaper;
+    final List<String> spacePathIds;
+    if (StringUtil.isDefined(spaceId)) {
+      spacePathIds = OrganizationController.get().getPathToSpace(spaceId).stream()
+          .map(SpaceInstLight::getId)
+          .collect(Collectors.toList());
+      final SilverpeasLook silverpeasLook = getSilverpeasLook();
+      look = defaultStringIfNotDefined(silverpeasLook.getSpaceLook(spaceId), defaultLook);
+      css = ofNullable(silverpeasLook.getCSSOfSpace(spaceId)).map(JavascriptPluginInclusion::normalizeWebResourceUrl).orElse(null);
+      wallpaper = ofNullable(silverpeasLook.getWallpaperOfSpace(spaceId)).map(JavascriptPluginInclusion::normalizeWebResourceUrl).orElse(null);
+    } else {
+      spacePathIds = emptyList();
+      look = defaultLook;
+      css = null;
+      wallpaper = null;
+    }
+    code.append("if(top.spWindow){");
+    code.append("top.spWindow.updateLookContext(");
+    code.append(encodeObject(o -> o
+        .put("mainFrameUrl", mainFrameUrl)
+        .putJSONArray("currentSpacePathIds", a -> {
+          spacePathIds.forEach(a::add);
+          return a;
+        })
+        .put("currentComponentId", defaultStringIfNotDefined(componentId))
+        .put("defaultLook", defaultLook)
+        .put("look", look)
+        .put("bannerHeight", lookSettings.getString("banner.height", "115") + "px")
+        .put("footerHeight", lookSettings.getString("footer.height", "26") + "px")
+        .put("css", css)
+        .put("wallpaper", wallpaper)
+        .put("defaultWallpaper", ofNullable(lookSettings.getString("banner.wallPaper", null))
+            .filter(StringUtil::isDefined)
+            .orElse("imgDesign/bandeau.jpg"))));
+    code.append(");}");
+    code.append(STR_NEW_LINE);
     return code.toString();
   }
 
@@ -245,7 +335,7 @@ class WebCommonLookAndFeel {
     String userLookName = controller.getFavoriteLook();
     SettingBundle lookSettings = GraphicElementFactory.getLookSettings(userLookName);
     if (StringUtil.isDefined(spaceId)) {
-      String spaceLook = SilverpeasLook.getSilverpeasLook().getSpaceLook(spaceId);
+      String spaceLook = getSilverpeasLook().getSpaceLook(spaceId);
       if (StringUtil.isDefined(spaceLook)) {
         lookSettings = GraphicElementFactory.getLookSettings(spaceLook);
       }
@@ -297,7 +387,7 @@ class WebCommonLookAndFeel {
         .append(STR_NEW_LINE);
     globalJSVariableBuilder.append("var currentUserId = '").append(controller.getUserId())
         .append("';").append(STR_NEW_LINE);
-    globalJSVariableBuilder.append("var currentUser = ").append(JSONCodec.encodeObject(j -> {
+    globalJSVariableBuilder.append("var currentUser = ").append(encodeObject(j -> {
       final UserDetail currentUserDetail = controller.getCurrentUserDetail();
       if (currentUserDetail != null) {
         j.put("id", currentUserDetail.getId())
