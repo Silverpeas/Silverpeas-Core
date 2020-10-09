@@ -648,17 +648,24 @@
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
+      <description>Only the context update callback of LookContextManager will be generated</description>
+      <name>lookContextManagerCallbackOnly</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
       <description>Include fieldset automatically</description>
       <name>withFieldsetStyle</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
       <type>boolean</type>
     </attribute>
     <attribute>
       <description>Include checkform automatically</description>
       <name>withCheckFormScript</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
       <type>boolean</type>
     </attribute>
   </tag>
@@ -2647,17 +2654,24 @@
       <type>boolean</type>
     </attribute>
     <attribute>
+      <description>Only the context update callback of LookContextManager will be generated</description>
+      <name>lookContextManagerCallbackOnly</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
       <description>Include fieldset automatically</description>
       <name>withFieldsetStyle</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
       <type>boolean</type>
     </attribute>
     <attribute>
       <description>Include checkform automatically</description>
       <name>withCheckFormScript</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
       <type>boolean</type>
     </attribute>
   </tag>
@@ -2668,6 +2682,12 @@
     <body-content>JSP</body-content>
     <attribute>
       <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>onLoad</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>

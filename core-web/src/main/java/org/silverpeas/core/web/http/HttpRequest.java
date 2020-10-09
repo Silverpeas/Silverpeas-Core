@@ -241,6 +241,16 @@ public class HttpRequest extends HttpServletRequestWrapper {
   }
 
   /**
+   * Get a parameter value as a boolean.
+   *
+   * @param attributeName the name of the attribute.
+   * @return the value of the attribute as a boolean.
+   */
+  public boolean getAttributeAsBoolean(String attributeName) {
+    return asBoolean(getAttribute(attributeName));
+  }
+
+  /**
    * Get a parameter value as a Long.
    *
    * @param attributeName the name of the attribute.

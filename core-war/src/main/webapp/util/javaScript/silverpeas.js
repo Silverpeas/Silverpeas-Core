@@ -1656,6 +1656,16 @@ if (typeof window.sp === 'undefined') {
         });
       }
     },
+    dom : {
+      /**
+       * Convert a template string into HTML DOM nodes
+       * @param  {String} htmlAsString The template string
+       * @return {Node}       The template HTML
+       */
+      parseHtmlString : function (htmlAsString) {
+        return new DOMParser().parseFromString(htmlAsString, 'text/html');
+      }
+    },
     element : {
       removeAllEventListenerOfAndGettingClone: function(elementOrCssSelector) {
         var element = typeof elementOrCssSelector === 'string' ? document.querySelector(elementOrCssSelector) : elementOrCssSelector;

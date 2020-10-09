@@ -47,20 +47,15 @@
   </c:otherwise>
 </c:choose>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title></title>
-  <c:if test="${newTabRequired}">
-    <view:looknfeel/>
-  </c:if>
+<view:sp-page>
+<view:sp-head-part lookContextManagerCallbackOnly="${not newTabRequired}">
   <script type="text/javascript">
     function sendForm() {
       document.connectionForm.submit();
     }
   </script>
-</head>
-<body onload="sendForm()">
+</view:sp-head-part>
+<view:sp-body-part onLoad="sendForm()">
 <c:if test="${newTabRequired}">
   <view:browseBar path='<%=resource.getString("webConnections.label")%>' extraInformations=" > ${connection.componentName}"/>
   <view:window>
@@ -81,5 +76,5 @@
 <c:if test="${!newTabRequired and !isAlreadyNewTab}">
   <viewTags:displayExternalFullIframe url="javascript:void(0)"/>
 </c:if>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

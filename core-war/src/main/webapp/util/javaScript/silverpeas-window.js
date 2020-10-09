@@ -316,6 +316,149 @@ function _spWindow_getSilverpeasMainWindow() {
     }
   };
 
+  const LookContextManager = new function() {
+    let __currentLookContext;
+    function __nodeUIOperation(node, callback) {
+      const nodeName = node.nodeName.toLowerCase();
+      if (nodeName === 'link' || nodeName === 'style') {
+        callback(node);
+      }
+    }
+    function __applyNewsUIElements(newDom, selector) {
+      const currentContainer = document.querySelector(selector);
+      let nodes = [];
+      const nodesToRemove = [];
+      Array.prototype.push.apply(nodes, currentContainer.childNodes);
+      nodes.forEach(function(node) {
+        __nodeUIOperation(node, function() {
+          nodesToRemove.push(node);
+        });
+      });
+      nodes = [];
+      const nodesToAdd = [];
+      Array.prototype.push.apply(nodes, newDom.querySelector(selector).childNodes);
+      nodes.forEach(function(node) {
+        __nodeUIOperation(node, function() {
+          nodesToAdd.push(node);
+        });
+      });
+      nodesToRemove.forEach(function(node) {
+        node.remove();
+      });
+      nodesToAdd.forEach(function(node) {
+        currentContainer.appendChild(node.cloneNode(true));
+      });
+    }
+    function __promiseToApplyLook(newContext) {
+      return sp.ajaxRequest(newContext.mainFrameUrl).send().then(function(request) {
+        const newDom = sp.dom.parseHtmlString(request.responseText);
+        __applyNewsUIElements(newDom, 'head');
+        __applyNewsUIElements(newDom, 'body');
+      });
+    }
+    function __applyCss(newContext) {
+      if (!__currentLookContext.cssLink || __currentLookContext.cssLink.getAttribute('href') !== newContext.css) {
+        if (__currentLookContext.cssLink) {
+          __currentLookContext.cssLink.remove();
+          delete __currentLookContext.cssLink;
+        }
+        if (newContext.css) {
+          __currentLookContext.cssLink = document.createElement('link');
+          __currentLookContext.cssLink.setAttribute('type', 'text/css');
+          __currentLookContext.cssLink.setAttribute('rel', 'stylesheet');
+          __currentLookContext.cssLink.setAttribute('href', newContext.css);
+          top.document.body.appendChild(__currentLookContext.cssLink);
+        }
+      }
+    }
+    function __applyWallpaper(newContext) {
+      let headerPart = spLayout.getHeader().getContainer();
+      let backgroundImageStyle = window.getComputedStyle(headerPart).backgroundImage || '';
+      let wallpaper = newContext.wallpaper ? newContext.wallpaper : newContext.defaultWallpaper;
+      if (backgroundImageStyle.indexOf(wallpaper) < 0) {
+        headerPart.setAttribute('style', 'background-image: url(' + wallpaper + ') !important');
+      }
+    }
+    function __setRootLayoutSibling() {
+      let cssClasses = '';
+      if (__currentLookContext.currentSpacePathIds.length) {
+        __currentLookContext.currentSpacePathIds.forEach(function(currentSpaceId) {
+          cssClasses += (' space-' + currentSpaceId).toLowerCase();
+        });
+      }
+      if (__currentLookContext.currentComponentId) {
+        cssClasses += (' instance-' + __currentLookContext.currentComponentId).toLowerCase();
+      }
+      spLayout.getRoot().setCssClasses(cssClasses);
+    }
+    this.updateContext = function(newContext) {
+      if (__currentLookContext) {
+        if (!__currentLookContext.mute) {
+          function __cssAndWallpaper() {
+            __applyCss(newContext);
+            __applyWallpaper(newContext);
+            __currentLookContext = extendsObject(false, __currentLookContext, newContext);
+          }
+          if (__currentLookContext.look !== newContext.look) {
+            __promiseToApplyLook(newContext).then(function() {
+              __cssAndWallpaper();
+              __setRootLayoutSibling();
+            });
+          } else {
+            __cssAndWallpaper();
+            __setRootLayoutSibling();
+          }
+        }
+      } else {
+        __currentLookContext = extendsObject(false, {
+          mainFrameUrl : undefined,
+          currentSpacePathIds : [],
+          currentComponentId : undefined,
+          defaultLook : undefined,
+          look : undefined,
+          bannerHeight : undefined,
+          footerHeight : undefined,
+          css : undefined,
+          wallpaper : undefined,
+          defaultWallpaper : undefined
+        }, newContext);
+        if (__currentLookContext.look !== __currentLookContext.defaultLook) {
+          __promiseToApplyLook(newContext).then(function() {
+            __applyCss(newContext);
+            __setRootLayoutSibling();
+          });
+        } else {
+          __applyCss(newContext);
+          __setRootLayoutSibling();
+        }
+      }
+    };
+    this.mute = function(promise) {
+      __currentLookContext.mute = true;
+      if (__currentLookContext.cssLink) {
+        if (sp.promise.isOne(promise)) {
+          promise.then(function() {
+            __currentLookContext.cssLink.remove();
+          })
+        } else {
+          __currentLookContext.cssLink.remove();
+        }
+      }
+    }
+    this.unmute = function(promise) {
+      delete __currentLookContext.mute;
+      if (__currentLookContext.cssLink) {
+        if (sp.promise.isOne(promise)) {
+          promise.then(function() {
+            top.document.body.appendChild(__currentLookContext.cssLink);
+          })
+        } else {
+          top.document.body.appendChild(__currentLookContext.cssLink);
+        }
+      }
+    }
+  };
+
   /**
    * Handling the rendering of the Silverpeas's window.
    * @constructor
@@ -359,6 +502,10 @@ function _spWindow_getSilverpeasMainWindow() {
     spLayout.getBody().getNavigation().addEventListener('load', __navigationListener, '__id__sp-window');
     spLayout.getBody().getNavigation().addEventListener('changeselected', __navigationListener, '__id__sp-window');
 
+    this.updateLookContext = function(lookContext) {
+      LookContextManager.updateContext(lookContext);
+    }
+
     this.reloadLastComponentOrSpaceAccessed = function(navigationMustBeReloaded) {
       const spaceId = __spWindowContext.lastNavigationEventData.currentSpaceId;
       const componentId = __spWindowContext.lastNavigationEventData.currentComponentId;
@@ -376,7 +523,8 @@ function _spWindow_getSilverpeasMainWindow() {
 
     this.loadAdminHomePage = function() {
       __logDebug("Loading admin homepage");
-      spLayout.getSplash().load(webContext + '/RjobManagerPeas/jsp/Main');
+      const promise = spLayout.getSplash().load(webContext + '/RjobManagerPeas/jsp/Main');
+      LookContextManager.mute(promise);
     };
 
     this.leaveAdmin = function(options) {
@@ -393,6 +541,7 @@ function _spWindow_getSilverpeasMainWindow() {
         }
       }
       spWindow.reloadLastComponentOrSpaceAccessed(true).then(function() {
+        LookContextManager.unmute();
         spLayout.getHeader().load().then(function() {
           spLayout.getSplash().close();
         });
@@ -598,7 +747,8 @@ function _spWindow_getSilverpeasMainWindow() {
      * Go to space administration (back office side)
      */
     this.setupSpace = function(spaceId) {
-      spLayout.getSplash().load(webContext + "/RjobManagerPeas/jsp/Main?SpaceId=" + spaceId)['catch'](__loadErrorListener);
+      const promise = spLayout.getSplash().load(webContext + "/RjobManagerPeas/jsp/Main?SpaceId=" + spaceId)['catch'](__loadErrorListener);
+      LookContextManager.mute(promise);
     };
 
     this.setupComponent = function(componentId) {
