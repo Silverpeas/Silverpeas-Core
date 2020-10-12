@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.viewer.service;
 
-import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.viewer.model.DocumentView;
 
 import java.io.File;
 
@@ -34,7 +34,7 @@ import java.io.File;
 public interface ViewService {
 
   static ViewService get() {
-    return ServiceProvider.getService(ViewService.class);
+    return ServiceProvider.getSingleton(ViewService.class);
   }
 
   /**

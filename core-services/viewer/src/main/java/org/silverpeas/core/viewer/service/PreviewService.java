@@ -34,7 +34,7 @@ import java.io.File;
 public interface PreviewService {
 
   static PreviewService get() {
-    return ServiceProvider.getService(PreviewService.class);
+    return ServiceProvider.getSingleton(PreviewService.class);
   }
 
   /**
