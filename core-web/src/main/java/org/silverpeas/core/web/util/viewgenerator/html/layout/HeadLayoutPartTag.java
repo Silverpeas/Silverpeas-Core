@@ -41,7 +41,7 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
  * {@link #noLookAndFeel}.
  * </p>
  * <p>
- * Attributes {@link #withCheckFormScript} and {@link #withFieldsetStyle} are directly
+ * Attributes {@link #lookContextManagerCallbackOnly}, {@link #withCheckFormScript} and {@link #withFieldsetStyle} are directly
  * transmitted to the look and feel TAG ({@link LookAndStyleTag}).
  * </p>
  */
@@ -50,6 +50,7 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
 
   private boolean minimalSilverpeasScriptEnv;
   private boolean noLookAndFeel;
+  private boolean lookContextManagerCallbackOnly;
   private boolean withFieldsetStyle;
   private boolean withCheckFormScript;
 
@@ -59,6 +60,10 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
 
   public void setNoLookAndFeel(final boolean noLookAndFeel) {
     this.noLookAndFeel = noLookAndFeel;
+  }
+
+  public void setLookContextManagerCallbackOnly(final boolean lookContextManagerCallbackOnly) {
+    this.lookContextManagerCallbackOnly = lookContextManagerCallbackOnly;
   }
 
   public void setWithCheckFormScript(final boolean withCheckFormScript) {
@@ -90,12 +95,19 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
   }
 
   private void renderLookAndFeel(final head head) {
-    if (!minimalSilverpeasScriptEnv && !noLookAndFeel) {
+    if ((!minimalSilverpeasScriptEnv && !noLookAndFeel) || lookContextManagerCallbackOnly) {
       final LookAndStyleTag lookAndFeel = new LookAndStyleTag();
       lookAndFeel.setPageContext(pageContext);
       lookAndFeel.setParent(this);
-      lookAndFeel.setWithCheckFormScript(withCheckFormScript);
-      lookAndFeel.setWithFieldsetStyle(withFieldsetStyle);
+      if (lookContextManagerCallbackOnly) {
+        lookAndFeel.setLookContextManagerCallbackOnly(true);
+        lookAndFeel.setWithFieldsetStyle(false);
+        lookAndFeel.setWithFieldsetStyle(false);
+      } else {
+        lookAndFeel.setLookContextManagerCallbackOnly(false);
+        lookAndFeel.setWithFieldsetStyle(withFieldsetStyle);
+        lookAndFeel.setWithFieldsetStyle(withFieldsetStyle);
+      }
       head.addElement(lookAndFeel.getContent());
     }
   }

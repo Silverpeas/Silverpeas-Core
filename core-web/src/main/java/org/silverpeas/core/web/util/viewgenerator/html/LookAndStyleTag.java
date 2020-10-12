@@ -32,13 +32,19 @@ import javax.servlet.jsp.tagext.TagSupport;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.link;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.script;
+import static org.silverpeas.core.web.util.viewgenerator.html.WebCommonLookAndFeel.LOOK_CONTEXT_MANAGER_CALLBACK_ONLY_ATTR;
 
 public class LookAndStyleTag extends TagSupport {
 
   private static final long serialVersionUID = 1L;
 
+  private boolean lookContextManagerCallbackOnly;
   private boolean withFieldsetStyle;
   private boolean withCheckFormScript;
+
+  public void setLookContextManagerCallbackOnly(final boolean lookContextManagerCallbackOnly) {
+    this.lookContextManagerCallbackOnly = lookContextManagerCallbackOnly;
+  }
 
   public void setWithFieldsetStyle(final boolean withFieldsetStyle) {
     this.withFieldsetStyle = withFieldsetStyle;
@@ -57,6 +63,7 @@ public class LookAndStyleTag extends TagSupport {
   public ElementContainer getContent() {
     final ElementContainer elements = new ElementContainer();
     final HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+    request.setAttribute(LOOK_CONTEXT_MANAGER_CALLBACK_ONLY_ATTR, lookContextManagerCallbackOnly);
     elements.addElement(WebCommonLookAndFeel.getInstance().getCommonHeader(request));
     if (withFieldsetStyle) {
       elements.addElement(link(getApplicationURL() + "/util/styleSheets/fieldset.css"));
