@@ -208,6 +208,11 @@
           </div>
           <div class="clear"></div>
         </div>
+
+        <div id="login-extra-content">
+          <view:applyTemplate locationBase="core:login" name="extraContent"/>
+        </div>
+
         <p>
           <label><span><fmt:message key="authentication.logon.login"/></span><input type="text" name="Login" id="Login"/></label>
         </p>
