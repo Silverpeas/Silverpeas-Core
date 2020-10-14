@@ -29,6 +29,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.internal.util.MockUtil;
 import org.silverpeas.core.test.TestBeanContainer;
+import org.silverpeas.core.test.TestSystemWrapper;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager;
@@ -38,10 +39,6 @@ import javax.enterprise.concurrent.ManagedThreadFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
@@ -149,65 +146,4 @@ public class CommonAPI4Test implements TestRule {
     }
   }
 
-  /**
-   * Default implementation that is nothing more than a delegate of {@link System} class.
-   * @author Yohann Chastagnier
-   */
-  private static class TestSystemWrapper implements SystemWrapper {
-
-    private Map<String, String> env = null;
-
-    public void setupDefaultParameters() {
-
-      // Adding by default this environment parameter
-      env = new HashMap<>();
-      env.putAll(System.getenv());
-      env.put("SILVERPEAS_HOME", "SilverpeasHome4Tests");
-
-      // Adding by default this system parameter
-      setProperty("SILVERPEAS_DATA_HOME", "SilverpeasDataHome4Tests");
-    }
-
-    @Override
-    public String getenv(final String name) {
-      return getenv().get(name);
-    }
-
-    @Override
-    public Map<String, String> getenv() {
-      return env;
-    }
-
-    @Override
-    public Properties getProperties() {
-      return System.getProperties();
-    }
-
-    @Override
-    public void setProperties(final Properties props) {
-      Enumeration<?> propertyNames = props.propertyNames();
-      while (propertyNames.hasMoreElements()) {
-        String key = (String) propertyNames.nextElement();
-        System.setProperty(key, props.getProperty(key));
-      }
-    }
-
-    @Override
-    public String setProperty(final String key, final String value) {
-      if (value != null && !value.trim().isEmpty()) {
-        return System.setProperty(key, value);
-      }
-      return null;
-    }
-
-    @Override
-    public String getProperty(final String key) {
-      return System.getProperty(key);
-    }
-
-    @Override
-    public String getProperty(final String key, final String def) {
-      return System.getProperty(key, def);
-    }
-  }
 }
