@@ -30,7 +30,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>29</version>
+    <version>29.1</version>
   </parent>
 
   <description>
@@ -40,7 +40,7 @@
   <scm>
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</developerConnection>
-    <url>http://github.com/Silverpeas/Silverpeas-Core</url>
+    <url>https://github.com/Silverpeas/Silverpeas-Core</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -49,7 +49,7 @@
       <id>Silverpeas</id>
       <layout>default</layout>
       <name>Silverpeas Repository</name>
-      <url>http://www.silverpeas.org/nexus/content/groups/silverpeas</url>
+      <url>https://www.silverpeas.org/nexus/content/groups/silverpeas</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -63,7 +63,7 @@
     <pluginRepository>
       <id>Silverpeas</id>
       <name>Silverpeas Maven 3.x Repository</name>
-      <url>http://www.silverpeas.org/nexus/content/groups/silverpeas</url>
+      <url>https://www.silverpeas.org/nexus/content/groups/silverpeas</url>
     </pluginRepository>
   </pluginRepositories>
 
@@ -73,7 +73,7 @@
   <version>5.15.13-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
-  <url>http://www.silverpeas.org/docs/core</url>
+  <url>https://www.silverpeas.org/docs/core</url>
 
   <build>
     <plugins>
