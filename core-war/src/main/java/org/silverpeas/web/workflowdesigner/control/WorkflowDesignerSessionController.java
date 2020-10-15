@@ -21,29 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
-* Copyright (C) 2000 - 2020 Silverpeas
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* As a special exception to the terms and conditions of version 3.0 of
-* the GPL, you may redistribute this Program in connection with Free/Libre
-* Open Source Software ("FLOSS") applications as described in Silverpeas's
-* FLOSS exception. You should have received a copy of the text describing
-* the FLOSS exception, and it is also available here:
-* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
 package org.silverpeas.web.workflowdesigner.control;
 
 import org.apache.commons.fileupload.FileItem;
@@ -55,8 +32,12 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -73,6 +54,9 @@ import org.silverpeas.core.workflow.util.WorkflowUtil;
 import org.silverpeas.web.workflowdesigner.model.WorkflowDesignerException;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class WorkflowDesignerSessionController extends AbstractComponentSessionController {
@@ -2808,49 +2792,18 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * name to be able to access it later
    * @throws WorkflowDesignerException when something goes wrong
    */
-  public void generateComponentDescriptor()
-      throws WorkflowDesignerException {
-    List<Profile> listSPProfile = new ArrayList<Profile>();
-    List<org.silverpeas.core.admin.component.model.Parameter> spParameters =
-        new ArrayList<org.silverpeas.core.admin.component.model.Parameter>();
-    org.silverpeas.core.admin.component.model.Parameter spParameter =
-        new org.silverpeas.core.admin.component.model.Parameter();
-    spParameter.setName(WorkflowUtil.PROCESS_XML_FILE_NAME);
-    spParameter.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
-        "componentDescriptor.parameterLabel"));
-    spParameter.getHelp().put(I18NHelper.defaultLanguage, "");
-    spParameter.getWarning().put(I18NHelper.defaultLanguage, "");
-    spParameter.setValue(processModelFileName.replace("\\", "/"));
-    spParameter.setMandatory(true);
-    spParameter.setUpdatable("always");
-    spParameter.setType("text");
-    // Create the list of roles, to be placed as profiles in the component descriptor
-    if (processModel.getRolesEx() != null) {
-      // 'supervisor' must be present in the list
-      if (processModel.getRolesEx().getRole("supervisor") == null) {
-        listSPProfile.add(getSupervisorProfile());
-      }
+  public void generateComponentDescriptor() throws WorkflowDesignerException {
+    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("workflow");
 
-      for (Role role : processModel.getRolesEx().getRoles()) {
-        Profile profile = new Profile();
-        profile.setName(role.getName());
-        Iterator<ContextualDesignation> labels = role.getLabels().iterateContextualDesignation();
-        while (labels.hasNext()) {
-          ContextualDesignation label = labels.next();
-          profile.getLabel().put(getSureLanguage(label.getLanguage()), label.getContent());
-          profile.getHelp().put(getSureLanguage(label.getLanguage()), label.getContent());
-        }
-        listSPProfile.add(profile);
-      }
-    } else {
-      listSPProfile.add(getSupervisorProfile());
-    }
+    String sureProcessModelFileName = processModelFileName.replace("\\\\", "/");
+    template.setAttribute("processModelFileName", sureProcessModelFileName);
+
+    String componentName = FileUtil.getFilename(sureProcessModelFileName);
+    componentName = componentName.substring(0, componentName.indexOf("."));
 
     WAComponent waComponent = new WAComponent();
-    ComponentBehaviors behaviors = new ComponentBehaviors();
-    behaviors.getBehavior().add(ComponentBehavior.WORKFLOW);
-    waComponent.setName(processModel.getName());
-    waComponent.setBehaviors(behaviors);
+    waComponent.setName(componentName);
+
     Iterator<ContextualDesignation> labels =
         processModel.getLabels().iterateContextualDesignation();
     while (labels.hasNext()) {
@@ -2861,6 +2814,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // no explicit labels, use name of process
       waComponent.getLabel().put(I18NHelper.defaultLanguage, processModel.getName());
     }
+
     Iterator<ContextualDesignation> descriptions =
         processModel.getDescriptions().iterateContextualDesignation();
     while (descriptions.hasNext()) {
@@ -2872,18 +2826,48 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // no explicit description, use name of process
       waComponent.getDescription().put(I18NHelper.defaultLanguage, processModel.getName());
     }
-    waComponent.setVisible(true);
-    waComponent.setPortlet(false);
-    waComponent.getSuite().put(I18NHelper.defaultLanguage,
-        getSettings().getString("componentDescriptor.suite"));
+
+    // Create the list of roles, to be placed as profiles in the component descriptor
+    List<Profile> listSPProfile = new ArrayList<Profile>();
+    if (processModel.getRolesEx() != null) {
+      // 'supervisor' must be present in the list
+      if (processModel.getRolesEx().getRole("supervisor") == null) {
+        listSPProfile.add(getSupervisorProfile());
+      }
+
+      for (Role role : processModel.getRolesEx().getRoles()) {
+        Profile profile = new Profile();
+        profile.setName(role.getName());
+        Iterator<ContextualDesignation> pLabels = role.getLabels().iterateContextualDesignation();
+        while (pLabels.hasNext()) {
+          ContextualDesignation label = pLabels.next();
+          profile.getLabel().put(getSureLanguage(label.getLanguage()), label.getContent());
+          profile.getHelp().put(getSureLanguage(label.getLanguage()), label.getContent());
+        }
+        listSPProfile.add(profile);
+      }
+    } else {
+      listSPProfile.add(getSupervisorProfile());
+    }
     waComponent.setProfiles(listSPProfile);
-    waComponent.setRouter(getSettings().getString("componentDescriptor.managerRequestRouter"));
-    spParameters.add(spParameter);
-    waComponent.setParameters(spParameters);
+
+    template.setAttribute("WAComponent", waComponent);
+
+    String xmlComponentTempPath = FileRepositoryManager.getTemporaryPath()+processModelFileName;
+
+    File xmlComponentTemp = new File(xmlComponentTempPath);
+    try (final PrintWriter out = new PrintWriter(new FileWriter(xmlComponentTemp, Charsets.UTF_8))) {
+      out.print(template.applyFileTemplate("xmlComponent"));
+    } catch (IOException e) {
+      throw new WorkflowDesignerException(
+          "WorkflowDesignerSessionController.generateComponentDescriptor()",
+          SilverpeasException.FATAL,
+          "workflowDesigner.EX_ERR_WRITE_WA_COMPONENTS", e);
+    }
 
     try {
-      WAComponentRegistry.get().putWorkflow(waComponent);
-      referencedInComponent = processModel.getName();
+      WAComponentRegistry.get().putWorkflow(xmlComponentTemp);
+      referencedInComponent = waComponent.getName();
     } catch (Exception e) {
       throw new WorkflowDesignerException(
           "WorkflowDesignerSessionController.generateComponentDescriptor()",
