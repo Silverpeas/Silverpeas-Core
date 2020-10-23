@@ -101,11 +101,11 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
       lookAndFeel.setParent(this);
       if (lookContextManagerCallbackOnly) {
         lookAndFeel.setLookContextManagerCallbackOnly(true);
-        lookAndFeel.setWithFieldsetStyle(false);
+        lookAndFeel.setWithCheckFormScript(false);
         lookAndFeel.setWithFieldsetStyle(false);
       } else {
         lookAndFeel.setLookContextManagerCallbackOnly(false);
-        lookAndFeel.setWithFieldsetStyle(withFieldsetStyle);
+        lookAndFeel.setWithCheckFormScript(withCheckFormScript);
         lookAndFeel.setWithFieldsetStyle(withFieldsetStyle);
       }
       head.addElement(lookAndFeel.getContent());
