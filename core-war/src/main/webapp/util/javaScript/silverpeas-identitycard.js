@@ -66,7 +66,11 @@
                   return !!data.element;
                 }).forEach(function(data) {
                   if (data.srcValue) {
-                    data.element.setAttribute('src', data.srcValue);
+                    if (data.element.getAttribute('src') !== data.srcValue) {
+                      sp.element.cloneAndReplace(data.element, function(clone) {
+                        clone.setAttribute('src', data.srcValue);
+                      });
+                    }
                   } else if (data.element.childNodes.length) {
                     data.element.childNodes[0].textContent = data.textValue;
                   } else {
