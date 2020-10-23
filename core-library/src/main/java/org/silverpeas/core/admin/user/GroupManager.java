@@ -43,6 +43,8 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.notification.GroupEventNotifier;
+import org.silverpeas.core.admin.user.notification.GroupUserLink;
+import org.silverpeas.core.admin.user.notification.GroupUserLinkEventNotifier;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -83,9 +85,9 @@ public class GroupManager {
   @Inject
   private UserDAO userDao;
   @Inject
-  private GroupEventNotifier notifier;
+  private GroupEventNotifier groupNotifier;
   @Inject
-  private OrganizationSchema organizationSchema;
+  private GroupUserLinkEventNotifier linkNotifier;
   @Inject
   private DomainDriverManager domainDriverManager;
 
@@ -177,6 +179,7 @@ public class GroupManager {
           AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       groupDao.addUserInGroup(connection, sUserId, sGroupId);
+      notifyUserInGroup(ResourceEvent.Type.CREATION, sUserId, sGroupId);
     } catch (Exception e) {
       throw new AdminException(failureOnAdding("user " + sUserId, IN_GROUP + sGroupId), e);
     }
@@ -186,6 +189,7 @@ public class GroupManager {
       throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       groupDao.addUsersInGroup(connection, userIds, groupId);
+      userIds.forEach(u -> notifyUserInGroup(ResourceEvent.Type.CREATION, u, groupId));
     } catch (SQLException e) {
       throw new AdminException(e.getMessage(), e);
     }
@@ -204,6 +208,7 @@ public class GroupManager {
       SynchroDomainReport.debug("GroupManager.removeUserFromGroup()",
           "Retrait de l'utilisateur d'ID " + sUserId + " du groupe d'ID " + sGroupId);
       groupDao.deleteUserInGroup(connection, sUserId, sGroupId);
+      notifyUserInGroup(ResourceEvent.Type.DELETION, sUserId, sGroupId);
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting("user " + sUserId, IN_GROUP + sGroupId), e);
     }
@@ -214,6 +219,7 @@ public class GroupManager {
     try (Connection connection = DBUtil.openConnection()) {
       for (String userId : userIds) {
         groupDao.deleteUserInGroup(connection, userId, groupId);
+        notifyUserInGroup(ResourceEvent.Type.DELETION, userId, groupId);
       }
     } catch (SQLException e) {
       throw new AdminException(
@@ -583,7 +589,7 @@ public class GroupManager {
       }
       String groupId = groupDao.saveGroup(connection, group);
       group.setId(groupId);
-      notifier.notifyEventOn(ResourceEvent.Type.CREATION, group);
+      groupNotifier.notifyEventOn(ResourceEvent.Type.CREATION, group);
 
       // index group information
       domainDriverManager.indexGroup(group);
@@ -639,7 +645,7 @@ public class GroupManager {
       }
       // Delete the group node from Silverpeas
       deleteGroup(connection, group);
-      notifier.notifyEventOn(ResourceEvent.Type.DELETION, group);
+      groupNotifier.notifyEventOn(ResourceEvent.Type.DELETION, group);
 
       // Delete index of group information
       domainDriverManager.unindexGroup(group.getId());
@@ -792,10 +798,17 @@ public class GroupManager {
         SynchroDomainReport.debug(GROUP_MANAGER_UPDATE_GROUP,
             "Ajout de l'utilisateur d'ID " + userId + " dans le groupe d'ID " + sGroupId);
         groupDao.addUserInGroup(connection, userId, sGroupId);
+        notifyUserInGroup(ResourceEvent.Type.CREATION, userId, sGroupId);
         addedUsers++;
       }
     }
     return addedUsers;
+  }
+
+  private void notifyUserInGroup(final ResourceEvent.Type typeOfOperation, final String userId,
+      final String groupId) {
+    GroupUserLink link = new GroupUserLink(groupId, userId);
+    linkNotifier.notifyEventOn(typeOfOperation, link);
   }
 
   private long removeUsersNoMoreInGroup(final Connection connection, final String sGroupId,
@@ -806,6 +819,7 @@ public class GroupManager {
         SynchroDomainReport.debug(GROUP_MANAGER_UPDATE_GROUP,
             "Suppression de l'utilisateur d'ID " + userId + " du groupe d'ID " + sGroupId);
         groupDao.deleteUserInGroup(connection, userId, sGroupId);
+        notifyUserInGroup(ResourceEvent.Type.DELETION, userId, sGroupId);
         removedUsers++;
       }
     }

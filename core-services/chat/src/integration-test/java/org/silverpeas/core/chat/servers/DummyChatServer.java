@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,28 +21,53 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.admin.user.notification;
 
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.notification.system.AbstractResourceEvent;
+package org.silverpeas.core.chat.servers;
 
-import java.io.Serializable;
+import org.silverpeas.core.admin.user.model.User;
+
+import javax.inject.Singleton;
+
+import static org.mockito.Mockito.mock;
 
 /**
- * An event about the creation, an update or a deletion of a user group in Silverpeas.
+ *
  * @author mmoquillon
  */
-public class GroupEvent extends AbstractResourceEvent<Group> {
+@DefaultChatServer
+@Singleton
+public class DummyChatServer implements ChatServer {
 
-  protected GroupEvent() {
-    super();
+  private final ChatServer mock = mock(ChatServer.class);
+
+  public ChatServer getMock() {
+    return mock;
   }
 
-  /**
-   * @see AbstractResourceEvent#AbstractResourceEvent(Type, Serializable[])
-   */
-  public GroupEvent(Type type, Group... group) {
-    super(type, group);
+  @Override
+  public void createUser(final User user) {
+    mock.createUser(user);
+  }
+
+  @Override
+  public void deleteUser(final User user) {
+    mock.deleteUser(user);
+  }
+
+  @Override
+  public void createRelationShip(final User user1, final User user2) {
+    mock.createRelationShip(user1, user2);
+  }
+
+  @Override
+  public void deleteRelationShip(final User user1, final User user2) {
+    mock.createRelationShip(user1, user2);
+  }
+
+  @Override
+  public boolean isUserExisting(final User user) {
+    return mock.isUserExisting(user);
   }
 
 }
+  

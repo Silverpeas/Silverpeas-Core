@@ -31,6 +31,10 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Setting properties of the chat service. It loads the
@@ -145,7 +149,7 @@ public class ChatSettings {
   public String getExplicitMappedXmppDomain(final String silverpeasDomainId) {
     String xmppDomain = "";
     if (StringUtil.isDefined(silverpeasDomainId)) {
-      xmppDomain = settings.getString("chat.xmpp.domain." + silverpeasDomainId, "");
+      xmppDomain = settings.getString("chat.xmpp.domain." + silverpeasDomainId, "").trim();
     }
     return xmppDomain;
   }
@@ -158,7 +162,7 @@ public class ChatSettings {
    * @return
    */
   public String getDefaultXmppDomain() {
-    return settings.getString("chat.xmpp.domain.default", "");
+    return settings.getString("chat.xmpp.domain.default", "").trim();
   }
 
   /**
@@ -172,11 +176,30 @@ public class ChatSettings {
    * returns an empty string.
    */
   public String getMappedXmppDomain(final String silverpeasDomainId) {
-    String xmppDomain = getExplicitMappedXmppDomain(silverpeasDomainId);
+    String xmppDomain = getExplicitMappedXmppDomain(silverpeasDomainId).trim();
     if (xmppDomain.isEmpty()) {
       return getDefaultXmppDomain();
     }
     return xmppDomain;
+  }
+
+  /**
+   * Gets all the user groups in Silverpeas that are allowed to use the chat service, id est the
+   * groups for which the chat is enabled. If no groups of users is defined, then an empty string
+   * is returned and the chat is enabled for all the groups in Silverpeas (default behaviour).
+   * @return an array of group identifiers or an empty array if all the groups are allowed.
+   */
+  public List<String> getAllowedUserGroups() {
+    return getListProperty("chat.xmpp.domain.groups");
+  }
+
+  /**
+   * Gets the ACL on the chat client.
+   * @return a {@link ChatACL} instance representing the ACL configured in the use of the chat
+   * client.
+   */
+  public ChatACL getACL() {
+    return new ChatACL();
   }
 
   /**
@@ -189,6 +212,44 @@ public class ChatSettings {
     final String rest = settings.getString("chat.xmpp.rest", "");
     final String bosh = settings.getString("chat.xmpp.httpBind", "");
     return enabled && !rest.isEmpty() && !bosh.isEmpty();
+  }
+
+  private List<String> getListProperty(final String property) {
+    String groups = settings.getString(property, "");
+    return groups.trim().isEmpty() ? Collections.emptyList() :
+        Stream.of(groups.split(",")).map(String::trim).collect(Collectors.toList());
+  }
+
+  /**
+   * ACL on the behaviour of the chat client.
+   */
+  public class ChatACL {
+
+    /**
+     * ACL on the behaviour of the group chats
+     */
+    public class GroupChat {
+
+      private GroupChat() {
+      }
+
+      /**
+       * Gets the list of identifiers of the groups of users in Silverpeas that are allowed to
+       * create a group chat and then to invite others users in that group chat.
+       * @return a list of Silverpeas group identifiers.
+       */
+      public List<String> getGroupsAllowedToCreate() {
+        return getListProperty("chat.acl.groupchat.creation");
+      }
+
+    }
+
+    private ChatACL() {
+    }
+
+    public GroupChat getAclOnGroupChat() {
+      return new GroupChat();
+    }
   }
 }
   

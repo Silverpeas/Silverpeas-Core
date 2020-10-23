@@ -26,6 +26,8 @@ package org.silverpeas.core.chat.servers;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.ChatServerException;
 import org.silverpeas.core.chat.ChatSettings;
+import org.silverpeas.core.chat.ChatUser;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
 /**
@@ -37,6 +39,10 @@ import org.silverpeas.core.util.StringUtil;
  * @author remipassmoilesel
  */
 public interface ChatServer {
+
+  static ChatServer get() {
+    return ServiceProvider.getService(ChatServer.class, DefaultChatServer.Literal.INSTANCE);
+  }
 
   /**
    * Gets the settings on the chat service. These settings provide the endpoint definitions as well
@@ -107,7 +113,7 @@ public interface ChatServer {
   boolean isUserExisting(final User user);
 
   /**
-   * Is the specified Silverpeas domain is supported by chat server? The domain is supported if
+   * Is the specified Silverpeas domain is supported by the chat server? The domain is supported if
    * it exists a mapping between it and a setting in the chat server. In that case, any users in
    * the domain can be registered and retrieved in the chat server.
    * @param domainId the unique identifier of a user domain in Silverpeas.
@@ -116,6 +122,19 @@ public interface ChatServer {
   default boolean isUserDomainSupported(final String domainId) {
     final ChatSettings settings = getChatSettings();
     return StringUtil.isDefined(settings.getMappedXmppDomain(domainId));
+  }
+
+  /**
+   * Is the specified user is allowed to access the chat server? Please consult the documentation of
+   * {@link ChatUser#isChatEnabled()} for more information about the conditions a user has to
+   * satisfy to allow hos access the chat server.
+   * @param user a user in Silverpeas
+   * @return true if the user is allowed to access the chat server, false otherwise.
+   * @see ChatUser#isChatEnabled()
+   */
+  default boolean isAllowed(final User user) {
+    ChatUser chatUser = ChatUser.fromUser(user);
+    return chatUser.isChatEnabled();
   }
 
 }

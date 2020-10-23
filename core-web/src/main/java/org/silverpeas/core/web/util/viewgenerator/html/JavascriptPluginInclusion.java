@@ -351,6 +351,7 @@ public class JavascriptPluginInclusion {
   static ElementContainer includePolyfills(final ElementContainer xhtml) {
     xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/unorm.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/array.generics.min.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/array.includes.from.min.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/es6-promise.min.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/classList.min.js"));
     xhtml.addElement(scriptContent("window.EVENT_SOURCE_POLYFILL_ACTIVATED=(typeof window.EventSource === 'undefined');"));

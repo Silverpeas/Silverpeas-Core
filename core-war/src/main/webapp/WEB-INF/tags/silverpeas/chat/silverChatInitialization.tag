@@ -35,18 +35,22 @@
 <jsp:useBean id="chatUser" type="org.silverpeas.core.chat.ChatUser"/>
 <c:set var="chatSettings" value="<%=ChatServer.getChatSettings()%>"/>
 <jsp:useBean id="chatSettings" type="org.silverpeas.core.chat.ChatSettings"/>
+<c:set var="chatServer" value="<%=ChatServer.get()%>"/>
+<jsp:useBean id="chatServer" type="org.silverpeas.core.chat.servers.ChatServer"/>
 <c:set var="chatBundle" value="<%=ChatLocalizationProvider.getLocalizationBundle(
           User.getCurrentRequester().getUserPreferences().getLanguage())%>"/>
 <jsp:useBean id="chatBundle" type="org.silverpeas.core.util.LocalizationBundle"/>
 
 <c:set var="chatUrl" value="${chatSettings.BOSHServiceUrl}"/>
 <c:set var="chatIceServer" value="${chatSettings.ICEServer}"/>
+<c:set var="chatACL" value="${chatSettings.ACL}"/>
+<c:set var="aclGroupsAllowedToCreate" value="${chatACL.aclOnGroupChat.groupsAllowedToCreate}"/>
 
 <script type="text/javascript">
   (function() {
     whenSilverpeasReady(function() {
       <c:choose>
-      <c:when test="${sessionScope.get('Silverpeas.Chat') and chatUser.chatEnabled}">
+      <c:when test="${sessionScope.get('Silverpeas.Chat') and chatUser.chatEnabled and chatServer.isUserExisting(chatUser)}">
       SilverChat.init({
         url : '${chatUrl}',
         id : '${chatUser.chatLogin}',
@@ -58,6 +62,11 @@
           auth: true
         },
         </c:if>
+        acl : {
+          groupchat : {
+             creation: ${empty aclGroupsAllowedToCreate or chatUser.isAtLeastInOneGroup(aclGroupsAllowedToCreate)}
+          }
+        },
         language : '${chatUser.userPreferences.language}',
         avatar: webContext + '/display/avatar/60x/',
         notificationLogo: (window.SilverChatSettings ? window.SilverChatSettings.get('un.d.i.u') : ''),
@@ -78,7 +87,7 @@
       }).start();
       </c:when>
       <c:otherwise>
-      sp.log.error('${silfn:escapeJs(chatBundle.getString("chat.server.notAvailable"))}');
+      sp.log.warning('${silfn:escapeJs(chatBundle.getString("chat.server.notAvailable"))}');
       </c:otherwise>
       </c:choose>
     });

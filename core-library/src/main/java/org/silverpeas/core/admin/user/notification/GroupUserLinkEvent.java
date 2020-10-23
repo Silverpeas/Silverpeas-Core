@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,28 +21,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.core.admin.user.notification;
 
-import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
 import java.io.Serializable;
 
 /**
- * An event about the creation, an update or a deletion of a user group in Silverpeas.
+ * An event about the creation, the update or the deletion of a link between user and a group of
+ * users in Silverpeas. The link symbolizes the belonging of a user to a group.
  * @author mmoquillon
  */
-public class GroupEvent extends AbstractResourceEvent<Group> {
+public class GroupUserLinkEvent extends AbstractResourceEvent<GroupUserLink> {
 
-  protected GroupEvent() {
-    super();
+  protected GroupUserLinkEvent() {
   }
 
   /**
    * @see AbstractResourceEvent#AbstractResourceEvent(Type, Serializable[])
    */
-  public GroupEvent(Type type, Group... group) {
-    super(type, group);
+  public GroupUserLinkEvent(Type type, GroupUserLink... links) {
+    super(type, links);
   }
-
 }
+  
