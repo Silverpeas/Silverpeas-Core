@@ -1700,11 +1700,17 @@ if (typeof window.sp === 'undefined') {
       }
     },
     element : {
-      removeAllEventListenerOfAndGettingClone: function(elementOrCssSelector) {
-        var element = typeof elementOrCssSelector === 'string' ? document.querySelector(elementOrCssSelector) : elementOrCssSelector;
-        var elClone = element.cloneNode(true);
+      cloneAndReplace: function(elementOrCssSelector, beforeReplaceCallback) {
+        const element = typeof elementOrCssSelector === 'string' ? document.querySelector(elementOrCssSelector) : elementOrCssSelector;
+        const elClone = element.cloneNode(true);
+        if (typeof beforeReplaceCallback === 'function') {
+          beforeReplaceCallback.call(this, elClone, element);
+        }
         element.parentNode.replaceChild(elClone, element);
         return elClone;
+      },
+      removeAllEventListenerOfAndGettingClone: function(elementOrCssSelector) {
+        return sp.element.cloneAndReplace(elementOrCssSelector);
       },
       isVisible: function (element) {
         return element === document.body || element.offsetParent !== null;
