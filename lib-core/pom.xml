@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.15.13-SNAPSHOT</version>
+    <version>5.15.13</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
