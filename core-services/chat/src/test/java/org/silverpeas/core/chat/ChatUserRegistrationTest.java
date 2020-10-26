@@ -99,6 +99,7 @@ class ChatUserRegistrationTest {
   void registerAUserAlreadyRegisteredShouldNotSucceed() {
     User aUser = aUser();
     when(settings.isChatEnabled()).thenReturn(true);
+    when(settings.getAllowedUserGroups()).thenReturn(Collections.emptyList());
     when(chatServer.isUserExisting(aUser)).thenReturn(true);
     assertThat(registration.isChatServiceEnabled(), is(true));
 

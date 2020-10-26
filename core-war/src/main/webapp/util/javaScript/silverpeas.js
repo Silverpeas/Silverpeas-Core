@@ -1547,7 +1547,7 @@ if (typeof window.sp === 'undefined') {
        * @private
        */
       displayAsDateTime : function(date) {
-        return sp.moment.displayAsDate(date) + sp.moment.make(date).format('LT');
+        return sp.moment.displayAsDate(date) + ' ' + sp.moment.make(date).format('LT');
       },
       /**
        * Formats the given UI date in order to get ISO representation of LocalDate as string.
