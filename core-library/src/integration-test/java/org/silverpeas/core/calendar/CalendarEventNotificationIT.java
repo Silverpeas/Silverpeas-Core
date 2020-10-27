@@ -31,9 +31,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.calendar.notification.AbstractNotifier;
 import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEvent;
 import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNotifier;
-import org.silverpeas.core.calendar.notification.AttendeeNotifier;
 import org.silverpeas.core.calendar.notification.CalendarEventLifeCycleEvent;
 import org.silverpeas.core.calendar.notification.CalendarEventOccurrenceLifeCycleEvent;
 import org.silverpeas.core.calendar.notification.LifeCycleEventSubType;
@@ -94,7 +94,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return CalendarWarBuilder.onWarForTestClass(CalendarEventNotificationIT.class)
-        .addClasses(AttendeeNotifier.class)
+        .addClasses(AbstractNotifier.class)
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .build();
@@ -174,7 +174,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
 
     // Modifying recurrence reset the participation of attendees
     assertThat(attendanceListener.hasBeenNotified(), is(true));
-    assertThat(attendanceListener.getRecievedNotifAction(),
+    assertThat(attendanceListener.getReceivedNotifyAction(),
         contains(NotifAction.UPDATE, NotifAction.UPDATE));
   }
 
@@ -193,8 +193,8 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
     assertThat(occurrenceListener.hasBeenNotified(), is(false));
 
     assertThat(attendanceListener.hasBeenNotified(), is(true));
-    assertThat(attendanceListener.getRecievedNotifAction().size(), is(1));
-    assertThat(attendanceListener.getRecievedNotifAction().contains(NotifAction.CREATE), is(true));
+    assertThat(attendanceListener.getReceivedNotifyAction().size(), is(1));
+    assertThat(attendanceListener.getReceivedNotifyAction().contains(NotifAction.CREATE), is(true));
   }
 
   /**
@@ -213,8 +213,8 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
     assertThat(occurrenceListener.hasBeenNotified(), is(false));
 
     assertThat(attendanceListener.hasBeenNotified(), is(true));
-    assertThat(attendanceListener.getRecievedNotifAction().size(), is(1));
-    assertThat(attendanceListener.getRecievedNotifAction().contains(NotifAction.DELETE), is(true));
+    assertThat(attendanceListener.getReceivedNotifyAction().size(), is(1));
+    assertThat(attendanceListener.getReceivedNotifyAction().contains(NotifAction.DELETE), is(true));
   }
 
   /**
@@ -233,8 +233,8 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
     assertThat(occurrenceListener.hasBeenNotified(), is(false));
 
     assertThat(attendanceListener.hasBeenNotified(), is(true));
-    assertThat(attendanceListener.getRecievedNotifAction().size(), is(1));
-    assertThat(attendanceListener.getRecievedNotifAction().contains(NotifAction.UPDATE), is(true));
+    assertThat(attendanceListener.getReceivedNotifyAction().size(), is(1));
+    assertThat(attendanceListener.getReceivedNotifyAction().contains(NotifAction.UPDATE), is(true));
   }
 
   /**
@@ -253,9 +253,9 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
     assertThat(occurrenceListener.hasBeenNotified(), is(false));
 
     assertThat(attendanceListener.hasBeenNotified(), is(true));
-    assertThat(attendanceListener.getRecievedNotifAction().size(), is(2));
-    assertThat(attendanceListener.getRecievedNotifAction().contains(NotifAction.UPDATE), is(true));
-    assertThat(attendanceListener.getRecievedNotifAction().contains(NotifAction.CREATE), is(true));
+    assertThat(attendanceListener.getReceivedNotifyAction().size(), is(2));
+    assertThat(attendanceListener.getReceivedNotifyAction().contains(NotifAction.UPDATE), is(true));
+    assertThat(attendanceListener.getReceivedNotifyAction().contains(NotifAction.CREATE), is(true));
   }
 
   /**
@@ -274,15 +274,16 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
     assertThat(occurrenceListener.hasBeenNotified(), is(false));
 
     assertThat(attendanceListener.hasBeenNotified(), is(true));
-    assertThat(attendanceListener.getRecievedNotifAction().size(), is(1));
-    assertThat(attendanceListener.getRecievedNotifAction().contains(NotifAction.UPDATE), is(true));
+    assertThat(attendanceListener.getReceivedNotifyAction().size(), is(1));
+    assertThat(attendanceListener.getReceivedNotifyAction().contains(NotifAction.UPDATE), is(true));
   }
 
   /**
    * Listens for change in the attendance in an event (or in a given event's occurrence).
    */
   @Singleton
-  public static class AttendanceNotificationListener extends AttendeeNotifier<AttendeeLifeCycleEvent> {
+  public static class AttendanceNotificationListener extends
+      AbstractNotifier<AttendeeLifeCycleEvent> {
 
 
     private List<NotifAction> notifAction = new ArrayList<>(2);
@@ -291,7 +292,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
       notifAction.clear();
     }
 
-    public List<NotifAction> getRecievedNotifAction() {
+    public List<NotifAction> getReceivedNotifyAction() {
       return this.notifAction;
     }
 
@@ -324,7 +325,8 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
    * implemented by the attendee notification mechanism. We just simulate here this behaviour.
    */
   @Singleton
-  public static class CalendarEventNotificationListener extends AttendeeNotifier<CalendarEventLifeCycleEvent> {
+  public static class CalendarEventNotificationListener extends
+      AbstractNotifier<CalendarEventLifeCycleEvent> {
 
     private NotifAction notifAction = null;
 
@@ -376,7 +378,7 @@ public class CalendarEventNotificationIT extends BaseCalendarTest {
    */
   @Singleton
   public static class CalendarEventOccurrenceNotificationListener
-      extends AttendeeNotifier<CalendarEventOccurrenceLifeCycleEvent> {
+      extends AbstractNotifier<CalendarEventOccurrenceLifeCycleEvent> {
 
     private NotifAction notifAction = null;
 

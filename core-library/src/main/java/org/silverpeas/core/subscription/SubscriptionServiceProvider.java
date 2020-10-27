@@ -30,11 +30,11 @@ import org.silverpeas.core.util.ServiceProvider;
  */
 public class SubscriptionServiceProvider {
 
-  public static SubscriptionService getSubscribeService() {
-    return ServiceProvider.getService(SubscriptionService.class);
+  private SubscriptionServiceProvider() {
+    // Provider class.
   }
 
-  private SubscriptionServiceProvider() {
-
+  public static SubscriptionService getSubscribeService() {
+    return ServiceProvider.getService(SubscriptionService.class);
   }
 }

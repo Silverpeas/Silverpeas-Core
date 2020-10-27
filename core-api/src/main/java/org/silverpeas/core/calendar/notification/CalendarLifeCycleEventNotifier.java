@@ -23,33 +23,27 @@
  */
 package org.silverpeas.core.calendar.notification;
 
-import org.silverpeas.core.calendar.Attendee;
-import org.silverpeas.core.calendar.CalendarComponent;
-import org.silverpeas.core.notification.system.CDIAfterSuccessfulTransactionResourceEventListener;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.util.Collections.singletonList;
-import static org.silverpeas.core.calendar.CalendarEventUtil.asAttendee;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
- * A notifier of attendees about some lifecycle events triggered by the Calendar engine.
- * @author mmoquillon
+ * A notifier of lifecycle events of {@link Calendar} instances.
+ * @author silveryocha
  */
-public abstract class AttendeeNotifier<T extends ResourceEvent>
-    extends CDIAfterSuccessfulTransactionResourceEventListener<T> {
+@Bean
+public class CalendarLifeCycleEventNotifier
+    extends CDIResourceEventNotifier<Calendar, CalendarLifeCycleEvent> {
 
-  protected List<Attendee> ownerOf(final CalendarComponent calendarComponent) {
-    return singletonList(asAttendee(calendarComponent.getLastUpdater(), calendarComponent));
+  public static CalendarLifeCycleEventNotifier get() {
+    return ServiceProvider.getService(CalendarLifeCycleEventNotifier.class);
   }
 
-  protected List<Attendee> concernedAttendeesIn(final CalendarComponent calendarComponent) {
-    return calendarComponent.getAttendees().stream().collect(Collectors.toList());
-  }
-
-  protected List<Attendee> attendeesIn(final CalendarComponent calendarComponent) {
-    return calendarComponent.getAttendees().stream().collect(Collectors.toList());
+  @Override
+  protected CalendarLifeCycleEvent createResourceEventFrom(final ResourceEvent.Type type,
+      final Calendar... resource) {
+    return new CalendarLifeCycleEvent(type, resource);
   }
 }

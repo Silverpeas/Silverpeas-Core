@@ -28,8 +28,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.UserNotification;
-import org.silverpeas.core.notification.user.builder
-    .AbstractContributionTemplateUserNotificationBuilder;
+import org.silverpeas.core.notification.user.builder.AbstractContributionTemplateUserNotificationBuilder;
 
 /**
  * Centralizes the building of a {@link UserNotification} in relation with a calendar contribution.
@@ -38,13 +37,13 @@ import org.silverpeas.core.notification.user.builder
  * </p>
  * @param <C> a contribution implementation type
  */
-public abstract class AbstractCalendarEventUserNotificationBuilder<C extends Contribution>
+public abstract class AbstractCalendarUserNotificationBuilder<C extends Contribution>
     extends AbstractContributionTemplateUserNotificationBuilder<C>
     implements FallbackToCoreTemplatePathBehavior {
 
   private final User user;
 
-  protected AbstractCalendarEventUserNotificationBuilder(final C contribution, final User user) {
+  protected AbstractCalendarUserNotificationBuilder(final C contribution, final User user) {
     super(contribution);
     this.user = user;
   }

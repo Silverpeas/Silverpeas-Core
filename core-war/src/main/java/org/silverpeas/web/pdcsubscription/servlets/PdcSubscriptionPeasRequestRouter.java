@@ -23,24 +23,36 @@
  */
 package org.silverpeas.web.pdcsubscription.servlets;
 
-import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
-import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
-import org.silverpeas.web.pdcsubscription.control.PdcSubscriptionSessionController;
-import org.silverpeas.core.util.StringUtil;
+import org.apache.commons.lang3.ArrayUtils;
 import org.silverpeas.core.pdc.classification.Criteria;
+import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
+import org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.web.pdcsubscription.control.PdcSubscriptionSessionController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<PdcSubscriptionSessionController> {
 
   private static final long serialVersionUID = -441269066150311066L;
+  private static final String SUB_RES_TYPE_ATTR = "subResType";
+  private static final String VIEW_SUBSCRIPTION_OF_TYPE = "ViewSubscriptionOfType";
+  private static final String VIEW_SUBSCRIPTION_TAXONOMY = "ViewSubscriptionTaxonomy";
+  private static final String USER_ID_PARAM = "userId";
+  private static final String ACTION_PARAM = "action";
 
   @Override
   public PdcSubscriptionSessionController createComponentSessionController(
@@ -73,52 +85,23 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
   @Override
   public String getDestination(String function, PdcSubscriptionSessionController pdcSC,
       HttpRequest request) {
+    final String rootDest = "/pdcSubscriptionPeas/jsp/";
     String destination = "";
     request.setAttribute("language", pdcSC.getLanguage());
     request.setAttribute("currentUserId", pdcSC.getUserId());
-    String rootDest = "/pdcSubscriptionPeas/jsp/";
-
     try {
       if (function.startsWith("subscriptionList")) {
-        destination = getDestination("ViewSubscriptionTheme", pdcSC, request);
-      } else if ("ViewSubscriptionTaxonomy".equals(function)) {
+        destination = getDestination(VIEW_SUBSCRIPTION_OF_TYPE, pdcSC, request);
+      } else if (VIEW_SUBSCRIPTION_TAXONOMY.equals(function)) {
         destination = rootDest + processSubscriptionList(request, pdcSC);
       } else if (function.startsWith("showUserSubscriptions")) {
-        String reqUserId = request.getParameter("userId");
-        if (StringUtil.isDefined(reqUserId)) {
-          int userId = Integer.parseInt(reqUserId);
-          destination = rootDest + processUserSubscriptions(request, pdcSC, userId);
-        }
-      } else if (function.equals("ViewSubscriptionTheme")) {
-        String userId = request.getParameter("userId");
-        String action = request.getParameter("action");
-        // passage des parametres ...
-        request.setAttribute("subscriptions", pdcSC.getNodeUserSubscriptions(userId));
-        request.setAttribute("action", action);
-        request.setAttribute("userId", userId);
-        destination = rootDest + "viewSubscriptionTheme.jsp";
-      } else if (function.equals("DeleteTheme")) {
-        Object o = request.getParameterValues("themeCheck");
-        if (o != null) {
-          String[] themes = (String[]) o;
-          pdcSC.deleteThemes(themes);
-        }
-        destination = getDestination("ViewSubscriptionTheme", pdcSC, request);
-      } else if (function.equals("ViewSubscriptionComponent")) {
-        String userId = request.getParameter("userId");
-        String action = request.getParameter("action");
-        // passage des parametres ...
-        request.setAttribute("subscriptions", pdcSC.getComponentUserSubscriptions(userId));
-        request.setAttribute("action", action);
-        request.setAttribute("userId", userId);
-        destination = rootDest + "viewSubscriptionComponent.jsp";
-      } else if (function.equals("DeleteComponentSubscription")) {
-        Object o = request.getParameterValues("subscriptionCheckbox");
-        if (o != null) {
-          String[] subscriptions = (String[]) o;
-          pdcSC.deleteComponentSubscription(subscriptions);
-        }
-        destination = getDestination("ViewSubscriptionComponent", pdcSC, request);
+        final String reqUserId = defaultStringIfNotDefined(request.getParameter(USER_ID_PARAM), pdcSC.getUserId());
+        final int userId = Integer.parseInt(reqUserId);
+        destination = rootDest + processUserSubscriptions(request, pdcSC, userId);
+      } else if (function.equals(VIEW_SUBSCRIPTION_OF_TYPE)) {
+        destination = rootDest + viewSubscriptionOfType(pdcSC, request);
+      } else if (function.equals("DeleteSubscriptionOfType")) {
+        destination = deleteSubscriptionOfType(pdcSC, request);
       } else if (function.startsWith("PdcSubscription")) {
         String subscriptionId = request.getParameter("pdcSId");
         if (StringUtil.isDefined(subscriptionId)) {
@@ -136,23 +119,45 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
         String values = request.getParameter("AxisValueCouples");
         List<? extends Criteria> criteria = AxisValueCriterion.fromFlattenedAxisValues(values);
         pdcSC.createPDCSubscription(name, criteria);
-        destination = getDestination("ViewSubscriptionTaxonomy", pdcSC, request);
+        destination = getDestination(VIEW_SUBSCRIPTION_TAXONOMY, pdcSC, request);
       } else if (function.startsWith("updateSubscription")) {
         String name = request.getParameter("SubscriptionName");
         String values = request.getParameter("AxisValueCouples");
         List<? extends Criteria> criteria = AxisValueCriterion.fromFlattenedAxisValues(values);
         pdcSC.updateCurrentSubscription(name, criteria);
-        destination = getDestination("ViewSubscriptionTaxonomy", pdcSC, request);
+        destination = getDestination(VIEW_SUBSCRIPTION_TAXONOMY, pdcSC, request);
       }
     } catch (Exception e) {
-      SilverTrace.error("pdcSubscriptionPeas",
-          "PdcSubscriptionPeasRequestRouter.getDestination",
-          "root.EX_GET_DESTINATION_ERROR", "", e);
+      SilverLogger.getLogger(this).error(e);
       request.setAttribute("javax.servlet.jsp.jspException", e);
       return "/admin/jsp/errorpageMain.jsp";
     }
-
     return destination;
+  }
+
+  private String viewSubscriptionOfType(final PdcSubscriptionSessionController pdcSC,
+      final HttpRequest request) {
+    final String userId = request.getParameter(USER_ID_PARAM);
+    SubscriptionResourceType subResType = SubscriptionResourceType.from(request.getParameter(SUB_RES_TYPE_ATTR));
+    if (!subResType.isValid()) {
+      subResType = CommonSubscriptionResourceConstants.COMPONENT;
+    }
+    final String action = request.getParameter(ACTION_PARAM);
+    request.setAttribute("subscriptions", pdcSC.getUserSubscriptionsOfType(userId, subResType));
+    request.setAttribute(SUB_RES_TYPE_ATTR, subResType);
+    request.setAttribute(ACTION_PARAM, action);
+    request.setAttribute(USER_ID_PARAM, userId);
+    return "viewSubscriptionsOfType.jsp";
+  }
+
+  private String deleteSubscriptionOfType(final PdcSubscriptionSessionController pdcSC,
+      final HttpRequest request) {
+    final SubscriptionResourceType subResType = SubscriptionResourceType.from(request.getParameter(SUB_RES_TYPE_ATTR));
+    final String[] selectedItems = request.getParameterValues("subscriptionCheckbox");
+    if (!ArrayUtils.isEmpty(selectedItems)) {
+      pdcSC.deleteUserSubscriptionsOfType(selectedItems, subResType);
+    }
+    return getDestination(VIEW_SUBSCRIPTION_OF_TYPE, pdcSC, request);
   }
 
   /**
@@ -160,25 +165,25 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
    */
   private String processSubscriptionList(HttpServletRequest request,
       PdcSubscriptionSessionController pdcSC)
-      throws Exception {
-    request.setAttribute("action", "ViewSubscriptionTaxonomy");
+      throws PdcException {
+    request.setAttribute(ACTION_PARAM, VIEW_SUBSCRIPTION_TAXONOMY);
 
     String mode = request.getParameter("mode");
     if ("delete".equals(mode)) {
       Object o = request.getParameterValues("pdcCheck");
       if (o != null) {
         String[] iDs = (String[]) o;
-        int[] ids_i = new int[iDs.length];
+        int[] idsI = new int[iDs.length];
         for (int i = 0; i < iDs.length; i++) {
           String id = iDs[i];
-          ids_i[i] = Integer.parseInt(id);
+          idsI[i] = Integer.parseInt(id);
         }
-        pdcSC.removeICByPK(ids_i);
+        pdcSC.removeICByPK(idsI);
       }
     }
     List<PdcSubscription> list = pdcSC.getUserPDCSubscription();
 
-    return doInitSubscrListRequest(request, pdcSC, list);
+    return initializeSubscrListRequest(request, pdcSC, list);
   }
 
   /**
@@ -186,11 +191,11 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
    */
   private String processUserSubscriptions(HttpServletRequest request,
       PdcSubscriptionSessionController pdcSC, int userId)
-      throws Exception {
-    request.setAttribute("action", "showUserSubscriptions");
-    request.setAttribute("userId", String.valueOf(userId));
+      throws PdcException {
+    request.setAttribute(ACTION_PARAM, "showUserSubscriptions");
+    request.setAttribute(USER_ID_PARAM, String.valueOf(userId));
     List<PdcSubscription> list = pdcSC.getUserPDCSubscription(userId);
-    return doInitSubscrListRequest(request, pdcSC, list);
+    return initializeSubscrListRequest(request, pdcSC, list);
   }
 
   /**
@@ -201,11 +206,11 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
    * @param subscriptions a list of loaded PdcSubscription to be shown
    * @return jsp name
    */
-  private String doInitSubscrListRequest(HttpServletRequest request,
+  private String initializeSubscrListRequest(HttpServletRequest request,
       PdcSubscriptionSessionController pdcSC, List<PdcSubscription> subscriptions)
-      throws Exception {
+      throws PdcException {
     request.setAttribute("subscriptionList", subscriptions);
-    List pathContext = new ArrayList();
+    final List<List<List<Value>>> pathContext = new ArrayList<>();
     for (PdcSubscription subscription : subscriptions) {
       pathContext.add(pdcSC.getPathCriterias(subscription.getPdcContext()));
     }

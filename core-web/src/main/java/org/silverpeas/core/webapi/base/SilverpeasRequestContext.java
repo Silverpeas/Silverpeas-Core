@@ -25,6 +25,7 @@
 package org.silverpeas.core.webapi.base;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,6 +42,10 @@ public abstract class SilverpeasRequestContext {
   protected void init(final HttpServletRequest request, final HttpServletResponse response) {
     this.request = request;
     this.response = response;
+    final String httpMethod = request.getMethod().toUpperCase();
+    if ("PUT".equals(httpMethod)) {
+      UserSubscriptionNotificationSendingHandler.verifyRequest(request);
+    }
   }
 
   public User getUser() {

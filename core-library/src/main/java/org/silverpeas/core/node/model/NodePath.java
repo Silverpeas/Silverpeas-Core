@@ -24,29 +24,16 @@
 
 package org.silverpeas.core.node.model;
 
-import org.silverpeas.core.SilverpeasExceptionMessages;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.ResourcePath;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.util.Collections.singletonList;
 
 /**
  * List of {@link NodeDetail} which represents a path.
  * @author silveryocha
  */
-public class NodePath extends ArrayList<NodeDetail> {
+public class NodePath extends ResourcePath<NodeDetail> {
   private static final long serialVersionUID = -2389557818767894656L;
-  private static final String SEP = " > ";
-  private transient Map<String, Pair<String, String>> lastPathByLanguage = new HashMap<>();
 
   public NodePath() {
     super();
@@ -60,74 +47,29 @@ public class NodePath extends ArrayList<NodeDetail> {
     super(c);
   }
 
-  /**
-   * Formats a path from the node that the list contains.
-   * @param language the aimed translation.
-   * @return a string.
-   */
-  public String format(final String language) {
-    return format(language, false);
+  @Override
+  protected String getInstanceId(final NodeDetail node) {
+    return node.getNodePK().getInstanceId();
   }
 
-  /**
-   * Formats a path from the node that the list contains.
-   * @param language the aimed translation.
-   * @param fullSpacePath if false, the space host is taken into account, if true the space host
-   * and all parents are taken into account.
-   * @return a string.
-   */
-  public String format(final String language, final boolean fullSpacePath) {
-    final String currentNodeIdPath = stream().map(NodeDetail::getId).map(String::valueOf)
-        .collect(Collectors.joining(","));
-    Pair<String, String> lastPath = lastPathByLanguage
-        .computeIfAbsent(language, l -> Pair.of("", ""));
-    if (!currentNodeIdPath.equals(lastPath.getFirst())) {
-      StringBuilder result = new StringBuilder();
-      for (NodeDetail node : this) {
-        if (result.length() > 0) {
-          result.insert(0, SEP);
-        }
-        if (NodePK.ROOT_NODE_ID.equals(node.getNodePK().getId())) {
-          result.insert(0, getPath(node, language, fullSpacePath));
-        } else {
-          result.insert(0, node.getName(language));
-        }
-      }
-      lastPath = Pair.of(currentNodeIdPath, result.toString());
-      lastPathByLanguage.put(language, lastPath);
-    }
-    return lastPath.getSecond();
-  }
-
-  private String getPath(final NodeDetail node, final String language,
-      final boolean fullSpacePath) {
-    final String instanceId = node.getNodePK().getInstanceId();
-    final SilverpeasComponentInstance componentInstance = OrganizationController.get()
-        .getComponentInstance(instanceId).orElseThrow(() -> new IllegalArgumentException(
-            SilverpeasExceptionMessages.failureOnGetting("component instance", instanceId)));
-    return getPath(componentInstance, language, fullSpacePath) + SEP +
-        componentInstance.getLabel(language);
-  }
-
-  private String getPath(SilverpeasComponentInstance instance, final String language,
-      final boolean fullSpacePath) {
-    final List<SpaceInstLight> spaceList;
-    final OrganizationController controller = OrganizationController.get();
-    if (fullSpacePath) {
-      spaceList = controller.getPathToComponent(instance.getId());
-    } else {
-      spaceList = singletonList(controller.getSpaceInstLightById(instance.getSpaceId()));
-    }
-    return spaceList.stream().map(s -> s.getName(language)).collect(Collectors.joining(SEP));
+  @SuppressWarnings("unchecked")
+  @Override
+  protected Integer getId(final NodeDetail node) {
+    return node.getId();
   }
 
   @Override
-  public boolean equals(final Object o) {
-    return super.equals(o);
+  protected boolean isRoot(final NodeDetail node) {
+    return node.isRoot();
   }
 
   @Override
-  public int hashCode() {
-    return super.hashCode();
+  protected boolean rootIsComponentInstance() {
+    return true;
+  }
+
+  @Override
+  protected String getLabel(final NodeDetail node, final String language) {
+    return node.getName(language);
   }
 }

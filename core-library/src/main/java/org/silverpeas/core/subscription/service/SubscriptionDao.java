@@ -29,10 +29,10 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.subscription.util.SubscriptionList;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.util.DateUtil;
@@ -49,6 +49,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.*;
 
 /**
  * Class declaration
@@ -465,22 +467,18 @@ public class SubscriptionDao {
     }
 
     final Subscription subscription;
-    switch (resourceType) {
-      case NODE:
-        subscription =
-            new NodeSubscription(subscriber, resource, subscriptionMethod, creatorId, creationDate);
-        break;
-      case COMPONENT:
-        subscription =
-            new ComponentSubscription(subscriber, resource, subscriptionMethod, creatorId,
-                creationDate);
-        break;
-      default:
-        if (SubscriptionResourceType.UNKNOWN.equals(resourceType)) {
-          throw new AssertionError("There is no reason to be here !");
-        }
-        subscription =
-            new PKSubscription(subscriber, resource, subscriptionMethod, creatorId, creationDate);
+    if (NODE.equals(resourceType)) {
+      subscription = new NodeSubscription(subscriber, resource, subscriptionMethod, creatorId,
+          creationDate);
+    } else if (COMPONENT.equals(resourceType)) {
+      subscription = new ComponentSubscription(subscriber, resource, subscriptionMethod, creatorId,
+          creationDate);
+    } else {
+      if (UNKNOWN.equals(resourceType)) {
+        throw new AssertionError("There is no reason to be here !");
+      }
+      subscription = new PKSubscription(subscriber, resource, subscriptionMethod, creatorId,
+          creationDate);
     }
     return subscription;
   }
@@ -496,20 +494,17 @@ public class SubscriptionDao {
   private SubscriptionResource createResourceInstance(String resourceId,
       SubscriptionResourceType resourceType, String space, String instanceId) {
     final SubscriptionResource resource;
-    switch (resourceType) {
-      case NODE:
-        resource = new NodeSubscriptionResource(new NodePK(resourceId, space, instanceId));
-        break;
-      case COMPONENT:
-        resource = new ComponentSubscriptionResource(instanceId);
-        break;
-      default:
-        if (SubscriptionResourceType.UNKNOWN.equals(resourceType)) {
-          resource = null;
-        } else {
-          resource =
-              new PKSubscriptionResource(new ResourceReference(resourceId, instanceId), resourceType);
-        }
+    if (NODE.equals(resourceType)) {
+      resource = new NodeSubscriptionResource(new NodePK(resourceId, space, instanceId));
+    } else if (COMPONENT.equals(resourceType)) {
+      resource = new ComponentSubscriptionResource(instanceId);
+    } else {
+      if (UNKNOWN.equals(resourceType)) {
+        resource = null;
+      } else {
+        resource = new PKSubscriptionResource(new ResourceReference(resourceId, instanceId),
+            resourceType);
+      }
     }
     return resource;
   }

@@ -25,11 +25,8 @@ package org.silverpeas.core.webapi.subscribe;
 
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
-import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.subscription.service.NodeSubscription;
 import org.silverpeas.core.web.subscription.bean.AbstractSubscriptionBean;
-import org.silverpeas.core.web.subscription.bean.ComponentSubscriptionBean;
-import org.silverpeas.core.web.subscription.bean.NodeSubscriptionBean;
+import org.silverpeas.core.web.subscription.bean.SubscriptionBeanProvider;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -95,13 +92,9 @@ public class SubscriptionEntity {
     final AbstractSubscriptionBean bean;
     if (subscription instanceof AbstractSubscriptionBean) {
       bean = (AbstractSubscriptionBean) subscription;
-    } else if (subscription instanceof ComponentSubscription) {
-      bean = new ComponentSubscriptionBean(subscription, null, null);
-    } else if (subscription instanceof NodeSubscription) {
-      bean = new NodeSubscriptionBean(subscription, null, null, null);
     } else {
-      throw new IllegalArgumentException(
-          "Type of subscription not supported: " + subscription.getResource().getType());
+      bean = SubscriptionBeanProvider.getBySubscription(subscription, null).orElseThrow(
+          () -> new IllegalArgumentException("Type of subscription not supported: " + subscription.getResource().getType()));
     }
     return bean;
   }

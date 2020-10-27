@@ -37,6 +37,8 @@ import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.html.SupportedWebPlugins;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
+import org.silverpeas.core.subscription.SubscriptionResourceTypeRegistry;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -932,7 +934,10 @@ public class JavascriptPluginInclusion {
             "jQuery.subscription.parameters.confirmNotificationSendingOnUpdateEnabled = " +
                 NotificationManagerSettings.isSubscriptionNotificationConfirmationEnabled() + ";",
             jsCallback);
-    return getDynamicPopupJavascriptLoadContent(subscriptionLoad);
+    final JavascriptSettingProducer settingProducer = settingVariableName("SubscriptionSettings");
+    settingProducer.add("s.t", SubscriptionResourceTypeRegistry.get().streamAll()
+        .map(SubscriptionResourceType::getName), true);
+    return getDynamicPopupJavascriptLoadContent(settingProducer.produce() + subscriptionLoad);
   }
 
   /**

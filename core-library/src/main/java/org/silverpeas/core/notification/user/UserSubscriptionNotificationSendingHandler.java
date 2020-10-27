@@ -36,7 +36,7 @@ import java.io.Serializable;
 
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.util.StringUtil.*;
 
 /**
  * This class handles the feature that permits to skip the user subscription notification sending.
@@ -96,14 +96,26 @@ public class UserSubscriptionNotificationSendingHandler {
   }
 
   private static Confirmation getMergedConfirmations(final String parameter, final String header) {
-    Confirmation fromParameters =
-        JSONCodec.decode(defaultStringIfNotDefined(parameter, "{}"), Confirmation.class);
-    Confirmation fromHeaders =
-        JSONCodec.decode(defaultStringIfNotDefined(header, "{}"), Confirmation.class);
+    Confirmation fromParameters = decodeConfirmation(parameter);
+    Confirmation fromHeaders = decodeConfirmation(header);
     final Confirmation mergedConfirmation = new Confirmation();
     mergedConfirmation.skip = fromParameters.skip || fromHeaders.skip;
     mergedConfirmation.note = defaultStringIfNotDefined(fromParameters.note, fromHeaders.note);
     return mergedConfirmation;
+  }
+
+  private static Confirmation decodeConfirmation(final String value) {
+    final String decodedValue;
+    if (isDefined(value)) {
+      if (value.startsWith("{")) {
+        decodedValue = value;
+      } else {
+        decodedValue = new String(fromBase64(value));
+      }
+    } else {
+      decodedValue = "{}";
+    }
+    return JSONCodec.decode(decodedValue, Confirmation.class);
   }
 
   private static Confirmation getConfirmation() {
@@ -120,6 +132,7 @@ public class UserSubscriptionNotificationSendingHandler {
   @XmlAccessorType(XmlAccessType.PROPERTY)
   @JsonIgnoreProperties(ignoreUnknown = true)
   private static class Confirmation implements Serializable {
+    private static final long serialVersionUID = 3590333285305219765L;
 
     @XmlElement
     private boolean skip = false;

@@ -24,6 +24,7 @@
 package org.silverpeas.core.subscription.stub;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.DefaultOrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
@@ -31,10 +32,11 @@ import org.silverpeas.core.annotation.Service;
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
+import java.util.Optional;
 
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.silverpeas.core.subscription.AbstractCommonSubscriptionIntegrationTest.GROUPID_WITH_ONE_USER;
 import static org.silverpeas.core.subscription.AbstractCommonSubscriptionIntegrationTest.USERID_OF_GROUP_WITH_ONE_USER;
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
  * @author Yohann Chastagnier
@@ -52,6 +54,12 @@ public class StubbedOrganizationController extends DefaultOrganizationController
     componentInstLight.setLocalId(Integer.parseInt(componentId.replaceAll("[^0-9]", "")));
     componentInstLight.setName(componentId.replaceAll("[0-9]", ""));
     return componentInstLight;
+  }
+
+  @Override
+  public Optional<SilverpeasComponentInstance> getComponentInstance(
+      final String componentInstanceIdentifier) {
+    return Optional.of(getComponentInstLight(componentInstanceIdentifier));
   }
 
   @Override

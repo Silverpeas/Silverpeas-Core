@@ -35,7 +35,7 @@ import java.util.Collections;
  * @author Yohann Chastagnier
  */
 public class CalendarEventOccurrenceNotifyUserNotificationBuilder
-    extends AbstractCalendarEventUserNotificationBuilder<CalendarEventOccurrence> {
+    extends AbstractCalendarUserNotificationBuilder<CalendarEventOccurrence> {
 
   public CalendarEventOccurrenceNotifyUserNotificationBuilder(
       final CalendarEventOccurrence occurrence, final User user) {

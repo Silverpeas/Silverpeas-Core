@@ -26,32 +26,20 @@ package org.silverpeas.core.calendar.notification;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
-import org.silverpeas.core.calendar.CalendarComponent;
-import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.ExternalAttendee;
 import org.silverpeas.core.calendar.InternalAttendee;
-import org.silverpeas.core.calendar.notification.user.AbstractCalendarEventUserNotificationBuilder;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.notification.user.RemoveSenderRecipientBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static org.silverpeas.core.calendar.CalendarEventUtil.getDateWithOffset;
-import static org.silverpeas.core.util.DateUtil.getDateOutputFormat;
-import static org.silverpeas.core.util.DateUtil.getHourOutputFormat;
 
 /**
  * A builder of notifications to attendees in a calendar component to inform them about some
@@ -64,15 +52,11 @@ import static org.silverpeas.core.util.DateUtil.getHourOutputFormat;
  * default one.
  * @author mmoquillon
  */
-class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationBuilder<Contribution>
+class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationBuilder
     implements RemoveSenderRecipientBehavior {
 
-  private NotifAction notifCause;
-  private CalendarOperation operation = CalendarOperation.NONE;
-  private User sender;
   private List<Attendee> recipients;
   private List<Attendee> attendees;
-  private boolean immediately = false;
 
   /**
    * Constructs a new builder of user notification against the attendee(s) of a calendar component.
@@ -80,8 +64,12 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
    * @param action the action that was performed onto the event.
    */
   AttendeeNotificationBuilder(final Contribution calendarComponent, final NotifAction action) {
-    super(calendarComponent, null);
-    this.notifCause = action;
+    super(calendarComponent, action);
+  }
+
+  @Override
+  public AttendeeNotificationBuilder about(final CalendarOperation operation) {
+    return (AttendeeNotificationBuilder) super.about(operation);
   }
 
   /**
@@ -100,7 +88,7 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
    * @return itself.
    */
   public AttendeeNotificationBuilder about(CalendarOperation operation, List<Attendee> attendees) {
-    this.operation = operation;
+    about(operation);
     this.attendees = attendees;
     return this;
   }
@@ -125,6 +113,16 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
     return about(operation, Arrays.asList(attendees));
   }
 
+  @Override
+  public AttendeeNotificationBuilder from(final User sender) {
+    return (AttendeeNotificationBuilder) super.from(sender);
+  }
+
+  @Override
+  public AttendeeNotificationBuilder immediately() {
+    return (AttendeeNotificationBuilder) super.immediately();
+  }
+
   /**
    * Sets the recipients of the user notification to build.
    * @param attendees a list of recipients for the notification.
@@ -145,36 +143,12 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
     return this;
   }
 
-  /**
-   * Sets the sender of the user notification to build.
-   * @param sender the sender of the notification.
-   * @return itself.
-   */
-  public AttendeeNotificationBuilder from(final User sender) {
-    this.sender = sender;
-    return this;
-  }
-
-  /**
-   * The notification must be sent immediately whatever the wish of the user about it.
-   * @return itself.
-   */
-  public AttendeeNotificationBuilder immediately() {
-    this.immediately = true;
-    return this;
-  }
-
-  @Override
-  protected boolean isSendImmediately() {
-    return this.immediately;
-  }
-
   @Override
   protected String getBundleSubjectKey() {
-    if (this.operation == CalendarOperation.NONE) {
+    if (getOperation() == CalendarOperation.NONE) {
       return "subject.default";
-    } else if (this.operation == CalendarOperation.EVENT_UPDATE ||
-               this.operation == CalendarOperation.SINCE_EVENT_UPDATE) {
+    } else if (getOperation() == CalendarOperation.EVENT_UPDATE ||
+               getOperation() == CalendarOperation.SINCE_EVENT_UPDATE) {
       return "subject.eventUpdate";
     } else {
       return "subject.attendance";
@@ -184,40 +158,25 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
   @Override
   protected void performTemplateData(final Contribution contribution,
       final SilverpeasTemplate template) {
-    String language = ((LocalizedContribution) contribution).getLanguage();
-    template.setAttribute("contributionDate", dateOf(getResource(), language));
-    template.setAttribute("several", this.operation.isSeveralImplied());
-    template.setAttribute("attendees",
-        this.attendees.stream().map(Attendee::getFullName).collect(Collectors.toList()));
-    if (CalendarOperation.ATTENDEE_PARTICIPATION == this.operation ||
-        CalendarOperation.SINCE_ATTENDEE_PARTICIPATION == this.operation) {
-      Optional<Attendee> attendee =
-          this.attendees.stream().filter(a -> a.getId().equals(sender.getId())).findFirst();
-      attendee.ifPresent(a -> {
-        final String bundleKey =
-            "event.attendee.participation." + a.getParticipationStatus().name().toLowerCase();
-        template.setAttribute("participation", getBundle(language).getString(bundleKey));
-      });
+    super.performTemplateData(contribution, template);
+    if (this.attendees != null) {
+      final String language = ((LocalizedContribution) contribution).getLanguage();
+      template.setAttribute("attendees",
+          this.attendees.stream().map(Attendee::getFullName).collect(Collectors.toList()));
+      if (CalendarOperation.ATTENDEE_PARTICIPATION == getOperation() ||
+          CalendarOperation.SINCE_ATTENDEE_PARTICIPATION == getOperation()) {
+        Optional<Attendee> attendee = this.attendees.stream().filter(a -> a.getId().equals(getSender())).findFirst();
+        attendee.ifPresent(a -> {
+          final String bundleKey =
+              "event.attendee.participation." + a.getParticipationStatus().name().toLowerCase();
+          template.setAttribute("participation", getBundle(language).getString(bundleKey));
+        });
+      }
     }
   }
 
   @Override
-  protected String getTemplateFileName() {
-    return this.operation.getTemplateName();
-  }
-
-  @Override
-  protected String getSender() {
-    return sender.getId();
-  }
-
-  @Override
-  protected NotifAction getAction() {
-    return this.notifCause;
-  }
-
-  @Override
-  protected Collection<String> getUserIdsToNotify() {
+  public Collection<String> getUserIdsToNotify() {
     return this.recipients.stream()
         .filter(a -> a instanceof InternalAttendee)
         .map(Attendee::getId)
@@ -230,31 +189,6 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
         .filter(a -> a instanceof ExternalAttendee)
         .map(Attendee::getId)
         .collect(Collectors.toSet());
-  }
-
-  private String dateOf(final Object contribution, final String language) {
-    final CalendarComponent calendarComponent;
-    if (contribution instanceof CalendarEvent) {
-      calendarComponent = ((CalendarEvent) contribution).asCalendarComponent();
-    } else if (contribution instanceof CalendarEventOccurrence) {
-      calendarComponent = ((CalendarEventOccurrence) contribution).asCalendarComponent();
-    } else if (contribution instanceof CalendarComponent) {
-      calendarComponent = (CalendarComponent) contribution;
-    } else {
-      return null;
-    }
-
-    final Temporal startDate =
-        getDateWithOffset(calendarComponent, calendarComponent.getPeriod().getStartDate());
-    if (startDate instanceof LocalDate) {
-      return ((LocalDate) startDate)
-          .format(DateTimeFormatter.ofPattern(getDateOutputFormat(language).getPattern()));
-    } else {
-      return ((OffsetDateTime) startDate).format(DateTimeFormatter.ofPattern(
-          getDateOutputFormat(language).getPattern() + " " +
-              getHourOutputFormat(language).getPattern())) + " (" +
-          calendarComponent.getCalendar().getZoneId() + ")";
-    }
   }
 
   @Override

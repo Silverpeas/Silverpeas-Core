@@ -1376,9 +1376,28 @@ if (typeof window.sp === 'undefined') {
         }
         return level === 0 ? JSON.stringify(__value) : __value;
       };
+      /**
+       * @param dataToCompare is an Array containing objects which each one is supplying attributes
+       *     a and b. For each object, attribute a is compared to b to guess the equality.
+       * @returns {boolean} true if all comparison performed are equal, false otherwise.
+       */
+      this.areEachExistingValuesEqual = function(dataToCompare) {
+        if (Array.isArray(dataToCompare)) {
+          if (dataToCompare.length) {
+            for (let i = 0; i < dataToCompare.length; i++) {
+              const comparison = dataToCompare[i];
+              if (!this.areExistingValuesEqual(comparison.a, comparison.b)) {
+                return false;
+              }
+            }
+          }
+          return true;
+        }
+        return false;
+      };
       this.areExistingValuesEqual = function(a, b) {
-        var typeOfA = typeof a;
-        var typeOfB = typeof b;
+        const typeOfA = typeof a;
+        const typeOfB = typeof b;
         return typeOfA === typeOfB && this.normalizeExistingValuesOf(a) === this.normalizeExistingValuesOf(b);
       };
     },

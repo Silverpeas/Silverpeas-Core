@@ -62,12 +62,11 @@
 </c:otherwise>
 </c:choose>
 
-<html>
-  <head>
-    <view:looknfeel/>
+<view:sp-page>
+  <view:sp-head-part>
     <view:includePlugin name="pdc"/>
-  </head>
-  <body>
+  </view:sp-head-part>
+  <view:sp-body-part>
     <view:window>
     <view:frame>
         <form id="PdcSubscription" name="PdcSubscription" action="addSubscription" method="POST">
@@ -120,5 +119,5 @@
         $('#PdcSubscription').submit();
       }
     </script>
-  </body>
-</html>
+  </view:sp-body-part>
+</view:sp-page>

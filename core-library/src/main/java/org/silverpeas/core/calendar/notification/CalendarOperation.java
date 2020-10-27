@@ -36,6 +36,11 @@ public enum CalendarOperation {
   NONE(null, false),
 
   /**
+   * The properties of the event which have been created (excepted the attendees).
+   */
+  EVENT_CREATE(CalendarSilverpeasTemplateNames.TEMPLATE_EVENT_CREATED, false),
+
+  /**
    * The properties of the event have been updated (excepted the attendees).
    */
   EVENT_UPDATE(CalendarSilverpeasTemplateNames.TEMPLATE_EVENT_UPDATED, false),
