@@ -23,7 +23,7 @@
  */
 
 (function(){
-  function activateIDCards() {
+  window.activateIDCards = function() {
     whenSilverpeasEntirelyLoaded(function() {
       const promises = [];
       sp.element.querySelectorAll('.user-card')
