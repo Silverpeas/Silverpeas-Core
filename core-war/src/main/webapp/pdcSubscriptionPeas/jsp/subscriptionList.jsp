@@ -24,6 +24,7 @@
 
 --%>
 <%@ page import="org.silverpeas.core.subscription.SubscriptionResourceTypeRegistry" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.Tab" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -195,9 +196,11 @@ function deleteSubscription() {
 	TabbedPane tabbedPane = gef.getTabbedPane();
    SubscriptionResourceTypeRegistry.get().streamAll().forEach(t -> {
      final String subscriptionResourceTypeUrl = "ViewSubscriptionOfType?userId=" + userId + "&action=" + action + "&subResType=" + t.getName();
-     tabbedPane.addTab(sessionController.getSubscriptionResourceTypeLabel(t), subscriptionResourceTypeUrl, false);
+     Tab tab = tabbedPane.addTab(sessionController.getSubscriptionResourceTypeLabel(t), subscriptionResourceTypeUrl, false);
+     tab.setName(t.getName());
    });
-   tabbedPane.addTab(resource.getString("pdc"), "#", true);
+   Tab tabPDC = tabbedPane.addTab(resource.getString("pdc"), "#", true);
+   tabPDC.setName("PDC");
 
       if (!isReadOnly) {
           operationPane.addOperationOfCreation(iconAdd , resource.getString("AddSC"),m_context + "/RpdcSubscriptionPeas/jsp/PdcSubscription");

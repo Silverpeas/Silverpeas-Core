@@ -89,7 +89,7 @@
   </view:sp-head-part>
   <view:sp-body-part>
     <view:browseBar componentId="${rootPath}"/>
-    <c:if test="${not isReadOnly}">
+    <c:if test="${not isReadOnly && not empty subscriptions}">
       <view:operationPane>
         <view:operation icon="${deleteIconUrl}" action="javascript:confirmDelete()" altText="${deleteActionLabel}"/>
       </view:operationPane>
@@ -104,10 +104,10 @@
             <c:param name="action" value="${action}"/>
           </c:url>
           <view:tab label="${controller.getSubscriptionResourceTypeLabel(subscriptionResourceType)}"
-                    action="${selectedType ? 'javascript:void(0)' : tabUrl}" selected="${selectedType}"/>
+                    action="${selectedType ? 'javascript:void(0)' : tabUrl}" selected="${selectedType}" name="${subscriptionResourceType.name}"/>
         </c:forEach>
         <view:tab label="${pdcTypeLabel}"
-                  action="${isReadOnly ? 'showUserSubscriptions' : 'ViewSubscriptionTaxonomy'}?userId=${userId}" selected="false"/>
+                  action="${isReadOnly ? 'showUserSubscriptions' : 'ViewSubscriptionTaxonomy'}?userId=${userId}" selected="false" name="PDC"/>
       </view:tabs>
       <view:frame>
         <form name="readForm" action="DeleteSubscriptionOfType" method="post">
