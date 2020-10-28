@@ -203,7 +203,7 @@
         }
       });
 
-      $("#searchField").keypress(function(e) {
+      $("#indexAndSearch").keypress(function(e) {
         if (e.which == 13) {
           e.preventDefault();
           search();
@@ -262,7 +262,7 @@
 <view:window>
   <view:frame>
     <div id="indexAndSearch">
-      <form name="search" action="searchByKey" method="post" enctype="multipart/form-data">
+      <form name="search" action="searchByKey" method="get">
       <div id="search">
         <c:choose>
           <c:when test="${not quickUserSelectionEnabled}">
