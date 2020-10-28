@@ -28,6 +28,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.Zip64Mode;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -81,6 +82,8 @@ public class ZipUtil {
       zos.setFallbackToUTF8(true);
       zos.setCreateUnicodeExtraFields(NOT_ENCODEABLE);
       zos.setEncoding(UTF_8.name());
+      zos.setUseZip64(Zip64Mode.Always);
+
       String entryName = FilenameUtils.getName(filePath);
       entryName = entryName.replace(File.separatorChar, '/');
       zos.putArchiveEntry(new ZipArchiveEntry(entryName));
@@ -117,6 +120,8 @@ public class ZipUtil {
       zos.setFallbackToUTF8(true);
       zos.setCreateUnicodeExtraFields(NOT_ENCODEABLE);
       zos.setEncoding(UTF_8.name());
+      zos.setUseZip64(Zip64Mode.Always);
+
       Collection<File> folderContent = FileUtils.listFiles(folderToZip, null, true);
       for (File file : folderContent) {
         String entryName = file.getPath().substring(folderToZip.getParent().length() + 1);
@@ -124,7 +129,13 @@ public class ZipUtil {
         zos.putArchiveEntry(new ZipArchiveEntry(entryName));
         try (InputStream in = new FileInputStream(file)) {
           IOUtils.copy(in, zos);
+          SilverLogger.getLogger(ZipUtil.class).info("File"  + file);
+          SilverLogger.getLogger(ZipUtil.class).info("Copy file OK");
           zos.closeArchiveEntry();
+        }
+        catch (Exception e ){
+          SilverLogger.getLogger(ZipUtil.class)
+              .error("Cannot compress archive {0} "  + entryName, e);
         }
       }
     }
@@ -148,6 +159,7 @@ public class ZipUtil {
       zos.setFallbackToUTF8(true);
       zos.setCreateUnicodeExtraFields(NOT_ENCODEABLE);
       zos.setEncoding(UTF_8.name());
+      zos.setUseZip64(Zip64Mode.Always);
       zos.putArchiveEntry(new ZipArchiveEntry(filePathNameToCreate));
       IOUtils.copy(inputStream, zos);
       zos.closeArchiveEntry();
