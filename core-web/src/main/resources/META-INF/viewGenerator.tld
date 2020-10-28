@@ -914,7 +914,7 @@
       <name>subscriptionResourceType</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
-      <type>org.silverpeas.core.subscription.constant.SubscriptionResourceType</type>
+      <type>org.silverpeas.core.subscription.SubscriptionResourceType</type>
     </attribute>
     <attribute>
       <description>The identifier of the resource on which the subscription is registered</description>

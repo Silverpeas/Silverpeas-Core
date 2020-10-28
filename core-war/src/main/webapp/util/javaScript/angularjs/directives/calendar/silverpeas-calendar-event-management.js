@@ -61,9 +61,9 @@
               return false;
             }.bind(this);
             this.displayOriginalStartDate = function() {
-              var formattedDate = '';
+              let formattedDate = '';
               if (this.occurrence) {
-                var originalStartDate = sp.moment.atZoneIdSameInstant(this.occurrence.originalStartDate,
+                const originalStartDate = sp.moment.atZoneIdSameInstant(this.occurrence.originalStartDate,
                     this.occurrence.calendarZoneId);
                 formattedDate = sp.moment.displayAsDate(originalStartDate);
               }
@@ -79,6 +79,7 @@
               add : function(eventToAdd) {
                 this.occurrence = undefined;
                 this.previousOccurrence = undefined;
+                spProgressMessage.show();
                 CalendarService.createEvent(eventToAdd).then(function(createdEvent) {
                   sp.editor.wysiwyg.lastBackupManager.clear();
                   this.onCreated({event : createdEvent});
@@ -90,17 +91,18 @@
                * service methods at the end when all is validated by the user.
                */
               modifyOccurrence : function(occurrenceToUpdate) {
-                var __confirmed;
+                let __confirmed;
                 notyReset();
                 this.occurrence = occurrenceToUpdate;
                 CalendarService.getEventOccurrenceByUri(occurrenceToUpdate.occurrenceUri).then(function(previousOccurrence) {
                   this.previousOccurrence = previousOccurrence;
+                  this.periodUpdated = occurrenceToUpdate.hasBeenModifiedOnPeriod(previousOccurrence);
                   this.updateMethodAtEventLevel = this.isRecurrence() && occurrenceToUpdate.hasBeenModifiedAtEventLevel(previousOccurrence);
                   this.updateMethodType = this.updateMethodAtEventLevel
                       ? this.isFirstEventOccurrence() ? 'ALL' : 'FROM'
                       : 'UNIQUE';
 
-                  var _previousDataOnNoUpdate = function() {
+                  const _previousDataOnNoUpdate = function() {
                     if (typeof this.occurrence.revertToPreviousState === 'function') {
                       this.occurrence.revertToPreviousState();
                     }
@@ -109,16 +111,34 @@
                   // Handles the call of the update method.
                   // This method must be called only after that there is no more confirmation to ask
                   // to the user.
-                  var _updateProcess = function() {
-                    var updateMethodType = this.isRecurrence() ? this.updateMethodType : undefined;
-                    CalendarService.updateEventOccurrence(this.occurrence, updateMethodType).then(
-                        function(modifiedEvents) {
-                          sp.editor.wysiwyg.lastBackupManager.clear();
-                          this.onOccurrenceUpdated({events : modifiedEvents});
-                        }.bind(this),
-                        function() {
-                          _previousDataOnNoUpdate();
-                        }.bind(this));
+                  const _updateProcess = function() {
+                    const __process = function(subscriptionParams) {
+                      spProgressMessage.show();
+                      const updateMethodType = this.isRecurrence() ? this.updateMethodType : undefined;
+                      CalendarService.updateEventOccurrence(this.occurrence, updateMethodType, subscriptionParams).then(
+                          function(modifiedEvents) {
+                            sp.editor.wysiwyg.lastBackupManager.clear();
+                            this.onOccurrenceUpdated({events : modifiedEvents});
+                          }.bind(this), function() {
+                            _previousDataOnNoUpdate();
+                          }.bind(this));
+                    }.bind(this);
+                    if (!this.periodUpdated && sp.promise.isOne(window.SUBSCRIPTION_PROMISE)) {
+                      SUBSCRIPTION_PROMISE.then(function() {
+                        jQuery.subscription.confirmNotificationSendingOnUpdate({
+                          subscription : {
+                            componentInstanceId : this.occurrence.componentInstanceId(),
+                            type : jQuery.subscription.subscriptionType.CALENDAR,
+                            resourceId : this.occurrence.calendarId
+                          },
+                          callback : function(userResponse) {
+                            __process(userResponse.applyOnAjaxOptions().headers);
+                          }
+                        });
+                      }.bind(this));
+                    } else {
+                      __process();
+                    }
                   }.bind(this);
 
                   if (this.isRecurrence()) {
@@ -156,8 +176,9 @@
                 // Handles the call of the delete method.
                 // This method must be called only after that there is no more confirmation to ask
                 // to the user.
-                var _deleteProcess = function() {
-                  var deleteMethodType = this.isRecurrence() ? this.deleteMethodType : undefined;
+                const _deleteProcess = function() {
+                  spProgressMessage.show();
+                  const deleteMethodType = this.isRecurrence() ? this.deleteMethodType : undefined;
                   CalendarService.removeEventOccurrence(this.occurrence, deleteMethodType).then(
                       function(modifiedEvent) {
                         sp.editor.wysiwyg.lastBackupManager.clear();
@@ -184,8 +205,8 @@
                 // Handles the call of the attendee answer method.
                 // This method must be called only after that there is no more confirmation to ask
                 // to the user.
-                var _attendeeAnswerProcess = function() {
-                  var answerMethodType = this.isRecurrence() ? this.answerMethodType : undefined;
+                const _attendeeAnswerProcess = function() {
+                  const answerMethodType = this.isRecurrence() ? this.answerMethodType : undefined;
                   CalendarService.updateEventOccurrenceAttendeeParticipation(this.occurrence,
                       attendee, answerMethodType).then(function(modifiedEvent) {
                     this.onEventAttendeeParticipationUpdated({

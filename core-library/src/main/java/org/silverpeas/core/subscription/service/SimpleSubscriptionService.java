@@ -24,7 +24,11 @@
 package org.silverpeas.core.subscription.service;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionService;
@@ -32,10 +36,6 @@ import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriptionMethod;
 import org.silverpeas.core.subscription.util.SubscriptionList;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -52,6 +52,7 @@ import java.util.Collections;
 @Service
 @Named("subscriptionService")
 public class SimpleSubscriptionService implements SubscriptionService, ComponentInstanceDeletion {
+  private static final long serialVersionUID = 7299411620583862933L;
 
   @Inject
   private SubscriptionDao subscriptionDao;
@@ -104,7 +105,6 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
 
   @Override
   public void unsubscribe(final Collection<? extends Subscription> subscriptions) {
-
     Connection con = null;
     try {
       con = getConnection();

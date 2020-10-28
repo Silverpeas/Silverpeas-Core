@@ -30,6 +30,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.UserNotification;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasStringTemplateUtil;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -154,13 +155,19 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
     NotificationResourceData resourceData;
     for (final String curLanguage : DisplayI18NHelper.getLanguages()) {
       //set link url and link label
-      final String linkUrl = getResourceURL(resource);
+      final String linkUrl;
       String linkLabel = "";
-      if (getContributionAccessLinkLabelBundleKey() != null) {
-        linkLabel = getBundle(curLanguage).getString(getContributionAccessLinkLabelBundleKey());
+      if (getAction() == NotifAction.DELETE) {
+        getNotificationMetaData().setLink(Link.EMPTY_LINK, curLanguage);
+        linkUrl = null;
+      } else {
+        linkUrl = getResourceURL(resource);
+        if (getContributionAccessLinkLabelBundleKey() != null) {
+          linkLabel = getBundle(curLanguage).getString(getContributionAccessLinkLabelBundleKey());
+        }
+        final Link link = new Link(linkUrl, linkLabel);
+        getNotificationMetaData().setLink(link, curLanguage);
       }
-      final Link link = new Link(linkUrl, linkLabel);
-      getNotificationMetaData().setLink(link, curLanguage);
 
       template = createTemplate();
       template.setAttribute("silverpeasURL", linkUrl);

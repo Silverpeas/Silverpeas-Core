@@ -38,6 +38,7 @@ import javax.validation.constraints.NotNull;
  * @author mmoquillon
  */
 public class AttendeeLifeCycleEvent extends AbstractResourceEvent<Attendee> {
+  private static final long serialVersionUID = -6171327955296591629L;
 
   private final LifeCycleEventSubType subType;
   private Contribution eventOrOccurrence;

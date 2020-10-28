@@ -23,17 +23,19 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
+
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 
 /**
  * This TAG can be called into a {@link ButtonTag}.<br>
@@ -43,7 +45,7 @@ import java.io.IOException;
 public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
   private static final long serialVersionUID = 6158988849428896473L;
 
-  private SubscriptionResourceType subscriptionResourceType = SubscriptionResourceType.COMPONENT;
+  private SubscriptionResourceType subscriptionResourceType = COMPONENT;
   private String subscriptionResourceId = null;
   private String jsValidationCallbackMethodName;
 
@@ -141,9 +143,9 @@ public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
     StringBuilder sb = new StringBuilder();
     sb.append("jQuery.subscription.confirmNotificationSendingOnUpdate({subscription:{");
     sb.append("  componentInstanceId:'").append(componentId).append("'");
-    if (SubscriptionResourceType.COMPONENT != getSubscriptionResourceType()) {
-      sb.append("  ,type:").append("$.subscription.subscriptionType.")
-          .append(getSubscriptionResourceType());
+    final SubscriptionResourceType type = getSubscriptionResourceType();
+    if (COMPONENT != type) {
+      sb.append("  ,type:").append("$.subscription.subscriptionType.").append(type.getName());
       sb.append("  ,resourceId:'").append(getSubscriptionResourceId()).append("'");
     }
     sb.append("  },callback: function() {");

@@ -22,6 +22,26 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<c:set var="userLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<fmt:setLocale value="${userLanguage}"/>
+<view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle"/>
+
+<fmt:message var="showLabel" key="calendar.action.show"/>
+<fmt:message var="hideLabel" key="calendar.action.hide"/>
+<fmt:message var="removeLabel" key="calendar.action.remove"/>
+<fmt:message var="infoLabel" key="calendar.action.info"/>
+<fmt:message var="synchronizeLabel" key="calendar.action.synchronize"/>
+<fmt:message var="exportLabel" key="GML.export"/>
+<fmt:message var="modifyLabel" key="GML.modify"/>
+<fmt:message var="deleteLabel" key="GML.delete"/>
+<fmt:message var="actionLabelManageSubscriptions" key="GML.manageSubscriptions"/>
+
 <div class="silverpeas-calendar-list-item" ng-class="{'unselected':$ctrl.calendar.notVisible}">
   <silverpeas-color-picker color="$ctrl.calendar.color"
                            potential-colors="$ctrl.calendarPotentialColors"
@@ -36,25 +56,32 @@
         <a href="#" ng-click="$ctrl.view({calendar:$ctrl.calendar})">{{$ctrl.calendar.title}}</a>
       </div>
     </div>
-    <a class="check-visibility" href="#" ng-click="$ctrl.onCalendarVisibilityToggle({calendar:$ctrl.calendar})" title="{{$ctrl.calendar.notVisible ? 'Afficher' : 'Cacher'}}">{{$ctrl.calendar.notVisible ? 'Afficher' : 'Cacher'}}</a> 
+    <a class="check-visibility" href="#" ng-click="$ctrl.onCalendarVisibilityToggle({calendar:$ctrl.calendar})" title="{{$ctrl.calendar.notVisible ? '${silfn:escapeJs(showLabel)}' : '${silfn:escapeJs(hideLabel)}'}}">{{$ctrl.calendar.notVisible ? '${silfn:escapeJs(showLabel)}' : '${silfn:escapeJs(hideLabel)}'}}</a>
     <a class="show-menu"></a>
-    <a class="remove-calendar" href="#" ng-click="$ctrl.remove({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.canBeRemoved" title="Retirer">Retirer</a>
+    <a class="remove-calendar" href="#" ng-click="$ctrl.remove({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.canBeRemoved" title="${removeLabel}">${removeLabel}</a>
     <div class="silverpeas-calendar-list-item-menu" style="display: none">
       <ul>
         <li ng-if="!$ctrl.calendar.canBeRemoved">
-          <a href="#" ng-click="$ctrl.view({calendar:$ctrl.calendar})">Info</a>
+          <a href="#" ng-click="$ctrl.view({calendar:$ctrl.calendar})">${infoLabel}</a>
         </li>
         <li ng-if="(!$ctrl.calendar.userPersonal || $ctrl.calendar.canBeDeleted) && !$ctrl.calendar.canBeRemoved">
-          <a href="{{$ctrl.calendar.uri}}/export/ical">Exporter</a>
+          <a href="{{$ctrl.calendar.uri}}/export/ical">${exportLabel}</a>
         </li>
         <li ng-if="$ctrl.calendar.isSynchronized">
-          <a href="#" ng-click="$ctrl.synchronize({calendar: $ctrl.calendar})">Synchroniser</a>
+          <a href="#" ng-click="$ctrl.synchronize({calendar: $ctrl.calendar})">${synchronizeLabel}</a>
         </li>
         <li ng-if="$ctrl.calendar.canBeModified">
-          <a href="#" ng-click="$ctrl.modify({calendar: $ctrl.calendar})">Modifier</a>
+          <a href="#" ng-click="$ctrl.modify({calendar: $ctrl.calendar})">${modifyLabel}</a>
         </li>
         <li ng-if="$ctrl.calendar.canBeDeleted">
-          <a href="#" ng-click="$ctrl.delete({calendar: $ctrl.calendar})">Supprimer</a>
+          <a href="#" ng-click="$ctrl.delete({calendar: $ctrl.calendar})">${deleteLabel}</a>
+        </li>
+        <li ng-if="$ctrl.spSubManager" class="separator"></li>
+        <li ng-if="$ctrl.spSubManager && $ctrl.calendar.isCurrentUserAdmin()">
+          <a ng-href="calendars/{{$ctrl.calendar.id}}/subscriptions/manage">${actionLabelManageSubscriptions}</a>
+        </li>
+        <li ng-if="$ctrl.spSubManager">
+          <a href="#" ng-click="$ctrl.spSubManager.switchUserSubscription()"><span id="subscriptionMenuLabel{{$ctrl.calendar.id}}"></span></a>
         </li>
       </ul>
     </div>

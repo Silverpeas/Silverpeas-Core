@@ -29,9 +29,11 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.calendar.notification.CalendarLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.calendar.repository.CalendarRepository;
 import org.silverpeas.core.importexport.ImportException;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
@@ -371,6 +373,8 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
       this.clear();
       CalendarRepository calendarRepository = CalendarRepository.get();
       calendarRepository.delete(this);
+      // notify about the deletion
+      notify(ResourceEvent.Type.DELETION, this);
       return null;
     });
   }
@@ -554,5 +558,10 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
           Optional.ofNullable(SilverpeasRole.getHighestFrom(roles))
               .filter(r -> r.isGreaterThanOrEquals(admin)).isPresent();
     });
+  }
+
+  private void notify(ResourceEvent.Type type, Calendar... events) {
+    CalendarLifeCycleEventNotifier notifier = CalendarLifeCycleEventNotifier.get();
+    notifier.notifyEventOn(type, events);
   }
 }

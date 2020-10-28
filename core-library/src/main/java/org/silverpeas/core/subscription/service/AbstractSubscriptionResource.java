@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.subscription.service;
 
-import org.silverpeas.core.subscription.SubscriptionResource;
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.WAPrimaryKey;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.subscription.SubscriptionResource;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * User: Yohann Chastagnier
@@ -86,6 +86,7 @@ public abstract class AbstractSubscriptionResource<T extends WAPrimaryKey>
     return pk;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public boolean equals(final Object obj) {
     if (this == obj) {
@@ -95,7 +96,7 @@ public abstract class AbstractSubscriptionResource<T extends WAPrimaryKey>
       return false;
     }
 
-    AbstractSubscriptionResource that = (AbstractSubscriptionResource) obj;
+    AbstractSubscriptionResource<T> that = (AbstractSubscriptionResource<T>) obj;
 
     return new EqualsBuilder().append(id, that.id).append(type, that.type).append(pk, that.pk)
         .isEquals();

@@ -86,7 +86,6 @@ public abstract class AbstractContributionTemplateUserNotificationBuilder<C exte
       final SilverpeasTemplate template) {
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   protected final void performNotificationResource(final String language, final C contribution,
       final NotificationResourceData notificationResourceData) {

@@ -23,7 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.pdc.subscription.model.PdcSubscription" %>
+<%@ page import="org.silverpeas.core.subscription.SubscriptionResourceTypeRegistry" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.Tab" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -141,10 +142,8 @@
     }
 
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<view:looknfeel withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
 <script type="text/javascript">
 function newSubscription() {
@@ -186,8 +185,8 @@ function deleteSubscription() {
   }
 }
 </script>
-</head>
-<body class="txtlist">
+</view:sp-head-part>
+<view:sp-body-part cssClass="txtlist">
 <form name="subscriptionList" action="<%=action%>" method="post">
 <input type="hidden" name="mode"/>
 
@@ -195,10 +194,13 @@ function deleteSubscription() {
     browseBar.setComponentName(path);
 
 	TabbedPane tabbedPane = gef.getTabbedPane();
-	tabbedPane.addTab(resource.getString("thematique"), "ViewSubscriptionTheme?userId="+userId+"&action="+action, false);
-  tabbedPane.addTab(resource.getString("application"),
-       "ViewSubscriptionComponent?userId=" + userId + "&action=" + action, false);
-   tabbedPane.addTab(resource.getString("pdc"), "#", true);
+   SubscriptionResourceTypeRegistry.get().streamAll().forEach(t -> {
+     final String subscriptionResourceTypeUrl = "ViewSubscriptionOfType?userId=" + userId + "&action=" + action + "&subResType=" + t.getName();
+     Tab tab = tabbedPane.addTab(sessionController.getSubscriptionResourceTypeLabel(t), subscriptionResourceTypeUrl, false);
+     tab.setName(t.getName());
+   });
+   Tab tabPDC = tabbedPane.addTab(resource.getString("pdc"), "#", true);
+   tabPDC.setName("PDC");
 
       if (!isReadOnly) {
           operationPane.addOperationOfCreation(iconAdd , resource.getString("AddSC"),m_context + "/RpdcSubscriptionPeas/jsp/PdcSubscription");
@@ -250,5 +252,5 @@ function deleteSubscription() {
   out.println(window.printAfter());
  %>
 </form>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

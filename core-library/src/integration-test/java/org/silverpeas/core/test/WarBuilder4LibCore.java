@@ -504,6 +504,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(ContributionWithVisibility.class, ContributionVisibility.class,
           DefaultContributionVisibility.class);
     }
+    if (!contains(ResourcePath.class)) {
+      addClasses(ResourcePath.class);
+    }
     addPackages(true, "org.silverpeas.core.node");
     addPackages(true, "org.silverpeas.core.contribution.publication.service");
     addPackages(true, "org.silverpeas.core.contribution.publication.model");

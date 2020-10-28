@@ -40,7 +40,8 @@
 
 <c:set var="currentUserId" value="${sessionScope['SilverSessionController'].userId}"/>
 <c:set var="context" value="${requestScope.context}"/>
-<c:set var="isNodeResource" value="${requestScope.context.resource.type.name eq 'NODE'}"/>
+<c:set var="subscriptionResourceType" value="${fn:toLowerCase(requestScope.context.resource.type.name)}"/>
+<c:set var="isOnResource" value="${not (subscriptionResourceType eq 'component')}"/>
 <c:set var="instanceId" value="${context.resource.instanceId}"/>
 <c:set var="resourceId" value="${context.resource.id}"/>
 
@@ -152,8 +153,8 @@
 
         // Subscriptions
         var url = '<c:url value="/services/subscriptions/${instanceId}"/>';
-        <c:if test="${isNodeResource}">
-        url += '/${resourceId}';
+        <c:if test="${isOnResource}">
+        url += '/${subscriptionResourceType}/${resourceId}';
         </c:if>
         $.ajax({
           url : url,
@@ -170,8 +171,8 @@
 
         // Unscubscribe start URL
         context.unsubscribeStartUrl = '<c:url value="/services/unsubscribe/${instanceId}" />';
-        <c:if test="${isNodeResource}">
-        context.unsubscribeStartUrl += '/topic/${resourceId}';
+        <c:if test="${isOnResource}">
+        context.unsubscribeStartUrl += '/${subscriptionResourceType}/${resourceId}';
         </c:if>
       }
 

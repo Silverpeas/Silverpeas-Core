@@ -43,7 +43,7 @@ import java.util.Collections;
  * lifecycle events.
  * @author mmoquillon
  */
-public class CalendarComponentAttendeeNotifier extends AttendeeNotifier<AttendeeLifeCycleEvent> {
+public class CalendarComponentNotifier extends AbstractNotifier<AttendeeLifeCycleEvent> {
 
   /**
    * An attendee has been removed. The attendee is informed about it (he shouldn't be the user
@@ -75,10 +75,9 @@ public class CalendarComponentAttendeeNotifier extends AttendeeNotifier<Attendee
    * it.</li>
    * </ul>
    * @param event the lifecycle event on the update of a resource.
-   * @throws Exception if an error occurs while notifying the attendee.
    */
   @Override
-  public void onUpdate(final AttendeeLifeCycleEvent event) throws Exception {
+  public void onUpdate(final AttendeeLifeCycleEvent event) {
     Attendee before = event.getTransition().getBefore();
     Attendee after = event.getTransition().getAfter();
     if (before.getPresenceStatus() != after.getPresenceStatus()) {

@@ -23,24 +23,23 @@
  */
 package org.silverpeas.core.subscription.service;
 
-import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.subscription.AbstractCommonSubscriptionIntegrationTest;
-import org.silverpeas.core.subscription.Subscription;
-import org.silverpeas.core.subscription.SubscriptionResource;
-import org.silverpeas.core.subscription.SubscriptionSubscriber;
-import org.silverpeas.core.subscription.constant.SubscriberType;
-import org.silverpeas.core.subscription.constant.SubscriptionMethod;
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.hamcrest.Matchers;
-import org.silverpeas.core.node.model.NodePK;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.subscription.AbstractCommonSubscriptionIntegrationTest;
+import org.silverpeas.core.subscription.Subscription;
+import org.silverpeas.core.subscription.SubscriptionResource;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.subscription.constant.SubscriptionMethod;
+import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 
 import java.sql.Connection;
 import java.util.Arrays;
@@ -49,6 +48,8 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.NODE;
 import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 
 /**
@@ -70,13 +71,17 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
 
   private Connection connection;
 
+  @Override
   @Before
   public void setup() throws Exception{
+    super.setup();
     connection = getSafeConnection();
   }
 
+  @Override
   @After
   public void clear() throws Exception{
+    super.clear();
     connection.close();
   }
 
@@ -129,12 +134,12 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
   public void testGetSubscriptionsByPKResource() throws Exception {
     ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
     SubscriptionResource resource =
-        PKSubscriptionResource.from(pk, SubscriptionResourceType.FORUM_MESSAGE);
+        PKSubscriptionResource.from(pk, FORUM_MESSAGE);
     Collection<Subscription> subscriptions = subscriptionDao.getSubscriptionsByResource(
         getConnection(), resource, null);
     assertThat(subscriptions, hasSize(0));
 
-    resource = PKSubscriptionResource.from(pk, SubscriptionResourceType.FORUM);
+    resource = PKSubscriptionResource.from(pk, FORUM);
     subscriptions = subscriptionDao.getSubscriptionsByResource(getConnection(), resource, null);
     assertThat(subscriptions, hasSize(1));
   }
@@ -175,7 +180,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getSubscriber().getId(), is("100"));
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.USER));
     assertThat(subscription.getResource().getId(), is("26"));
-    assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.NODE));
+    assertThat(subscription.getResource().getType(), is(NODE));
     assertThat(subscription.getResource().getPK(), is((WAPrimaryKey) nodePk));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.SELF_CREATION));
     assertThat(subscription.getCreatorId(), is("100"));
@@ -198,7 +203,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getSubscriber().getId(), is("100"));
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.USER));
     assertThat(subscription.getResource().getId(), is("26"));
-    assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.NODE));
+    assertThat(subscription.getResource().getType(), is(NODE));
     assertThat(subscription.getResource().getPK(), is((WAPrimaryKey) nodePk));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.SELF_CREATION));
     assertThat(subscription.getCreatorId(), is("100"));
@@ -220,7 +225,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getSubscriber().getId(), is("100"));
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.USER));
     assertThat(subscription.getResource().getId(), is("26"));
-    assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.NODE));
+    assertThat(subscription.getResource().getType(), is(NODE));
     assertThat(subscription.getResource().getPK(), is((WAPrimaryKey) nodePk));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.FORCED));
     assertThat(subscription.getCreatorId(), is("200"));
@@ -242,7 +247,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getSubscriber().getId(), is("100"));
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.GROUP));
     assertThat(subscription.getResource().getId(), is("26"));
-    assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.NODE));
+    assertThat(subscription.getResource().getType(), is(NODE));
     assertThat(subscription.getResource().getPK(), is((WAPrimaryKey) nodePk));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.FORCED));
     assertThat(subscription.getCreatorId(), is("100"));
@@ -263,7 +268,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getSubscriber().getId(), is("100"));
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.GROUP));
     assertThat(subscription.getResource().getId(), is("26"));
-    assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.NODE));
+    assertThat(subscription.getResource().getType(), is(NODE));
     assertThat(subscription.getResource().getPK(), is((WAPrimaryKey) nodePk));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.FORCED));
     assertThat(subscription.getCreatorId(), is("200"));
@@ -282,7 +287,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getSubscriber().getId(), is("100"));
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.USER));
     assertThat(subscription.getResource().getId(), is("0"));
-    assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.COMPONENT));
+    assertThat(subscription.getResource().getType(), is(COMPONENT));
     assertThat(subscription.getResource().getInstanceId(), is(INSTANCE_ID));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.SELF_CREATION));
     assertThat(subscription.getCreatorId(), is("100"));
@@ -303,7 +308,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getSubscriber().getId(), is("100"));
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.USER));
     assertThat(subscription.getResource().getId(), is("0"));
-    assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.COMPONENT));
+    assertThat(subscription.getResource().getType(), is(COMPONENT));
     assertThat(subscription.getResource().getInstanceId(), is(INSTANCE_ID));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.SELF_CREATION));
     assertThat(subscription.getCreatorId(), is("100"));
@@ -323,7 +328,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getSubscriber().getId(), is("100"));
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.USER));
     assertThat(subscription.getResource().getId(), is("0"));
-    assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.COMPONENT));
+    assertThat(subscription.getResource().getType(), is(COMPONENT));
     assertThat(subscription.getResource().getInstanceId(), is(INSTANCE_ID));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.FORCED));
     assertThat(subscription.getCreatorId(), is("200"));
@@ -343,7 +348,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getSubscriber().getId(), is("100"));
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.GROUP));
     assertThat(subscription.getResource().getId(), is("0"));
-    assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.COMPONENT));
+    assertThat(subscription.getResource().getType(), is(COMPONENT));
     assertThat(subscription.getResource().getInstanceId(), is(INSTANCE_ID));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.FORCED));
     assertThat(subscription.getCreatorId(), is("100"));
@@ -362,7 +367,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscription.getSubscriber().getId(), is("100"));
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.GROUP));
     assertThat(subscription.getResource().getId(), is("0"));
-    assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.COMPONENT));
+    assertThat(subscription.getResource().getType(), is(COMPONENT));
     assertThat(subscription.getResource().getInstanceId(), is(INSTANCE_ID));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.FORCED));
     assertThat(subscription.getCreatorId(), is("200"));
@@ -378,12 +383,12 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
     pk.setSpace("100");
     Subscription subscription =
-        new PKSubscription("200", PKSubscriptionResource.from(pk, SubscriptionResourceType.FORUM));
+        new PKSubscription("200", PKSubscriptionResource.from(pk, FORUM));
     assertAddSubscription(subscription);
     assertThat(subscription.getSubscriber().getId(), is("200"));
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.USER));
     assertThat(subscription.getResource().getId(), is("26"));
-    assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.FORUM));
+    assertThat(subscription.getResource().getType(), is(FORUM));
     assertThat(subscription.getResource().getInstanceId(), is(FORUM_INSTANCE_ID));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.SELF_CREATION));
     assertThat(subscription.getCreatorId(), is("200"));
@@ -537,7 +542,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
     String userId = "126";
     Subscription subscription =
-        new PKSubscription(userId, new PKSubscriptionResource(pk, SubscriptionResourceType.FORUM));
+        new PKSubscription(userId, new PKSubscriptionResource(pk, FORUM));
     assertRemoveSubscription(subscription, 1);
   }
 
@@ -654,12 +659,12 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
     assertThat(subscriptionDao.
         existsSubscription(getConnection(),
             new PKSubscription(UserSubscriptionSubscriber.from("126"),
-                new PKSubscriptionResource(pk, SubscriptionResourceType.FORUM), "999")), is(false));
+                new PKSubscriptionResource(pk, FORUM), "999")), is(false));
 
     // PK - User 126 - Self creation method
     assertThat(subscriptionDao.
         existsSubscription(getConnection(), new PKSubscription("126",
-            new PKSubscriptionResource(pk, SubscriptionResourceType.FORUM))), is(true));
+            new PKSubscriptionResource(pk, FORUM))), is(true));
   }
 
   /**
@@ -761,11 +766,11 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
   public void testGetSubscribersForPKResource() throws Exception {
     ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
     Collection<SubscriptionSubscriber> result = subscriptionDao.getSubscribers(getConnection(),
-        PKSubscriptionResource.from(pk, SubscriptionResourceType.FORUM_MESSAGE), null);
+        PKSubscriptionResource.from(pk, FORUM_MESSAGE), null);
     assertThat(result, hasSize(0));
 
     result = subscriptionDao.getSubscribers(getConnection(),
-        PKSubscriptionResource.from(pk, SubscriptionResourceType.FORUM), null);
+        PKSubscriptionResource.from(pk, FORUM), null);
     assertThat(result, hasSize(1));
     assertThat(result, Matchers.hasItem(UserSubscriptionSubscriber.from("126")));
   }

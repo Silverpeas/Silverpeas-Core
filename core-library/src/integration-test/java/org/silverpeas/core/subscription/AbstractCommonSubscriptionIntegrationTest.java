@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.subscription;
 
-import org.silverpeas.core.subscription.constant.SubscriberType;
-import org.silverpeas.core.subscription.service.DefaultResourceSubscriptionService;
-import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
+import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.subscription.service.DefaultResourceSubscriptionService;
+import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 import org.silverpeas.core.util.ServiceProvider;
@@ -51,6 +51,40 @@ public abstract class AbstractCommonSubscriptionIntegrationTest {
 
   protected final static SubscriberType[] validSubscriberTypes = SubscriberType.getValidValues()
       .toArray(new SubscriberType[0]);
+
+  /**
+   * The resource is a forum. Used by component instances handling forums.
+   */
+  protected static final SubscriptionResourceType FORUM = new SubscriptionResourceType() {
+    private static final long serialVersionUID = -1130015664194572265L;
+
+    @Override
+    public int priority() {
+      return 100;
+    }
+
+    @Override
+    public String getName() {
+      return "FORUM";
+    }
+  };
+
+  /**
+   * The resource is a message in a given forum. Used by component instances handling forums.
+   */
+  protected static final SubscriptionResourceType FORUM_MESSAGE = new SubscriptionResourceType() {
+    private static final long serialVersionUID = 6385822460694305970L;
+
+    @Override
+    public int priority() {
+      return 101;
+    }
+
+    @Override
+    public String getName() {
+      return "FORUM_MESSAGE";
+    }
+  };
 
   @Rule
   public DbUnitLoadingRule dbUnitLoadingRule =
@@ -74,11 +108,14 @@ public abstract class AbstractCommonSubscriptionIntegrationTest {
   @Before
   public void setup() throws Exception {
     ServiceProvider.getService(DefaultResourceSubscriptionService.class).init();
+    SubscriptionResourceTypeRegistry.get().add(FORUM);
+    SubscriptionResourceTypeRegistry.get().add(FORUM_MESSAGE);
   }
 
+  @SuppressWarnings("unchecked")
   @After
   public void clear() throws Exception {
-    Map map = (Map) FieldUtils
+    Map<String, ResourceSubscriptionService> map = (Map<String, ResourceSubscriptionService>) FieldUtils
         .readDeclaredStaticField(ResourceSubscriptionProvider.class, "componentImplementations",
             true);
     SilverLogger.getLogger(this).info(

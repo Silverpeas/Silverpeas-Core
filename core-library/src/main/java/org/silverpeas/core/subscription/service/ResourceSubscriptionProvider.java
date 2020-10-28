@@ -23,16 +23,20 @@
  */
 package org.silverpeas.core.subscription.service;
 
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.subscription.ResourceSubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionResource;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
+import static org.silverpeas.core.subscription.service.DefaultResourceSubscriptionService.DEFAULT_IMPLEMENTATION_ID;
 
 /**
  * This common subscription provider can return results from a default {@link
@@ -44,8 +48,11 @@ import java.util.Map;
 public class ResourceSubscriptionProvider {
 
   // Component implementations.
-  private static final Map<String, ResourceSubscriptionService> componentImplementations =
-      new HashMap<>();
+  private static final Map<String, ResourceSubscriptionService> componentImplementations = new HashMap<>();
+
+  private ResourceSubscriptionProvider() {
+    // Provider class
+  }
 
   /**
    * Registers a new implementation of {@link ResourceSubscriptionService}
@@ -68,8 +75,7 @@ public class ResourceSubscriptionProvider {
    * with useful tool methods.
    */
   public static SubscriptionSubscriberList getSubscribersOfComponent(String componentInstanceId) {
-    return getSubscribersOfComponentAndTypedResource(componentInstanceId,
-        SubscriptionResourceType.COMPONENT, null);
+    return getSubscribersOfComponentAndTypedResource(componentInstanceId, COMPONENT, null);
   }
 
   /**
@@ -113,23 +119,14 @@ public class ResourceSubscriptionProvider {
    * @return an instance of {@link ResourceSubscriptionService}.
    */
   private static ResourceSubscriptionService getService(String componentInstanceId) {
-    ComponentInstLight componentInstLight =
-        OrganizationControllerProvider.getOrganisationController()
-            .getComponentInstLight(componentInstanceId);
-    if (componentInstLight == null) {
+    final Optional<SilverpeasComponentInstance> componentInstance = OrganizationController.get()
+        .getComponentInstance(componentInstanceId);
+    if (!componentInstance.isPresent()) {
       throw new IllegalStateException(
           "Component instance " + componentInstanceId + " is not valid.");
     }
-    ResourceSubscriptionService service =
-        componentImplementations.get(componentInstLight.getName());
-    if (service == null) {
-      service = componentImplementations
-          .get(DefaultResourceSubscriptionService.DEFAULT_IMPLEMENTATION_ID);
-    }
-    return service;
-  }
-
-  private ResourceSubscriptionProvider() {
-
+    return componentInstance
+        .map(i -> componentImplementations.get(i.getName()))
+        .orElseGet(() -> componentImplementations.get(DEFAULT_IMPLEMENTATION_ID));
   }
 }

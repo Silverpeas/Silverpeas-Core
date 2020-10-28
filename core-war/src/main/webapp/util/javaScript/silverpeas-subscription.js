@@ -29,8 +29,9 @@
 
   $.subscription = {
     subscriptionType : {
-      COMPONENT : 'COMPONENT', NODE : 'NODE', FORUM : 'FORUM', FORUM_MESSAGE : 'FORUM_MESSAGE'
-    }, parameters : {
+      COMPONENT : 'COMPONENT', NODE : 'NODE'
+    },
+    parameters : {
       confirmNotificationSendingOnUpdateEnabled : false
     },
 
@@ -45,10 +46,19 @@
     }
   };
 
+  if (!window.SubscriptionSettings) {
+    window.SubscriptionSettings = new SilverpeasPluginSettings();
+  }
+
+  const SUBSCRIPTION_TYPES = SubscriptionSettings.get('s.t');
+  SUBSCRIPTION_TYPES.forEach(function(subscriptionType) {
+    $.subscription.subscriptionType[subscriptionType] = subscriptionType;
+  });
+
   /**
    * The parameter settings of the plugin with, for some, the default value.
    */
-  var pluginSettings = {
+  const pluginSettings = {
     /**
      * The handled subscription.
      * It is defined by:
@@ -79,7 +89,7 @@
   /**
    * The different plugin methods handled by the plugin.
    */
-  var methods = {
+  const methods = {
 
     /**
      * Handles confirmation message in order to ask to the user if its contribution modifications
@@ -99,7 +109,7 @@
         }
       }
       return this.each(function() {
-        var $this = $(this);
+        const $this = $(this);
         __init($this, options);
         __configureConfirmSubscriptionNotificationSending($this.data('settings'));
       });
@@ -127,12 +137,12 @@
    * @private
    */
   function __init($this, options) {
-    var settings = $.extend(true, {}, pluginSettings);
+    const settings = $.extend(true, {}, pluginSettings);
     if (options) {
       $.extend(true, settings, options);
     }
     $this.data('settings', settings);
-    var error;
+    let error;
     if (typeof settings.subscription.componentInstanceId !== 'string' ||
         $.trim(settings.subscription.componentInstanceId) === 0) {
       error =
@@ -159,10 +169,10 @@
    * @private
    */
   function __existSubscribersOnAimedResourceSubscription($settings) {
-    var $deferred = $.Deferred();
-    var url = $settings.subscription.serviceContext + '/subscriptions/';
+    const $deferred = $.Deferred();
+    let url = $settings.subscription.serviceContext + '/subscriptions/';
     url += $settings.subscription.componentInstanceId;
-    url += '/subscribers/' + $settings.subscription.type;
+    url += '/' + $settings.subscription.type.toLowerCase() + '/subscribers';
     url += '/inheritance/' + $settings.subscription.resourceId;
     url += '?existenceIndicatorOnly=true';
     $.get(url, function(existSubscribers) {
@@ -190,24 +200,24 @@
       return;
     }
 
-    var setSubscriptionNotificationSendingParameter = function(userResponse) {
-      var targetContainer = $(document);
-      var forms = $('form', targetContainer);
+    const setSubscriptionNotificationSendingParameter = function(userResponse) {
+      const targetContainer = $(document);
+      const forms = $('form', targetContainer);
       $('input[name="SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION"]', forms).remove();
       forms.append($('<input>',
           {'name' : 'SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION', 'type' : 'hidden'}).val(
           userResponse.getJsonEntityAsString()));
     };
 
-    var initUserResponse = function() {
+    const initUserResponse = function() {
       return new function() {
         this.sendNotification = true;
         this.note = undefined;
         this.applyOnAjaxOptions = function(ajaxOptions) {
-          var notEmptyAjaxOptions = typeof ajaxOptions === 'object' ? ajaxOptions : {};
+          const notEmptyAjaxOptions = typeof ajaxOptions === 'object' ? ajaxOptions : {};
           extendsObject(notEmptyAjaxOptions, {
             headers : {
-              'SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION' : this.getJsonEntityAsString()
+              'SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION' : sp.base64.encode(this.getJsonEntityAsString())
             }
           });
           return notEmptyAjaxOptions;
@@ -221,23 +231,22 @@
       };
     };
 
-    var confirmSubscriptionNotificationSending = function() {
-      var userConfirmation = initUserResponse();
-      var commentActivated = $settings.comment.saveNote &&
+    const confirmSubscriptionNotificationSending = function() {
+      const userConfirmation = initUserResponse();
+      const commentActivated = $settings.comment.saveNote &&
           StringUtil.isDefined($settings.comment.contributionLocalId) &&
           StringUtil.isDefined($settings.comment.contributionType);
-      var urlOfDialogMessage = $settings.subscription.context +
+      const urlOfDialogMessage = $settings.subscription.context +
           '/subscription/jsp/messages/confirmSubscriptionNotificationSending.jsp';
-      var url = sp.url.format(urlOfDialogMessage,
-          {'saveNoteIntoComment' : commentActivated});
+      const url = sp.url.format(urlOfDialogMessage, {'saveNoteIntoComment' : commentActivated});
       jQuery.popup.load(url).show('confirmation', {
         callback : function() {
-          var saveNoteIntoComment = $('input.saveNoteIntoComment:checked', this).length;
-          var userNoteValue = $('textarea', this).val();
+          const saveNoteIntoComment = $('input.saveNoteIntoComment:checked', this).length;
+          const userNoteValue = $('textarea', this).val();
           userConfirmation.note = userNoteValue;
           setSubscriptionNotificationSendingParameter.call(this, userConfirmation);
           if (saveNoteIntoComment && StringUtil.isDefined(userNoteValue)) {
-            var commentServiceUrl = webContext + '/services/comments/' +
+            const commentServiceUrl = webContext + '/services/comments/' +
                 $settings.subscription.componentInstanceId + '/' +
                 $settings.comment.contributionType + '/' + $settings.comment.contributionLocalId;
             return sp.ajaxRequest(commentServiceUrl)
@@ -308,29 +317,31 @@
     if (typeof params !== 'object') {
       params = {componentInstanceId : params};
     }
-    var __context = extendsObject({
+    const __context = extendsObject({
+      actionLabelContainerSuffixId : '',
       state : this.STATE.SUBSCRIBED,
       componentInstanceId : undefined,
-      topicId : undefined,
+      subscriptionResourceType : $.subscription.subscriptionType.COMPONENT,
+      resourceId : undefined,
       labels : {
         subscribe : SubscriptionBundle.get('s.s'),
         unsubscribe : SubscriptionBundle.get('s.u')
       },
       $menuLabel : undefined
     }, params);
-    var url = webContext + '/services/subscriptions/' + __context.componentInstanceId;
-    if (__context.topicId) {
-      url += '/' + __context.topicId;
+    let url = webContext + '/services/subscriptions/' + __context.componentInstanceId;
+    if (__context.resourceId) {
+      url += '/' + __context.subscriptionResourceType.toLowerCase() + '/' + __context.resourceId;
     }
     sp.ajaxRequest(sp.url.format(url, {userId : 'me'})).sendAndPromiseJsonResponse().then(function(userSubscriptions) {
       whenSilverpeasReady(function() {
-        __context.$menuLabel = $("#subscriptionMenuLabel");
+        __context.$menuLabel = $("#subscriptionMenuLabel" + __context.actionLabelContainerSuffixId);
         __context.state = userSubscriptions.length ? this.STATE.SUBSCRIBED : this.STATE.NOT_SUBSCRIBED;
         __updateUI();
       }.bind(this));
     }.bind(this));
-    var __updateUI = function() {
-      var label;
+    const __updateUI = function() {
+      let label;
       if (__context.state === this.STATE.SUBSCRIBED) {
         label = __context.labels.unsubscribe;
       } else {
@@ -342,11 +353,11 @@
      * This method must be called by menu action.
      */
     this.switchUserSubscription = function() {
-      var __url = '/' + __context.componentInstanceId;
-      if (__context.topicId) {
-        __url += '/topic/' + __context.topicId;
+      let __url = '/' + __context.componentInstanceId;
+      if (__context.resourceId) {
+        __url += '/' + __context.subscriptionResourceType.toLowerCase() + '/' + __context.resourceId;
       }
-      var promise;
+      let promise;
       if (__context.state === this.STATE.SUBSCRIBED) {
         promise = sp.ajaxRequest(webContext + '/services/unsubscribe' +
             __url).byPostMethod().sendAndPromiseJsonResponse().then(function() {

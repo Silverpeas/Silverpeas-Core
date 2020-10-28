@@ -49,7 +49,6 @@ package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 /**
@@ -57,50 +56,61 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
  * single occurrence or since this occurrence up to the end of the event recurrence.
  * @author mmoquillon
  */
-public class CalendarEventOccurrenceAttendeeNotifier
-    extends AttendeeNotifier<CalendarEventOccurrenceLifeCycleEvent> {
+public class CalendarEventOccurrenceNotifier
+    extends AbstractNotifier<CalendarEventOccurrenceLifeCycleEvent> {
 
   @Override
   public void onDeletion(final CalendarEventOccurrenceLifeCycleEvent event) throws Exception {
-    // notify the attendees and the previous updater of the event occurrence deletion
-    CalendarEventOccurrence deleted = event.getTransition().getBefore();
+    final CalendarEventOccurrence deleted = event.getTransition().getBefore();
     CalendarOperation operation = CalendarOperation.EVENT_DELETION;
     if (event.getSubtype() == LifeCycleEventSubType.SINCE) {
       operation = CalendarOperation.SINCE_EVENT_DELETION;
-    } else if (event.getSubtype() == LifeCycleEventSubType.SINGLE) {
-      operation = CalendarOperation.EVENT_DELETION;
     }
-    UserNotification notification =
-        new AttendeeNotificationBuilder(deleted, NotifAction.DELETE).immediately()
-            .from(User.getCurrentRequester())
+    final User sender = User.getCurrentRequester();
+    // notify the attendees and the previous updater of the event occurrence deletion
+    final AttendeeNotificationBuilder attendeeNotificationBuilder =
+        new AttendeeNotificationBuilder(deleted, NotifAction.DELETE)
+            .immediately()
+            .from(sender)
             .to(concernedAttendeesIn(deleted.asCalendarComponent()))
-            .about(operation)
-            .build();
-    notification.send();
+            .about(operation);
+    attendeeNotificationBuilder.build().send();
+    // notify the subscribers (by excluding attendees already notified)
+    new SubscriberNotificationBuilder(deleted, NotifAction.DELETE)
+        .from(sender)
+        .about(operation)
+        .excludingUsersIds(attendeeNotificationBuilder.getUserIdsToNotify())
+        .build()
+        .send();
   }
 
   @Override
-  public void onUpdate(final CalendarEventOccurrenceLifeCycleEvent event) throws Exception {
-    // notify the attendees and the previous updater about the modification of properties of the
-    // event occurrence
-    CalendarEventOccurrence before = event.getTransition().getBefore();
-    CalendarEventOccurrence after = event.getTransition().getAfter();
+  public void onUpdate(final CalendarEventOccurrenceLifeCycleEvent event) {
+    final CalendarEventOccurrence before = event.getTransition().getBefore();
+    final CalendarEventOccurrence after = event.getTransition().getAfter();
     if (after.isModifiedSince(before)) {
       // the update is about the event occurrence itself
       CalendarOperation operation = CalendarOperation.EVENT_UPDATE;
       if (event.getSubtype() == LifeCycleEventSubType.SINCE) {
         operation = CalendarOperation.SINCE_EVENT_UPDATE;
-      } else if (event.getSubtype() == LifeCycleEventSubType.SINGLE) {
-        operation = CalendarOperation.EVENT_UPDATE;
       }
-
-      UserNotification notification =
-          new AttendeeNotificationBuilder(after, NotifAction.UPDATE).immediately()
-              .from(User.getCurrentRequester())
+      final User sender = User.getCurrentRequester();
+      // notify the attendees and the previous updater about the modification of properties of the
+      // event occurrence
+      final AttendeeNotificationBuilder attendeeNotificationBuilder =
+          new AttendeeNotificationBuilder(after, NotifAction.UPDATE)
+              .immediately()
+              .from(sender)
               .to(concernedAttendeesIn(before.asCalendarComponent()))
-              .about(operation)
-              .build();
-      notification.send();
+              .about(operation);
+      attendeeNotificationBuilder.build().send();
+      // notify the subscribers (by excluding attendees already notified)
+      new SubscriberNotificationBuilder(after, NotifAction.UPDATE)
+          .from(sender)
+          .about(operation)
+          .excludingUsersIds(attendeeNotificationBuilder.getUserIdsToNotify())
+          .build()
+          .send();
     }
 
     if (!after.getAttendees().isSameAs(before.getAttendees())) {
