@@ -28,6 +28,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.Zip64Mode;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -58,6 +59,7 @@ import static org.silverpeas.core.util.Charsets.UTF_8;
 
 /**
  * Helper to manage archive files.
+ * 
  * @author sdevolder
  */
 public class ZipUtil {
@@ -76,11 +78,9 @@ public class ZipUtil {
    * @throws IOException
    */
   public static long compressFile(String filePath, String zipFilePath) throws IOException {
-    try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(new FileOutputStream(zipFilePath));
-         InputStream in = new FileInputStream(filePath)) {
-      zos.setFallbackToUTF8(true);
-      zos.setCreateUnicodeExtraFields(NOT_ENCODEABLE);
-      zos.setEncoding(UTF_8.name());
+    try (
+      ZipArchiveOutputStream zos = createZipArchive(new FileOutputStream(zipFilePath));
+      InputStream in = new FileInputStream(filePath)) {
       String entryName = FilenameUtils.getName(filePath);
       entryName = entryName.replace(File.separatorChar, '/');
       zos.putArchiveEntry(new ZipArchiveEntry(entryName));
@@ -113,10 +113,7 @@ public class ZipUtil {
    * @throws IOException
    */
   public static long compressPathToZip(File folderToZip, File zipFile) throws IOException {
-    try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(new FileOutputStream(zipFile))) {
-      zos.setFallbackToUTF8(true);
-      zos.setCreateUnicodeExtraFields(NOT_ENCODEABLE);
-      zos.setEncoding(UTF_8.name());
+    try (ZipArchiveOutputStream zos = createZipArchive(new FileOutputStream(zipFile))) {
       Collection<File> folderContent = FileUtils.listFiles(folderToZip, null, true);
       for (File file : folderContent) {
         String entryName = file.getPath().substring(folderToZip.getParent().length() + 1);
@@ -124,7 +121,12 @@ public class ZipUtil {
         zos.putArchiveEntry(new ZipArchiveEntry(entryName));
         try (InputStream in = new FileInputStream(file)) {
           IOUtils.copy(in, zos);
+          SilverLogger.getLogger(ZipUtil.class).info("Copy file {0} OK",file);
           zos.closeArchiveEntry();
+        }
+        catch (Exception e ){
+          SilverLogger.getLogger(ZipUtil.class)
+              .error("Cannot compress archive {0} "  + entryName, e);
         }
       }
     }
@@ -143,11 +145,8 @@ public class ZipUtil {
    */
   public static void compressStreamToZip(InputStream inputStream, String filePathNameToCreate,
       String outfilename) throws IOException {
-    try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(
+    try (ZipArchiveOutputStream zos = createZipArchive(
         new FileOutputStream(outfilename))) {
-      zos.setFallbackToUTF8(true);
-      zos.setCreateUnicodeExtraFields(NOT_ENCODEABLE);
-      zos.setEncoding(UTF_8.name());
       zos.putArchiveEntry(new ZipArchiveEntry(filePathNameToCreate));
       IOUtils.copy(inputStream, zos);
       zos.closeArchiveEntry();
@@ -259,6 +258,20 @@ public class ZipUtil {
           .error("Error while counting file in archive " + archive.getPath(), ioe);
     }
     return nbFiles;
+  }
+
+  /**
+   * Init zip file
+   * @param fileOutputStream
+   * @return ZipArchiveOutputStream
+   */
+  private static ZipArchiveOutputStream createZipArchive(FileOutputStream fileOutputStream) {
+      ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fileOutputStream);
+      zos.setFallbackToUTF8(true);
+      zos.setCreateUnicodeExtraFields(NOT_ENCODEABLE);
+      zos.setEncoding(UTF_8.name());
+      zos.setUseZip64(Zip64Mode.Always);
+      return zos;
   }
 
 }
