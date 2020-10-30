@@ -163,7 +163,7 @@ public class VolatileResourceCacheService {
    * @return true if the contribution exists into the volatile cache, false otherwise.
    */
   public boolean contains(final Contribution contribution) {
-    final ContributionIdentifier contributionId = contribution.getContributionId();
+    final ContributionIdentifier contributionId = contribution.getIdentifier();
     final String volatileId = contributionId.getLocalId();
     final String componentInstanceId = contributionId.getComponentInstanceId();
     return contains(volatileId, componentInstanceId);

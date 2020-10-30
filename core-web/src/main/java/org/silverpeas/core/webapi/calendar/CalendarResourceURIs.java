@@ -132,7 +132,7 @@ public final class CalendarResourceURIs {
     }
     final CalendarEvent event = occurrence.getCalendarEvent();
     final String instanceId = event.getCalendar().getComponentInstanceId();
-    return getRoutingMap(instanceId).absolute().getPermalink(event.getContributionId());
+    return getRoutingMap(instanceId).absolute().getPermalink(event.getIdentifier());
   }
 
   /**
@@ -146,7 +146,7 @@ public final class CalendarResourceURIs {
     }
     final CalendarEvent event = occurrence.getCalendarEvent();
     final String instanceId = event.getCalendar().getComponentInstanceId();
-    return getRoutingMap(instanceId).absolute().getPermalink(occurrence.getContributionId());
+    return getRoutingMap(instanceId).absolute().getPermalink(occurrence.getIdentifier());
   }
 
   /**
@@ -159,7 +159,7 @@ public final class CalendarResourceURIs {
       return null;
     }
     final String instanceId = occurrence.getCalendarEvent().getCalendar().getComponentInstanceId();
-    return getRoutingMap(instanceId).relativeToSilverpeas().getViewPage(occurrence.getContributionId());
+    return getRoutingMap(instanceId).relativeToSilverpeas().getViewPage(occurrence.getIdentifier());
   }
 
   /**
@@ -172,7 +172,7 @@ public final class CalendarResourceURIs {
       return null;
     }
     final String instanceId = occurrence.getCalendarEvent().getCalendar().getComponentInstanceId();
-    return getRoutingMap(instanceId).relativeToSilverpeas().getEditionPage(occurrence.getContributionId());
+    return getRoutingMap(instanceId).relativeToSilverpeas().getEditionPage(occurrence.getIdentifier());
   }
 
   /**

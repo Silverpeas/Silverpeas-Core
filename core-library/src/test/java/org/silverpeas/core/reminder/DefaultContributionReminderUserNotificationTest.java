@@ -127,7 +127,7 @@ class DefaultContributionReminderUserNotificationTest {
     when(receiver.getId()).thenReturn("26");
     when(receiver.getUserPreferences()).thenReturn(userPreferences);
 
-    when(contribution.getContributionId()).thenReturn(CONTRIBUTION_IDENTIFIER);
+    when(contribution.getIdentifier()).thenReturn(CONTRIBUTION_IDENTIFIER);
     when(contribution.getTitle()).thenReturn("super test");
     when(contributionManager.getById(CONTRIBUTION_IDENTIFIER))
         .thenReturn(Optional.of(contribution));

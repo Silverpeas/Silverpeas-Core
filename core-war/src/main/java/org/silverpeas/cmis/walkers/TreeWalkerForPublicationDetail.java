@@ -30,7 +30,7 @@ import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderListImpl;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
-import org.silverpeas.core.Identifiable;
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.model.CmisObjectFactory;
@@ -40,7 +40,7 @@ import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 
@@ -66,19 +66,21 @@ public class TreeWalkerForPublicationDetail extends AbstractCmisObjectsTreeWalke
   private PublicationService publicationService;
 
   @Override
+  @SuppressWarnings("unchecked")
   protected PublicationDetail getSilverpeasObjectById(final String objectId) {
     return publicationService.getDetail(asPublicationPK(objectId));
   }
 
   @Override
-  protected <T extends AbstractI18NBean & Identifiable> Stream<T> getAllowedChildrenOfSilverpeasObject(
-      final String parentId, final User user) {
+  protected Stream<LocalizedResource> getAllowedChildrenOfSilverpeasObject(
+      final ResourceIdentifier parentId, final User user) {
     return Stream.empty();
   }
 
   @Override
-  protected Publication createCmisObject(final Object silverpeasObject, final String language) {
-    PublicationDetail pub = (PublicationDetail) silverpeasObject;
+  @SuppressWarnings("unchecked")
+  protected Publication createCmisObject(final LocalizedResource resource, final String language) {
+    PublicationDetail pub = (PublicationDetail) resource;
     Location location = publicationService.getMainLocation(pub.getPK())
         .orElse(new Location(NodePK.ROOT_NODE_ID, pub.getInstanceId()));
     ContributionIdentifier folder = ContributionIdentifier.from(location, NodeDetail.TYPE);
@@ -97,13 +99,13 @@ public class TreeWalkerForPublicationDetail extends AbstractCmisObjectsTreeWalke
   }
 
   @Override
-  protected List<ObjectInFolderContainer> browseObjectsInFolderTree(final Identifiable object,
+  protected List<ObjectInFolderContainer> browseObjectsInFolderTree(final LocalizedResource object,
       final Filtering filtering, final long depth) {
     return Collections.emptyList();
   }
 
   @Override
-  protected ObjectInFolderList browseObjectsInFolder(final Identifiable object,
+  protected ObjectInFolderList browseObjectsInFolder(final LocalizedResource object,
       final Filtering filtering, final Paging paging) {
     ObjectInFolderListImpl folderList = new ObjectInFolderListImpl();
     folderList.setObjects(Collections.emptyList());
@@ -113,7 +115,7 @@ public class TreeWalkerForPublicationDetail extends AbstractCmisObjectsTreeWalke
   }
 
   @Override
-  protected List<ObjectParentData> browseParentsOfObject(final Identifiable object,
+  protected List<ObjectParentData> browseParentsOfObject(final LocalizedResource object,
       final Filtering filtering) {
     return Collections.emptyList();
   }

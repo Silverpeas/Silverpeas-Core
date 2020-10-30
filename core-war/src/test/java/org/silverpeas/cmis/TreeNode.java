@@ -27,8 +27,8 @@ package org.silverpeas.cmis;
 import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 
@@ -47,7 +47,7 @@ import java.util.Set;
  */
 public class TreeNode {
   private final Map<String, TreeNode> cache;
-  private final Identifiable object;
+  private final LocalizedResource object;
   private final Set<TreeNode> children = new HashSet<>();
   private final TreeNode parent;
   private final String id;
@@ -58,7 +58,7 @@ public class TreeNode {
    * @param cache the cache of nodes backed by the tree.
    * @param object the value of the node.
    */
-  TreeNode(Map<String, TreeNode> cache, final Identifiable object) {
+  TreeNode(Map<String, TreeNode> cache, final LocalizedResource object) {
     this(cache, object, null);
   }
 
@@ -69,13 +69,11 @@ public class TreeNode {
    * @param object the value of the node.
    * @param parent the parent of the node. If null, then the node is a root one.
    */
-  TreeNode(Map<String, TreeNode> cache, final Identifiable object, final TreeNode parent) {
+  TreeNode(Map<String, TreeNode> cache, final LocalizedResource object, final TreeNode parent) {
     this.cache = cache;
     this.object = object;
     this.parent = parent;
-    this.id =
-        object instanceof Contribution ? ((Contribution) object).getContributionId().asString() :
-            object.getId();
+    this.id = object.getIdentifier().asString();
   }
 
   /**
@@ -92,7 +90,7 @@ public class TreeNode {
    * Gets the value of the node, id est the object wrapped by the node.
    * @return the wrapped object.
    */
-  public Identifiable getObject() {
+  public LocalizedResource getObject() {
     return object;
   }
 
@@ -157,7 +155,7 @@ public class TreeNode {
    */
   public TreeNode addChild(final ComponentInstLight componentInstLight) {
     if (object instanceof SpaceInstLight) {
-      componentInstLight.setDomainFatherId(object.getId());
+      componentInstLight.setDomainFatherId(object.getIdentifier().asString());
       return addChildNode(componentInstLight);
     } else {
       throw new IllegalArgumentException("A component instance can be a child only to a space");
@@ -169,7 +167,7 @@ public class TreeNode {
       nodeDetail.setFatherPK(((NodeDetail) object).getNodePK());
       return addChildNode(nodeDetail);
     } else if (object instanceof ComponentInstLight) {
-      NodePK pk = new NodePK(nodeDetail.getNodePK().getId(), object.getId());
+      NodePK pk = new NodePK(nodeDetail.getNodePK().getId(), object.getIdentifier().asString());
       nodeDetail.setNodePK(pk);
       return addChildNode(nodeDetail);
     } else {
@@ -186,7 +184,7 @@ public class TreeNode {
     }
   }
 
-  private TreeNode addChildNode(final Identifiable child) {
+  private TreeNode addChildNode(final LocalizedResource child) {
     TreeNode node = new TreeNode(cache, child, this);
     getChildren().add(node);
     cache.put(node.getId(), node);
@@ -202,12 +200,12 @@ public class TreeNode {
       return false;
     }
     final TreeNode treeNode = (TreeNode) o;
-    return object.getId().equals(treeNode.object.getId());
+    return object.getIdentifier().asString().equals(treeNode.object.getIdentifier().asString());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(object.getId());
+    return Objects.hash(object.getIdentifier().asString());
   }
 }
   

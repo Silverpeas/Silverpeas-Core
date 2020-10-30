@@ -60,13 +60,13 @@ public class CalendarContributionLocator implements ContributionLocatorByLocalId
     if (CalendarEvent.TYPE.equals(type)) {
       final CalendarEvent event = CalendarEvent.getById(localId);
       if (event != null) {
-        contributionIdentifier = event.getContributionId();
+        contributionIdentifier = event.getIdentifier();
       }
     } else {
       final CalendarEventOccurrence occurrence =
           CalendarEventOccurrence.getById(localId).orElse(null);
       if (occurrence != null) {
-        contributionIdentifier = occurrence.getContributionId();
+        contributionIdentifier = occurrence.getIdentifier();
       }
     }
     return Optional.ofNullable(contributionIdentifier);

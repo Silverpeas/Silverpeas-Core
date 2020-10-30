@@ -56,6 +56,11 @@ public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java
    */
   private int rootId = -1;
 
+  @Override
+  protected Class<AxisHeaderI18N> getTranslationType() {
+    return AxisHeaderI18N.class;
+  }
+
   //
   // Constructor
   //

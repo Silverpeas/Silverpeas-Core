@@ -78,6 +78,6 @@ public class SimpleContributionUIEntity<C extends Contribution> extends Selectab
 
   @Override
   public String getId() {
-    return getData().getContributionId().getLocalId();
+    return getData().getIdentifier().getLocalId();
   }
 }

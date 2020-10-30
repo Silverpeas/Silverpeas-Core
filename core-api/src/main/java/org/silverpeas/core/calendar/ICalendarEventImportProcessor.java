@@ -316,7 +316,7 @@ public class ICalendarEventImportProcessor {
       final CalendarEventOccurrence existing) {
     if (imported.getLastUpdateDate() == null) {
       // Setting the last modification date to the one of occurrence and indicate it as updated
-      JpaEntityReflection.setUpdateData(imported.asCalendarComponent(), existing.getLastModifier(),
+      JpaEntityReflection.setUpdateData(imported.asCalendarComponent(), existing.getLastUpdater(),
           existing.getLastUpdateDate());
       return true;
     }

@@ -37,6 +37,6 @@ public class GSCNameComparatorDesc implements Comparator<GlobalSilverContent> {
    */
   @Override
   public int compare(GlobalSilverContent gsc1, GlobalSilverContent gsc2) {
-    return 0 - gsc1.getName().compareTo(gsc2.getName());
+    return -gsc1.getName().compareTo(gsc2.getName());
   }
 }

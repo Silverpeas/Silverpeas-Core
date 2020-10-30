@@ -452,16 +452,16 @@ public class CalendarEventUserNotificationReminderTest {
         .startingAt(event.getStartDate())
         .endingAt(event.getEndDate())
         .build();
-    when(contributionManager.getById(event.getContributionId()))
+    when(contributionManager.getById(event.getIdentifier()))
         .thenReturn(Optional.of(event));
-    when(componentInstanceRoutingMap.getPermalink(occurrence.getContributionId()))
+    when(componentInstanceRoutingMap.getPermalink(occurrence.getIdentifier()))
         .thenReturn(UriBuilder.fromPath("").build());
     when(calendarEventOccurrenceRepository.getById(occurrence.getId())).thenReturn(occurrence);
     return event;
   }
 
   private Reminder.ReminderBuilder initReminderBuilder(Contribution contribution) {
-    return new Reminder.ReminderBuilder().about(contribution.getContributionId())
+    return new Reminder.ReminderBuilder().about(contribution.getIdentifier())
         .withText("Dummy test").forUser(receiver);
   }
 

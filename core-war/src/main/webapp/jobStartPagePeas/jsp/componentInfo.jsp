@@ -232,9 +232,9 @@ out.println(tabbedPane.print());
         <% } %>
       <% } %>
       <viewTags:displayLastUserCRUD permalink="<%=compoInst.getPermalink() %>"
-                                    displayHour="true"
-                                    createDate="<%=compoInst.getCreateDate() %>" createdById="<%=compoInst.getCreatorUserId() %>"
-                                    updateDate="<%=compoInst.getUpdateDate() %>" updatedById="<%=compoInst.getUpdaterUserId() %>"/>
+																		displayHour="true"
+																		createDate="<%=compoInst.getCreationDate() %>" createdById="<%=compoInst.getCreatorUserId() %>"
+																		updateDate="<%=compoInst.getLastUpdateDate() %>" updatedById="<%=compoInst.getUpdaterUserId() %>"/>
     </div>
 
     <div class="principalContent">

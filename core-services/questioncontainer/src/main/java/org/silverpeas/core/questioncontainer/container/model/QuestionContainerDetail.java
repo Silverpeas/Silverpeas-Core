@@ -161,8 +161,8 @@ public class QuestionContainerDetail implements java.io.Serializable, Silverpeas
   }
 
   @Override
-  public Date getLastModificationDate() {
-    return getHeader().getLastModificationDate();
+  public Date getLastUpdateDate() {
+    return getHeader().getLastUpdateDate();
   }
 
   @Override
@@ -171,8 +171,8 @@ public class QuestionContainerDetail implements java.io.Serializable, Silverpeas
   }
 
   @Override
-  public User getLastModifier() {
-    return getHeader().getLastModifier();
+  public User getLastUpdater() {
+    return getHeader().getLastUpdater();
   }
 
   @Override

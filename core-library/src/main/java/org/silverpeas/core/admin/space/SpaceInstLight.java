@@ -23,21 +23,24 @@
  */
 package org.silverpeas.core.admin.space;
 
-import org.apache.commons.lang3.ObjectUtils;
+import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.persistence.SpaceRow;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author neysseri
  */
 public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
-    implements Identifiable, Serializable, Comparable<SpaceInstLight> {
+    implements Serializable, LocalizedResource, Identifiable, Comparable<SpaceInstLight> {
 
   private static final long serialVersionUID = 8772050454345960478L;
   private String id = null;
@@ -59,6 +62,11 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
   private boolean displaySpaceFirst = true;
   private boolean isPersonalSpace = false;
   private boolean inheritanceBlocked = false;
+
+  @Override
+  protected Class<SpaceI18N> getTranslationType() {
+    return SpaceI18N.class;
+  }
 
   public SpaceInstLight() {
     id = "";
@@ -107,9 +115,9 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
       setDescription(spaceInst.getDescription());
       orderNum = spaceInst.getOrderNum();
       setLevel(spaceInst.getLevel());
-      createDate = spaceInst.getCreateDate();
-      updateDate = spaceInst.getUpdateDate();
-      removeDate = spaceInst.getRemoveDate();
+      createDate = spaceInst.getCreationDate();
+      updateDate = spaceInst.getLastUpdateDate();
+      removeDate = spaceInst.getRemovalDate();
       status = spaceInst.getStatus();
       look = spaceInst.getLook();
 
@@ -124,22 +132,22 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
     return SpaceInst.SPACE_KEY_PREFIX + getLocalId();
   }
 
-  /**
-   * @return
-   */
+  @Override
+  @SuppressWarnings("unchecked")
+  public BasicIdentifier getIdentifier() {
+    return new BasicIdentifier(getLocalId(), getId());
+  }
+
   public String getFatherId() {
     return fatherId;
   }
 
-  /**
-   * @return
-   */
   public int getLevel() {
     return level;
   }
 
+  @Override
   public String getName(String language) {
-
     if (isPersonalSpace) {
       return ResourceLocator.getGeneralLocalizationBundle(language)
           .getString("GML.personalSpace");
@@ -164,9 +172,6 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
     return Integer.parseInt(id);
   }
 
-  /**
-   * @param i
-   */
   public void setLevel(int i) {
     level = i;
   }
@@ -179,9 +184,6 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
     return "0".equals(spaceId);
   }
 
-  /**
-   * @return
-   */
   public int getOrderNum() {
     return orderNum;
   }
@@ -190,11 +192,11 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
     this.orderNum = orderNum;
   }
 
-  public Date getCreateDate() {
+  public Date getCreationDate() {
     return createDate;
   }
 
-  public Date getRemoveDate() {
+  public Date getRemovalDate() {
     return removeDate;
   }
 
@@ -202,7 +204,7 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
     return status;
   }
 
-  public Date getUpdateDate() {
+  public Date getLastUpdateDate() {
     return updateDate;
   }
 
@@ -240,6 +242,19 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
 
   public int getUpdatedBy() {
     return updatedBy;
+  }
+
+  @Override
+  public User getCreator() {
+    return User.getById(String.valueOf((getCreatedBy())));
+  }
+
+  @Override
+  public User getLastUpdater() {
+    if (updatedBy < 0) {
+      return getCreator();
+    }
+    return User.getById(String.valueOf((getUpdatedBy())));
   }
 
   public int compareTo(SpaceInstLight o) {
@@ -321,6 +336,6 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
       return false;
     }
     SpaceInstLight other = (SpaceInstLight) obj;
-    return ObjectUtils.equals(getId(), other.getId());
+    return Objects.equals(getId(), other.getId());
   }
 }

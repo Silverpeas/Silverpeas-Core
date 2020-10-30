@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,19 +25,21 @@
 package org.silverpeas.core;
 
 /**
- * An object in Silverpeas that is identifiable by a unique identifier encoded as a String. For a
- * better precision in the representation of the identifier, id est when such an identifier is a
- * complex object, then prefer to use the {@link SilverpeasResource} interface.
+ * A nameable object in Silverpeas is an object that has both a name and a short textual description
+ * about it.
  * @author mmoquillon
  */
-public interface Identifiable {
+public interface Nameable {
 
   /**
-   * Gets the unique identifier of the object in Silverpeas. If the is also identified by a local
-   * identifier, then this method should returns the one global to Silverpeas.
-   * @return the identifier encoded as a String. If the identifier is a complex one, that is made up
-   * of several identification parts, then the returned representation should take care of such
-   * a structure.
+   * Gets the name of the object in Silverpeas.
+   * @return the name or the title of the object.
    */
-  String getId();
+  String getName();
+
+  /**
+   * Gets the description about the object in Silverpeas.
+   * @return a short description about the object.
+   */
+  String getDescription();
 }

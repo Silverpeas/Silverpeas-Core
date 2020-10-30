@@ -187,7 +187,7 @@ public class WysiwygContent implements ContributionContent<String> {
 
     final WysiwygContent content = (WysiwygContent) o;
 
-    if (!contribution.getContributionId().equals(content.contribution.getContributionId())) {
+    if (!contribution.getIdentifier().equals(content.contribution.getIdentifier())) {
       return false;
     }
     return text != null ? text.equals(content.text) : content.text == null;
@@ -195,7 +195,7 @@ public class WysiwygContent implements ContributionContent<String> {
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(contribution.getContributionId())
+    return new HashCodeBuilder().append(contribution.getIdentifier())
         .append(text)
         .toHashCode();
   }

@@ -231,7 +231,7 @@ public class DefaultPdcClassificationService implements PdcClassificationService
       final PdcClassification withClassification, boolean alertSubscribers) {
     List<ClassifyPosition> classifyPositions = withClassification.getClassifyPositions();
     try {
-      final ContributionIdentifier contributionId = contribution.getContributionId();
+      final ContributionIdentifier contributionId = contribution.getIdentifier();
       int silverObjectId = getOrCreateSilverpeasContentId(contribution);
       final String componentInstanceId = contributionId.getComponentInstanceId();
       List<ClassifyPosition> existingPositions =
@@ -278,7 +278,7 @@ public class DefaultPdcClassificationService implements PdcClassificationService
     if (contribution instanceof SilverpeasContent) {
       return Integer.parseInt(((SilverpeasContent) contribution).getSilverpeasContentId());
     }
-    final ContributionIdentifier contributionId = contribution.getContributionId();
+    final ContributionIdentifier contributionId = contribution.getIdentifier();
 
     Optional<SilverpeasContentManager> contentManager =
         SilverpeasContentManager.getByInstanceId(contributionId.getComponentInstanceId());

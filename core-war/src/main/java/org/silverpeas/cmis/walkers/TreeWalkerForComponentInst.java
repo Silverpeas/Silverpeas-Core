@@ -29,7 +29,8 @@ import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
-import org.silverpeas.core.Identifiable;
+import org.silverpeas.core.ResourceIdentifier;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
@@ -37,8 +38,7 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
 import org.silverpeas.core.cmis.model.Application;
 import org.silverpeas.core.cmis.model.CmisFolder;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.LocalizedResource;
 
 import javax.inject.Singleton;
 import java.util.Collections;
@@ -58,13 +58,15 @@ public class TreeWalkerForComponentInst extends AbstractCmisObjectsTreeWalker {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   protected ComponentInstLight getSilverpeasObjectById(final String objectId) {
     return getController().getComponentInstLight(objectId);
   }
 
   @Override
-  protected Application createCmisObject(final Object silverpeasObject, final String language) {
-    return getObjectFactory().createApplication((ComponentInstLight) silverpeasObject, language);
+  @SuppressWarnings("unchecked")
+  protected Application createCmisObject(final LocalizedResource resource, final String language) {
+    return getObjectFactory().createApplication((ComponentInstLight) resource, language);
   }
 
   @Override
@@ -72,39 +74,35 @@ public class TreeWalkerForComponentInst extends AbstractCmisObjectsTreeWalker {
     try {
       CmisContributionsProvider provider = getContributionsProvider(objectId);
       return provider != null;
-    } catch (IllegalStateException e) {
+    } catch (SilverpeasRuntimeException e) {
       return false;
     }
   }
 
   @Override
-  protected <T extends AbstractI18NBean & Identifiable> Stream<T> getAllowedChildrenOfSilverpeasObject(
-      final String parentId, final User user) {
-    return getAllowedRootContributionsIds(parentId, user)
-        .map(id -> {
-          AbstractCmisObjectsTreeWalker walker = AbstractCmisObjectsTreeWalker.selectInstance(id);
-          return walker.getSilverpeasObjectById(id);
-        });
+  protected Stream<LocalizedResource> getAllowedChildrenOfSilverpeasObject(
+      final ResourceIdentifier parentId, final User user) {
+    return getAllowedRootContributions(parentId, user).stream();
   }
 
   @Override
-  protected List<ObjectInFolderContainer> browseObjectsInFolderTree(final Identifiable object,
+  protected List<ObjectInFolderContainer> browseObjectsInFolderTree(final LocalizedResource object,
       final Filtering filtering, final long depth) {
-    String[] ids = getAllowedRootContributionsIds(object.getId(), filtering.getCurrentUser())
-        .toArray(String[]::new);
-    return browseObjectsInFolderSubTrees(ids, filtering, depth);
+    List<LocalizedResource> contributions =
+        getAllowedRootContributions(object.getIdentifier(), filtering.getCurrentUser());
+    return browseObjectsInFolderSubTrees(contributions, filtering, depth);
   }
 
   @Override
-  protected ObjectInFolderList browseObjectsInFolder(final Identifiable object,
+  protected ObjectInFolderList browseObjectsInFolder(final LocalizedResource object,
       final Filtering filtering, final Paging paging) {
-    String[] ids = getAllowedRootContributionsIds(object.getId(), filtering.getCurrentUser())
-        .toArray(String[]::new);
-    return buildObjectInFolderList(ids, filtering, paging);
+    List<LocalizedResource> contributions =
+        getAllowedRootContributions(object.getIdentifier(), filtering.getCurrentUser());
+    return buildObjectInFolderList(contributions, filtering, paging);
   }
 
   @Override
-  protected List<ObjectParentData> browseParentsOfObject(final Identifiable object,
+  protected List<ObjectParentData> browseParentsOfObject(final LocalizedResource object,
       final Filtering filtering) {
     final ComponentInstLight compInst = (ComponentInstLight) object;
     final String spaceId = compInst.getSpaceId();
@@ -117,11 +115,13 @@ public class TreeWalkerForComponentInst extends AbstractCmisObjectsTreeWalker {
     return Collections.singletonList(parentData);
   }
 
-  private Stream<String> getAllowedRootContributionsIds(final String appId, final User user) {
-    CmisContributionsProvider contributionsProvider = getContributionsProvider(appId);
-    return contributionsProvider.getAllowedRootContributions(appId, user)
-        .stream()
-        .map(ContributionIdentifier::asString);
+  @SuppressWarnings("unchecked")
+  private List<LocalizedResource> getAllowedRootContributions(final ResourceIdentifier appId,
+      final User user) {
+    CmisContributionsProvider contributionsProvider = getContributionsProvider(appId.asString());
+    List<? extends LocalizedResource> contributions =
+        contributionsProvider.getAllowedRootContributions(appId, user);
+    return (List<LocalizedResource>) contributions;
   }
 }
   

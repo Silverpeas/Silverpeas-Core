@@ -340,9 +340,9 @@ class DefaultAdministration implements Administration {
       indexEntry.setPreview(translation.getValue().getDescription(), translation.getKey());
     }
     indexEntry.setCreationUser(String.valueOf(spaceInst.getCreatedBy()));
-    indexEntry.setCreationDate(spaceInst.getCreateDate());
+    indexEntry.setCreationDate(spaceInst.getCreationDate());
     indexEntry.setLastModificationUser(String.valueOf(spaceInst.getUpdatedBy()));
-    indexEntry.setLastModificationDate(spaceInst.getUpdateDate());
+    indexEntry.setLastModificationDate(spaceInst.getLastUpdateDate());
     IndexEngineProxy.addIndexEntry(indexEntry);
   }
 
@@ -1004,17 +1004,17 @@ class DefaultAdministration implements Administration {
   private void setIndexEntry(ComponentInst componentInst, FullIndexEntry indexEntry) {
     setIndexEntryTranslations(componentInst.getTranslations(), indexEntry);
     indexEntry.setCreationUser(componentInst.getCreatorUserId());
-    indexEntry.setCreationDate(componentInst.getCreateDate());
+    indexEntry.setCreationDate(componentInst.getCreationDate());
     indexEntry.setLastModificationUser(componentInst.getUpdaterUserId());
-    indexEntry.setLastModificationDate(componentInst.getUpdateDate());
+    indexEntry.setLastModificationDate(componentInst.getLastUpdateDate());
   }
 
   private void setIndexEntry(ComponentInstLight componentInstLight, FullIndexEntry indexEntry) {
     setIndexEntryTranslations(componentInstLight.getTranslations(), indexEntry);
     indexEntry.setCreationUser(Integer.toString(componentInstLight.getCreatedBy()));
-    indexEntry.setCreationDate(componentInstLight.getCreateDate());
+    indexEntry.setCreationDate(componentInstLight.getCreationDate());
     indexEntry.setLastModificationUser(String.valueOf(componentInstLight.getUpdatedBy()));
-    indexEntry.setLastModificationDate(componentInstLight.getUpdateDate());
+    indexEntry.setLastModificationDate(componentInstLight.getLastUpdateDate());
   }
 
   private void setIndexEntryTranslations(Map<String, ComponentI18N> translations,
@@ -5371,7 +5371,7 @@ class DefaultAdministration implements Administration {
     newCompo.setLocalId(-1);
     newCompo.setDomainFatherId(destinationSpace.getId());
     newCompo.setOrderNum(destinationSpace.getNumComponentInst());
-    newCompo.setCreateDate(new Date());
+    newCompo.setCreationDate(new Date());
     newCompo.setCreatorUserId(pasteDetail.getUserId());
     newCompo.setLanguage(lang);
 
@@ -5379,7 +5379,7 @@ class DefaultAdministration implements Administration {
     String label = renameComponentName(newCompo.getLabel(lang), destinationSpace.
         getAllComponentsInst());
     newCompo.setLabel(label);
-    ComponentI18N translation = newCompo.getTranslation(lang);
+    ComponentI18N translation = newCompo.getTranslations().get(lang);
     if (translation != null) {
       translation.setName(label);
     }
@@ -5555,7 +5555,7 @@ class DefaultAdministration implements Administration {
       newBrotherIds = Arrays.asList(getAllRootSpaceIds());
     }
     newSpace.setOrderNum(newBrotherIds.size());
-    newSpace.setCreateDate(new Date());
+    newSpace.setCreationDate(new Date());
     newSpace.setCreatorUserId(pasteDetail.getUserId());
     String lang = oldSpace.getLanguage();
     if (StringUtil.isNotDefined(lang)) {

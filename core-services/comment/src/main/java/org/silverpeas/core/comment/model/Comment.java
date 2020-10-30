@@ -130,12 +130,12 @@ public class Comment implements SilverpeasContent {
   }
 
   @Override
-  public User getLastModifier() {
+  public User getLastUpdater() {
     return getCreator();
   }
 
   @Override
-  public Date getLastModificationDate() {
+  public Date getLastUpdateDate() {
     Date date = null;
     if (this.modification_date != null) {
       date = new Date(this.modification_date.getTime());
@@ -166,7 +166,7 @@ public class Comment implements SilverpeasContent {
     str.append("getCreationDate() = ").append(getCreationDate())
         .append(", \n");
     str.append("getModificationDate() = ").append(
-        getLastModificationDate());
+        getLastUpdateDate());
     return str.toString();
   }
 

@@ -22,22 +22,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core;
+package org.silverpeas.core.i18n;
+
+import org.silverpeas.core.SilverpeasResource;
 
 /**
- * An object in Silverpeas that is identifiable by a unique identifier encoded as a String. For a
- * better precision in the representation of the identifier, id est when such an identifier is a
- * complex object, then prefer to use the {@link SilverpeasResource} interface.
+ * An identifiable resource in Silverpeas with localization support.
  * @author mmoquillon
  */
-public interface Identifiable {
+public interface LocalizedResource extends SilverpeasResource, Translatable {
 
-  /**
-   * Gets the unique identifier of the object in Silverpeas. If the is also identified by a local
-   * identifier, then this method should returns the one global to Silverpeas.
-   * @return the identifier encoded as a String. If the identifier is a complex one, that is made up
-   * of several identification parts, then the returned representation should take care of such
-   * a structure.
-   */
-  String getId();
+  @Override
+  ResourceTranslation getTranslation(final String language);
 }

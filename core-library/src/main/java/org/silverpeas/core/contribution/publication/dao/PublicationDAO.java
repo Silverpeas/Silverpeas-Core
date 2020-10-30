@@ -297,8 +297,8 @@ public class PublicationDAO extends AbstractDAO {
       prepStmt.setString(11, detail.getKeywords());
       prepStmt.setString(12, detail.getContentPagePath());
       prepStmt.setString(13, detail.getStatus());
-      if (detail.isUpdateDateMustBeSet() && detail.getUpdateDate() != null) {
-        prepStmt.setString(14, formatDate(detail.getUpdateDate()));
+      if (detail.isUpdateDateMustBeSet() && detail.getLastUpdateDate() != null) {
+        prepStmt.setString(14, formatDate(detail.getLastUpdateDate()));
       } else {
         setDateParameter(prepStmt, 14, detail.getCreationDate(), DateUtil.today2SQLDate());
       }
@@ -1121,7 +1121,7 @@ public class PublicationDAO extends AbstractDAO {
       prepStmt.setString(10, detail.getKeywords());
       prepStmt.setString(11, detail.getContentPagePath());
       prepStmt.setString(12, detail.getStatus());
-      setDateParameter(prepStmt, 13, detail.getUpdateDate(), formatDate(detail.getCreationDate()));
+      setDateParameter(prepStmt, 13, detail.getLastUpdateDate(), formatDate(detail.getCreationDate()));
       if (detail.getUpdaterId() == null) {
         prepStmt.setString(14, detail.getCreatorId());
       } else {

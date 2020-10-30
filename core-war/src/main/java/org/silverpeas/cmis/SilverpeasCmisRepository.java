@@ -109,7 +109,7 @@ public class SilverpeasCmisRepository {
     repositoryInfo.setProductName("Silverpeas Collaborative Portal");
     repositoryInfo.setProductVersion(URLUtil.getSilverpeasVersion());
     repositoryInfo.setVendorName("Silverpeas");
-    repositoryInfo.setRootFolder(Space.ROOT_ID);
+    repositoryInfo.setRootFolder(Space.ROOT_ID.asString());
     repositoryInfo.setThinClientUri("");
     repositoryInfo.setChangesIncomplete(true);
 

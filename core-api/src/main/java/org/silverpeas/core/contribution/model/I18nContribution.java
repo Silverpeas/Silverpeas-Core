@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.model;
 
-import org.silverpeas.core.i18n.Translation;
+import org.silverpeas.core.i18n.LocalizedResource;
 
 /**
  * An internationalized contribution. It supports different languages and regional specificity
@@ -32,13 +32,13 @@ import org.silverpeas.core.i18n.Translation;
  *
  * @author mmoquillon
  */
-public interface I18nContribution extends Contribution {
+public interface I18nContribution extends Contribution, LocalizedResource {
 
   /**
-   * Gets a translation of this contribution in the specified language.
-   * @param language the ISO 639-1 code of the language.
-   * @return a translation of the contribution in the specified language.
+   * Gets the unique identifier of this contribution.
+   * @return the unique identifier of the contribution.
    */
-  <T extends Translation> T getTranslation(String language);
+  @SuppressWarnings("unchecked")
+  ContributionIdentifier getIdentifier();
 
 }

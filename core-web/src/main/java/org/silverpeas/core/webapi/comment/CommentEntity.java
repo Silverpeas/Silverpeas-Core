@@ -308,7 +308,7 @@ public class CommentEntity implements WebEntity {
     // not been yet initialized
     this.creationDate = encodeToDisplayDate(comment.getCreationDate(), I18NHelper.defaultLanguage);
     this.modificationDate =
-        encodeToDisplayDate(comment.getLastModificationDate(), I18NHelper.defaultLanguage);
+        encodeToDisplayDate(comment.getLastUpdateDate(), I18NHelper.defaultLanguage);
   }
 
   @Override

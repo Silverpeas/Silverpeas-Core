@@ -36,7 +36,7 @@ import org.silverpeas.cmis.walkers.TreeWalkerForNodeDetail;
 import org.silverpeas.cmis.walkers.TreeWalkerForPublicationDetail;
 import org.silverpeas.cmis.walkers.TreeWalkerForSpaceInst;
 import org.silverpeas.cmis.walkers.TreeWalkerSelector;
-import org.silverpeas.core.Identifiable;
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentDataProvider;
@@ -50,13 +50,14 @@ import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
 import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObjectFactory;
-import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodePath;
@@ -147,7 +148,7 @@ public abstract class CMISEnvForTests {
 
   // provider of contributions for a given component
   @TestManagedMock
-  @Named("kmeliaContributionsProvider")
+  @Named("kmelia" + CmisContributionsProvider.Constants.NAME_SUFFIX)
   protected CmisContributionsProvider contributionsProvider;
 
   @TestManagedBean
@@ -227,11 +228,14 @@ public abstract class CMISEnvForTests {
     when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
     when(nodeAccessControl.isUserAuthorized(anyString(), any(NodeDetail.class))).thenReturn(true);
 
+    when(organizationController.isComponentAvailableToUser(anyString(), anyString()))
+        .thenReturn(true);
+
     when(organizationController.getSpaceInstLightById(anyString())).then(
         (Answer<SpaceInstLight>) invocation -> {
           String spaceId = invocation.getArgument(0);
           return getInTreeAndApply(spaceId, n -> {
-            Identifiable object = n.getObject();
+            LocalizedResource object = n.getObject();
             return object instanceof SpaceInstLight ? (SpaceInstLight) object : null;
           });
         });
@@ -240,7 +244,7 @@ public abstract class CMISEnvForTests {
         (Answer<ComponentInstLight>) invocation -> {
           String compInstId = invocation.getArgument(0);
           return getInTreeAndApply(compInstId, n -> {
-            Identifiable object = n.getObject();
+            LocalizedResource object = n.getObject();
             return object instanceof ComponentInstLight ? (ComponentInstLight) object : null;
           });
         });
@@ -258,7 +262,7 @@ public abstract class CMISEnvForTests {
               .stream()
               .map(TreeNode::getObject)
               .filter(o -> o instanceof ComponentInstLight)
-              .map(Identifiable::getId)
+              .map(o -> o.getIdentifier().asString())
               .toArray(String[]::new));
         });
 
@@ -269,7 +273,7 @@ public abstract class CMISEnvForTests {
               .stream()
               .map(TreeNode::getObject)
               .filter(o -> o instanceof SpaceInstLight)
-              .map(Identifiable::getId)
+              .map(o -> o.getIdentifier().asString())
               .toArray(String[]::new));
         });
 
@@ -301,7 +305,7 @@ public abstract class CMISEnvForTests {
           NodePK nodePK = invocation.getArgument(0);
           ContributionIdentifier id = ContributionIdentifier.from(nodePK, NodeDetail.TYPE);
           return getInTreeAndApply(id.asString(), n -> {
-            Identifiable object = n.getObject();
+            LocalizedResource object = n.getObject();
             return object instanceof NodeDetail ? (NodeDetail) object : null;
           });
         });
@@ -330,25 +334,26 @@ public abstract class CMISEnvForTests {
       return path;
     });
 
-    when(contributionsProvider.getAllowedRootContributions(anyString(), any(User.class))).then(
-        (Answer<List<ContributionIdentifier>>) invocation -> {
-          String appId = invocation.getArgument(0);
+    when(contributionsProvider.getAllowedRootContributions(any(ResourceIdentifier.class),
+        any(User.class))).then(
+        (Answer<List<I18nContribution>>) invocation -> {
+          ResourceIdentifier appId = invocation.getArgument(0);
           ContributionIdentifier id =
-              ContributionIdentifier.from(appId, NodePK.ROOT_NODE_ID, NodeDetail.TYPE);
+              ContributionIdentifier.from(appId.asString(), NodePK.ROOT_NODE_ID, NodeDetail.TYPE);
           return getInTreeAndApply(id.asString(), n -> n.getChildren()
               .stream()
               .map(TreeNode::getObject)
-              .map(c -> ((Contribution) c).getContributionId())
+              .map(I18nContribution.class::cast)
               .collect(Collectors.toList()));
         });
 
     when(contributionsProvider.getAllowedContributionsInFolder(any(ContributionIdentifier.class),
-        any(User.class))).then((Answer<List<ContributionIdentifier>>) invocation -> {
+        any(User.class))).then((Answer<List<I18nContribution>>) invocation -> {
       ContributionIdentifier id = invocation.getArgument(0);
       return getInTreeAndApply(id.asString(), n ->
         n.getChildren().stream()
             .map(TreeNode::getObject)
-            .map(o -> ((Contribution) o).getContributionId())
+            .map(I18nContribution.class::cast)
             .collect(Collectors.toList())
       );
     });
@@ -358,7 +363,7 @@ public abstract class CMISEnvForTests {
           PublicationPK pk = invocation.getArgument(0);
           ContributionIdentifier id = ContributionIdentifier.from(pk, PublicationDetail.TYPE);
           return getInTreeAndApply(id.asString(), n -> {
-            Identifiable object = n.getObject();
+            LocalizedResource object = n.getObject();
             return object instanceof PublicationDetail ? (PublicationDetail) object : null;
           });
         });
@@ -368,7 +373,7 @@ public abstract class CMISEnvForTests {
           PublicationPK pubPk = invocation.getArgument(0);
           ContributionIdentifier id = ContributionIdentifier.from(pubPk, PublicationDetail.TYPE);
           return getInTreeAndApply(id.asString(), n -> {
-            Identifiable object = n.getParent().getObject();
+            LocalizedResource object = n.getParent().getObject();
             Location location;
             if (object instanceof NodeDetail) {
               NodePK nodePk = ((NodeDetail) object).getNodePK();
@@ -385,8 +390,6 @@ public abstract class CMISEnvForTests {
   static void createOrganizationSchema() {
     final String appType = "kmelia";
     final int rootNodeId = Integer.parseInt(NodePK.ROOT_NODE_ID);
-    final int unclassedNodeId = Integer.parseInt(NodePK.UNCLASSED_NODE_ID);
-    final int binNodeId = Integer.parseInt(NodePK.BIN_NODE_ID);
 
     TreeNode wa1Node = organization.addSpace(1, "", 0, "COLLABORATIVE WORKSPACE", "");
     TreeNode wa3Node =

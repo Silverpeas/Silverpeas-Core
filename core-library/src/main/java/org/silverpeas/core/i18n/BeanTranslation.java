@@ -29,7 +29,7 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class BeanTranslation implements Translation, Serializable {
+public class BeanTranslation implements ResourceTranslation, Serializable {
 
   private static final long serialVersionUID = -3879515108587719162L;
   private String id = "-1";

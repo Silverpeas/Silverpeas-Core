@@ -29,8 +29,6 @@ import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlEntryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlPrincipalDataImpl;
-import org.silverpeas.core.Identifiable;
-import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -68,29 +66,6 @@ public class CmisObjectFactory {
   }
 
   /**
-   * A generic way to creates a CMIS object corresponding to a specified Silverpeas object without
-   * having to known the concrete type of the Silverpeas object and hence the concrete type of
-   * the corresponding CMIS object.
-   * @param silverpeasObject the object to represent in the CMIS model.
-   * @param language the language to use in the localization of the CMIS object to construct.
-   * @return a CMIS object corresponding to the given Silverpeas object.
-   * @throws NotSupportedException if the type of the Silverpeas object has no any correspondence
-   * in the CMIS model.
-   */
-  public CmisObject createCmisObject(final Identifiable silverpeasObject, final String language) {
-    if (silverpeasObject.getClass().equals(SpaceInstLight.class)) {
-      return createSpace((SpaceInstLight) silverpeasObject, language);
-    } else if (silverpeasObject.getClass().equals(ComponentInstLight.class)) {
-      return createApplication((ComponentInstLight) silverpeasObject, language);
-    } else if (silverpeasObject.getClass().equals(NodeDetail.class)) {
-      return createContributionFolder((NodeDetail) silverpeasObject, language);
-    } else {
-      throw new NotSupportedException(
-          silverpeasObject.getClass() + " isn't supported by our CMIS implementation");
-    }
-  }
-
-  /**
    * Creates the root space in the CMIS model. It is the root of the CMIS organizational tree of
    * CMIS objects. It corresponds in Silverpeas to the container of all root workspaces.
    * @return the root space.
@@ -119,26 +94,26 @@ public class CmisObjectFactory {
   public Space createSpace(final SpaceInstLight space, final String language) {
     final String fatherId;
     if (space.getFatherId() == null) {
-      fatherId = Space.ROOT_ID;
+      fatherId = Space.ROOT_ID.asString();
     } else {
       final String idPrefix = SpaceInst.SPACE_KEY_PREFIX;
       fatherId = (space.getFatherId().startsWith(idPrefix) ? "" : idPrefix) + space.getFatherId();
     }
-    final User creator = User.getById(String.valueOf(space.getCreatedBy()));
+    final User creator = space.getCreator();
     final User lastModifier;
     final long lastModificationDate;
     if (space.getUpdatedBy() < 0) {
       lastModifier = creator;
-      lastModificationDate = space.getCreateDate().getTime();
+      lastModificationDate = space.getCreationDate().getTime();
     } else {
-      lastModifier = User.getById(String.valueOf(space.getUpdatedBy()));
-      lastModificationDate = space.getUpdateDate().getTime();
+      lastModifier = space.getLastUpdater();
+      lastModificationDate = space.getLastUpdateDate().getTime();
     }
-    return new Space(space.getId(), space.getName(language), language)
+    return new Space(space.getIdentifier(), space.getName(language), language)
         .setParentId(fatherId)
         .setDescription(space.getDescription(language))
         .setCreator(creator.getDisplayedName())
-        .setCreationDate(space.getCreateDate().getTime())
+        .setCreationDate(space.getCreationDate().getTime())
         .setLastModifier(lastModifier.getDisplayedName())
         .setLastModificationDate(lastModificationDate)
         .setAclSupplier(this::theCommonsACE)
@@ -157,16 +132,16 @@ public class CmisObjectFactory {
     final long lastModificationDate;
     if (component.getUpdatedBy() < 0) {
       lastModifier = creator;
-      lastModificationDate = component.getCreateDate().getTime();
+      lastModificationDate = component.getCreationDate().getTime();
     } else {
       lastModifier = User.getById(String.valueOf(component.getUpdatedBy()));
-      lastModificationDate = component.getUpdateDate().getTime();
+      lastModificationDate = component.getLastUpdateDate().getTime();
     }
-    return new Application(component.getId(), component.getName(language), language).setParentId(
-        component.getSpaceId())
+    return new Application(component.getIdentifier(), component.getName(language), language)
+        .setParentId(component.getSpaceId())
         .setDescription(component.getDescription(language))
         .setCreator(creator.getDisplayedName())
-        .setCreationDate(component.getCreateDate().getTime())
+        .setCreationDate(component.getCreationDate().getTime())
         .setLastModifier(lastModifier.getDisplayedName())
         .setLastModificationDate(lastModificationDate)
         .setAclSupplier(this::theCommonsACE)
@@ -185,17 +160,17 @@ public class CmisObjectFactory {
   public ContributionFolder createContributionFolder(final NodeDetail node, final String language) {
     String parentId;
     if (node.getFatherPK().isRoot()) {
-      parentId = node.getContributionId().getComponentInstanceId();
+      parentId = node.getIdentifier().getComponentInstanceId();
     } else {
       parentId = ContributionIdentifier.from(node.getFatherPK(), NodeDetail.TYPE).asString();
     }
-    return new ContributionFolder(node.getContributionId(), node.getName(language), language)
+    return new ContributionFolder(node.getIdentifier(), node.getName(language), language)
         .setParentId(parentId)
         .setDescription(node.getDescription(language))
         .setCreator(node.getCreator().getDisplayedName())
         .setCreationDate(node.getCreationDate().getTime())
-        .setLastModifier(node.getLastModifier().getDisplayedName())
-        .setLastModificationDate(node.getLastModificationDate().getTime())
+        .setLastModifier(node.getLastUpdater().getDisplayedName())
+        .setLastModificationDate(node.getLastUpdateDate().getTime())
         .setAclSupplier(this::theCommonsACE)
         .setAllowedActionsSupplier(() -> completeWithFolderActions(theCommonActions()));
   }
@@ -214,13 +189,13 @@ public class CmisObjectFactory {
       final ContributionIdentifier folder, final String language) {
     String parentId = folder.getLocalId().equals(NodePK.ROOT_NODE_ID) ?
         folder.getComponentInstanceId() : folder.asString();
-    return new Publication(pub.getContributionId(), pub.getName(language), language)
+    return new Publication(pub.getIdentifier(), pub.getName(language), language)
         .setParentId(parentId)
         .setDescription(pub.getDescription(language))
         .setCreator(pub.getCreator().getDisplayedName())
         .setCreationDate(pub.getCreationDate().getTime())
-        .setLastModifier(pub.getLastModifier().getDisplayedName())
-        .setLastModificationDate(pub.getLastModificationDate().getTime())
+        .setLastModifier(pub.getLastUpdater().getDisplayedName())
+        .setLastModificationDate(pub.getLastUpdateDate().getTime())
         .setAclSupplier(this::theCommonsACE)
         .setAllowedActionsSupplier(() -> completeWithFolderActions(theCommonActions()));
   }

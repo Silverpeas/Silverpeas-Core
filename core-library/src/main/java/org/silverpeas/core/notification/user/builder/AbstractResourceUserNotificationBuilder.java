@@ -88,7 +88,7 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
     } else if (resource instanceof Contribution) {
       // for any others contributions
       final Contribution contribution = (Contribution) this.resource;
-      final String instanceId = contribution.getContributionId().getComponentInstanceId();
+      final String instanceId = contribution.getIdentifier().getComponentInstanceId();
       isAccessible = ComponentAccessControl.get().isUserAuthorized(userId, instanceId);
     } else {
       final String instanceId = getComponentInstanceId();
@@ -117,7 +117,7 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
       isAccessible = NodeAccessControl.get().isGroupAuthorized(groupId, node.getNodePK());
     } else if (resource instanceof Contribution) {
       final Contribution contribution = (Contribution) this.resource;
-      final String instanceId = contribution.getContributionId().getComponentInstanceId();
+      final String instanceId = contribution.getIdentifier().getComponentInstanceId();
       isAccessible = ComponentAccessControl.get().isGroupAuthorized(groupId, instanceId);
     } else {
       final String instanceId = getComponentInstanceId();
@@ -179,9 +179,9 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
       Contribution contribution = (Contribution) resource;
       final ComponentInstanceRoutingMapProvider routingMapProvider =
           ComponentInstanceRoutingMapProviderByInstance.get()
-              .getByInstanceId(contribution.getContributionId().getComponentInstanceId());
+              .getByInstanceId(contribution.getIdentifier().getComponentInstanceId());
       resourceUrl =
-          routingMapProvider.absolute().getPermalink(contribution.getContributionId()).toString();
+          routingMapProvider.absolute().getPermalink(contribution.getIdentifier()).toString();
     }
     if (StringUtils.isBlank(resourceUrl)) {
       resourceUrl = "";
@@ -214,7 +214,7 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
 
   private void fill(final NotificationResourceData notificationResourceData,
       final Contribution contribution) {
-    final ContributionIdentifier contributionId = contribution.getContributionId();
+    final ContributionIdentifier contributionId = contribution.getIdentifier();
     notificationResourceData.setComponentInstanceId(contributionId.getComponentInstanceId());
     notificationResourceData.setResourceId(contributionId.getLocalId());
     notificationResourceData.setResourceType(contributionId.getType());

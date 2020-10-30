@@ -25,6 +25,6 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 
 public interface GlobalSilverContentExtension {
 
-  public void extendGlobalSilverContent(SilverContentInterface sci, GlobalSilverContent gsc);
+  void extendGlobalSilverContent(SilverContentInterface sci, GlobalSilverContent gsc);
 
 }

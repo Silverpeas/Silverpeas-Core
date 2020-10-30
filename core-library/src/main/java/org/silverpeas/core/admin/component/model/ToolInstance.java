@@ -34,6 +34,7 @@ import java.util.Optional;
  */
 public class ToolInstance implements SilverpeasPersonalComponentInstance {
   private static final long serialVersionUID = 5778041904324864493L;
+  private static final String NOT_IMPLEMENTETED = "this information must not be used from a tool";
 
   private final transient Tool tool;
 
@@ -55,7 +56,7 @@ public class ToolInstance implements SilverpeasPersonalComponentInstance {
 
   @Override
   public User getUser() {
-    throw new NotImplementedException("this information must not be used from a tool");
+    throw new NotImplementedException(NOT_IMPLEMENTETED);
   }
 
   @Override
@@ -65,7 +66,7 @@ public class ToolInstance implements SilverpeasPersonalComponentInstance {
 
   @Override
   public String getSpaceId() {
-    throw new NotImplementedException("this information must not be used from a tool");
+    throw new NotImplementedException(NOT_IMPLEMENTETED);
   }
 
   @Override

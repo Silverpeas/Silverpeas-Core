@@ -53,7 +53,7 @@ public class Publication extends CmisFolder {
   }
 
   Publication(final ContributionIdentifier id, final String name, final String language) {
-    super(id.asString(), name, language);
+    super(id, name, language);
     this.id = id;
   }
 

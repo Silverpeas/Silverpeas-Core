@@ -31,19 +31,22 @@ import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.jetbrains.annotations.NotNull;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
-import org.silverpeas.core.Identifiable;
+import org.silverpeas.core.BasicIdentifier;
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.Space;
-import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -60,12 +63,14 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   protected SpaceInstLight getSilverpeasObjectById(final String objectId) {
     return getController().getSpaceInstLightById(objectId);
   }
 
   @Override
-  protected Space createCmisObject(final Object space, final String language) {
+  @SuppressWarnings("unchecked")
+  protected Space createCmisObject(final LocalizedResource space, final String language) {
     return getObjectFactory().createSpace((SpaceInstLight) space, language);
   }
 
@@ -75,24 +80,21 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   }
 
   @Override
-  protected <T extends AbstractI18NBean & Identifiable> Stream<T> getAllowedChildrenOfSilverpeasObject(
-      final String parentId, final User user) {
-    String[] childrenIds;
-    if (StringUtil.isNotDefined(parentId) || parentId.equals(Space.ROOT_ID)) {
-      childrenIds = getController().getAllRootSpaceIds(user.getId());
+  protected Stream<LocalizedResource> getAllowedChildrenOfSilverpeasObject(
+      final ResourceIdentifier parentId, final User user) {
+    Stream<LocalizedResource> children;
+    if (Space.ROOT_ID == parentId) {
+      children = Arrays.stream(getController().getAllRootSpaceIds(user.getId()))
+          .map(this::getSilverpeasObjectById);
     } else {
-      childrenIds = getAllowedChildrenOfSpace(parentId, user);
+      children = getAllowedChildrenOfSpace(parentId, user);
     }
-    return Stream.of(childrenIds)
-        .map(id -> {
-          AbstractCmisObjectsTreeWalker walker = AbstractCmisObjectsTreeWalker.selectInstance(id);
-          return walker.getSilverpeasObjectById(id);
-        });
+    return children;
   }
 
   @Override
   public ObjectData getObjectData(final String objectId, final Filtering filtering) {
-    if (Space.ROOT_ID.equals(objectId)) {
+    if (Space.ROOT_ID.asString().equals(objectId)) {
       final CmisObject rootSpace = getObjectFactory().createRootSpace();
       return buildObjectData(rootSpace, filtering);
     } else {
@@ -112,7 +114,7 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
 
   @Override
   public List<ObjectParentData> getParentsData(final String objectId, final Filtering filtering) {
-    if (Space.ROOT_ID.equals(objectId)) {
+    if (Space.ROOT_ID.asString().equals(objectId)) {
       return Collections.emptyList();
     } else {
       return super.getParentsData(objectId, filtering);
@@ -122,10 +124,10 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   @Override
   public ObjectInFolderList getChildrenData(final String folderId, final Filtering filtering,
       final Paging paging) {
-    if (Space.ROOT_ID.equals(folderId)) {
+    if (Space.ROOT_ID.asString().equals(folderId)) {
       final User user = filtering.getCurrentUser();
-      final String[] subSpaceIds = getController().getAllRootSpaceIds(user.getId());
-      return buildObjectInFolderList(subSpaceIds, filtering, paging);
+      final List<LocalizedResource> rootSpaces = getAllowedRootSpaces(user);
+      return buildObjectInFolderList(rootSpaces, filtering, paging);
     } else {
       return super.getChildrenData(folderId, filtering, paging);
     }
@@ -135,10 +137,10 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   public List<ObjectInFolderContainer> getSubTreeData(final String folderId,
       final Filtering filtering, final long depth) {
     final List<ObjectInFolderContainer> tree;
-    if (Space.ROOT_ID.equals(folderId)) {
+    if (Space.ROOT_ID.asString().equals(folderId)) {
       final User user = filtering.getCurrentUser();
-      final String[] subSpaceIds = getController().getAllRootSpaceIds(user.getId());
-      tree = browseObjectsInFolderSubTrees(subSpaceIds, filtering, depth);
+      List<LocalizedResource> rootSpaces = getAllowedRootSpaces(user);
+      tree = browseObjectsInFolderSubTrees(rootSpaces, filtering, depth);
     } else {
       tree = super.getSubTreeData(folderId, filtering, depth);
     }
@@ -146,35 +148,49 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   }
 
   @Override
-  protected List<ObjectInFolderContainer> browseObjectsInFolderTree(final Identifiable object,
+  protected List<ObjectInFolderContainer> browseObjectsInFolderTree(final LocalizedResource object,
       final Filtering filtering, final long depth) {
     User user = filtering.getCurrentUser();
-    String[] ids = getAllowedChildrenOfSpace(object.getId(), user);
-    return browseObjectsInFolderSubTrees(ids, filtering, depth);
+    List<LocalizedResource> children = getAllowedChildrenOfSpace(object.getIdentifier(), user)
+        .collect(Collectors.toList());
+    return browseObjectsInFolderSubTrees(children, filtering, depth);
   }
 
   @NotNull
-  private String[] getAllowedChildrenOfSpace(final String spaceId, final User user) {
-    String[] subSpaceIds = getController().getAllowedSubSpaceIds(user.getId(), spaceId);
-    String[] compInstIds = getController().getAvailCompoIds(spaceId, user.getId());
+  private List<LocalizedResource> getAllowedRootSpaces(final User user) {
+    return Stream.of(getController().getAllRootSpaceIds(user.getId()))
+        .map(this::getSilverpeasObjectById)
+        .collect(Collectors.toList());
+  }
+
+  @NotNull
+  private Stream<LocalizedResource> getAllowedChildrenOfSpace(final ResourceIdentifier spaceId,
+      final User user) {
+    String[] subSpaceIds = getController().getAllowedSubSpaceIds(user.getId(), spaceId.asString());
+    String[] compInstIds = getController().getAvailCompoIds(spaceId.asString(), user.getId());
     // we browse first the subspaces and then the component instances that are supported by our CMIS
     // implementation
     return Stream.concat(Stream.of(subSpaceIds),
         Stream.of(compInstIds).filter(AbstractCmisObjectsTreeWalker::supports))
-        .toArray(String[]::new);
+        .map(BasicIdentifier::new)
+        .map(id -> {
+          AbstractCmisObjectsTreeWalker walker =
+              AbstractCmisObjectsTreeWalker.selectInstance(id.asString());
+          return walker.getSilverpeasObjectById(id.asString());
+        });
   }
 
   @Override
-  protected ObjectInFolderList browseObjectsInFolder(final Identifiable object,
+  protected ObjectInFolderList browseObjectsInFolder(final LocalizedResource object,
       final Filtering filtering, final Paging paging) {
     User user = filtering.getCurrentUser();
-    SpaceInstLight space = (SpaceInstLight) object;
-    String[] ids = getAllowedChildrenOfSpace(space.getId(), user);
+    List<LocalizedResource> ids = getAllowedChildrenOfSpace(object.getIdentifier(), user)
+        .collect(Collectors.toList());
     return buildObjectInFolderList(ids, filtering, paging);
   }
 
   @Override
-  protected List<ObjectParentData> browseParentsOfObject(final Identifiable object,
+  protected List<ObjectParentData> browseParentsOfObject(final LocalizedResource object,
       final Filtering filtering) {
     final SpaceInstLight space = (SpaceInstLight) object;
     final String fatherId = space.getFatherId();

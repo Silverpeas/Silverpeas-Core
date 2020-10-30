@@ -27,6 +27,7 @@ package org.silverpeas.core.cmis.model;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.silverpeas.core.ResourceIdentifier;
 
 import java.util.Collections;
 import java.util.List;
@@ -62,8 +63,8 @@ public abstract class CmisObject {
   private Supplier<Set<Action>> actionsSupplier = Collections::emptySet;
   private final String language;
 
-  CmisObject(final String id, String name, String language) {
-    this.id = id;
+  CmisObject(final ResourceIdentifier id, String name, String language) {
+    this.id = id.asString();
     this.name = name;
     this.language = language;
   }

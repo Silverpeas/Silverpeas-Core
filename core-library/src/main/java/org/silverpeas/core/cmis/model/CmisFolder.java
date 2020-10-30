@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.cmis.model;
 
+import org.silverpeas.core.ResourceIdentifier;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -52,7 +54,7 @@ public abstract class CmisFolder extends CmisObject implements Folding {
     return Collections.emptyList();
   }
 
-  CmisFolder(final String id, final String name, final String language) {
+  CmisFolder(final ResourceIdentifier id, final String name, final String language) {
     super(id, name, language);
   }
 

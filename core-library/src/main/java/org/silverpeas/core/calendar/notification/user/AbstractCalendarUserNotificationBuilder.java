@@ -61,7 +61,7 @@ public abstract class AbstractCalendarUserNotificationBuilder<C extends Contribu
 
   @Override
   protected String getComponentInstanceId() {
-    return getResource().getContributionId().getComponentInstanceId();
+    return getResource().getIdentifier().getComponentInstanceId();
   }
 
   @Override

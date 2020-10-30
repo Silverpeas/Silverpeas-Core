@@ -41,7 +41,7 @@ public class SocialInformationPublication extends AbstractSocialInformation {
     this.publication = publication.getPublication();
     if (publication.isUpdate()) {
       setAuthor(publication.getPublication().getUpdaterId());
-      setDate(publication.getPublication().getUpdateDate());
+      setDate(publication.getPublication().getLastUpdateDate());
     } else {
       setAuthor(publication.getPublication().getCreatorId());
       setDate(publication.getPublication().getCreationDate());

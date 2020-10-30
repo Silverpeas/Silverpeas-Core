@@ -155,8 +155,8 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
    */
   private Set<String> getInterestedUsers(final String commentAuthorId, Contribution content) {
     Set<String> interestedUsers = new LinkedHashSet<>();
-    WAPrimaryKey pk = new ResourceReference(content.getContributionId().getLocalId(),
-        content.getContributionId().getComponentInstanceId());
+    WAPrimaryKey pk = new ResourceReference(content.getIdentifier().getLocalId(),
+        content.getIdentifier().getComponentInstanceId());
     List<Comment> comments = getCommentService().getAllCommentsOnPublication(content.
         getContributionType(), pk);
     for (Comment aComment : comments) {
@@ -169,7 +169,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
     if (!commentAuthorId.equals(contentCreator.getId()) && canBeSent(content, contentCreator)) {
       interestedUsers.add(contentCreator.getId());
     }
-    User contentUpdater = content.getLastModifier();
+    User contentUpdater = content.getLastUpdater();
     if (contentUpdater != null && !contentUpdater.getId().equals(contentCreator.getId()) &&
         !commentAuthorId.equals(contentUpdater.getId()) && canBeSent(content, contentUpdater)) {
       interestedUsers.add(contentUpdater.getId());

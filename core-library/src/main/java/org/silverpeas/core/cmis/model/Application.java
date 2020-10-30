@@ -25,6 +25,7 @@
 package org.silverpeas.core.cmis.model;
 
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.util.Collections;
@@ -44,7 +45,7 @@ public class Application extends CmisFolder {
     return Collections.singletonList(TypeId.SILVERPEAS_FOLDER);
   }
 
-  Application(final String id, final String name, final String language) {
+  Application(final ResourceIdentifier id, final String name, final String language) {
     super(id, name, language);
   }
 

@@ -44,7 +44,7 @@ public class SilverpeasContentDeleter implements ContributionDeletion {
 
   @Override
   public void delete(final Contribution contribution) {
-    final ContributionIdentifier contributionId = contribution.getContributionId();
+    final ContributionIdentifier contributionId = contribution.getIdentifier();
     try {
       int contentId = contentMgtEngine
           .getSilverContentId(contributionId.getLocalId(), contributionId.getComponentInstanceId());

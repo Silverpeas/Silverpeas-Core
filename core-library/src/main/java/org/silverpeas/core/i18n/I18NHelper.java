@@ -64,8 +64,8 @@ public class I18NHelper implements I18n {
 
   private static int nbContentLanguages = 0;
   public static final boolean isI18nContentActivated;
-  public static String defaultLanguage;
-  public static Locale defaultLocale = Locale.getDefault();
+  public static final String defaultLanguage;
+  public static final Locale defaultLocale;
   private static final List<String> allContentLanguageCodes = new ArrayList<>();
 
   public static final String HTMLSelectObjectName = "I18NLanguage";
@@ -79,10 +79,6 @@ public class I18NHelper implements I18n {
       if (!contentLanguageCode.isEmpty()) {
         allContentLanguageCodes.add(contentLanguageCode);
         nbContentLanguages++;
-        if (defaultLanguage == null) {
-          defaultLanguage = contentLanguageCode;
-          defaultLocale = new Locale(contentLanguageCode);
-        }
         LocalizationBundle rsLanguage =
             ResourceLocator.getLocalizationBundle("org.silverpeas.util.multilang.i18n",
                 contentLanguageCode);
@@ -99,6 +95,8 @@ public class I18NHelper implements I18n {
         allContentLanguages.put(contentLanguageCode, contentLanguageLabels);
       }
     }
+    defaultLanguage = allContentLanguageCodes.get(0);
+    defaultLocale = new Locale(defaultLanguage);
 
     isI18nContentActivated = (nbContentLanguages > 1);
 
@@ -250,7 +248,7 @@ public class I18NHelper implements I18n {
       return "";
     }
 
-    if (bean.getTranslation(lang) == null) {
+    if (bean.getTranslations().get(lang) == null) {
       Translation translation = bean.getNextTranslation();
       if (translation != null) {
         lang = translation.getLanguage();
@@ -287,7 +285,7 @@ public class I18NHelper implements I18n {
     for (I18NLanguage lang : languages) {
       I18NLanguage newLang = new I18NLanguage(lang.getCode(), lang.getLabel());
       if (bean != null) {
-        BeanTranslation translation = (BeanTranslation) bean.getTranslation(newLang.getCode());
+        BeanTranslation translation = (BeanTranslation) bean.getTranslations().get(newLang.getCode());
         if (translation != null) {
           newLang.setTranslationId(translation.getId());
         }
@@ -305,7 +303,7 @@ public class I18NHelper implements I18n {
     String onChangeJavascript = "";
     if (bean != null) {
       onChangeJavascript = "onChange= \"javaScript:showTranslation(this.value.substring(0,2));\"";
-      if (bean.getTranslation(currentTranslation) == null) {
+      if (bean.getTranslations().get(currentTranslation) == null) {
         Translation translation = bean.getNextTranslation();
         if (translation != null) {
           currentTranslation = translation.getLanguage();

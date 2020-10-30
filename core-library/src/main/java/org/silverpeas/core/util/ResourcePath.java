@@ -40,7 +40,9 @@ import java.util.stream.Collectors;
 import static java.util.Collections.singletonList;
 
 /**
- * Capitalizes some code in order to represent a path to a resource.
+ * The path of a resource in the organizational resources tree of Silverpeas. It provides a
+ * centralized point to compute such a path according to the type of the concerned resource.
+ * Each segment of the path refers a given resource of the tree by its localized name.
  * @author silveryocha
  */
 public abstract class ResourcePath<T> extends ArrayList<T> {

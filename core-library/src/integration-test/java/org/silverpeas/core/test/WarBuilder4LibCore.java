@@ -24,7 +24,7 @@
 package org.silverpeas.core.test;
 
 import org.silverpeas.core.ActionType;
-import org.silverpeas.core.IdentifiableResource;
+import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.BaseRightProfile;
@@ -326,7 +326,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addSilverpeasContentFeatures() {
     if (!contains(Contribution.class)) {
-      addClasses(Contribution.class, IdentifiableResource.class);
+      addClasses(Contribution.class, SilverpeasResource.class);
     }
     if (!contains(SilverpeasContent.class)) {
       addClasses(SilverpeasContent.class);

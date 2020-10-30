@@ -36,6 +36,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <c:set var="space" value="${requestScope.Space}" />
+<jsp:useBean id="space" type="org.silverpeas.core.admin.space.SpaceInst"/>
 
 <%@ include file="check.jsp" %>
 
@@ -52,7 +53,7 @@
   boolean 		isBackupEnable 		= (Boolean)request.getAttribute("IsBackupEnable");
   boolean 		isInHeritanceEnable = (Boolean)request.getAttribute("IsInheritanceEnable");
 
-  SpaceInst 		space 				= (SpaceInst) request.getAttribute("Space");
+  //SpaceInst 		space 				= (SpaceInst) request.getAttribute("Space");
   Set<String>	copiedComponentNames	= (Set<String>) request.getAttribute("CopiedComponents");
 
   // Component space quota
@@ -293,8 +294,8 @@ out.println(tabbedPane.print());
     <viewTags:displayLastUserCRUD
         permalink="<%=space.getPermalink() %>"
         displayHour="true"
-        createDate="${space.createDate}" createdBy="${space.creator}"
-        updateDate="${space.updateDate}" updatedBy="${space.updater}"/>
+        createDate="${space.creationDate}" createdBy="${space.creator}"
+        updateDate="${space.lastUpdateDate}" updatedBy="${space.lastUpdater}"/>
   </div>
 
   <div class="principalContent">

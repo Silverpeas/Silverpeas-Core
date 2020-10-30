@@ -64,7 +64,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
 
   @Override
   public <T extends Contribution> int getSilverContentId(final T contribution) {
-    final ContributionIdentifier contributionId = contribution.getContributionId();
+    final ContributionIdentifier contributionId = contribution.getIdentifier();
     return getSilverContentId(contributionId.getLocalId(), contributionId.getComponentInstanceId());
   }
 
@@ -72,7 +72,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
   public <T extends Contribution> int getOrCreateSilverContentId(final T contribution) {
     int contentId = getSilverContentId(contribution);
     if (contentId == -1) {
-      contentId = createSilverContent(contribution, contribution.getLastModifier().getId());
+      contentId = createSilverContent(contribution, contribution.getLastUpdater().getId());
     }
     return contentId;
   }
@@ -147,7 +147,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
    */
   public int createSilverContent(final Connection connection, final Contribution contribution,
       final String userId) throws ContentManagerException {
-    final ContributionIdentifier contributionId = contribution.getContributionId();
+    final ContributionIdentifier contributionId = contribution.getIdentifier();
     final SilverContentVisibility scv = computeSilverContentVisibility(contribution);
     return getContentManager().addSilverContent(connection, contributionId.getLocalId(),
         contributionId.getComponentInstanceId(), userId, scv);
@@ -160,7 +160,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
    */
   public int createSilverContent(final Connection connection, final Contribution contribution,
       final String userId, final boolean visible) throws ContentManagerException {
-    final ContributionIdentifier contributionId = contribution.getContributionId();
+    final ContributionIdentifier contributionId = contribution.getIdentifier();
     final SilverContentVisibility scv = computeSilverContentVisibility(contribution);
     scv.setVisibilityAttributes(visible);
     return getContentManager().addSilverContent(connection, contributionId.getLocalId(),
@@ -190,7 +190,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
       throws ContentManagerException {
     int silverContentId = getSilverContentId(contribution);
     if (silverContentId == -1) {
-      createSilverContent(null, contribution, contribution.getLastModifier().getId());
+      createSilverContent(null, contribution, contribution.getLastUpdater().getId());
     } else {
       SilverContentVisibility scv = computeSilverContentVisibility(contribution);
       getContentManager().updateSilverContentVisibilityAttributes(scv, silverContentId);
@@ -207,7 +207,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
       boolean visibility) throws ContentManagerException {
     int silverContentId = getSilverContentId(contribution);
     if (silverContentId == -1) {
-      createSilverContent(null, contribution, contribution.getLastModifier().getId(), visibility);
+      createSilverContent(null, contribution, contribution.getLastUpdater().getId(), visibility);
     } else {
       SilverContentVisibility scv = computeSilverContentVisibility(contribution);
       scv.setVisibilityAttributes(visibility);
@@ -243,7 +243,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
    * is given instead of resource identifier and component instance identifier.
    */
   public void deleteSilverContent(final Contribution contribution) {
-    final ContributionIdentifier contributionId = contribution.getContributionId();
+    final ContributionIdentifier contributionId = contribution.getIdentifier();
     deleteSilverContent(contributionId.getLocalId(), contributionId.getComponentInstanceId());
   }
 
@@ -268,7 +268,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
    * @return a {@link SilverContentInterface} instance.
    */
   private <T extends Contribution> SilverContentInterface convert(T instance) {
-    final String componentInstanceId = instance.getContributionId().getComponentInstanceId();
+    final String componentInstanceId = instance.getIdentifier().getComponentInstanceId();
     return new ContributionWrapper(instance, getContentIconFileName(componentInstanceId));
   }
 
@@ -293,7 +293,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
     private LocalizedContribution contribution;
 
     private ContributionWrapper(final Contribution contribution, final String contentIconFileName) {
-      this.contributionId = contribution.getContributionId();
+      this.contributionId = contribution.getIdentifier();
       this.wrappedInstance = contribution;
       this.contribution = LocalizedContribution.from(contribution);
       this.contentIconFileName = contentIconFileName;
@@ -366,7 +366,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
       if (silverContentInterface != null) {
         return silverContentInterface.getDate();
       }
-      return DateUtil.date2SQLDate(contribution.getLastModificationDate());
+      return DateUtil.date2SQLDate(contribution.getLastUpdateDate());
     }
 
     @Override
@@ -396,8 +396,8 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
     }
 
     @Override
-    public User getLastModifier() {
-      return contribution.getLastModifier();
+    public User getLastUpdater() {
+      return contribution.getLastUpdater();
     }
 
     @Override
@@ -406,8 +406,8 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
     }
 
     @Override
-    public Date getLastModificationDate() {
-      return contribution.getLastModificationDate();
+    public Date getLastUpdateDate() {
+      return contribution.getLastUpdateDate();
     }
 
     @Override
@@ -419,7 +419,7 @@ public abstract class AbstractSilverpeasContentManager implements SilverpeasCont
     }
 
     @Override
-    public ContributionIdentifier getContributionId() {
+    public ContributionIdentifier getIdentifier() {
       return contributionId;
     }
 

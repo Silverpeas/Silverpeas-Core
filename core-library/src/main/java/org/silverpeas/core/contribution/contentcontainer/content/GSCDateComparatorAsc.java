@@ -37,7 +37,7 @@ public class GSCDateComparatorAsc implements Comparator<GlobalSilverContent> {
    */
   @Override
   public int compare(GlobalSilverContent gsc1, GlobalSilverContent gsc2) {
-    int compareResult = gsc1.getDate().compareTo(gsc2.getDate());
+    int compareResult = gsc1.getLastUpdateDate().compareTo(gsc2.getLastUpdateDate());
     if (compareResult == 0) {
       // both objects have been created on the same date
       compareResult = gsc1.getId().compareTo(gsc2.getId());

@@ -223,8 +223,8 @@ public class RepositoriesTypeManager {
       // add attachment
       Date creationDate = new Date();
       if (settings.useFileDates() && !settings.mustCreateOnePublicationForAllFiles()) {
-        if (pubDetailToSave.getUpdateDate() != null) {
-          creationDate = pubDetailToSave.getUpdateDate();
+        if (pubDetailToSave.getLastUpdateDate() != null) {
+          creationDate = pubDetailToSave.getLastUpdateDate();
         } else {
           creationDate = pubDetailToSave.getCreationDate();
         }

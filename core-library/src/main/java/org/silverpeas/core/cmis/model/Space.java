@@ -25,6 +25,8 @@
 package org.silverpeas.core.cmis.model;
 
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.silverpeas.core.BasicIdentifier;
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.util.Arrays;
@@ -42,7 +44,7 @@ import java.util.stream.Collectors;
  */
 public class Space  extends CmisFolder {
 
-  public static final String ROOT_ID = "WA0";
+  public static final ResourceIdentifier ROOT_ID = new BasicIdentifier(0,"WA0");
   public static final TypeId CMIS_TYPE = TypeId.SILVERPEAS_SPACE;
 
   public static List<TypeId> getAllAllowedChildrenTypes() {
@@ -53,14 +55,14 @@ public class Space  extends CmisFolder {
     return folderId.startsWith("WA");
   }
 
-  Space(final String id, final String name, final String language) {
+  Space(final ResourceIdentifier id, final String name, final String language) {
     super(id, name, language);
   }
 
   @Override
   public String getPath() {
     final String path;
-    if (getId().equals(ROOT_ID)) {
+    if (ROOT_ID.asString().equals(getId())) {
       path = PATH_SEPARATOR;
     } else {
       final OrganizationController controller = OrganizationController.get();
@@ -83,7 +85,7 @@ public class Space  extends CmisFolder {
   }
 
   public boolean isRoot() {
-    return ROOT_ID.equals(getId());
+    return ROOT_ID.asString().equals(getId());
   }
 
   @Override

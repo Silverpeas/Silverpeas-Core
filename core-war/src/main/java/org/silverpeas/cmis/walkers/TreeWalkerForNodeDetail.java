@@ -29,15 +29,14 @@ import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
-import org.silverpeas.core.Identifiable;
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
 import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.ContributionFolder;
-import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
@@ -47,6 +46,7 @@ import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -65,23 +65,22 @@ public class TreeWalkerForNodeDetail extends AbstractCmisObjectsTreeWalker {
   private NodeService nodeService;
 
   @Override
+  @SuppressWarnings("unchecked")
   protected NodeDetail getSilverpeasObjectById(final String objectId) {
     return nodeService.getDetail(asNodePk(objectId));
   }
 
   @Override
-  protected <T extends AbstractI18NBean & Identifiable> Stream<T> getAllowedChildrenOfSilverpeasObject(
-      final String parentId, final User user) {
-    ContributionIdentifier nodeId = ContributionIdentifier.decode(parentId);
-    return getAllowedChildrenOfNode(nodeId, user).map(c -> {
-      AbstractCmisObjectsTreeWalker walker = AbstractCmisObjectsTreeWalker.selectInstance(c);
-      return walker.getSilverpeasObjectById(c);
-    });
+  protected Stream<LocalizedResource> getAllowedChildrenOfSilverpeasObject(
+      final ResourceIdentifier parentId, final User user) {
+    ContributionIdentifier nodeId = ContributionIdentifier.from(parentId);
+    return getAllowedChildrenOfNode(nodeId, user);
   }
 
   @Override
-  protected ContributionFolder createCmisObject(final Object silverpeasObject, final String language) {
-    return getObjectFactory().createContributionFolder((NodeDetail) silverpeasObject, language);
+  @SuppressWarnings("unchecked")
+  protected ContributionFolder createCmisObject(final LocalizedResource resource, final String language) {
+    return getObjectFactory().createContributionFolder((NodeDetail) resource, language);
   }
 
   @Override
@@ -94,48 +93,46 @@ public class TreeWalkerForNodeDetail extends AbstractCmisObjectsTreeWalker {
   }
 
   @Override
-  protected List<ObjectInFolderContainer> browseObjectsInFolderTree(final Identifiable parent,
+  protected List<ObjectInFolderContainer> browseObjectsInFolderTree(final LocalizedResource parent,
       final Filtering filtering, final long depth) {
     User user = filtering.getCurrentUser();
-    Contribution node = (Contribution) parent;
-    String[] childrenIds =
-        getAllowedChildrenOfNode(node.getContributionId(), user).toArray(String[]::new);
-    return browseObjectsInFolderSubTrees(childrenIds, filtering, depth);
+    List<LocalizedResource> children =
+        getAllowedChildrenOfNode(parent.getIdentifier(), user).collect(Collectors.toList());
+    return browseObjectsInFolderSubTrees(children, filtering, depth);
   }
 
   @Override
-  protected ObjectInFolderList browseObjectsInFolder(final Identifiable object,
+  protected ObjectInFolderList browseObjectsInFolder(final LocalizedResource object,
       final Filtering filtering, final Paging paging) {
     User user = filtering.getCurrentUser();
-    Contribution node = (Contribution) object;
-    String[] childrenIds =
-        getAllowedChildrenOfNode(node.getContributionId(), user).toArray(String[]::new);
-    return buildObjectInFolderList(childrenIds, filtering, paging);
+    List<LocalizedResource> children =
+        getAllowedChildrenOfNode(object.getIdentifier(), user).collect(Collectors.toList());
+    return buildObjectInFolderList(children, filtering, paging);
   }
 
   @Override
-  protected List<ObjectParentData> browseParentsOfObject(final Identifiable object,
+  protected List<ObjectParentData> browseParentsOfObject(final LocalizedResource object,
       final Filtering filtering) {
     NodeDetail node = (NodeDetail) object;
     String language = filtering.getLanguage();
     // root folder is the node representation of the application
     String fatherId = node.getFatherPK().isRoot() ?
-        node.getContributionId().getComponentInstanceId() : asFolderId(node.getFatherPK());
+        node.getIdentifier().getComponentInstanceId() : asFolderId(node.getFatherPK());
     AbstractCmisObjectsTreeWalker walker = AbstractCmisObjectsTreeWalker.selectInstance(fatherId);
-    Object parent = walker.getSilverpeasObjectById(fatherId);
+    LocalizedResource parent = walker.getSilverpeasObjectById(fatherId);
     final CmisFolder cmisParent = walker.createCmisObject(parent, language);
     final CmisFolder cmisObject = getObjectFactory().createContributionFolder(node, language);
     final ObjectParentData parentData = buildObjectParentData(cmisParent, cmisObject, filtering);
     return Collections.singletonList(parentData);
   }
 
-  private Stream<String> getAllowedChildrenOfNode(final ContributionIdentifier nodeId,
+  private Stream<LocalizedResource> getAllowedChildrenOfNode(final ContributionIdentifier nodeId,
       final User user) {
     CmisContributionsProvider provider = getContributionsProvider(nodeId.getComponentInstanceId());
     return provider.getAllowedContributionsInFolder(nodeId, user)
         .stream()
         .filter(isNotBinNeitherUnclassified)
-        .map(ContributionIdentifier::asString);
+        .map(LocalizedResource.class::cast);
   }
 
   private NodePK asNodePk(final String nodeId) {
@@ -152,10 +149,12 @@ public class TreeWalkerForNodeDetail extends AbstractCmisObjectsTreeWalker {
     return identifier.asString();
   }
 
-  private Predicate<ContributionIdentifier> isNotBinNeitherUnclassified =
-      c -> !c.getType().equals(NodeDetail.TYPE) ||
-          (!c.getLocalId().equals(NodePK.UNCLASSED_NODE_ID) &&
-          !c.getLocalId().equals(NodePK.BIN_NODE_ID));
+  private final Predicate<LocalizedResource> isNotBinNeitherUnclassified = r -> {
+    ContributionIdentifier id = r.getIdentifier();
+    return !id.getType().equals(NodeDetail.TYPE) ||
+        (!id.getLocalId().equals(NodePK.UNCLASSED_NODE_ID) &&
+            !id.getLocalId().equals(NodePK.BIN_NODE_ID));
+  };
 
 }
   

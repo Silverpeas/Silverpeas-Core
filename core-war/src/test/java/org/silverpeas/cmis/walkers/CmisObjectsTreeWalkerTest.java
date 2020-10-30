@@ -41,7 +41,6 @@ import org.silverpeas.cmis.CMISEnvForTests;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.cmis.TreeNode;
-import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -55,6 +54,7 @@ import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 
@@ -135,7 +135,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     final CmisFolder root = new CmisObjectFactory().createRootSpace();
     User admin = User.getById("0");
     Map<String, PropertyData<?>> props = data.getProperties().getProperties();
-    assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(), is(Space.ROOT_ID));
+    assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(), is(Space.ROOT_ID.asString()));
     assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(root.getName()));
     assertThat(props.get(PropertyIds.DESCRIPTION).getFirstValue(), is(root.getDescription()));
     assertThat(props.get(PropertyIds.CREATED_BY).getFirstValue(), is(admin.getDisplayedName()));
@@ -191,7 +191,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
 
     Filtering filtering = new Filtering().setIncludeAllowableActions(true)
         .setIncludeRelationships(IncludeRelationships.NONE);
-    String folderId = node.getContributionId().asString();
+    String folderId = node.getIdentifier().asString();
     ObjectData data = CmisObjectsTreeWalker.getInstance().getObjectData(folderId, filtering);
     assertCMISObjectMatchesNode(data, node);
   }
@@ -206,7 +206,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
 
     Filtering filtering = new Filtering().setIncludeAllowableActions(true)
         .setIncludeRelationships(IncludeRelationships.NONE);
-    String publiId = publi.getContributionId().asString();
+    String publiId = publi.getIdentifier().asString();
     ObjectData data = CmisObjectsTreeWalker.getInstance().getObjectData(publiId, filtering);
     assertCMISObjectMatchesPublication(data, publi);
   }
@@ -322,7 +322,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
           " by the CMIS object")
   void getChildrenWithoutPaging() {
     final String spaceId = "WA1";
-    List<Identifiable> spaceChildren = organization.findTreeNodeById(spaceId)
+    List<LocalizedResource> spaceChildren = organization.findTreeNodeById(spaceId)
         .getChildren()
         .stream()
         .map(TreeNode::getObject)
@@ -342,9 +342,9 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     List<ObjectInFolderData> dataList = children.getObjects();
     assertThat(dataList.size(), is(spaceChildren.size()));
     dataList.forEach(data -> {
-      Optional<Identifiable> child =
+      Optional<LocalizedResource> child =
           spaceChildren.stream()
-              .filter(c -> c.getId().equals(data.getObject().getId()))
+              .filter(c -> c.getIdentifier().asString().equals(data.getObject().getId()))
               .findFirst();
       assertThat(child.isPresent(), is(true));
       child.ifPresent(c -> {
@@ -358,7 +358,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
   @DisplayName("The paging on the children of a CMIS object should return only the asked objects")
   void getChildrenWithPaging() {
     final String spaceId = "WA2";
-    List<Identifiable> spaceChildren = organization.findTreeNodeById(spaceId)
+    List<LocalizedResource> spaceChildren = organization.findTreeNodeById(spaceId)
         .getChildren()
         .stream()
         .map(TreeNode::getObject)
@@ -378,9 +378,9 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     List<ObjectInFolderData> dataList = children.getObjects();
     assertThat(dataList.size(), is(1));
     ObjectData data = dataList.get(0).getObject();
-    Optional<Identifiable> child =
+    Optional<LocalizedResource> child =
         spaceChildren.stream()
-            .filter(c -> c.getId().equals(data.getId()))
+            .filter(c -> c.getIdentifier().asString().equals(data.getId()))
             .findFirst();
     assertThat(child.isPresent(), is(true));
     child.ifPresent(c -> {
@@ -587,7 +587,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
   }
 
   private void assertCMISObjectMatchesSilverpeasObject(final ObjectData data,
-      final Identifiable resource) {
+      final LocalizedResource resource) {
     if (resource instanceof SpaceInstLight) {
       assertCMISObjectMatchesSpace(data, (SpaceInstLight) resource);
     } else if (resource instanceof ComponentInstLight) {
@@ -646,7 +646,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     assertThat(data, notNullValue());
     assertThat(data.getAcl(), nullValue());
     assertThat(data.getBaseTypeId(), is(BaseTypeId.CMIS_FOLDER));
-    assertThat(data.getId(), is(node.getContributionId().asString()));
+    assertThat(data.getId(), is(node.getIdentifier().asString()));
     assertThat(data.getChangeEventInfo(), nullValue());
     assertThat(data.getPolicyIds(), nullValue());
     assertThat(data.getRelationships(), empty());
@@ -667,7 +667,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     assertThat(data, notNullValue());
     assertThat(data.getAcl(), nullValue());
     assertThat(data.getBaseTypeId(), is(BaseTypeId.CMIS_FOLDER));
-    assertThat(data.getId(), is(publication.getContributionId().asString()));
+    assertThat(data.getId(), is(publication.getIdentifier().asString()));
     assertThat(data.getChangeEventInfo(), nullValue());
     assertThat(data.getPolicyIds(), nullValue());
     assertThat(data.getRelationships(), empty());
@@ -704,9 +704,9 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     assertThat(props.get(PropertyIds.LAST_MODIFIED_BY).getFirstValue(),
         is(lastUpdater.getDisplayedName()));
     assertThat(props.get(PropertyIds.CREATION_DATE).getFirstValue(),
-        is(millisToCalendar(space.getCreateDate().getTime())));
+        is(millisToCalendar(space.getCreationDate().getTime())));
     assertThat(props.get(PropertyIds.LAST_MODIFICATION_DATE).getFirstValue(),
-        is(millisToCalendar(space.getUpdateDate().getTime())));
+        is(millisToCalendar(space.getLastUpdateDate().getTime())));
     assertThat(props.get(PropertyIds.BASE_TYPE_ID).getFirstValue(),
         is(BaseTypeId.CMIS_FOLDER.value()));
     assertThat(props.get(PropertyIds.OBJECT_TYPE_ID).getFirstValue(),
@@ -747,9 +747,9 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     assertThat(props.get(PropertyIds.LAST_MODIFIED_BY).getFirstValue(),
         is(lastUpdater.getDisplayedName()));
     assertThat(props.get(PropertyIds.CREATION_DATE).getFirstValue(),
-        is(millisToCalendar(application.getCreateDate().getTime())));
+        is(millisToCalendar(application.getCreationDate().getTime())));
     assertThat(props.get(PropertyIds.LAST_MODIFICATION_DATE).getFirstValue(),
-        is(millisToCalendar(application.getUpdateDate().getTime())));
+        is(millisToCalendar(application.getLastUpdateDate().getTime())));
     assertThat(props.get(PropertyIds.BASE_TYPE_ID).getFirstValue(),
         is(BaseTypeId.CMIS_FOLDER.value()));
     assertThat(props.get(PropertyIds.OBJECT_TYPE_ID).getFirstValue(),
@@ -780,22 +780,22 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
   private void assertProperties(final Properties properties, final NodeDetail node) {
     User requester = User.getCurrentRequester();
     String language = requester.getUserPreferences().getLanguage();
-    String appId = node.getContributionId().getComponentInstanceId();
+    String appId = node.getIdentifier().getComponentInstanceId();
 
     Map<String, PropertyData<?>> props = properties.getProperties();
     assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(),
-        is(node.getContributionId().asString()));
+        is(node.getIdentifier().asString()));
     assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(node.getName(language)));
     assertThat(props.get(PropertyIds.DESCRIPTION).getFirstValue(),
         is(node.getDescription(language)));
     assertThat(props.get(PropertyIds.CREATED_BY).getFirstValue(),
         is(node.getCreator().getDisplayedName()));
     assertThat(props.get(PropertyIds.LAST_MODIFIED_BY).getFirstValue(),
-        is(node.getLastModifier().getDisplayedName()));
+        is(node.getLastUpdater().getDisplayedName()));
     assertThat(props.get(PropertyIds.CREATION_DATE).getFirstValue(),
         is(millisToCalendar(node.getCreationDate().getTime())));
     assertThat(props.get(PropertyIds.LAST_MODIFICATION_DATE).getFirstValue(),
-        is(millisToCalendar(node.getLastModificationDate().getTime())));
+        is(millisToCalendar(node.getLastUpdateDate().getTime())));
     assertThat(props.get(PropertyIds.BASE_TYPE_ID).getFirstValue(),
         is(BaseTypeId.CMIS_FOLDER.value()));
     assertThat(props.get(PropertyIds.OBJECT_TYPE_ID).getFirstValue(),
@@ -808,7 +808,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
         containsInAnyOrder(TypeId.SILVERPEAS_FOLDER.value(),
             TypeId.SILVERPEAS_PUBLICATION.value()));
 
-    TreeNode folderNode = organization.findTreeNodeById(node.getContributionId().asString());
+    TreeNode folderNode = organization.findTreeNodeById(node.getIdentifier().asString());
     String path = pathToNode(folderNode, language);
     assertThat(props.get(PropertyIds.PATH).getFirstValue(), is(path));
   }
@@ -825,18 +825,18 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
 
     Map<String, PropertyData<?>> props = properties.getProperties();
     assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(),
-        is(pub.getContributionId().asString()));
+        is(pub.getIdentifier().asString()));
     assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(pub.getName(language)));
     assertThat(props.get(PropertyIds.DESCRIPTION).getFirstValue(),
         is(pub.getDescription(language)));
     assertThat(props.get(PropertyIds.CREATED_BY).getFirstValue(),
         is(pub.getCreator().getDisplayedName()));
     assertThat(props.get(PropertyIds.LAST_MODIFIED_BY).getFirstValue(),
-        is(pub.getLastModifier().getDisplayedName()));
+        is(pub.getLastUpdater().getDisplayedName()));
     assertThat(props.get(PropertyIds.CREATION_DATE).getFirstValue(),
         is(millisToCalendar(pub.getCreationDate().getTime())));
     assertThat(props.get(PropertyIds.LAST_MODIFICATION_DATE).getFirstValue(),
-        is(millisToCalendar(pub.getLastModificationDate().getTime())));
+        is(millisToCalendar(pub.getLastUpdateDate().getTime())));
     assertThat(props.get(PropertyIds.BASE_TYPE_ID).getFirstValue(),
         is(BaseTypeId.CMIS_FOLDER.value()));
     assertThat(props.get(PropertyIds.OBJECT_TYPE_ID).getFirstValue(),
@@ -850,7 +850,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     assertThat(props.get(PropertyIds.PARENT_ID).getFirstValue(), is(folderId));
     assertThat(props.get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS).getValues(), empty());
 
-    TreeNode pubNode = organization.findTreeNodeById(pub.getContributionId().asString());
+    TreeNode pubNode = organization.findTreeNodeById(pub.getIdentifier().asString());
     String path = pathToNode(pubNode, language);
     assertThat(props.get(PropertyIds.PATH).getFirstValue(), is(path));
   }

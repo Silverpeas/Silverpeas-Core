@@ -24,8 +24,10 @@
 
 package org.silverpeas.core.cmis;
 
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.I18nContribution;
 
 import java.util.List;
 
@@ -43,33 +45,38 @@ import java.util.List;
 public interface CmisContributionsProvider {
 
   class Constants {
-    public static final String NAME_SUFFIX = "ContributionsProvider";
+    private Constants() {
+    }
+
+    public static final String NAME_SUFFIX = "ContributionsProviderForCMIS";
   }
 
   /**
-   * Gets the contributions that are rooted at the application and that are accessible to the given
-   * user. For applications using {@link org.silverpeas.core.node.model.NodeDetail}s to categorize
-   * the content, the root contributions are those that are contained directly in the root node (as
-   * the root node is the node representation of the application).
+   * Gets the contributions that are rooted at the specified application and that are accessible to
+   * the given user. For applications using {@link org.silverpeas.core.contribution.model.Folder}s
+   * to categorize the content, the root contributions are those that are contained directly in the
+   * root folder (id est the folder representation of the application).
    * @param appId the unique identifier of a component instance. Should throw
-   * {@link org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException}
-   * exception if there is no such application.
+   * {@link org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException} exception
+   * if there is no such application.
    * @param user a user in Silverpeas.
-   * @return a list with the identifiers of the localized contributions directly accessible at
-   * the root level of the application.
+   * @return a list with the localized contributions directly accessible at
+   * the root level of the application. If there is no contributions, then an empty list is
+   * returned.
    */
-  List<ContributionIdentifier> getAllowedRootContributions(final String appId, final User user);
+  List<I18nContribution> getAllowedRootContributions(final ResourceIdentifier appId,
+      final User user);
 
   /**
    * Gets the contributions that are directly in the specified folder and that are accessible to the
    * given user. If the folder or the application doesn't
    * exist, a {@link org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException}
-   * has to be thrown.
+   * exception has to be thrown.
    * @param folder a folder in the application.
    * @param user a user in Silverpeas.
-   * @return a list with the identifiers of the localized contributions contained in the given
-   * folder.
+   * @return a list with the localized contributions contained in the given folder. If the folder
+   * doesn't have any contributions, then an empty list is returned.
    */
-  List<ContributionIdentifier> getAllowedContributionsInFolder(final ContributionIdentifier folder,
+  List<I18nContribution> getAllowedContributionsInFolder(final ContributionIdentifier folder,
       final User user);
 }

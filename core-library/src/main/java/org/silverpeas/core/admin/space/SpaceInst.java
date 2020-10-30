@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.space;
 
+import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
@@ -37,10 +38,12 @@ import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ResourceLocator;
@@ -54,7 +57,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.admin.space.SpaceServiceProvider.getComponentSpaceQuotaService;
 import static org.silverpeas.core.admin.space.SpaceServiceProvider.getDataStorageSpaceQuotaService;
@@ -65,7 +70,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * The class SpaceInst is the representation in memory of a space
  */
 public class SpaceInst extends AbstractI18NBean<SpaceI18N>
-    implements Identifiable, Serializable {
+    implements Serializable, Identifiable, LocalizedResource {
 
   public static final String SPACE_KEY_PREFIX = "WA";
   public static final String PERSONAL_SPACE_ID = "-10";
@@ -113,7 +118,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   private String look = null;
 
   /* Collection of components Instances */
-  private ArrayList<ComponentInst> components;
+  private List<ComponentInst> components;
 
   /* Collection of subspaces Instances */
   private List<SpaceInst> subSpaces = new ArrayList<>();
@@ -122,9 +127,14 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   private ArrayList<SpaceProfileInst> spaceProfiles;
 
   /* Array of space ids that are children of this space */
-  private int level = 0;
-  private boolean displaySpaceFirst = true;
-  private boolean isPersonalSpace = false;
+  private int level;
+  private boolean displaySpaceFirst;
+  private boolean isPersonalSpace;
+
+  @Override
+  protected Class<SpaceI18N> getTranslationType() {
+    return SpaceI18N.class;
+  }
 
   /**
    * Constructor
@@ -141,6 +151,12 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     level = 0;
     displaySpaceFirst = true;
     isPersonalSpace = false;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public BasicIdentifier getIdentifier() {
+    return new BasicIdentifier(getLocalId(), getId());
   }
 
   /**
@@ -216,7 +232,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   /**
    * Set the space first page type
    *
-   * @param iFirstPageType
+   * @param iFirstPageType type of the home page of the space.
    */
   public void setFirstPageType(int iFirstPageType) {
     firstPageType = iFirstPageType;
@@ -234,7 +250,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   /**
    * Set the space relative order num
    *
-   * @param iOrderNum
+   * @param iOrderNum the order of the space relative to others
    */
   public void setOrderNum(int iOrderNum) {
     orderNum = iOrderNum;
@@ -243,7 +259,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   /**
    * Get the space relative order num
    *
-   * @return
+   * @return the order of the space relative to the others spaces.
    */
   public int getOrderNum() {
     return orderNum;
@@ -252,7 +268,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   /**
    * Set the space first page extra parameter
    *
-   * @param sFirstPageExtraParam
+   * @param sFirstPageExtraParam parameters to pass to the home page of the space.
    */
   public void setFirstPageExtraParam(String sFirstPageExtraParam) {
     firstPageExtraParam = sFirstPageExtraParam;
@@ -301,12 +317,10 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @param componentInst component instance to be removed
    */
   public void deleteComponentInst(ComponentInst componentInst) {
-    for (int nI = 0; nI < components.size(); nI++) {
-      if (components.get(nI).getName().equals(componentInst.getName())) {
-        components.remove(nI);
-        return;
-      }
-    }
+    components.stream()
+        .filter(c -> c.getName().equals(componentInst.getName()))
+        .findFirst()
+        .ifPresent(c -> components.remove(c));
   }
 
   /**
@@ -325,10 +339,11 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * Get all {@link SilverpeasComponentInstance} of the given space.
    * @return a list of {@link SilverpeasComponentInstance} which could be empty but never null.
    */
-  @SuppressWarnings("unchecked")
   public List<SilverpeasComponentInstance> getAllComponentInstances() {
     if (!isPersonalSpace()) {
-      return (List) components;
+      return components.stream()
+          .map(c -> (SilverpeasComponentInstance) c)
+          .collect(Collectors.toList());
     }
     final List<SilverpeasComponentInstance> componentInstances = new ArrayList<>(components);
     PersonalComponent.getAll()
@@ -365,8 +380,8 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * Get a component from component list, given its name (WARNING : if more than one component
    * instance match the given name, the first one will be returned)
    *
-   * @param nIndex
-   * @return
+   * @param nIndex index of the component instance in the cache.
+   * @return a {@link ComponentInst} instance.
    */
   public ComponentInst getComponentInst(int nIndex) {
     return components.get(nIndex);
@@ -389,9 +404,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    */
   public void addSpaceProfileInst(SpaceProfileInst spaceProfileInst) {
     spaceProfileInst.setSpaceFatherId(String.valueOf(getLocalId()));
-    if (spaceProfiles.contains(spaceProfileInst)) {
-      spaceProfiles.remove(spaceProfileInst);
-    }
+    spaceProfiles.remove(spaceProfileInst);
     spaceProfiles.add(spaceProfileInst);
   }
 
@@ -402,12 +415,10 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    * @param spaceProfileInst space profile to be removed
    */
   public void deleteSpaceProfileInst(SpaceProfileInst spaceProfileInst) {
-    for (int nI = 0; nI < spaceProfiles.size(); nI++) {
-      SpaceProfileInst profile = spaceProfiles.get(nI);
-      if (profile.getId().equals(spaceProfileInst.getId())) {
-        spaceProfiles.remove(nI);
-      }
-    }
+    spaceProfiles.stream()
+        .filter(p -> p.getId().equals(spaceProfileInst.getId()))
+        .findFirst()
+        .ifPresent(p -> spaceProfiles.remove(p));
   }
 
   /**
@@ -495,19 +506,19 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
         .equals(getDomainFatherId()));
   }
 
-  public Date getCreateDate() {
+  public Date getCreationDate() {
     return createDate;
   }
 
-  public void setCreateDate(Date createDate) {
+  public void setCreationDate(Date createDate) {
     this.createDate = createDate;
   }
 
-  public Date getRemoveDate() {
+  public Date getRemovalDate() {
     return removeDate;
   }
 
-  public void setRemoveDate(Date removeDate) {
+  public void setRemovalDate(Date removeDate) {
     this.removeDate = removeDate;
   }
 
@@ -519,11 +530,11 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     this.status = status;
   }
 
-  public Date getUpdateDate() {
+  public Date getLastUpdateDate() {
     return updateDate;
   }
 
-  public void setUpdateDate(Date updateDate) {
+  public void setLastUpdate(Date updateDate) {
     this.updateDate = updateDate;
   }
 
@@ -561,21 +572,21 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     this.look = look;
   }
 
-  public UserDetail getCreator() {
+  public User getCreator() {
     if (creator == null && isDefined(creatorUserId)) {
       creator = UserDetail.getById(creatorUserId);
     }
     return creator;
   }
 
-  public UserDetail getUpdater() {
+  public User getLastUpdater() {
     if (updater == null && isDefined(updaterUserId)) {
       updater = UserDetail.getById(updaterUserId);
     }
     return updater;
   }
 
-  public UserDetail getRemover() {
+  public User getRemover() {
     if (remover == null && isDefined(removerUserId)) {
       remover = UserDetail.getById(removerUserId);
     }
@@ -639,17 +650,18 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   /**
    * Indicates if the quota of the space or of a parent space is reached.
    *
-   * @return
+   * @return true if the quota in storage space of the parent of this component instance is reached.
+   * False otherwise.
    */
   public boolean isComponentSpaceQuotaReached() {
     return getReachedComponentSpaceQuota().isReached();
   }
 
   /**
-   * Gets the error message about component space quota reached.
+   * Gets the error message about reached quota space of this component's father.
    *
-   * @param language
-   * @return
+   * @param language an ISO 631-1 code of the language.
+   * @return a localized error message to indicate a storage space quota is reached.
    */
   public String getComponentSpaceQuotaReachedErrorMessage(final String language) {
     return getQuotaReachedErrorMessage(getReachedComponentSpaceQuota(), language, "componentSpaceQuotaReached");
@@ -696,7 +708,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   /**
    * Indicates if the quota of the space or of a parent space is reached.
    *
-   * @return
+   * @return true if the storage space is reached for this component instance. False otherwise.
    */
   public boolean isDataStorageQuotaReached() {
     return getReachedDataStorageQuota().isReached();
@@ -705,8 +717,8 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   /**
    * Gets the error message about data storage space quota reached.
    *
-   * @param language
-   * @return
+   * @param language the ISO 631-1 code of the language.
+   * @return the localized error message for a reach storage quota space for a component instance.
    */
   public String getDataStorageQuotaReachedErrorMessage(final String language) {
     return getQuotaReachedErrorMessage(getReachedDataStorageQuota(), language, "dataStorageQuotaReached");
@@ -715,10 +727,10 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   /**
    * Centralized the error message about reached quota.
    *
-   * @param quotaReached
-   * @param language
-   * @param stringTemplateFile
-   * @return
+   * @param quotaReached a quota
+   * @param language an ISO 631-1 language code.
+   * @param stringTemplateFile a template file to use for the error message.
+   * @return the error message.
    */
   private String getQuotaReachedErrorMessage(Quota quotaReached, String language,
       final String stringTemplateFile) {
@@ -794,9 +806,8 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
       copy.addSpaceProfileInst(profile.copy());
     }
 
-    for (String lang : getTranslations().keySet()) {
-      SpaceI18N translation = getTranslation(lang);
-      copy.addTranslation(translation);
+    for (Map.Entry<String, SpaceI18N> translation : getTranslations().entrySet()) {
+      copy.addTranslation(translation.getValue());
     }
 
     // clone components

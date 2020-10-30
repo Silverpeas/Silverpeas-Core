@@ -88,7 +88,7 @@ public class ComponentSelection extends ClipboardSelection implements Serializab
     SilverpeasKeyData keyData = new SilverpeasKeyData();
     keyData.setTitle(componentInst.getName());
     keyData.setAuthor(componentInst.getCreatorUserId());
-    keyData.setCreationDate(componentInst.getCreateDate());
+    keyData.setCreationDate(componentInst.getCreationDate());
     keyData.setDesc(componentInst.getDescription());
     return keyData;
   }

@@ -24,14 +24,17 @@
 
 package org.silverpeas.core.admin.component.model;
 
+import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
+import org.silverpeas.core.i18n.LocalizedResource;
 
 import java.util.Optional;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface SilverpeasSharedComponentInstance extends SilverpeasComponentInstance {
+public interface SilverpeasSharedComponentInstance extends SilverpeasComponentInstance,
+    LocalizedResource {
 
   /**
    * Gets a personal silverpeas component instance from the specified identifier.
@@ -42,4 +45,7 @@ public interface SilverpeasSharedComponentInstance extends SilverpeasComponentIn
   static Optional<SilverpeasSharedComponentInstance> getById(String sharedComponentInstanceId) {
     return SilverpeasComponentInstanceProvider.get().getSharedById(sharedComponentInstanceId);
   }
+
+  @Override
+  BasicIdentifier getIdentifier();
 }

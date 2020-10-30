@@ -60,6 +60,11 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   private int orderNumber;
   private String fatherId;
 
+  @Override
+  protected Class<TreeNodeI18N> getTranslationType() {
+    return TreeNodeI18N.class;
+  }
+
   /**
    * Constructor declaration
    *

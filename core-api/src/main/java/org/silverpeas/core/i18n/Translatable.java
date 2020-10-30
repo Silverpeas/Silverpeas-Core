@@ -22,22 +22,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core;
+package org.silverpeas.core.i18n;
 
 /**
- * An object in Silverpeas that is identifiable by a unique identifier encoded as a String. For a
- * better precision in the representation of the identifier, id est when such an identifier is a
- * complex object, then prefer to use the {@link SilverpeasResource} interface.
+ * An object in Silverpeas whose the textual properties are translatable in different languages.
+ * In this case, the object supports the localization (l10n).
  * @author mmoquillon
  */
-public interface Identifiable {
+public interface Translatable {
 
   /**
-   * Gets the unique identifier of the object in Silverpeas. If the is also identified by a local
-   * identifier, then this method should returns the one global to Silverpeas.
-   * @return the identifier encoded as a String. If the identifier is a complex one, that is made up
-   * of several identification parts, then the returned representation should take care of such
-   * a structure.
+   * Gets a translation in the specified language about some textual properties of the object.
+   * If no such translation exists, then returns the default translation of the bean.
+   * @param language the ISO 631-1 code of a language.
+   * @param <T> the concrete type of the translation.
+   * @return a translation of the object in the given language. Can be never null.
    */
-  String getId();
+  <T extends Translation> T getTranslation(final String language);
 }

@@ -38,7 +38,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.*;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.cmis.security.AccessControllerRegister;
-import org.silverpeas.core.Identifiable;
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
@@ -46,9 +46,9 @@ import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.CmisObjectFactory;
 import org.silverpeas.core.cmis.model.Folding;
+import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.cmis.model.TypeId;
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -102,6 +102,22 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
   }
 
   /**
+   * Gets the CMIS representation of the specified localized resource in Silverpeas. This is
+   * a shortcut of the following code:
+   * <blockquote><pre>
+   *  selectInstance(object.getIdentifier().asString()).createCmisObject(object, language);
+   * </pre></blockquote>
+   * @param resource a localized resource in Silverpeas exposed in the CMIS objects tree
+   * @param language the language in which the resource has to be exposed.
+   * @param <T> the concrete type of the CMIS object
+   * @return @return a {@link CmisObject} instance.
+   */
+  protected static <T extends CmisObject> T getCmisObject(final LocalizedResource resource,
+      final String language) {
+    return selectInstance(resource.getIdentifier().asString()).createCmisObject(resource, language);
+  }
+
+  /**
    * Is there any {@link AbstractCmisObjectsTreeWalker} implementation that knows how to handle
    * the subtree rooted to the object with the specified unique identifier?
    * @param objectId the unique identifier of a Silverpeas object.
@@ -121,11 +137,11 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * Gets in Silverpeas the object identified by the specified unique identifier. The way how to get
    * such an object depends on its type and it is then delegated to the walker that handles such a
    * type of Silverpeas objects.
-   * @param objectId the unique identifier of an object in Silverpeas.
    * @param <T> the concrete type of the object to return.
+   * @param objectId the unique identifier of an object in Silverpeas.
    * @return a Silverpeas object or null if no such object exists.
    */
-  protected abstract <T extends Identifiable> T getSilverpeasObjectById(final String objectId);
+  protected abstract <T extends LocalizedResource> T getSilverpeasObjectById(final String objectId);
 
   /**
    * Gets in Silverpeas all the children objects of the specified parent and that are accessible
@@ -133,23 +149,22 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * delegated to the walker that handles such a type of Silverpeas objects.
    * @param parentId the unique identifier of the parent in Silverpeas.
    * @param user the user for which the children are get.
-   * @param <T> the concrete type of the children.
    * @return a stream over all the allowed children of the specified parent in Silverpeas.
    */
-  protected abstract <T extends AbstractI18NBean & Identifiable> Stream<T> getAllowedChildrenOfSilverpeasObject(
-      final String parentId, final User user);
+  protected abstract Stream<LocalizedResource> getAllowedChildrenOfSilverpeasObject(
+      final ResourceIdentifier parentId, final User user);
 
   /**
    * Creates the a CMIS object representation of the specified Silverpeas object. The representation
    * depends on the concrete type of the Silverpeas object. The way how create such a CMIS object
    * depends on the type of the Silverpeas object and it is then delegated to the walker that
    * handles such a type of Silverpeas objects.
-   * @param silverpeasObject an object in Silverpeas.
+   * @param <T> the concrete type of the CMIS object.
+   * @param resource a localized resource in Silverpeas.
    * @param language the language to use in the localization of the CMIS object.
-   * @param <T> the concrete type of the Silverpeas object.
-   * @return a {@link CmisObject} innstance.
+   * @return a {@link CmisObject} instance.
    */
-  protected abstract <T extends CmisObject> T createCmisObject(final Object silverpeasObject,
+  protected abstract <T extends CmisObject> T createCmisObject(final LocalizedResource resource,
       final String language);
 
   /**
@@ -174,7 +189,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
       throw new IllegalArgumentException("Invalid path: " + path);
     }
     final String[] pathSegments = path.substring(1).split(CmisFolder.PATH_SEPARATOR);
-    return walkDownPathForChildData("", 0, pathSegments, filtering);
+    return walkDownPathForChildData(Space.ROOT_ID, 0, pathSegments, filtering);
   }
 
   @Override
@@ -217,7 +232,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * {@link ObjectData} object.
    */
   protected abstract List<ObjectInFolderContainer> browseObjectsInFolderTree(
-      final Identifiable object, final Filtering filtering, final long depth);
+      final LocalizedResource object, final Filtering filtering, final long depth);
 
   /**
    * Browses for the direct children in the CMIS folder represented by the specified Silverpeas
@@ -231,7 +246,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * the CMIS repository tree (if asked by the filtering). The CMIS data are carried by the
    * {@link ObjectData} object.
    */
-  protected abstract ObjectInFolderList browseObjectsInFolder(final Identifiable object,
+  protected abstract ObjectInFolderList browseObjectsInFolder(final LocalizedResource object,
       final Filtering filtering, final Paging paging);
 
   /**
@@ -248,19 +263,14 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * file-able or it is the root folder (the virtual root space in Silverpeas), then an empty list
    * is returned.
    */
-  protected abstract List<ObjectParentData> browseParentsOfObject(final Identifiable object,
+  protected abstract List<ObjectParentData> browseParentsOfObject(final LocalizedResource object,
       final Filtering filtering);
 
   /**
-   * Browses for all the allowed children the different subtrees rooted at the specified objects
-   * down to the given depth of the trees. The subtrees are all part of a same CMIS objects tree and
-   * therefore share a common parent.
-   * @param objectIds the unique identifier of the root of the subtrees to browse. These identifiers
-   * have to be unique alongside of the CMIS object tree and hence can differ of the identifier of
-   * the Silverpeas object. The
-   * {@link org.silverpeas.core.contribution.model.ContributionIdentifier} class is way to have a
-   * true unique identifier among all the CMIS objects when applying to the users contributions
-   * (that implement the {@link org.silverpeas.core.contribution.model.Contribution} interface.
+   * Browses the different subtrees rooted at the specified objects for all the children accessible
+   * by the user in the given filter up to the specified level depth of the trees. The subtrees are
+   * all part of a same CMIS objects tree and therefore share a common parent.
+   * @param objects the objects in Silverpeas as root of the subtrees to browse.
    * @param filtering the filtering rules to apply on the CMIS data to return.
    * @param depth the depth of the browsing of the tree.
    * @return a list of {@link ObjectInFolderContainer} elements (the direct children), each
@@ -270,12 +280,12 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * repository tree (if asked by the filtering). The CMIS data are carried by the
    * {@link ObjectData} object.
    */
-  protected final List<ObjectInFolderContainer> browseObjectsInFolderSubTrees(final String[] objectIds,
-      final Filtering filtering, final long depth) {
+  protected final List<ObjectInFolderContainer> browseObjectsInFolderSubTrees(
+      final List<LocalizedResource> objects, final Filtering filtering, final long depth) {
     List<ObjectInFolderContainer> tree = new ArrayList<>();
-    for (String objectId : objectIds) {
-      final AbstractCmisObjectsTreeWalker walker = AbstractCmisObjectsTreeWalker.selectInstance(objectId);
-      final Identifiable object = walker.getSilverpeasObjectById(objectId);
+    for (LocalizedResource object : objects) {
+      final AbstractCmisObjectsTreeWalker walker =
+          AbstractCmisObjectsTreeWalker.selectInstance(object.getIdentifier().asString());
       final CmisFolder child = walker.createCmisObject(object, filtering.getLanguage());
       final ObjectInFolderContainerImpl objectInFolder =
           buildObjectInFolderContainer(child, filtering);
@@ -294,13 +304,8 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * Builds the CMIS data corresponding to all of the specified Silverpeas object by taking into
    * account the filtering that indicates the properties to return and the paging that indicates
    * both from which object the build is started and the number of objects to build (and return).
-   * @param objectIds the unique identifiers of the Silverpeas objects for which a CMIS object
+   * @param objects the objects in Silverpeas to expose and therefore for which a CMIS object
    * representation has to be built.
-   * These identifiers have to be unique alongside of the CMIS object tree and hence can differ of
-   * the identifier of the Silverpeas object. The
-   * {@link org.silverpeas.core.contribution.model.ContributionIdentifier} class is way to have a
-   * true unique identifier among all the CMIS objects when applying to the users contributions
-   * (that implement the {@link org.silverpeas.core.contribution.model.Contribution} interface.
    * @param filtering the filtering rules to apply on the data to build.
    * @param paging the paging to apply on the elements of the list.
    * @return an {@link ObjectInFolderList} instance that is a list of {@link ObjectInFolderData}
@@ -309,24 +314,23 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * {@link ObjectData} object. The size and the content of the list is conditioned by the paging
    * rules.
    */
-  protected final ObjectInFolderList buildObjectInFolderList(final String[] objectIds,
+  protected final ObjectInFolderList buildObjectInFolderList(final List<LocalizedResource> objects,
       final Filtering filtering, final Paging paging) {
-    final List<ObjectInFolderData> children = Stream.of(objectIds)
+    final List<ObjectInFolderData> children = objects.stream()
         .skip(paging.getSkipCount().longValue())
         .limit(paging.getMaxItems().longValue())
-        .map(id -> {
-          AbstractCmisObjectsTreeWalker walker = AbstractCmisObjectsTreeWalker.selectInstance(id);
-          Identifiable object = walker.getSilverpeasObjectById(id);
-          CmisFolder cmisObject = walker.createCmisObject(object, filtering.getLanguage());
+        .map(o -> {
+          CmisFolder cmisObject =
+              AbstractCmisObjectsTreeWalker.getCmisObject(o, filtering.getLanguage());
           return buildObjectInFolderData(cmisObject, filtering);
         })
         .collect(Collectors.toList());
 
     final ObjectInFolderListImpl childrenInList = new ObjectInFolderListImpl();
     childrenInList.setHasMoreItems(
-        paging.getSkipCount().longValue() + children.size() < objectIds.length);
+        paging.getSkipCount().longValue() + children.size() < objects.size());
     childrenInList.setObjects(children);
-    childrenInList.setNumItems(BigInteger.valueOf(objectIds.length));
+    childrenInList.setNumItems(BigInteger.valueOf(objects.size()));
     return childrenInList;
   }
 
@@ -418,19 +422,19 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
     return objData;
   }
 
-  private ObjectData walkDownPathForChildData(final String parentId, final int idx,
+  private ObjectData walkDownPathForChildData(final ResourceIdentifier parentId, final int idx,
       final String[] pathSegments, final Filtering filtering) {
     final User user = filtering.getCurrentUser();
     final String language = user.getUserPreferences().getLanguage();
-    final Identifiable object = getAllowedChildrenOfSilverpeasObject(parentId, user).filter(
-        s -> s.getName(language).equals(pathSegments[idx]))
+    final LocalizedResource object = getAllowedChildrenOfSilverpeasObject(parentId, user).filter(
+        s -> s.getTranslation(language).getName().equals(pathSegments[idx]))
         .findFirst()
         .orElseThrow(() -> new CmisObjectNotFoundException(
             "No such object with name '" + pathSegments[idx] + "' in the path " +
                 String.join(CmisFolder.PATH_SEPARATOR, pathSegments)));
-    String objectId = getCmisObjectId(object);
+    ResourceIdentifier objectId = object.getIdentifier();
     final AbstractCmisObjectsTreeWalker walker =
-        AbstractCmisObjectsTreeWalker.selectInstance(objectId);
+        AbstractCmisObjectsTreeWalker.selectInstance(objectId.asString());
     if (idx >= pathSegments.length - 1) {
       CmisObject cmisObject = walker.createCmisObject(object, filtering.getLanguage());
       return buildObjectData(cmisObject, filtering);
@@ -439,26 +443,9 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
     }
   }
 
-  /**
-   * Gets the unique identifier of the specified Silverpeas object as exposed in the CMIS objects
-   * tree.
-   * @param object a Silverpeas object exposed through our implementation of CMIS.
-   * @return the unique identifier of the CMIS object representation of the specified Silverpeas
-   * object.
-   */
-  protected String getCmisObjectId(final Identifiable object) {
-    String objectId;
-    if (object instanceof Contribution) {
-      objectId = ((Contribution) object).getContributionId().asString();
-    } else {
-      objectId = object.getId();
-    }
-    return objectId;
-  }
-
   private <T> T checkAndDo(final String objectId, final Filtering filtering,
-      BiFunction<Identifiable, Filtering, T> action) {
-    final Identifiable object = getSilverpeasObjectById(objectId);
+      BiFunction<LocalizedResource, Filtering, T> action) {
+    final LocalizedResource object = getSilverpeasObjectById(objectId);
     checkObjectExists(objectId, object);
     checkUserPermissions(filtering.getCurrentUser(), object.getClass(), objectId);
     return action.apply(object, filtering);
@@ -500,12 +487,6 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
 
   private static void setPropertyId(final MutableProperties props, final String propertyName,
       final String propertyValue, final Set<String> filter) {
-    applyFilter(filter, propertyName,
-        () -> props.addProperty(new PropertyIdImpl(propertyName, propertyValue)));
-  }
-
-  private static void setPropertyIds(final MutableProperties props, final String propertyName,
-      final List<String> propertyValue, final Set<String> filter) {
     applyFilter(filter, propertyName,
         () -> props.addProperty(new PropertyIdImpl(propertyName, propertyValue)));
   }

@@ -64,12 +64,10 @@ import java.util.StringTokenizer;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 @EnableSilverTestEnv
 @TestManagedMocks({Administration.class, SessionManager.class, SilverStatisticsManager.class})
@@ -80,7 +78,7 @@ public abstract class WebComponentRequestRouterTest {
   private OrganizationController mockedOrganizationController;
 
   @TestedBean
-  private WebComponentRequestRouter requestRouter;
+  private WebComponentRequestRouter<?, ?> requestRouter;
 
   @TestedBean
   private SilverpeasWebUtil silverpeasWebUtil;
@@ -100,13 +98,13 @@ public abstract class WebComponentRequestRouterTest {
     return mockedOrganizationController;
   }
 
-  protected void verifyNoNavigation(TestResult testResult) throws Exception {
+  protected void verifyNoNavigation(TestResult<?> testResult) throws Exception {
     ServletContext servletContextMock = testResult.router.getServletContext();
     verify(servletContextMock, times(0)).getRequestDispatcher(anyString());
     verify(testResult.requestContext.getResponse(), times(1)).getWriter();
   }
 
-  protected void verifyDestination(WebComponentRequestRouter routerInstance,
+  protected void verifyDestination(WebComponentRequestRouter<?, ?> routerInstance,
       String expectedDestination) {
     ServletContext servletContextMock = routerInstance.getServletContext();
     verify(servletContextMock, times(1)).getRequestDispatcher(expectedDestination);
@@ -141,23 +139,23 @@ public abstract class WebComponentRequestRouterTest {
     when(request.getPathInfo()).thenReturn(uriPart);
     when(request.getRequestURI()).thenReturn(
         UriBuilder.fromPath(URLUtil.getApplicationURL()).path(uriPart).build().toString());
-    when(organisationController.isComponentAvailableToUser(anyString(), anyString()))
-        .then(new Returns(true));
-    when(organisationController.getComponentInstLight(anyString()))
-        .then(new Returns(new ComponentInstLight()));
+    when(organisationController.isComponentAvailableToUser(anyString(), anyString())).then(
+        new Returns(true));
+    when(organisationController.getComponentInstLight(anyString())).then(
+        new Returns(new ComponentInstLight()));
     when(mainSessionController.getCurrentUserDetail()).thenReturn(new UserDetail());
     ComponentContext componentContext = mock(ComponentContext.class);
-    when(componentContext.getCurrentProfile())
-        .thenReturn(highestUserRole != null ? new String[]{highestUserRole.getName()} : null);
+    when(componentContext.getCurrentProfile()).thenReturn(
+        highestUserRole != null ? new String[]{highestUserRole.getName()} : null);
     when(componentContext.getCurrentComponentName()).thenReturn("componentName");
     when(componentContext.getCurrentSpaceName()).thenReturn("spaceName");
     when(componentContext.getCurrentComponentId()).thenReturn("componentName26");
-    when(mainSessionController.createComponentContext(any(), anyString()))
-        .then(new Returns(componentContext));
-    when(session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT))
-        .thenReturn(mainSessionController);
-    when(session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT))
-        .thenReturn(mock(GraphicElementFactory.class));
+    when(mainSessionController.createComponentContext(any(), anyString())).then(
+        new Returns(componentContext));
+    when(session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT)).thenReturn(
+        mainSessionController);
+    when(session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT)).thenAnswer(i ->
+        mock(GraphicElementFactory.class));
     when(request.getSession()).thenReturn(session);
     when(request.getSession(anyBoolean())).then(new Returns(session));
     return request;
@@ -165,14 +163,13 @@ public abstract class WebComponentRequestRouterTest {
 
   /**
    * Initialization of a WebComponentController.
-   * @param controller
    */
-  private WebComponentRequestRouter initRequestRouterWith(WebComponentRequestRouter routerInstance,
-      Class<? extends WebComponentController> controller) {
+  private WebComponentRequestRouter<?, ?> initRequestRouterWith(WebComponentRequestRouter<?, ?> routerInstance,
+      Class<? extends WebComponentController<?>> controller) {
     ServletConfig servletConfig = mock(ServletConfig.class);
     when(servletConfig.getInitParameter(
-        org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController.class
-            .getSimpleName())).thenReturn(controller.getName());
+        org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController.class.getSimpleName()))
+        .thenReturn(controller.getName());
     ServletContext servletContext = mock(ServletContext.class);
     when(servletConfig.getServletContext()).thenReturn(servletContext);
 
@@ -184,107 +181,95 @@ public abstract class WebComponentRequestRouterTest {
     return routerInstance;
   }
 
-  @SuppressWarnings("unchecked")
-  protected <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
-      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<? extends
-          WebComponentController>> ControllerTest<CONTROLLER, WEB_COMPONENT_REQUEST_CONTEXT>
-  onController(
-      Class<CONTROLLER> controllerClass) {
-    return new ControllerTest(controllerClass);
+  protected <C extends WebComponentController<R>, R extends WebComponentRequestContext<?
+      extends WebComponentController<R>>> ControllerTest<C, R> onController(
+      Class<C> controllerClass) {
+    return new ControllerTest<>(controllerClass);
   }
 
-  protected class TestResult<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext<?
-      extends WebComponentController>> {
-    public WebComponentRequestRouter router = null;
-    public WEB_COMPONENT_REQUEST_CONTEXT requestContext = null;
+  protected static class TestResult<R extends WebComponentRequestContext<?
+      extends WebComponentController<R>>> {
+    public WebComponentRequestRouter<?, R> router = null;
+    public R requestContext = null;
   }
 
-  protected class ControllerTest<CONTROLLER extends
-      WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>, WEB_COMPONENT_REQUEST_CONTEXT
-      extends WebComponentRequestContext<? extends WebComponentController>> {
-    private Class<CONTROLLER> controllerClass = null;
+  protected class ControllerTest<C extends WebComponentController<R>,
+      R extends WebComponentRequestContext<? extends WebComponentController<R>>> {
+    private final Class<C> controllerClass;
     private SilverpeasRole highestUserRole = null;
 
-    protected ControllerTest(Class<CONTROLLER> controllerClass) {
+    protected ControllerTest(Class<C> controllerClass) {
       this.controllerClass = controllerClass;
     }
 
-    public ControllerTest setHighestUserRole(SilverpeasRole highestUserRole) {
+    public ControllerTest<C, R> setHighestUserRole(SilverpeasRole highestUserRole) {
       this.highestUserRole = highestUserRole;
       return this;
     }
 
-    @SuppressWarnings("unchecked")
-    public RequestTest<CONTROLLER, WEB_COMPONENT_REQUEST_CONTEXT> defaultRequest()
-        throws Exception {
-      return new RequestTest(this);
+    public RequestTest<C, R> defaultRequest() {
+      return new RequestTest<>(this);
     }
   }
 
-  protected class RequestTest<CONTROLLER extends
-      WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>, WEB_COMPONENT_REQUEST_CONTEXT
-      extends WebComponentRequestContext<? extends WebComponentController>> {
-    private ControllerTest<CONTROLLER, WEB_COMPONENT_REQUEST_CONTEXT> controller;
+  protected class RequestTest<C extends WebComponentController<R>,
+      R extends WebComponentRequestContext<? extends WebComponentController<R>>> {
+    private final ControllerTest<C, R> controller;
     private String httpMethod = HttpMethod.GET;
     private String suffixPath = "Main";
 
-    protected RequestTest(ControllerTest<CONTROLLER, WEB_COMPONENT_REQUEST_CONTEXT> controller) {
+    protected RequestTest(ControllerTest<C, R> controller) {
       this.controller = controller;
     }
 
-    public RequestTest changeHttpMethodWith(final String httpMethod) {
+    public RequestTest<C, R> changeHttpMethodWith(final String httpMethod) {
       this.httpMethod = httpMethod;
       return this;
     }
 
-    public RequestTest changeSuffixPathWith(final String suffixPath) {
+    public RequestTest<C, R> changeSuffixPathWith(final String suffixPath) {
       this.suffixPath = suffixPath;
       return this;
     }
 
     @SuppressWarnings("unchecked")
-    public TestResult<WEB_COMPONENT_REQUEST_CONTEXT> perform() throws Exception {
+    public TestResult<R> perform() throws Exception {
       SimpleCache sessionCache = CacheServiceProvider.getSessionCacheService().getCache();
       CacheServiceProvider.getRequestCacheService().clearAllCaches();
       if (sessionCache != null) {
         // Session cache is not trashed
-        ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
-            .setCurrentSessionCache(sessionCache);
+        ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).setCurrentSessionCache(
+            sessionCache);
       } else {
         // Putting a current requester for the next actions of this test.
         ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
       }
 
-      WebComponentRequestRouter routerInstance =
+      WebComponentRequestRouter<?, ?> routerInstance =
           initRequestRouterWith(requestRouter, controller.controllerClass);
       HttpServletResponse response = mock(HttpServletResponse.class);
       when(response.getWriter()).thenReturn(new PrintWriter4Test(new ByteArrayOutputStream()));
       if (HttpMethod.GET.equals(httpMethod)) {
-        routerInstance
-            .doGet(mockRequest("/componentName26/" + suffixPath, controller.highestUserRole),
-                response);
+        routerInstance.doGet(
+            mockRequest("/componentName26/" + suffixPath, controller.highestUserRole), response);
       } else if (HttpMethod.POST.equals(httpMethod)) {
-        routerInstance
-            .doPost(mockRequest("/componentName26/" + suffixPath, controller.highestUserRole),
-                response);
+        routerInstance.doPost(
+            mockRequest("/componentName26/" + suffixPath, controller.highestUserRole), response);
       } else if (HttpMethod.PUT.equals(httpMethod)) {
-        routerInstance
-            .doPut(mockRequest("/componentName26/" + suffixPath, controller.highestUserRole),
-                response);
+        routerInstance.doPut(
+            mockRequest("/componentName26/" + suffixPath, controller.highestUserRole), response);
       } else if (HttpMethod.DELETE.equals(httpMethod)) {
-        routerInstance
-            .doDelete(mockRequest("/componentName26/" + suffixPath, controller.highestUserRole),
-                response);
+        routerInstance.doDelete(
+            mockRequest("/componentName26/" + suffixPath, controller.highestUserRole), response);
       }
-      WEB_COMPONENT_REQUEST_CONTEXT requestContext =
-          (WEB_COMPONENT_REQUEST_CONTEXT) CacheServiceProvider.getRequestCacheService().getCache()
-              .get(WebComponentRequestContext.class.getName());
+      R requestContext = (R) CacheServiceProvider.getRequestCacheService()
+          .getCache()
+          .get(WebComponentRequestContext.class.getName());
       assertThat(requestContext, notNullValue());
       assertThat(requestContext.getHttpMethodClass().getName(), Matchers.endsWith(httpMethod));
       assertThat(requestContext.getController(), instanceOf(controller.controllerClass));
-      TestResult<WEB_COMPONENT_REQUEST_CONTEXT> testResult =
-          new TestResult<WEB_COMPONENT_REQUEST_CONTEXT>();
-      testResult.router = routerInstance;
+      TestResult<R> testResult = new TestResult<>();
+      testResult.router = (WebComponentRequestRouter<?, R>) routerInstance;
       testResult.requestContext = requestContext;
       return testResult;
     }
@@ -292,6 +277,7 @@ public abstract class WebComponentRequestRouterTest {
 
   private static class PrintWriter4Test extends PrintWriter {
     ByteArrayOutputStream baos;
+
     PrintWriter4Test(final ByteArrayOutputStream out) {
       super(out);
       baos = out;

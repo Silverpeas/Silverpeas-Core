@@ -96,9 +96,9 @@ public class SpaceInstManager {
     spaceInst.setFirstPageType(spaceInstToCopy.getFirstPageType());
     spaceInst.setFirstPageExtraParam(spaceInstToCopy.getFirstPageExtraParam());
     spaceInst.setOrderNum(spaceInstToCopy.getOrderNum());
-    spaceInst.setCreateDate(spaceInstToCopy.getCreateDate());
-    spaceInst.setUpdateDate(spaceInstToCopy.getUpdateDate());
-    spaceInst.setRemoveDate(spaceInstToCopy.getRemoveDate());
+    spaceInst.setCreationDate(spaceInstToCopy.getCreationDate());
+    spaceInst.setLastUpdate(spaceInstToCopy.getLastUpdateDate());
+    spaceInst.setRemovalDate(spaceInstToCopy.getRemovalDate());
     spaceInst.setStatus(spaceInstToCopy.getStatus());
     spaceInst.setUpdaterUserId(spaceInstToCopy.getUpdaterUserId());
     spaceInst.setRemoverUserId(spaceInstToCopy.getRemoverUserId());
@@ -295,13 +295,13 @@ public class SpaceInstManager {
     spaceInst.setOrderNum(space.orderNum);
 
     if (space.createTime != null) {
-      spaceInst.setCreateDate(new Date(Long.parseLong(space.createTime)));
+      spaceInst.setCreationDate(new Date(Long.parseLong(space.createTime)));
     }
     if (space.updateTime != null) {
-      spaceInst.setUpdateDate(new Date(Long.parseLong(space.updateTime)));
+      spaceInst.setLastUpdate(new Date(Long.parseLong(space.updateTime)));
     }
     if (space.removeTime != null) {
-      spaceInst.setRemoveDate(new Date(Long.parseLong(space.removeTime)));
+      spaceInst.setRemovalDate(new Date(Long.parseLong(space.removeTime)));
     }
 
     spaceInst.setUpdaterUserId(idAsString(space.updatedBy));

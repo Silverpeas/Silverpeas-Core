@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.component.model;
 
+import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -79,6 +80,11 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   private List<ProfileInst> profiles;
   private transient List<Parameter> parameters = null;
 
+  @Override
+  protected Class<ComponentI18N> getTranslationType() {
+    return ComponentI18N.class;
+  }
+
   /**
    * Creates new ComponentInst
    */
@@ -128,6 +134,11 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
       }
     }
     return componentId;
+  }
+
+  @Override
+  public BasicIdentifier getIdentifier() {
+    return new BasicIdentifier(getLocalId(), getId());
   }
 
   public ComponentInst copy() {
@@ -230,19 +241,19 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return getOrderNum();
   }
 
-  public Date getCreateDate() {
+  public Date getCreationDate() {
     return createDate;
   }
 
-  public void setCreateDate(Date createDate) {
+  public void setCreationDate(Date createDate) {
     this.createDate = createDate;
   }
 
-  public Date getRemoveDate() {
+  public Date getRemovalDate() {
     return removeDate;
   }
 
-  public void setRemoveDate(Date removeDate) {
+  public void setRemovalDate(Date removeDate) {
     this.removeDate = removeDate;
   }
 
@@ -254,11 +265,11 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     this.status = status;
   }
 
-  public Date getUpdateDate() {
+  public Date getLastUpdateDate() {
     return updateDate;
   }
 
-  public void setUpdateDate(Date updateDate) {
+  public void setLastUpdateDate(Date updateDate) {
     this.updateDate = updateDate;
   }
 
@@ -418,21 +429,21 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     creator = null;
   }
 
-  public UserDetail getCreator() {
+  public User getCreator() {
     if (creator == null && isDefined(creatorUserId)) {
       creator = UserDetail.getById(creatorUserId);
     }
     return creator;
   }
 
-  public UserDetail getUpdater() {
+  public User getLastUpdater() {
     if (updater == null && isDefined(updaterUserId)) {
       updater = UserDetail.getById(updaterUserId);
     }
     return updater;
   }
 
-  public UserDetail getRemover() {
+  public User getRemover() {
     if (remover == null && isDefined(removerUserId)) {
       remover = UserDetail.getById(removerUserId);
     }

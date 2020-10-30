@@ -26,6 +26,7 @@ package org.silverpeas.core.node.model;
 import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.Folder;
 import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.security.Securable;
@@ -52,7 +53,7 @@ import java.util.Date;
 @XmlRootElement(name = "xmlField")
 @XmlAccessorType(XmlAccessType.NONE)
 public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Identifiable,
-    I18nContribution, Serializable, Securable {
+    I18nContribution, Folder, Serializable, Securable {
 
   private static final long serialVersionUID = -1401884517616404337L;
   private static final String UNKNOWN = "unknown";
@@ -152,6 +153,11 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
     this.childrenDetails = null;
   }
 
+  @Override
+  protected Class<NodeI18NDetail> getTranslationType() {
+    return NodeI18NDetail.class;
+  }
+
   /**
    * Get the NodePK
    * @return The NodePK
@@ -196,8 +202,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
   }
 
   /**
-   * Is this node unclassified? A node is unclassified if it is an orphan, it isn't attached to an
-   * existing classification tree.
+   * Is this node the one containing unclassified contributions?
    * @return true if the node isn't yet classified among other nodes. False otherwise.
    */
   public boolean isUnclassified() {
@@ -219,7 +224,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
   }
 
   @Override
-  public ContributionIdentifier getContributionId() {
+  public ContributionIdentifier getIdentifier() {
     return ContributionIdentifier.from(getNodePK().getInstanceId(), getNodePK().getId(),
         getContributionType());
   }
@@ -244,7 +249,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
    * @return the creator of the node
    */
   @Override
-  public User getLastModifier() {
+  public User getLastUpdater() {
     return getCreator();
   }
 
@@ -253,7 +258,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
    * @return the creation date.
    */
   @Override
-  public Date getLastModificationDate() {
+  public Date getLastUpdateDate() {
     return getCreationDate();
   }
 
@@ -557,10 +562,5 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Iden
   public boolean canBeSharedBy(final User user) {
     final AccessControlContext context = AccessControlContext.init().onOperationsOf(AccessControlOperation.SHARING);
     return NodeAccessControl.get().isUserAuthorized(user.getId(), this, context);
-  }
-
-  @Override
-  public NodeI18NDetail getTranslation(final String language) {
-    return super.getTranslation(language);
   }
 }

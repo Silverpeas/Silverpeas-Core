@@ -95,6 +95,6 @@ public abstract class AbstractContributionTemplateUserNotificationBuilder<C exte
 
   @Override
   protected String getComponentInstanceId() {
-    return getResource().getContributionId().getComponentInstanceId();
+    return getResource().getIdentifier().getComponentInstanceId();
   }
 }

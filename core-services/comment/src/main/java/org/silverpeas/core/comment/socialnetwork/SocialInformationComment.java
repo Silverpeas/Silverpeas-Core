@@ -40,8 +40,8 @@ public class SocialInformationComment extends AbstractSocialInformation {
   public SocialInformationComment(Comment comment) {
     this.comment = comment;
     setAuthor(comment.getCreator().getId());
-    if (comment.getLastModificationDate() != null) {
-      setDate(comment.getLastModificationDate());
+    if (comment.getLastUpdateDate() != null) {
+      setDate(comment.getLastUpdateDate());
       setUpdated(true);
     } else {
       setDate(comment.getCreationDate());

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.contribution.model;
 
+import org.silverpeas.core.SilverpeasResource;
 import org.silverpeas.core.Instance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * A contribution in Silverpeas. A contribution is an identifiable resource that is pushed by a
@@ -37,42 +37,15 @@ import java.util.Date;
  * always a content that can be of any type (simple text, WYSIWYG, form, image, ...).
  * @author mmoquillon
  */
-public interface Contribution extends Serializable, Securable, Instance<Contribution> {
+public interface Contribution extends SilverpeasResource, Serializable, Securable,
+    Instance<Contribution> {
 
   /**
    * Gets the unique identifier of this contribution.
    * @return the unique identifier of the contribution.
    */
-  ContributionIdentifier getContributionId();
-
-  /**
-   * Gets the user that has created this contribution.
-   * @return the user that has created this contribution.
-   */
-  User getCreator();
-
-  /**
-   * Gets the date at which this content was created.
-   * @return the date at which this content was created.
-   */
-  Date getCreationDate();
-
-  /**
-   * Gets the last user that has modified this contribution.<br>
-   * When some old entities can not provide a modifier, then the creator is returned.
-   * @return the detail about the user that has modified this contribution.
-   */
-  User getLastModifier();
-
-  /**
-   * Gets the date at which this content was modified.
-   * <p>
-   * Some beans can not handle both creation and modification dates. In a such case, both methods
-   * ({@link #getCreationDate()} and this method) returns the same date.
-   * </p>
-   * @return the date at which this content was created.
-   */
-  Date getLastModificationDate();
+  @SuppressWarnings("unchecked")
+  ContributionIdentifier getIdentifier();
 
   /**
    * Gets the title of this contribution if any. By default returns an empty String.
@@ -81,6 +54,14 @@ public interface Contribution extends Serializable, Securable, Instance<Contribu
    */
   default String getTitle() {
     return "";
+  }
+
+  /**
+   * Gets the name of this contribution. The name is in a contribution its title.
+   * @return the contribution title.
+   */
+  default String getName() {
+    return getTitle();
   }
 
   /**
@@ -129,7 +110,7 @@ public interface Contribution extends Serializable, Securable, Instance<Contribu
   @Override
   default boolean canBeAccessedBy(final User user) {
     return ComponentAccessControl.get()
-        .isUserAuthorized(user.getId(), getContributionId().getComponentInstanceId());
+        .isUserAuthorized(user.getId(), getIdentifier().getComponentInstanceId());
   }
 
   /**

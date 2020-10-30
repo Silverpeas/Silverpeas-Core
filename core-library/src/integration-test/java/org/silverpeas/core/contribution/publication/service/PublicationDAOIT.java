@@ -120,7 +120,7 @@ public class PublicationDAOIT {
       assertEquals(detail.getBeginHour(), result.getBeginHour());
       assertEquals(detail.getContentPagePath(), result.getContentPagePath());
       assertEquals(detail.getCreationDate(), result.getCreationDate());
-      assertEquals(detail.getUpdateDate(), result.getCreationDate());
+      assertEquals(detail.getLastUpdateDate(), result.getCreationDate());
       assertEquals(detail.getCreatorId(), result.getCreatorId());
       assertEquals(detail.getDescription(), result.getDescription());
       assertEquals(detail.getEndDate(), result.getEndDate());
@@ -578,7 +578,7 @@ public class PublicationDAOIT {
       assertEquals(detail.getBeginHour(), result.getBeginHour());
       assertEquals(detail.getContentPagePath(), result.getContentPagePath());
       assertEquals(detail.getCreationDate(), result.getCreationDate());
-      assertEquals(detail.getUpdateDate(), result.getCreationDate());
+      assertEquals(detail.getLastUpdateDate(), result.getCreationDate());
       assertEquals(detail.getCreatorId(), result.getCreatorId());
       assertEquals(detail.getDescription(), result.getDescription());
       assertEquals(detail.getEndDate(), result.getEndDate());

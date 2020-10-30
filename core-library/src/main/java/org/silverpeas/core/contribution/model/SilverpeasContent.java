@@ -74,7 +74,7 @@ public interface SilverpeasContent extends Identifiable, Contribution {
    */
 
   @Override
-  default ContributionIdentifier getContributionId() {
+  default ContributionIdentifier getIdentifier() {
     return ContributionIdentifier.from(getComponentInstanceId(), getId(), getContributionType());
   }
 }

@@ -879,7 +879,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
 
     final Collection<String> languages = nodeDetail.getLanguages();
     languages.forEach(l -> {
-      NodeI18NDetail translation = nodeDetail.getTranslation(l);
+      NodeI18NDetail translation = nodeDetail.getTranslations().get(l);
       indexEntry.setTitle(translation.getName(), l);
       indexEntry.setPreview(translation.getDescription(), l);
       if (processWysiwygContent) {

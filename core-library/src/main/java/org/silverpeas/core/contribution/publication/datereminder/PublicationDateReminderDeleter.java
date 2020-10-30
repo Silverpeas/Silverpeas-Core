@@ -46,7 +46,7 @@ public class PublicationDateReminderDeleter implements ContributionDeletion {
   public void delete(final Contribution contribution) {
     if (contribution.getContributionType().equals(PublicationDetail.getResourceType())) {
       PublicationNoteReference publicationNoteReference =
-          new PublicationNoteReference(contribution.getContributionId().getLocalId());
+          new PublicationNoteReference(contribution.getIdentifier().getLocalId());
       dateReminderService.remove(publicationNoteReference);
     }
   }

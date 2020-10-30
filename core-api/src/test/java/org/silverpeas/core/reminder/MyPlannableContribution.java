@@ -46,7 +46,7 @@ public class MyPlannableContribution implements Contribution, Plannable {
   }
 
   @Override
-  public ContributionIdentifier getContributionId() {
+  public ContributionIdentifier getIdentifier() {
     return id;
   }
 
@@ -66,12 +66,12 @@ public class MyPlannableContribution implements Contribution, Plannable {
   }
 
   @Override
-  public User getLastModifier() {
+  public User getLastUpdater() {
     return null;
   }
 
   @Override
-  public Date getLastModificationDate() {
+  public Date getLastUpdateDate() {
     return null;
   }
 

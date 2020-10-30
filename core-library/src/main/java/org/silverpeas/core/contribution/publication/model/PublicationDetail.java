@@ -173,6 +173,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   private ContributionRating contributionRating;
 
+  @Override
+  protected Class<PublicationI18N> getTranslationType() {
+    return PublicationI18N.class;
+  }
+
   /**
    * Default contructor, required for JAXB mapping in importExport.
    */
@@ -504,11 +509,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   }
 
-  @Override
-  public PublicationI18N getTranslation(final String language) {
-    return super.getTranslation(language);
-  }
-
   public PublicationPK getPK() {
     return pk;
   }
@@ -600,7 +600,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   @Override
-  public ContributionIdentifier getContributionId() {
+  public ContributionIdentifier getIdentifier() {
     return ContributionIdentifier.from(getInstanceId(), getId(), getContributionType());
   }
 
@@ -675,7 +675,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     this.thumbnail = thumbnail;
   }
 
-  public Date getUpdateDate() {
+  public Date getLastUpdateDate() {
     return updateDate;
   }
 
@@ -684,7 +684,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   @Override
-  public User getLastModifier() {
+  public User getLastUpdater() {
     return updaterId != null ? User.getById(updaterId) : null;
   }
 
@@ -714,7 +714,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     result.append(" getKeywords() = ").append(getKeywords()).append("\n");
     result.append(" getContent() = ").append(getContentPagePath()).append("\n");
     result.append(" getStatus() = ").append(getStatus()).append("\n");
-    result.append(" getUpdateDate() = ").append(getUpdateDate()).append("\n");
+    result.append(" getUpdateDate() = ").append(getLastUpdateDate()).append("\n");
     result.append(" getUpdaterId() = ").append(getUpdaterId()).append("\n");
     result.append(" getValidateDate() = ").append(getValidateDate()).append("\n");
     result.append(" getValidatorId() = ").append(getValidatorId()).append("\n");
@@ -796,8 +796,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   @Override
   public String getDate() {
-    if (getUpdateDate() != null) {
-      return DateUtil.date2SQLDate(getUpdateDate());
+    if (getLastUpdateDate() != null) {
+      return DateUtil.date2SQLDate(getLastUpdateDate());
     }
     return DateUtil.date2SQLDate(getCreationDate());
   }

@@ -166,7 +166,7 @@ public class AnnotationUtil {
       Class<? extends Annotation> annotationClass, Object object) {
     WAPrimaryKey waPrimaryKey = null;
     if (object instanceof Contribution) {
-      ContributionIdentifier contributionIdentifier = ((Contribution) object).getContributionId();
+      ContributionIdentifier contributionIdentifier = ((Contribution) object).getIdentifier();
       waPrimaryKey =
           new ResourceReference(contributionIdentifier.getLocalId(), contributionIdentifier.getComponentInstanceId());
     } else if (object instanceof SilverpeasContent) {

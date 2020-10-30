@@ -31,6 +31,11 @@ public class SilverContent extends AbstractI18NBean<SilverContentI18N>
   private static final long serialVersionUID = 1L;
   private String silverContentURL;
 
+  @Override
+  protected Class<SilverContentI18N> getTranslationType() {
+    return SilverContentI18N.class;
+  }
+
   public SilverContent(String name, String description, String url) {
     setName(name);
     setDescription(description);

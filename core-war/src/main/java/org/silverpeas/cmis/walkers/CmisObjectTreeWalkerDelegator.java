@@ -50,7 +50,7 @@ public class CmisObjectTreeWalkerDelegator implements CmisObjectsTreeWalker {
 
   @Override
   public ObjectData getObjectDataByPath(final String path, final Filtering filtering) {
-    return selector.selectByObjectId(Space.ROOT_ID).getObjectDataByPath(path, filtering);
+    return selector.selectByObjectId(Space.ROOT_ID.asString()).getObjectDataByPath(path, filtering);
   }
 
   @Override

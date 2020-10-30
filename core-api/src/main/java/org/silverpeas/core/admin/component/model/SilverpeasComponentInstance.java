@@ -25,6 +25,7 @@
 package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.Identifiable;
+import org.silverpeas.core.Nameable;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -39,7 +40,7 @@ import java.util.Optional;
  * an instance of a personal application.
  * @author Yohann Chastagnier
  */
-public interface SilverpeasComponentInstance extends Identifiable, Serializable {
+public interface SilverpeasComponentInstance extends Identifiable, Nameable, Serializable {
 
   /**
    * Gets a silverpeas component instance from the specified identifier.

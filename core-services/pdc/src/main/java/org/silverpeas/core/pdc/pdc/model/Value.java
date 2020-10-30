@@ -24,6 +24,8 @@
 package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.pdc.tree.model.TreeNode;
+import org.silverpeas.core.pdc.tree.model.TreeNodeI18N;
+
 import java.util.List;
 
 public class Value extends TreeNode implements java.io.Serializable {
@@ -43,6 +45,12 @@ public class Value extends TreeNode implements java.io.Serializable {
   //
   // constructor
   //
+
+
+  @Override
+  protected Class<TreeNodeI18N> getTranslationType() {
+    return TreeNodeI18N.class;
+  }
 
   public Value() {
     super();

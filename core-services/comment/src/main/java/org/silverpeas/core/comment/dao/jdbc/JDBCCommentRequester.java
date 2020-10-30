@@ -96,8 +96,8 @@ public class JDBCCommentRequester {
       prepStmt.setInt(2, cmt.getOwnerId());
       prepStmt.setString(3, date2SQLDate(cmt.getCreationDate()));
       String modifDate = null;
-      if (cmt.getLastModificationDate() != null) {
-        modifDate = date2SQLDate(cmt.getLastModificationDate());
+      if (cmt.getLastUpdateDate() != null) {
+        modifDate = date2SQLDate(cmt.getLastUpdateDate());
       }
       prepStmt.setString(4, modifDate);
       prepStmt.setString(5, cmt.getMessage());
@@ -145,7 +145,7 @@ public class JDBCCommentRequester {
     try {
       prepStmt = con.prepareStatement(updateQuery);
       prepStmt.setInt(1, cmt.getOwnerId());
-      prepStmt.setString(2, date2SQLDate(cmt.getLastModificationDate()));
+      prepStmt.setString(2, date2SQLDate(cmt.getLastUpdateDate()));
       prepStmt.setString(3, cmt.getMessage());
       prepStmt.setString(4, cmt.getResourceType());
       prepStmt.setString(5, cmt.getForeignKey().getId());

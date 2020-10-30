@@ -355,7 +355,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
       final String userId) {
     try (final Connection con = getConnection()) {
       final Map<ContributionIdentifier, T> indexed = contributions.stream()
-          .collect(Collectors.toMap(Contribution::getContributionId, c -> c));
+          .collect(Collectors.toMap(Contribution::getIdentifier, c -> c));
       return countByPeriodAndUser(con, indexed.keySet(), null, null, userId)
           .filter(p -> p.getSecond() > 0)
           .map(p -> indexed.get(p.getFirst()));

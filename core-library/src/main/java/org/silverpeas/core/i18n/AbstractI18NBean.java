@@ -23,21 +23,25 @@
  */
 package org.silverpeas.core.i18n;
 
+import org.silverpeas.core.Nameable;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class AbstractI18NBean<T extends BeanTranslation>
-    implements Serializable, I18NBean<T> {
+    implements Serializable, Nameable, I18NBean<T> {
   private static final long serialVersionUID = 756146888448232764L;
 
   /* Name of the bean */
@@ -48,7 +52,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   @XmlElement(namespace = "http://www.silverpeas.org/exchange")
   private String description = "";
 
-  private String language = null;
+  private String language = I18NHelper.defaultLanguage;
   private String translationId = null;
   private Map<String, T> translations = new HashMap<>(3);
   private boolean removeTranslation = false;
@@ -65,80 +69,105 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
     this.removeTranslation = other.removeTranslation;
   }
 
+  private T getDefaultTranslation() {
+    String lang = getLanguage();
+    Class<T> type = getTranslationType();
+    try {
+      Constructor<T> constructor = type.getDeclaredConstructor();
+      constructor.trySetAccessible();
+      T translation = constructor.newInstance();
+      translation.setName(name);
+      translation.setDescription(description);
+      translation.setLanguage(lang);
+      translation.setId(translationId);
+      return translation;
+    } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
+
+  protected abstract Class<T> getTranslationType();
+
   /**
-   * Gets the name of the bean (default plat-form language)
-   * @return
+   * Gets the name of the bean in the language defined by the {@link AbstractI18NBean#getLanguage()}
+   * property.
+   * @return a short description about the bean.
    */
   public String getName() {
     return name;
   }
 
   /**
-   * Set the bean name
+   * Sets the name of the bean in the language defined by the {@link AbstractI18NBean#getLanguage()}
+   * property.
+   * @param name the name of the bean.
    */
   public void setName(String name) {
     this.name = name;
+    String lang = getLanguage();
+    T translation = getTranslation(lang);
+    translation.setName(name);
   }
 
   /**
-   * Gets the description of the bean (default plat-form language)
-   * @return
+   * Gets the description about the bean in the language defined by the
+   * {@link AbstractI18NBean#getLanguage()} property.
+   * @return a short description about the bean.
    */
   public final String getDescription() {
     return description;
   }
 
   /**
-   * Set the bean description
+   * Gets the description about the bean in the language defined by the
+   * {@link AbstractI18NBean#getLanguage()} property.
+   * @param description a short description about the bean.
    */
   public final void setDescription(String description) {
     this.description = description;
+    String lang = getLanguage();
+    T translation = getTranslation(lang);
+    translation.setDescription(description);
   }
 
   /**
-   * Gets the name of the bean from the given language
-   * @param language
-   * @return
+   * Gets the name of the bean in the given language. This method is a shortcut of the
+   * following code:
+   * <blockquote><pre>
+   * myBean.getTranslation(language).getName();
+   * </pre></blockquote>
+   * @param language the ISO 631-1 code of the language
+   * @return the name of the bean in the specified language.
    */
   public String getName(String language) {
-    if (!I18NHelper.isI18nContentActivated) {
-      return name;
-    }
     T translation = selectTranslation(language);
-    if (translation != null) {
-      return translation.getName();
-    } else {
-      return name;
-    }
+    return translation.getName();
   }
 
   /**
-   * Gets the description of the bean from the given language
-   * @param language
-   * @return
+   * Gets the description about the bean in the given language. This method is a shortcut of the
+   * following code:
+   * <blockquote><pre>
+   * myBean.getTranslation(language).getDescription();
+   * </pre></blockquote>
+   * @param language the ISO 631-1 code of the language
+   * @return the description about the bean in the specified language.
    */
   public String getDescription(String language) {
-    if (!I18NHelper.isI18nContentActivated) {
-      return description;
-    }
     T translation = selectTranslation(language);
-    if (translation != null) {
-      return translation.getDescription();
-    } else {
-      return description;
-    }
+    return translation.getDescription();
   }
 
-  /**
-   * Centralization.
-   * @param language
-   * @return
-   */
   private T selectTranslation(String language) {
-    T translation = getTranslations()
-        .get(StringUtil.isDefined(language) ? language : I18NHelper.defaultLanguage);
-    if (translation == null) {
-      translation = getNextTranslation();
+    final String lang = StringUtil.isDefined(language) ? language : I18NHelper.defaultLanguage;
+    T translation;
+    if (!I18NHelper.isI18nContentActivated) {
+      translation = getDefaultTranslation();
+    } else {
+      translation = getTranslations().get(lang);
+      if (translation == null) {
+        translation = getNextTranslation();
+      }
     }
     return translation;
   }
@@ -152,7 +181,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
 
   @Override
   public void setLanguage(String language) {
-    this.language = language;
+    this.language = StringUtil.isDefined(language) ? language : I18NHelper.defaultLanguage;
   }
 
   public boolean isRemoveTranslation() {
@@ -216,9 +245,18 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
     }
   }
 
+  /**
+   * Gets a possible translation for the specified language. If no such translation exists in
+   * the given language then browse for a language for which a translation exists.
+   * This method will return always a translation; indeed in the case there is no translation in
+   * whatever supported language, then a default translation with the actual bean's properties is
+   * returned.
+   * @param language the ISO 631-1 code of the language.
+   * @return a translation. Never null.
+   */
   @Override
   public T getTranslation(String language) {
-    return translations.get(language);
+    return selectTranslation(language);
   }
 
   public void addTranslation(T translation) {
@@ -232,12 +270,12 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
 
   @Override
   public T getNextTranslation() {
-    Iterator<String> languages = I18NHelper.getLanguages().iterator();
-    T translation = null;
-    while (translation == null && languages.hasNext()) {
-      translation = getTranslations().get(languages.next());
-    }
-    return translation;
+    Map<String, T> l10n = getTranslations();
+    return I18NHelper.getLanguages().stream()
+        .map(l10n::get)
+        .filter(Objects::nonNull)
+        .findFirst()
+        .orElseGet(this::getDefaultTranslation);
   }
 
   public String getLanguageToDisplay(String language) {
