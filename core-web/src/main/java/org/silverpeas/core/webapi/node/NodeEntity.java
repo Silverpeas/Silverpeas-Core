@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.node;
 
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodeI18NDetail;
@@ -109,7 +110,8 @@ public class NodeEntity implements WebEntity {
     this.uri = uri;
     this.id = node.getNodePK().getId();
     this.attr = NodeAttrEntity.fromNodeDetail(node, uri, lang);
-    if (this.getAttr().isSpecificRights()) {
+    if (this.getAttr().isSpecificRights() &&
+        SilverpeasRole.admin.getName().equals(this.getAttr().getRole())) {
       this.type = NodeType.FOLDER_WITH_RIGHTS;
     }
 
