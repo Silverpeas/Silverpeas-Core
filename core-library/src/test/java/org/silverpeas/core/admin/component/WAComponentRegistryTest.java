@@ -28,7 +28,7 @@
 package org.silverpeas.core.admin.component;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.component.model.GlobalContext;
@@ -40,19 +40,18 @@ import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
-import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-import static org.apache.commons.io.FileUtils.getFile;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Unit test on the services provided by the WAComponentRegistry.
@@ -61,28 +60,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 @EnableSilverTestEnv
 @TestManagedBeans(PublicationTemplateManager.class)
-public class WAComponentRegistryTest {
+class WAComponentRegistryTest {
 
+  private static final String NEW_WORKFLOW_COMPONENT_NAME = "newWorkflow";
   private WAComponentRegistry registry;
 
-  @BeforeAll
-  public static void generalSetup() {
-    final File resDir = getFile(
-        WAComponentRegistryTest.class.getProtectionDomain().getCodeSource().getLocation()
-            .getFile());
-    FileUtils.deleteQuietly(
-        Paths.get(resDir.getPath(), "xmlcomponents", "workflows", "newWorkflow.xml").toFile());
-  }
-
   @BeforeEach
-  public void setup() throws Exception {
+  void setup() throws Exception {
     // Tested registry
     registry = new WAComponentRegistry();
     registry.init();
   }
 
+  @AfterEach
+  void clear() throws Exception {
+    streamComponentDescriptors(NEW_WORKFLOW_COMPONENT_NAME).map(Path::toFile).forEach(FileUtils::deleteQuietly);
+  }
+
   @Test
-  public void testLoadComponent() {
+  void testLoadComponent() {
     Optional<WAComponent> result = registry.getWAComponent("almanach");
     assertThat(result.isPresent(), is(true));
 
@@ -106,7 +102,7 @@ public class WAComponentRegistryTest {
   }
 
   @Test
-  public void testLoadComponentWithXmlTemplates() throws Exception {
+  void testLoadComponentWithXmlTemplates() throws Exception {
     Optional<WAComponent> result = registry.getWAComponent("kmelia");
     assertThat(result.isPresent(), is(true));
     WAComponent kmelia = result.get();
@@ -135,7 +131,7 @@ public class WAComponentRegistryTest {
     List<Option> options = paramWithXMLTemplate.getOptions();
     assertThat(options.size(), is(3));
 
-    Collections.sort(options, new OptionComparator());
+    options.sort(new OptionComparator());
     Option option = options.get(0);
     assertThat(option.getValue(), is("classifieds.xml"));
     assertThat(option.getName().get("fr"), is("Classifieds"));
@@ -148,7 +144,7 @@ public class WAComponentRegistryTest {
   }
 
   @Test
-  public void testLoadComponentWithOneTemplate() throws Exception {
+  void testLoadComponentWithOneTemplate() throws Exception {
     Optional<WAComponent> result = registry.getWAComponent("classifieds");
     assertThat(result.isPresent(), is(true));
     WAComponent classifieds = result.get();
@@ -184,8 +180,11 @@ public class WAComponentRegistryTest {
   }
 
   @Test
-  public void testSaveWorkflow() throws Exception {
-    String componentName = "newWorkflow";
+  void testSaveWorkflow() throws Exception {
+    final String componentName = NEW_WORKFLOW_COMPONENT_NAME;
+    final Path expectedDescriptor = Paths.get(getWorkflowRepoPath().toString(), componentName + ".xml");
+    assertThat(Files.exists(expectedDescriptor), is(false));
+    assertThat(streamComponentDescriptors(componentName).count(), is(0L));
     String label = "Nouveau Workflow";
 
     WAComponent component = new WAComponent();
@@ -201,14 +200,24 @@ public class WAComponentRegistryTest {
     assertThat(result.isPresent(), is(true));
     assertThat(result.get().getLabel().get("fr"), is(label));
     assertThat(registry.getAllWAComponents().size(), is(5));
+    assertThat(Files.exists(expectedDescriptor), is(true));
+    assertThat(streamComponentDescriptors(componentName).count(), is(1L));
 
-    Path descriptor = Paths
-        .get(SystemWrapper.get().getenv("SILVERPEAS_HOME"), "xmlcomponents", "workflows",
-            componentName + ".xml");
-    assertThat(Files.exists(descriptor), is(true));
+    // saving when already existing makes a copy
+    registry.putWorkflow(component);
+    assertThat(Files.exists(expectedDescriptor), is(true));
+    assertThat(streamComponentDescriptors(componentName).count(), is(2L));
   }
 
-  private class OptionComparator implements Comparator<Option> {
+  private Path getWorkflowRepoPath() {
+    return Paths.get(SystemWrapper.get().getenv("SILVERPEAS_HOME"), "xmlcomponents", "workflows");
+  }
+
+  private Stream<Path> streamComponentDescriptors(final String componentName) throws IOException {
+    return Files.list(getWorkflowRepoPath()).filter(p -> p.getFileName().toString().contains(componentName));
+  }
+
+  private static class OptionComparator implements Comparator<Option> {
 
     @Override
     public int compare(Option o1, Option o2) {
