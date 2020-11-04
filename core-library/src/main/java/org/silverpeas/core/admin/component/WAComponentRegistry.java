@@ -47,11 +47,14 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import static org.apache.commons.io.FilenameUtils.getBaseName;
 
 /**
  * A registry of Web Application Components available in Silverpeas.
@@ -188,6 +191,16 @@ public class WAComponentRegistry implements Initialization {
   }
 
   private static void storeComponent(WAComponent component, File descriptor) throws JAXBException {
+    if (descriptor.exists()) {
+      final Path descriptorCopy = Paths.get(descriptor.getParent(),
+          getBaseName(descriptor.getName()).concat(".")
+              .concat(LocalDateTime.now().toString().replaceAll("[^0-9]", "")));
+      try {
+        Files.move(descriptor.toPath(), descriptorCopy);
+      } catch (IOException e) {
+        throw new SilverpeasRuntimeException(e);
+      }
+    }
     JAXBContext context = JAXBContext.newInstance("org.silverpeas.core.admin.component.model");
     Marshaller marshaller = context.createMarshaller();
     marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");

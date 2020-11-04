@@ -25,8 +25,6 @@ package org.silverpeas.web.workflowdesigner.control;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
-import org.silverpeas.core.admin.component.model.ComponentBehavior;
-import org.silverpeas.core.admin.component.model.ComponentBehaviors;
 import org.silverpeas.core.admin.component.model.Profile;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.contribution.content.form.TypeManager;
@@ -37,7 +35,6 @@ import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -58,6 +55,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
+
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
 
 public class WorkflowDesignerSessionController extends AbstractComponentSessionController {
 
@@ -2794,14 +2794,15 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    */
   public void generateComponentDescriptor() throws WorkflowDesignerException {
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("workflow");
-
-    String sureProcessModelFileName = processModelFileName.replace("\\\\", "/");
+    final String sureProcessModelFileName = processModelFileName.replace("\\", "/");
     template.setAttribute("processModelFileName", sureProcessModelFileName);
 
-    String componentName = FileUtil.getFilename(sureProcessModelFileName);
-    componentName = componentName.substring(0, componentName.indexOf("."));
-
-    WAComponent waComponent = new WAComponent();
+    final WAComponent waComponent = new WAComponent();
+    final String componentName = ofNullable(findComponentDescriptor(sureProcessModelFileName))
+        .orElseGet(() -> {
+          final String fileName = FileUtil.getFilename(sureProcessModelFileName);
+          return fileName.substring(0, fileName.indexOf("."));
+        });
     waComponent.setName(componentName);
 
     Iterator<ContextualDesignation> labels =
@@ -2828,7 +2829,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
 
     // Create the list of roles, to be placed as profiles in the component descriptor
-    List<Profile> listSPProfile = new ArrayList<Profile>();
+    List<Profile> listSPProfile = new ArrayList<>();
     if (processModel.getRolesEx() != null) {
       // 'supervisor' must be present in the list
       if (processModel.getRolesEx().getRole("supervisor") == null) {
@@ -2853,9 +2854,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 
     template.setAttribute("WAComponent", waComponent);
 
-    String xmlComponentTempPath = FileRepositoryManager.getTemporaryPath()+processModelFileName;
-
-    File xmlComponentTemp = new File(xmlComponentTempPath);
+    final File xmlComponentTemp = new File(getTemporaryPath(), sureProcessModelFileName);
+    Optional.of(xmlComponentTemp.getParentFile())
+        .filter(f -> !f.exists())
+        .ifPresent(File::mkdirs);
     try (final PrintWriter out = new PrintWriter(new FileWriter(xmlComponentTemp, Charsets.UTF_8))) {
       out.print(template.applyFileTemplate("xmlComponent"));
     } catch (IOException e) {

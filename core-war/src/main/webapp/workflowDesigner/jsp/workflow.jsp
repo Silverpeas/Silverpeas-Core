@@ -28,77 +28,77 @@
 <%@ include file="check.jsp" %>
 <%@ taglib prefix="designer" uri="/WEB-INF/workflowEditor.tld" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+
+<c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${currentUserLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
+<fmt:message key="GML.name" var="nameLabel"/>
+<fmt:message key="GML.MustBeFilled" var="mustBeFilledErrMsg"/>
+<fmt:message key="workflowDesigner.confirmGenerateComponentDescriptorJS" var="confirmGenerateMsg"/>
+<fmt:message key="workflowDesigner.confirmProcessReferencedJS" var="confirmUpdateMsg"/>
 <%
   String strProcessFileName = (String) request.getAttribute("ProcessFileName");
-  String strComponentDescriptor = (String) request.getAttribute("componentDescriptor");
   String strCurrentTab = "ModifyWorkflow";
   ArrayPane processPane = gef.getArrayPane("processPane", strCurrentTab, request, session);
   ProcessModel processModel = (ProcessModel) request.getAttribute("ProcessModel");
-  boolean fExistingProcess = !((Boolean) request.getAttribute("IsANewProcess")).booleanValue();
+  boolean fExistingProcess = !(Boolean) request.getAttribute("IsANewProcess");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<view:looknfeel withCheckFormScript="true"/>
+<c:set var="strComponentDescriptor" value="${requestScope.componentDescriptor}"/>
+
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script type="text/javascript">
 
     function sendData() {
       // If saving a process model that is referenced in component descriptor
       // give a warning.
-      //
-      if (isCorrectlyFilled()
-          && ( <%=Boolean.toString( strComponentDescriptor == null )%>
-          || confirm('<%=resource.getString("workflowDesigner.confirmProcessReferencedJS")%>')))
-      {
+      if (isCorrectlyFilled()) {
+        <c:choose>
+        <c:when test="${silfn:isDefined(strComponentDescriptor)}">
+        jQuery.popup.confirm('${silfn:escapeJs(confirmUpdateMsg)}', function() {
+          document.workflowHeaderForm.submit();
+        });
+        </c:when>
+        <c:otherwise>
         document.workflowHeaderForm.submit();
+        </c:otherwise>
+        </c:choose>
       }
     }
 
     function isCorrectlyFilled() {
-      var errorMsg = "";
-      var errorNb = 0;
-      var title = stripInitialWhitespace(document.workflowHeaderForm.name.value);
-
-      if (title == "") {
-        errorMsg += "  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-        errorNb++;
+      const title = stripInitialWhitespace(document.workflowHeaderForm.name.value);
+      if (StringUtil.isNotDefined(title)) {
+        SilverpeasError.add("<strong>${silfn:escapeJs(nameLabel)}</strong> ${silfn:escapeJs(mustBeFilledErrMsg)}")
       }
-
-      switch (errorNb) {
-        case 0 :
-          result = true;
-          break;
-        case 1 :
-          errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error").toLowerCase()%> : \n" + errorMsg;
-          window.alert(errorMsg);
-          result = false;
-          break;
-        default :
-          errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-          window.alert(errorMsg);
-          result = false;
-          break;
-      }
-      return result;
+      return !SilverpeasError.show();
     }
 
     /**
      * If there is a component descriptor, confirm that you really want to overwrite it.
      */
     function editComponentDescription() {
-      if (<%=Boolean.toString(strComponentDescriptor != null)%>) {
-	if (confirm('<%=resource.getString("workflowDesigner.confirmProcessReferencedJS")%>')) {
-		location.href = "GenerateComponentDescription";
-	}
-      } else {
-	  location.href = "GenerateComponentDescription";
-      }
+      <c:choose>
+      <c:when test="${silfn:isDefined(strComponentDescriptor)}">
+      jQuery.popup.confirm('${silfn:escapeJs(confirmGenerateMsg)}', function() {
+        location.href = "GenerateComponentDescription";
+      });
+      </c:when>
+      <c:otherwise>
+      location.href = "GenerateComponentDescription";
+      </c:otherwise>
+      </c:choose>
     }
   </script>
-</head>
-<body class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
   browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
   browseBar.setComponentName(resource.getString("workflowDesigner.workflowHeader"), strCurrentTab);
@@ -172,5 +172,5 @@
 <%
   out.println(window.printAfter());
 %>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
