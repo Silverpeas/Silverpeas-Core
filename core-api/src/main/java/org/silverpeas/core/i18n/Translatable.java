@@ -33,7 +33,7 @@ public interface Translatable {
 
   /**
    * Gets a translation in the specified language about some textual properties of the object.
-   * If no such translation exists, then returns the default translation of the bean.
+   * If no such translation exists, then returns the default translation of the object.
    * @param language the ISO 631-1 code of a language.
    * @param <T> the concrete type of the translation.
    * @return a translation of the object in the given language. Can be never null.

@@ -101,10 +101,10 @@ public class SimpleDocumentEntity implements WebEntity {
     entity.fileName = document.getFilename();
     entity.description = document.getDescription();
     entity.size = document.getSize();
-    entity.creationDate = document.getCreated().getTime();
+    entity.creationDate = document.getCreationDate().getTime();
     entity.createdBy = document.getCreatedBy();
-    if (document.getUpdated() != null) {
-      entity.updateDate = document.getUpdated().getTime();
+    if (document.getLastUpdateDate() != null) {
+      entity.updateDate = document.getLastUpdateDate().getTime();
     }
     entity.updatedBy = document.getUpdatedBy();
     entity.title = document.getTitle();

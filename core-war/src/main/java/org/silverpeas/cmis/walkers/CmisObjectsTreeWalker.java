@@ -24,6 +24,7 @@
 
 package org.silverpeas.cmis.walkers;
 
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderData;
@@ -31,12 +32,14 @@ import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
+import org.silverpeas.core.cmis.model.CmisFile;
+import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
 
 /**
- * A walker of a CMIS objects tree whose each leaf is mapped to a given Silverpeas organizational
+ * A walker of a CMIS objects tree whose each node is mapped to a given Silverpeas organizational
  * resource or to a given user contribution. The root of the tree is a virtual container of all of
  * the Silverpeas root spaces. The walker provides a functional view to access the CMIS objects but
  * behind de scene it walks across the organizational schema of Silverpeas by using its different
@@ -64,17 +67,18 @@ public interface CmisObjectsTreeWalker {
    * @return an {@link ObjectData} instance that provides the CMIS data of the specified Silverpeas
    * object.
    */
-  ObjectData getObjectData(String objectId, Filtering filtering);
+  CmisObject getObjectData(String objectId, Filtering filtering);
 
   /**
    * Gets the CMIS data of the Silverpeas object that is located at the specified path in the CMIS
-   * objects tree. Only the data satisfying the given filtering rules are returned.
+   * objects tree. Only the data satisfying the given filtering rules are returned. The root of
+   * the CMIS objects tree is the {@link org.silverpeas.core.cmis.model.CmisFolder#PATH_SEPARATOR}.
    * @param path the path of the object in Silverpeas to get.
    * @param filtering the filtering rules to apply on the data.
    * @return an {@link ObjectData} instance that provides the CMIS data of the specified Silverpeas
    * object.
    */
-  ObjectData getObjectDataByPath(String path, Filtering filtering);
+  CmisFile getObjectDataByPath(String path, Filtering filtering);
 
   /**
    * Gets a list of the CMIS data of the Silverpeas objects that are the direct parents of the
@@ -97,13 +101,16 @@ public interface CmisObjectsTreeWalker {
    * Gets a list of CMIS data of the Silverpeas objects that are children of the CMIS folder
    * uniquely identified by the specified identifier. The CMIS folder represents a Silverpeas
    * resource that is a container of others Silverpeas resources (space, component instance, ...).
+   * If this method is invoked for a document instead of a folder, then an empty
+   * {@link ObjectInFolderList} list should be returned.
    * @param folderId the unique identifier of a Silverpeas resource.
    * @param filtering the filtering rules to apply on the CMIS data to return.
    * @param paging the paging to apply on the elements of the list.
    * @return an {@link ObjectInFolderList} instance that is a list of {@link ObjectInFolderData}
    * elements, each of them being a decorator of an {@link ObjectData} instance with its path in
    * the CMIS repository tree (if asked by the filtering). The CMIS data are carried by the
-   * {@link ObjectData} object.
+   * {@link ObjectData} object. If the folder has no children, then an empty
+   * {@link ObjectInFolderList} instance is returned.
    */
   ObjectInFolderList getChildrenData(String folderId, Filtering filtering, Paging paging);
 
@@ -114,7 +121,8 @@ public interface CmisObjectsTreeWalker {
    * folder ({@link ObjectInFolderContainer} instances) is returned with, for each of them,
    * if any, their own direct children and so on. Each child is described by their CMIS data
    * (a decorator {@link ObjectInFolderData} of an {@link ObjectData} instance) filtered with the
-   * given filtering rules.
+   * given filtering rules. If this method is invoked for a document instead of a folder, then
+   * an empty list should be returned.
    * @param folderId the unique identifier of a Silverpeas resource.
    * @param filtering the filtering rules to apply on the CMIS data to return.
    * @param depth the maximum depth of the subtree to return from the specified folder. If -1, the
@@ -125,7 +133,22 @@ public interface CmisObjectsTreeWalker {
    * being a container of others {@link ObjectInFolderContainer} objects (recursive walk of
    * children) and described by an {@link ObjectInFolderData} instance that is a decorator of an
    * {@link ObjectData} instance (the CMIS data) with its path in the CMIS repository tree (if asked
-   * by the filtering). The CMIS data are carried by the {@link ObjectData} object.
+   * by the filtering). The CMIS data are carried by the {@link ObjectData} object. If the folder
+   * has no children, then an empty list is returned.
    */
   List<ObjectInFolderContainer> getSubTreeData(String folderId, Filtering filtering, long depth);
+
+  /**
+   * Gets a stream on the content of the specified object, starting at the given offset position and
+   * upto the given length.
+   * @param objectId the unique identifier of the object in the CMIS objects tree.
+   * @param language the ISO 631-1 code of the language of the content to fetch. If no content
+   * exists in the specified language, then it is the content for the first language found that will
+   * be returned (see {@link org.silverpeas.core.i18n.I18NHelper#allContentLanguageCodes}).
+   * @param offset the position in bytes in the content to start the stream.
+   * @param length the length in bytes of the stream, id est the length of the content to read by
+   * the stream.
+   * @return a {@link ContentStream} instance.
+   */
+  ContentStream getContentStream(String objectId, String language, long offset, long length);
 }

@@ -191,12 +191,15 @@ class DocumentConverter extends AbstractJcrConverter {
         file = getAttachment(node, iter.next());
       }
     }
+
     SimpleDocument doc = new SimpleDocument(pk, getStringProperty(node, SLV_PROPERTY_FOREIGN_KEY),
-        getIntProperty(node, SLV_PROPERTY_ORDER), getBooleanProperty(node, SLV_PROPERTY_VERSIONED, false),
-        getStringProperty(node, SLV_PROPERTY_OWNER), getDateProperty(node,
-        SLV_PROPERTY_RESERVATION_DATE), getDateProperty(node, SLV_PROPERTY_ALERT_DATE),
-        getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE),
-        getStringProperty(node, SLV_PROPERTY_COMMENT), file);
+        getIntProperty(node, SLV_PROPERTY_ORDER),
+        getBooleanProperty(node, SLV_PROPERTY_VERSIONED, false),
+         getStringProperty(node, SLV_PROPERTY_OWNER), file);
+    doc.setReservation(getDateProperty(node, SLV_PROPERTY_RESERVATION_DATE));
+    doc.setAlert(getDateProperty(node, SLV_PROPERTY_ALERT_DATE));
+    doc.setExpiry(getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE));
+    doc.setComment(getStringProperty(node, SLV_PROPERTY_COMMENT));
     doc.setRepositoryPath(node.getPath());
     doc.setCloneId(getStringProperty(node, SLV_PROPERTY_CLONE));
     doc.setMajorVersion(getIntProperty(node, SLV_PROPERTY_MAJOR));

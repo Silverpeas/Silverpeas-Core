@@ -23,10 +23,14 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodePK;
@@ -63,20 +67,28 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
   }
 
   @Override
+  public boolean isUserAuthorized(final String userId, final ResourceIdentifier id) {
+    ContributionIdentifier docId = (ContributionIdentifier) id;
+    SimpleDocumentPK docPK =
+        new SimpleDocumentPK(docId.getLocalId(), docId.getComponentInstanceId());
+    SimpleDocument doc = AttachmentService.get().searchDocumentById(docPK, null);
+    return isUserAuthorized(userId, doc);
+  }
+
+  @Override
   public boolean isUserAuthorized(String userId, SimpleDocument object,
       final AccessControlContext context) {
     Set<SilverpeasRole> componentUserRoles = null;
     boolean componentAccessAuthorized = false;
 
     // Node access control
-    final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
+    final ComponentAccessController.DataManager componentDataManager =
+        ComponentAccessController.getDataManager(context);
     if (componentDataManager.isTopicTrackerSupported(object.getInstanceId())) {
       final String foreignId = object.getForeignId();
       final PublicationPK pubPk = new PublicationPK(foreignId, object.getInstanceId());
-      final Set<SilverpeasRole> publicationUserRoles = getPublicationAccessController()
-          .getUserRoles(userId, pubPk, context);
-      final PublicationDetail publicationDetail = PublicationAccessController
-          .getDataManager(context).getCurrentPublication();
+      final Set<SilverpeasRole> publicationUserRoles = getPublicationAccessController().getUserRoles(userId, pubPk, context);
+      final PublicationDetail publicationDetail = PublicationAccessController.getDataManager(context).getCurrentPublication();
       if (publicationDetail != null) {
         // PublicationDetail has been loaded by PublicationAccessController processing,
         // publicationUserRoles are the one of the publication
@@ -87,8 +99,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
         // PublicationDetail has been loaded by PublicationAccessController processing,
         // publicationUserRoles are the one of the component instance
         componentUserRoles = publicationUserRoles;
-        componentAccessAuthorized =
-            getComponentAccessController().isUserAuthorized(componentUserRoles);
+        componentAccessAuthorized = getComponentAccessController().isUserAuthorized(componentUserRoles);
         if (componentAccessAuthorized && isFileAttachedToWysiwygDescriptionOfNode(foreignId)) {
           String nodeId = foreignId.substring("Node_".length());
           final Set<SilverpeasRole> nodeUserRoles =
@@ -102,13 +113,10 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
 
     // Component access control
     if (!componentAccessAuthorized && componentUserRoles == null) {
-      componentUserRoles =
-          getComponentAccessController().getUserRoles(userId, object.getInstanceId(), context);
-      componentAccessAuthorized =
-          getComponentAccessController().isUserAuthorized(componentUserRoles);
+      componentUserRoles = getComponentAccessController().getUserRoles(userId, object.getInstanceId(), context);
+      componentAccessAuthorized = getComponentAccessController().isUserAuthorized(componentUserRoles);
     }
-    return componentAccessAuthorized &&
-        isUserAuthorizedByContext(false, userId, object, context, componentUserRoles, userId);
+    return componentAccessAuthorized && isUserAuthorizedByContext(false, userId, object, context, componentUserRoles, userId);
   }
 
   /**

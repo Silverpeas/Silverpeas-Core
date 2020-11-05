@@ -24,17 +24,23 @@
 
 package org.silverpeas.cmis.walkers;
 
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectInFolderListImpl;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.core.ResourceIdentifier;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.cmis.model.CmisFolder;
+import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.CmisObjectFactory;
 import org.silverpeas.core.cmis.model.Publication;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.model.Document;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -46,9 +52,9 @@ import org.silverpeas.core.node.model.NodePK;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -65,6 +71,15 @@ public class TreeWalkerForPublicationDetail extends AbstractCmisObjectsTreeWalke
   @Inject
   private PublicationService publicationService;
 
+  @Inject
+  private AttachmentService attachmentService;
+
+  @Override
+  public ContentStream getContentStream(final String objectId, final String language,
+      final long offset, final long length) {
+    throw new CmisNotSupportedException("The content stream isn't supported by publications");
+  }
+
   @Override
   @SuppressWarnings("unchecked")
   protected PublicationDetail getSilverpeasObjectById(final String objectId) {
@@ -74,16 +89,18 @@ public class TreeWalkerForPublicationDetail extends AbstractCmisObjectsTreeWalke
   @Override
   protected Stream<LocalizedResource> getAllowedChildrenOfSilverpeasObject(
       final ResourceIdentifier parentId, final User user) {
-    return Stream.empty();
+    String language = user.getUserPreferences().getLanguage();
+    ResourceReference ref = ResourceReference.to((ContributionIdentifier)parentId);
+    return attachmentService.listDocumentsByForeignKey(ref, language)
+        .stream()
+        .map(Document::new);
   }
 
   @Override
   @SuppressWarnings("unchecked")
   protected Publication createCmisObject(final LocalizedResource resource, final String language) {
     PublicationDetail pub = (PublicationDetail) resource;
-    Location location = publicationService.getMainLocation(pub.getPK())
-        .orElse(new Location(NodePK.ROOT_NODE_ID, pub.getInstanceId()));
-    ContributionIdentifier folder = ContributionIdentifier.from(location, NodeDetail.TYPE);
+    ContributionIdentifier folder = getFolder(pub);
     return CmisObjectFactory.getInstance().createPublication(pub, folder, language);
   }
 
@@ -101,28 +118,50 @@ public class TreeWalkerForPublicationDetail extends AbstractCmisObjectsTreeWalke
   @Override
   protected List<ObjectInFolderContainer> browseObjectsInFolderTree(final LocalizedResource object,
       final Filtering filtering, final long depth) {
-    return Collections.emptyList();
+    if (filtering.getIncludeCmisObjectTypes() == Filtering.IncludeCmisObjectTypes.ONLY_FOLDERS) {
+      return Collections.emptyList();
+    }
+    User user = filtering.getCurrentUser();
+    List<LocalizedResource> children =
+        getAllowedChildrenOfSilverpeasObject(object.getIdentifier(), user)
+            .collect(Collectors.toList());
+    return browseObjectsInFolderSubTrees(children, filtering, depth);
   }
 
   @Override
   protected ObjectInFolderList browseObjectsInFolder(final LocalizedResource object,
       final Filtering filtering, final Paging paging) {
-    ObjectInFolderListImpl folderList = new ObjectInFolderListImpl();
-    folderList.setObjects(Collections.emptyList());
-    folderList.setNumItems(BigInteger.ZERO);
-    folderList.setHasMoreItems(false);
-    return folderList;
+    User user = filtering.getCurrentUser();
+    List<LocalizedResource> children =
+        getAllowedChildrenOfSilverpeasObject(object.getIdentifier(), user)
+            .collect(Collectors.toList());
+    return buildObjectInFolderList(children, filtering, paging);
   }
 
   @Override
   protected List<ObjectParentData> browseParentsOfObject(final LocalizedResource object,
       final Filtering filtering) {
-    return Collections.emptyList();
+    PublicationDetail pub = (PublicationDetail) object;
+    String language = filtering.getLanguage();
+    String folderId = getFolder(pub).asString();
+    AbstractCmisObjectsTreeWalker walker =
+        AbstractCmisObjectsTreeWalker.selectInstance(folderId);
+    LocalizedResource folder = walker.getSilverpeasObjectById(folderId);
+    CmisFolder cmisParent = walker.createCmisObject(folder, language);
+    CmisObject cmisObject = createCmisObject(pub, language);
+    ObjectParentData parentData = buildObjectParentData(cmisParent, cmisObject, filtering);
+    return Collections.singletonList(parentData);
   }
 
   private PublicationPK asPublicationPK(final String pubId) {
     ContributionIdentifier identifier = ContributionIdentifier.decode(pubId);
     return new PublicationPK(identifier.getLocalId(), identifier.getComponentInstanceId());
+  }
+
+  private ContributionIdentifier getFolder(final PublicationDetail publication) {
+    Location location = publicationService.getMainLocation(publication.getPK())
+        .orElse(new Location(NodePK.ROOT_NODE_ID, publication.getInstanceId()));
+    return ContributionIdentifier.from(location, NodeDetail.TYPE);
   }
 }
   

@@ -26,7 +26,6 @@ package org.silverpeas.core.cmis.model;
 
 import org.apache.chemistry.opencmis.commons.BasicPermissions;
 import org.apache.chemistry.opencmis.commons.data.Ace;
-import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlEntryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlPrincipalDataImpl;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -34,6 +33,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Provider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -43,9 +43,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * A factory of objects in the CMIS model by using as source object a Silverpeas resource. It is
@@ -81,8 +79,7 @@ public class CmisObjectFactory {
         .setCreationDate(spawningDate.getTime())
         .setLastModifier(admin.getDisplayedName())
         .setLastModificationDate(spawningDate.getTime())
-        .setAclSupplier(this::theCommonsACE)
-        .setAllowedActionsSupplier(() -> completeWithCommonFolderActions(theCommonActions()));
+        .setAcesSupplier(this::theCommonsACE);
   }
 
   /**
@@ -116,8 +113,7 @@ public class CmisObjectFactory {
         .setCreationDate(space.getCreationDate().getTime())
         .setLastModifier(lastModifier.getDisplayedName())
         .setLastModificationDate(lastModificationDate)
-        .setAclSupplier(this::theCommonsACE)
-        .setAllowedActionsSupplier(() -> completeWithFolderActions(theCommonActions()));
+        .setAcesSupplier(this::theCommonsACE);
   }
 
   /**
@@ -144,8 +140,7 @@ public class CmisObjectFactory {
         .setCreationDate(component.getCreationDate().getTime())
         .setLastModifier(lastModifier.getDisplayedName())
         .setLastModificationDate(lastModificationDate)
-        .setAclSupplier(this::theCommonsACE)
-        .setAllowedActionsSupplier(() -> completeWithFolderActions(theCommonActions()));
+        .setAcesSupplier(this::theCommonsACE);
   }
 
   /**
@@ -171,8 +166,7 @@ public class CmisObjectFactory {
         .setCreationDate(node.getCreationDate().getTime())
         .setLastModifier(node.getLastUpdater().getDisplayedName())
         .setLastModificationDate(node.getLastUpdateDate().getTime())
-        .setAclSupplier(this::theCommonsACE)
-        .setAllowedActionsSupplier(() -> completeWithFolderActions(theCommonActions()));
+        .setAcesSupplier(this::theCommonsACE);
   }
 
   /**
@@ -196,39 +190,48 @@ public class CmisObjectFactory {
         .setCreationDate(pub.getCreationDate().getTime())
         .setLastModifier(pub.getLastUpdater().getDisplayedName())
         .setLastModificationDate(pub.getLastUpdateDate().getTime())
-        .setAclSupplier(this::theCommonsACE)
-        .setAllowedActionsSupplier(() -> completeWithFolderActions(theCommonActions()));
+        .setAcesSupplier(this::theCommonsACE);
   }
 
-  private List<Ace> theCommonsACE() {
-    final User admin = User.getMainAdministrator();
+  /**
+   * Creates a CMIS representation of the specified localized document attached to the specified
+   * contribution.
+   * @param document a {@link SimpleDocument} instance.
+   * @param parentId the unique identifier of a contribution.
+   * @return a CMIS document attached to a contribution.
+   */
+  public DocumentFile createDocument(final SimpleDocument document, final ContributionIdentifier
+      parentId) {
+    Date updateDate;
+    User updater;
+    if (document.getLastUpdater() == null) {
+      updateDate = document.getCreationDate();
+      updater = document.getCreator();
+    } else {
+      updateDate = document.getLastUpdateDate();
+      updater = document.getLastUpdater();
+    }
+    return new DocumentFile(document.getIdentifier(), document.getFilename(), document.getLanguage())
+        .setTitle(document.getName())
+        .setLastComment(document.getComment())
+        .setMimeType(document.getContentType())
+        .setSize(document.getSize())
+        .setParentId(parentId.asString())
+        .setDescription(document.getDescription())
+        .setCreator(document.getCreator().getDisplayedName())
+        .setCreationDate(document.getCreationDate().getTime())
+        .setLastModifier(updater.getDisplayedName())
+        .setLastModificationDate(updateDate.getTime())
+        .setAcesSupplier(this::theCommonsACE);
+  }
+
+  private List<Ace> theCommonsACE(final User user) {
     final AccessControlEntryImpl entry = new AccessControlEntryImpl();
-    entry.setPrincipal(new AccessControlPrincipalDataImpl(admin.getLogin()));
+    entry.setPrincipal(new AccessControlPrincipalDataImpl(user.getLogin()));
     entry.setPermissions(new ArrayList<>());
     entry.getPermissions().add(BasicPermissions.READ);
     entry.setDirect(true);
     return Collections.singletonList(entry);
-  }
-
-  private Set<Action> theCommonActions() {
-    final Set<Action> actions = EnumSet.noneOf(Action.class);
-    actions.add(Action.CAN_GET_PROPERTIES);
-    actions.add(Action.CAN_GET_ACL);
-    return actions;
-  }
-
-  private Set<Action> completeWithCommonFolderActions(final Set<Action> actions) {
-    actions.add(Action.CAN_GET_DESCENDANTS);
-    actions.add(Action.CAN_GET_CHILDREN);
-    actions.add(Action.CAN_GET_FOLDER_TREE);
-
-    return actions;
-  }
-
-  private Set<Action> completeWithFolderActions(final Set<Action> actions) {
-    actions.add(Action.CAN_GET_OBJECT_PARENTS);
-    actions.add(Action.CAN_GET_FOLDER_PARENT);
-    return completeWithCommonFolderActions(actions);
   }
 
 }

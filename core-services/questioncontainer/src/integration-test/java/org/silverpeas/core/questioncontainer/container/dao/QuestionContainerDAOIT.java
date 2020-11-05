@@ -93,6 +93,7 @@ public class QuestionContainerDAOIT extends DataSetTest {
   @Deployment
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(QuestionContainerDAOIT.class)
+        .addMavenDependencies("org.silverpeas.core:silverpeas-core-api")
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
         .testFocusedOn(war -> {

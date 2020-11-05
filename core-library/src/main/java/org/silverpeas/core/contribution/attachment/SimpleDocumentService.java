@@ -154,7 +154,7 @@ public class SimpleDocumentService
       FullIndexEntry indexEntry = new FullIndexEntry(document.getInstanceId(), objectType, document.
           getForeignId());
       indexEntry.setLang(language);
-      indexEntry.setCreationDate(document.getCreated());
+      indexEntry.setCreationDate(document.getCreationDate());
       indexEntry.setCreationUser(document.getCreatedBy());
       if (startOfVisibility != null) {
         indexEntry.setStartDate(startOfVisibility);
@@ -806,7 +806,7 @@ public class SimpleDocumentService
     boolean notify = false;
     if (context.isWebdav() || context.isUpload()) {
       String workerId = document.getEditedBy();
-      document.setUpdated(new Date());
+      document.setLastUpdateDate(new Date());
       document.setUpdatedBy(workerId);
       notify = true;
     }
@@ -914,7 +914,7 @@ public class SimpleDocumentService
     try (JcrSession session = openSystemSession()) {
       final List<SimpleDocument> documents = repository
           .listDocumentsLockedByUser(session, usedId, language);
-      documents.sort((o1, o2) -> o2.getUpdated().compareTo(o1.getUpdated()));
+      documents.sort((o1, o2) -> o2.getLastUpdateDate().compareTo(o1.getLastUpdateDate()));
       return documents;
     } catch (RepositoryException ex) {
       throw new AttachmentException(ex);

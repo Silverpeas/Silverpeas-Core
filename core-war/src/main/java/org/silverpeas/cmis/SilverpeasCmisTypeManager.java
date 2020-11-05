@@ -36,20 +36,25 @@ import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
+import org.apache.chemistry.opencmis.commons.enums.ContentStreamAllowed;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIdDefinitionImpl;
 import org.apache.chemistry.opencmis.server.support.TypeDefinitionFactory;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.model.Application;
+import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.ContributionFolder;
+import org.silverpeas.core.cmis.model.DocumentFile;
 import org.silverpeas.core.cmis.model.Publication;
 import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.cmis.model.TypeId;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -82,84 +87,80 @@ public class SilverpeasCmisTypeManager {
   private void addSilverpeasCmisObjectTypes() {
     // add Silverpeas collaborative space type
     MutableFolderTypeDefinition spaceType =
-        typeDefinitionFactory.createFolderTypeDefinition(CmisVersion.CMIS_1_1,
-            BaseTypeId.CMIS_FOLDER.value());
-    spaceType.setId(TypeId.SILVERPEAS_SPACE.value());
-    spaceType.setLocalName(Space.class.getSimpleName());
-    spaceType.setQueryName(TypeId.SILVERPEAS_SPACE.value());
-    spaceType.setDisplayName("Collaborative Space");
-    spaceType.setDescription(
-        "An hierarchical tree of both spaces and applications to organize your contributions");
-    spaceType.setTypeMutability(typeDefinitionFactory.createTypeMutability(true, false, false));
-    final MutablePropertyIdDefinition spaceAllowedChildTypes =
-        (MutablePropertyIdDefinition) spaceType.getPropertyDefinitions().get(
-           PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS);
-    spaceAllowedChildTypes.setDefaultValue(
-        Space.getAllAllowedChildrenTypes().stream().map(TypeId::value).collect(Collectors.toList()));
-    removeQueryableAndOrderableFlags(spaceType);
+        new CMISFolderSubTypeBuilder(typeDefinitionFactory).setTypeId(TypeId.SILVERPEAS_SPACE)
+            .setObjectType(Space.class)
+            .setName("Collaborative Space")
+            .setDescription(
+                "An hierarchical tree of both spaces and applications to organize your " +
+                    "contributions")
+            .setAllowedChildrenTypes(Space.getAllAllowedChildrenTypes()
+                .stream()
+                .map(TypeId::value)
+                .collect(Collectors.toList()))
+            .setCreatable(false)
+            .build();
     typeDefinitions.put(spaceType.getId(), spaceType);
 
     // add Silverpeas application type
     MutableFolderTypeDefinition appType =
-        typeDefinitionFactory.createFolderTypeDefinition(CmisVersion.CMIS_1_1,
-            BaseTypeId.CMIS_FOLDER.value());
-    appType.setId(TypeId.SILVERPEAS_APPLICATION.value());
-    appType.setLocalName(Application.class.getSimpleName());
-    appType.setQueryName(TypeId.SILVERPEAS_APPLICATION.value());
-    appType.setDisplayName("Silverpeas Application");
-    appType.setDescription("An application to manage some kinds of your contributions");
-    appType.setTypeMutability(typeDefinitionFactory.createTypeMutability(true, false, false));
-    final MutablePropertyIdDefinition appAllowedChildTypes =
-        (MutablePropertyIdDefinition) appType.getPropertyDefinitions()
-            .get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS);
-    appAllowedChildTypes.setDefaultValue(Application.getAllAllowedChildrenTypes()
-        .stream()
-        .map(TypeId::value)
-        .collect(Collectors.toList()));
-    removeQueryableAndOrderableFlags(appType);
+        new CMISFolderSubTypeBuilder(typeDefinitionFactory).setTypeId(TypeId.SILVERPEAS_APPLICATION)
+            .setObjectType(Application.class)
+            .setName("Silverpeas Application")
+            .setDescription("An application to manage some kinds of your contributions")
+            .setAllowedChildrenTypes(Application.getAllAllowedChildrenTypes()
+                .stream()
+                .map(TypeId::value)
+                .collect(Collectors.toList()))
+            .setCreatable(false)
+            .build();
     typeDefinitions.put(appType.getId(), appType);
 
-    // add Silverpeas contribution folder type (Node)
+    // add Silverpeas contribution folder type (NodeDetail)
     MutableFolderTypeDefinition folderType =
-        typeDefinitionFactory.createFolderTypeDefinition(CmisVersion.CMIS_1_1,
-            BaseTypeId.CMIS_FOLDER.value());
-    folderType.setId(TypeId.SILVERPEAS_FOLDER.value());
-    folderType.setLocalName(ContributionFolder.class.getSimpleName());
-    folderType.setQueryName(TypeId.SILVERPEAS_FOLDER.value());
-    folderType.setDisplayName("Silverpeas Folder");
-    folderType.setDescription(
-        "A folder to categorize and organize your contributions according to thematics");
-    folderType.setTypeMutability(typeDefinitionFactory.createTypeMutability(true, false, false));
-    final MutablePropertyIdDefinition folderAllowedChildTypes =
-        (MutablePropertyIdDefinition) folderType.getPropertyDefinitions()
-            .get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS);
-    folderAllowedChildTypes.setDefaultValue(ContributionFolder.getAllAllowedChildrenTypes()
-        .stream()
-        .map(TypeId::value)
-        .collect(Collectors.toList()));
-    removeQueryableAndOrderableFlags(folderType);
+        new CMISFolderSubTypeBuilder(typeDefinitionFactory).setTypeId(TypeId.SILVERPEAS_FOLDER)
+            .setObjectType(ContributionFolder.class)
+            .setName("Silverpeas Folder")
+            .setDescription(
+                "A folder to categorize and organize your contributions according to thematics")
+            .setAllowedChildrenTypes(ContributionFolder.getAllAllowedChildrenTypes()
+                .stream()
+                .map(TypeId::value)
+                .collect(Collectors.toList()))
+            .setCreatable(false)
+            .build();
     typeDefinitions.put(folderType.getId(), folderType);
 
-    // add publications
-    MutableFolderTypeDefinition publiType =
-        typeDefinitionFactory.createFolderTypeDefinition(CmisVersion.CMIS_1_1,
-            BaseTypeId.CMIS_FOLDER.value());
-    publiType.setId(TypeId.SILVERPEAS_PUBLICATION.value());
-    publiType.setLocalName(Publication.class.getSimpleName());
-    publiType.setQueryName(TypeId.SILVERPEAS_PUBLICATION.value());
-    publiType.setDisplayName("Publication");
-    publiType.setDescription(
-        "A publication to gathers in a single contribution about a given subject one or more contents");
-    publiType.setTypeMutability(typeDefinitionFactory.createTypeMutability(true, false, false));
-    final MutablePropertyIdDefinition publiAllowedChildTypes =
-        (MutablePropertyIdDefinition) publiType.getPropertyDefinitions()
-            .get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS);
-    publiAllowedChildTypes.setDefaultValue(Publication.getAllAllowedChildrenTypes()
-        .stream()
-        .map(TypeId::value)
-        .collect(Collectors.toList()));
-    removeQueryableAndOrderableFlags(publiType);
-    typeDefinitions.put(publiType.getId(), publiType);
+    // add publication type
+    MutableFolderTypeDefinition pubType =
+        new CMISFolderSubTypeBuilder(typeDefinitionFactory).setTypeId(TypeId.SILVERPEAS_PUBLICATION)
+            .setObjectType(Publication.class)
+            .setName("Publication")
+            .setDescription(
+                "A publication to gathers in a single contribution about a given subject one or " +
+                    "more contents")
+            .setAllowedChildrenTypes(Publication.getAllAllowedChildrenTypes()
+                .stream()
+                .map(TypeId::value)
+                .collect(Collectors.toList()))
+            .setCreatable(true)
+            .build();
+    typeDefinitions.put(pubType.getId(), pubType);
+
+    // add Silverpeas document type (attachments to publications)
+    MutableDocumentTypeDefinition docType =
+        typeDefinitionFactory.createDocumentTypeDefinition(CmisVersion.CMIS_1_1,
+            BaseTypeId.CMIS_DOCUMENT.value());
+    docType.setId(TypeId.SILVERPEAS_DOCUMENT.value());
+    docType.setLocalName(DocumentFile.class.getSimpleName());
+    docType.setQueryName(TypeId.SILVERPEAS_DOCUMENT.value());
+    docType.setDisplayName("Document files");
+    docType.setDescription("A document attached to a given publication");
+    docType.setIsCreatable(true);
+    docType.setContentStreamAllowed(ContentStreamAllowed.ALLOWED);
+    docType.setIsVersionable(false);
+    docType.setTypeMutability(typeDefinitionFactory.createTypeMutability(false, false, false));
+    removeQueryableAndOrderableFlags(docType);
+    typeDefinitions.put(docType.getId(), docType);
   }
 
   private void addBaseCMISObjectTypes() {
@@ -237,9 +238,84 @@ public class SilverpeasCmisTypeManager {
   public List<String> getAllowedChildObjectTypeIds(final String typeId) {
     final TypeDefinition typeDefinition = getTypeDefinition(typeId);
     final MutablePropertyIdDefinition allowedChildTypes =
-        (MutablePropertyIdDefinition) typeDefinition.getPropertyDefinitions().computeIfAbsent(
-            PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS, p -> new PropertyIdDefinitionImpl());
+        (MutablePropertyIdDefinition) typeDefinition.getPropertyDefinitions()
+            .computeIfAbsent(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS,
+                p -> new PropertyIdDefinitionImpl());
     return allowedChildTypes.getDefaultValue();
+  }
+
+  private static class CMISFolderSubTypeBuilder {
+
+    private final TypeDefinitionFactory typeDefinitionFactory;
+    private TypeId typeId;
+    private Class<? extends CmisObject> objectType;
+    private List<String> childrenTypes;
+    private boolean isCreatable;
+    private String name;
+    private String description;
+
+    private CMISFolderSubTypeBuilder(final TypeDefinitionFactory typeDefinitionFactory) {
+      this.typeDefinitionFactory = typeDefinitionFactory;
+    }
+
+    public CMISFolderSubTypeBuilder setTypeId(final TypeId typeId) {
+      this.typeId = typeId;
+      return this;
+    }
+
+    public CMISFolderSubTypeBuilder setObjectType(final Class<? extends CmisObject> objectType) {
+      this.objectType = objectType;
+      return this;
+    }
+
+    public CMISFolderSubTypeBuilder setAllowedChildrenTypes(
+        final List<String> allowedChildrenTypes) {
+      this.childrenTypes = allowedChildrenTypes;
+      return this;
+    }
+
+    public CMISFolderSubTypeBuilder setCreatable(final boolean creatable) {
+      isCreatable = creatable;
+      return this;
+    }
+
+    public CMISFolderSubTypeBuilder setName(final String name) {
+      this.name = name;
+      return this;
+    }
+
+    public CMISFolderSubTypeBuilder setDescription(final String description) {
+      this.description = description;
+      return this;
+    }
+
+    public MutableFolderTypeDefinition build() {
+      Objects.requireNonNull(name);
+      Objects.requireNonNull(description);
+      Objects.requireNonNull(typeId);
+      Objects.requireNonNull(objectType);
+      MutableFolderTypeDefinition folderType =
+          typeDefinitionFactory.createFolderTypeDefinition(CmisVersion.CMIS_1_1,
+              BaseTypeId.CMIS_FOLDER.value());
+      folderType.setId(typeId.value());
+      folderType.setLocalName(objectType.getSimpleName());
+      folderType.setQueryName(typeId.value());
+      folderType.setDisplayName(name);
+      folderType.setDescription(description);
+      folderType.setIsCreatable(isCreatable);
+      folderType.setTypeMutability(typeDefinitionFactory.createTypeMutability(false, false, false));
+      final MutablePropertyIdDefinition allowedChildrenTypes =
+          (MutablePropertyIdDefinition) folderType.getPropertyDefinitions()
+              .get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS);
+      allowedChildrenTypes.setDefaultValue(
+          childrenTypes == null ? Collections.emptyList() : childrenTypes);
+      for (PropertyDefinition<?> propDef : folderType.getPropertyDefinitions().values()) {
+        MutablePropertyDefinition<?> mutablePropDef = (MutablePropertyDefinition<?>) propDef;
+        mutablePropDef.setIsQueryable(false);
+        mutablePropDef.setIsOrderable(false);
+      }
+      return folderType;
+    }
   }
 }
   

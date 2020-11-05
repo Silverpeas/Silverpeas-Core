@@ -24,10 +24,11 @@
 
 package org.silverpeas.cmis.walkers;
 
-import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.jetbrains.annotations.NotNull;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
@@ -36,12 +37,14 @@ import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.cmis.model.CmisFile;
 import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.i18n.LocalizedResource;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,6 +61,9 @@ import java.util.stream.Stream;
 @Service
 @Singleton
 public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
+
+  @Inject
+  private ComponentAccessControl componentAccessControl;
 
   protected TreeWalkerForSpaceInst() {
   }
@@ -93,20 +99,22 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   }
 
   @Override
-  public ObjectData getObjectData(final String objectId, final Filtering filtering) {
+  public CmisObject getObjectData(final String objectId, final Filtering filtering) {
     if (Space.ROOT_ID.asString().equals(objectId)) {
       final CmisObject rootSpace = getObjectFactory().createRootSpace();
-      return buildObjectData(rootSpace, filtering);
+      setObjectDataFields(rootSpace, filtering);
+      return rootSpace;
     } else {
       return super.getObjectData(objectId, filtering);
     }
   }
 
   @Override
-  public ObjectData getObjectDataByPath(final String path, final Filtering filtering) {
+  public CmisFile getObjectDataByPath(final String path, final Filtering filtering) {
     if (CmisFolder.PATH_SEPARATOR.equals(path)) {
-      final CmisObject rootSpace = getObjectFactory().createRootSpace();
-      return buildObjectData(rootSpace, filtering);
+      final CmisFile rootSpace = getObjectFactory().createRootSpace();
+      setObjectDataFields(rootSpace, filtering);
+      return rootSpace;
     } else {
       return super.getObjectDataByPath(path, filtering);
     }
@@ -148,11 +156,18 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   }
 
   @Override
+  public ContentStream getContentStream(final String objectId, final String language,
+      final long offset, final long length) {
+    throw new CmisNotSupportedException(
+        "The content stream isn't supported by collaborative spaces");
+  }
+
+  @Override
   protected List<ObjectInFolderContainer> browseObjectsInFolderTree(final LocalizedResource object,
       final Filtering filtering, final long depth) {
     User user = filtering.getCurrentUser();
-    List<LocalizedResource> children = getAllowedChildrenOfSpace(object.getIdentifier(), user)
-        .collect(Collectors.toList());
+    List<LocalizedResource> children =
+        getAllowedChildrenOfSpace(object.getIdentifier(), user).collect(Collectors.toList());
     return browseObjectsInFolderSubTrees(children, filtering, depth);
   }
 
@@ -167,7 +182,9 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   private Stream<LocalizedResource> getAllowedChildrenOfSpace(final ResourceIdentifier spaceId,
       final User user) {
     String[] subSpaceIds = getController().getAllowedSubSpaceIds(user.getId(), spaceId.asString());
-    String[] compInstIds = getController().getAvailCompoIds(spaceId.asString(), user.getId());
+    String[] compInstIds = Stream.of(getController().getAllComponentIds(spaceId.asString()))
+        .filter(c -> componentAccessControl.isUserAuthorized(user.getId(), c))
+        .toArray(String[]::new);
     // we browse first the subspaces and then the component instances that are supported by our CMIS
     // implementation
     return Stream.concat(Stream.of(subSpaceIds),
@@ -193,14 +210,15 @@ public class TreeWalkerForSpaceInst extends AbstractCmisObjectsTreeWalker {
   protected List<ObjectParentData> browseParentsOfObject(final LocalizedResource object,
       final Filtering filtering) {
     final SpaceInstLight space = (SpaceInstLight) object;
+    final String rootSpaceId = String.valueOf(Space.ROOT_ID.asLocalId());
     final String fatherId = space.getFatherId();
     final CmisFolder cmisChild = getObjectFactory().createSpace(space, filtering.getLanguage());
     final CmisFolder cmisParent;
-    if (StringUtil.isDefined(fatherId)) {
+    if (rootSpaceId.equals(fatherId)) {
       cmisParent = getObjectFactory().createRootSpace();
     } else {
       final SpaceInstLight father = getController().getSpaceInstLightById(fatherId);
-      cmisParent = getObjectFactory().createSpace(father, filtering.getLanguage());
+      cmisParent = createCmisObject(father, filtering.getLanguage());
     }
     final ObjectParentData parentData = buildObjectParentData(cmisParent, cmisChild, filtering);
     return Collections.singletonList(parentData);

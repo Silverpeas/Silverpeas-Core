@@ -26,11 +26,10 @@ package org.silverpeas.core.cmis.model;
 
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.silverpeas.core.ResourceIdentifier;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.component.model.ComponentInstPath;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * An application in Silverpeas. An application is always a child of a given Silverpeas space and
@@ -42,29 +41,33 @@ public class Application extends CmisFolder {
   public static final TypeId CMIS_TYPE = TypeId.SILVERPEAS_APPLICATION;
 
   public static List<TypeId> getAllAllowedChildrenTypes() {
-    return Collections.singletonList(TypeId.SILVERPEAS_FOLDER);
+    return Arrays.asList(TypeId.SILVERPEAS_FOLDER, TypeId.SILVERPEAS_PUBLICATION);
   }
 
+  /**
+   * Constructs a new application with the specified identifier, name and language.
+   * @param id the {@link ResourceIdentifier} instance identifying the component instance in
+   * Silverpeas.
+   * @param name the name of the application.
+   * @param language the language in which the properties of the application are written.
+   */
   Application(final ResourceIdentifier id, final String name, final String language) {
     super(id, name, language);
   }
 
   @Override
   public String getPath() {
-    final OrganizationController controller = OrganizationController.get();
-    return PATH_SEPARATOR + controller.getPathToComponent(getId())
-        .stream()
-        .map(s -> s.getName(getLanguage()))
-        .collect(Collectors.joining(PATH_SEPARATOR)) + PATH_SEPARATOR + getName();
+    return PATH_SEPARATOR +
+        ComponentInstPath.getPath(getId()).format(getLanguage(), true, PATH_SEPARATOR);
   }
 
   @Override
-  public BaseTypeId getBaseCmisType() {
+  public BaseTypeId getBaseTypeId() {
     return CMIS_TYPE.getBaseTypeId();
   }
 
   @Override
-  public TypeId getCmisType() {
+  public TypeId getTypeId() {
     return CMIS_TYPE;
   }
 

@@ -23,11 +23,15 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
-import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.WebdavServiceProvider;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.LocalizedAttachment;
+import org.silverpeas.core.i18n.LocalizedResource;
+import org.silverpeas.core.i18n.ResourceTranslation;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavWopiFile;
 import org.silverpeas.core.persistence.jcr.JcrDataConverter;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -63,10 +67,20 @@ import static org.silverpeas.core.contribution.attachment.util.AttachmentSetting
 import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
 
 /**
- *
+ * A document file attached to a given user contribution. A document file is itself a user
+ * contribution whose the content is written in a given language. As such it is then both a
+ * localized contribution and its own translation. A localized contribution because it can exist in
+ * different languages (rare enough) and a translation by itself because the content of the file is
+ * always written in a given language; it is then not a container of several contents, each of them
+ * written in a different language. The choice has been made here, in the current context, to not
+ * represent such a document as a virtual localized contribution and resource of one or more
+ * translation(s) (each of them being a document file) but to merge these different concepts into a
+ * single one in this peculiar case of attached document files.
  * @author ehugonnet
+ * @author mmoquillon
  */
-public class SimpleDocument implements Identifiable, Serializable, Securable {
+public class SimpleDocument implements LocalizedAttachment, LocalizedResource, ResourceTranslation,
+    Serializable, Securable {
 
   private static final long serialVersionUID = 8778738762037114180L;
   public static final String WEBDAV_FOLDER = "webdav";
@@ -101,6 +115,10 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
   private Boolean displayableAsContent;
   private Boolean editableSimultaneously;
 
+  public static boolean isASimpleDocument(final ContributionIdentifier id) {
+    return DocumentType.decode(id.getType()) != null;
+  }
+
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
       SimpleAttachment attachment) {
     this(pk, foreignId, order, versioned, null, attachment);
@@ -108,47 +126,11 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
       String editedBy, SimpleAttachment attachment) {
-    this(pk, foreignId, order, versioned, editedBy, null, null, null, null, attachment);
-  }
-
-  public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
-      Date reservation, Date alert, Date expiry, String comment, SimpleAttachment attachment) {
-    this.pk = pk;
-    this.foreignId = foreignId;
-    this.order = order;
-    this.versioned = versioned;
-    setReservation(reservation);
-    this.alert = DateUtil.getBeginOfDay(alert);
-    this.expiry = DateUtil.getBeginOfDay(expiry);
-    this.comment = comment;
-    this.attachment = attachment;
-  }
-
-  /**
-   *
-   * @param pk
-   * @param foreignId
-   * @param order
-   * @param versioned
-   * @param editedBy
-   * @param reservation
-   * @param alert
-   * @param expiry
-   * @param comment
-   * @param attachment
-   */
-  public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
-      String editedBy, Date reservation, Date alert, Date expiry, String comment,
-      SimpleAttachment attachment) {
     this.pk = pk;
     this.foreignId = foreignId;
     this.order = order;
     this.versioned = versioned;
     this.editedBy = editedBy;
-    setReservation(reservation);
-    this.alert = DateUtil.getBeginOfDay(alert);
-    this.expiry = DateUtil.getBeginOfDay(expiry);
-    this.comment = comment;
     this.attachment = attachment;
   }
 
@@ -180,6 +162,24 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
     this.attachment = simpleDocument.getAttachment();
     this.displayableAsContent = simpleDocument.displayableAsContent;
     this.editableSimultaneously = simpleDocument.editableSimultaneously;
+  }
+
+  @Override
+  public ContributionIdentifier getIdentifier() {
+    return ContributionIdentifier.from(getPk(), getDocumentType().getName());
+  }
+
+  @Override
+  public User getCreator() {
+    return User.getById(getCreatedBy());
+  }
+
+  @Override
+  public User getLastUpdater() {
+    if (StringUtil.isDefined(getUpdatedBy())) {
+      return User.getById(getUpdatedBy());
+    }
+    return null;
   }
 
   public void setDocumentType(DocumentType documentType) {
@@ -228,6 +228,11 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
     return getAttachment().getTitle();
   }
 
+  @Override
+  public String getName() {
+    return getTitle();
+  }
+
   public void setTitle(String title) {
     getAttachment().setTitle(title);
   }
@@ -260,12 +265,12 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
     return getAttachment().getCreatedBy();
   }
 
-  public Date getCreated() {
-    return getAttachment().getCreated();
+  public Date getCreationDate() {
+    return getAttachment().getCreationDate();
   }
 
-  public void setCreated(Date created) {
-    getAttachment().setCreated(created);
+  public void setCreationDate(Date created) {
+    getAttachment().setCreationDate(created);
   }
 
   public String getUpdatedBy() {
@@ -276,12 +281,12 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
     getAttachment().setUpdatedBy(updatedBy);
   }
 
-  public Date getUpdated() {
-    return getAttachment().getUpdated();
+  public Date getLastUpdateDate() {
+    return getAttachment().getLastUpdateDate();
   }
 
-  public void setUpdated(Date updated) {
-    getAttachment().setUpdated(updated);
+  public void setLastUpdateDate(Date updated) {
+    getAttachment().setLastUpdateDate(updated);
   }
 
   public Date getReservation() {
@@ -353,12 +358,7 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
     this.majorVersion = majorVersion;
   }
 
-  /**
-   * Gets a version number as String.
-   * For now, this is the concatenation of major and minor version data that are separated by a
-   * point.
-   * @return
-   */
+  @Override
   public String getVersion() {
     return getMajorVersion() + "." + getMinorVersion();
   }
@@ -584,11 +584,7 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
     return '/' + getInstanceId() + '/' + getFolder() + '/' + getNodeName();
   }
 
-  /**
-   * Return the icon correponding to the file.
-   *
-   * @return
-   */
+  @Override
   public String getDisplayIcon() {
     return FileRepositoryManager.getFileIcon(FileRepositoryManager.getFileExtension(getFilename()));
   }
@@ -611,6 +607,7 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
    *
    * @return the path to the file stored on the filesystem.
    */
+  @Override
   public String getAttachmentPath() {
     String lang = getLanguage();
     if (!StringUtil.isDefined(lang)) {
@@ -685,7 +682,7 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
    * @return the attachment URL.
    */
   public String getAttachmentURL() {
-    Date date = getUpdated() != null ? getUpdated() : getCreated();
+    Date date = getLastUpdateDate() != null ? getLastUpdateDate() : getCreationDate();
     if (date == null) {
       date = Date.from(Instant.now());
     }
@@ -745,7 +742,7 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
    * If not versionned, it returns itself.
    * If versioned, it returns the master of versioned document (the last created or updated in
    * other words).
-   * @return
+   * @return the master version of this document.
    */
   public SimpleDocument getVersionMaster() {
     return versionMaster;
@@ -765,7 +762,7 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
 
   /**
    * Returns the path into the repository.
-   * @return
+   * @return the repository path.
    */
   public String getRepositoryPath() {
     return repositoryPath;
@@ -778,7 +775,7 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
   /**
    * Returns the index of document into the history if any and if the document is a versioned one.
    * In other cases, it returns 0 (the start index).
-   * @return
+   * @return the index of the document version in the document change history.
    */
   public int getVersionIndex() {
     return versionIndex;
@@ -838,7 +835,7 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
    * Indicates if the download of the document is allowed for the given user in relation to its
    * roles.
    * DON'T USE THIS METHOD IN CASE OF LARGE NUMBER OF ATTACHMENT TO PERFORM.
-   * @param user
+   * @param user a user in Silverpeas.
    * @return true if download is allowed.
    */
   public boolean isDownloadAllowedForRolesFrom(final User user) {
@@ -861,24 +858,26 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
 
   /**
    * Indicates if the download of the document is allowed for the given roles.
-   * @param roles
+   * @param roles a set of silverpeas roles
    * @return true if download is allowed.
    */
   public boolean isDownloadAllowedForRoles(final Set<SilverpeasRole> roles) {
-    if (CollectionUtil.isEmpty(roles)) {
+    SilverpeasRole highestRole = SilverpeasRole.getHighestFrom(roles);
+    if (highestRole == null) {
       return false;
     }
 
-    if (CollectionUtil.isEmpty(getVersionMaster().forbiddenDownloadForRoles)) {
-      // In that case, there is no reason to verify user role informations because it doesn't
+    SilverpeasRole highestForbiddenRole =
+        SilverpeasRole.getHighestFrom(getVersionMaster().forbiddenDownloadForRoles);
+    if (highestForbiddenRole == null) {
+      // In that case, there is no reason to verify user role because it doesn't
       // exists any restriction for downloading.
       return true;
     }
 
     // If the intersection of the allowed roles compared to the given ones is empty,
     // then the download is allowed.
-    return SilverpeasRole.getHighestFrom(roles)
-        .isGreaterThan(SilverpeasRole.getHighestFrom(getVersionMaster().forbiddenDownloadForRoles));
+    return highestRole.isGreaterThan(highestForbiddenRole);
   }
 
   /**
@@ -892,7 +891,7 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
    * Forbids the download for the given roles.
    * PLEASE BE CAREFUL : this method doesn't persist the information. It is used by attachment
    * services during the conversion from JCR data to SimpleDocument data.
-   * @param forbiddenRoles
+   * @param forbiddenRoles one or more silverpeas roles
    * @return true if roles were not forbidden before the call of this method.
    */
   public boolean addRolesForWhichDownloadIsForbidden(final SilverpeasRole... forbiddenRoles) {
@@ -903,7 +902,7 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
    * Forbids the download for the given roles.
    * PLEASE BE CAREFUL : this method doesn't persist the information. It is used by attachment
    * services during the conversion from JCR data to SimpleDocument data.
-   * @param forbiddenRoles
+   * @param forbiddenRoles a collection of silverpeas roles
    * @return true if roles were not forbidden before the call of this method.
    */
   public boolean addRolesForWhichDownloadIsForbidden(
@@ -921,7 +920,7 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
    * Allows the download for the given roles.
    * PLEASE BE CAREFUL : this method doesn't persist the information. It is used by attachment
    * services during the conversion from JCR data to SimpleDocument data.
-   * @param allowedRoles
+   * @param allowedRoles one or more silverpeas roles
    * @return true if roles were not allowed before the call of this method.
    */
   public boolean addRolesForWhichDownloadIsAllowed(final SilverpeasRole... allowedRoles) {
@@ -932,7 +931,7 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
    * Allows the download for the given roles.
    * PLEASE BE CAREFUL : this method doesn't persist the information. It is used by attachment
    * services during the conversion from JCR data to SimpleDocument data.
-   * @param allowedRoles
+   * @param allowedRoles a collection of silverpeas roles
    * @return true if roles were not allowed before the call of this method.
    */
   public boolean addRolesForWhichDownloadIsAllowed(final Collection<SilverpeasRole> allowedRoles) {
@@ -943,7 +942,7 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
 
   /**
    * Gets roles for which download is not allowed.
-   * @return
+   * @return a set of silverpeas roles
    */
   public Set<SilverpeasRole> getForbiddenDownloadForRoles() {
     return (getVersionMaster().forbiddenDownloadForRoles != null) ?
@@ -997,6 +996,15 @@ public class SimpleDocument implements Identifiable, Serializable, Securable {
 
   public void setDisplayableAsContent(final boolean displayableAsContent) {
     this.displayableAsContent = displayableAsContent;
+  }
+
+  @Override
+  public SimpleDocument getTranslation(final String language) {
+    if (language.equals(getLanguage())) {
+      return this;
+    }
+    SimpleDocument translation = AttachmentService.get().searchDocumentById(getPk(), language);
+    return translation == null ? this : translation;
   }
 
   /**

@@ -24,14 +24,13 @@
 
 package org.silverpeas.cmis;
 
-import org.apache.chemistry.opencmis.commons.PropertyIds;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ExtensionsData;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
@@ -43,13 +42,18 @@ import org.apache.chemistry.opencmis.commons.impl.server.AbstractCmisService;
 import org.apache.chemistry.opencmis.commons.impl.server.ObjectInfoImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.server.support.wrapper.CallContextAwareCmisService;
+import org.silverpeas.cmis.util.CmisDateConverter;
 import org.silverpeas.core.annotation.WebService;
+import org.silverpeas.core.cmis.model.CmisFile;
+import org.silverpeas.core.cmis.model.CmisFolder;
+import org.silverpeas.core.cmis.model.CmisObject;
+import org.silverpeas.core.cmis.model.DocumentFile;
+import org.silverpeas.core.cmis.model.Space;
 
 import javax.inject.Inject;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -75,15 +79,14 @@ import java.util.stream.Stream;
 public class SilverpeasCmisService extends AbstractCmisService
     implements CallContextAwareCmisService {
 
-  private static final Map<BaseTypeId, BiConsumer<ObjectInfoImpl, ObjectData>> objectInfoSetters =
+  private static final Map<BaseTypeId, BiConsumer<ObjectInfoImpl, CmisObject>> objectInfoSetters =
       new EnumMap<>(BaseTypeId.class);
 
   private CmisRequestContext context;
 
   static {
     objectInfoSetters.put(BaseTypeId.CMIS_FOLDER, (i, d) -> {
-      final Map<String, PropertyData<?>> properties = d.getProperties().getProperties();
-      i.setHasParent(properties.get(PropertyIds.PARENT_ID).getFirstValue() != null);
+      i.setHasParent(!d.getId().equals(Space.ROOT_ID.asString()));
       i.setContentType(null);
       i.setFileName(null);
       i.setHasContent(false);
@@ -92,13 +95,13 @@ public class SilverpeasCmisService extends AbstractCmisService
     });
 
     objectInfoSetters.put(BaseTypeId.CMIS_DOCUMENT, (i, d) -> {
+      DocumentFile document = (DocumentFile) d;
       i.setHasParent(true);
       i.setSupportsDescendants(false);
       i.setSupportsFolderTree(false);
-      // for instance. Later taken into account its content
-      i.setHasContent(false);
-      i.setContentType(null);
-      i.setFileName(null);
+      i.setHasContent(true);
+      i.setContentType(document.getMimeType());
+      i.setFileName(document.getName());
     });
   }
 
@@ -149,9 +152,10 @@ public class SilverpeasCmisService extends AbstractCmisService
     final ObjectInFolderList children =
         repository.getChildren(folderId, filter, includeAllowableActions, includeRelationships,
             includePathSegment, maxItems, skipCount);
-    buildObjectInfo(repository, folderId,
-        children.getObjects().stream().map(ObjectInFolderData::getObject));
-
+    buildObjectInfo(repository, folderId, children.getObjects()
+        .stream()
+        .map(ObjectInFolderData::getObject)
+        .map(CmisObject.class::cast));
     return children;
   }
 
@@ -165,7 +169,8 @@ public class SilverpeasCmisService extends AbstractCmisService
     final List<ObjectInFolderContainer> descendants =
         repository.getDescendants(folderId, depth, filter, includeAllowableActions,
             includeRelationships, includePathSegment);
-    buildObjectInfo(repository, folderId, descendants.stream().map(c -> c.getObject().getObject()));
+    buildObjectInfo(repository, folderId,
+        descendants.stream().map(c -> c.getObject().getObject()).map(CmisObject.class::cast));
     return descendants;
   }
 
@@ -179,7 +184,8 @@ public class SilverpeasCmisService extends AbstractCmisService
     final List<ObjectInFolderContainer> descendants =
         repository.getFolderTree(folderId, depth, filter, includeAllowableActions,
             includeRelationships, includePathSegment);
-    buildObjectInfo(repository, folderId, descendants.stream().map(c -> c.getObject().getObject()));
+    buildObjectInfo(repository, folderId,
+        descendants.stream().map(c -> c.getObject().getObject()).map(CmisObject.class::cast));
     return descendants;
   }
 
@@ -190,9 +196,9 @@ public class SilverpeasCmisService extends AbstractCmisService
     final List<ObjectParentData> parents =
         repository.getObjectParents(folderId, filter, false, false);
     if (parents.isEmpty()) {
-      throw new CmisInvalidArgumentException("The root folder has no parent!");
+      throw new CmisInvalidArgumentException("Only the root folder has no parent!");
     }
-    final ObjectData parent = parents.get(0).getObject();
+    final CmisFolder parent = (CmisFolder) parents.get(0).getObject();
     final CallContext callContext = getCallContext();
     if (callContext.isObjectInfoRequired()) {
       setObjectInfo(parent);
@@ -209,7 +215,8 @@ public class SilverpeasCmisService extends AbstractCmisService
     final List<ObjectParentData> parents =
         repository.getObjectParents(objectId, filter, includeAllowableActions,
             includeRelativePathSegment);
-    buildObjectInfo(repository, objectId, parents.stream().map(ObjectParentData::getObject));
+    buildObjectInfo(repository, objectId,
+        parents.stream().map(ObjectParentData::getObject).map(CmisObject.class::cast));
     return parents;
   }
 
@@ -219,7 +226,7 @@ public class SilverpeasCmisService extends AbstractCmisService
       final String renditionFilter, final Boolean includePolicyIds, final Boolean includeAcl,
       final ExtensionsData extension) {
     final SilverpeasCmisRepository repository = getRepository(repositoryId);
-    final ObjectData object =
+    final CmisObject object =
         repository.getObject(objectId, filter, includeAllowableActions, includeRelationships,
             includeAcl);
     final CallContext callContext = getCallContext();
@@ -235,7 +242,7 @@ public class SilverpeasCmisService extends AbstractCmisService
       final IncludeRelationships includeRelationships, final String renditionFilter,
       final Boolean includePolicyIds, final Boolean includeAcl, final ExtensionsData extension) {
     final SilverpeasCmisRepository repository = getRepository(repositoryId);
-    final ObjectData objData =
+    final CmisFile objData =
         repository.getObjectByPath(path, filter, includeAllowableActions, includeRelationships,
             includeAcl);
     final CallContext callContext = getCallContext();
@@ -246,36 +253,40 @@ public class SilverpeasCmisService extends AbstractCmisService
     return objData;
   }
 
+  @Override
+  public ContentStream getContentStream(final String repositoryId, final String objectId,
+      final String streamId, final BigInteger offset, final BigInteger length,
+      final ExtensionsData extension) {
+    final SilverpeasCmisRepository repository = getRepository(repositoryId);
+    return repository.getContentStream(objectId, offset, length);
+  }
+
   private void buildObjectInfo(final SilverpeasCmisRepository repository, final String objectId,
-      final Stream<ObjectData> relatives) {
+      final Stream<CmisObject> relatives) {
     final CallContext callContext = getCallContext();
     if (callContext.isObjectInfoRequired()) {
-      final ObjectData object =
+      final CmisObject object =
           repository.getObject(objectId, null, false, IncludeRelationships.NONE, false);
       setObjectInfo(object);
       setObjectInfo(relatives);
     }
   }
 
-  private void setObjectInfo(final Stream<ObjectData> objectDataStream) {
+  private void setObjectInfo(final Stream<CmisObject> objectDataStream) {
     objectDataStream.forEach(this::setObjectInfo);
   }
 
-  private void setObjectInfo(final ObjectData object) {
+  private void setObjectInfo(final CmisObject object) {
     // should be adapted to the type of the object
-    final Map<String, PropertyData<?>> properties = object.getProperties().getProperties();
-    final String objectTypeId = (String) properties.get(PropertyIds.OBJECT_TYPE_ID).getFirstValue();
-
     final ObjectInfoImpl objectInfo = new ObjectInfoImpl();
     objectInfo.setId(object.getId());
-    objectInfo.setName(properties.get(PropertyIds.NAME).getId());
+    objectInfo.setName(object.getName());
     objectInfo.setBaseType(object.getBaseTypeId());
-    objectInfo.setTypeId(objectTypeId);
-    objectInfo.setCreatedBy((String) properties.get(PropertyIds.CREATED_BY).getFirstValue());
-    objectInfo.setCreationDate(
-        (GregorianCalendar) properties.get(PropertyIds.CREATION_DATE).getFirstValue());
+    objectInfo.setTypeId(object.getTypeId().value());
+    objectInfo.setCreatedBy(object.getCreator());
+    objectInfo.setCreationDate(CmisDateConverter.millisToCalendar(object.getCreationDate()));
     objectInfo.setLastModificationDate(
-        (GregorianCalendar) properties.get(PropertyIds.LAST_MODIFICATION_DATE).getFirstValue());
+        CmisDateConverter.millisToCalendar(object.getLastModificationDate()));
     objectInfo.setHasAcl(true);
     objectInfo.setVersionSeriesId(null);
     objectInfo.setIsCurrentVersion(true);
@@ -288,7 +299,7 @@ public class SilverpeasCmisService extends AbstractCmisService
     objectInfo.setWorkingCopyOriginalId(null);
     objectInfo.setObject(object);
 
-    BiConsumer<ObjectInfoImpl, ObjectData> setter = objectInfoSetters.get(object.getBaseTypeId());
+    BiConsumer<ObjectInfoImpl, CmisObject> setter = objectInfoSetters.get(object.getBaseTypeId());
     if (setter != null) {
       setter.accept(objectInfo, object);
     }

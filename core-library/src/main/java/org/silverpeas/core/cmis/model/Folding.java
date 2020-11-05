@@ -36,18 +36,12 @@ import java.util.List;
 public interface Folding extends Fileable {
 
   /**
-   * Gets the unique identifier of the folder containing him.
-   * @return the unique identifier of the parent of this fileable instance or null if it is a root
+   * Gets the unique identifier of the folder parent of this one
+   * @return the unique identifier of the parent of this folding instance or null if it is a root
    * folder.
    */
+  @Override
   String getParentId();
-
-  /**
-   * Gets the path of this object from the root folder in the CMIS objects tree.
-   * @return a slash-separated path whose the first slash is the root folder in the CMIS objects
-   * tree.
-   */
-  String getPath();
 
   /**
    * Is this object is the root folder in the CMIS objects tree?

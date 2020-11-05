@@ -85,7 +85,7 @@ public class AttachmentEntity implements WebEntity {
     entity.logicalName = detail.getFilename();
     entity.description = detail.getDescription();
     entity.size = detail.getSize();
-    entity.creationDate = detail.getCreated().getTime();
+    entity.creationDate = detail.getCreationDate().getTime();
     entity.author = detail.getCreatedBy();
     entity.title = detail.getTitle();
     entity.type = detail.getContentType();

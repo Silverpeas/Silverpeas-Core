@@ -284,7 +284,7 @@ public class VersioningImport {
     boolean launchCallback = isPublic;
     existingDocument.setPublicDocument(isPublic);
     existingDocument.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-    existingDocument.setUpdated(new Date());
+    existingDocument.setLastUpdateDate(new Date());
     existingDocument.setUpdatedBy("" + userId);
     existingDocument.setContentType(version.getMimeType());
     existingDocument.setSize(version.getSize());

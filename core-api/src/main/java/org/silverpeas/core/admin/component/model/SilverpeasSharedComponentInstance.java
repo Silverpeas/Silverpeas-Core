@@ -26,7 +26,10 @@ package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.LocalizedResource;
+import org.silverpeas.core.security.Securable;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import java.util.Optional;
 
@@ -34,7 +37,7 @@ import java.util.Optional;
  * @author Yohann Chastagnier
  */
 public interface SilverpeasSharedComponentInstance extends SilverpeasComponentInstance,
-    LocalizedResource {
+    LocalizedResource, Securable {
 
   /**
    * Gets a personal silverpeas component instance from the specified identifier.
@@ -48,4 +51,19 @@ public interface SilverpeasSharedComponentInstance extends SilverpeasComponentIn
 
   @Override
   BasicIdentifier getIdentifier();
+
+  @Override
+  default boolean canBeAccessedBy(User user) {
+    return ComponentAccessControl.get().isUserAuthorized(user.getId(), getIdentifier());
+  }
+
+  @Override
+  default boolean canBeModifiedBy(User user) {
+    return canBeAccessedBy(user) && (user.isAccessAdmin() || user.isAccessSpaceManager());
+  }
+
+  @Override
+  default boolean canBeDeletedBy(User user) {
+    return canBeAccessedBy(user) && (user.isAccessAdmin() || user.isAccessSpaceManager());
+  }
 }

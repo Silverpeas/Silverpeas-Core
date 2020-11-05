@@ -26,8 +26,7 @@ package org.silverpeas.core.cmis.model;
 
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.node.model.NodePath;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,6 +51,13 @@ public class ContributionFolder extends CmisFolder {
 
   private final ContributionIdentifier id;
 
+  /**
+   * Constructs a new folder of contributions with the specified identifier, name and language.
+   * @param id the {@link ContributionIdentifier} instance identifying the node or
+   * the category in Silverpeas.
+   * @param name the name of the folder.
+   * @param language the language of the folder.
+   */
   ContributionFolder(final ContributionIdentifier id, final String name, final String language) {
     super(id, name, language);
     this.id = id;
@@ -63,9 +69,7 @@ public class ContributionFolder extends CmisFolder {
 
   @Override
   public String getPath() {
-    NodePK nodePK = new NodePK(id.getLocalId(), id.getComponentInstanceId());
-    return PATH_SEPARATOR +
-        NodeService.get().getPath(nodePK).format(getLanguage(), true, PATH_SEPARATOR);
+    return PATH_SEPARATOR + NodePath.getPath(id).format(getLanguage(), true, PATH_SEPARATOR);
   }
 
   @Override
@@ -79,12 +83,12 @@ public class ContributionFolder extends CmisFolder {
   }
 
   @Override
-  public BaseTypeId getBaseCmisType() {
+  public BaseTypeId getBaseTypeId() {
     return CMIS_TYPE.getBaseTypeId();
   }
 
   @Override
-  public TypeId getCmisType() {
+  public TypeId getTypeId() {
     return CMIS_TYPE;
   }
 }

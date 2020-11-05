@@ -27,12 +27,11 @@ package org.silverpeas.core.cmis.model;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.silverpeas.core.BasicIdentifier;
 import org.silverpeas.core.ResourceIdentifier;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.model.SpacePath;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A collaborative space in Silverpeas. A collaborative space provides a way to organize the
@@ -44,7 +43,7 @@ import java.util.stream.Collectors;
  */
 public class Space  extends CmisFolder {
 
-  public static final ResourceIdentifier ROOT_ID = new BasicIdentifier(0,"WA0");
+  public static final BasicIdentifier ROOT_ID = new BasicIdentifier(0,"WA0");
   public static final TypeId CMIS_TYPE = TypeId.SILVERPEAS_SPACE;
 
   public static List<TypeId> getAllAllowedChildrenTypes() {
@@ -55,6 +54,13 @@ public class Space  extends CmisFolder {
     return folderId.startsWith("WA");
   }
 
+  /**
+   * Constructs a new space with the specified identifier, name and language.
+   * @param id the {@link ResourceIdentifier} instance identifying a collaborative space in
+   * Silverpeas.
+   * @param name the name of the collaborative space.
+   * @param language the language in which are written the properties of the space.
+   */
   Space(final ResourceIdentifier id, final String name, final String language) {
     super(id, name, language);
   }
@@ -65,22 +71,19 @@ public class Space  extends CmisFolder {
     if (ROOT_ID.asString().equals(getId())) {
       path = PATH_SEPARATOR;
     } else {
-      final OrganizationController controller = OrganizationController.get();
-      path = PATH_SEPARATOR + controller.getPathToSpace(getId())
-          .stream()
-          .map(s -> s.getName(getLanguage()))
-          .collect(Collectors.joining(PATH_SEPARATOR));
+      path =
+          PATH_SEPARATOR + SpacePath.getPath(getId()).format(getLanguage(), true, PATH_SEPARATOR);
     }
     return path;
   }
 
   @Override
-  public BaseTypeId getBaseCmisType() {
+  public BaseTypeId getBaseTypeId() {
     return CMIS_TYPE.getBaseTypeId();
   }
 
   @Override
-  public TypeId getCmisType() {
+  public TypeId getTypeId() {
     return CMIS_TYPE;
   }
 

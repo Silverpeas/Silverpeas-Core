@@ -28,6 +28,10 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
 import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -46,6 +50,8 @@ import java.util.Set;
  * @author mmoquillon
  */
 public class SilverpeasObjectsTree {
+
+  public static final String LANGUAGE = "en";
 
   private final Set<TreeNode> rootSpaces = new HashSet<>();
   private final Map<String, TreeNode> cache = new HashMap<>();
@@ -79,7 +85,7 @@ public class SilverpeasObjectsTree {
     boolean isRoot = StringUtil.isNotDefined(fatherId);
     SpaceRow row = new SpaceRow();
     row.id = localId;
-    row.lang = "en";
+    row.lang = LANGUAGE;
     row.name = name;
     row.description = description;
     row.domainFatherId = isRoot ? 0 : Integer.parseInt(fatherId.substring(2));
@@ -108,7 +114,7 @@ public class SilverpeasObjectsTree {
       String description) {
     ComponentInstanceRow row = new ComponentInstanceRow();
     row.id = localId;
-    row.lang = "en";
+    row.lang = LANGUAGE;
     row.name = name;
     row.description = description;
     row.spaceId = Integer.parseInt(fatherId.substring(2));
@@ -166,6 +172,24 @@ public class SilverpeasObjectsTree {
     pub.setCloneId("-1");
     pub.setInfoId("0");
     return parentNode.addChild(pub);
+  }
+
+  public TreeNode addDocument(int localId, String pubId, String name, String description) {
+    TreeNode parentNode = cache.get(pubId);
+    int order = parentNode.getChildren().size() + 1;
+    ContributionIdentifier pub = ContributionIdentifier.decode(pubId);
+    SimpleDocumentPK pk =
+        new SimpleDocumentPK(String.valueOf(localId), pub.getComponentInstanceId());
+    Date today = new Date();
+    SimpleAttachment attachment =
+        new SimpleAttachment(name + ".pdf", LANGUAGE, name, description, 102400, "application/pdf",
+            "0", today, null);
+    SimpleDocument doc = new SimpleDocument(pk, pub.getLocalId(), order, false, attachment);
+    doc.setDocumentType(DocumentType.attachment);
+    doc.setCreationDate(today);
+    doc.setUpdatedBy("0");
+    doc.setLastUpdateDate(today);
+    return parentNode.addChild(doc);
   }
 }
   

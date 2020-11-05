@@ -32,6 +32,9 @@ import java.util.Collections;
 public abstract class AbstractBean extends AbstractI18NBean<BeanTranslation> {
   private static final long serialVersionUID = 3300278318449203747L;
 
+  protected AbstractBean() {
+  }
+
   @Override
   protected Class<BeanTranslation> getTranslationType() {
     return BeanTranslation.class;

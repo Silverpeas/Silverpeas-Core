@@ -24,10 +24,13 @@
 
 package org.silverpeas.core.cmis.model;
 
+import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.silverpeas.core.ResourceIdentifier;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * The abstract representation of a Silverpeas resource as a CMIS folder. In CMIS, a Folder is a
@@ -36,11 +39,7 @@ import java.util.List;
  * all a container of other objects and hence they can be represented by a CMIS folder.
  * @author mmoquillon
  */
-public abstract class CmisFolder extends CmisObject implements Folding {
-
-  public static final String PATH_SEPARATOR = "/";
-
-  private String parentId;
+public abstract class CmisFolder extends CmisFile implements Folding {
 
   /**
    * Gets the types of the objects this type of folder accept as children. This method returns
@@ -54,47 +53,67 @@ public abstract class CmisFolder extends CmisObject implements Folding {
     return Collections.emptyList();
   }
 
+  /**
+   * Constructs a new CMIS folder with the specified identifier, name and language in which the
+   * folder name and description is written.
+   * @param id the {@link ResourceIdentifier} instance identifying a resource in Silverpeas that
+   * can wrap other resources.
+   * @param name the name of the resource.
+   * @param language the language in which the name and the description of the folder is written.
+   */
   CmisFolder(final ResourceIdentifier id, final String name, final String language) {
     super(id, name, language);
   }
 
-  @Override
-  public String getParentId() {
-    return parentId;
-  }
-
-  @Override
-  public abstract String getPath();
-
   /**
-   * Sets the unique identifier of the parent to this folder is any. If null, then this folder is a
+   * Sets the unique identifier of the parent to this folder if any. If null, then this folder is a
    * root one in the CMIS objects tree. Otherwise, the identifier must be the one of another CMIS
-   * folder.
+   * folder; a folder cannot be orphaned.
    * @param parentId the unique identifier of the parent folder.
    * @return either the unique identifier of a folder, parent of it, or null if this folder is a
    * root one in the CMIS objects tree.
    */
   public CmisFolder setParentId(final String parentId) {
-    this.parentId = parentId;
+    super.setParentId(parentId);
     return this;
   }
 
   /**
-   * Gets the segment of the path of this folder in the CMIS objects tree relative to its parent.
-   * The path of an object in the tree identifies it uniquely in the tree. Each segment of a path is
-   * the name of the objects that made up the path down to this object. The value depends on the
-   * context within which the folder is built:
-   * <ul>
-   *   <li>in the case the folder is get as child: the segment is its name.</li>
-   *   <li>in the case the folder is get as parent of a given object: the segment is the name
-   *   of the given object; it is the segment of the path of the object relative to it.</li>
-   * </ul>
-   * @return the name of this object as referred in its path.
+   * A folder cannot be orphaned.
+   * @return false.
    */
-  public String getPathSegment() {
-    final String path = getPath();
-    int idx = path.lastIndexOf('/');
-    return path.substring(idx + 1);
+  @Override
+  public boolean isOrphaned() {
+    return false;
+  }
+
+  @Override
+  public boolean isFolding() {
+    return true;
+  }
+
+  @Override
+  protected Supplier<Set<Action>> getAllowableActionsSupplier() {
+    Supplier<Set<Action>> supplier;
+    if (isRoot()) {
+      supplier = () -> completeWithCommonFolderActions(theCommonActions());
+    } else {
+      supplier = () -> completeWithFolderActions(theCommonActions());
+    }
+    return supplier;
+  }
+
+  private Set<Action> completeWithCommonFolderActions(final Set<Action> actions) {
+    actions.add(Action.CAN_GET_DESCENDANTS);
+    actions.add(Action.CAN_GET_CHILDREN);
+    actions.add(Action.CAN_GET_FOLDER_TREE);
+
+    return actions;
+  }
+
+  private Set<Action> completeWithFolderActions(final Set<Action> actions) {
+    actions.add(Action.CAN_GET_FOLDER_PARENT);
+    return completeWithCommonFolderActions(completeWithFileActions(actions));
   }
 }
   

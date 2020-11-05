@@ -25,13 +25,22 @@
 package org.silverpeas.core.cmis.model;
 
 import org.apache.chemistry.opencmis.commons.data.Ace;
+import org.apache.chemistry.opencmis.commons.data.Acl;
+import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.AllowableActionsImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectDataImpl;
 import org.silverpeas.core.ResourceIdentifier;
+import org.silverpeas.core.admin.user.model.User;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -50,7 +59,7 @@ import java.util.function.Supplier;
  * </p>
  * @author mmoquillon
  */
-public abstract class CmisObject {
+public abstract class CmisObject extends ObjectDataImpl {
 
   private final String id;
   private final String name;
@@ -59,10 +68,17 @@ public abstract class CmisObject {
   private String lastModifier;
   private long creationDate;
   private long lastModificationDate;
-  private Supplier<List<Ace>> aclSupplier = Collections::emptyList;
-  private Supplier<Set<Action>> actionsSupplier = Collections::emptySet;
+  private Function<User, List<Ace>> aclSupplier = u -> Collections.emptyList();
+  private Function<User, Set<Action>> actionsSupplier = u -> Collections.emptySet();
   private final String language;
 
+  /**
+   * Constructs a new CMIS object with the specified identifier, name and language in which the
+   * object is expressed.
+   * @param id a {@link ResourceIdentifier} instance identifying a resource in Silverpeas.
+   * @param name the name of the resource.
+   * @param language the language in which the properties of the resource are written.
+   */
   CmisObject(final ResourceIdentifier id, String name, String language) {
     this.id = id.asString();
     this.name = name;
@@ -73,8 +89,27 @@ public abstract class CmisObject {
    * Gets the unique identifier of the object in the CMIS objects tree.
    * @return the unique identifier of this CMIS object.
    */
+  @Override
   public String getId() {
     return id;
+  }
+
+  /**
+   * Is this CMIS object file-able into the CMIS objects tree?
+   * @return true if the object can be put in the CMIS objects tree as a node or a leaf of that
+   * tree. False otherwise
+   */
+  public abstract boolean isFileable();
+
+  /**
+   * Is this CMIS object a document in the CMIS objects tree? A document is a file-able object
+   * that doesn't have any children (it is a leaf in the CMIS objects tree) and that has a
+   * content stream (beside any rendition content streams). Such objects must have as base type
+   * identifier {@link BaseTypeId#CMIS_DOCUMENT}.
+   * @return true if this object is a document. False otherwise.
+   */
+  public boolean isDocument() {
+    return getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT);
   }
 
   /**
@@ -95,16 +130,17 @@ public abstract class CmisObject {
   }
 
   /**
-   * Gets the base CMIS type from which the type of the CMIS object is derived.
+   * Gets the identifier of the base type from which the type of the CMIS object is derived.
    * @returna a {@link BaseTypeId} enumeration value.
    */
-  public abstract BaseTypeId getBaseCmisType();
+  @Override
+  public abstract BaseTypeId getBaseTypeId();
 
   /**
-   * Gets the type of this CMIS object.
+   * Gets the identifier of the type of this CMIS object.
    * @return a {@link TypeId} enumeration value.
    */
-  public abstract TypeId getCmisType();
+  public abstract TypeId getTypeId();
 
   /**
    * Gets a description of this CMIS object.
@@ -198,11 +234,43 @@ public abstract class CmisObject {
   }
 
   /**
-   * Gets the ACL regarding this CMIS object.
-   * @return a list of {@link Ace} objects, each of them defining an entry in the ACL.
+   * Adds the ACEs relative to the specified user and regarding to this CMIS object in the ACL of
+   * the objet. The ACEs are supplied by the function that was passed with the
+   * {@link CmisObject#setAcesSupplier(Function)} function.
+   * @return itself.
    */
-  public List<Ace> getAcl() {
-    return aclSupplier.get();
+  public <T extends CmisObject> T addACEs(final User user) {
+    final List<Ace> aces = aclSupplier.apply(user);
+    if (getAcl() == null) {
+      AccessControlListImpl acl = new AccessControlListImpl(new ArrayList<>());
+      acl.setExact(false);
+      setAcl(acl);
+      // currently all the permissions set in the ACL are those as defined in the CMIS repository
+      // (no custom ones)
+      super.setIsExactAcl(true);
+    }
+    getAcl().getAces().addAll(aces);
+    return self();
+  }
+
+  /**
+   * Overrides the ACL of this CMIS object with this new one. All the previous ACE that were set
+   * are then lost.
+   * @param acl the new ACL to set explicitly.
+   */
+  @Override
+  public void setAcl(final Acl acl) {
+    super.setAcl(acl);
+  }
+
+  /**
+   * This method does nothing. The exactitude of the ACL regarding the permissions defined in the
+   * CMIS repository is centralized and controlled.
+   * @param isExactACL a boolean.
+   */
+  @Override
+  public void setIsExactAcl(final Boolean isExactACL) {
+    // does nothing
   }
 
   /**
@@ -211,30 +279,74 @@ public abstract class CmisObject {
    * @param <T> the concrete Java type of this CMIS object.
    * @return itself.
    */
-  public <T extends CmisObject> T setAclSupplier(final Supplier<List<Ace>> supplier) {
+  public <T extends CmisObject> T setAcesSupplier(final Function<User, List<Ace>> supplier) {
     this.aclSupplier = supplier;
     return self();
   }
 
   /**
-   * Gets all the actions that can be performed by the user behind the request onto this CMIS
-   * object.
-   * @return a set of {@link Action} enumeration values, each of them defining a peculiar action.
+   * Gets the ACL of this CMIS object. The ACL contains a list of ACEs that define for one or more
+   * users in Silverpeas the permissions they have regarding this object. Each permission authorizes
+   * or forbids the related user to perform one or more of the actions that are allowable on this
+   * CMIS object.
+   * For more information about the ACL and the allowable actions on CMIS objects, see
+   * <a href="http://docs.oasis-open.org/cmis/CMIS/v1.1/os/CMIS-v1.1-os.html#x1-7700012">CMIS
+   * specification</a>
+   * @see CmisObject#getAllowableActions()
+   * @return an {@link Acl} object.
    */
-  public Set<Action> getAllowedActions() {
-    return this.actionsSupplier.get();
+  @Override
+  public Acl getAcl() {
+    return super.getAcl();
   }
 
   /**
-   * Sets a supplier of the actions that can be performed on this CMIS object.
-   * @param supplier a function that supplies on demand a set of actions allowed by the current
-   * user behind the request on this object.
+   * Gets all the actions that are allowable on this CMIS object, whatever the permissions a user
+   * in Silverpeas can have in performing those actions. The actions are set only and only if the
+   * {@link CmisObject#setAllowableActions()} was previously invoked. Indeed, in CMIS the allowable
+   * actions are requested on demand.
+   * For more information about the ACL and the allowable actions on CMIS objects, see
+   * <a href="http://docs.oasis-open.org/cmis/CMIS/v1.1/os/CMIS-v1.1-os.html#x1-7700012">CMIS
+   * specification</a>
+   * @return a {@link AllowableActions} object.
+   */
+  @Override
+  public AllowableActions getAllowableActions() {
+    return super.getAllowableActions();
+  }
+
+  /**
+   * Sets all the actions allowable on this CMIS object, whatever the permissions a user
+   * in Silverpeas can have in performing those actions, by using the supplier of the actions
+   * predefined for this object. The goal of the supplier is to set the
+   * allowable actions in this object on the demand. In some circumstances, the allowable actions
+   * aren't requested and therefore don't need to be set.
+   * For more information about the ACL and the allowable actions on CMIS objects, see
+   * <a href="http://docs.oasis-open.org/cmis/CMIS/v1.1/os/CMIS-v1.1-os.html#x1-7700012">CMIS
+   * specification</a>
    * @param <T> the concrete Java type of this CMIS object.
    * @return itself.
    */
-  public <T extends CmisObject> T setAllowedActionsSupplier(final Supplier<Set<Action>> supplier) {
-    this.actionsSupplier = supplier;
+  public <T extends CmisObject> T setAllowableActions() {
+    Supplier<Set<Action>> supplier = getAllowableActionsSupplier();
+    AllowableActionsImpl allowableActions = new AllowableActionsImpl();
+    allowableActions.setAllowableActions(supplier.get());
+    setAllowableActions(allowableActions);
     return self();
+  }
+
+  /**
+   * Gets a supplier of the actions allowable on this CMIS object. The supplier is only invoked
+   * when the {@link CmisObject#setAllowableActions()} is invoked.
+   * @return
+   */
+  protected abstract Supplier<Set<Action>> getAllowableActionsSupplier();
+
+  protected Set<Action> theCommonActions() {
+    final Set<Action> actions = EnumSet.noneOf(Action.class);
+    actions.add(Action.CAN_GET_PROPERTIES);
+    actions.add(Action.CAN_GET_ACL);
+    return actions;
   }
 
   @SuppressWarnings("unchecked")

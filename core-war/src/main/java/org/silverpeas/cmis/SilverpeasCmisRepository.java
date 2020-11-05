@@ -25,7 +25,7 @@
 package org.silverpeas.cmis;
 
 import org.apache.chemistry.opencmis.commons.BasicPermissions;
-import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
@@ -43,8 +43,11 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.PermissionDefiniti
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PermissionMappingDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryCapabilitiesImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryInfoImpl;
-import org.silverpeas.core.cmis.model.Space;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.cmis.model.CmisFile;
+import org.silverpeas.core.cmis.model.CmisObject;
+import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.util.URLUtil;
 
 import javax.annotation.PostConstruct;
@@ -196,7 +199,8 @@ public class SilverpeasCmisRepository {
    *            <em>(optional)</em> number of potential results that the
    *            repository MUST skip/page over before returning any results
    *            (default is 0)
-   * @return the list of children
+   * @return the list of children. Each child is a {@link org.silverpeas.core.cmis.model.CmisFile}
+   * instance.
    */
   public ObjectInFolderList getChildren(final String folderId, final String filter,
       final Boolean includeAllowableActions, final IncludeRelationships includeRelationships,
@@ -236,7 +240,9 @@ public class SilverpeasCmisRepository {
    *            <em>(optional)</em> if {@code true}, returns a path segment
    *            for each child object for use in constructing that object's
    *            path (default is {@code false})
-   * @return the tree of descendants
+   * @return the tree of descendants. Each descendent carried by the
+   * {@link org.apache.chemistry.opencmis.commons.data.ObjectInFolderData} objects in the listed
+   * containers is a {@link org.silverpeas.core.cmis.model.CmisFile} instance.
    **/
   public List<ObjectInFolderContainer> getDescendants(final String folderId, final BigInteger depth,
       final String filter, final Boolean includeAllowableActions,
@@ -272,7 +278,9 @@ public class SilverpeasCmisRepository {
    *            <em>(optional)</em> if {@code true}, returns a path segment
    *            for each child object for use in constructing that object's
    *            path (default is {@code false})
-   * @return the folder tree
+   * @return the folder tree. Each descendent carried by the
+   * {@link org.apache.chemistry.opencmis.commons.data.ObjectInFolderData} objects in the
+   * listed containers is a {@link org.silverpeas.core.cmis.model.CmisFolder} instance.
    **/
   public List<ObjectInFolderContainer> getFolderTree(String folderId, BigInteger depth, String filter,
       Boolean includeAllowableActions, IncludeRelationships includeRelationships,
@@ -298,7 +306,8 @@ public class SilverpeasCmisRepository {
    *            <em>(optional)</em> if {@code true}, returns a relative path
    *            segment for each parent object for use in constructing that
    *            object's path (default is {@code false})
-   * @return the list of parents
+   * @return the list of parents. Each parent is a {@link org.silverpeas.core.cmis.model.CmisFolder}
+   * instance.
    */
   public List<ObjectParentData> getObjectParents(final String objectId, final String filter,
       final Boolean includeAllowableActions, final Boolean includeRelativePathSegment) {
@@ -328,9 +337,9 @@ public class SilverpeasCmisRepository {
    * @param includeAcl
    *            <em>(optional)</em> if {@code true}, then the repository must
    *            return the ACL for the object (default is {@code false})
-   * @return the object
+   * @return the CMIS object.
    */
-  public ObjectData getObject(final String objectId, final String filter,
+  public CmisObject getObject(final String objectId, final String filter,
       final Boolean includeAllowableActions, final IncludeRelationships includeRelationships,
       final Boolean includeAcl) {
     final Filtering filtering = new Filtering().setPropertiesFilter(filter)
@@ -360,9 +369,9 @@ public class SilverpeasCmisRepository {
    * @param includeAcl
    *            <em>(optional)</em> if {@code true}, then the repository must
    *            return the ACL for the object (default is {@code false})
-   * @return the object
+   * @return the CMIS file-able object located at the given path.
    */
-  public ObjectData getObjectByPath(final String path, final String filter,
+  public CmisFile getObjectByPath(final String path, final String filter,
       final Boolean includeAllowableActions, final IncludeRelationships includeRelationships,
       final Boolean includeAcl) {
     final Filtering filtering = new Filtering().setPropertiesFilter(filter)
@@ -370,6 +379,26 @@ public class SilverpeasCmisRepository {
         .setIncludeAcl(includeAcl)
         .setIncludeRelationships(includeRelationships);
     return objectManager.getObjectByPath(path, filtering);
+  }
+
+  /**
+   * Gets the content stream for the specified document object.
+   *
+   * @param objectId
+   *            the identifier for the object
+   * @param offset
+   *            the position in bytes in the document content from which the stream to return
+   *            should start.
+   * @param length the length in bytes of the stream to return.
+   * @return the content stream
+   */
+  public ContentStream getContentStream(final String objectId, final BigInteger offset,
+      final BigInteger length) {
+    long start = offset == null ? 0 : offset.longValue();
+    long size = length == null ? -1 : length.longValue();
+    User currentUser = User.getCurrentRequester();
+    String language = currentUser.getUserPreferences().getLanguage();
+    return objectManager.getContentStream(objectId, language, start, size);
   }
 
   private List<ObjectInFolderContainer> getObjectInFolderContainers(final String folderId,

@@ -30,4 +30,28 @@ package org.silverpeas.core.cmis.model;
  * @author mmoquillon
  */
 public interface Fileable {
+
+  /**
+   * Gets the unique identifier of the folder into which this object is filed.
+   * @return the unique identifier of the parent of this fileable instance or null if it is a root
+   * folder. Cannot be null or empty for any non-folder objects.
+   */
+  String getParentId();
+
+  /**
+   * Gets the path of this object from the root folder in the CMIS objects tree.
+   * @return a slash-separated path whose the first slash is the root folder in the CMIS objects
+   * tree.
+   */
+  String getPath();
+
+  /**
+   * Is this file-able object orphaned? A file-able object is orphaned if and only if it isn't
+   * in the CMIS objects tree and, as such, it has no parent. In this case, the
+   * {@link Fileable#getParentId()} returns null.
+   * @return
+   */
+  default boolean isOrphaned() {
+    return getParentId() == null;
+  }
 }

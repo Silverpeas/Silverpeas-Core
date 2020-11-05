@@ -51,7 +51,12 @@ public enum TypeId {
   /**
    * The CMIS object represents a publication in a Silverpeas application.
    */
-  SILVERPEAS_PUBLICATION(BaseTypeId.CMIS_FOLDER, "slvp:publication");
+  SILVERPEAS_PUBLICATION(BaseTypeId.CMIS_FOLDER, "slvp:publication"),
+
+  /**
+   * The CMIS object represents a document in a Silverpeas application.
+   */
+  SILVERPEAS_DOCUMENT(BaseTypeId.CMIS_DOCUMENT, "slvp:document");
 
   private final String value;
   private final BaseTypeId baseTypeId;

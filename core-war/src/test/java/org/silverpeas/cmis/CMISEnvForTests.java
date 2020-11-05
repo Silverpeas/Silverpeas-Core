@@ -34,9 +34,11 @@ import org.silverpeas.cmis.walkers.CmisObjectTreeWalkerDelegator;
 import org.silverpeas.cmis.walkers.TreeWalkerForComponentInst;
 import org.silverpeas.cmis.walkers.TreeWalkerForNodeDetail;
 import org.silverpeas.cmis.walkers.TreeWalkerForPublicationDetail;
+import org.silverpeas.cmis.walkers.TreeWalkerForSimpleDocument;
 import org.silverpeas.cmis.walkers.TreeWalkerForSpaceInst;
 import org.silverpeas.cmis.walkers.TreeWalkerSelector;
 import org.silverpeas.core.ResourceIdentifier;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentDataProvider;
@@ -50,13 +52,18 @@ import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
 import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObjectFactory;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
+import org.silverpeas.core.contribution.model.Attachment;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -67,6 +74,8 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
+import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.LoggerExtension;
@@ -130,6 +139,9 @@ public abstract class CMISEnvForTests {
   @TestManagedMock
   protected PublicationService publicationService;
 
+  @TestManagedMock
+  protected AttachmentService attachmentService;
+
   // used to get the current user behind the request
   @TestManagedMock
   protected UserProvider userProvider;
@@ -146,6 +158,12 @@ public abstract class CMISEnvForTests {
   @TestManagedMock
   protected NodeAccessControl nodeAccessControl;
 
+  @TestManagedMock
+  protected PublicationAccessControl publicationAccessControl;
+
+  @TestManagedMock
+  protected SimpleDocumentAccessControl documentAccessControl;
+
   // provider of contributions for a given component
   @TestManagedMock
   @Named("kmelia" + CmisContributionsProvider.Constants.NAME_SUFFIX)
@@ -155,8 +173,8 @@ public abstract class CMISEnvForTests {
   Class<?>[] supplyRequiredManagedBeanTypes() {
     return new Class<?>[]{AccessControllerRegister.class, TreeWalkerForComponentInst.class,
         TreeWalkerForSpaceInst.class, TreeWalkerForNodeDetail.class,
-        TreeWalkerForPublicationDetail.class, TreeWalkerSelector.class,
-        CmisObjectTreeWalkerDelegator.class};
+        TreeWalkerForPublicationDetail.class, TreeWalkerForSimpleDocument.class,
+        TreeWalkerSelector.class, CmisObjectTreeWalkerDelegator.class};
   }
 
   /**
@@ -174,7 +192,7 @@ public abstract class CMISEnvForTests {
     return CmisFolder.PATH_SEPARATOR + node.getPath().stream()
         .map(TreeNode::getObject)
         .filter(o -> !(o instanceof NodeDetail) || !((NodeDetail) o).isRoot())
-        .map(o -> ((AbstractI18NBean<?>) o).getName(language))
+        .map(o -> getObjectName(o, language))
         .collect(Collectors.joining(CmisFolder.PATH_SEPARATOR));
   }
 
@@ -224,12 +242,27 @@ public abstract class CMISEnvForTests {
     when(userProvider.getMainAdministrator()).then(
         (Answer<User>) invocation -> userProvider.getUser("0"));
 
+    when(
+        spaceAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(
+        true);
     when(spaceAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
+    when(componentAccessControl.isUserAuthorized(anyString(),
+        any(ResourceIdentifier.class))).thenReturn(true);
     when(componentAccessControl.isUserAuthorized(anyString(), anyString())).thenReturn(true);
+    when(nodeAccessControl.isUserAuthorized(anyString(), any(ResourceIdentifier.class))).thenReturn(
+        true);
     when(nodeAccessControl.isUserAuthorized(anyString(), any(NodeDetail.class))).thenReturn(true);
+    when(publicationAccessControl.isUserAuthorized(anyString(),
+        any(ResourceIdentifier.class))).thenReturn(true);
+    when(publicationAccessControl.isUserAuthorized(anyString(),
+        any(PublicationDetail.class))).thenReturn(true);
+    when(documentAccessControl.isUserAuthorized(anyString(),
+        any(ResourceIdentifier.class))).thenReturn(true);
+    when(documentAccessControl.isUserAuthorized(anyString(), any(SimpleDocument.class))).thenReturn(
+        true);
 
-    when(organizationController.isComponentAvailableToUser(anyString(), anyString()))
-        .thenReturn(true);
+    when(organizationController.isComponentAvailableToUser(anyString(), anyString())).thenReturn(
+        true);
 
     when(organizationController.getSpaceInstLightById(anyString())).then(
         (Answer<SpaceInstLight>) invocation -> {
@@ -255,7 +288,7 @@ public abstract class CMISEnvForTests {
           return Optional.ofNullable(organizationController.getComponentInstLight(compInstId));
         });
 
-    when(organizationController.getAvailCompoIds(anyString(), anyString())).then(
+    when(organizationController.getAllComponentIds(anyString())).then(
         (Answer<String[]>) invocation -> {
           String spaceId = invocation.getArgument(0);
           return getInTreeAndApply(spaceId, n -> n.getChildren()
@@ -300,27 +333,25 @@ public abstract class CMISEnvForTests {
               .collect(Collectors.toList()));
         });
 
-    when(nodeService.getDetail(any(NodePK.class))).then(
-        (Answer<NodeDetail>) invocation -> {
-          NodePK nodePK = invocation.getArgument(0);
-          ContributionIdentifier id = ContributionIdentifier.from(nodePK, NodeDetail.TYPE);
-          return getInTreeAndApply(id.asString(), n -> {
-            LocalizedResource object = n.getObject();
-            return object instanceof NodeDetail ? (NodeDetail) object : null;
-          });
-        });
+    when(nodeService.getDetail(any(NodePK.class))).then((Answer<NodeDetail>) invocation -> {
+      NodePK nodePK = invocation.getArgument(0);
+      ContributionIdentifier id = ContributionIdentifier.from(nodePK, NodeDetail.TYPE);
+      return getInTreeAndApply(id.asString(), n -> {
+        LocalizedResource object = n.getObject();
+        return object instanceof NodeDetail ? (NodeDetail) object : null;
+      });
+    });
 
     when(nodeService.getChildrenDetails(any(NodePK.class))).then(
         (Answer<Collection<NodeDetail>>) invocation -> {
           NodePK nodePK = invocation.getArgument(0);
           ContributionIdentifier id = ContributionIdentifier.from(nodePK, NodeDetail.TYPE);
           return getInTreeAndApply(id.asString(), n -> n.getChildren()
-                .stream()
-                .map(TreeNode::getObject)
-                .filter(o -> o instanceof NodeDetail)
-                .map(o -> (NodeDetail) o)
-                .collect(Collectors.toList())
-          );
+              .stream()
+              .map(TreeNode::getObject)
+              .filter(o -> o instanceof NodeDetail)
+              .map(o -> (NodeDetail) o)
+              .collect(Collectors.toList()));
         });
 
     when(nodeService.getPath(any(NodePK.class))).then((Answer<NodePath>) invocation -> {
@@ -335,27 +366,25 @@ public abstract class CMISEnvForTests {
     });
 
     when(contributionsProvider.getAllowedRootContributions(any(ResourceIdentifier.class),
-        any(User.class))).then(
-        (Answer<List<I18nContribution>>) invocation -> {
-          ResourceIdentifier appId = invocation.getArgument(0);
-          ContributionIdentifier id =
-              ContributionIdentifier.from(appId.asString(), NodePK.ROOT_NODE_ID, NodeDetail.TYPE);
-          return getInTreeAndApply(id.asString(), n -> n.getChildren()
-              .stream()
-              .map(TreeNode::getObject)
-              .map(I18nContribution.class::cast)
-              .collect(Collectors.toList()));
-        });
+        any(User.class))).then((Answer<List<I18nContribution>>) invocation -> {
+      ResourceIdentifier appId = invocation.getArgument(0);
+      ContributionIdentifier id =
+          ContributionIdentifier.from(appId.asString(), NodePK.ROOT_NODE_ID, NodeDetail.TYPE);
+      return getInTreeAndApply(id.asString(), n -> n.getChildren()
+          .stream()
+          .map(TreeNode::getObject)
+          .map(I18nContribution.class::cast)
+          .collect(Collectors.toList()));
+    });
 
     when(contributionsProvider.getAllowedContributionsInFolder(any(ContributionIdentifier.class),
         any(User.class))).then((Answer<List<I18nContribution>>) invocation -> {
       ContributionIdentifier id = invocation.getArgument(0);
-      return getInTreeAndApply(id.asString(), n ->
-        n.getChildren().stream()
-            .map(TreeNode::getObject)
-            .map(I18nContribution.class::cast)
-            .collect(Collectors.toList())
-      );
+      return getInTreeAndApply(id.asString(), n -> n.getChildren()
+          .stream()
+          .map(TreeNode::getObject)
+          .map(I18nContribution.class::cast)
+          .collect(Collectors.toList()));
     });
 
     when(publicationService.getDetail(any(PublicationPK.class))).then(
@@ -384,6 +413,30 @@ public abstract class CMISEnvForTests {
             return Optional.ofNullable(location);
           });
         });
+
+    when(attachmentService.searchDocumentById(any(SimpleDocumentPK.class), anyString())).then(
+        (Answer<SimpleDocument>) invocation -> {
+          SimpleDocumentPK pk = invocation.getArgument(0);
+          ContributionIdentifier id =
+              ContributionIdentifier.from(pk, DocumentType.attachment.getName());
+          return getInTreeAndApply(id.asString(), n -> {
+            LocalizedResource doc = n.getObject();
+            return doc instanceof SimpleDocument ? (SimpleDocument) doc : null;
+          });
+        });
+
+    when(attachmentService.listDocumentsByForeignKey(any(ResourceReference.class),
+        anyString())).then((Answer<SimpleDocumentList<SimpleDocument>>) invocation -> {
+      ResourceReference ref = invocation.getArgument(0);
+      ContributionIdentifier id =
+          ContributionIdentifier.from(ref.getComponentInstanceId(), ref.getLocalId(),
+              PublicationDetail.getResourceType());
+      return getInTreeAndApply(id.asString(), n -> n.getChildren()
+          .stream()
+          .map(TreeNode::getObject)
+          .map(a -> (SimpleDocument) a)
+          .collect(SimpleDocumentList::new, SimpleDocumentList::add, SimpleDocumentList::addAll));
+    });
   }
 
   @BeforeAll
@@ -401,20 +454,26 @@ public abstract class CMISEnvForTests {
         organization.addApplication(appType, 1, wa3Node.getId(), 0, "Documentation", "");
     TreeNode rootKm1 = organization.addFolder(rootNodeId, kmelia1.getId(), 1, "Home", "The root");
     TreeNode folder1 = organization.addFolder(3, rootKm1.getId(), 2, "Folder 1", "");
-    TreeNode folderKm1 =
-        organization.addFolder(4, rootKm1.getId(), 2, "Folder 2", "");
+    TreeNode folderKm1 = organization.addFolder(4, rootKm1.getId(), 2, "Folder 2", "");
     TreeNode folder21 = organization.addFolder(5, folderKm1.getId(), 3, "Folder 2.1", "");
-    organization.addPublication(1, folder1.getId(), "Smalltalk Forever", "All about this powerfull language");
-    organization.addPublication(2, folder21.getId(), "Java Magazine October 2020", "Make it simple; make it better.");
+    TreeNode pub1 = organization.addPublication(1, folder1.getId(), "Smalltalk Forever",
+        "All about this powerful language");
+    TreeNode pub2 = organization.addPublication(2, folder21.getId(), "Java Magazine October 2020",
+        "Make it simple; make it better.");
+    organization.addDocument(1, pub1.getId(), "HistoryOfSmalltalk",
+        "The history of Smalltalk told by Alan Kay himself");
+    organization.addDocument(2, pub1.getId(), "Computer Programming Using GNU Smalltalk", "");
+    organization.addDocument(3, pub1.getId(), "Developing Applications with Smalltalk and CouchDB",
+        "");
+    organization.addDocument(4, pub2.getId(), pub2.getObject().getName(),
+        pub2.getObject().getDescription());
 
     TreeNode kmelia2 =
         organization.addApplication(appType, 2, wa4Node.getId(), 0, "Documentation", "");
     TreeNode rootKm2 = organization.addFolder(rootNodeId, kmelia2.getId(), 1, "Home", "The root");
-    TreeNode folder1Km2 =
-        organization.addFolder(3, rootKm2.getId(), 2, "Folder 1", "");
+    TreeNode folder1Km2 = organization.addFolder(3, rootKm2.getId(), 2, "Folder 1", "");
     organization.addFolder(4, folder1Km2.getId(), 3, "Folder 1.1", "");
-    TreeNode folder2Km2 =
-        organization.addFolder(5, rootKm2.getId(), 2, "Folder 2", "");
+    TreeNode folder2Km2 = organization.addFolder(5, rootKm2.getId(), 2, "Folder 2", "");
     organization.addFolder(6, folder2Km2.getId(), 3, "Folder 2.1", "");
 
     TreeNode kmelia5 = organization.addApplication(appType, 5, wa6Node.getId(), 0, "Documentation",
@@ -435,6 +494,14 @@ public abstract class CMISEnvForTests {
   @AfterAll
   static void clearOrganizationSchema() {
     organization.clear();
+  }
+
+  protected String getObjectName(final LocalizedResource object, final String language) {
+    if (object instanceof Attachment) {
+      return ((Attachment) object).getFilename();
+    } else {
+      return object.getTranslation(language).getName();
+    }
   }
 
   private <T> T getInTreeAndApply(String id, Function<TreeNode, T> fun) {

@@ -46,7 +46,7 @@ import static org.hamcrest.Matchers.*;
 @EnableAutoWeld
 @AddBeanClasses(DefaultServerEventNotifier.class)
 @AddPackages(AbstractServerEventDispatcherTaskTest.class)
-public class ServerEventListenerPushingServerEventDispatcherTaskTest
+class ServerEventListenerPushingServerEventDispatcherTaskTest
     extends AbstractServerEventDispatcherTaskTest {
 
   @Inject
@@ -65,7 +65,7 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
   }
 
   @Test
-  public void notifyOneServerEventAFromAWhenOneAsyncContext() throws Exception {
+  void notifyOneServerEventAFromAWhenOneAsyncContext() throws Exception {
     final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext("SESSION_ID");
     ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
     TestServerEventA serverEventA = new TestServerEventA();
@@ -80,7 +80,7 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
   }
 
   @Test
-  public void notifyTwoATwoBTwoCTwoDFromAWhenOneAsyncContext() throws Exception {
+  void notifyTwoATwoBTwoCTwoDFromAWhenOneAsyncContext() throws Exception {
     final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext("SESSION_ID");
     ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
     TestServerEventA serverEventA = new TestServerEventA();
@@ -118,7 +118,7 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
   }
 
   @Test
-  public void notifyOneServerEventBAndOneAFromAWhenSeveralAsyncContext() throws Exception {
+  void notifyOneServerEventBAndOneAFromAWhenSeveralAsyncContext() throws Exception {
     SilverpeasAsyncContext[] mockedAsyncContexts =
         {newMockedAsyncContext("SESSION_ID"), newMockedAsyncContext("SESSION_ID"),
             newMockedAsyncContext("SESSION_ID")};
@@ -142,7 +142,7 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
   }
 
   @Test
-  public void notifySeveralServerEventsBAndSeveralAFromAWhenSeveralAsyncContext() throws Exception {
+  void notifySeveralServerEventsBAndSeveralAFromAWhenSeveralAsyncContext() throws Exception {
     SilverpeasAsyncContext[] mockedAsyncContexts =
         {newMockedAsyncContext("SESSION_ID"), newMockedAsyncContext("SESSION_ID"),
             newMockedAsyncContext("SESSION_ID")};
@@ -183,7 +183,7 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
   }
 
   @Test
-  public void notifySeveralServerEventsOnCommonNotifierWhenSeveralAsyncContext() throws Exception {
+  void notifySeveralServerEventsOnCommonNotifierWhenSeveralAsyncContext() throws Exception {
     SilverpeasAsyncContext[] mockedAsyncContexts =
         {newMockedAsyncContext("SESSION_ID"), newMockedAsyncContext("SESSION_ID"),
             newMockedAsyncContext("SESSION_ID")};

@@ -29,6 +29,8 @@ import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.LocalizedResource;
+import org.silverpeas.core.security.Securable;
+import org.silverpeas.core.security.authorization.SpaceAccessControl;
 import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.Serializable;
@@ -40,7 +42,7 @@ import java.util.Objects;
  * @author neysseri
  */
 public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
-    implements Serializable, LocalizedResource, Identifiable, Comparable<SpaceInstLight> {
+    implements Serializable, LocalizedResource, Identifiable, Securable, Comparable<SpaceInstLight> {
 
   private static final long serialVersionUID = 8772050454345960478L;
   private String id = null;
@@ -314,6 +316,23 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
 
   public boolean isRemoved() {
     return SpaceInst.STATUS_REMOVED.equals(getStatus());
+  }
+
+  @Override
+  public boolean canBeAccessedBy(final User user) {
+    return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId());
+  }
+
+  @Override
+  public boolean canBeModifiedBy(final User user) {
+    return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId())
+        && (user.isAccessAdmin() || user.isAccessSpaceManager());
+  }
+
+  @Override
+  public boolean canBeDeletedBy(final User user) {
+    return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId())
+        && (user.isAccessAdmin() || user.isAccessSpaceManager());
   }
 
   @Override

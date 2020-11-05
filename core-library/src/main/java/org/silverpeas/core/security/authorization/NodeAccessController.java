@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectIds;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeRuntimeException;
@@ -86,6 +88,14 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     final List<String> instancesIds = nodePks.stream().map(NodePK::getInstanceId).distinct().collect(Collectors.toList());
     getDataManager(context).loadCaches(userId, instancesIds);
     return nodePks.stream().filter(n -> isUserAuthorized(userId, n, context));
+  }
+
+  @Override
+  public boolean isUserAuthorized(final String userId, final ResourceIdentifier id) {
+    ContributionIdentifier nodeId = (ContributionIdentifier) id;
+    NodePK nodePK = new NodePK(nodeId.getLocalId(), nodeId.getComponentInstanceId());
+    NodeDetail nodeDetail = NodeService.get().getDetail(nodePK);
+    return isUserAuthorized(userId, nodeDetail);
   }
 
   @Override

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
@@ -33,5 +34,10 @@ public interface SpaceAccessControl extends AccessController<String> {
 
   static SpaceAccessControl get() {
     return ServiceProvider.getSingleton(SpaceAccessControl.class);
+  }
+
+  @Override
+  default boolean isUserAuthorized(String userId, ResourceIdentifier id) {
+    return isUserAuthorized(userId, id.asString());
   }
 }

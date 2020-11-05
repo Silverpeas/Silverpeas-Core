@@ -22,22 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core;
+package org.silverpeas.cmis.util;
+
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
- * An object in Silverpeas that is identifiable by a unique identifier encoded as a String. For a
- * better precision in the representation of the identifier, id est when such an identifier is a
- * complex object, then prefer to use the {@link SilverpeasResource} interface.
+ * In CMIS the date and time are expressed in the Gregorian calendar.
  * @author mmoquillon
  */
-public interface Identifiable {
+public class CmisDateConverter {
 
   /**
-   * Gets the unique identifier of the object in Silverpeas. If he's also identified by a local
-   * identifier, then this method should returns the one global to Silverpeas.
-   * @return the identifier encoded as a String. If the identifier is a complex one, that is made up
-   * of several identification parts, then the returned representation should take care of such
-   * a structure.
+   * Converts milliseconds into a {@link GregorianCalendar} object, setting
+   * the timezone to GMT and cutting milliseconds off.
    */
-  String getId();
+  public static GregorianCalendar millisToCalendar(long millis) {
+    GregorianCalendar calendar = new GregorianCalendar();
+    calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+    calendar.setTimeInMillis((long) (Math.ceil((double) millis / 1000) * 1000));
+    return calendar;
+  }
 }
+  

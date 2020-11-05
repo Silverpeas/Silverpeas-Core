@@ -82,7 +82,7 @@ public final class AttachmentDetail implements Serializable {
     this.type = document.getContentType();
     this.size = document.getSize();
     setContext(document.getDocumentType().toString());
-    this.creationDate = document.getCreated();
+    this.creationDate = document.getCreationDate();
   }
 
   public AttachmentPK getPK() {

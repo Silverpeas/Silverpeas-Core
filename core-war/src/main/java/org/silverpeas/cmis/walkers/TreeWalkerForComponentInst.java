@@ -24,13 +24,14 @@
 
 package org.silverpeas.cmis.walkers;
 
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.core.ResourceIdentifier;
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
@@ -58,6 +59,12 @@ public class TreeWalkerForComponentInst extends AbstractCmisObjectsTreeWalker {
   }
 
   @Override
+  public ContentStream getContentStream(final String objectId, final String language,
+      final long offset, final long length) {
+    throw new CmisNotSupportedException("The content stream isn't supported by applications");
+  }
+
+  @Override
   @SuppressWarnings("unchecked")
   protected ComponentInstLight getSilverpeasObjectById(final String objectId) {
     return getController().getComponentInstLight(objectId);
@@ -74,7 +81,7 @@ public class TreeWalkerForComponentInst extends AbstractCmisObjectsTreeWalker {
     try {
       CmisContributionsProvider provider = getContributionsProvider(objectId);
       return provider != null;
-    } catch (SilverpeasRuntimeException e) {
+    } catch (IllegalStateException e) {
       return false;
     }
   }

@@ -27,8 +27,14 @@ package org.silverpeas.cmis.security;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
+import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
 
 import javax.annotation.PostConstruct;
@@ -48,12 +54,15 @@ public class AccessControllerRegister {
 
   private static final AccessController<String> DEFAULT_ACCESS_CTRL = new GrantedAccessController();
 
-  private final Map<String, Supplier<AccessController<String>>> controllers = new HashMap<>();
+  private final Map<String, Supplier<AccessController<?>>> controllers = new HashMap<>();
 
   @PostConstruct
   private void init() {
     controllers.put(SpaceInstLight.class.getSimpleName(), SpaceAccessControl::get);
     controllers.put(ComponentInstLight.class.getSimpleName(), ComponentAccessControl::get);
+    controllers.put(NodeDetail.class.getSimpleName(), NodeAccessControl::get);
+    controllers.put(PublicationDetail.class.getSimpleName(), PublicationAccessControl::get);
+    controllers.put(SimpleDocument.class.getSimpleName(), SimpleDocumentAccessControl::get);
   }
 
   /**
@@ -64,10 +73,11 @@ public class AccessControllerRegister {
    * @param objectClass the type of a resource in Silverpeas.
    * @return an {@link AccessController} object.
    */
-  public AccessController<String> getAccessController(final Class<?> objectClass) {
-    final Supplier<AccessController<String>> supplier =
+  @SuppressWarnings("unchecked")
+  public <T> AccessController<T> getAccessController(final Class<?> objectClass) {
+    final Supplier<AccessController<?>> supplier =
         controllers.getOrDefault(objectClass.getSimpleName(), () -> DEFAULT_ACCESS_CTRL);
-    return supplier.get();
+    return (AccessController<T>) supplier.get();
   }
 }
   

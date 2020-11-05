@@ -192,7 +192,7 @@ public class TestComponentAccessController {
     when(controller.getUserDetail(ANONYMOUS_ID)).thenReturn(null);
 
     initTest();
-    boolean result = instance.isUserAuthorized(USER_ID, null);
+    boolean result = instance.isUserAuthorized(USER_ID, (String)null);
     assertFalse(result);
 
     initTest();
@@ -219,7 +219,7 @@ public class TestComponentAccessController {
     setupUser(null);
 
     initTest();
-    result = instance.isUserAuthorized(USER_ID, null);
+    result = instance.isUserAuthorized(USER_ID, (String)null);
     assertTrue(result);
 
     initTest();

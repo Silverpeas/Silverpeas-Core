@@ -26,9 +26,7 @@ package org.silverpeas.core.cmis.model;
 
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.node.model.NodePath;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,9 +47,16 @@ public class Publication extends CmisFolder {
   private final ContributionIdentifier id;
 
   public static List<TypeId> getAllAllowedChildrenTypes() {
-    return Collections.emptyList();
+    return Collections.singletonList(TypeId.SILVERPEAS_DOCUMENT);
   }
 
+  /**
+   * Constructs a new publication with the specified identifier, name and language.
+   * @param id the {@link ContributionIdentifier} instance identifying the publication in
+   * Silverpeas.
+   * @param name the name of the publication.
+   * @param language the language in which is written the publication.
+   */
   Publication(final ContributionIdentifier id, final String name, final String language) {
     super(id, name, language);
     this.id = id;
@@ -61,15 +66,14 @@ public class Publication extends CmisFolder {
     return id.getComponentInstanceId();
   }
 
-
   @Override
   public String getPath() {
-    ContributionIdentifier folder = ContributionIdentifier.decode(getParentId());
-    NodeDetail parentNode = NodeService.get()
-        .getDetail(new NodePK(folder.getLocalId(), folder.getComponentInstanceId()));
-    CmisFolder parent =
-        CmisObjectFactory.getInstance().createContributionFolder(parentNode, getLanguage());
-    return parent.getPath() + CmisFolder.PATH_SEPARATOR + getName();
+    // the parent of a publication must be always a folder in our implementation of the CMIS objects
+    // tree
+    ContributionIdentifier folderId = ContributionIdentifier.decode(getParentId());
+    String folderPath =
+        NodePath.getPath(folderId).format(getLanguage(), true, PATH_SEPARATOR);
+    return PATH_SEPARATOR + folderPath + PATH_SEPARATOR + getName();
   }
 
   @Override
@@ -83,12 +87,12 @@ public class Publication extends CmisFolder {
   }
 
   @Override
-  public BaseTypeId getBaseCmisType() {
+  public BaseTypeId getBaseTypeId() {
     return BaseTypeId.CMIS_FOLDER;
   }
 
   @Override
-  public TypeId getCmisType() {
+  public TypeId getTypeId() {
     return CMIS_TYPE;
   }
 }

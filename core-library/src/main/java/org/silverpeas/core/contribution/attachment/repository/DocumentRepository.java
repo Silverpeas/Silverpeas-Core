@@ -140,7 +140,7 @@ public class DocumentRepository {
         getFolder());
     Node documentNode = docsNode.addNode(document.computeNodeName(), SLV_SIMPLE_DOCUMENT);
     document.setUpdatedBy(document.getCreatedBy());
-    document.setUpdated(document.getCreated());
+    document.setLastUpdateDate(document.getCreationDate());
     converter.fillNode(document, documentNode);
     if (document.isVersioned()) {
       documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
@@ -308,7 +308,7 @@ public class DocumentRepository {
         if (!checkedLanguages.contains(language)) {
           SimpleDocument temp = findDocumentById(session, doc.getPk(), language);
           if (temp != null && !checkedLanguages.contains(temp.getLanguage()) &&
-              temp.getUpdated().after(doc.getUpdated())) {
+              temp.getLastUpdateDate().after(doc.getLastUpdateDate())) {
             updated = temp;
           }
           checkedLanguages.add(language);
@@ -355,7 +355,7 @@ public class DocumentRepository {
       if (StringUtil.isDefined(document.getEditedBy())) {
         document.setUpdatedBy(document.getEditedBy());
       }
-      document.setUpdated(new Date());
+      document.setLastUpdateDate(new Date());
     }
     converter.fillNode(document, documentNode);
   }

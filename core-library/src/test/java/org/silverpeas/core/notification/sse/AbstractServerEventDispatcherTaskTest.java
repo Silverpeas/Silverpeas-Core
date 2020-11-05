@@ -144,7 +144,7 @@ abstract class AbstractServerEventDispatcherTaskTest {
   void afterSomeTimesCheck(final ThrowingRunnable assertions) {
     with().pollInterval(400, TimeUnit.MILLISECONDS)
         .await()
-        .atMost(1, TimeUnit.SECONDS)
+        .atMost(2, TimeUnit.SECONDS)
         .untilAsserted(assertions);
   }
 }

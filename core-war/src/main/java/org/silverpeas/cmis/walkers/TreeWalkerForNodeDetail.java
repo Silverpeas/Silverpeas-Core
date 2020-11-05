@@ -24,9 +24,11 @@
 
 package org.silverpeas.cmis.walkers;
 
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
 import org.silverpeas.core.ResourceIdentifier;
@@ -63,6 +65,12 @@ public class TreeWalkerForNodeDetail extends AbstractCmisObjectsTreeWalker {
 
   @Inject
   private NodeService nodeService;
+
+  @Override
+  public ContentStream getContentStream(final String objectId, final String language,
+      final long offset, final long length) {
+    throw new CmisNotSupportedException("The content stream isn't supported by folders");
+  }
 
   @Override
   @SuppressWarnings("unchecked")

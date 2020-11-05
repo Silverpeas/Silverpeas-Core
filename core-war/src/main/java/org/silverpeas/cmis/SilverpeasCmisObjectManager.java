@@ -24,7 +24,7 @@
 
 package org.silverpeas.cmis;
 
-import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
@@ -32,6 +32,8 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.silverpeas.cmis.walkers.AbstractCmisObjectsTreeWalker;
 import org.silverpeas.cmis.walkers.CmisObjectsTreeWalker;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.cmis.model.CmisFile;
+import org.silverpeas.core.cmis.model.CmisObject;
 
 import java.util.List;
 
@@ -67,9 +69,9 @@ public class SilverpeasCmisObjectManager {
    * @param objectId the unique identifier of the object.
    * @param filtering filtering parameters to apply on the characteristics to include with the
    * object.
-   * @return the data about the asked object.
+   * @return the {@link CmisObject} instance matching the given identifier.
    */
-  public ObjectData getObject(final String objectId, final Filtering filtering) {
+  public CmisObject getObject(final String objectId, final Filtering filtering) {
     checkArgumentNotNull("object", objectId);
     return CmisObjectsTreeWalker.getInstance().getObjectData(objectId, filtering);
   }
@@ -82,9 +84,9 @@ public class SilverpeasCmisObjectManager {
    * object's identifiers for segments.
    * @param filtering parameters to apply on the characteristics to include with the
    * object.
-   * @return the data about the asked object.
+   * @return the {@link CmisFile} instance located at the given path.
    */
-  public ObjectData getObjectByPath(final String path, final Filtering filtering) {
+  public CmisFile getObjectByPath(final String path, final Filtering filtering) {
     checkArgumentNotNull("path", path);
     if (path.trim().isEmpty() || path.charAt(0) != '/') {
       throw new CmisInvalidArgumentException("The path isn't valid!");
@@ -98,7 +100,8 @@ public class SilverpeasCmisObjectManager {
    * @param filtering the filtering parameters to apply on the characteristics to include with each
    * object.
    * @param paging paging parameters to apply on the list of objects to return.
-   * @return a list of objects that are children of a folder.
+   * @return a list of {@link org.apache.chemistry.opencmis.commons.data.ObjectInFolderData}
+   * objects, each of them carrying a {@link CmisFile} instance as a child of the given folder.
    */
   public ObjectInFolderList getChildren(final String folderId, final Filtering filtering,
       final Paging paging) {
@@ -116,8 +119,11 @@ public class SilverpeasCmisObjectManager {
    * the direct children of the specified folder are returned, if negative all descendant objects at
    * all depth levels in the CMIS hierarchy are returned, any positive value means only objects that
    * are children of the folder and descendants down to the given levels deep.
-   * @return a list of the children of the specified folder with for each their own children, and
-   * so one, down to the given depth.
+   * @return the subtree rooted at the specified folder, upto the given depth value. The tree is a
+   * list of containers of both a
+   * {@link org.apache.chemistry.opencmis.commons.data.ObjectInFolderData} object and the children
+   * of that object. Each {@link org.apache.chemistry.opencmis.commons.data.ObjectInFolderData}
+   * instance carries a {@link CmisFile} instance as a descendent.
    */
   public List<ObjectInFolderContainer> getDescendants(final String folderId,
       final Filtering filtering, final long depth) {
@@ -130,11 +136,25 @@ public class SilverpeasCmisObjectManager {
    * @param objectId the unique identifier of an object in Silverpeas, whatever its concrete type
    * in Silverpeas.
    * @param filtering the filtering parameters to apply on the list of objects to return.
-   * @return a list of folders that are parents of other objects.
+   * @return a list of {@link org.silverpeas.core.cmis.model.CmisFolder} instances that are the
+   * direct parents of the given object.
    */
   public List<ObjectParentData> getParents(final String objectId, final Filtering filtering) {
     checkArgumentNotNull("object", objectId);
     return CmisObjectsTreeWalker.getInstance().getParentsData(objectId, filtering);
+  }
+
+  /**
+   * Gets the content of the specified object starting at the given position and at the specified
+   * size.
+   * @param objectId the unique identifier of an object in Silverpeas.
+   * @param start the starting position in bytes of the content to get.
+   * @param size the size of the content, from the starting position, to get.
+   * @return a stream on the object's content.
+   */
+  public ContentStream getContentStream(final String objectId, final String language,
+      final long start, final long size) {
+    return CmisObjectsTreeWalker.getInstance().getContentStream(objectId, language, start, size);
   }
 
   private static void checkArgumentNotNull(final String argName, final Object arg) {

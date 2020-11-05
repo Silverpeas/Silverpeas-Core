@@ -23,9 +23,11 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -87,6 +89,14 @@ public class PublicationAccessController extends AbstractAccessController<Public
       context.put(DATA_MANAGER_CONTEXT_KEY, manager);
     }
     return manager;
+  }
+
+  @Override
+  public boolean isUserAuthorized(final String userId, final ResourceIdentifier id) {
+    ContributionIdentifier pubId = (ContributionIdentifier) id;
+    PublicationPK pubPK = new PublicationPK(pubId.getLocalId(), pubId.getComponentInstanceId());
+    PublicationDetail pub = PublicationService.get().getDetail(pubPK);
+    return isUserAuthorized(userId, pub);
   }
 
   @Override

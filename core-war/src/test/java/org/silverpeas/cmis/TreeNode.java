@@ -27,6 +27,7 @@ package org.silverpeas.cmis;
 import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -181,6 +182,14 @@ public class TreeNode {
       return addChildNode(publiDetail);
     } else {
       throw new IllegalArgumentException("A publication can be a child only to a node");
+    }
+  }
+
+  public TreeNode addChild(final SimpleDocument doc) {
+    if (object instanceof PublicationDetail) {
+      return addChildNode(doc);
+    } else {
+      throw new IllegalArgumentException("A document can be a child only to a publication");
     }
   }
 

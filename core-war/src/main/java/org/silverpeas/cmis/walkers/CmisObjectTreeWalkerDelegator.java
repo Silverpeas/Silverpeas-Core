@@ -24,12 +24,14 @@
 
 package org.silverpeas.cmis.walkers;
 
-import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
+import org.silverpeas.core.cmis.model.CmisFile;
+import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.Space;
 
 import javax.inject.Inject;
@@ -44,12 +46,12 @@ public class CmisObjectTreeWalkerDelegator implements CmisObjectsTreeWalker {
   private TreeWalkerSelector selector;
 
   @Override
-  public ObjectData getObjectData(final String objectId, final Filtering filtering) {
+  public CmisObject getObjectData(final String objectId, final Filtering filtering) {
     return selector.selectByObjectId(objectId).getObjectData(objectId, filtering);
   }
 
   @Override
-  public ObjectData getObjectDataByPath(final String path, final Filtering filtering) {
+  public CmisFile getObjectDataByPath(final String path, final Filtering filtering) {
     return selector.selectByObjectId(Space.ROOT_ID.asString()).getObjectDataByPath(path, filtering);
   }
 
@@ -68,6 +70,12 @@ public class CmisObjectTreeWalkerDelegator implements CmisObjectsTreeWalker {
   public List<ObjectInFolderContainer> getSubTreeData(final String folderId,
       final Filtering filtering, final long depth) {
     return selector.selectByObjectId(folderId).getSubTreeData(folderId, filtering, depth);
+  }
+
+  @Override
+  public ContentStream getContentStream(final String objectId, final String language,
+      final long offset, final long length) {
+    return selector.selectByObjectId(objectId).getContentStream(objectId, language, offset, length);
   }
 }
   

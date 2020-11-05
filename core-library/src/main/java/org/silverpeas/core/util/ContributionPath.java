@@ -25,19 +25,15 @@
 package org.silverpeas.core.util;
 
 import org.jetbrains.annotations.NotNull;
-import org.silverpeas.core.SilverpeasExceptionMessages;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInstPath;
+import org.silverpeas.core.contribution.model.Contribution;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static java.util.Collections.singletonList;
 
 /**
  * The path of a resource in the organizational resources tree of Silverpeas. It provides a
@@ -45,27 +41,24 @@ import static java.util.Collections.singletonList;
  * Each segment of the path refers a given resource of the tree by its localized name.
  * @author silveryocha
  */
-public abstract class ResourcePath<T> extends ArrayList<T> {
+public abstract class ContributionPath<T extends Contribution> extends ArrayList<T>
+    implements ResourcePath<T>, Serializable {
+
   private static final long serialVersionUID = 9091158323736803705L;
 
-  public static final String DEFAULT_SEPARATOR = " > ";
   protected final transient Map<String, Pair<String, String>> lastPathByLanguage = new HashMap<>();
 
-  public ResourcePath() {
+  public ContributionPath() {
     super();
   }
 
-  public ResourcePath(final int initialCapacity) {
+  public ContributionPath(final int initialCapacity) {
     super(initialCapacity);
   }
 
-  public ResourcePath(@NotNull final Collection<? extends T> c) {
+  public ContributionPath(@NotNull final Collection<? extends T> c) {
     super(c);
   }
-
-  protected abstract String getInstanceId(final T resource);
-
-  protected abstract String getId(final T resource);
 
   protected abstract boolean isRoot(final T resource);
 
@@ -76,38 +69,18 @@ public abstract class ResourcePath<T> extends ArrayList<T> {
   protected abstract String getLabel(final T resource, final String language);
 
   /**
-   * Formats a path from the node that the list contains.
-   * @param language the aimed translation.
-   * @return a string.
-   */
-  public String format(final String language) {
-    return format(language, false);
-  }
-
-  /**
-   * Formats a path from the node that the list contains by using the default path separator.
-   * @param language the aimed translation.
-   * @param fullSpacePath if false, the space host is taken into account, if true the space host
-   * and all parents are taken into account.
-   * @return a string.
-   */
-  public String format(final String language, final boolean fullSpacePath) {
-    return format(language, fullSpacePath, DEFAULT_SEPARATOR);
-  }
-
-  /**
    * Formats a path from the node that the list contains by using the specified path separator.
    * @param language the aimed translation.
    * @param fullSpacePath if false, the space host is taken into account, if true the space host
-   * and all parents are taken into account.
+   * and all of its parents are taken into account.
    * @param pathSep the path separator to use.
    * @return a string.
    */
   public String format(final String language, final boolean fullSpacePath, final String pathSep) {
-    final String currentResourceIdPath = stream().map(this::getId)
-        .collect(Collectors.joining(","));
-    Pair<String, String> lastPath = lastPathByLanguage
-        .computeIfAbsent(language, l -> Pair.of("", ""));
+    final String currentResourceIdPath =
+        stream().map(c -> c.getIdentifier().getLocalId()).collect(Collectors.joining(","));
+    Pair<String, String> lastPath =
+        lastPathByLanguage.computeIfAbsent(language, l -> Pair.of("", ""));
     if (!currentResourceIdPath.equals(lastPath.getFirst())) {
       StringBuilder result = new StringBuilder();
       for (T resource : this) {
@@ -129,26 +102,11 @@ public abstract class ResourcePath<T> extends ArrayList<T> {
     return lastPath.getSecond();
   }
 
-  private String getPath(final T resource, final String language,
-      final boolean fullSpacePath, final String pathSep) {
-    final String instanceId = getInstanceId(resource);
-    final SilverpeasComponentInstance componentInstance = OrganizationController.get()
-        .getComponentInstance(instanceId).orElseThrow(() -> new IllegalArgumentException(
-            SilverpeasExceptionMessages.failureOnGetting("component instance", instanceId)));
-    return getPath(componentInstance, language, fullSpacePath, pathSep) + pathSep +
-        componentInstance.getLabel(language);
-  }
-
-  private String getPath(SilverpeasComponentInstance instance, final String language,
-      final boolean fullSpacePath, final String pathSep) {
-    final List<SpaceInstLight> spaceList;
-    final OrganizationController controller = OrganizationController.get();
-    if (fullSpacePath) {
-      spaceList = controller.getPathToComponent(instance.getId());
-    } else {
-      spaceList = singletonList(controller.getSpaceInstLightById(instance.getSpaceId()));
-    }
-    return spaceList.stream().map(s -> s.getName(language)).collect(Collectors.joining(pathSep));
+  private String getPath(final T resource, final String language, final boolean fullSpacePath,
+      final String pathSep) {
+    final String instanceId = resource.getIdentifier().getComponentInstanceId();
+    ComponentInstPath path = ComponentInstPath.getPath(instanceId);
+    return path.format(language, fullSpacePath, pathSep);
   }
 
   @Override

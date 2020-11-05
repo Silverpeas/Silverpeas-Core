@@ -24,6 +24,7 @@
 
 package org.silverpeas.cmis.security;
 
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.security.authorization.AbstractAccessController;
 import org.silverpeas.core.security.authorization.AccessControlContext;
@@ -39,6 +40,11 @@ public class GrantedAccessController extends AbstractAccessController<String> {
 
   @Override
   public boolean isUserAuthorized(final Set<SilverpeasRole> userRoles) {
+    return true;
+  }
+
+  @Override
+  public boolean isUserAuthorized(final String userId, final ResourceIdentifier id) {
     return true;
   }
 

@@ -27,10 +27,13 @@ import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
- *
+ * An attachment of a user contribution. It represents both the file in the Silverpeas filesystem
+ * and the node in the JCR about a given document attached to a user contribution.
  * @author ehugonnet
+ * @author mmoquillon
  */
 public class SimpleAttachment implements Serializable {
   private static final long serialVersionUID = -6153003608158238503L;
@@ -56,7 +59,7 @@ public class SimpleAttachment implements Serializable {
     this.size = size;
     this.contentType = contentType;
     this.createdBy = createdBy;
-    setCreated(created);
+    setCreationDate(created);
     this.xmlFormId = xmlFormId;
   }
 
@@ -123,14 +126,14 @@ public class SimpleAttachment implements Serializable {
     this.createdBy = createdBy;
   }
 
-  public Date getCreated() {
+  public Date getCreationDate() {
     if (created == null) {
       return null;
     }
     return new Date(created.getTime());
   }
 
-  public final void setCreated(Date creationDate) {
+  public final void setCreationDate(Date creationDate) {
     if (creationDate == null) {
       this.created = null;
     } else {
@@ -146,14 +149,14 @@ public class SimpleAttachment implements Serializable {
     this.updatedBy = updatedBy;
   }
 
-  public Date getUpdated() {
+  public Date getLastUpdateDate() {
     if (updated == null) {
       return null;
     }
     return new Date(updated.getTime());
   }
 
-  public final void setUpdated(Date updateDate) {
+  public final void setLastUpdateDate(Date updateDate) {
     if (updateDate == null) {
       this.updated = null;
     } else {
@@ -195,44 +198,37 @@ public class SimpleAttachment implements Serializable {
       return false;
     }
     final SimpleAttachment other = (SimpleAttachment) obj;
-    if ((this.filename == null) ? (other.filename != null) : !this.filename.equals(other.filename)) {
+    if (!Objects.equals(this.filename, other.filename)) {
       return false;
     }
-    if ((this.language == null) ? (other.language != null) : !this.language.equals(other.language)) {
+    if (!Objects.equals(this.language, other.language)) {
       return false;
     }
-    if ((this.title == null) ? (other.title != null) : !this.title.equals(other.title)) {
+    if (!Objects.equals(this.title, other.title)) {
       return false;
     }
-    if ((this.description == null) ? (other.description != null)
-        : !this.description.equals(other.description)) {
+    if (!Objects.equals(this.description, other.description)) {
       return false;
     }
     if (this.size != other.size) {
       return false;
     }
-    if ((this.contentType == null) ? (other.contentType != null)
-        : !this.contentType.equals(other.contentType)) {
+    if (!Objects.equals(this.contentType, other.contentType)) {
       return false;
     }
-    if ((this.createdBy == null) ? (other.createdBy != null)
-        : !this.createdBy.equals(other.createdBy)) {
+    if (!Objects.equals(this.createdBy, other.createdBy)) {
       return false;
     }
-    if (this.created != other.created && (this.created == null || !this.created.
-        equals(other.created))) {
+    if (!Objects.equals(this.created, other.created)) {
       return false;
     }
-    if ((this.updatedBy == null) ? (other.updatedBy != null)
-        : !this.updatedBy.equals(other.updatedBy)) {
+    if (!Objects.equals(this.updatedBy, other.updatedBy)) {
       return false;
     }
-    if (this.updated != other.updated && (this.updated == null || !this.updated.
-        equals(other.updated))) {
+    if (!Objects.equals(this.updated, other.updated)) {
       return false;
     }
-    return this.xmlFormId == null ? other.xmlFormId == null :
-        this.xmlFormId.equals(other.xmlFormId);
+    return Objects.equals(this.xmlFormId, other.xmlFormId);
   }
 
   @Override

@@ -115,7 +115,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       SimpleDocumentPK result = createVersionedDocument(session, document, content);
@@ -125,7 +125,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc.getMajorVersion(), is(1));
       assertThat(doc.getMinorVersion(), is(0));
       checkEnglishSimpleDocument(doc);
@@ -145,7 +145,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       SimpleDocumentPK result = createVersionedDocument(session, document, content);
@@ -155,7 +155,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(doc, is(notNullValue()));
       checkEnglishSimpleDocument(doc);
       assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       attachment = createFrenchVersionnedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
       document.setPublicDocument(false);
@@ -181,7 +181,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       SimpleDocumentPK result = createVersionedDocument(session, document, content);
@@ -190,7 +190,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       SimpleDocument doc = documentRepository.findDocumentById(session, expResult, "en");
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(0L)));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       checkEnglishSimpleDocument(doc);
     }
   }
@@ -934,7 +934,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -982,7 +982,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           (HistorisedDocument) documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(document.getOldSilverpeasId()));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       checkEnglishSimpleDocument(doc);
       assertThat(doc.getMajorVersion(), is(0));
       assertThat(doc.getMinorVersion(), is(1));
@@ -1045,7 +1045,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -1113,7 +1113,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           (HistorisedDocument) documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(document.getOldSilverpeasId()));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       checkEnglishSimpleDocument(doc);
       assertThat(doc.getMajorVersion(), is(0));
       assertThat(doc.getMinorVersion(), is(1));
@@ -1156,7 +1156,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -1234,7 +1234,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           (HistorisedDocument) documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(document.getOldSilverpeasId()));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       checkEnglishSimpleDocument(doc);
       assertThat(doc.getMajorVersion(), is(0));
       assertThat(doc.getMinorVersion(), is(2));
@@ -1317,7 +1317,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -1393,7 +1393,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           (HistorisedDocument) documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(document.getOldSilverpeasId()));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       checkEnglishSimpleDocument(doc);
       assertThat(doc.getMajorVersion(), is(0));
       assertThat(doc.getMinorVersion(), is(1));
@@ -1476,7 +1476,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -1692,7 +1692,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           (HistorisedDocument) documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(document.getOldSilverpeasId()));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       checkEnglishSimpleDocument(doc);
       assertThat(doc.getMajorVersion(), is(2));
       assertThat(doc.getMinorVersion(), is(0));
@@ -1776,7 +1776,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
       Map<String, Date> creationDateByLanguage = new HashMap<String, Date>();
-      creationDateByLanguage.put("en", attachment.getCreated());
+      creationDateByLanguage.put("en", attachment.getCreationDate());
       String foreignId = "node78";
       SimpleDocument initialDocument = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       initialDocument.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -1785,7 +1785,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       // French content before version
       initialDocument.setLanguage("fr");
       initialDocument.setAttachment(createFrenchVersionnedAttachment());
-      creationDateByLanguage.put("fr", initialDocument.getAttachment().getCreated());
+      creationDateByLanguage.put("fr", initialDocument.getAttachment().getCreationDate());
       documentRepository.updateDocument(session, initialDocument, true);
       session.save();
 
@@ -2040,7 +2040,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
         assertThat(doc.getLanguage(), is(lang));
         assertThat(doc, is(notNullValue()));
         assertThat(doc.getOldSilverpeasId(), is(document.getOldSilverpeasId()));
-        assertThat(doc.getCreated(), is(creationDateByLanguage.get(lang)));
+        assertThat(doc.getCreationDate(), is(creationDateByLanguage.get(lang)));
         if (lang.equals("fr")) {
           checkFrenchSimpleDocument(doc);
         } else {
@@ -2130,7 +2130,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -2170,7 +2170,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           (HistorisedDocument) documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       document.setForeignId(targetForeignId);
       document.setPK(result);
       document.setNodeName(doc.getNodeName());
@@ -2212,7 +2212,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -2279,7 +2279,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           (HistorisedDocument) documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       document.setForeignId(targetForeignId);
       document.setPK(result);
       document.setNodeName(doc.getNodeName());
@@ -2353,7 +2353,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content =
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -2423,7 +2423,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           (HistorisedDocument) documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       document.setForeignId(targetForeignId);
       document.setPK(result);
       document.setNodeName(doc.getNodeName());
@@ -2494,7 +2494,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -2562,7 +2562,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           (HistorisedDocument) documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       document.setForeignId(targetForeignId);
       document.setPK(result);
       document.setNodeName(doc.getNodeName());
@@ -2633,7 +2633,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -2841,7 +2841,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           (HistorisedDocument) documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       document.setForeignId(targetForeignId);
       document.setPK(result);
       document.setNodeName(doc.getNodeName());
@@ -2913,7 +2913,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
       Map<String, Date> creationDateByLanguage = new HashMap<String, Date>();
-      creationDateByLanguage.put("en", attachment.getCreated());
+      creationDateByLanguage.put("en", attachment.getCreationDate());
       String foreignId = "node78";
       SimpleDocument initialDocument = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       initialDocument.setContentType(MimeTypes.PDF_MIME_TYPE);
@@ -2922,7 +2922,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       // French content before version
       initialDocument.setLanguage("fr");
       initialDocument.setAttachment(createFrenchVersionnedAttachment());
-      creationDateByLanguage.put("fr", initialDocument.getAttachment().getCreated());
+      creationDateByLanguage.put("fr", initialDocument.getAttachment().getCreationDate());
       documentRepository.updateDocument(session, initialDocument, true);
       session.save();
 
@@ -3169,7 +3169,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
         assertThat(doc.getLanguage(), is(lang));
         assertThat(doc, is(notNullValue()));
         assertThat(doc.getOldSilverpeasId(), is(not(document.getOldSilverpeasId())));
-        assertThat(doc.getCreated(), is(creationDateByLanguage.get(lang)));
+        assertThat(doc.getCreationDate(), is(creationDateByLanguage.get(lang)));
         document.setForeignId(targetForeignId);
         document.setPK(result);
         document.setNodeName(doc.getNodeName());
@@ -3283,7 +3283,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
-      Date creationDate = attachment.getCreated();
+      Date creationDate = attachment.getCreationDate();
       String foreignId = "node78";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       document.setNodeName(SimpleDocument.ATTACHMENT_PREFIX + document.getOldSilverpeasId());
@@ -3308,14 +3308,14 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
           oldSilverpeasId, false, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(2048L));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       document.setUpdatedBy(document.getCreatedBy());
       assertThat(doc, SimpleDocumentMatcher.matches(document));
       doc = documentRepository.findDocumentByOldSilverpeasId(session, instanceId, oldSilverpeasId,
           true, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(2048L));
-      assertThat(doc.getCreated(), is(creationDate));
+      assertThat(doc.getCreationDate(), is(creationDate));
       assertThat(doc, SimpleDocumentMatcher.matches(versionedDocument));
       checkEnglishSimpleDocument(doc);
     }

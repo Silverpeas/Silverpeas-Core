@@ -44,6 +44,8 @@ import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.i18n.LocalizedResource;
+import org.silverpeas.core.security.Securable;
+import org.silverpeas.core.security.authorization.SpaceAccessControl;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ResourceLocator;
@@ -70,7 +72,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * The class SpaceInst is the representation in memory of a space
  */
 public class SpaceInst extends AbstractI18NBean<SpaceI18N>
-    implements Serializable, Identifiable, LocalizedResource {
+    implements Serializable, Identifiable, Securable, LocalizedResource {
 
   public static final String SPACE_KEY_PREFIX = "WA";
   public static final String PERSONAL_SPACE_ID = "-10";
@@ -838,5 +840,22 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
 
   public boolean isRemoved() {
     return STATUS_REMOVED.equals(getStatus());
+  }
+
+  @Override
+  public boolean canBeAccessedBy(final User user) {
+    return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId());
+  }
+
+  @Override
+  public boolean canBeModifiedBy(final User user) {
+    return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId())
+        && (user.isAccessAdmin() || user.isAccessSpaceManager());
+  }
+
+  @Override
+  public boolean canBeDeletedBy(final User user) {
+    return SpaceAccessControl.get().isUserAuthorized(user.getId(), getId())
+        && (user.isAccessAdmin() || user.isAccessSpaceManager());
   }
 }

@@ -31,25 +31,27 @@ import org.apache.chemistry.opencmis.commons.data.ObjectInFolderContainer;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderData;
 import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
 import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisPermissionDeniedException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.*;
 import org.silverpeas.cmis.Filtering;
 import org.silverpeas.cmis.Paging;
-import org.silverpeas.cmis.security.AccessControllerRegister;
+import org.silverpeas.cmis.util.CmisDateConverter;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
+import org.silverpeas.core.cmis.model.CmisFile;
 import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObject;
 import org.silverpeas.core.cmis.model.CmisObjectFactory;
+import org.silverpeas.core.cmis.model.DocumentFile;
 import org.silverpeas.core.cmis.model.Folding;
 import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.cmis.model.TypeId;
+import org.silverpeas.core.contribution.model.Attachment;
 import org.silverpeas.core.i18n.LocalizedResource;
-import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
@@ -57,13 +59,13 @@ import javax.inject.Inject;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.silverpeas.core.cmis.model.CmisFile.PATH_SEPARATOR;
 
 /**
  * Abstract class providing default behaviour of the different methods defined in the
@@ -141,7 +143,8 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * @param objectId the unique identifier of an object in Silverpeas.
    * @return a Silverpeas object or null if no such object exists.
    */
-  protected abstract <T extends LocalizedResource> T getSilverpeasObjectById(final String objectId);
+  protected abstract <T extends LocalizedResource & Securable> T getSilverpeasObjectById(
+      final String objectId);
 
   /**
    * Gets in Silverpeas all the children objects of the specified parent and that are accessible
@@ -176,19 +179,20 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
   protected abstract boolean isSupported(final String objectId);
 
   @Override
-  public ObjectData getObjectData(final String objectId, final Filtering filtering) {
+  public CmisObject getObjectData(final String objectId, final Filtering filtering) {
     return checkAndDo(objectId, filtering, (o, f) -> {
       final CmisObject cmisObject = createCmisObject(o, f.getLanguage());
-      return buildObjectData(cmisObject, f);
+      setObjectDataFields(cmisObject, f);
+      return cmisObject;
     });
   }
 
   @Override
-  public ObjectData getObjectDataByPath(final String path, final Filtering filtering) {
-    if (StringUtil.isNotDefined(path) || !path.startsWith(CmisFolder.PATH_SEPARATOR)) {
+  public CmisFile getObjectDataByPath(final String path, final Filtering filtering) {
+    if (StringUtil.isNotDefined(path) || !path.startsWith(PATH_SEPARATOR)) {
       throw new IllegalArgumentException("Invalid path: " + path);
     }
-    final String[] pathSegments = path.substring(1).split(CmisFolder.PATH_SEPARATOR);
+    final String[] pathSegments = path.substring(1).split(PATH_SEPARATOR);
     return walkDownPathForChildData(Space.ROOT_ID, 0, pathSegments, filtering);
   }
 
@@ -286,12 +290,12 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
     for (LocalizedResource object : objects) {
       final AbstractCmisObjectsTreeWalker walker =
           AbstractCmisObjectsTreeWalker.selectInstance(object.getIdentifier().asString());
-      final CmisFolder child = walker.createCmisObject(object, filtering.getLanguage());
+      final CmisFile child = walker.createCmisObject(object, filtering.getLanguage());
       final ObjectInFolderContainerImpl objectInFolder =
           buildObjectInFolderContainer(child, filtering);
       tree.add(objectInFolder);
 
-      if (depth != 1) {
+      if (depth != 1 && child.isFolding()) {
         final List<ObjectInFolderContainer> children =
             walker.browseObjectsInFolderTree(object, filtering, depth == -1 ? -1 : depth - 1);
         objectInFolder.setChildren(children);
@@ -320,7 +324,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
         .skip(paging.getSkipCount().longValue())
         .limit(paging.getMaxItems().longValue())
         .map(o -> {
-          CmisFolder cmisObject =
+          CmisFile cmisObject =
               AbstractCmisObjectsTreeWalker.getCmisObject(o, filtering.getLanguage());
           return buildObjectInFolderData(cmisObject, filtering);
         })
@@ -337,18 +341,18 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
   /**
    * Builds the CMIS data corresponding to the specified CMIS folder and by taking into account the
    * filtering that indicates the properties to return.
-   * @param folder a CMIS folder representing a Silverpeas object.
+   * @param file a CMIS file representing a Silverpeas object.
    * @param filtering the filtering rules to apply on the data to build.
    * @return an {@link ObjectInFolderData} object representing the CMIS data of the folder plus its
    * path segment in the CMIS objects tree (if not excluded by the filtering rules).
    */
-  protected final ObjectInFolderData buildObjectInFolderData(final CmisFolder folder,
+  protected final ObjectInFolderData buildObjectInFolderData(final CmisFile file,
       final Filtering filtering) {
+    setObjectDataFields(file, filtering);
     ObjectInFolderDataImpl objectInFolderData = new ObjectInFolderDataImpl();
-    final ObjectData objData = buildObjectData(folder, filtering);
-    objectInFolderData.setObject(objData);
+    objectInFolderData.setObject(file);
     if (filtering.isPathSegmentToBeIncluded()) {
-      objectInFolderData.setPathSegment(folder.getPathSegment());
+      objectInFolderData.setPathSegment(file.getPathSegment());
     }
     return objectInFolderData;
   }
@@ -356,14 +360,14 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
   /**
    * Builds the CMIS data both for the specified CMIS folder and recursively for all of its children
    * by taking into account the filtering that indicates the properties to return.
-   * @param folder a CMIS folder representing a Silverpeas object.
+   * @param file a CMIS file representing a Silverpeas object.
    * @param filtering the filtering rules to apply on the data to build.
    * @return an {@link ObjectInFolderContainerImpl} instance representing the CMIS data of the
    * folder plus the CMIS data of its direct children, and so on for each of its children.
    */
-  protected final ObjectInFolderContainerImpl buildObjectInFolderContainer(final CmisFolder folder,
+  protected final ObjectInFolderContainerImpl buildObjectInFolderContainer(final CmisFile file,
       final Filtering filtering) {
-    ObjectInFolderData objectInFolder = buildObjectInFolderData(folder, filtering);
+    ObjectInFolderData objectInFolder = buildObjectInFolderData(file, filtering);
     ObjectInFolderContainerImpl container = new ObjectInFolderContainerImpl();
     container.setObject(objectInFolder);
     return container;
@@ -382,76 +386,75 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
    * excluded by the filtering rules).
    */
   protected final ObjectParentData buildObjectParentData(final CmisFolder parent,
-      final CmisFolder folder, final Filtering filtering) {
-    ObjectData objectData = buildObjectData(parent, filtering);
-    ObjectParentDataImpl parentData = new ObjectParentDataImpl(objectData);
+      final CmisObject folder, final Filtering filtering) {
+    setObjectDataFields(parent, filtering);
+    ObjectParentDataImpl parentData = new ObjectParentDataImpl(parent);
     if (filtering.isPathSegmentToBeIncluded()) {
-      parentData.setRelativePathSegment(folder.getPathSegment());
+      parentData.setRelativePathSegment(folder.getName());
     }
     return parentData;
   }
 
   /**
-   * Builds the CMIS data corresponding to the specified CMIS object and by taking into account the
-   * filtering that indicates the properties to return.
+   * The specified CMIS objects in Silverpeas implement the {@link ObjectData} interface that
+   * defines the specific CMIS attributes and properties a CMIS object should have. Sets these data
+   * by taking into account the specified filtering rules.
    * @param object a CMIS object.
-   * @param filtering the filtering rules to apply on the data to build.
-   * @return an {@link ObjectData} object gathering both the CMIS attributes and properties of the
-   * specified CMIS object.
+   * @param filtering the filtering rules to apply on the data to set.
    */
-  protected final ObjectData buildObjectData(final CmisObject object, final Filtering filtering) {
-    final ObjectDataImpl objData = new ObjectDataImpl();
-
+  protected final void setObjectDataFields(final CmisObject object,
+      final Filtering filtering) {
     if (filtering.isACLToBeIncluded()) {
-      AccessControlListImpl acl = new AccessControlListImpl();
-      acl.setAces(object.getAcl());
-      objData.setAcl(acl);
-      objData.setIsExactAcl(true);
+      object.addACEs(filtering.getCurrentUser());
     }
 
     if (filtering.areAllowedActionsToBeIncluded()) {
-      // should depend on the type of the object and on the access right of the current user
-      AllowableActionsImpl allowableActions = new AllowableActionsImpl();
-      allowableActions.setAllowableActions(object.getAllowedActions());
-      objData.setAllowableActions(allowableActions);
+      // should depend on the type of the object
+      object.setAllowableActions();
     }
 
-    final Properties objProps = setProperties(object, filtering);
-    objData.setProperties(objProps);
-
-    return objData;
+    setProperties(object, filtering);
   }
 
-  private ObjectData walkDownPathForChildData(final ResourceIdentifier parentId, final int idx,
+  private CmisFile walkDownPathForChildData(final ResourceIdentifier parentId, final int idx,
       final String[] pathSegments, final Filtering filtering) {
     final User user = filtering.getCurrentUser();
     final String language = user.getUserPreferences().getLanguage();
     final LocalizedResource object = getAllowedChildrenOfSilverpeasObject(parentId, user).filter(
-        s -> s.getTranslation(language).getName().equals(pathSegments[idx]))
+        s -> getObjectName(s, language).equals(pathSegments[idx]))
         .findFirst()
         .orElseThrow(() -> new CmisObjectNotFoundException(
-            "No such object with name '" + pathSegments[idx] + "' in the path " +
-                String.join(CmisFolder.PATH_SEPARATOR, pathSegments)));
+            "No such object with name '" + pathSegments[idx] + "' in the path " + PATH_SEPARATOR +
+                String.join(PATH_SEPARATOR, pathSegments)));
     ResourceIdentifier objectId = object.getIdentifier();
     final AbstractCmisObjectsTreeWalker walker =
         AbstractCmisObjectsTreeWalker.selectInstance(objectId.asString());
     if (idx >= pathSegments.length - 1) {
-      CmisObject cmisObject = walker.createCmisObject(object, filtering.getLanguage());
-      return buildObjectData(cmisObject, filtering);
+      CmisFile cmisFile = walker.createCmisObject(object, filtering.getLanguage());
+      setObjectDataFields(cmisFile, filtering);
+      return cmisFile;
     } else {
       return walker.walkDownPathForChildData(objectId, idx + 1, pathSegments, filtering);
     }
   }
 
-  private <T> T checkAndDo(final String objectId, final Filtering filtering,
-      BiFunction<LocalizedResource, Filtering, T> action) {
-    final LocalizedResource object = getSilverpeasObjectById(objectId);
+  private String getObjectName(final LocalizedResource object, final String language) {
+    if (object instanceof Attachment) {
+      return ((Attachment) object).getFilename();
+    } else {
+      return object.getTranslation(language).getName();
+    }
+  }
+
+  private <T extends LocalizedResource & Securable, R> R checkAndDo(final String objectId,
+      final Filtering filtering, BiFunction<T, Filtering, R> action) {
+    final T object = getSilverpeasObjectById(objectId);
     checkObjectExists(objectId, object);
-    checkUserPermissions(filtering.getCurrentUser(), object.getClass(), objectId);
+    checkUserPermissions(filtering.getCurrentUser(), object);
     return action.apply(object, filtering);
   }
 
-  private Properties setProperties(final CmisObject object, final Filtering filtering) {
+  private void setProperties(final CmisObject object, final Filtering filtering) {
     Set<String> filter = filtering.getPropertiesFilter();
     PropertiesImpl props = new PropertiesImpl();
     props.addProperty(new PropertyStringImpl(PropertyIds.NAME, object.getName()));
@@ -460,29 +463,67 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
     props.addProperty(new PropertyStringImpl(PropertyIds.CHANGE_TOKEN, NOTHING));
 
     setPropertyId(props, PropertyIds.OBJECT_ID, object.getId(), filter);
-    setPropertyId(props, PropertyIds.BASE_TYPE_ID, object.getBaseCmisType().value(), filter);
-    setPropertyId(props, PropertyIds.OBJECT_TYPE_ID, object.getCmisType().value(), filter);
+    setPropertyId(props, PropertyIds.BASE_TYPE_ID, object.getBaseTypeId().value(), filter);
+    setPropertyId(props, PropertyIds.OBJECT_TYPE_ID, object.getTypeId().value(), filter);
     setPropertyString(props, PropertyIds.CREATED_BY, object.getCreator(), filter);
     setPropertyDateTime(props, PropertyIds.CREATION_DATE, object.getCreationDate(), filter);
     setPropertyString(props, PropertyIds.LAST_MODIFIED_BY, object.getLastModifier(), filter);
     setPropertyDateTime(props, PropertyIds.LAST_MODIFICATION_DATE, object.getLastModificationDate(),
         filter);
 
-    if (object instanceof Folding) {
-      final Folding folder = (Folding) object;
-      List<String> types =
-          folder.getAllowedChildrenTypes().stream().map(TypeId::value).collect(Collectors.toList());
-      props.addProperty(new PropertyIdImpl(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS, types));
-      setPropertyId(props, PropertyIds.PARENT_ID, folder.getParentId(), filter);
-      setPropertyString(props, PropertyIds.PATH, folder.getPath(), filter);
+    if (object.isFileable()) {
+      CmisFile file = (CmisFile) object;
+      if (file.isFolding()) {
+        // folder properties
+        final Folding folder = (Folding) file;
+        List<String> types = folder.getAllowedChildrenTypes()
+            .stream()
+            .map(TypeId::value)
+            .collect(Collectors.toList());
+        props.addProperty(new PropertyIdImpl(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS, types));
+        setPropertyId(props, PropertyIds.PARENT_ID, folder.getParentId(), filter);
+        setPropertyString(props, PropertyIds.PATH, file.getPath(), filter);
+      } else {
+        // document properties
+        DocumentFile document = (DocumentFile) file;
+        setPropertyBoolean(props, PropertyIds.IS_IMMUTABLE, false, filter);
+        setPropertyBoolean(props, PropertyIds.IS_LATEST_VERSION, true, filter);
+        setPropertyBoolean(props, PropertyIds.IS_MAJOR_VERSION, true, filter);
+        setPropertyBoolean(props, PropertyIds.IS_LATEST_MAJOR_VERSION, true, filter);
+        setPropertyString(props, PropertyIds.VERSION_LABEL, document.getTitle(), filter);
+        setPropertyId(props, PropertyIds.VERSION_SERIES_ID, document.getId(), filter);
+        setPropertyBoolean(props, PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, false, filter);
+        setPropertyString(props, PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, filter);
+        setPropertyString(props, PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, filter);
+        setPropertyString(props, PropertyIds.CHECKIN_COMMENT, document.getLastComment(), filter);
+        setPropertyBoolean(props, PropertyIds.IS_PRIVATE_WORKING_COPY, false, filter);
+        setPropertyBigInteger(props, PropertyIds.CONTENT_STREAM_LENGTH, document.getSize(), filter);
+        setPropertyString(props, PropertyIds.CONTENT_STREAM_MIME_TYPE, document.getMimeType(),
+            filter);
+        setPropertyString(props, PropertyIds.CONTENT_STREAM_FILE_NAME, document.getName(),
+            filter);
+        setPropertyId(props, PropertyIds.CONTENT_STREAM_ID, null, filter);
+      }
     }
-    return props;
+    object.setProperties(props);
   }
 
   private static void setPropertyString(final MutableProperties props, final String propertyName,
       final String propertyValue, final Set<String> filter) {
     applyFilter(filter, propertyName,
         () -> props.addProperty(new PropertyStringImpl(propertyName, propertyValue)));
+  }
+
+  private static void setPropertyBoolean(final MutableProperties props, final String propertyName,
+      final boolean propertyValue, final Set<String> filter) {
+    applyFilter(filter, propertyName,
+        () -> props.addProperty(new PropertyBooleanImpl(propertyName, propertyValue)));
+  }
+
+  private static void setPropertyBigInteger(final MutableProperties props,
+      final String propertyName, final long propertyValue, final Set<String> filter) {
+    applyFilter(filter, propertyName, () -> props.addProperty(
+        new PropertyIntegerImpl(propertyName, BigInteger.valueOf(propertyValue))));
   }
 
   private static void setPropertyId(final MutableProperties props, final String propertyName,
@@ -494,7 +535,7 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
   private static void setPropertyDateTime(final MutableProperties props, final String propertyName,
       final long propertyValue, final Set<String> filter) {
     applyFilter(filter, propertyName, () -> props.addProperty(
-        new PropertyDateTimeImpl(propertyName, millisToCalendar(propertyValue))));
+        new PropertyDateTimeImpl(propertyName, CmisDateConverter.millisToCalendar(propertyValue))));
   }
 
   private static void applyFilter(final Set<String> filter, final String propertyName,
@@ -505,29 +546,14 @@ public abstract class AbstractCmisObjectsTreeWalker implements CmisObjectsTreeWa
     }
   }
 
-  /**
-   * Converts milliseconds into a {@link GregorianCalendar} object, setting
-   * the timezone to GMT and cutting milliseconds off.
-   */
-  static GregorianCalendar millisToCalendar(long millis) {
-    GregorianCalendar calendar = new GregorianCalendar();
-    calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-    calendar.setTimeInMillis((long) (Math.ceil((double) millis / 1000) * 1000));
-    return calendar;
-  }
-
   private static void checkObjectExists(final String objId, final Object obj) {
     if (obj == null) {
       throw new CmisObjectNotFoundException("The object '" + objId + "' doesn't exist");
     }
   }
 
-  private void checkUserPermissions(final User user, final Class<?> objectClass, final String id) {
-    AccessControllerRegister accessControllerRegister =
-        ServiceProvider.getSingleton(AccessControllerRegister.class);
-    final AccessController<String> accessController =
-        accessControllerRegister.getAccessController(objectClass);
-    if (!accessController.isUserAuthorized(user.getId(), id)) {
+  private void checkUserPermissions(final User user, final Securable object) {
+    if (!object.canBeAccessedBy(user)) {
       throw new CmisPermissionDeniedException(
           "The user '" + user.getDisplayedName() + "' (id=" + user.getId() + " isn't authorized");
     }

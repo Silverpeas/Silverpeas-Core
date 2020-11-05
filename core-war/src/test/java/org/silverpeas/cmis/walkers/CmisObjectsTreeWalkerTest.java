@@ -49,6 +49,9 @@ import org.silverpeas.core.cmis.model.CmisFolder;
 import org.silverpeas.core.cmis.model.CmisObjectFactory;
 import org.silverpeas.core.cmis.model.Space;
 import org.silverpeas.core.cmis.model.TypeId;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -57,9 +60,10 @@ import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.LocalizedResource;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.util.StringUtil;
 
 import java.math.BigInteger;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -71,7 +75,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.silverpeas.cmis.walkers.AbstractCmisObjectsTreeWalker.millisToCalendar;
+import static org.silverpeas.cmis.SilverpeasObjectsTree.LANGUAGE;
+import static org.silverpeas.cmis.util.CmisDateConverter.millisToCalendar;
 
 /**
  * Unit tests about the walking of the CMIS objects tree whose each node is mapped to a given
@@ -132,7 +137,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
         containsInAnyOrder(CAN_GET_FOLDER_TREE, CAN_GET_PROPERTIES, CAN_GET_DESCENDANTS,
             CAN_GET_CHILDREN, CAN_GET_ACL));
 
-    final CmisFolder root = new CmisObjectFactory().createRootSpace();
+    final Space root = new CmisObjectFactory().createRootSpace();
     User admin = User.getById("0");
     Map<String, PropertyData<?>> props = data.getProperties().getProperties();
     assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(), is(Space.ROOT_ID.asString()));
@@ -209,6 +214,21 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     String publiId = publi.getIdentifier().asString();
     ObjectData data = CmisObjectsTreeWalker.getInstance().getObjectData(publiId, filtering);
     assertCMISObjectMatchesPublication(data, publi);
+  }
+
+  @Test
+  @DisplayName("The CMIS data of an attachemnt of a publication in an application of Silverpeas " +
+      "should match the properties of that publication")
+  void getObjectDataOfAnAttachment() {
+    final SimpleDocumentPK pk = new SimpleDocumentPK("1", "kmelia1");
+    final SimpleDocument doc = attachmentService.searchDocumentById(pk, LANGUAGE);
+    assertThat(doc, notNullValue());
+
+    Filtering filtering = new Filtering().setIncludeAllowableActions(true)
+        .setIncludeRelationships(IncludeRelationships.NONE);
+    String docId = doc.getIdentifier().asString();
+    ObjectData data = CmisObjectsTreeWalker.getInstance().getObjectData(docId, filtering);
+    assertCMISObjectMatchesDocument(data, doc);
   }
 
   @Test
@@ -291,6 +311,21 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     final String path = pathToNode(node, filtering.getLanguage());
     ObjectData data = CmisObjectsTreeWalker.getInstance().getObjectDataByPath(path, filtering);
     assertCMISObjectMatchesPublication(data, (PublicationDetail) node.getObject());
+  }
+
+  @Test
+  @DisplayName(
+      "The path of a document of a publication should be connected to the CMIS objects tree")
+  void getObjectDataOfADocumentByPath() {
+    final String docId =
+        ContributionIdentifier.from("kmelia1", "2", DocumentType.attachment.getName()).asString();
+    final TreeNode node = organization.findTreeNodeById(docId);
+
+    Filtering filtering = new Filtering().setIncludeAllowableActions(true)
+        .setIncludeRelationships(IncludeRelationships.NONE);
+    final String path = pathToNode(node, filtering.getLanguage());
+    ObjectData data = CmisObjectsTreeWalker.getInstance().getObjectDataByPath(path, filtering);
+    assertCMISObjectMatchesDocument(data, (SimpleDocument) node.getObject());
   }
 
   @Test
@@ -513,6 +548,26 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
 
   @Test
   @DisplayName(
+      "Asking for only folders for a subtree should satisfies that request")
+  void getFoldersOnlySubtreeOfASpace() {
+    final String spaceId = "WA1";
+    final TreeNode spaceNode = organization.findTreeNodeById(spaceId);
+
+    Filtering filtering = new Filtering().setIncludeAllowableActions(true)
+        .setIncludePathSegment(true)
+        .setIncludeRelationships(IncludeRelationships.NONE)
+        .setIncludeCmisObjectTypes(Filtering.IncludeCmisObjectTypes.ONLY_FOLDERS);
+    int depth = -1; // the whole subtree
+    List<ObjectInFolderContainer> subtree =
+        CmisObjectsTreeWalker.getInstance().getSubTreeData(spaceId, filtering, depth);
+    assertThat(subtree, notNullValue());
+    assertThat(subtree.isEmpty(), is(false));
+
+    assertChildrenTypeMatchesOnlyFolders(subtree);
+  }
+
+  @Test
+  @DisplayName(
       "The CMIS data of the first level of a subtree should match the children of the Silverpeas " +
           "object corresponding to the root of that subtree")
   void getAOneLevelSubtreeOfASpace() {
@@ -563,7 +618,7 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
           nodes.stream().filter(n -> n.getId().equals(data.getId())).findFirst();
       assertThat(optNode.isPresent(), is(true));
       optNode.ifPresent(n -> {
-        assertThat(((AbstractI18NBean<?>) n.getObject()).getName(language), is(pathSegment));
+        assertThat(getObjectName(n.getObject(), language), is(pathSegment));
         assertCMISObjectMatchesSilverpeasObject(data, n.getObject());
         if (depth > 1 || depth == -1) {
           int newDepth = depth == -1 ? -1 : depth - 1;
@@ -571,6 +626,14 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
           assertChildrenMatches(children, c.getChildren(), newDepth, language);
         }
       });
+    });
+  }
+
+  private void assertChildrenTypeMatchesOnlyFolders(final List<ObjectInFolderContainer> subtree) {
+    subtree.forEach(c -> {
+      ObjectData data = c.getObject().getObject();
+      assertThat(data, instanceOf(CmisFolder.class));
+      assertChildrenTypeMatchesOnlyFolders(c.getChildren());
     });
   }
 
@@ -596,6 +659,8 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
       assertCMISObjectMatchesNode(data, (NodeDetail) resource);
     } else if (resource instanceof PublicationDetail) {
       assertCMISObjectMatchesPublication(data, (PublicationDetail) resource);
+    } else if (resource instanceof SimpleDocument) {
+      assertCMISObjectMatchesDocument(data, (SimpleDocument) resource);
     } else {
       fail("Non CMIS matching for the resource: " + resource);
     }
@@ -683,6 +748,26 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     assertProperties(data.getProperties(), publication);
   }
 
+  private void assertCMISObjectMatchesDocument(final ObjectData data, final SimpleDocument doc) {
+    assertThat(data, notNullValue());
+    assertThat(data.getAcl(), nullValue());
+    assertThat(data.getBaseTypeId(), is(BaseTypeId.CMIS_DOCUMENT));
+    assertThat(data.getId(), is(doc.getIdentifier().asString()));
+    assertThat(data.getChangeEventInfo(), nullValue());
+    assertThat(data.getPolicyIds(), nullValue());
+    assertThat(data.getRelationships(), empty());
+    assertThat(data.getRenditions(), empty());
+    assertThat(data.getAllowableActions(), notNullValue());
+    assertThat(data.getProperties(), notNullValue());
+
+    AllowableActions actions = data.getAllowableActions();
+    assertThat(actions.getAllowableActions(),
+        containsInAnyOrder(CAN_GET_ALL_VERSIONS, CAN_GET_PROPERTIES, CAN_GET_ACL,
+            CAN_GET_OBJECT_PARENTS, CAN_GET_CONTENT_STREAM));
+
+    assertProperties(data.getProperties(), doc);
+  }
+
   /**
    * Asserts the specified properties of a CMIS object matches the expected Silverpeas business
    * object.
@@ -717,10 +802,6 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     assertThat(props.get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS).getValues(),
         containsInAnyOrder(TypeId.SILVERPEAS_SPACE.value(), TypeId.SILVERPEAS_APPLICATION.value()));
 
-    /*String path = CmisFolder.PATH_SEPARATOR + organizationController.getPathToSpace(space.getId())
-        .stream()
-        .map(s -> s.getName(language))
-        .collect(Collectors.joining(CmisFolder.PATH_SEPARATOR));*/
     TreeNode spaceNode = organization.findTreeNodeById(space.getId());
     String path = pathToNode(spaceNode, language);
     assertThat(props.get(PropertyIds.PATH).getFirstValue(), is(path));
@@ -758,14 +839,8 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     assertThat(props.get(PropertyIds.PARENT_ID).getFirstValue(),
         is(application.getDomainFatherId()));
     assertThat(props.get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS).getValues(),
-        is(Collections.singletonList(TypeId.SILVERPEAS_FOLDER.value())));
+        is(Arrays.asList(TypeId.SILVERPEAS_FOLDER.value(), TypeId.SILVERPEAS_PUBLICATION.value())));
 
-    /*String path = CmisFolder.PATH_SEPARATOR +
-        organizationController.getPathToComponent(application.getId())
-            .stream()
-            .map(s -> s.getName(language))
-            .collect(Collectors.joining(CmisFolder.PATH_SEPARATOR)) + CmisFolder.PATH_SEPARATOR +
-        application.getName(language);*/
     TreeNode appNode = organization.findTreeNodeById(application.getId());
     String path = pathToNode(appNode, language);
     assertThat(props.get(PropertyIds.PATH).getFirstValue(), is(path));
@@ -848,11 +923,59 @@ class CmisObjectsTreeWalkerTest extends CMISEnvForTests {
     String folderId = folder.isRoot() ? pub.getInstanceId() :
         ContributionIdentifier.from(folder, NodeDetail.TYPE).asString();
     assertThat(props.get(PropertyIds.PARENT_ID).getFirstValue(), is(folderId));
-    assertThat(props.get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS).getValues(), empty());
+    assertThat(props.get(PropertyIds.ALLOWED_CHILD_OBJECT_TYPE_IDS).getValues(),
+        containsInAnyOrder(TypeId.SILVERPEAS_DOCUMENT.value()));
 
     TreeNode pubNode = organization.findTreeNodeById(pub.getIdentifier().asString());
     String path = pathToNode(pubNode, language);
     assertThat(props.get(PropertyIds.PATH).getFirstValue(), is(path));
+  }
+
+  /**
+   * Asserts the specified properties of a CMIS object matches the expected Silverpeas business
+   * object.
+   * @param properties the CMIS properties of a CMIS object.
+   * @param doc a {@link SimpleDocument} instance in Silverpeas.
+   */
+  private void assertProperties(final Properties properties, final SimpleDocument doc) {
+    Map<String, PropertyData<?>> props = properties.getProperties();
+    String comment = StringUtil.isDefined(doc.getComment()) ? doc.getComment() : "";
+    assertThat(props.get(PropertyIds.OBJECT_ID).getFirstValue(),
+        is(doc.getIdentifier().asString()));
+    assertThat(props.get(PropertyIds.NAME).getFirstValue(), is(doc.getFilename()));
+    assertThat(props.get(PropertyIds.DESCRIPTION).getFirstValue(), is(doc.getDescription()));
+    assertThat(props.get(PropertyIds.CREATED_BY).getFirstValue(),
+        is(doc.getCreator().getDisplayedName()));
+    assertThat(props.get(PropertyIds.LAST_MODIFIED_BY).getFirstValue(),
+        is(doc.getLastUpdater().getDisplayedName()));
+    assertThat(props.get(PropertyIds.CREATION_DATE).getFirstValue(),
+        is(millisToCalendar(doc.getCreationDate().getTime())));
+    assertThat(props.get(PropertyIds.LAST_MODIFICATION_DATE).getFirstValue(),
+        is(millisToCalendar(doc.getLastUpdateDate().getTime())));
+    assertThat(props.get(PropertyIds.BASE_TYPE_ID).getFirstValue(),
+        is(BaseTypeId.CMIS_DOCUMENT.value()));
+    assertThat(props.get(PropertyIds.OBJECT_TYPE_ID).getFirstValue(),
+        is(TypeId.SILVERPEAS_DOCUMENT.value()));
+    assertThat(props.get(PropertyIds.IS_IMMUTABLE).getFirstValue(), is(false));
+    assertThat(props.get(PropertyIds.IS_LATEST_VERSION).getFirstValue(), is(true));
+    assertThat(props.get(PropertyIds.IS_MAJOR_VERSION).getFirstValue(), is(true));
+    assertThat(props.get(PropertyIds.IS_LATEST_MAJOR_VERSION).getFirstValue(), is(true));
+    assertThat(props.get(PropertyIds.VERSION_LABEL).getFirstValue(), is(doc.getTitle()));
+    assertThat(props.get(PropertyIds.VERSION_SERIES_ID).getFirstValue(),
+        is(doc.getIdentifier().asString()));
+    assertThat(props.get(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT).getFirstValue(), is(false));
+    assertThat(props.get(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY).getFirstValue(), nullValue());
+    assertThat(props.get(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID).getFirstValue(), nullValue());
+    assertThat(props.get(PropertyIds.CHECKIN_COMMENT).getFirstValue(), is(comment));
+    assertThat(props.get(PropertyIds.IS_PRIVATE_WORKING_COPY).getFirstValue(), is(false));
+    assertThat(
+        ((BigInteger) props.get(PropertyIds.CONTENT_STREAM_LENGTH).getFirstValue()).longValue(),
+        is(doc.getSize()));
+    assertThat(props.get(PropertyIds.CONTENT_STREAM_MIME_TYPE).getFirstValue(),
+        is(doc.getContentType()));
+    assertThat(props.get(PropertyIds.CONTENT_STREAM_FILE_NAME).getFirstValue(),
+        is(doc.getFilename()));
+    assertThat(props.get(PropertyIds.CONTENT_STREAM_ID).getFirstValue(), nullValue());
   }
 }
   

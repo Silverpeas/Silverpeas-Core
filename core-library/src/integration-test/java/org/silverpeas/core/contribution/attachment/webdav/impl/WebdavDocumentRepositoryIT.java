@@ -50,12 +50,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static javax.jcr.Property.*;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 @RunWith(Arquillian.class)
 public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
@@ -188,13 +190,13 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       getJcr().assertContent(document.getId(), "en", "Whaou !");
       assertWebdavContent(session, document, "Updated webdav content.", relativeWebdavJcrPath);
 
-      Date dateOfCreateOrUpdate = document.getUpdated();
-      await().atLeast(10, TimeUnit.MILLISECONDS).timeout(1, TimeUnit.SECONDS).until(() -> true);
+      Date dateOfCreateOrUpdate = document.getLastUpdateDate();
+      awaitUntil(10, MILLISECONDS);
       webdavRepository.updateAttachmentBinaryContent(session, document);
 
       getJcr().assertContent(document.getId(), "fr", null);
       document = getJcr().assertContent(document.getId(), "en", "Updated webdav content.");
-      assertThat(document.getUpdated(), is(dateOfCreateOrUpdate));
+      assertThat(document.getLastUpdateDate(), is(dateOfCreateOrUpdate));
       assertWebdavContent(session, document, "Updated webdav content.", relativeWebdavJcrPath);
 
       webdavRepository.updateNodeAttachment(session, document);
@@ -515,7 +517,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
        */
 
       final OffsetDateTime beforeDate = OffsetDateTime.now();
-      await().atLeast(100, TimeUnit.MILLISECONDS).until(() -> true);
+      await().atLeast(100, MILLISECONDS).until(() -> true);
       Node webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
       assertThat(webdavNode, nullValue());
       document = getJcr().assertContent(document.getId(), "en", "EN content");
@@ -542,7 +544,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
        */
 
       OffsetDateTime beforeDate2 = OffsetDateTime.now();
-      await().atLeast(100, TimeUnit.MILLISECONDS).until(() -> true);
+      await().atLeast(100, MILLISECONDS).until(() -> true);
       document.setAttachment(getJcr().defaultFRContent());
       document = getJcr().updateAttachmentForTest(document, "fr", "FR content");
       SimpleDocument frDocument = getJcr().assertContent(document.getId(), "fr", "FR content");
@@ -560,7 +562,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
        */
 
       OffsetDateTime beforeDate3 = OffsetDateTime.now();
-      await().atLeast(100, TimeUnit.MILLISECONDS).until(() -> true);
+      await().atLeast(100, MILLISECONDS).until(() -> true);
       document.setAttachment(getJcr().defaultENContent());
       getJcr().updateAttachmentForTest(document, "en", "EN content updated");
       webdavRepository.createAttachmentNode(session, document);
@@ -591,7 +593,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
        */
 
       final OffsetDateTime beforeDate = OffsetDateTime.now();
-      await().atLeast(100, TimeUnit.MILLISECONDS).until(() -> true);
+      await().atLeast(100, MILLISECONDS).until(() -> true);
       Node webdavNode = getJcr().getRelativeNode(session.getRootNode(), SimpleDocument.WEBDAV_FOLDER);
       assertThat(webdavNode, nullValue());
       document = getJcr().assertContent(document.getId(), "en", "EN content");
@@ -620,7 +622,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       Updating into WEBDAV the EN content to the same document (wait 100ms for date checking)
        */
 
-      await().atLeast(100, TimeUnit.MILLISECONDS).until(() -> true);
+      await().atLeast(100, MILLISECONDS).until(() -> true);
       document.setLanguage("fr");
       document.setId(documentId);
       webdavRepository.updateContentFrom(session, document, new ByteArrayInputStream("A new content!!!".getBytes()));

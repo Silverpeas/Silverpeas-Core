@@ -40,27 +40,27 @@ class SimpleAttachmentConverter extends AbstractJcrConverter {
   public SimpleAttachment convertNode(Node node) throws RepositoryException {
     SimpleAttachment attachment = new SimpleAttachment();
     attachment.setContentType(getStringProperty(node, JCR_MIMETYPE));
-    attachment.setCreated(getDateProperty(node, SLV_PROPERTY_CREATION_DATE));
+    attachment.setCreationDate(getDateProperty(node, SLV_PROPERTY_CREATION_DATE));
     attachment.setCreatedBy(getStringProperty(node, SLV_PROPERTY_CREATOR));
     attachment.setDescription(getStringProperty(node, JCR_DESCRIPTION));
     attachment.setFilename(getStringProperty(node, SLV_PROPERTY_NAME));
     attachment.setLanguage(getStringProperty(node, JCR_LANGUAGE));
     attachment.setSize(getLongProperty(node, SLV_PROPERTY_SIZE));
     attachment.setTitle(getStringProperty(node, JCR_TITLE));
-    attachment.setUpdated(getDateProperty(node, JCR_LAST_MODIFIED));
+    attachment.setLastUpdateDate(getDateProperty(node, JCR_LAST_MODIFIED));
     attachment.setUpdatedBy(getStringProperty(node, JCR_LAST_MODIFIED_BY));
     attachment.setXmlFormId(getStringProperty(node, SLV_PROPERTY_XMLFORM_ID));
     return attachment;
   }
 
   public void fillNode(SimpleAttachment attachment, Node node) throws RepositoryException {
-    addDateProperty(node, SLV_PROPERTY_CREATION_DATE, attachment.getCreated());
+    addDateProperty(node, SLV_PROPERTY_CREATION_DATE, attachment.getCreationDate());
     addStringProperty(node, SLV_PROPERTY_CREATOR, attachment.getCreatedBy());
     addStringProperty(node, JCR_DESCRIPTION, attachment.getDescription());
     addStringProperty(node, SLV_PROPERTY_NAME, attachment.getFilename());
     addStringProperty(node, JCR_LANGUAGE, attachment.getLanguage());
     addStringProperty(node, JCR_TITLE, attachment.getTitle());
-    addDateProperty(node, JCR_LAST_MODIFIED, attachment.getUpdated());
+    addDateProperty(node, JCR_LAST_MODIFIED, attachment.getLastUpdateDate());
     addStringProperty(node, JCR_LAST_MODIFIED_BY, attachment.getUpdatedBy());
     addStringProperty(node, SLV_PROPERTY_XMLFORM_ID, attachment.getXmlFormId());
     addStringProperty(node, JCR_MIMETYPE, attachment.getContentType());
