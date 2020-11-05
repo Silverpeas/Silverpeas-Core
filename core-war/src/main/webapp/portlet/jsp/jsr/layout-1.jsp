@@ -41,7 +41,7 @@
 <c:if test="${thickportlets != null}">
   <c:forEach items="${thickportlets}" var="portlet2Test">
     <c:choose>
-      <c:when test="${portlet2Test.maximized==true}">
+      <c:when test="${portlet2Test.maximized}">
         <c:set var="isMaximized" value="true"/>
         <c:set var="portlet" value="${portlet2Test}"/>
       </c:when>
@@ -54,7 +54,7 @@
 <c:if test="${thinportlets != null}">
   <c:forEach items="${thinportlets}" var="portlet2Test">
     <c:choose>
-      <c:when test="${portlet2Test.maximized==true}">
+      <c:when test="${portlet2Test.maximized}">
         <c:set var="isMaximized" value="true"/>
         <c:set var="portlet" value="${portlet2Test}"/>
       </c:when>
@@ -67,16 +67,16 @@
 <div id="portal-content-layout">
 
   <c:choose>
-  <c:when test="${isMaximized==true}">
+  <c:when test="${isMaximized}">
   <!-- <div style="width:100%; height:100%"> -->
-  <dl id="portlet_<c:out value="${portlet.portletWindowName}"/>" class="sort" style="width:100%; height:100%">
+  <dl id="portlet_<c:out value="${portlet.portletWindowName}"/>" class="sort portlet ${fn:replace(portlet.portletName, ".", "-")}" style="width:100%; height:100%">
     <%@include file="portletSP.jsp" %>
   </dl>
   <!-- </div> -->
   </c:when>
   <c:otherwise>
   <c:choose>
-  <c:when test="${disableMove==true}">
+  <c:when test="${disableMove}">
   <div id="thick" class="ui-non-sortable">
     </c:when>
     <c:otherwise>
@@ -85,7 +85,7 @@
       </c:choose>
       <c:if test="${thickportlets != null}">
         <c:forEach items="${thickportlets}" var="portlet">
-          <dl id="portlet_<c:out value="${portlet.portletWindowName}"/>" class="sort">
+          <dl id="portlet_<c:out value="${portlet.portletWindowName}"/>" class="sort portlet ${fn:replace(portlet.portletName, ".", "-")}">
             <%@include file="portletSP.jsp" %>
           </dl>
         </c:forEach>
@@ -93,7 +93,7 @@
     </div>
 
     <c:choose>
-    <c:when test="${disableMove==true}">
+    <c:when test="${disableMove}">
     <div id="thin" class="ui-non-sortable">
       </c:when>
       <c:otherwise>
@@ -102,7 +102,7 @@
         </c:choose>
         <c:if test="${thinportlets != null}">
           <c:forEach items="${thinportlets}" var="portlet">
-            <dl id="portlet_<c:out value="${portlet.portletWindowName}"/>" class="sort">
+            <dl id="portlet_<c:out value="${portlet.portletWindowName}"/>" class="sort portlet ${fn:replace(portlet.portletName, ".", "-")}">
               <%@include file="portletSP.jsp" %>
             </dl>
           </c:forEach>
