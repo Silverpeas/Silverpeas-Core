@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.webapi.node;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.i18n.BeanTranslation;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodeI18NDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.owasp.encoder.Encode;
-import org.silverpeas.core.i18n.BeanTranslation;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -69,23 +69,28 @@ public class NodeEntity implements WebEntity {
   /**
    * Creates a new node entity from the specified node.
    *
+   * @param highestComponentUserRole the highest component user role from which code are computed.
    * @param node the node to entitify.
    * @return the entity representing the specified node.
    */
-  public static NodeEntity fromNodeDetail(final NodeDetail node, URI uri) {
-    return new NodeEntity(node, uri, null);
+  public static NodeEntity fromNodeDetail(final SilverpeasRole highestComponentUserRole,
+      final NodeDetail node, URI uri) {
+    return new NodeEntity(highestComponentUserRole, node, uri, null);
   }
 
-  public static NodeEntity fromNodeDetail(final NodeDetail node, URI uri, String lang) {
-    return new NodeEntity(node, uri, lang);
+  public static NodeEntity fromNodeDetail(final SilverpeasRole highestComponentUserRole,
+      final NodeDetail node, URI uri, String lang) {
+    return new NodeEntity(highestComponentUserRole, node, uri, lang);
   }
 
-  public static NodeEntity fromNodeDetail(final NodeDetail node, String uri) {
-    return fromNodeDetail(node, getURI(uri), null);
+  public static NodeEntity fromNodeDetail(final SilverpeasRole highestComponentUserRole,
+      final NodeDetail node, String uri) {
+    return fromNodeDetail(highestComponentUserRole, node, getURI(uri), null);
   }
 
-  public static NodeEntity fromNodeDetail(final NodeDetail node, String uri, String lang) {
-    return fromNodeDetail(node, getURI(uri), lang);
+  public static NodeEntity fromNodeDetail(final SilverpeasRole highestComponentUserRole,
+      final NodeDetail node, String uri, String lang) {
+    return fromNodeDetail(highestComponentUserRole, node, getURI(uri), lang);
   }
 
   @Override
@@ -105,13 +110,15 @@ public class NodeEntity implements WebEntity {
     return id;
   }
 
-  private NodeEntity(final NodeDetail node, URI uri, String lang) {
+  private NodeEntity(final SilverpeasRole highestComponentUserRole, final NodeDetail node, URI uri,
+      String lang) {
     this.text = Encode.forHtml(node.getName(lang));
     this.uri = uri;
     this.id = node.getNodePK().getId();
     this.attr = NodeAttrEntity.fromNodeDetail(node, uri, lang);
     if (this.getAttr().isSpecificRights() &&
-        SilverpeasRole.admin.getName().equals(this.getAttr().getRole())) {
+        (SilverpeasRole.admin == highestComponentUserRole ||
+            SilverpeasRole.admin.getName().equals(this.getAttr().getRole()))) {
       this.type = NodeType.FOLDER_WITH_RIGHTS;
     }
 
@@ -131,7 +138,7 @@ public class NodeEntity implements WebEntity {
       List<NodeEntity> entities = new ArrayList<>();
       for (NodeDetail child : node.getChildrenDetails()) {
         URI childURI = getChildURI(uri, child.getNodePK().getId());
-        NodeEntity childEntity = fromNodeDetail(child, childURI, lang);
+        NodeEntity childEntity = fromNodeDetail(highestComponentUserRole, child, childURI, lang);
         childEntity.setChildrenURI(getChildrenURI(childURI));
         entities.add(childEntity);
       }
