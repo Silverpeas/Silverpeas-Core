@@ -23,11 +23,14 @@
  */
 package org.silverpeas.web.directory.servlets;
 
+import org.apache.commons.fileupload.DefaultFileItem;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.content.form.fileitem.InternalFileItem;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
@@ -45,6 +48,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
     .getPaginationPageFrom;
@@ -77,6 +82,9 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
 
       DirectoryItemList users;
       if ("Main".equalsIgnoreCase(function)) {
+
+        // starting by clearing search criteria
+        directorySC.clear();
 
         String groupId = request.getParameter("GroupId");
         String groupIds = request.getParameter("GroupIds");
@@ -136,14 +144,20 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
       } else if ("searchByKey".equalsIgnoreCase(function)) {
         boolean globalSearch = request.getParameterAsBoolean("Global");
         QueryDescription query;
-        if (request.isContentInMultipart()) {
-          query = directorySC.buildQuery(request.getFileItems(), globalSearch);
+        final String queryDirectory = request.getParameter("queryDirectory");
+        if (StringUtil.isDefined(queryDirectory)) {
+          query = directorySC.buildSimpleQuery(queryDirectory, globalSearch);
         } else {
-          query = directorySC.buildSimpleQuery(request.getParameter("queryDirectory"), globalSearch);
+          final List<FileItem> items = request.getParameterMap().entrySet().stream()
+              .flatMap(e -> Stream.of(e.getValue()).map(v -> new InternalFileItem(e.getKey(), v)))
+              .collect(Collectors.toList());
+          query = directorySC.buildQuery(items, globalSearch);
         }
         if (query != null && !query.isEmpty()) {
-          // case of direct search
-          directorySC.initSources(!lDomainIds.isEmpty());
+          if (globalSearch) {
+            // case of direct search
+            directorySC.initSources(!lDomainIds.isEmpty());
+          }
           users = directorySC.getUsersByQuery(query, globalSearch);
           destination = doPagination(request, users, directorySC);
         } else {
@@ -180,7 +194,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         destination = doPagination(request, users, directorySC);
       } else if ("Clear".equals(function)) {
         directorySC.clear();
-        destination = getDestination("Main", directorySC, request);
+        destination = getDestination(DirectorySessionController.VIEW_ALL, directorySC, request);
       } else if ("LimitTo".equals(function)) {
         // case of an access to directory but limited to one source
         String limitedToSourceId = request.getParameter("SourceId");

@@ -815,12 +815,15 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.setSearchingUser(getUserId());
+    queryDescription.setRequestedLanguage("*");
     if (getCurrentDirectory() == DIRECTORY_COMPONENT) {
       queryDescription.addComponent(getCurrentComponent().getId());
     } else {
       queryDescription.addComponent("users");
-      for (String appId : getContactComponentIds()) {
-        queryDescription.addComponent(appId);
+      if (!isDoNotUseContacts()) {
+        for (String appId : getContactComponentIds()) {
+          queryDescription.addComponent(appId);
+        }
       }
     }
     setCurrentQuery(query);
