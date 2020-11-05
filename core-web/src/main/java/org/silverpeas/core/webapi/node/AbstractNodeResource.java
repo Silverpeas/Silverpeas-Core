@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.node;
 
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
@@ -63,7 +64,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
     if (getUri().getRequestUri().toString().endsWith("/" + NodePK.ROOT_NODE_ID)) {
       uri = getUri().getRequestUri();
     }
-    NodeEntity entity = NodeEntity.fromNodeDetail(node, uri);
+    NodeEntity entity = NodeEntity.fromNodeDetail(getHighestUserRoleIfAny(), node, uri);
     entity.getState().setOpened(true);
     // in non authenticated mode, special nodes are unavailable
     entity.setChildren(removeSpecialNodes(entity.getChildren()));
@@ -85,7 +86,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
         throw new WebApplicationException(Status.UNAUTHORIZED);
       }
       URI uri = getUri().getRequestUri();
-      return NodeEntity.fromNodeDetail(node, uri);
+      return NodeEntity.fromNodeDetail(getHighestUserRoleIfAny(), node, uri);
     }
   }
 
@@ -103,7 +104,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
     }
     String requestUri = getUri().getRequestUri().toString();
     String uri = requestUri.substring(0, requestUri.lastIndexOf("/"));
-    NodeEntity entity = NodeEntity.fromNodeDetail(node, uri);
+    NodeEntity entity = NodeEntity.fromNodeDetail(getHighestUserRoleIfAny(), node, uri);
     if (nodeId.equals(NodePK.ROOT_NODE_ID)) {
       return removeSpecialNodes(entity.getChildren());
     }
@@ -140,4 +141,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
     return NodeService.get();
   }
 
+  private SilverpeasRole getHighestUserRoleIfAny() {
+    return getUser() != null && getComponentId() != null ? getHighestUserRole() : null;
+  }
 }
