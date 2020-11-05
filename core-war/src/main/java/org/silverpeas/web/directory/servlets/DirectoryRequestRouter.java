@@ -154,6 +154,10 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
           query = directorySC.buildQuery(items, globalSearch);
         }
         if (query != null && !query.isEmpty()) {
+          if (globalSearch) {
+            // case of direct search
+            directorySC.initSources(!lDomainIds.isEmpty());
+          }
           users = directorySC.getUsersByQuery(query, globalSearch);
           destination = doPagination(request, users, directorySC);
         } else {
