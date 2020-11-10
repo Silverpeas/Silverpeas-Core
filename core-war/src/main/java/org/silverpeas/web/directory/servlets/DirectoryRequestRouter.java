@@ -23,7 +23,6 @@
  */
 package org.silverpeas.web.directory.servlets;
 
-import org.apache.commons.fileupload.DefaultFileItem;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
@@ -85,7 +84,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
       if ("Main".equalsIgnoreCase(function)) {
 
         // starting by clearing search criteria
-        directorySC.clear();
+        directorySC.clearSearchCriteria();
 
         List<String> groupIds = processGroups(request);
         String spaceId = request.getParameter("SpaceId");
@@ -195,17 +194,20 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         users = directorySC.getLastListOfUsersCalled();
         destination = doPagination(request, users, directorySC);
       } else if ("Clear".equals(function)) {
-        directorySC.clear();
+        directorySC.clearSearchCriteria();
         destination = getDestination(DirectorySessionController.VIEW_ALL, directorySC, request);
       } else if ("LimitTo".equals(function)) {
         // case of an access to directory but limited to one source
         String limitedToSourceId = request.getParameter("SourceId");
         directorySC.setSelectedSource(limitedToSourceId);
+        directorySC.clearSearchCriteria();
         if ("-1".equals(limitedToSourceId)) {
-          users = directorySC.getAllUsers();
-        } else if (limitedToSourceId.startsWith("yellow")){
+          users = directorySC.getUsersOfSources();
+        } else if (limitedToSourceId.startsWith("yellow")) {
           directorySC.setCurrentDirectory(DirectorySessionController.DIRECTORY_CONTACTS);
           users = directorySC.getContacts(limitedToSourceId, true);
+        } else if (limitedToSourceId.startsWith("group_")){
+          users = directorySC.getAllUsersByGroup(limitedToSourceId);
         } else {
           directorySC.setCurrentDomains(Arrays.asList(limitedToSourceId));
           directorySC.setCurrentDirectory(DirectorySessionController.DIRECTORY_DOMAIN);
@@ -272,7 +274,8 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     request.setAttribute("Referer", directorySC.getReferer());
     if (directorySC.getCurrentDirectory() == DirectorySessionController.DIRECTORY_DEFAULT ||
         directorySC.getCurrentDirectory() == DirectorySessionController.DIRECTORY_DOMAIN ||
-        directorySC.getCurrentDirectory() == DirectorySessionController.DIRECTORY_CONTACTS) {
+        directorySC.getCurrentDirectory() == DirectorySessionController.DIRECTORY_CONTACTS ||
+        directorySC.getCurrentDirectory() == DirectorySessionController.DIRECTORY_GROUP) {
       request.setAttribute("DirectorySources", directorySC.getDirectorySources());
     }
     SilverpeasComponentInstance component = directorySC.getCurrentComponent();

@@ -320,10 +320,10 @@
             <c:forEach var="source" items="${sources}">
               <c:choose>
                 <c:when test="${source.selected}">
-                  <option value="${source.id}" selected="selected">${source.label}</option>
+                  <option value="${source.uniqueId}" selected="selected">${source.label}</option>
                 </c:when>
                 <c:otherwise>
-                  <option value="${source.id}">${source.label}</option>
+                  <option value="${source.uniqueId}">${source.label}</option>
                 </c:otherwise>
               </c:choose>
             </c:forEach>

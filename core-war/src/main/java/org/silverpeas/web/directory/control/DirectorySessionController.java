@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
@@ -351,8 +352,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    *
    */
   public DirectoryItemList getAllUsersByGroup(String groupId) {
-    resetDirectorySession();
-    setCurrentDirectory(DIRECTORY_GROUP);
+    if (groupId.indexOf('_') != -1) {
+      groupId = StringUtil.split(groupId, '_')[1];
+    }
     currentGroups = new ArrayList<>();
     currentGroups.add(getOrganisationController().getGroup(groupId));
     lastAllListUsersCalled = new DirectoryItemList(getOrganisationController().getAllUsersOfGroup(groupId));
@@ -371,20 +373,34 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
     addSourceFromComponent(componentId);
 
-    DirectoryItemList tmpList = new DirectoryItemList();
-
     currentGroups = new ArrayList<>();
     for (String groupId : groupIds) {
-      mergeUsersIntoDirectoryItemList(getOrganisationController().getAllUsersOfGroup(groupId),
-          tmpList);
       Group group = getOrganisationController().getGroup(groupId);
       if (group != null) {
         currentGroups.add(group);
+        addSource(group);
       }
     }
 
+    return getUsersOfSources();
+  }
+
+  public DirectoryItemList getUsersOfSources() {
+    DirectoryItemList tmpList = new DirectoryItemList();
+
+    currentGroups = new ArrayList<>();
+    currentDomains = new ArrayList<>();
+    OrganizationController oc = getOrganisationController();
     for (DirectorySource source : getDirectorySources()) {
-      if (source.isContactsComponent()) {
+      if (source.isGroup()) {
+        mergeUsersIntoDirectoryItemList(oc.getAllUsersOfGroup(source.getId()), tmpList);
+        currentGroups.add(Group.getById(source.getId()));
+      } else if (source.isDomain()) {
+        DirectoryItemList usersOfDomain =
+            new DirectoryItemList(oc.getUsersOfDomains(Collections.singletonList(source.getId())));
+        mergeUsersIntoDirectoryItemList(usersOfDomain, tmpList);
+        currentDomains.add(oc.getDomain(source.getId()));
+      } else if (source.isContactsComponent()) {
         tmpList.addContactItems(getContacts(source.getId(), false));
       }
     }
@@ -396,6 +412,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
     return lastAllListUsersCalled;
   }
+
 
   public void removeUserFromLists(User userToRemove) {
     if (userToRemove != null) {
@@ -466,6 +483,15 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     for (UserDetail var : users) {
       if (!directoryItems.contains(var)) {
         directoryItems.add(var);
+      }
+    }
+  }
+
+  public void mergeUsersIntoDirectoryItemList(DirectoryItemList users,
+      DirectoryItemList directoryItems) {
+    for (DirectoryItem user : users) {
+      if (!directoryItems.contains(user)) {
+        directoryItems.add(user);
       }
     }
   }
@@ -903,8 +929,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return null;
   }
 
-  public void clear() {
+  public void clearSearchCriteria() {
     xmlData = null;
+    setCurrentQuery(null);
   }
 
   public boolean isQuickUserSelectionEnabled() {
@@ -1008,12 +1035,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   private void addSource(final SilverpeasComponentInstance component) {
-    directorySources.add(new DirectorySource(component.getId(), component.getLabel(getLanguage()),
-        component.getDescription(getLanguage())));
+    directorySources.add(new DirectorySource(component, getLanguage()));
   }
 
   private void addSource(final Domain domain) {
-    directorySources.add(new DirectorySource(domain.getId(), domain.getName(), domain.getDescription()));
+    directorySources.add(new DirectorySource(domain));
   }
 
   private void addSourceFromComponent(final String componentId) {
@@ -1022,9 +1048,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
   }
 
+  private void addSource(final Group group) {
+    directorySources.add(new DirectorySource(group));
+  }
+
   public void setSelectedSource(String id) {
     for (DirectorySource source : directorySources) {
-      source.setSelected(source.getId().equals(id));
+      source.setSelected(source.getUniqueId().equals(id));
     }
   }
 
@@ -1044,7 +1074,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private List<String> getDomainSources() {
     List<String> ids = new ArrayList<>();
     for (DirectorySource source : directorySources) {
-      if (!source.isContactsComponent()) {
+      if (source.isDomain()) {
         if (source.isSelected()) {
           return Arrays.asList(source.getId());
         }
