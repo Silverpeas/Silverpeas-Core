@@ -46,6 +46,10 @@ public class DirectoryItemList extends ArrayList<DirectoryItem> {
     addUsers(users);
   }
 
+  public DirectoryItemList(UserDetail[] users) {
+    addUsers(users);
+  }
+
   public DirectoryItemList(Collection<DirectoryItem> c) {
     super(c);
   }
