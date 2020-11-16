@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.authentication;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -61,6 +62,12 @@ public class LogoutServlet extends HttpServlet {
     SettingBundle resource = ResourceLocator.getSettingBundle(
         "org.silverpeas.authentication.settings.authenticationSettings");
     String postLogoutPage = resource.getString("logout.page", "/Login?logout=true");
+    User currentUser = User.getCurrentRequester();
+    if (currentUser != null) {
+      String paramDelimiter = (postLogoutPage.contains("?") ? "&" : "?");
+      postLogoutPage +=
+          paramDelimiter + LoginServlet.PARAM_DOMAINID + "=" + currentUser.getDomainId();
+    }
     if (postLogoutPage.startsWith("http")) {
       response.sendRedirect(postLogoutPage);
       return;

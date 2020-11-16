@@ -237,6 +237,11 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       } else {
         url = LOGIN_ERROR_PAGE + TECHNICAL_ISSUE;
       }
+      if (url != null) {
+        String paramDelimiter = (url.contains("?") ? "&" : "?");
+        url += paramDelimiter + LoginServlet.PARAM_DOMAINID + "=" +
+            authenticationParameters.getDomainId();
+      }
     }
     response.sendRedirect(
         response.encodeRedirectURL(URLUtil.getFullApplicationURL(request) + url));

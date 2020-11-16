@@ -86,6 +86,7 @@ import org.silverpeas.core.util.csv.CSVReader;
 import org.silverpeas.core.util.csv.Variant;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.authentication.LoginServlet;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -99,6 +100,7 @@ import org.silverpeas.web.directory.servlets.ImageProfil;
 import org.silverpeas.web.jobdomain.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -367,17 +369,17 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * @return the login URL string representation
    */
   private String getLoginUrl(UserDetail user, HttpServletRequest req) {
-    SettingBundle general =
-        getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
-    String loginPage = general.getString("loginPage");
-    if (!isDefined(loginPage)) {
-      loginPage = "/defaultLogin.jsp";
-      String domainId = user.getDomainId();
-      if (isDefined(domainId) && !Domain.MIXED_DOMAIN_ID.equals(domainId)) {
-        loginPage += "?DomainId=" + domainId;
-      }
+    SettingBundle general = getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
+    String loginPage = general.getString("loginPage", "/defaultLogin.jsp");
+
+    UriBuilder uriBuilder = UriBuilder.fromPath(URLUtil.getFullApplicationURL(req)+loginPage);
+
+    String domainId = user.getDomainId();
+    if (isDefined(domainId) && !Domain.MIXED_DOMAIN_ID.equals(domainId) &&
+        !loginPage.contains(LoginServlet.PARAM_DOMAINID)) {
+      uriBuilder.queryParam(LoginServlet.PARAM_DOMAINID, domainId);
     }
-    return URLUtil.getFullApplicationURL(req) + loginPage;
+    return uriBuilder.toTemplate();
   }
 
   /**
