@@ -23,18 +23,20 @@
  */
 package org.silverpeas.web.directory.model;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Date;
+import java.util.Optional;
 
 public class UserItem extends AbstractDirectoryItem implements DirectoryUserItem {
 
-  private UserDetail userDetail;
+  private User userDetail;
   private UserFull userFull = null;
 
-  public UserItem(UserDetail user) {
+  public UserItem(User user) {
     this.userDetail = user;
   }
 
@@ -106,10 +108,21 @@ public class UserItem extends AbstractDirectoryItem implements DirectoryUserItem
 
   /**
    * Gets the details of the user associated to the item.
-   * @return
+   * @return a {@link UserDetail} instance explicitly. If the item has been initialized from
+   * {@link User} instance which is not a {@link UserDetail} one, then {@link UserDetail}
+   * instance is reached from persistence.
    */
   public UserDetail getUserDetail() {
-    return userDetail;
+    return Optional.ofNullable(userDetail)
+        .filter(UserDetail.class::isInstance)
+        .map(UserDetail.class::cast)
+        .orElseGet(() -> {
+          final UserDetail fromId = UserDetail.getById(getOriginalId());
+          if (fromId != null) {
+            userDetail = fromId;
+          }
+          return fromId;
+        });
   }
 
   /**
@@ -121,5 +134,23 @@ public class UserItem extends AbstractDirectoryItem implements DirectoryUserItem
       userFull = UserFull.getById(getOriginalId());
     }
     return userFull;
+  }
+
+  /**
+   * This implementation to indicates that the equals is explicitly delegated to the overridden
+   * class.
+   */
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  /**
+   * This implementation to indicates that the hasCode is explicitly delegated to the overridden
+   * class.
+   */
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

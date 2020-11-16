@@ -98,6 +98,8 @@ import org.silverpeas.web.directory.model.UserItem;
 import java.text.ParseException;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.admin.domain.DomainDriverManagerProvider.getCurrentDomainDriverManager;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlParagraphe;
@@ -398,7 +400,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       } else if (source.isDomain()) {
         DirectoryItemList usersOfDomain =
             new DirectoryItemList(oc.getUsersOfDomains(Collections.singletonList(source.getId())));
-        mergeUsersIntoDirectoryItemList(usersOfDomain, tmpList);
+        mergeUserItemsIntoDirectoryItemList(usersOfDomain, tmpList);
         currentDomains.add(oc.getDomain(source.getId()));
       } else if (source.isContactsComponent()) {
         tmpList.addContactItems(getContacts(source.getId(), false));
@@ -478,22 +480,15 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @param users the users to add into directoryItems.
    * @param directoryItems the list of directory items that will be filled.
    */
-  public void mergeUsersIntoDirectoryItemList(UserDetail[] users,
-      DirectoryItemList directoryItems) {
-    for (UserDetail var : users) {
-      if (!directoryItems.contains(var)) {
-        directoryItems.add(var);
-      }
-    }
+  public void mergeUsersIntoDirectoryItemList(User[] users, DirectoryItemList directoryItems) {
+    final Predicate<User> userPredicate = directoryItems::containsUserItemWith;
+    Stream.of(users).filter(userPredicate.negate()).forEach(directoryItems::add);
   }
 
-  public void mergeUsersIntoDirectoryItemList(DirectoryItemList users,
+  public void mergeUserItemsIntoDirectoryItemList(DirectoryItemList userItems,
       DirectoryItemList directoryItems) {
-    for (DirectoryItem user : users) {
-      if (!directoryItems.contains(user)) {
-        directoryItems.add(user);
-      }
-    }
+    final Predicate<DirectoryItem> itemPredicate = directoryItems::contains;
+    userItems.stream().filter(itemPredicate.negate()).forEach(directoryItems::add);
   }
 
   /**

@@ -24,7 +24,6 @@
 package org.silverpeas.web.directory.model;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contact.model.CompleteContact;
 
 import java.util.ArrayList;
@@ -46,15 +45,11 @@ public class DirectoryItemList extends ArrayList<DirectoryItem> {
     addUsers(users);
   }
 
-  public DirectoryItemList(UserDetail[] users) {
-    addUsers(users);
-  }
-
   public DirectoryItemList(Collection<DirectoryItem> c) {
     super(c);
   }
 
-  public void add(UserDetail user) {
+  public void add(User user) {
     // Directory list does not take into account users fro which the state is deactivated.
     if (!user.isDeactivatedState()) {
       super.add(new UserItem(user));
@@ -63,18 +58,18 @@ public class DirectoryItemList extends ArrayList<DirectoryItem> {
 
   public void addUsers(List<User> users) {
     for (User user : users) {
-      add((UserDetail) user);
+      add(user);
     }
   }
 
   public void addUsers(User[] users) {
     for (User user : users) {
-      add((UserDetail) user);
+      add(user);
     }
   }
 
-  public boolean contains(final UserDetail userDetail) {
-    return super.contains(new UserItem(userDetail));
+  public boolean containsUserItemWith(final User user) {
+    return contains(new UserItem(user));
   }
 
   public void add(CompleteContact contact) {
