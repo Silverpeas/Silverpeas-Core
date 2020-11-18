@@ -7,7 +7,7 @@ pipeline {
   }
   agent {
     docker {
-      image 'silverpeas/silverbuild:java-11'
+      image 'silverpeas/silverbuild'
       args '-v $HOME/.m2:/home/silverbuild/.m2 -v $HOME/.gitconfig:/home/silverbuild/.gitconfig -v $HOME/.ssh:/home/silverbuild/.ssh -v $HOME/.gnupg:/home/silverbuild/.gnupg'
     }
   }
