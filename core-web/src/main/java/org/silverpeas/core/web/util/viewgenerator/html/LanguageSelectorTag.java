@@ -47,7 +47,7 @@ import java.util.Locale;
 public class LanguageSelectorTag extends TagSupport {
   private static final long serialVersionUID = -6521946554686125224L;
 
-  private String currentLangCode = I18NHelper.defaultLanguage;
+  private String currentLangCode = I18NHelper.DEFAULT_LANGUAGE;
   private String elementId;
   private String elementName;
   private boolean includeLabel;

@@ -248,11 +248,11 @@ public class CommentEntity implements WebEntity {
 
     //change values of creationDate and modificationDate according to language of the current user
     java.util.Date createDate =
-        decodeFromDisplayDate(getCreationDate(), I18NHelper.defaultLanguage);
+        decodeFromDisplayDate(getCreationDate(), I18NHelper.DEFAULT_LANGUAGE);
     this.creationDate = encodeToDisplayDate(createDate, this.currentUserLanguage);
 
     java.util.Date updateDate =
-        decodeFromDisplayDate(getModificationDate(), I18NHelper.defaultLanguage);
+        decodeFromDisplayDate(getModificationDate(), I18NHelper.DEFAULT_LANGUAGE);
     this.modificationDate = encodeToDisplayDate(updateDate, this.currentUserLanguage);
     return this;
   }
@@ -306,9 +306,9 @@ public class CommentEntity implements WebEntity {
     this.author = UserProfileEntity.fromUser((UserDetail) comment.getCreator());
     //we don't even know the language of the current user (the currentUserLanguage attribute has
     // not been yet initialized
-    this.creationDate = encodeToDisplayDate(comment.getCreationDate(), I18NHelper.defaultLanguage);
+    this.creationDate = encodeToDisplayDate(comment.getCreationDate(), I18NHelper.DEFAULT_LANGUAGE);
     this.modificationDate =
-        encodeToDisplayDate(comment.getLastUpdateDate(), I18NHelper.defaultLanguage);
+        encodeToDisplayDate(comment.getLastUpdateDate(), I18NHelper.DEFAULT_LANGUAGE);
   }
 
   @Override

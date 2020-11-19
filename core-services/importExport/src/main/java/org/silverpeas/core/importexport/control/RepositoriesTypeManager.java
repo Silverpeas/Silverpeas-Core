@@ -249,7 +249,7 @@ public class RepositoriesTypeManager {
     } catch (Exception ex) {
       massiveReport.setError(UnitReport.ERROR_ERROR);
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, I18NHelper.defaultLanguage);
+      SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(ex, I18NHelper.DEFAULT_LANGUAGE);
       return null;
     }
   }

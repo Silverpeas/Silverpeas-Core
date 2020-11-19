@@ -198,7 +198,7 @@ public class DefaultTreeService implements TreeService {
   private void setDefaultLanguage(final TreeNode oldRoot) {
     if (oldRoot.getLanguage() == null) {
       // translation for the first time
-      oldRoot.setLanguage(I18NHelper.defaultLanguage);
+      oldRoot.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
     }
   }
 

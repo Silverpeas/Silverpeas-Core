@@ -334,7 +334,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * {@link #getLocalizationBundlePath()} method.
    */
   protected final LocalizationBundle getBundle() {
-    return getBundle(I18NHelper.defaultLanguage);
+    return getBundle(I18NHelper.DEFAULT_LANGUAGE);
   }
 
   /**

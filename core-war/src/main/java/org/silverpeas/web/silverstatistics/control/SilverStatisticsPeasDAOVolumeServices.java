@@ -73,7 +73,7 @@ public class SilverStatisticsPeasDAOVolumeServices {
       String componentName = rs.getString(1);
       WAComponent compo = components.get(componentName);
       if (compo != null) {
-        String value = compo.getLabel().get(I18NHelper.defaultLanguage);
+        String value = compo.getLabel().get(I18NHelper.DEFAULT_LANGUAGE);
         if (StringUtil.isDefined(value)) {
           label = (value.indexOf("-") == -1) ? value : value.substring(value.indexOf("-") + 1);
         } else {

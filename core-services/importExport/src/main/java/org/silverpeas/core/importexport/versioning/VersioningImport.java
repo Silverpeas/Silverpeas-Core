@@ -216,7 +216,7 @@ public class VersioningImport {
     }
     SimpleDocument existingDocument = new HistorisedDocument(new SimpleDocumentPK(null, objectPK.
         getInstanceId()), objectPK.getId(), -1, new SimpleAttachment(version.
-        getLogicalName(), I18NHelper.defaultLanguage,
+        getLogicalName(), I18NHelper.DEFAULT_LANGUAGE,
         document.getName(), document.getDescription(), version.getSize(), version.
         getMimeType(), version.getAuthorId() + "", version.getCreationDate(), xmlFormId));
 

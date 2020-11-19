@@ -375,7 +375,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       String defaultLanguage = oldNodeDetail.getLanguage();
       if (defaultLanguage == null) {
         // translation for the first time
-        nd.setLanguage(I18NHelper.defaultLanguage);
+        nd.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
         defaultLanguage = nd.getLanguage();
       }
 
@@ -549,7 +549,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
 
     if (node.getLanguage() == null) {
       // translation for the first time
-      node.setLanguage(I18NHelper.defaultLanguage);
+      node.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
     }
     try {
       NodePK newNodePK = save(node);
@@ -580,7 +580,7 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
       nd.setFatherPK(fatherDetail.getNodePK());
       if (nd.getLanguage() == null) {
         // translation for the first time
-        nd.setLanguage(I18NHelper.defaultLanguage);
+        nd.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
       }
       NodePK newNodePK = save(nd);
       NodeDetail newNode = getDetail(newNodePK);

@@ -894,7 +894,7 @@ public class GenericRecordSetManager {
         while (rs.next()) {
           String language = rs.getString("lang");
           if (!StringUtil.isDefined(language)) {
-            language = I18NHelper.defaultLanguage;
+            language = I18NHelper.DEFAULT_LANGUAGE;
           }
           languages.add(language);
         }

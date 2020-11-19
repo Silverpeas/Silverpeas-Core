@@ -189,7 +189,7 @@ public class Document implements LocalizedAttachment, LocalizedResource {
   }
 
   private SimpleDocument selectTranslation(final String language) {
-    String lang = StringUtil.isDefined(language) ? language : I18NHelper.defaultLanguage;
+    String lang = StringUtil.isDefined(language) ? language : I18NHelper.DEFAULT_LANGUAGE;
     AttachmentService service = AttachmentService.get();
     SimpleDocumentPK pk = new SimpleDocumentPK(id.getLocalId(), id.getComponentInstanceId());
     SimpleDocument document = service.searchDocumentById(pk, lang);

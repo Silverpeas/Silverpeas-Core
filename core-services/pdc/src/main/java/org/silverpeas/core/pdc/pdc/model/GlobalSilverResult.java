@@ -210,7 +210,7 @@ public class GlobalSilverResult implements java.io.Serializable {
   public String getAttachmentLanguage() {
     String id = getType().substring(10); // object type is Attachment1245 or
     // Attachment1245_en
-    String language = I18NHelper.defaultLanguage;
+    String language = I18NHelper.DEFAULT_LANGUAGE;
     if (id.indexOf('_') != -1) {
       language = id.substring(id.indexOf('_') + 1);
     }

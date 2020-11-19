@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 import java.util.Comparator;
 
 public class GSCNameComparatorAsc implements Comparator<GlobalSilverContent> {
-  final static public GSCNameComparatorAsc comparator = new GSCNameComparatorAsc();
+  public static final GSCNameComparatorAsc comparator = new GSCNameComparatorAsc();
 
   @Override
   public int compare(GlobalSilverContent gsc1, GlobalSilverContent gsc2) {

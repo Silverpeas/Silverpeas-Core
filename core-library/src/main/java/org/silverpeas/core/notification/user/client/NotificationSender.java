@@ -49,8 +49,8 @@ public class NotificationSender implements java.io.Serializable {
 
   private static final long serialVersionUID = 4165938893905145809L;
 
-  private transient NotificationManager notificationManager;
-  private int instanceId;
+  private final transient NotificationManager notificationManager;
+  private final int instanceId;
 
   /**
    * Default constructor
@@ -148,8 +148,8 @@ public class NotificationSender implements java.io.Serializable {
     }
     if (languages.contains(senderLanguage)) {
       defaultLanguage = senderLanguage;
-    } else if (languages.contains(I18NHelper.defaultLanguage)) {
-      defaultLanguage = I18NHelper.defaultLanguage;
+    } else if (languages.contains(I18NHelper.DEFAULT_LANGUAGE)) {
+      defaultLanguage = I18NHelper.DEFAULT_LANGUAGE;
     } else {
       defaultLanguage = languages.iterator().next();
     }

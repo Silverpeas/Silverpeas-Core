@@ -33,6 +33,10 @@ import java.util.TimeZone;
  */
 public class CmisDateConverter {
 
+  private CmisDateConverter() {
+
+  }
+
   /**
    * Converts milliseconds into a {@link GregorianCalendar} object, setting
    * the timezone to GMT and cutting milliseconds off.

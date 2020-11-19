@@ -34,7 +34,7 @@ public class BeanTranslation implements ResourceTranslation, Serializable {
   private static final long serialVersionUID = -3879515108587719162L;
   private String id = "-1";
   private String objectId = null;
-  private String language = I18NHelper.defaultLanguage;
+  private String language = I18NHelper.DEFAULT_LANGUAGE;
   private String name = "";
   private String description = "";
 

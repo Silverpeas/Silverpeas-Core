@@ -64,7 +64,7 @@ import java.util.Set;
 
 import static java.io.File.separatorChar;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.*;
-import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
+import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
 
 /**
  * A document file attached to a given user contribution. A document file is itself a user
@@ -611,7 +611,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
   public String getAttachmentPath() {
     String lang = getLanguage();
     if (!StringUtil.isDefined(lang)) {
-      lang = defaultLanguage;
+      lang = DEFAULT_LANGUAGE;
     }
     return getDirectoryPath(lang) + getFilename();
   }
@@ -628,7 +628,7 @@ public class SimpleDocument implements LocalizedAttachment, LocalizedResource, R
     String versionDir = getMajorVersion() + "_" + getMinorVersion();
     String lang = language;
     if (!StringUtil.isDefined(lang)) {
-      lang = defaultLanguage;
+      lang = DEFAULT_LANGUAGE;
     }
     return directory + getNodeName() + separatorChar + versionDir + separatorChar + lang
         + separatorChar;

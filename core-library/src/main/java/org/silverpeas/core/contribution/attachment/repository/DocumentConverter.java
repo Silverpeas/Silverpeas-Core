@@ -182,7 +182,7 @@ class DocumentConverter extends AbstractJcrConverter {
     pk.setOldSilverpeasId(oldSilverpeasId);
     String language = lang;
     if (language == null) {
-      language = I18NHelper.defaultLanguage;
+      language = I18NHelper.DEFAULT_LANGUAGE;
     }
     SimpleAttachment file = getAttachment(node, language);
     if (file == null) {
@@ -358,7 +358,7 @@ class DocumentConverter extends AbstractJcrConverter {
   public void removeAttachment(Node documentNode, String language) throws RepositoryException {
     String lang = language;
     if (lang == null) {
-      lang = I18NHelper.defaultLanguage;
+      lang = I18NHelper.DEFAULT_LANGUAGE;
     }
     if (documentNode.hasNode(SimpleDocument.FILE_PREFIX + lang)) {
       Node attachmentNode = documentNode.getNode(SimpleDocument.FILE_PREFIX + lang);
@@ -399,7 +399,7 @@ class DocumentConverter extends AbstractJcrConverter {
   public void releaseDocumentNode(Node documentNode, String lang) throws RepositoryException {
     String language = lang;
     if (!StringUtil.isDefined(language)) {
-      language = I18NHelper.defaultLanguage;
+      language = I18NHelper.DEFAULT_LANGUAGE;
     }
     final String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
     if (documentNode.hasNode(attachmentNodeName)) {

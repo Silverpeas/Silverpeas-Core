@@ -856,7 +856,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
     // récupération de la langue et passage en paramètre à la jsp
     String currentLanguage = pdcSC.getCurrentLanguage();
     if (!StringUtil.isDefined(currentLanguage)) {
-      currentLanguage = I18NHelper.defaultLanguage;
+      currentLanguage = I18NHelper.DEFAULT_LANGUAGE;
     }
     request.setAttribute("DisplayLanguage", currentLanguage);
   }

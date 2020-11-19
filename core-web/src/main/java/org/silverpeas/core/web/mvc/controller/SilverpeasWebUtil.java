@@ -136,7 +136,7 @@ public class SilverpeasWebUtil {
       contentLanguage = request.getParameter("ContentLanguage");
     }
     if (StringUtil.isNotDefined(contentLanguage)) {
-      contentLanguage = I18NHelper.defaultLanguage;
+      contentLanguage = I18NHelper.DEFAULT_LANGUAGE;
     }
     if (StringUtil.isNotDefined(contentLanguage)) {
       MainSessionController mainSessionCtrl = getMainSessionController(request);

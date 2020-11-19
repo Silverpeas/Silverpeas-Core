@@ -603,7 +603,7 @@ public class SpaceInstManager {
     if (changedSpace.lang != null) {
       if (oldSpace.lang == null) {
         // translation for the first time
-        oldSpace.lang = I18NHelper.defaultLanguage;
+        oldSpace.lang = I18NHelper.DEFAULT_LANGUAGE;
       }
       if (!oldSpace.lang.equalsIgnoreCase(changedSpace.lang)) {
         SpaceI18NRow row = new SpaceI18NRow(changedSpace);

@@ -86,7 +86,7 @@ import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.YOUNGEST_TO_OLDEST_MANUAL_REORDER_THRESHOLD;
 import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings.listFromYoungestToOldestAdd;
-import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
+import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 /**
@@ -519,16 +519,16 @@ public class DocumentRepository {
       if (StringUtil.isDefined(comment)) {
         documentNode.setProperty(SLV_PROPERTY_COMMENT, comment);
       }
-      final SimpleDocument origin = converter.fillDocument(documentNode, defaultLanguage);
+      final SimpleDocument origin = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
       if (versionedNode) {
         removeHistory(documentNode);
         documentNode.removeMixin(MIX_SIMPLE_VERSIONABLE);
         documentNode.setProperty(SLV_PROPERTY_VERSIONED, false);
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 0);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
-        final SimpleDocument target = converter.fillDocument(documentNode, defaultLanguage);
+        final SimpleDocument target = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
         moveMultilangContent(origin, target);
-        File currentDocumentDir = new File(target.getDirectoryPath(defaultLanguage)).getParentFile();
+        File currentDocumentDir = new File(target.getDirectoryPath(DEFAULT_LANGUAGE)).getParentFile();
         final Optional<File[]> files = ofNullable(currentDocumentDir.getParentFile().listFiles());
         final File[] safeContents = files.orElseGet(() -> {
           SilverLogger.getLogger(this).warn(
@@ -546,7 +546,7 @@ public class DocumentRepository {
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 1);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
         documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
-        final SimpleDocument target = converter.fillDocument(documentNode, defaultLanguage);
+        final SimpleDocument target = converter.fillDocument(documentNode, DEFAULT_LANGUAGE);
         VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
         documentNode.getSession().save();
         moveMultilangContent(origin, target);
@@ -639,7 +639,7 @@ public class DocumentRepository {
     while (iter.hasNext()) {
       final Node node = iter.nextNode();
       if (!iter.hasNext()) {
-        return converter.convertNode(node, defaultLanguage);
+        return converter.convertNode(node, DEFAULT_LANGUAGE);
       }
     }
     return null;
@@ -1118,7 +1118,7 @@ public class DocumentRepository {
     Node docNode = session.getNodeByIdentifier(pk.getId());
     String language = lang;
     if (!StringUtil.isDefined(language)) {
-      language = defaultLanguage;
+      language = DEFAULT_LANGUAGE;
     }
     SimpleDocument document = converter.fillDocument(docNode, language);
     return new BufferedInputStream(

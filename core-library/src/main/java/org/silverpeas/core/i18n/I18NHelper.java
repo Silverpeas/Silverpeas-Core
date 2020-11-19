@@ -64,7 +64,7 @@ public class I18NHelper implements I18n {
 
   private static int nbContentLanguages = 0;
   public static final boolean isI18nContentActivated;
-  public static final String defaultLanguage;
+  public static final String DEFAULT_LANGUAGE;
   public static final Locale defaultLocale;
   private static final List<String> allContentLanguageCodes = new ArrayList<>();
 
@@ -95,8 +95,8 @@ public class I18NHelper implements I18n {
         allContentLanguages.put(contentLanguageCode, contentLanguageLabels);
       }
     }
-    defaultLanguage = allContentLanguageCodes.get(0);
-    defaultLocale = new Locale(defaultLanguage);
+    DEFAULT_LANGUAGE = allContentLanguageCodes.get(0);
+    defaultLocale = new Locale(DEFAULT_LANGUAGE);
 
     isI18nContentActivated = (nbContentLanguages > 1);
 
@@ -149,7 +149,7 @@ public class I18NHelper implements I18n {
 
   @Override
   public String getDefaultLanguage() {
-    return I18NHelper.defaultLanguage;
+    return I18NHelper.DEFAULT_LANGUAGE;
   }
 
   @Override
@@ -167,7 +167,7 @@ public class I18NHelper implements I18n {
 
   public static boolean isDefaultLanguage(String language) {
     if (StringUtil.isDefined(language)) {
-      return defaultLanguage.equalsIgnoreCase(language);
+      return DEFAULT_LANGUAGE.equalsIgnoreCase(language);
     }
     return true;
   }
@@ -175,7 +175,7 @@ public class I18NHelper implements I18n {
   public static String checkLanguage(String language) {
     String lang = language;
     if (!StringUtil.isDefined(language) || !allContentLanguageCodes.contains(language)) {
-      lang = defaultLanguage;
+      lang = DEFAULT_LANGUAGE;
     }
     return lang;
   }

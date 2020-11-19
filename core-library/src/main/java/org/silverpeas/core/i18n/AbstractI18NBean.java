@@ -52,7 +52,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   @XmlElement(namespace = "http://www.silverpeas.org/exchange")
   private String description = "";
 
-  private String language = I18NHelper.defaultLanguage;
+  private String language = I18NHelper.DEFAULT_LANGUAGE;
   private String translationId = null;
   private Map<String, T> translations = new HashMap<>(3);
   private boolean removeTranslation = false;
@@ -159,7 +159,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   }
 
   private T selectTranslation(String language) {
-    final String lang = StringUtil.isDefined(language) ? language : I18NHelper.defaultLanguage;
+    final String lang = StringUtil.isDefined(language) ? language : I18NHelper.DEFAULT_LANGUAGE;
     T translation;
     if (!I18NHelper.isI18nContentActivated) {
       translation = getDefaultTranslation();
@@ -174,14 +174,14 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
 
   public String getLanguage() {
     if (I18NHelper.isI18nContentActivated && StringUtil.isNotDefined(language)) {
-      return I18NHelper.defaultLanguage;
+      return I18NHelper.DEFAULT_LANGUAGE;
     }
     return language;
   }
 
   @Override
   public void setLanguage(String language) {
-    this.language = StringUtil.isDefined(language) ? language : I18NHelper.defaultLanguage;
+    this.language = StringUtil.isDefined(language) ? language : I18NHelper.DEFAULT_LANGUAGE;
   }
 
   public boolean isRemoveTranslation() {
@@ -262,7 +262,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   public void addTranslation(T translation) {
     String lang = translation.getLanguage();
     if (!StringUtil.isDefined(lang)) {
-      lang = I18NHelper.defaultLanguage;
+      lang = I18NHelper.DEFAULT_LANGUAGE;
       translation.setLanguage(lang);
     }
     translations.put(lang, translation);

@@ -218,7 +218,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
    * @return the language of the user as he has chosen in its profile in Silverpeas.
    */
   public String getUserLanguage() {
-    String language = I18NHelper.defaultLanguage;
+    String language = I18NHelper.DEFAULT_LANGUAGE;
     User user = User.getCurrentRequester();
     if (user != null) {
       language = user.getUserPreferences().getLanguage();

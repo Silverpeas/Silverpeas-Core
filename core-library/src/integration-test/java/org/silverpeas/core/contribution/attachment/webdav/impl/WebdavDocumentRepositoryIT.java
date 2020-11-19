@@ -191,7 +191,7 @@ public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
       assertWebdavContent(session, document, "Updated webdav content.", relativeWebdavJcrPath);
 
       Date dateOfCreateOrUpdate = document.getLastUpdateDate();
-      awaitUntil(10, MILLISECONDS);
+      await().atLeast(10, TimeUnit.MILLISECONDS).timeout(1, TimeUnit.SECONDS).until(() -> true);
       webdavRepository.updateAttachmentBinaryContent(session, document);
 
       getJcr().assertContent(document.getId(), "fr", null);

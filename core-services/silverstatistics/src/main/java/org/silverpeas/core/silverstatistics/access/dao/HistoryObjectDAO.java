@@ -347,7 +347,7 @@ public class HistoryObjectDAO {
   }
 
   public static List<String> getListObjectAccessByPeriod(Connection con,
-      List<WAPrimaryKey> primaryKeys, String objectType, Date startDate, Date endDate)
+      List<ResourceReference> primaryKeys, String objectType, Date startDate, Date endDate)
       throws SQLException {
     StringBuilder query = new StringBuilder();
     query.append(
@@ -356,7 +356,7 @@ public class HistoryObjectDAO {
     String instanceId = null;
     if (primaryKeys != null && !primaryKeys.isEmpty()) {
       query.append("AND resourceId IN (");
-      for (WAPrimaryKey pk : primaryKeys) {
+      for (ResourceReference pk : primaryKeys) {
         if (primaryKeys.indexOf(pk) != 0) {
           query.append(",");
         }
@@ -387,7 +387,7 @@ public class HistoryObjectDAO {
   }
 
   public static List<String> getListObjectAccessByPeriodAndUser(Connection con,
-      List<WAPrimaryKey> primaryKeys, String objectType, Date startDate, Date endDate,
+      List<ResourceReference> primaryKeys, String objectType, Date startDate, Date endDate,
       String userId) throws SQLException {
     StringBuilder query = new StringBuilder();
     query.append(
@@ -396,7 +396,7 @@ public class HistoryObjectDAO {
     String instanceId = null;
     if (CollectionUtil.isNotEmpty(primaryKeys)) {
       query.append("AND resourceId IN (");
-      for (WAPrimaryKey pk : primaryKeys) {
+      for (ResourceReference pk : primaryKeys) {
         if (primaryKeys.indexOf(pk) != 0) {
           query.append(",");
         }

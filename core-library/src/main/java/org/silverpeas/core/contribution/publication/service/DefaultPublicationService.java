@@ -378,7 +378,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         if (pubDetail.getLanguage() != null) {
           if (oldLang == null) {
             // translation for the first time
-            publi.setLanguage(I18NHelper.defaultLanguage);
+            publi.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
           }
           if (oldLang != null && !oldLang.equalsIgnoreCase(pubDetail.getLanguage())) {
             addOrUpdateTranslation(con, pubDetail);

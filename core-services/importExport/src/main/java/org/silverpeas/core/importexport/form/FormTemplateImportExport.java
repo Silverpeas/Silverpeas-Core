@@ -100,7 +100,7 @@ public class FormTemplateImportExport {
     if (image.length() > 0L) {
       String fileName = FileUtil.getFilename(xmlFieldValue);
       SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(null, pk.getInstanceId()),
-          pk.getId(), 0, false, new SimpleAttachment(fileName, I18NHelper.defaultLanguage, fileName,
+          pk.getId(), 0, false, new SimpleAttachment(fileName, I18NHelper.DEFAULT_LANGUAGE, fileName,
           "", image.length(), FileUtil.getMimeType(fileName), userId, new Date(), null));
       document.setDocumentType(type);
       fieldValue = AttachmentServiceProvider.getAttachmentService().createAttachment(document, image,

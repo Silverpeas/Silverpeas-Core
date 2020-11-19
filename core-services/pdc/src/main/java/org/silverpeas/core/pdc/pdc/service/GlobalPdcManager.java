@@ -402,7 +402,7 @@ public class GlobalPdcManager implements PdcManager {
         if (axisHeader.isRemoveTranslation()) {
           if (oldAxisHeader.getLanguage() == null) {
             // translation for the first time
-            oldAxisHeader.setLanguage(I18NHelper.defaultLanguage);
+            oldAxisHeader.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
           }
           if (oldAxisHeader.getLanguage().equalsIgnoreCase(axisHeader.getLanguage())) {
             List<AxisHeaderI18N> translations =
@@ -428,7 +428,7 @@ public class GlobalPdcManager implements PdcManager {
           if (axisHeader.getLanguage() != null) {
             if (oldAxisHeader.getLanguage() == null) {
               // translation for the first time
-              oldAxisHeader.setLanguage(I18NHelper.defaultLanguage);
+              oldAxisHeader.setLanguage(I18NHelper.DEFAULT_LANGUAGE);
             }
             if (!axisHeader.getLanguage().equalsIgnoreCase(oldAxisHeader.getLanguage())) {
               AxisHeaderI18N newAxis =

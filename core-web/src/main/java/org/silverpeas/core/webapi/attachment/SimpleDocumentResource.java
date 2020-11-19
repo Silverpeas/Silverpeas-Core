@@ -66,7 +66,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
+import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
 import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
 
 @WebService
@@ -366,7 +366,8 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   private List<SimpleDocument> getListDocuments(SimpleDocument document) {
     return
         AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(
-            new ResourceReference(document.getForeignId(), getComponentId()), document.getDocumentType(), defaultLanguage);
+            new ResourceReference(document.getForeignId(), getComponentId()), document.getDocumentType(),
+            DEFAULT_LANGUAGE);
   }
 
   /**
@@ -405,7 +406,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   }
 
   private String moveSimpleDocument(boolean up) {
-    SimpleDocument document = getSimpleDocument(defaultLanguage);
+    SimpleDocument document = getSimpleDocument(DEFAULT_LANGUAGE);
     List<SimpleDocument> docs = getListDocuments(document);
     int position = docs.indexOf(document);
     Collections.swap(docs, position, up ? (position - 1) : (position + 1));
@@ -429,9 +430,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
       @FormParam("webdav") final boolean webdav, @FormParam("private") final boolean privateVersion,
       @FormParam("comment") final String comment) {
     UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
-    SimpleDocument document = getSimpleDocument(defaultLanguage);
+    SimpleDocument document = getSimpleDocument(DEFAULT_LANGUAGE);
     UnlockContext unlockContext = new UnlockContext(getSimpleDocumentId(), getUser().getId(),
-        defaultLanguage, comment);
+        DEFAULT_LANGUAGE, comment);
     if (force) {
       unlockContext.addOption(UnlockOption.FORCE);
     }
@@ -463,7 +464,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   public String switchDocumentVersionState(@FormParam("switch-version-comment") final String comment,
       @FormParam("switch-version") final String version) {
     boolean useMajor = "lastMajor".equalsIgnoreCase(version);
-    SimpleDocument document = getSimpleDocument(defaultLanguage);
+    SimpleDocument document = getSimpleDocument(DEFAULT_LANGUAGE);
     SimpleDocumentPK pk = new SimpleDocumentPK(getSimpleDocumentId());
     if (document.isVersioned() && useMajor) {
       final SimpleDocument lastPublicVersion = document.getLastPublicVersion();
@@ -474,7 +475,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     }
     pk = AttachmentServiceProvider.getAttachmentService().changeVersionState(pk, comment);
     document = AttachmentServiceProvider.getAttachmentService().searchDocumentById(pk,
-        defaultLanguage);
+        DEFAULT_LANGUAGE);
     return MessageFormat.format("'{'\"status\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
         true, document.getOldSilverpeasId(), document.getId());
   }
@@ -545,7 +546,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @return SimpleDocument
    */
   private SimpleDocument getSimpleDocument(String lang) {
-    String language = (lang == null ? defaultLanguage : lang);
+    String language = (lang == null ? DEFAULT_LANGUAGE : lang);
     SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
         searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), language);
     if (attachment == null) {

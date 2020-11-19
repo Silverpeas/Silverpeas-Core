@@ -89,7 +89,7 @@ public class Attachments {
    * @param contribution the contribution to which the attachments has to be attached.
    */
   public void attachTo(final Contribution contribution) {
-    attachTo(contribution, I18NHelper.defaultLanguage);
+    attachTo(contribution, I18NHelper.DEFAULT_LANGUAGE);
   }
 
   /**

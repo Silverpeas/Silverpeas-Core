@@ -25,7 +25,6 @@ package org.silverpeas.core.silverstatistics.access.service;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
@@ -253,13 +252,13 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public int getCountByPeriod(List<WAPrimaryKey> primaryKeys, int action, String objectType,
+  public int getCountByPeriod(List<ResourceReference> refs, int action, String objectType,
       Date startDate, Date endDate) {
     int nb = 0;
     Connection con = getConnection();
     try {
-      for (WAPrimaryKey primaryKey : primaryKeys) {
-        nb += HistoryObjectDAO.getCountByPeriod(con, primaryKey, objectType, startDate, endDate);
+      for (ResourceReference aRef : refs) {
+        nb += HistoryObjectDAO.getCountByPeriod(con, aRef, objectType, startDate, endDate);
       }
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
@@ -270,11 +269,11 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public int getCountByPeriodAndUser(List<WAPrimaryKey> primaryKeys, String objectType,
+  public int getCountByPeriodAndUser(List<ResourceReference> refs, String objectType,
       Date startDate, Date endDate, List<String> userIds) {
     int nb = 0;
     if (!userIds.isEmpty()) {
-      final Set<ContributionIdentifier> ids = primaryKeys.stream()
+      final Set<ContributionIdentifier> ids = refs.stream()
           .map(k -> ContributionIdentifier.from(k, objectType))
           .collect(Collectors.toSet());
       try (Connection con = getConnection()) {
@@ -293,25 +292,23 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public int getDistinctCountByPeriod(List<WAPrimaryKey> primaryKeys, int action, String objectType,
+  public int getDistinctCountByPeriod(List<ResourceReference> refs, int action, String objectType,
       Date startDate, Date endDate) {
-    int nb = 0;
     Connection con = getConnection();
     try {
-      List<String> objectIds = HistoryObjectDAO
-          .getListObjectAccessByPeriod(con, primaryKeys, objectType, startDate, endDate);
+      List<String> objectIds =
+          HistoryObjectDAO.getListObjectAccessByPeriod(con, refs, objectType, startDate, endDate);
       Set<String> distinctObjectIds = new HashSet<>(objectIds);
-      nb = distinctObjectIds.size();
+      return distinctObjectIds.size();
     } catch (Exception e) {
       throw new StatisticRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
-    return nb;
   }
 
   @Override
-  public int getDistinctCountByPeriodUser(List<WAPrimaryKey> primaryKeys, int action,
+  public int getDistinctCountByPeriodUser(List<ResourceReference> refs, int action,
       String objectType, Date startDate, Date endDate, List<String> userIds) {
     int nb = 0;
     Connection con = getConnection();
@@ -319,9 +316,9 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
       Set<String> distinctObjectIds = new HashSet<>(userIds.size());
       try {
         for (String userId : userIds) {
-          List<String> objectIds = HistoryObjectDAO
-              .getListObjectAccessByPeriodAndUser(con, primaryKeys, objectType, startDate, endDate,
-                  userId);
+          List<String> objectIds =
+              HistoryObjectDAO.getListObjectAccessByPeriodAndUser(con, refs, objectType, startDate,
+                  endDate, userId);
           distinctObjectIds.addAll(objectIds);
         }
         nb = distinctObjectIds.size();

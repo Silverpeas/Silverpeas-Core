@@ -24,7 +24,6 @@
 package org.silverpeas.core.silverstatistics.access.service;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
@@ -86,18 +85,18 @@ public interface StatisticService {
   void moveStat(ResourceReference toResourceReference, int actionType, String objectType);
 
   /**
-   * @param primaryKeys
+   * @param refs
    * @param action
    * @param objectType String representation of an object type
    * @param startDate the start date
    * @param endDate the end date
    * @return the number of access over a list of publications between startDate and endDate
    */
-  int getCountByPeriod(List<WAPrimaryKey> primaryKeys, int action, String objectType,
+  int getCountByPeriod(List<ResourceReference> refs, int action, String objectType,
       Date startDate, Date endDate);
 
   /**
-   * @param primaryKeys
+   * @param refs
    * @param objectType String representation of an object type
    * @param startDate the start date
    * @param endDate the end date
@@ -105,11 +104,11 @@ public interface StatisticService {
    * @return the number of access over a list of publications between startDate and endDate for
    * specific user
    */
-  int getCountByPeriodAndUser(List<WAPrimaryKey> primaryKeys, String objectType,
+  int getCountByPeriodAndUser(List<ResourceReference> refs, String objectType,
       Date startDate, Date endDate, List<String> userIds);
 
   /**
-   * @param primaryKeys
+   * @param refs
    * @param action
    * @param objectType String representation of an object type
    * @param startDate the start date
@@ -117,10 +116,10 @@ public interface StatisticService {
    * @return the number of access over a list of publications between startDate and endDate
    * @
    */
-  int getDistinctCountByPeriod(List<WAPrimaryKey> primaryKeys, int action,
+  int getDistinctCountByPeriod(List<ResourceReference> refs, int action,
       String objectType, Date startDate, Date endDate);
 
-  int getDistinctCountByPeriodUser(List<WAPrimaryKey> primaryKeys, int action,
+  int getDistinctCountByPeriodUser(List<ResourceReference> refs, int action,
       String objectType, Date startDate, Date endDate, List<String> userIds);
 
 

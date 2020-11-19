@@ -36,7 +36,7 @@ public class Paging {
   /**
    * Default value for no paging.
    */
-  public static Paging NO_PAGING = new Paging(null, null);
+  public static final Paging NO_PAGING = new Paging(null, null);
 
   private final long maxItems;
   private final long skipCount;

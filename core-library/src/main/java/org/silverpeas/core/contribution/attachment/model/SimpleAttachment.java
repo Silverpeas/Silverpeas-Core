@@ -39,7 +39,7 @@ public class SimpleAttachment implements Serializable {
   private static final long serialVersionUID = -6153003608158238503L;
 
   private String filename;
-  private String language = I18NHelper.defaultLanguage;
+  private String language = I18NHelper.DEFAULT_LANGUAGE;
   private String title;
   private String description;
   private long size;

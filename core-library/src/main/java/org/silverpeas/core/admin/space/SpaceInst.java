@@ -755,7 +755,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
       template.setAttribute("fromSpaceName", space.getName());
     }
     if (!StringUtil.isDefined(language)) {
-      language = I18NHelper.defaultLanguage;
+      language = I18NHelper.DEFAULT_LANGUAGE;
     }
     return template.applyFileTemplate(stringTemplateFile + "_" + language);
   }

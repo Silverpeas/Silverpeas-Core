@@ -239,7 +239,7 @@ public class FileUploadTag extends TagSupport {
         language = locale.getLanguage();
       }
       fileUploadContext.language =
-          StringUtil.isDefined(language) ? language : I18NHelper.defaultLanguage;
+          StringUtil.isDefined(language) ? language : I18NHelper.DEFAULT_LANGUAGE;
       fileUploadContext.generalBundle =
           ResourceLocator.getGeneralLocalizationBundle(fileUploadContext.language);
     }

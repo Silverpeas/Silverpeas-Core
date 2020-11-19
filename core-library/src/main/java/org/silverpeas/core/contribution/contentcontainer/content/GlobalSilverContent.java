@@ -72,7 +72,7 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
     this.userId = userId;
 
     GlobalSilverContentI18N gscI18N =
-        new GlobalSilverContentI18N(I18NHelper.defaultLanguage, name, desc);
+        new GlobalSilverContentI18N(I18NHelper.DEFAULT_LANGUAGE, name, desc);
     addTranslation(gscI18N);
   }
 

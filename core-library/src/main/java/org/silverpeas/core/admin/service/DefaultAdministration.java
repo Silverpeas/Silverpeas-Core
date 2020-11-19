@@ -5365,7 +5365,7 @@ class DefaultAdministration implements Administration {
 
     String lang = newCompo.getLanguage();
     if (StringUtil.isNotDefined(lang)) {
-      lang = I18NHelper.defaultLanguage;
+      lang = I18NHelper.DEFAULT_LANGUAGE;
     }
     // Creation
     newCompo.setLocalId(-1);
@@ -5559,7 +5559,7 @@ class DefaultAdministration implements Administration {
     newSpace.setCreatorUserId(pasteDetail.getUserId());
     String lang = oldSpace.getLanguage();
     if (StringUtil.isNotDefined(lang)) {
-      lang = I18NHelper.defaultLanguage;
+      lang = I18NHelper.DEFAULT_LANGUAGE;
     }
     newSpace.setLanguage(lang);
 

@@ -452,7 +452,6 @@
   <servlet>
     <servlet-name>PortletContainerDesktopServlet</servlet-name>
     <servlet-class>org.silverpeas.web.portlets.portal.SPDesktopServlet</servlet-class>
-    <!-- <load-on-startup>1</load-on-startup> -->
   </servlet>
   <servlet>
     <servlet-name>PortletContainerAdminServlet</servlet-name>
@@ -477,7 +476,6 @@
     <!-- PortletAppEngine Servlet -->
     <servlet-name>PortletAppEngineServlet</servlet-name>
     <servlet-class>com.sun.portal.portletcontainer.appengine.PortletAppEngineServlet</servlet-class>
-    <!-- <load-on-startup>10</load-on-startup> -->
   </servlet>
   <servlet>
     <servlet-name>TodoRequestRouter</servlet-name>
@@ -555,20 +553,6 @@
     <servlet-name>AttachmentAjaxServlet</servlet-name>
     <servlet-class>org.silverpeas.web.attachment.AjaxServlet</servlet-class>
   </servlet>
-  <!--
-  <servlet>
-    <servlet-name>AjaxFileUploadServlet</servlet-name>
-    <servlet-class>org.silverpeas.web.upload.AjaxFileUploadServlet</servlet-class>
-    <init-param>
-      <param-name>UPLOAD_DIRECTORY</param-name>
-      <param-value>C:/tmp/ajax</param-value>
-    </init-param>
-    <init-param>
-      <param-name>WHITE_LIST</param-name>
-      <param-value>html htm odt doc docx pdf</param-value>
-    </init-param>
-  </servlet>
-  -->
   <servlet>
     <servlet-name>AutocompleteServlet</servlet-name>
     <servlet-class>org.silverpeas.web.pdc.servlets.AutocompleteServlet</servlet-class>
@@ -718,13 +702,6 @@
       <param-name>cmisVersion</param-name>
       <param-value>1.1</param-value>
     </init-param>
-    <!--
-    <init-param>
-        <description>Name of the CSRF header</description>
-        <param-name>csrfHeader</param-name>
-        <param-value>X-CSRF-Token</param-value>
-    </init-param>
-    -->
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
@@ -736,21 +713,12 @@
       <description>Call Context Handler implementation</description>
       <param-name>callContextHandler</param-name>
       <param-value>org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler</param-value>
-      <!-- <param-value>org.apache.chemistry.opencmis.server.shared.UserPrincipalCallContextHandler</param-value> -->
-      <!-- <param-value>org.apache.chemistry.opencmis.server.shared.AttributeCallContextHandler</param-value> -->
     </init-param>
     <init-param>
       <description>CMIS version of this endpoint</description>
       <param-name>cmisVersion</param-name>
       <param-value>1.1</param-value>
     </init-param>
-    <!--
-    <init-param>
-        <description>Name of the CSRF header</description>
-        <param-name>csrfHeader</param-name>
-        <param-value>X-CSRF-Token</param-value>
-    </init-param>
-    -->
     <load-on-startup>2</load-on-startup>
   </servlet>
 
@@ -1042,12 +1010,6 @@
     <servlet-name>AttachmentAjaxServlet</servlet-name>
     <url-pattern>/Attachment/*</url-pattern>
   </servlet-mapping>
-  <!--
-  <servlet-mapping>
-    <servlet-name>AjaxFileUploadServlet</servlet-name>
-    <url-pattern>/ajaxupload/*</url-pattern>
-  </servlet-mapping>
-  -->
   <servlet-mapping>
     <servlet-name>AutocompleteServlet</servlet-name>
     <url-pattern>/AutocompleteServlet</url-pattern>

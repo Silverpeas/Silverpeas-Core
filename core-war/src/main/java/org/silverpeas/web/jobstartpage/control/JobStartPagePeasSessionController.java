@@ -804,8 +804,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     Map<String, WAComponent> resTable = adminController.getAllComponents();
     WAComponent[] componentsModels = resTable.values().toArray(new WAComponent[resTable.size()]);
     Arrays.sort(componentsModels, (o1, o2) -> {
-      String valcomp1 = o1.getSuite() + o1.getLabel().get(I18NHelper.defaultLanguage);
-      String valcomp2 = o2.getSuite() + o2.getLabel().get(I18NHelper.defaultLanguage);
+      String valcomp1 = o1.getSuite() + o1.getLabel().get(I18NHelper.DEFAULT_LANGUAGE);
+      String valcomp2 = o2.getSuite() + o2.getLabel().get(I18NHelper.DEFAULT_LANGUAGE);
       return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
     });
     return componentsModels;
