@@ -44,37 +44,17 @@ fieldset.skinFieldset {
 	background: linear-gradient(left, #fff 0%, #e5e5e5 100%);
  }
 
- .table {
-	display:table;
-	width:100%;
-	height:auto;
-	}
-
- :root *> .table {
-	height:8%;
-	margin-bottom:1%;
-	}
-
-.cell {
-	display:inline !ie;
-	float:left !ie;
-	width:49.9% !ie;
-	}
-
-.cell {
-	display:table-cell;
-	height:100%;
-	width:50%;
+.table {
+	display:flex;
+	margin-bottom:2em;
 }
 
-.table .cell:nth-child(2n){
-	width:50%;
-	padding-right:0
+.cell {
+	flex-basis:calc( 50% - 1em );
 }
 
 .table .cell:nth-child(2n+1){
-	width:48%;
-	padding-right:2%
+	margin-right:2em;
 }
 
 .cell .field {
@@ -105,7 +85,7 @@ fieldset.skinFieldset {
 
 .champs {
 	display: table-cell;
-  padding: 5px 15px 5px 0;
+	padding: 5px 15px 5px 0;
 	min-width:180px;
 }
 
@@ -317,6 +297,9 @@ fieldset.parameters {
 @media only screen and (max-width: 600px), only screen and (max-device-width: 600px){
 	.cell  {
 		width:100%;
+		display:block;
+	}
+	.table  {
 		display:block;
 	}
 }
