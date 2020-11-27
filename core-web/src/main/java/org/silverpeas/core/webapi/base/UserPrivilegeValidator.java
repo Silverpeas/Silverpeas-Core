@@ -28,9 +28,11 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
@@ -67,6 +69,9 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
 
   @Inject
   private SimpleDocumentAccessControl documentAccessController;
+
+  @Inject
+  private PublicationAccessControl publicationAccessController;
 
   @Inject
   private OrganizationController organizationController;
@@ -188,6 +193,23 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
       context.onOperationsOf(AccessControlOperation.deletion);
     }
     if (!documentAccessController.isUserAuthorized(user.getId(), doc, context)) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
+
+  /**
+   * Validates the authorization of the specified user to access the specified publication.
+   *
+   * @param request the HTTP request from which the authentication of the caller can be done.
+   * @param user the user for whom the authorization has to be validated.
+   * @param publi the publication accessed.
+   * @throws WebApplicationException exception if the validation failed.
+   */
+  @Override
+  public void validateUserAuthorizationOnPublication(final HttpServletRequest request,
+      final User user, PublicationDetail publi) {
+    AccessControlContext context = AccessControlContext.init();
+    if (!publicationAccessController.isUserAuthorized(user.getId(), publi, context)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }
