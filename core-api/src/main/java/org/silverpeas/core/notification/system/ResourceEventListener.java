@@ -78,6 +78,14 @@ public interface ResourceEventListener<T extends ResourceEvent> {
   }
 
   /**
+   * An event on the unlock of a resource has be listened. By default, this method does nothing.
+   * @param event the event on the unlock of a resource.
+   * @throws java.lang.Exception if an error occurs while treating the event.
+   */
+  default void onUnlock(final T event) throws Exception {
+  }
+
+  /**
    * Dispatches the treatment of the specified event to the correct method according to its type:
    * <ul>
    *   <li>{@code org.silverpeas.core.notification.system.ResourceEventListener#onCreation(ResourceEvent} for
@@ -103,6 +111,9 @@ public interface ResourceEventListener<T extends ResourceEvent> {
           break;
         case UPDATE:
           onUpdate(event);
+          break;
+        case UNLOCK:
+          onUnlock(event);
           break;
         case REMOVING:
           onRemoving(event);

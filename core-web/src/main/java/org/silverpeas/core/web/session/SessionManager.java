@@ -33,9 +33,9 @@ import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.cache.service.VolatileResourceCacheService;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.io.upload.UploadSession;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
 import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
-import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -60,6 +60,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
@@ -123,6 +124,8 @@ public class SessionManager implements SessionManagement, Initialization {
   private Scheduler scheduler;
   @Inject
   private DefaultServerEventNotifier defaultServerEventNotifier;
+  @Inject
+  private Event<UserSessionEvent> userSessionNotifier;
 
   /**
    * Prevent the class from being instantiate (private)
@@ -253,6 +256,7 @@ public class SessionManager implements SessionManagement, Initialization {
       }
 
       defaultServerEventNotifier.notify(UserSessionServerEvent.aClosingOneFor(si));
+      userSessionNotifier.fire(new UserSessionEvent(si));
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }

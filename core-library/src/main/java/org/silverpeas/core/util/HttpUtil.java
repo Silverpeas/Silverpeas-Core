@@ -25,16 +25,21 @@
 package org.silverpeas.core.util;
 
 import com.google.api.client.util.SslUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.net.ssl.SSLContext;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.security.GeneralSecurityException;
 
+import static java.net.http.HttpClient.Redirect.NORMAL;
+
 /**
+ * Centralizing the initializing of an {@link HttpRequest} or {@link HttpRequest.Builder} against
+ * the different Silverpeas's HTTP requirements such as proxy configurations for example.
  * @author silveryocha
  */
 public class HttpUtil {
@@ -45,35 +50,56 @@ public class HttpUtil {
 
   /**
    * Centralizing the getting of HTTP client configured with proxy host and proxy port if any.
-   * @return a {@link CloseableHttpClient} instance.
+   * @return a {@link HttpClient} instance.
    */
-  public static CloseableHttpClient httpClient() {
+  public static HttpClient httpClient() {
     return httpClient(null);
   }
 
   /**
-   * Centralizing the getting of HTTP client configured with proxy host and proxy port if any.
-   * @return a {@link CloseableHttpClient} instance.
+   * Centralizing the getting of HTTP client configured with proxy host and proxy port if any and
+   * with the acceptance of any SSL certificate whatever its validity.
+   * @return a {@link HttpClient} instance.
    */
-  public static CloseableHttpClient httpClientTrustingAnySslContext()
+  public static HttpClient httpClientTrustingAnySslContext()
       throws GeneralSecurityException {
     return httpClient(SslUtils.trustAllSSLContext());
   }
 
   /**
-   * Centralizing the getting of HTTP client configured with proxy host and proxy port if any.
-   * @return a {@link CloseableHttpClient} instance.
+   * Centralizing the getting of HTTP client configured with proxy host and proxy port if any and
+   * with the acceptance of optional given SSL context.
+   * @param sslContext an optional SSL context.
+   * @return a {@link HttpClient} instance.
    */
-  public static CloseableHttpClient httpClient(final SSLContext sslContext) {
-    final HttpClientBuilder builder = HttpClients.custom();
+  public static HttpClient httpClient(final SSLContext sslContext) {
+    HttpClient.Builder builder = HttpClient.newBuilder().followRedirects(NORMAL);
     if (sslContext != null) {
-      builder.setSSLContext(sslContext);
+      builder = builder.sslContext(sslContext);
     }
     final String proxyHost = SystemWrapper.get().getProperty("http.proxyHost");
     final String proxyPort = SystemWrapper.get().getProperty("http.proxyPort");
     if (StringUtil.isDefined(proxyHost) && StringUtil.isInteger(proxyPort)) {
-      builder.setProxy(new HttpHost(proxyHost, Integer.parseInt(proxyPort)));
+      builder = builder.proxy(ProxySelector.of(new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort))));
     }
     return builder.build();
+  }
+
+  /**
+   * Centralizing the getting of HTTP request builder initialized with given URL.
+   * @param url the URL to request.
+   * @return a {@link HttpRequest.Builder} instance.
+   */
+  public static HttpRequest.Builder toUrl(final String url) {
+    return toUri(URI.create(url));
+  }
+
+  /**
+   * Centralizing the getting of HTTP request builder initialized with given URI.
+   * @param uri the URI to request.
+   * @return a {@link HttpRequest.Builder} instance.
+   */
+  public static HttpRequest.Builder toUri(final URI uri) {
+    return HttpRequest.newBuilder().uri(uri);
   }
 }

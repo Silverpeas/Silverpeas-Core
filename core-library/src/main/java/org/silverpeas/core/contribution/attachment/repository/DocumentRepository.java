@@ -357,19 +357,8 @@ public class DocumentRepository {
    */
   public void saveForbiddenDownloadForRoles(Session session, SimpleDocument document)
       throws RepositoryException {
-    Node documentNode = session.getNodeByIdentifier(document.getVersionMaster().getPk().getId());
-    boolean checkedin = !documentNode.isCheckedOut();
-    if (checkedin) {
-      session.getWorkspace().getVersionManager().checkout(documentNode.getPath());
-    }
-
-    // Optional downloadable mixin
-    converter.setForbiddenDownloadForRolesOptionalNodeProperty(document, documentNode);
-
-    if (checkedin) {
-      session.save();
-      session.getWorkspace().getVersionManager().checkin(documentNode.getPath());
-    }
+    acceptOnMasterVersionWithoutChangingFunctionalVersion(session, document, d ->
+        converter.setForbiddenDownloadForRolesOptionalNodeProperty(document, d));
   }
 
   /**
@@ -383,23 +372,29 @@ public class DocumentRepository {
    */
   public void saveDisplayableAsContent(Session session, SimpleDocument document)
       throws RepositoryException {
-    Node documentNode = session.getNodeByIdentifier(document.getVersionMaster().getPk().getId());
-    boolean checkedin = !documentNode.isCheckedOut();
-    if (checkedin) {
-      session.getWorkspace().getVersionManager().checkout(documentNode.getPath());
-    }
+    acceptOnMasterVersionWithoutChangingFunctionalVersion(session, document, d ->
+        converter.setDisplayableAsContentOptionalNodeProperty(document, d));
+  }
 
-    // Optional viewable mixin
-    converter.setDisplayableAsContentOptionalNodeProperty(document, documentNode);
-
-    if (checkedin) {
-      session.save();
-      session.getWorkspace().getVersionManager().checkin(documentNode.getPath());
-    }
+  /**
+   * Save the optional slv:editableSimultaneously simple document property (MIXIN).
+   * This saving works with versionable documents without changing the major and minor version.
+   * This property is transverse between all versions.
+   *
+   * @param session
+   * @param document
+   * @throws RepositoryException
+   */
+  public void saveEditableSimultaneously(Session session, SimpleDocument document)
+      throws RepositoryException {
+    acceptOnMasterVersionWithoutChangingFunctionalVersion(session, document, d ->
+        converter.setEditableSimultaneouslyOptionalNodeProperty(document, d));
   }
 
   /**
    * Add the document's clone id to the document even if it is locked.
+   * This saving works with versionable documents without changing the major and minor version.
+   * This property is transverse between all versions.
    *
    * @param session the JCR session.
    * @param original the original document to be cloned.
@@ -408,35 +403,51 @@ public class DocumentRepository {
    */
   public void setClone(Session session, SimpleDocument original, SimpleDocument clone) throws
       RepositoryException {
-    Node documentNode = session.getNodeByIdentifier(clone.getId());
-    boolean checkedin = !documentNode.isCheckedOut();
-    if (checkedin) {
-      session.getWorkspace().getVersionManager().checkout(documentNode.getPath());
-    }
-    documentNode.setProperty(SLV_PROPERTY_CLONE, original.getId());
-    if (checkedin) {
-      session.save();
-      session.getWorkspace().getVersionManager().checkin(documentNode.getPath());
-    }
+    acceptWithoutChangingFunctionalVersion(session, clone, d ->
+        d.setProperty(SLV_PROPERTY_CLONE, original.getId()));
   }
 
   /**
-   * Update the document order. This is a unique operation since the order propery is not
+   * Update the document order. This is a unique operation since the order property is not
    * versionable.
-   *
-   * @param session
-   * @param document
-   * @throws RepositoryException
+   * This saving works with versionable documents without changing the major and minor version.
+   * This property is transverse between all versions.
    */
-  public void setOrder(Session session, SimpleDocument document) throws
-      RepositoryException {
+  public void setOrder(Session session, SimpleDocument document) throws RepositoryException {
+    acceptWithoutChangingFunctionalVersion(session, document, d ->
+        d.setProperty(SLV_PROPERTY_ORDER, document.getOrder()));
+  }
+
+  /**
+   * Centralization of a simple update.
+   * This saving works with versionable documents without changing the major and minor version.
+   * This property is transverse between all versions.
+   * @param session the current session.
+   * @param document the aimed document which will be updated on master version.
+   * @param consumer the consumer of a checked documentNode.
+   * @throws RepositoryException on JCR error.
+   */
+  private void acceptOnMasterVersionWithoutChangingFunctionalVersion(Session session, SimpleDocument document,
+      RepositoryConsumer<Node> consumer) throws RepositoryException {
+    acceptWithoutChangingFunctionalVersion(session, document.getVersionMaster(), consumer);
+  }
+
+  /**
+   * Centralization of the mechanism to update a property
+   * @param session the current session.
+   * @param document the aimed document without taking care of the version.
+   * @param consumer the consumer of a checked documentNode.
+   * @throws RepositoryException on JCR error.
+   */
+  private void acceptWithoutChangingFunctionalVersion(Session session, SimpleDocument document,
+      RepositoryConsumer<Node> consumer) throws RepositoryException {
     Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
-    boolean checkedin = !documentNode.isCheckedOut();
-    if (checkedin) {
+    boolean checkedIn = !documentNode.isCheckedOut();
+    if (checkedIn) {
       session.getWorkspace().getVersionManager().checkout(documentNode.getPath());
     }
-    documentNode.setProperty(SLV_PROPERTY_ORDER, document.getOrder());
-    if (checkedin) {
+    consumer.accept(documentNode);
+    if (checkedIn) {
       session.save();
       session.getWorkspace().getVersionManager().checkin(documentNode.getPath());
     }
@@ -1575,5 +1586,10 @@ public class DocumentRepository {
     private static SimpleCache getThreadCache() {
       return getThreadCacheService().getCache();
     }
+  }
+
+  @FunctionalInterface
+  private interface RepositoryConsumer<T> {
+    void accept(T t) throws RepositoryException;
   }
 }

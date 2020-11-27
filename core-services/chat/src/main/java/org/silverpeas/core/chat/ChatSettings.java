@@ -79,6 +79,18 @@ public class ChatSettings {
   }
 
   /**
+   * Is the URL given by {@link #getChatServerUrl()} a safe one.
+   * <p>
+   *   In case it is, SSL validations of requests performed between Silverpeas's server and the
+   *   XMPP server are bypassed.
+   * </p>
+   * @return the chat server's URL.
+   */
+  public boolean isChatServerSafeUrl() {
+    return settings.getBoolean("chat.servers.xmpp.safe", false);
+  }
+
+  /**
    * Gets the fully qualified hostname or the IP address of the ICE server listening for audio/video
    * communications.
    * @return the hostname or the IP address of the ICE server.
@@ -159,7 +171,7 @@ public class ChatSettings {
    * domain. If no such default XMPP domain is defined, then the Silverpeas domains with no mapping
    * rule won't be mapped to a XMPP domain and hence the users of those domains won't have an XMPP
    * account; the chat won't be enabled for them.
-   * @return
+   * @return default domain identifier as string.
    */
   public String getDefaultXmppDomain() {
     return settings.getString("chat.xmpp.domain.default", "").trim();

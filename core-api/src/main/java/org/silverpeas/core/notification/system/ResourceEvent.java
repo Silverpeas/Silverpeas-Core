@@ -128,7 +128,11 @@ public interface ResourceEvent<T extends Serializable> extends Serializable {
      * The notification is about the deletion of a resource in Silverpeas. When a resource is
      * deleted, it is then nonexistent and nonrecoverable.
      */
-    DELETION;
-
+    DELETION,
+    /**
+     * The notification is about the unlock of a resource in Silverpeas. When a resource is
+     * unlocked, it is again available.
+     */
+    UNLOCK;
   }
 }

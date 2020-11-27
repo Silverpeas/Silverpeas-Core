@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.security.session;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
@@ -34,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * It gathers information about an opened session of a user.
  */
-public class SessionInfo {
+public class SessionInfo implements SilverpeasUserSession {
 
   public static final SessionInfo NoneSession = new SessionInfo(null, null);
   public static final SessionInfo AnonymousSession = getAnonymousSession();
@@ -75,6 +76,16 @@ public class SessionInfo {
       return new SessionInfo(null, anonymousUser);
     }
     return NoneSession;
+  }
+
+  @Override
+  public String getId() {
+    return getSessionId();
+  }
+
+  @Override
+  public User getUser() {
+    return getUserDetail();
   }
 
   /**

@@ -123,6 +123,15 @@
     <async-supported>true</async-supported>
   </filter>
   <filter>
+    <!-- WopiFilter Filter -->
+    <description>
+      To manage for each incoming request, the life-cycle of a WOPI host.
+    </description>
+    <filter-name>WopiServerFilter</filter-name>
+    <filter-class>org.silverpeas.core.webapi.wopi.WopiServerFilter</filter-class>
+    <async-supported>true</async-supported>
+  </filter>
+  <filter>
     <description>
       To validate each incoming HTTP request to a protected resource by using a synchronizer token
       mechanism.
@@ -184,6 +193,10 @@
   <filter-mapping>
     <filter-name>ScimServerFilter</filter-name>
     <url-pattern>/services/domains/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>WopiServerFilter</filter-name>
+    <url-pattern>/services/wopi/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
     <filter-name>SessionSynchronizerTokenValidator</filter-name>
@@ -677,6 +690,15 @@
     <servlet-name>VariablesRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.web.variables.VariablesRequestRouter</servlet-class>
   </servlet>
+  <servlet>
+    <display-name>WopiRequestRouter</display-name>
+    <servlet-name>WopiRequestRouter</servlet-name>
+    <servlet-class>org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestRouter</servlet-class>
+    <init-param>
+      <param-name>WebComponentController</param-name>
+      <param-value>org.silverpeas.web.wopi.WopiWebController</param-value>
+    </init-param>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>LoginDispatcher</servlet-name>
@@ -1080,6 +1102,10 @@
   <servlet-mapping>
     <servlet-name>VariablesRequestRouter</servlet-name>
     <url-pattern>/Rvariables/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>WopiRequestRouter</servlet-name>
+    <url-pattern>/Rwopi/*</url-pattern>
   </servlet-mapping>
 
   <jsp-config>

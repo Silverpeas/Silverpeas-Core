@@ -30,7 +30,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.BasicWarBuilder;
+import org.silverpeas.core.silverstatistics.test.WarBuilder4Statistics;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 /**
@@ -49,9 +49,7 @@ public class StatisticsConfigIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(StatisticsConfigIT.class)
-        .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
-        .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
+    return WarBuilder4Statistics.onWarForTestClass(StatisticsConfigIT.class)
         .testFocusedOn(war -> {
           war.addPackages(true, "org.silverpeas.core.silverstatistics");
           war.addAsResource("org/silverpeas/silverstatistics/SilverStatisticsTest.properties");

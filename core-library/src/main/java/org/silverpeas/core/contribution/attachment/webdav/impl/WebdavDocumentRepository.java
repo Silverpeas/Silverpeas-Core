@@ -23,15 +23,16 @@
  */
 package org.silverpeas.core.contribution.attachment.webdav.impl;
 
-import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.core.persistence.jcr.JcrDataConverter;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.persistence.jcr.JcrDataConverter;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.jcr.Binary;
 import javax.jcr.Node;
@@ -45,9 +46,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.time.OffsetDateTime.ofInstant;
+import static java.time.ZoneId.systemDefault;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 @Repository
@@ -230,8 +236,8 @@ public class WebdavDocumentRepository implements WebdavRepository {
     Node rootNode = session.getRootNode();
     Node webdavFileNode = rootNode.getNode(attachment.getWebdavJcrPath());
     Binary webdavBinary = webdavFileNode.getNode(JCR_CONTENT).getProperty(JCR_DATA).getBinary();
-    try (InputStream in = webdavBinary.getStream();
-         OutputStream out = FileUtils.openOutputStream(new File(attachment.getAttachmentPath()))) {
+    try (final InputStream in = webdavBinary.getStream();
+         final OutputStream out = FileUtils.openOutputStream(new File(attachment.getAttachmentPath()))) {
       IOUtils.copy(in, out);
     } finally {
       webdavBinary.dispose();
@@ -304,16 +310,26 @@ public class WebdavDocumentRepository implements WebdavRepository {
     Node contentNode = fileNode.addNode(JCR_CONTENT, NT_RESOURCE);
     contentNode.setProperty(JCR_MIMETYPE, attachment.getContentType());
     contentNode.setProperty(JCR_ENCODING, "");
-    contentNode.setProperty(JCR_LAST_MODIFIED, Calendar.getInstance());
     setContent(fileNode, attachment);
     return fileNode;
   }
 
   private void setContent(Node fileNode, SimpleDocument attachment)
       throws RepositoryException, IOException {
-    try(InputStream in = FileUtils.openInputStream(new File(attachment.getAttachmentPath()))) {
-      Binary attachmentBinary = fileNode.getSession().getValueFactory().createBinary(in);
-      fileNode.getNode(JCR_CONTENT).setProperty(JCR_DATA, attachmentBinary);
+    try (final InputStream in = FileUtils.openInputStream(new File(attachment.getAttachmentPath()))) {
+      setContent(fileNode, in);
+    }
+  }
+
+  private void setContent(Node fileNode, InputStream input)
+      throws RepositoryException {
+    final Binary attachmentBinary = fileNode.getSession().getValueFactory().createBinary(input);
+    try {
+      final Node contentNode = fileNode.getNode(JCR_CONTENT);
+      contentNode.setProperty(JCR_LAST_MODIFIED, Calendar.getInstance());
+      contentNode.setProperty(JCR_DATA, attachmentBinary);
+    } finally {
+      attachmentBinary.dispose();
     }
   }
 
@@ -332,7 +348,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
           Date creationDate = null;
           while (webdavNodeIt.hasNext()) {
             Node currentLanguageNode = webdavNodeIt.nextNode();
-            // Normaly, it must exist one filename node.
+            // Normally, it must exist one filename node.
             Node currentFileNode = currentLanguageNode.getNodes().nextNode();
             if (creationDate == null ||
                 creationDate.before(currentFileNode.getProperty(JCR_CREATED).getDate().getTime())) {
@@ -351,24 +367,87 @@ public class WebdavDocumentRepository implements WebdavRepository {
   @Override
   public long getContentEditionSize(final Session session, final SimpleDocument attachment)
       throws RepositoryException {
+    final Long size = getWebdavFileValue(session, attachment,
+        n -> n.getNode(JCR_CONTENT).getProperty(JCR_DATA).getBinary().getSize());
+    return size != null ? size : -1;
+  }
+
+  @Override
+  public Optional<WebdavContentDescriptor> getDescriptor(final Session session,
+      final SimpleDocument attachment) throws RepositoryException {
+    final Optional<Pair<Node, String>> webdavFileNode = getWebdavNode(session, attachment);
+    if (webdavFileNode.isPresent()) {
+      final Node fileNode = webdavFileNode.get().getFirst();
+      final Node contentNode = fileNode.getNode(JCR_CONTENT);
+      final WebdavContentDescriptor descriptor = new WebdavContentDescriptor(attachment);
+      final String identifier = fileNode.getIdentifier();
+      final String language = webdavFileNode.get().getSecond();
+      final long size = contentNode.getProperty(JCR_DATA).getBinary().getSize();
+      final Date time = contentNode.getProperty(JCR_LAST_MODIFIED).getDate().getTime();
+      descriptor.set(identifier, language, size, ofInstant(time.toInstant(), systemDefault()));
+      // result
+      return Optional.of(descriptor);
+    }
+    return empty();
+  }
+
+  @Override
+  public void updateContentFrom(final Session session, final SimpleDocument document,
+      final InputStream input) throws RepositoryException {
+    final Optional<Pair<Node, String>> webdavFileNode = getWebdavNode(session, document);
+    if (webdavFileNode.isPresent()) {
+      setContent(webdavFileNode.get().getFirst(), input);
+      session.save();
+    }
+  }
+
+  @Override
+  public void loadContentInto(final Session session, final SimpleDocument document,
+      final OutputStream output) throws RepositoryException, IOException {
+    final Optional<Pair<Node, String>> webdavFileNode = getWebdavNode(session, document);
+    if (webdavFileNode.isPresent()) {
+      final Node contentNode = webdavFileNode.get().getFirst().getNode(JCR_CONTENT);
+      final Binary binary = contentNode.getProperty(JCR_DATA).getBinary();
+      try(InputStream input = binary.getStream()) {
+        IOUtils.copy(input, output);
+      } finally {
+        binary.dispose();
+      }
+    }
+  }
+
+  private <T> T getWebdavFileValue(final Session session, final SimpleDocument attachment,
+      final WebdavFunction<Node, T> provider) throws RepositoryException {
+    final Optional<Pair<Node, String>> webdavFileNode = getWebdavNode(session, attachment);
+    if (webdavFileNode.isPresent()) {
+      return provider.apply(webdavFileNode.get().getFirst());
+    }
+    return null;
+  }
+
+  private Optional<Pair<Node, String>> getWebdavNode(final Session session, final SimpleDocument attachment)
+      throws RepositoryException {
     String currentLanguage = attachment.getLanguage();
     String webDavJcrPath = attachment.getWebdavJcrPath().replaceFirst("/[^/]+$", "");
     String languageInWebDav = getContentEditionLanguage(session, attachment);
     if (languageInWebDav != null) {
       if (!currentLanguage.equals(languageInWebDav)) {
-        String before = attachment.getId() + "/" + currentLanguage;
-        String after = attachment.getId() + "/" + languageInWebDav;
+        final String before = attachment.getId() + "/" + currentLanguage;
+        final String after = attachment.getId() + "/" + languageInWebDav;
         webDavJcrPath = webDavJcrPath.replace(before, after);
       }
       try {
-        Node rootNode = session.getRootNode();
-        Node webdavFileNode = rootNode.getNode(webDavJcrPath).getNodes().nextNode();
-        Binary webdavBinary = webdavFileNode.getNode(JCR_CONTENT).getProperty(JCR_DATA).getBinary();
-        return webdavBinary.getSize();
+        final Node fileNode = session.getRootNode().getNode(webDavJcrPath).getNodes().nextNode();
+        return of(Pair.of(fileNode, languageInWebDav));
       } catch (PathNotFoundException pex) {
         // Node does not exist.
       }
     }
-    return -1;
+    return empty();
+  }
+
+  @FunctionalInterface
+  private interface WebdavFunction<T, R> {
+    R apply(T t) throws RepositoryException;
   }
 }

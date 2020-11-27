@@ -73,8 +73,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
@@ -3661,6 +3661,151 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(doc.isDisplayableAsContent(), is(true));
       for (SimpleDocumentVersion version : doc.getHistory()) {
         assertThat(version.isDisplayableAsContent(), is(true));
+      }
+    }
+  }
+
+  /**
+   * Test of saveEditableSimultaneously method, of class DocumentRepository.
+   * Testing also history, functional history, repository path and version index.
+   */
+  @Test
+  public void testSaveEditableSimultaneously() throws Exception {
+    try (JcrSession session = openSystemSession()) {
+
+      /*
+      Context of this test
+       */
+
+      // Create a versioned work document
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content =
+          new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
+      SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
+      document.setPublicDocument(false);
+      SimpleDocumentPK result = createVersionedDocument(session, document, content);
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      assertThat(document.editableSimultaneously().isPresent(), is(false));
+      HistorisedDocument docCreated =
+          (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
+      assertThat(docCreated, is(notNullValue()));
+      assertThat(docCreated.getOrder(), is(10));
+      assertThat(docCreated.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(docCreated.getSize(), is(14L));
+      assertThat(docCreated.getHistory(), is(notNullValue()));
+      assertThat(docCreated.getHistory(), hasSize(0));
+      assertThat(docCreated.getFunctionalHistory(), is(notNullValue()));
+      assertThat(docCreated.getFunctionalHistory(), hasSize(0));
+      assertThat(docCreated.getMajorVersion(), is(0));
+      assertThat(docCreated.getMinorVersion(), is(1));
+      assertThat(docCreated.getVersionIndex(), is(0));
+      assertThat(docCreated.getVersionIndex(), is(docCreated.getVersionMaster().getVersionIndex()));
+
+      // Verifying data are ok
+      String masterUuid = docCreated.getVersionMaster().getId();
+      String masterPath = docCreated.getVersionMaster().getRepositoryPath();
+      assertThat(masterUuid, is(docCreated.getId()));
+      assertThat(masterPath, is("/kmelia73/attachments/" + docCreated.getNodeName()));
+
+      // Update the versioned document to a public one
+      attachment = createFrenchVersionnedAttachment();
+      document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
+      document.setPublicDocument(true);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document, true);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      HistorisedDocument doc =
+          (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOrder(), is(15));
+      assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
+      assertThat(doc.getSize(), is(28L));
+      assertThat(doc.getHistory(), is(notNullValue()));
+      assertThat(doc.getHistory(), hasSize(1));
+      assertThat(doc.getFunctionalHistory(), is(notNullValue()));
+      assertThat(doc.getFunctionalHistory(), hasSize(1));
+      assertThat(doc.getHistory().get(0).getOrder(), is(0));
+      assertThat(doc.getMajorVersion(), is(1));
+      assertThat(doc.getMinorVersion(), is(0));
+      assertThat(doc.getVersionIndex(), is(1));
+      assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
+
+      // Update the versioned document to a working one
+      attachment = createFrenchVersionnedAttachment();
+      document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
+      document.setPublicDocument(false);
+      documentRepository.lock(session, document, document.getEditedBy());
+      documentRepository.updateDocument(session, document, true);
+      session.save();
+      documentRepository.unlock(session, document, false);
+      doc = (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOrder(), is(15));
+      assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
+      assertThat(doc.getSize(), is(28L));
+      assertThat(doc.getHistory(), is(notNullValue()));
+      assertThat(doc.getHistory(), hasSize(2));
+      assertThat(doc.getFunctionalHistory(), is(notNullValue()));
+      assertThat(doc.getFunctionalHistory(), hasSize(2));
+      assertThat(doc.getHistory().get(0).getOrder(), is(0));
+      assertThat(doc.getMajorVersion(), is(1));
+      assertThat(doc.getMinorVersion(), is(1));
+      assertThat(doc.getVersionIndex(), is(2));
+      assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
+
+      /*
+      Test starts here
+       */
+      document.setEditableSimultaneously(false);
+      documentRepository.saveEditableSimultaneously(session, document);
+
+      doc = (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOrder(), is(15));
+      assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
+      assertThat(doc.getSize(), is(28L));
+      assertThat(doc.getHistory(), is(notNullValue()));
+      assertThat(doc.getHistory(), hasSize(3));
+      assertThat(doc.getFunctionalHistory(), is(notNullValue()));
+      assertThat(doc.getFunctionalHistory(), hasSize(2));
+      assertThat(doc.getHistory().get(0).getOrder(), is(0));
+      assertThat(doc.getMajorVersion(), is(1));
+      assertThat(doc.getMinorVersion(), is(1));
+      assertThat(doc.getVersionIndex(), is(3));
+      assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
+      assertThat(doc.editableSimultaneously().isPresent(), is(true));
+      assertThat(doc.editableSimultaneously().get(), is(false));
+      for (SimpleDocumentVersion version : doc.getHistory()) {
+        assertThat(version.editableSimultaneously().isPresent(), is(true));
+        assertThat(version.editableSimultaneously().get(), is(false));
+      }
+
+      document.setEditableSimultaneously(true);
+      documentRepository.saveEditableSimultaneously(session, document);
+
+      doc = (HistorisedDocument) documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOrder(), is(15));
+      assertThat(doc.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
+      assertThat(doc.getSize(), is(28L));
+      assertThat(doc.getHistory(), is(notNullValue()));
+      assertThat(doc.getHistory(), hasSize(4));
+      assertThat(doc.getFunctionalHistory(), is(notNullValue()));
+      assertThat(doc.getFunctionalHistory(), hasSize(2));
+      assertThat(doc.getHistory().get(0).getOrder(), is(0));
+      assertThat(doc.getMajorVersion(), is(1));
+      assertThat(doc.getMinorVersion(), is(1));
+      assertThat(doc.getVersionIndex(), is(4));
+      assertThat(doc.getVersionIndex(), is(doc.getVersionMaster().getVersionIndex()));
+      assertThat(doc.editableSimultaneously().isPresent(), is(true));
+      assertThat(doc.editableSimultaneously().get(), is(true));
+      for (SimpleDocumentVersion version : doc.getHistory()) {
+        assertThat(version.editableSimultaneously().isPresent(), is(true));
+        assertThat(version.editableSimultaneously().get(), is(true));
       }
     }
   }

@@ -530,4 +530,11 @@ public interface AttachmentService extends DocumentIndexing {
    * @param enable enable the display if true
    */
   void switchEnableDisplayAsContent(SimpleDocumentPK pk, boolean enable);
+
+  /**
+   * Enables or not the simultaneous edition of the content of an attachment.
+   * @param pk the id of the document.
+   * @param enable enable edition simultaneously if true
+   */
+  void switchEnableEditSimultaneously(SimpleDocumentPK pk, boolean enable);
 }

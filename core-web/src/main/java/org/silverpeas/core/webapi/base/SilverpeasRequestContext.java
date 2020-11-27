@@ -39,7 +39,7 @@ public abstract class SilverpeasRequestContext {
   private HttpServletResponse response;
   private User user;
 
-  protected void init(final HttpServletRequest request, final HttpServletResponse response) {
+  public void init(final HttpServletRequest request, final HttpServletResponse response) {
     this.request = request;
     this.response = response;
     final String httpMethod = request.getMethod().toUpperCase();
