@@ -23,10 +23,10 @@
  */
 package org.silverpeas.web.portlets.portal;
 
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -36,7 +36,7 @@ import java.util.Locale;
  */
 public class DesktopMessages {
   private static final String RESOURCE_BASE = "org.silverpeas.portlets.multilang.portletsBundle";
-  private static final ThreadLocal<DesktopMessages> cache = new ThreadLocal<DesktopMessages>();
+  private static final ThreadLocal<DesktopMessages> cache = new ThreadLocal<>();
 
   private LocalizationBundle bundle;
   private Locale locale;
@@ -45,9 +45,10 @@ public class DesktopMessages {
    * This method has to be called at each HTTP Request performed related to portlet management.
    * @param language the language of the user. If no one is passed, default platform language is
    * taken.
-   * @return
+   * @return a {@link DesktopMessages} instance.
    */
   public static DesktopMessages init(String language) {
+    cache.remove();
     final String userLanguage =
         (StringUtil.isDefined(language) ? language : I18NHelper.defaultLanguage);
     DesktopMessages desktopMessages = new DesktopMessages();

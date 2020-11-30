@@ -62,7 +62,7 @@ public class Action implements Serializable {
     return ext;
   }
 
-  protected String getName() {
+  public String getName() {
     return name;
   }
 

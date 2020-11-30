@@ -23,41 +23,31 @@
  */
 package org.silverpeas.web.templatedesigner.servlets;
 
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 
-public class FormLayerServlet extends HttpServlet {
+public class FormLayerServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 1013565640540446129L;
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-    HttpSession session = request.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
-    if (mainSessionCtrl == null) {
-      response.sendRedirect(URLUtil.getApplicationURL() +
-          ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
-    }
-
-    String pathInfo = request.getPathInfo();
-
-    String form = pathInfo.substring(1);
-    if (UserDetail.getCurrentRequester().isAccessAdmin()) {
-      String filename = request.getParameter("Layer");
+    final String pathInfo = request.getPathInfo();
+    final String form = pathInfo.substring(1);
+    if (User.getCurrentRequester().isAccessAdmin()) {
+      final String filename = checkPath(request.getParameter("Layer"));
       String dir = PublicationTemplateManager.getInstance().makePath(form);
       File file = new File(dir, filename);
       response.setContentType(FileUtil.getMimeType(filename));
@@ -77,4 +67,10 @@ public class FormLayerServlet extends HttpServlet {
     doPost(request, response);
   }
 
+  private String checkPath(String path) {
+    if (path.contains("..")) {
+      throw new SilverpeasRuntimeException("'..' is not allowed into path definition");
+    }
+    return path;
+  }
 }

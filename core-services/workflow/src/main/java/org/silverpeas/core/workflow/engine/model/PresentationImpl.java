@@ -23,12 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.Column;
 import org.silverpeas.core.workflow.api.model.Columns;
@@ -40,6 +34,11 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Class implementing the representation of the &lt;presentation&gt; element of a Process Model.
@@ -103,7 +102,7 @@ public class PresentationImpl implements Presentation, Serializable {
    */
   public Columns getColumnsByRole(String strRoleName) {
     Columns search;
-    int index, indexDefault;
+    int index;
 
     if (columnsList == null) {
       return null;
@@ -115,7 +114,7 @@ public class PresentationImpl implements Presentation, Serializable {
 
     if (index == -1) {
       search.setRoleName("default");
-      indexDefault = columnsList.indexOf(search);
+      int indexDefault = columnsList.indexOf(search);
 
       if (indexDefault == -1) {
         return null;
@@ -158,12 +157,11 @@ public class PresentationImpl implements Presentation, Serializable {
    */
   public void deleteColumns(String strRoleName) throws WorkflowException {
     Columns search = createColumns();
-
     search.setRoleName(strRoleName);
     if (!columnsList.remove(search)) {
       throw new WorkflowException("PresentationImpl.deleteColumns",
           "workflowEngine.EX_COLUMNS_NOT_FOUND",
-          "Columns role name=" + strRoleName == null ? "<null>" : strRoleName);
+          "Columns role name=" + (strRoleName == null ? "<null>" : strRoleName));
     }
   }
 }

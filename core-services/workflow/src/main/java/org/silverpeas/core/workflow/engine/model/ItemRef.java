@@ -23,10 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.Input;
@@ -38,6 +34,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;input&gt; element of a Process Model.
@@ -82,6 +81,7 @@ public class ItemRef implements Input, Serializable {
   /**
    * Get the referred item
    */
+  @Override
   public Item getItem() {
     return item;
   }
@@ -90,6 +90,7 @@ public class ItemRef implements Input, Serializable {
    * Get value of readOnly attribute
    * @return true if item must be readonly
    */
+  @Override
   public boolean isReadonly() {
     return this.readonly;
   }
@@ -98,6 +99,7 @@ public class ItemRef implements Input, Serializable {
    * Get value of mandatory attribute
    * @return true if item must be filled
    */
+  @Override
   public boolean isMandatory() {
     return this.mandatory;
   }
@@ -106,6 +108,7 @@ public class ItemRef implements Input, Serializable {
    * Get name of displayer used to show the item
    * @return displayer name
    */
+  @Override
   public String getDisplayerName() {
     return this.displayerName;
   }
@@ -122,6 +125,7 @@ public class ItemRef implements Input, Serializable {
    * Set the referred item
    * @param item Item to refer
    */
+  @Override
   public void setItem(Item item) {
     this.item = (ItemImpl) item;
   }
@@ -129,6 +133,7 @@ public class ItemRef implements Input, Serializable {
   /**
    * Set the readonly attribute
    */
+  @Override
   public void setReadonly(boolean readonly) {
     this.readonly = readonly;
   }
@@ -137,6 +142,7 @@ public class ItemRef implements Input, Serializable {
    * Set value of mandatory attribute
    * @param mandatory true if item must be filled
    */
+  @Override
   public void setMandatory(boolean mandatory) {
     this.mandatory = mandatory;
   }
@@ -145,6 +151,7 @@ public class ItemRef implements Input, Serializable {
    * Set name of displayer used to show the item
    * @param displayerName displayer name
    */
+  @Override
   public void setDisplayerName(String displayerName) {
     this.displayerName = displayerName;
   }
@@ -153,6 +160,7 @@ public class ItemRef implements Input, Serializable {
    * Set default value
    * @param value default value
    */
+  @Override
   public void setValue(String value) {
     this.value = value;
   }
@@ -161,6 +169,7 @@ public class ItemRef implements Input, Serializable {
    * (non-Javadoc)
    * @see Input#getLabels()
    */
+  @Override
   public ContextualDesignations getLabels() {
     return new SpecificLabelListHelper(labels);
   }
@@ -169,6 +178,7 @@ public class ItemRef implements Input, Serializable {
    * (non-Javadoc)
    * @see Input#getLabel(java.lang.String, java.lang.String)
    */
+  @Override
   public String getLabel(String role, String language) {
     return getLabels().getLabel(role, language);
   }

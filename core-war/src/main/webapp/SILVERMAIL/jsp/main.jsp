@@ -71,11 +71,8 @@
 <fmt:message var="urlLabel" key="url"/>
 <fmt:message var="subjectLabel" key="subject"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title></title>
-  <view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part>
   <view:includePlugin name="userNotification"/>
   <script type="text/javascript">
 
@@ -143,8 +140,8 @@
           "SILVERMAIL_UserNotificationCleared");
     });
   </script>
-</head>
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
 <view:browseBar clickable="false">
   <view:browseBarElt link="#" label="${componentName}"/>
   <view:browseBarElt link="#" label="${inboxBrowseBarLabel}"/>
@@ -213,5 +210,5 @@
   </view:frame>
 </view:window>
 <view:progressMessage/>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

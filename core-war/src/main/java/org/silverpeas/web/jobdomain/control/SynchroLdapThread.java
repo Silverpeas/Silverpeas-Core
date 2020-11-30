@@ -29,30 +29,27 @@ package org.silverpeas.web.jobdomain.control;
 import org.silverpeas.core.admin.service.AdminController;
 
 public class SynchroLdapThread extends SynchroThread {
-  protected AdminController m_AdminCtrl = null;
-  protected String m_TargetDomainId = "";
+  protected AdminController adminCtrl;
+  protected String targetDomainId;
 
   public SynchroLdapThread(JobDomainPeasSessionController toAwake,
       AdminController adminCtrl, String targetDomainId) {
     super(toAwake);
-    m_AdminCtrl = adminCtrl;
-    m_TargetDomainId = targetDomainId;
+    this.adminCtrl = adminCtrl;
+    this.targetDomainId = targetDomainId;
   }
 
+  @Override
   public void run() {
-
     try {
-      m_SynchroReport = m_AdminCtrl
-          .synchronizeSilverpeasWithDomain(m_TargetDomainId);
-
-      m_isEncours = false;
-      m_toAwake.threadFinished();
-
+      synchroReport = adminCtrl
+          .synchronizeSilverpeasWithDomain(targetDomainId);
+      isRunning = false;
+      toAwake.threadFinished();
     } catch (Exception e) {
-      m_ErrorOccured = e;
-      m_isEncours = false;
-      m_toAwake.threadFinished();
-
+      errorOccurred = e;
+      isRunning = false;
+      toAwake.threadFinished();
     }
   }
 }

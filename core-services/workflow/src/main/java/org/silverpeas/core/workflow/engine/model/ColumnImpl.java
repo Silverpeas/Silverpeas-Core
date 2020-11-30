@@ -48,6 +48,7 @@ public class ColumnImpl implements Column, Serializable {
   /*
    * @see Column#getItem()
    */
+  @Override
   public Item getItem() {
     return item;
   }
@@ -55,6 +56,7 @@ public class ColumnImpl implements Column, Serializable {
   /*
    * @see Column#setItem(Item)
    */
+  @Override
   public void setItem(Item item) {
     this.item = (ItemImpl) item;
   }

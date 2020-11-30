@@ -211,7 +211,7 @@ public class DefaultWopiFileEditionManager implements WopiFileEditionManager, In
         }
         wopiDiscovery.consumeBaseUrlMimeType((n, a) -> {
           baseUrlByMimeTypes.put(n, a.getUrlsrc());
-          if (isDefined(a.getExt())) {
+          if (isDefined(a.getExt()) && "edit".equals(a.getName())) {
             baseUrlByExtension.put(a.getExt(), a.getUrlsrc());
           }
         });

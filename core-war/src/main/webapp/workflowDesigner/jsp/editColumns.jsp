@@ -40,13 +40,11 @@ String[]        astrFolderItemNames = (String[])request.getAttribute( "FolderIte
 String          strCancelAction = "ViewPresentation";
 
 %>
-<HTML>
-<HEAD>
-<view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part>
 <script type="text/javascript">
 
-    function sendData()
-    {
+    function sendData() {
         var errorMsg = "";
         var errorNb = 0;
         var fChecked = false;
@@ -90,8 +88,8 @@ String          strCancelAction = "ViewPresentation";
         }
     }
 </script>
-</HEAD>
-<body class="page_content_admin">
+</view:sp-head-part>
+<view:sp-body-part cssClass="page_content_admin">
 <%
 browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
 browseBar.setComponentName(resource.getString("workflowDesigner.presentationTab"), strCancelAction );
@@ -153,5 +151,5 @@ out.println(board.printAfter());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

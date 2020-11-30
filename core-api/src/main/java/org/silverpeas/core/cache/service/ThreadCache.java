@@ -51,7 +51,7 @@ class ThreadCache extends AbstractSimpleCache {
 
   @Override
   public void clear() {
-    cache.set(null);
+    cache.remove();
   }
 
   @Override

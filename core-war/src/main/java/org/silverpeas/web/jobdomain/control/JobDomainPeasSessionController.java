@@ -1958,7 +1958,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public boolean isEnCours() {
-    return synchroThread != null && synchroThread.isEnCours();
+    return synchroThread != null && synchroThread.isRunning();
   }
 
   public String getSynchroReport() {
@@ -1973,7 +1973,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public void threadFinished() {
-    errorOccured = synchroThread.getErrorOccured();
+    errorOccured = synchroThread.getErrorOccurred();
     synchroReport = synchroThread.getSynchroReport();
     synchroThread = null;
   }

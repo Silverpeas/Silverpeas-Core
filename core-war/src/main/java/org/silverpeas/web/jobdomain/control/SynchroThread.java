@@ -21,37 +21,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
 
 package org.silverpeas.web.jobdomain.control;
 
-public abstract class SynchroThread extends Thread {
-  protected JobDomainPeasSessionController m_toAwake = null;
-  protected boolean m_isEncours = false;
-  protected Exception m_ErrorOccured = null;
-  protected String m_SynchroReport = "";
+import org.silverpeas.core.thread.ManagedThreadPool;
+
+public abstract class SynchroThread implements Runnable {
+  protected final JobDomainPeasSessionController toAwake;
+  protected boolean isRunning = false;
+  protected Exception errorOccurred = null;
+  protected String synchroReport = "";
 
   public SynchroThread(JobDomainPeasSessionController toAwake) {
-    m_toAwake = toAwake;
+    this.toAwake = toAwake;
   }
 
-  public boolean isEnCours() {
-    return m_isEncours;
+  public boolean isRunning() {
+    return isRunning;
   }
 
-  public Exception getErrorOccured() {
-    return m_ErrorOccured;
+  public Exception getErrorOccurred() {
+    return errorOccurred;
   }
 
   public String getSynchroReport() {
-    return m_SynchroReport;
+    return synchroReport;
   }
 
   public void startTheThread() {
-    m_isEncours = true;
-    m_ErrorOccured = null;
-    m_SynchroReport = "";
-    start();
+    isRunning = true;
+    errorOccurred = null;
+    synchroReport = "";
+    ManagedThreadPool.getPool().invoke(this);
   }
 }

@@ -23,11 +23,7 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.workflow.api.model.Column;
 import org.silverpeas.core.workflow.api.model.Columns;
 
@@ -36,6 +32,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;columns&gt; element of a Process Model.
@@ -76,14 +76,11 @@ public class ColumnsImpl implements Serializable, Columns {
 
   @Override
   public Column getColumn(String strItemName) {
-    ItemImpl search = new ItemImpl();
-    search.setName(strItemName);
-    int i = columnList.indexOf(search);
-
-    if (i < 0) {
-      return null;
-    }
-    return columnList.get(i);
+    final String search = StringUtil.defaultStringIfNotDefined(strItemName);
+    return columnList.stream()
+        .filter(c -> search.equals(c.getItem().getName()))
+        .findFirst()
+        .orElse(null);
   }
 
   @Override

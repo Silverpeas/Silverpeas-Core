@@ -32,19 +32,16 @@ public class SynchroWebServiceThread extends SynchroThread {
     super(toAwake);
   }
 
+  @Override
   public void run() {
-
     try {
-      m_SynchroReport = m_toAwake.synchronizeSilverpeasViaWebService();
-
-      m_isEncours = false;
-      m_toAwake.threadFinished();
-
+      synchroReport = toAwake.synchronizeSilverpeasViaWebService();
+      isRunning = false;
+      toAwake.threadFinished();
     } catch (Exception e) {
-      m_ErrorOccured = e;
-      m_isEncours = false;
-      m_toAwake.threadFinished();
-
+      errorOccurred = e;
+      isRunning = false;
+      toAwake.threadFinished();
     }
   }
 }

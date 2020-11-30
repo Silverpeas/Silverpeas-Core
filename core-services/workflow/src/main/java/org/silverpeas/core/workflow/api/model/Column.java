@@ -35,7 +35,6 @@ public interface Column {
 
   /**
    * Set the item to show in this column
-   * @return the item
    */
   void setItem(Item item);
 }
