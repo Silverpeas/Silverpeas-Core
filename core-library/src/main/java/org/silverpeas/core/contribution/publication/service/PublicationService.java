@@ -180,7 +180,7 @@ public interface PublicationService {
    * @param ids the instance ids aimed.
    * @return a list of {@link Location} instances.
    */
-  Map<String, List<Location>> getAllLocationsByPublicationIds(Collection<PublicationPK> ids);
+  Map<String, List<Location>> getAllLocationsByPublicationIds(Collection<String> ids);
 
   /**
    * Gets all the locations of the specified publication whatever the component instance in which

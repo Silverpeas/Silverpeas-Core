@@ -71,6 +71,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.ArrayUtil;
@@ -94,6 +95,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 
@@ -595,8 +597,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public Map<String, List<Location>> getAllLocationsByPublicationIds(
-      final Collection<PublicationPK> ids) {
+  public Map<String, List<Location>> getAllLocationsByPublicationIds(final Collection<String> ids) {
     try (Connection con = getConnection()) {
       return PublicationFatherDAO.getAllLocationsByPublicationIds(con, ids);
     } catch (SQLException e) {
@@ -1495,14 +1496,59 @@ public class DefaultPublicationService implements PublicationService, ComponentI
             }).collect(Collectors.toList());
             return PublicationDAO.getByIds(con, pubIds, indexedPks).stream().collect(SilverpeasList.collector(pubPks));
           } catch (Exception e) {
-            SilverLogger.getLogger(this)
-                .error(failureOnGetting("publications of with ", criteria));
+            SilverLogger.getLogger(this).error(failureOnGetting("publications of with ", criteria));
             return new SilverpeasArrayList<>(0);
           }
         })
         .filter(p -> PublicationAccessControl.get()
-            .filterAuthorizedByUser(userId, p)
+            .filterAuthorizedByUser(userId, performAuthorizedLocation(con, userId, criteria, p))
             .collect(SilverpeasList.collector(p)));
+  }
+
+  private SilverpeasList<PublicationDetail> performAuthorizedLocation(final Connection con,
+      final String userId, final PublicationCriteria criteria,
+      final SilverpeasList<PublicationDetail> publis) {
+    if (!criteria.isAliasesTakenIntoAccount()) {
+      return publis;
+    }
+    long startTime = System.currentTimeMillis();
+    try {
+      final Map<String, List<Location>> indexedLocations =
+          PublicationFatherDAO.getAllLocationsByPublicationIds(con, publis.stream()
+              .map(PublicationDetail::getId)
+              .collect(Collectors.toSet()));
+      final Set<String> instanceIds = criteria.getComponentInstanceIds().stream().collect(Collectors.toSet());
+      final Map<NodePK, Location> locationsAsNodePKs = indexedLocations.entrySet().stream()
+          .flatMap(e -> e.getValue().stream())
+          .filter(l -> instanceIds.isEmpty() || instanceIds.contains(l.getInstanceId()))
+          .collect(toMap(l -> l, l -> l, (l1, l2) -> l1));
+      final Set<Location> authorizedLocations = NodeAccessControl.get()
+          .filterAuthorizedByUser(locationsAsNodePKs.keySet(), userId)
+          .map(locationsAsNodePKs::get)
+          .collect(Collectors.toSet());
+      return publis.stream()
+          .filter(p -> {
+            final Optional<Location> result = indexedLocations.get(p.getId()).stream()
+              .filter(authorizedLocations::contains)
+              .sorted(comparing((Location l) -> !l.getInstanceId().equals(p.getInstanceId()))
+                  .thenComparing(Location::isAlias).thenComparing(Location::getInstanceId))
+                  .findFirst();
+            if (result.isPresent()) {
+              p.setAuthorizedLocation(result.get());
+              return true;
+            }
+            return false;
+          })
+          .collect(SilverpeasList.collector(publis));
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(failureOnGetting("publications alias", "adjustments"));
+      return new SilverpeasArrayList<>(0);
+    } finally {
+      long endTime = System.currentTimeMillis();
+      SilverLogger.getLogger(PublicationService.class).debug(() -> MessageFormat
+          .format(" setting authorized locations in {0} with {1} publications",
+              formatDurationHMS(endTime - startTime), publis.size()));
+    }
   }
 
   @Override

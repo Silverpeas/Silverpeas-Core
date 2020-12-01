@@ -200,21 +200,13 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
       nodeDetailCache = singletonMap(computeNodeCacheKey(nodeDetail.getNodePK()), nodeDetail);
     }
 
-    /**
-     * @return the identifiers of component instance for which data has been loaded (empty set if
-     * already loaded)
-     */
-    Set<String> loadCaches(final String userId, final Collection<String> instanceIds) {
-      if (userProfiles != null || instanceIds.isEmpty()) {
-        return emptySet();
+    void loadCaches(final String userId, final Collection<String> instanceIds) {
+      if (userProfiles == null && !instanceIds.isEmpty()) {
+        completeCaches(userId, instanceIds);
       }
-      return completeCaches(userId, instanceIds);
     }
 
-    /**
-     * @return the identifiers of component instance for which data has been loaded
-     */
-    Set<String> completeCaches(final String userId, final Collection<String> instanceIds) {
+    void completeCaches(final String userId, final Collection<String> instanceIds) {
       final ComponentAccessController.DataManager componentDataManager = ComponentAccessController.getDataManager(context);
       final boolean firstLoad = nodeDetailCache == null;
       if (firstLoad) {
@@ -241,7 +233,6 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
         caches.getFirst().forEach((k, v) -> nodeDetailCache.put(k, v));
         caches.getSecond().forEach((k, v) -> userProfiles.put(k, v));
       }
-      return instanceIdsWithRightsOnTopic;
     }
 
     private Pair<Map<String, NodeDetail>, Map<Pair<String, Integer>, Set<String>>> loadNodesAndUserProfiles(

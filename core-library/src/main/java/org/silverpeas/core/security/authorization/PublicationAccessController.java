@@ -361,23 +361,18 @@ public class PublicationAccessController extends AbstractAccessController<Public
           .map(PublicationPK::getInstanceId)
           .collect(Collectors.toSet());
       final NodeAccessController.DataManager nodeDataManager = NodeAccessController.getDataManager(context);
-      final Set<String> instanceIdsWithRightsOnTopic = nodeDataManager.loadCaches(userId, instanceIds);
-      if (instanceIdsWithRightsOnTopic.isEmpty()) {
-        locationsByPublicationCache = emptyMap();
-      } else {
-        final List<PublicationPK> pksForLocations = givenPublicationPks.stream()
-            .filter(p -> instanceIdsWithRightsOnTopic.contains(p.getInstanceId()))
-            .collect(Collectors.toList());
-        locationsByPublicationCache = publicationService
-            .getAllLocationsByPublicationIds(pksForLocations);
-        final Set<String> additionalInstanceIdsToLoad = locationsByPublicationCache.entrySet().stream()
-            .flatMap(e -> new ArrayList<>(e.getValue()).stream())
-            .map(Location::getInstanceId)
-            .filter(i -> ! instanceIds.contains(i))
-            .collect(Collectors.toSet());
-        if (!additionalInstanceIdsToLoad.isEmpty()) {
-          nodeDataManager.completeCaches(userId, additionalInstanceIdsToLoad);
-        }
+      nodeDataManager.loadCaches(userId, instanceIds);
+      final Set<String> pubIdsForLocations = givenPublicationPks.stream()
+          .map(PublicationPK::getId)
+          .collect(Collectors.toSet());
+      locationsByPublicationCache = publicationService.getAllLocationsByPublicationIds(pubIdsForLocations);
+      final Set<String> additionalInstanceIdsToLoad = locationsByPublicationCache.entrySet().stream()
+          .flatMap(e -> new ArrayList<>(e.getValue()).stream())
+          .map(Location::getInstanceId)
+          .filter(i -> !instanceIds.contains(i))
+          .collect(Collectors.toSet());
+      if (!additionalInstanceIdsToLoad.isEmpty()) {
+        nodeDataManager.completeCaches(userId, additionalInstanceIdsToLoad);
       }
       return this;
     }
