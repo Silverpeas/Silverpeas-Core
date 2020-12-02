@@ -209,7 +209,7 @@
 
 <div id="variable-popin" style="display: none">
   <form name="dnForm" id="dnForm">
-    <div class="table">
+    <div>
       <label class="label-ui-dialog" for="label">${colLabel}</label>
       <div class="champ-ui-dialog">
         <input id="label" name="Label" size="60" maxlength="150" type="text"/>&nbsp;<img alt="obligatoire" src="<c:url value='/util/icons/mandatoryField.gif' />" height="5" width="5"/>

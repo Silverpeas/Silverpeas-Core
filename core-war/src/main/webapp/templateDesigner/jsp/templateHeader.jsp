@@ -461,7 +461,7 @@ $(function () {
 
 <div id="duplicateDialog" style="display:none">
 <form name="DuplicateForm" action="DuplicateForm" method="post">
-  <div class="table">
+  <div>
     <label id="name_label" class="label-ui-dialog" for="DuplicatedFormName"><fmt:message key="GML.nom"/></label>
     <div class="champ-ui-dialog">
       <input id="DuplicatedFormName" name="DuplicatedFormName" size="60" maxlength="150" type="text"/>&nbsp;<img alt="obligatoire" src="<c:url value='/util/icons/mandatoryField.gif' />" height="5" width="5"/>

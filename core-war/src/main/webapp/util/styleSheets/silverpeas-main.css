@@ -5360,6 +5360,10 @@ ul.tagit li.tagit-choice a.tagit-close {
   margin-bottom: 14px;
 }
 
+.ui-dialog #mandatory_label {
+  clear: left;
+}
+
 .ui-dialog .champ-ui-dialog input[type=text],
 .ui-dialog .champ-ui-dialog input[type=file],
 .ui-dialog .champ-ui-dialog textarea {
