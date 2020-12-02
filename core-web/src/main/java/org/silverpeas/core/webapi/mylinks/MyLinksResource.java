@@ -24,7 +24,9 @@
 package org.silverpeas.core.webapi.mylinks;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
@@ -49,6 +51,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -107,6 +110,14 @@ public class MyLinksResource extends RESTWebService {
     LinkDetail userLink = getMyLinksService().getLink(linkId);
     if (userLink == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
+    } else if (StringUtil.isDefined(userLink.getInstanceId())) {
+      // it's a link associated to a component
+      // check if current user is admin of component
+      Collection<SilverpeasRole> roles = OrganizationController.get()
+          .getUserSilverpeasRolesOn(getUser(), userLink.getInstanceId());
+      if (!roles.contains(SilverpeasRole.admin)) {
+        throw new WebApplicationException(Response.Status.FORBIDDEN);
+      }
     } else if (!getUser().getId().equals(userLink.getUserId())) {
       throw new WebApplicationException(Status.FORBIDDEN);
     }
