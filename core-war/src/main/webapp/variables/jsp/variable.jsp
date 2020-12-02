@@ -234,7 +234,7 @@
 
 <div id="variablePeriod-popin" style="display: none">
   <form name="dnForm" id="dnForm">
-    <div class="table">
+    <div>
       <label class="label-ui-dialog" for="value">${colValue}</label>
       <div class="champ-ui-dialog">
         <textarea id="value" name="Value" cols="60" rows="7" maxlength="2000"></textarea>&nbsp;<img alt="obligatoire" src="<c:url value='/util/icons/mandatoryField.gif' />" height="5" width="5"/>

@@ -293,7 +293,7 @@ function submitLink() {
 
 <div id="mylink-popup-content" style="display: none">
   <form name="linkForm" action="" method="post" id="linkFormId">
-    <div class="table">
+    <div>
       <label id="url_label" class="label-ui-dialog" for="urlId"><fmt:message key="myLinks.url"/></label>
 
       <div class="champ-ui-dialog">
