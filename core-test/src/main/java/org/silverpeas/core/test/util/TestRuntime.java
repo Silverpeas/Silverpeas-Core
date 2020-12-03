@@ -36,6 +36,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class TestRuntime {
 
+  private TestRuntime() {
+  }
+
   /**
    * Suspends the execution of the test until a given amount of time.
    * @param duration the duration of the execution suspension.

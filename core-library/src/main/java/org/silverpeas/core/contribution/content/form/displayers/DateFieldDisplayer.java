@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
+import org.jetbrains.annotations.Nullable;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -57,12 +58,6 @@ import java.util.Map;
 public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
 
   /**
-   * Constructeur
-   */
-  public DateFieldDisplayer() {
-  }
-
-  /**
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
@@ -84,22 +79,22 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
     String language = pagesContext.getLanguage();
     String label = WebEncodeHelper.javaStringToJsString(template.getLabel(language));
     produceMandatoryCheck(out, template, pagesContext);
-    out.println("		if (! isWhitespace(stripInitialWhitespace(field.value))) {");
-    out.println("			if (! isCorrectDate(extractYear(field.value, '" + language
+    out.println("\t\tif (! isWhitespace(stripInitialWhitespace(field.value))) {");
+    out.println("\t\t\tif (! isCorrectDate(extractYear(field.value, '" + language
         + "'), extractMonth(field.value, '" + language + "'), extractDay(field.value, '" + language
         + "'))) {");
-    out.println("				errorMsg+=\"  - '"
+    out.println("\t\t\t\terrorMsg+=\"  - '"
         + label + "' "
         + Util.getString("GML.MustContainsCorrectDate", language) + "\\n\";");
-    out.println("				errorNb++;");
-    out.println("		}}");
+    out.println("\t\t\t\terrorNb++;");
+    out.println("\t\t}}");
 
-    out.println("		if (! isValidText(field, " + Util.getSetting("nbMaxCar") + ")) {");
-    out.println("			errorMsg+=\"  - '" + label + "' "
+    out.println("\t\tif (! isValidText(field, " + Util.getSetting("nbMaxCar") + ")) {");
+    out.println("\t\t\terrorMsg+=\"  - '" + label + "' "
         + Util.getString("ContainsTooLargeText", language) + Util.getSetting("nbMaxCar") + " "
         + Util.getString("Characters", language) + "\\n\";");
-    out.println("			errorNb++;");
-    out.println("		}");
+    out.println("\t\t\terrorNb++;");
+    out.println("\t\t}");
 
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
@@ -118,34 +113,16 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
     String language = pagesContext.getLanguage();
     Map<String, String> parameters = template.getParameters(language);
     String fieldName = template.getFieldName();
-    String cssClass = null;
-
-    if (parameters.containsKey("class")) {
-      cssClass = parameters.get("class");
-      if (StringUtil.isDefined(cssClass)) {
-        cssClass = "class=\"" + cssClass + "\"";
-      }
-    }
-
-    String defaultParam = (parameters.containsKey("default") ? parameters.get("default") : "");
-    String defaultValue = "";
-    if ("now".equalsIgnoreCase(defaultParam) && !pagesContext.isIgnoreDefaultValues()) {
-      defaultValue = DateUtil.dateToString(new Date(), pagesContext.getLanguage());
-    }
-
-    String value = (!field.isNull() ? field.getValue(language) : defaultValue);
-    if (pagesContext.isBlankFieldsUse()) {
-      value = "";
-    }
+    String cssClass = getCssClass(parameters);
+    String value = getValue(field, pagesContext, language, parameters);
 
     input inputField = new input();
     inputField.setID(fieldName);
     inputField.setName(fieldName);
     inputField.setValue(WebEncodeHelper.javaStringToHtmlString(value));
     inputField.setType(template.isHidden() ? input.hidden : input.text);
-    inputField.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength")
-        : "10");
-    inputField.setSize(parameters.containsKey("size") ? parameters.get("size") : "13");
+    inputField.setMaxlength(parameters.getOrDefault("maxLength", "10"));
+    inputField.setSize(parameters.getOrDefault("size", "13"));
     if (parameters.containsKey("border")) {
       inputField.setBorder(Integer.parseInt(parameters.get("border")));
     }
@@ -185,6 +162,34 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer<DateField> {
     } else {
       out.println(inputField.toString());
     }
+  }
+
+  private String getValue(final DateField field, final PagesContext pagesContext,
+      final String language, final Map<String, String> parameters) {
+    String defaultParam = (parameters.containsKey("default") ? parameters.get("default") : "");
+    String defaultValue = "";
+    if ("now".equalsIgnoreCase(defaultParam) && !pagesContext.isIgnoreDefaultValues()) {
+      defaultValue = DateUtil.dateToString(new Date(), pagesContext.getLanguage());
+    }
+
+    String value = (!field.isNull() ? field.getValue(language) : defaultValue);
+    if (pagesContext.isBlankFieldsUse()) {
+      value = "";
+    }
+    return value;
+  }
+
+  @Nullable
+  private String getCssClass(final Map<String, String> parameters) {
+    String cssClass = null;
+
+    if (parameters.containsKey("class")) {
+      cssClass = parameters.get("class");
+      if (StringUtil.isDefined(cssClass)) {
+        cssClass = "class=\"" + cssClass + "\"";
+      }
+    }
+    return cssClass;
   }
 
   /**

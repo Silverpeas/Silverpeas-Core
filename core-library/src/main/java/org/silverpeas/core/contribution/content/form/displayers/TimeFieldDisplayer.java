@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.img;
+import org.apache.ecs.xhtml.input;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -31,16 +34,14 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
+
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.img;
-import org.apache.ecs.xhtml.input;
 
 /**
  * A TimeFieldDisplayer is an object which can display a time
@@ -51,9 +52,6 @@ import org.apache.ecs.xhtml.input;
  * @see FieldDisplayer
  */
 public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
-
-  public TimeFieldDisplayer() {
-  }
 
   /**
    * Returns the name of the managed types.
@@ -85,9 +83,9 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     out.println(" if (!" + template.getFieldName() + "Empty) {");
     out.println("var reg=new RegExp(\"^([01][0-9]|2[0-3]):([0-5][0-9])$\",\"g\");");
     out.println("if (!reg.test(field.value)) {");
-    out.println("		errorMsg+=\"  - '" + label + "' " + Util.getString(
+    out.println("\t\terrorMsg+=\"  - '" + label + "' " + Util.getString(
         "GML.MustContainsCorrectHour", language) + "\\n \";");
-    out.println("		errorNb++;");
+    out.println("\t\terrorNb++;");
     out.println("}");
     out.println("}");
 
@@ -106,27 +104,17 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String value;
-    String html = "";
-
-    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
     if (field == null) {
       return;
     }
+    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
+    String value = getValue(field, pageContext, parameters);
 
-    String defaultParam = (parameters.containsKey("default") ? parameters.get("default") : "");
-    String defaultValue = "";
-    if ("now".equalsIgnoreCase(defaultParam) && !pageContext.isIgnoreDefaultValues()) {
-      defaultValue = DateUtil.formatTime(new Date());
-    }
-    value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
-    if (pageContext.isBlankFieldsUse()) {
-      value = "";
-    }
-
+    String html;
     if (template.isReadOnly() && !template.isHidden()) {
       html = value;
     } else {
+      html = "";
       input inputField = new input();
       inputField.setName(template.getFieldName());
       inputField.setID(template.getFieldName());
@@ -164,14 +152,28 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
     out.println(html);
   }
 
+  private String getValue(final TextField field, final PagesContext pageContext,
+      final Map<String, String> parameters) {
+    String defaultParam = parameters.getOrDefault("default", "");
+    String defaultValue = "";
+    if ("now".equalsIgnoreCase(defaultParam) && !pageContext.isIgnoreDefaultValues()) {
+      defaultValue = DateUtil.formatTime(new Date());
+    }
+    String value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
+    if (pageContext.isBlankFieldsUse()) {
+      value = "";
+    }
+    return value;
+  }
+
   public List<String> update(String newValue, TextField field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+      PagesContext pagesContext) throws FormException {
     if (!TextField.TYPE.equals(field.getTypeName())) {
       throw new FormException("TimeFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
-    if (field.acceptValue(newValue, PagesContext.getLanguage())) {
-      field.setValue(newValue, PagesContext.getLanguage());
+    if (field.acceptValue(newValue, pagesContext.getLanguage())) {
+      field.setValue(newValue, pagesContext.getLanguage());
     } else {
       throw new FormException("TimeFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
           TextField.TYPE);
