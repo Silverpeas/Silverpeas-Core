@@ -374,12 +374,10 @@ public class UserDAO {
         .from(USER_TABLE)
         .where(STATE)
         .notIn(UserState.REMOVED, UserState.DELETED);
-    if (fromUser.isAccessAdmin() || fromUser.isAccessDomainManager()) {
-      query.and(ACCESS_LEVEL_CRITERION, UserAccessLevel.ADMINISTRATOR.code());
-    } else {
-      query.and(DOMAIN_ID_CRITERION, Integer.parseInt(fromUser.getDomainId()))
-          .and("(accessLevel = ? or accessLevel = ?)", UserAccessLevel.ADMINISTRATOR.code(),
-              UserAccessLevel.DOMAIN_ADMINISTRATOR.code());
+    query.and(ACCESS_LEVEL_CRITERION, UserAccessLevel.ADMINISTRATOR.code());
+    if (!fromUser.isAccessAdmin() && !fromUser.isAccessDomainManager()) {
+      query.or("(accessLevel = ? and domainId = ?)", UserAccessLevel.DOMAIN_ADMINISTRATOR.code(),
+          Integer.parseInt(fromUser.getDomainId()));
     }
     return query.orderBy(LAST_NAME).executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
