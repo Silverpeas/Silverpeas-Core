@@ -173,6 +173,7 @@ class Admin implements Administration {
   private SynchroDomainScheduler domainSynchroScheduler = null;
   private SettingBundle roleMapping = null;
   private boolean useProfileInheritance = false;
+  private static int maxGroupDelete = 20;
 
   @Inject
   private AdminCache cache;
@@ -221,6 +222,8 @@ class Admin implements Administration {
     delUsersOnDiffSynchro = resources.getBoolean("DelUsersOnThreadedSynchro", true);
     // Cache management
     cache.setCacheAvailable(StringUtil.getBooleanValue(resources.getString("UseCache", "1")));
+
+    maxGroupDelete = resources.getInteger("MaxGroupDelete", 20);
   }
 
   protected Admin() {
@@ -4916,6 +4919,7 @@ class Admin implements Administration {
     int iNbGroupsAdded = 0;
     int iNbGroupsMaj = 0;
     int iNbGroupsDeleted = 0;
+    HashMap<String, GroupDetail> groupToDelete = new HashMap<String, GroupDetail>();
     SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS, "Starting groups synchronization...");
     try {
       // Get all root groups of the domain from distant datasource
@@ -4951,10 +4955,23 @@ class Admin implements Administration {
 
         // if found, do nothing, else delete
         if (!bFound) {
+          groupToDelete.put(specificId, silverpeasGroup);
+        }
+      }
+
+      // Effective delete
+      if (groupToDelete.entrySet().size() > maxGroupDelete) {
+        SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_GROUPS, "Too many groups to delete => the deletion is canceled");
+      } else {
+        for (Map.Entry<String, GroupDetail> entry : groupToDelete.entrySet()) {
+          specificId = entry.getKey();
+          GroupDetail silverpeasGroup = entry.getValue();
+
           iNbGroupsDeleted =
               synchroDeleteGroup(specificId, silverpeasGroup, sReport, iNbGroupsDeleted);
         }
       }
+
       sReport.append("Groups synchronization terminated\n");
       SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS,
           "# of groups updated : " + iNbGroupsMaj + ", added : " + iNbGroupsAdded
