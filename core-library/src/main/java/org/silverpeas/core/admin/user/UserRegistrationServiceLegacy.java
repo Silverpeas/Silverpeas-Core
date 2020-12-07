@@ -116,8 +116,7 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
         throw new AdminException(failureOnAdding("user", firstName + " " + lastName));
       }
       // Send credentials to user
-      Domain domain = admin.getDomain(domainId);
-      sendCredentialsToUser(uf, password, domain.getSilverpeasServerURL());
+      sendCredentialsToUser(uf, password, URLUtil.getCurrentServerURL());
     }
 
     return userId;
