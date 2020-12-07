@@ -31,7 +31,7 @@
 <%@ include file="../../headLog.jsp" %>
 
 <fmt:setLocale value="<%=userLanguage%>" />
-<view:setBundle basename="org.silverpeas.social.multilang.registration" />
+<view:setBundle basename="org.silverpeas.authentication.multilang.authentication" />
 <view:sp-page>
 <view:sp-head-part noLookAndFeel="true">
 <link rel="icon" href="<%=favicon%>" />

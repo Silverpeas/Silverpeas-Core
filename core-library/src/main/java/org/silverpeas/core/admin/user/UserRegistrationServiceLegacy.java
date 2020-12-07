@@ -66,7 +66,7 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
   void init() {
       multilang =
         ResourceLocator.getLocalizationBundle(
-        "org.silverpeas.social.multilang.registration", DisplayI18NHelper
+        "org.silverpeas.authentication.multilang.authentication", DisplayI18NHelper
         .getDefaultLanguage());
   }
 
@@ -156,7 +156,7 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
   private void sendCredentialsToUser(UserFull user, String password, String silverpeasServerURL) {
     try {
       Map<String, SilverpeasTemplate> templates = new HashMap<>();
-      String subject = multilang.getString("credentialsMail.subject");
+      String subject = multilang.getString("registration.credentials.mail.subject");
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, templates,
           "credentialsMail");
