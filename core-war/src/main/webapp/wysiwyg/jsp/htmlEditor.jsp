@@ -291,7 +291,7 @@
 
   <c:if test="${not empty param.notySuccess}">
   $(document).ready(function(){
-    notySuccess('${param.notySuccess}');
+    notySuccess('${silfn:escapeJs(param.notySuccess)}');
   });
   </c:if>
 

@@ -27,20 +27,21 @@
 <%@page import="org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail"%>
 <%@page import="org.silverpeas.core.util.file.FileServerUtils"%>
 <%@page import="org.silverpeas.core.util.StringUtil"%>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%@ include file="thumbnailHeader.jsp"%>
 
 <%
-	String result		    = (String)request.getAttribute("resultThumbnail");
-    String action		    = (String)request.getAttribute("action");
-	String componentId		= request.getParameter("ComponentId");
-	String objectId			= request.getParameter("ObjectId");
-	String objectType		= request.getParameter("ObjectType");
-	String backUrl		    = request.getParameter("BackUrl");
-	String thumbnailHeight  = request.getParameter("ThumbnailHeight");
-    String thumbnailWidth   = request.getParameter("ThumbnailWidth");
-    if (!StringUtil.isDefined(thumbnailHeight) && StringUtil.isDefined(thumbnailWidth)) {
-      thumbnailHeight = Long.toString(Math.round(Integer.parseInt(thumbnailWidth) * 0.75));
-    }
+  String result = (String) request.getAttribute("resultThumbnail");
+  String action = (String) request.getAttribute("action");
+  String componentId = Encode.forHtmlAttribute(request.getParameter("ComponentId"));
+  String objectId = Encode.forHtmlAttribute(request.getParameter("ObjectId"));
+  String objectType = Encode.forHtmlAttribute(request.getParameter("ObjectType"));
+  String backUrl = Encode.forHtmlAttribute(request.getParameter("BackUrl"));
+  String thumbnailHeight = Encode.forCssString(request.getParameter("ThumbnailHeight"));
+  String thumbnailWidth = Encode.forCssString(request.getParameter("ThumbnailWidth"));
+  if (!StringUtil.isDefined(thumbnailHeight) && StringUtil.isDefined(thumbnailWidth)) {
+    thumbnailHeight = Long.toString(Math.round(Integer.parseInt(thumbnailWidth) * 0.75));
+  }
 
 	ThumbnailSessionController thumbnailScc = (ThumbnailSessionController) request.getAttribute("thumbnail");
 	ThumbnailDetail currentThumbnail = (ThumbnailDetail) request.getAttribute("thumbnaildetail");
