@@ -57,7 +57,7 @@ public class LoginServlet extends SilverpeasHttpServlet {
 
   private static final SettingBundle general =
       ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
-  private static final String PARAM_DOMAINID = "DomainId";
+  public static final String PARAM_DOMAINID = "DomainId";
 
   @Override
   protected void service(final HttpServletRequest request, final HttpServletResponse response)
