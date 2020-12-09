@@ -28,7 +28,6 @@ import org.silverpeas.core.mylinks.MyLinksRuntimeException;
 import org.silverpeas.core.mylinks.dao.LinkDAO;
 import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.model.LinkDetailComparator;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -49,9 +48,7 @@ public class DefaultMyLinksService implements MyLinksService, ComponentInstanceD
     try {
       LinkDAO.deleteComponentInstanceData(componentInstanceId);
     } catch (SQLException e) {
-      throw new MyLinksRuntimeException("MyLinksBmEJB.delete()", SilverpeasRuntimeException.ERROR,
-          "node.DELETING_COMPONENT_INSTANCE_MYLINKS_FAILED", "instanceId = " + componentInstanceId,
-          e);
+      throw new MyLinksRuntimeException(e);
     }
   }
 
@@ -66,8 +63,7 @@ public class DefaultMyLinksService implements MyLinksService, ComponentInstanceD
       List<LinkDetail> links = getLinkDao().getAllLinksByUser(con, userId);
       return LinkDetailComparator.sort(links);
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByUser()",
-          SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
+      throw new MyLinksRuntimeException(e);
     }
   }
 
@@ -76,8 +72,7 @@ public class DefaultMyLinksService implements MyLinksService, ComponentInstanceD
     try (Connection con = openConnection()) {
       return getLinkDao().getAllLinksByInstance(con, instanceId);
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByInstance()",
-          SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
+      throw new MyLinksRuntimeException(e);
     }
   }
 
@@ -86,8 +81,7 @@ public class DefaultMyLinksService implements MyLinksService, ComponentInstanceD
     try (Connection con = openConnection()) {
       return getLinkDao().getAllLinksByObject(con, instanceId, objectId);
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByObject()",
-          SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINKS_NOT_EXIST", e);
+      throw new MyLinksRuntimeException(e);
     }
   }
 
@@ -97,8 +91,7 @@ public class DefaultMyLinksService implements MyLinksService, ComponentInstanceD
       int id = getLinkDao().createLink(con, link);
       link.setLinkId(id);
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksBmEJB.createLink()",
-          SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINK_NOT_CREATE", e);
+      throw new MyLinksRuntimeException(e);
     }
   }
 
@@ -109,8 +102,7 @@ public class DefaultMyLinksService implements MyLinksService, ComponentInstanceD
         getLinkDao().deleteLink(con, linkId);
       }
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksBmEJB.deleteLinks()",
-          SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINK_NOT_DELETE", e);
+      throw new MyLinksRuntimeException(e);
     }
   }
 
@@ -119,8 +111,7 @@ public class DefaultMyLinksService implements MyLinksService, ComponentInstanceD
     try (Connection con = openConnection()) {
       getLinkDao().updateLink(con, link);
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksBmEJB.updateLink()",
-          SilverpeasRuntimeException.ERROR, "myLinks.MSG_LINK_NOT_UPDATE", e);
+      throw new MyLinksRuntimeException(e);
     }
   }
 
@@ -129,8 +120,7 @@ public class DefaultMyLinksService implements MyLinksService, ComponentInstanceD
     try (Connection con = openConnection()) {
       return getLinkDao().getLink(con, linkId);
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksBmEJB.getLink()", SilverpeasRuntimeException.ERROR,
-          "myLinks.MSG_LINKS_NOT_EXIST", e);
+      throw new MyLinksRuntimeException(e);
     }
   }
 }

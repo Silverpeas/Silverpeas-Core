@@ -23,38 +23,19 @@
  */
 package org.silverpeas.core.mylinks;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class MyLinksRuntimeException extends SilverpeasRuntimeException {
-  /**
-   * --------------------------------------------------------------------------
-   * constructors
-   */
-  public MyLinksRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+
+  public MyLinksRuntimeException(final String message) {
+    super(message);
   }
 
-  public MyLinksRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public MyLinksRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public MyLinksRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public MyLinksRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public MyLinksRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * --------------------------------------------------------------------------
-   * getModule
-   */
-  public String getModule() {
-    return "myLinks";
-  }
-
 }

@@ -23,20 +23,15 @@
  */
 package org.silverpeas.web.mylinks.control;
 
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.mylinks.MyLinksRuntimeException;
-import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.mylinks.model.LinkDetail;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.mylinks.service.MyLinksService;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.webapi.mylinks.MyLinkEntity;
-import org.silverpeas.core.notification.message.MessageNotifier;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -70,10 +65,9 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
   public Collection<LinkDetail> getAllLinksByUser() {
     Collection<LinkDetail> links;
     try {
-      links = getMyLinksBm().getAllLinksByUser(getUserId());
+      links = getMyLinksService().getAllLinksByUser(getUserId());
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksPeasSessionController.getAllLinksByUser",
-          SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
+      throw new MyLinksRuntimeException(e);
     }
     return links;
   }
@@ -81,10 +75,9 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
   public Collection<LinkDetail> getAllLinksByInstance() {
     Collection<LinkDetail> links;
     try {
-      links = getMyLinksBm().getAllLinksByInstance(instanceId);
+      links = getMyLinksService().getAllLinksByInstance(instanceId);
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksPeasSessionController.getAllLinksByInstance",
-          SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
+      throw new MyLinksRuntimeException(e);
     }
     return links;
   }
@@ -92,10 +85,9 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
   public Collection<LinkDetail> getAllLinksByObject() {
     Collection<LinkDetail> links;
     try {
-      links = getMyLinksBm().getAllLinksByObject(instanceId, objectId);
+      links = getMyLinksService().getAllLinksByObject(instanceId, objectId);
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksPeasSessionController.getAllLinksByObject",
-          SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
+      throw new MyLinksRuntimeException(e);
     }
     return links;
   }
@@ -103,10 +95,9 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
   public LinkDetail getLink(String linkId) {
     LinkDetail link;
     try {
-      link = getMyLinksBm().getLink(linkId);
+      link = getMyLinksService().getLink(linkId);
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksPeasSessionController.getLink",
-          SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
+      throw new MyLinksRuntimeException(e);
     }
     return link;
   }
@@ -127,15 +118,7 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
     LinkDetail userLink = getLink(linkId);
     if (userLink == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
-    } else if (StringUtil.isDefined(userLink.getInstanceId())) {
-      // it's a link associated to a component
-      // check if current user is admin of component
-      Collection<SilverpeasRole> roles = OrganizationController.get()
-          .getUserSilverpeasRolesOn(User.getCurrentRequester(), userLink.getInstanceId());
-      if (!roles.contains(SilverpeasRole.admin)) {
-        throw new WebApplicationException(Response.Status.FORBIDDEN);
-      }
-    } else if (!getUserDetail().getId().equals(userLink.getUserId())) {
+    } else if (! userLink.canBeModifiedBy(getUserDetail())) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }
@@ -144,11 +127,10 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
     try {
       LinkDetail linkDetail = newLink.toLinkDetail();
       linkDetail.setUserId(getUserId());
-      getMyLinksBm().createLink(linkDetail);
+      getMyLinksService().createLink(linkDetail);
       MessageNotifier.addSuccess(getString("myLinks.messageConfirm"));
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksPeasSessionController.createLink",
-          SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
+      throw new MyLinksRuntimeException(e);
     }
   }
 
@@ -158,11 +140,10 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
       checkMandatoryLinkData(updatedLink);
       LinkDetail linkDetail = updatedLink.toLinkDetail();
       linkDetail.setUserId(getUserId());
-      getMyLinksBm().updateLink(linkDetail);
+      getMyLinksService().updateLink(linkDetail);
       MessageNotifier.addSuccess(getString("myLinks.updateLink.messageConfirm"));
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksPeasSessionController.updateLink",
-          SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
+      throw new MyLinksRuntimeException(e);
     }
   }
 
@@ -172,16 +153,16 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
         for (String linkId : links) {
           verifyCurrentUserIsOwner(linkId);
         }
-        getMyLinksBm().deleteLinks(links);
-        MessageNotifier.addSuccess(getString("myLinks.deleteLinks.messageConfirm"), links.length);
+        getMyLinksService().deleteLinks(links);
+        MessageNotifier.addSuccess(getString("myLinks.deleteLinks.messageConfirm"),
+            links.length);
       }
     } catch (Exception e) {
-      throw new MyLinksRuntimeException("MyLinksPeasSessionController.createLink",
-          SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
+      throw new MyLinksRuntimeException(e);
     }
   }
 
-  private MyLinksService getMyLinksBm() {
+  private MyLinksService getMyLinksService() {
     return ServiceProvider.getService(MyLinksService.class);
   }
 

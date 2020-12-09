@@ -23,9 +23,18 @@
  */
 package org.silverpeas.core.mylinks.model;
 
-import java.io.Serializable;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.security.Securable;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.util.StringUtil;
 
-public class LinkDetail implements Serializable {
+import java.io.Serializable;
+import java.util.Collection;
+
+public class LinkDetail implements Serializable, Securable {
 
   private static final long serialVersionUID = 1841282101128766762L;
   private int linkId;
@@ -141,4 +150,38 @@ public class LinkDetail implements Serializable {
     this.hasPosition = hasPosition;
   }
 
+  @Override
+  public boolean canBeAccessedBy(final User user) {
+    boolean canBeAccessed;
+    if (StringUtil.isDefined(instanceId)) {
+      SilverpeasComponentInstance componentInstance =
+          SilverpeasComponentInstance.getById(instanceId).orElse(null);
+      canBeAccessed = componentInstance != null &&
+          (componentInstance.isPublic() || componentInstance.isPersonal() ||
+              ComponentAccessControl.get().isUserAuthorized(user.getId(), instanceId));
+    } else {
+      canBeAccessed = true;
+    }
+    return canBeAccessed;
+  }
+
+  @Override
+  public boolean canBeModifiedBy(final User user) {
+    boolean canBeModified;
+    if (StringUtil.isDefined(instanceId)) {
+      // it's a link associated to a component
+      // check if current user is admin of component
+      Collection<SilverpeasRole> roles = OrganizationController.get()
+          .getUserSilverpeasRolesOn(User.getCurrentRequester(), instanceId);
+      canBeModified = roles.contains(SilverpeasRole.admin);
+    } else {
+      canBeModified = user.getId().equals(userId);
+    }
+    return canBeModified;
+  }
+
+  @Override
+  public boolean canBeDeletedBy(final User user) {
+    return canBeModifiedBy(user);
+  }
 }
