@@ -27,8 +27,12 @@ import org.silverpeas.core.comment.CommentRuntimeException;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.enterprise.context.RequestScoped;
@@ -67,6 +71,9 @@ public class CommentResource extends RESTWebService {
   private String contentType;
   @PathParam("contentId")
   private String contentId;
+
+  @Inject
+  private PublicationService publicationService;
 
   @Override
   protected String getResourceBasePath() {
@@ -307,6 +314,17 @@ public class CommentResource extends RESTWebService {
             getContentType()) || !theComment.getResourceId().equals(
             getContentId())) {
       throw new WebApplicationException(Status.NOT_FOUND);
+    }
+  }
+
+  @Override
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
+    if (PublicationDetail.TYPE.equals(getContentType())) {
+      PublicationDetail publi =
+          publicationService.getDetail(new PublicationPK(getContentId(), getComponentId()));
+      validation.validateUserAuthorizationOnPublication(getHttpServletRequest(), getUser(), publi);
+    } else {
+      super.validateUserAuthorization(validation);
     }
   }
 }

@@ -25,6 +25,7 @@ package org.silverpeas.core.webapi.base;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -114,4 +115,15 @@ public interface UserPrivilegeValidation {
    */
   void validateUserAuthorizationOnAttachment(HttpServletRequest request, User user,
       SimpleDocument doc);
+
+  /**
+   * Validates the authorization of the specified user to access the specified publication.
+   *
+   * @param request the HTTP request from which the authentication of the caller can be done.
+   * @param user the user for whom the authorization has to be validated.
+   * @param publi the publication accessed.
+   * @throws WebApplicationException exception if the validation failed.
+   */
+  void validateUserAuthorizationOnPublication(final HttpServletRequest request, final User user,
+      PublicationDetail publi);
 }
