@@ -23,9 +23,13 @@
  */
 package org.silverpeas.web.mylinks.control;
 
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.mylinks.MyLinksRuntimeException;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.mylinks.model.LinkDetail;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -123,6 +127,14 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
     LinkDetail userLink = getLink(linkId);
     if (userLink == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
+    } else if (StringUtil.isDefined(userLink.getInstanceId())) {
+      // it's a link associated to a component
+      // check if current user is admin of component
+      Collection<SilverpeasRole> roles = OrganizationController.get()
+          .getUserSilverpeasRolesOn(User.getCurrentRequester(), userLink.getInstanceId());
+      if (!roles.contains(SilverpeasRole.admin)) {
+        throw new WebApplicationException(Response.Status.FORBIDDEN);
+      }
     } else if (!getUserDetail().getId().equals(userLink.getUserId())) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
