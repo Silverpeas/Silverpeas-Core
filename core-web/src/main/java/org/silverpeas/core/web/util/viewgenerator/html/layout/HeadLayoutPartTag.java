@@ -46,13 +46,18 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
  * </p>
  */
 public class HeadLayoutPartTag extends SilverpeasLayout {
-  private static final long serialVersionUID = 6334425081267420038L;
+  private static final long serialVersionUID = 3999748737379369648L;
 
+  private String atTop;
   private boolean minimalSilverpeasScriptEnv;
   private boolean noLookAndFeel;
   private boolean lookContextManagerCallbackOnly;
   private boolean withFieldsetStyle;
   private boolean withCheckFormScript;
+
+  public void setAtTop(final String atTop) {
+    this.atTop = atTop;
+  }
 
   public void setMinimalSilverpeasScriptEnv(final boolean minimalSilverpeasScriptEnv) {
     this.minimalSilverpeasScriptEnv = minimalSilverpeasScriptEnv;
@@ -77,15 +82,22 @@ public class HeadLayoutPartTag extends SilverpeasLayout {
   @Override
   public int doEndTag() throws JspException {
     final head head = new head();
+    renderTop(head);
     head.addElement(new title(getBundle().getString("GML.popupTitle")));
     renderMinimalSilverpeas(head);
     renderLookAndFeel(head);
     final BodyContent bodyContent = getBodyContent();
     if (bodyContent != null) {
       head.addElement(bodyContent.getString());
-    }
+      }
     head.output(pageContext.getOut());
     return EVAL_PAGE;
+  }
+
+  private void renderTop(final head head) {
+    if (atTop != null) {
+      head.addElement(atTop);
+    }
   }
 
   private void renderMinimalSilverpeas(final head head) {

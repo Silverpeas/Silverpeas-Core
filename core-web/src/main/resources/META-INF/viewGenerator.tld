@@ -2640,17 +2640,24 @@
     <tag-class>org.silverpeas.core.web.util.viewgenerator.html.layout.HeadLayoutPartTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
+      <description>Permits to add some head contents before the one automatically filled</description>
+      <name>atTop</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
       <description>Includes minimal Silverpeas's script requirement. Look and Feel stuffs are not returned (noLookAndFeel is ignored)</description>
       <name>minimalSilverpeasScriptEnv</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
       <type>boolean</type>
     </attribute>
     <attribute>
       <description>Dont include Look and Feel stuffs (like view:looknfeel)</description>
       <name>noLookAndFeel</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
       <type>boolean</type>
     </attribute>
     <attribute>
