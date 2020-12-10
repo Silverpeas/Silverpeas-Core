@@ -282,6 +282,7 @@ public class UserDAO {
   public void blankUser(final Connection connection, final UserDetail user) throws SQLException {
     user.setFirstName(BLANK_NAME);
     user.setLastName("");
+    user.seteMail("");
     updateUser(connection, user);
   }
 
@@ -293,11 +294,12 @@ public class UserDAO {
    */
   public void updateUser(final Connection connection, final UserDetail user) throws SQLException {
     Instant now = new Date().toInstant();
+    String firstName = user.isBlanked() ? BLANK_NAME : user.getFirstName();
     JdbcSqlQuery.createUpdateFor(USER_TABLE)
         .addUpdateParam(SPECIFIC_ID, user.getSpecificId())
         .addUpdateParam(DOMAIN_ID, Integer.parseInt(user.getDomainId()))
         .addUpdateParam(LOGIN, user.getLogin())
-        .addUpdateParam(FIRST_NAME, user.getFirstName())
+        .addUpdateParam(FIRST_NAME, firstName)
         .addUpdateParam(LAST_NAME, user.getLastName())
         .addUpdateParam("email", user.geteMail())
         .addUpdateParam(ACCESS_LEVEL, user.getAccessLevel().code())

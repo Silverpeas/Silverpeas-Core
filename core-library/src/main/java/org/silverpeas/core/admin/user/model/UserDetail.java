@@ -580,6 +580,11 @@ public class UserDetail implements User {
     return getId() != null && getId().equals(getAnonymousUserId());
   }
 
+  @Override
+  public boolean isBlanked() {
+    return isDeletedState() && firstName.equals(BLANK_NAME);
+  }
+
   /**
    * Gets the anonymous user or null if no such user exists.
    * @return the detail about the anonymous user or null if no such user exists.

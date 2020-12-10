@@ -236,6 +236,11 @@ public class ChatUser extends UserDetail {
   }
 
   @Override
+  public boolean isBlanked() {
+    return user.isBlanked();
+  }
+
+  @Override
   public boolean isAccessAdmin() {
     return user.isAccessAdmin();
   }
