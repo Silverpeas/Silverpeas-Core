@@ -179,6 +179,14 @@ public interface User extends Serializable, Comparable<User> {
   boolean isAnonymous();
 
   /**
+   * Indicates if the user was blanked after its deletion. Blank a user means its data has been
+   * blanked and therefore any of his contributions in Silverpeas can be figured out; his
+   * contributions were anonymized.
+   * @return true if the user was blanked.
+   */
+  boolean isBlanked();
+
+  /**
    * Indicates if the user has admin access on the platform.
    * @return true if admin access, false otherwise.
    */
