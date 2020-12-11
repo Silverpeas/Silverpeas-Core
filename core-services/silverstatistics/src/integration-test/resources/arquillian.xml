@@ -39,6 +39,7 @@
       <property name="serverConfig">standalone-full.xml</property>
       <property name="startupTimeoutInSeconds">120</property>
       <property name="allowConnectingToRunningServer">true</property>
+      <property name="javaVmArguments">-Xms512M -Xmx2G -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m</property>
       <!-- uncomment it for debugging integration test -->
       <!--
       <property name="javaVmArguments">-agentlib:jdwp=transport=dt_socket,address=5005,server=y,suspend=y</property>
