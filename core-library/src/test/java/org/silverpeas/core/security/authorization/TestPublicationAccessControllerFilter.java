@@ -230,7 +230,7 @@ public class TestPublicationAccessControllerFilter {
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     final int publicationForTestPlusOneClone = ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE.size() + 1;
     assertThat(publicationDataManager.publicationCache.size(), is(publicationForTestPlusOneClone));
-    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), containsInAnyOrder("3", "4"));
+    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), containsInAnyOrder("1", "2", "3", "4", "27"));
     // Publication level
     if (fromPks) {
       // One to load the publications, and an other one to load the master of clones
@@ -278,7 +278,7 @@ public class TestPublicationAccessControllerFilter {
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     final int publicationForTestPlusOneClone = ALL_PUBLICATIONS_FOR_TEST_ON_INHERITED_RIGHTS_WITH_ONE_CLONE.size() + 1;
     assertThat(publicationDataManager.publicationCache.size(), is(publicationForTestPlusOneClone));
-    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), empty());
+    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), containsInAnyOrder("1", "2", "27"));
     // Publication level
     if (fromPks) {
       // One to load the publications, and an other one to load the master of clones
@@ -287,7 +287,7 @@ public class TestPublicationAccessControllerFilter {
       // One to load the master of clones
       verify(publicationService, times(1)).getMinimalDataByIds(anyCollection());
     }
-    verify(publicationService, times(0)).getAllLocationsByPublicationIds(anyCollection());
+    verify(publicationService, times(1)).getAllLocationsByPublicationIds(anyCollection());
     // Node level
     verify(nodeService, times(0)).getMinimalDataByInstances(anyCollection());
     verify(organizationController, times(0))
@@ -373,7 +373,7 @@ public class TestPublicationAccessControllerFilter {
     assertThat(publicationDataManager.lotOfDataMode, is(true));
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     assertThat(publicationDataManager.publicationCache.size(), is(0));
-    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), containsInAnyOrder("3", "4"));
+    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), containsInAnyOrder("1", "2", "3", "4", "27"));
     // Publication level
     verify(publicationService, times(0)).getMinimalDataByIds(anyCollection());
     verify(publicationService, times(1)).getAllLocationsByPublicationIds(anyCollection());
@@ -417,7 +417,7 @@ public class TestPublicationAccessControllerFilter {
     assertThat(publicationDataManager.givenPublicationPks, containsInAnyOrder(pksOfTest));
     final int publicationForTestPlusOneClone = ALL_PUBLICATIONS_FOR_TEST_WITH_ONE_CLONE.size() + 1;
     assertThat(publicationDataManager.publicationCache.size(), is(publicationForTestPlusOneClone));
-    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), containsInAnyOrder("3", "4"));
+    assertThat(publicationDataManager.locationsByPublicationCache.keySet(), containsInAnyOrder("1", "2", "3", "4", "27"));
     // Publication level
     if (fromPks) {
       // One to load the publications, and an other one to load the master of clones
@@ -557,8 +557,8 @@ public class TestPublicationAccessControllerFilter {
               .collect(Collectors.toList()));
       when(publicationService.getAllLocationsByPublicationIds(anyCollection())).then(a -> {
           final Map<String, Set<Location>> result = new HashMap<>();
-          ((Collection<PublicationPK>) a.getArgument(0)).stream()
-              .flatMap(p -> ALL_PUBLICATIONS.stream().filter(pu -> pu.getPK().equals(p)))
+          ((Collection<String>) a.getArgument(0)).stream()
+              .flatMap(p -> ALL_PUBLICATIONS.stream().filter(pu -> pu.getPK().getId().equals(p)))
               .forEach(pu -> result.put(pu.getId(), new HashSet<>(pu.getLocations())));
           return result;
       });

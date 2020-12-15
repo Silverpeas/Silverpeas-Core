@@ -837,7 +837,9 @@ public class PublicationDAO {
       query.join(PUBLICATION_FATHER_TABLE_NAME + " F").on("F.pubId = P.pubId");
     }
     if (!criteria.getComponentInstanceIds().isEmpty()) {
-      query.join("ST_ComponentInstance I").on("P.instanceid = CONCAT(I.componentname , CAST(I.id AS VARCHAR(20)))");
+      final String instanceSelector = criteria.isAliasesTakenIntoAccount() ? "F" : "P";
+      query.join("ST_ComponentInstance I")
+           .on(instanceSelector + ".instanceid = CONCAT(I.componentname , CAST(I.id AS VARCHAR(20)))");
     }
   }
 

@@ -177,13 +177,12 @@ public class PublicationFatherDAO {
    *   This method is designed for process performance needs.
    * </p>
    * @param con the database connection.
-   * @param ids the instance ids aimed.
+   * @param pubIds the publication ids which are aimed.
    * @return a list of {@link Location} instances.
    * @throws SQLException on database error.
    */
   public static Map<String, List<Location>> getAllLocationsByPublicationIds(Connection con,
-      Collection<PublicationPK> ids) throws SQLException {
-    final List<String> pubIds = ids.stream().map(PublicationPK::getId).collect(Collectors.toList());
+      Collection<String> pubIds) throws SQLException {
     return JdbcSqlQuery.executeBySplittingOn(pubIds, (pubIdBatch, result) -> {
       final JdbcSqlQuery query = JdbcSqlQuery.createSelect(LOCATION_FIELDS + ", " + PUB_ID)
           .from(PUBLICATION_FATHER_TABLE_NAME)

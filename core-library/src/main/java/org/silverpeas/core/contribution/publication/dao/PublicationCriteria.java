@@ -82,6 +82,7 @@ public class PublicationCriteria {
   private final Set<Integer> excludedNodeIds = new HashSet<>();
   private final List<QUERY_ORDER_BY> orderByList = new ArrayList<>();
   private boolean mustHaveAtLeastOneNodeFather = false;
+  private boolean takingAliasesIntoAccount = false;
   private OffsetDateTime visibilityDate = null;
   private OffsetDateTime lastUpdatedSince = null;
   private PaginationPage pagination;
@@ -158,8 +159,21 @@ public class PublicationCriteria {
     return this;
   }
 
+  /**
+   * Indicates that the publication MUST be linked to a node.
+   * @return itself.
+   */
   public PublicationCriteria mustHaveAtLeastOneNodeFather() {
     this.mustHaveAtLeastOneNodeFather = true;
+    return this;
+  }
+
+  /**
+   * Indicates that publications can be retrieved from the aliases data.
+   * @return itself.
+   */
+  public PublicationCriteria takingAliasesIntoAccount() {
+    this.takingAliasesIntoAccount = true;
     return this;
   }
 
@@ -272,10 +286,14 @@ public class PublicationCriteria {
   }
 
   boolean mustJoinOnNodeFatherTable() {
-    return mustHaveAtLeastOneNodeFather || !includedNodeIds.isEmpty() || !excludedNodeIds.isEmpty();
+    return takingAliasesIntoAccount || mustHaveAtLeastOneNodeFather || !includedNodeIds.isEmpty() || !excludedNodeIds.isEmpty();
   }
 
-  List<String> getComponentInstanceIds() {
+  public boolean isAliasesTakenIntoAccount() {
+    return takingAliasesIntoAccount;
+  }
+
+  public List<String> getComponentInstanceIds() {
     return componentInstanceIds;
   }
 

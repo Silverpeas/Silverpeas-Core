@@ -168,6 +168,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   public static final String CLONE_STATUS = "Clone";
   public static final String TYPE = "Publication";
   private boolean alias = false;
+  private Location authorizedLocation = null;
   private transient ThumbnailDetail thumbnail = null;
 
   private ContributionRating contributionRating;
@@ -1280,6 +1281,34 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     return contributionRating;
   }
 
+  /**
+   * Sets an authorized location to the current instance.
+   * <p>
+   * A publication is linked or not to a node, depending the application functional context. This
+   * method should be used into the case of a publication linked to a node, located at a location
+   * in other words. Sometimes, a publication can be located at several locations (so linked to
+   * several nodes), in that case there is a main location and the others which are called
+   * "aliases". The caller of this method has verified which locations of a publication is
+   * authorized according to a context, that the publication detail instance does not know about,
+   * and set one of these authorized ones to the current instance. If the authorized location set
+   * defines an alias then some methods will take into account this information, like
+   * {@link #getPermalink()} for example.
+   * </p>
+   * <p>
+   *   Giving a null location means that alias data MUST be cleared.
+   * </p>
+   * @param location a {@link Location} instance.
+   */
+  public void setAuthorizedLocation(final Location location) {
+    if (location == null) {
+      alias = false;
+      authorizedLocation = null;
+    } else {
+      this.alias = location.isAlias();
+      this.authorizedLocation = alias ? location : null;
+    }
+  }
+
   public void setAlias(boolean alias) {
     this.alias = alias;
   }
@@ -1289,7 +1318,10 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public String getPermalink() {
-    return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, getId());
+    return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, getId(),
+        authorizedLocation != null && !authorizedLocation.getInstanceId().equals(getInstanceId())
+            ? authorizedLocation.getInstanceId()
+            : null);
   }
 
   public boolean isSharingAllowedForRolesFrom(final UserDetail user) {
