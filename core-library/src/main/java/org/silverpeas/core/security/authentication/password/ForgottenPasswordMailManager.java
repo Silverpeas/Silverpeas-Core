@@ -23,15 +23,13 @@
  */
 package org.silverpeas.core.security.authentication.password;
 
-import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.mail.MailSending;
+import org.silverpeas.core.notification.user.SimpleUserNotification;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 
-import javax.mail.MessagingException;
-
-import static org.silverpeas.core.mail.MailAddress.eMail;
+import static java.util.stream.Stream.of;
 
 public class ForgottenPasswordMailManager {
 
@@ -39,54 +37,38 @@ public class ForgottenPasswordMailManager {
   private static final String PREFIX_NEW_PASSWORD = "newPassword";
   private static final String PREFIX_ERROR = "error";
   private static final String PREFIX_ADMIN = "admin";
-  private static final String CONTENT = "content";
   private static final String SUBJECT = "subject";
 
-  // SMTP parameters
-  private String fromAddress;
-  private String fromName;
-
-  public ForgottenPasswordMailManager() {
-    initFromAddress();
-  }
-
-  private void initFromAddress() {
-    fromAddress = Administration.get().getSilverpeasEmail();
-    fromName = Administration.get().getSilverpeasName();
-  }
-
-  public void sendResetPasswordRequestMail(ForgottenPasswordMailParameters parameters)
-      throws MessagingException {
+  public void sendResetPasswordRequestMail(ForgottenPasswordMailParameters parameters) {
     sendMail(parameters, PREFIX_RESET_PASSWORD_REQUEST);
   }
 
-  public void sendNewPasswordMail(ForgottenPasswordMailParameters parameters)
-      throws MessagingException {
+  public void sendNewPasswordMail(ForgottenPasswordMailParameters parameters) {
     sendMail(parameters, PREFIX_NEW_PASSWORD);
   }
 
-  public void sendErrorMail(ForgottenPasswordMailParameters parameters)
-      throws MessagingException {
+  public void sendErrorMail(ForgottenPasswordMailParameters parameters) {
     User admin = User.getMainAdministrator();
     parameters.setToAddress(admin.geteMail());
     sendMail(parameters, PREFIX_ERROR);
   }
 
-  public void sendAdminMail(ForgottenPasswordMailParameters parameters)
-      throws MessagingException {
+  public void sendAdminMail(ForgottenPasswordMailParameters parameters) {
     User admin = User.getMainAdministrator();
     parameters.setToAddress(admin.geteMail());
     sendMail(parameters, PREFIX_ADMIN);
   }
 
-  private void sendMail(ForgottenPasswordMailParameters parameters, String resourcePrefix)
-      throws MessagingException {
-    LocalizationBundle resource = ResourceLocator.getLocalizationBundle(
+  private void sendMail(ForgottenPasswordMailParameters parameters, String resourcePrefix) {
+    final LocalizationBundle resource = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.authentication.multilang.forgottenPasswordMail",
         parameters.getUserLanguage());
-    parameters.setSubject(resource.getString(resourcePrefix + "." + SUBJECT));
-    parameters.setContent(resource.getString(resourcePrefix + "." + CONTENT));
-    MailSending.from(eMail(fromAddress).withName(fromName)).to(eMail(parameters.getToAddress()))
-        .withSubject(parameters.getSubject()).withContent(parameters.getFilledContent()).send();
+    final Pair<String, String> path = Pair.of("admin/password", "forgottenPasswordMail_" + resourcePrefix);
+    final SimpleUserNotification notification = SimpleUserNotification.fromSystem()
+        .toEMails(of(parameters.getToAddress()), parameters.getUserLanguage())
+        .withTitle(l -> resource.getString(resourcePrefix + "." + SUBJECT))
+        .fillTemplate(path, (t, l) -> parameters.applyTemplateData(t));
+    parameters.getMessage().ifPresent(notification::withExtraMessage);
+    notification.send();
   }
 }

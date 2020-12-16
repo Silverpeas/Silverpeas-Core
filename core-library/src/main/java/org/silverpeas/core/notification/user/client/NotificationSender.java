@@ -118,7 +118,7 @@ public class NotificationSender implements java.io.Serializable {
     }
 
     // send the notification to the external recipients who are declared in metaData
-    sendNotification(Collections.emptySet(), metaData, addressId, I18NHelper.defaultLanguage);
+    sendNotification(Collections.emptySet(), metaData, addressId, metaData.getExternalLanguage());
 
     if (metaData.isSendByAUser()) {
       // save notification for history
@@ -181,6 +181,8 @@ public class NotificationSender implements java.io.Serializable {
       notificationManager.notifyUsers(params, userIds);
     } else if (CollectionUtil.isNotEmpty(metaData.getExternalRecipients())) {
       notificationManager.notifyExternals(params, metaData.getExternalRecipients());
+      // indicating the sending to external emails has been managed by clearing the collection
+      metaData.setExternalRecipients(null);
     }
   }
 

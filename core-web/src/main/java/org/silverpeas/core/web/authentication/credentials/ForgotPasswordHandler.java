@@ -33,7 +33,6 @@ import org.silverpeas.core.security.authentication.password.ForgottenPasswordExc
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -68,39 +67,42 @@ public class ForgotPasswordHandler extends FunctionHandler {
 
     try {
       if (authenticator.isPasswordChangeAllowed(domainId)) {
-        String authenticationKey;
-        try {
-          authenticationKey = authenticator.getAuthenticationKey(login, domainId);
-        } catch (AuthenticationException e) {
-          throw new ForgottenPasswordException(
-              "CredentialsServlet.forgotPasswordHandler.doAction()",
-              "forgottenPassword.EX_GET_USER_AUTHENTICATION_KEY",
-              "login=" + login + " ; domainId=" + domainId, e);
-        }
-
-        // Envoi d'un mail contenant un lien permettant de lancer la réinitialisation
-        // automatique du mot de passe.
-        try {
-          ForgottenPasswordMailParameters parameters = getMailParameters(userId);
-          parameters.setLink(
-              getContextPath(request) + "/ResetPassword?key=" + authenticationKey);
-          forgottenPasswordMailManager.sendResetPasswordRequestMail(parameters);
-          return getGeneral().getString("forgottenPasswordChangeAllowed");
-        } catch (AdminException e) {
-          throw new ForgottenPasswordException(
-              "CredentialsServlet.forgotPasswordHandler.doAction()",
-              "forgottenPassword.EX_GET_USER_DETAIL", "userId=" + userId, e);
-        } catch (MessagingException e) {
-          throw new ForgottenPasswordException(
-              "CredentialsServlet.forgotPasswordHandler.doAction()",
-              "forgottenPassword.EX_SEND_MAIL", "userId=" + userId, e);
-        }
+        return sendUserResetMail(request, login, domainId, userId);
       } else {
         // Affichage d'un message d'information invitant à joindre l'administrateur système
         return getGeneral().getString("forgottenPasswordChangeNotAllowed");
       }
     } catch (ForgottenPasswordException fpe) {
       return forgottenPasswordError(request, fpe);
+    }
+  }
+
+  private String sendUserResetMail(final HttpServletRequest request, final String login,
+      final String domainId, final String userId) throws ForgottenPasswordException {
+    // Envoi d'un mail contenant un lien permettant de lancer la réinitialisation
+    // automatique du mot de passe.
+    try {
+      ForgottenPasswordMailParameters parameters = getMailParameters(userId);
+      parameters.setLink(
+          getContextPath(request) + "/ResetPassword?key=" + getAuthenticationKey(login, domainId));
+      forgottenPasswordMailManager.sendResetPasswordRequestMail(parameters);
+      return getGeneral().getString("forgottenPasswordChangeAllowed");
+    } catch (AdminException e) {
+      throw new ForgottenPasswordException(
+          "CredentialsServlet.forgotPasswordHandler.doAction()",
+          "forgottenPassword.EX_GET_USER_DETAIL", "userId=" + userId, e);
+    }
+  }
+
+  private String getAuthenticationKey(final String login, final String domainId)
+      throws ForgottenPasswordException {
+    try {
+      return authenticator.getAuthenticationKey(login, domainId);
+    } catch (AuthenticationException e) {
+      throw new ForgottenPasswordException(
+          "CredentialsServlet.forgotPasswordHandler.doAction()",
+          "forgottenPassword.EX_GET_USER_AUTHENTICATION_KEY",
+          "login=" + login + " ; domainId=" + domainId, e);
     }
   }
 

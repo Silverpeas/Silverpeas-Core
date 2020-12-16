@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
@@ -31,13 +30,13 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailManager;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -46,7 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 public abstract class FunctionHandler {
 
   private SettingBundle resources;
-  private LocalizationBundle m_Multilang;
+  private LocalizationBundle multilang;
   private ForgottenPasswordMailManager forgottenPasswordMailManager;
   private SettingBundle general
       = ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
@@ -59,7 +58,7 @@ public abstract class FunctionHandler {
     if (!StringUtil.isDefined(language)) {
       language = "fr";
     }
-    m_Multilang =
+    multilang =
         ResourceLocator.getLocalizationBundle("org.silverpeas.peasCore.multilang.peasCoreBundle",
             language);
     forgottenPasswordMailManager = new ForgottenPasswordMailManager();
@@ -81,22 +80,15 @@ public abstract class FunctionHandler {
   protected String getContextPath(HttpServletRequest request) {
     String requestUrl = request.getRequestURL().toString();
     String servletPath = request.getServletPath();
-    String contextPath = requestUrl.substring(
+    return requestUrl.substring(
         0, requestUrl.indexOf(servletPath) + servletPath.length());
-    return contextPath;
   }
 
   protected String forgottenPasswordError(HttpServletRequest request, ForgottenPasswordException fpe) {
     String error = SilverTrace.getTraceMessage(fpe.getMessage()) + " - " + fpe.getExtraInfos();
     ForgottenPasswordMailParameters parameters = new ForgottenPasswordMailParameters();
     parameters.setError(error);
-    try {
-      getForgottenPasswordMailManager().sendErrorMail(parameters);
-    } catch (MessagingException e) {
-      SilverTrace.error("peasCore",
-          "CredentialsServlet.forgottenPasswordError()",
-          "forgottenPassword.EX_SEND_MAIL", e);
-    }
+    getForgottenPasswordMailManager().sendErrorMail(parameters);
     request.setAttribute("error", error);
     return getGeneral().getString("forgottenPasswordError");
   }
@@ -116,17 +108,17 @@ public abstract class FunctionHandler {
   }
 
   /**
-   * @return the m_Multilang
+   * @return the multilang
    */
-  protected LocalizationBundle getM_Multilang() {
-    return m_Multilang;
+  protected LocalizationBundle getMultilang() {
+    return multilang;
   }
 
   /**
-   * @param m_Multilang the m_Multilang to set
+   * @param multilang the multilang to set
    */
-  protected void setM_Multilang(LocalizationBundle m_Multilang) {
-    this.m_Multilang = m_Multilang;
+  protected void setMultilang(LocalizationBundle multilang) {
+    this.multilang = multilang;
   }
 
   /**

@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.silverpeas.core.security.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 import org.silverpeas.core.security.authentication.verifier.UserCanTryAgainToLoginVerifier;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * User: Yohann Chastagnier
@@ -45,7 +45,7 @@ public abstract class ChangeCredentialFunctionHandler extends FunctionHandler {
   protected String performUrlOnBadCredentialError(HttpServletRequest request, String originalUrl,
       UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier, String messageBundleKey) {
     try {
-      StringBuilder message = new StringBuilder(getM_Multilang().getString(messageBundleKey));
+      StringBuilder message = new StringBuilder(getMultilang().getString(messageBundleKey));
       String url = userCanTryAgainToLoginVerifier.verify().performRequestUrl(request, originalUrl);
       if (userCanTryAgainToLoginVerifier.isActivated()) {
         message.append("<br>");
