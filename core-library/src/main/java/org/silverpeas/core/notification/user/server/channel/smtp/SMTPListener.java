@@ -54,6 +54,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.mail.MailAddress.eMail;
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.*;
 import static org.silverpeas.core.util.MailUtil.isForceReplyToSenderField;
@@ -212,23 +213,23 @@ public class SMTPListener extends AbstractListener implements MessageListener {
    */
   private void sendEmail(String from, String fromName, String to, String subject,
       String content, boolean isHtml) throws NotificationServerException {
-    MailAddress fromMailAddress = eMail(from).withName(fromName);
-    MailSending mail = MailSending.from(fromMailAddress).to(eMail(to)).withSubject(subject);
+    final boolean isSilverpeasEmail = Administration.get().getSilverpeasEmail().equals(from);
+    final MailAddress fromMailAddress = eMail(from).withName(ofNullable(fromName)
+        .filter(StringUtil::isDefined)
+        .orElseGet(() -> isSilverpeasEmail ? Administration.get().getSilverpeasName() : StringUtil.EMPTY));
+    final MailSending mail = MailSending.from(fromMailAddress).to(eMail(to)).withSubject(subject);
     try {
-      InternetAddress fromAddress = fromMailAddress.getAuthorizedInternetAddress();
-      if (!Administration.get().getSilverpeasEmail().equals(from) &&
+      final InternetAddress fromAddress = fromMailAddress.getAuthorizedInternetAddress();
+      if (!isSilverpeasEmail &&
           (!fromAddress.getAddress().equals(from) || isForceReplyToSenderField())) {
         mail.setReplyToRequired();
       }
-
       if (isHtml) {
         mail.withContent(content);
       } else {
         mail.withTextContent(content);
       }
-
       mail.sendSynchronously();
-
     } catch (MessagingException | UnsupportedEncodingException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     } catch (Exception e) {

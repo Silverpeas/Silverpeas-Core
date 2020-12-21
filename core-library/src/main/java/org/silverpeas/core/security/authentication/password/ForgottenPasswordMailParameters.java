@@ -23,7 +23,15 @@
  */
 package org.silverpeas.core.security.authentication.password;
 
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.StringUtil;
+
 import java.util.HashMap;
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 public class ForgottenPasswordMailParameters {
 
@@ -35,21 +43,16 @@ public class ForgottenPasswordMailParameters {
   private static final String KEY_MESSAGE = "message";
   private static final String KEY_PASSWORD = "password";
   private static final String KEY_USER_NAME = "userName";
-  private static final String[] KEYS = {
-      KEY_DOMAIN_ID, KEY_EMAIL, KEY_ERROR, KEY_LINK, KEY_LOGIN, KEY_MESSAGE, KEY_PASSWORD,
-      KEY_USER_NAME };
 
   private static final String TEXT_LINE_SEPARATOR = "\r\n";
   private static final String HTML_LINE_SEPARATOR = "<br>";
 
+  private final HashMap<String, String> parametersValues;
   private String toAddress;
-  private String subject;
-  private String content;
   private String language;
-  private HashMap<String, String> parametersValues;
 
   public ForgottenPasswordMailParameters() {
-    parametersValues = new HashMap<String, String>();
+    parametersValues = new HashMap<>();
   }
 
   public void setToAddress(String toAddress) {
@@ -60,20 +63,8 @@ public class ForgottenPasswordMailParameters {
     return toAddress;
   }
 
-  public void setSubject(String subject) {
-    this.subject = subject;
-  }
-
-  public String getSubject() {
-    return subject;
-  }
-
-  public void setContent(String content) {
-    this.content = content;
-  }
-
-  public String getContent() {
-    return content;
+  public Optional<String> getMessage() {
+    return ofNullable(parametersValues.get(KEY_MESSAGE));
   }
 
   public void setDomainId(String domainId) {
@@ -113,24 +104,11 @@ public class ForgottenPasswordMailParameters {
   }
 
   public String getUserLanguage() {
-    return language;
+    return defaultStringIfNotDefined(language, DisplayI18NHelper.getDefaultLanguage());
   }
 
-
-  public String getFilledContent() {
-    String result = content;
-    for (String name : KEYS) {
-      String key = "{" + name + "}";
-      int index = result.indexOf(key);
-      if (index != -1) {
-        String value = parametersValues.get(name);
-        while (index != -1) {
-          result = result.substring(0, index) + value + result.substring(index + key.length());
-          index = result.indexOf(key);
-        }
-      }
-    }
-    return result;
+  public void applyTemplateData(final SilverpeasTemplate template) {
+    parametersValues.forEach(template::setAttribute);
   }
 
   private static String replaceLineSeparators(String s) {
@@ -146,5 +124,4 @@ public class ForgottenPasswordMailParameters {
     }
     return sb.toString();
   }
-
 }

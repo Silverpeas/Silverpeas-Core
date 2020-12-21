@@ -33,71 +33,78 @@ import org.silverpeas.core.security.authentication.password.ForgottenPasswordExc
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
 import org.silverpeas.core.security.authentication.password.service.PasswordRulesServiceProvider;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 public class ResetPasswordHandler extends FunctionHandler {
 
+  private static final String USER_ID_LOG_DATA = "userId=";
+  private static final String LOG_CONTEXT = "CredentialsServlet.resetPasswordHandler.doAction()";
+
   @Override
   public String doAction(HttpServletRequest request) {
+    final String authenticationKey = request.getParameter("key");
+    String userId;
     try {
-      String authenticationKey = request.getParameter("key");
-      String userId;
-      try {
-        userId = getAdminService().getUserIdByAuthenticationKey(authenticationKey);
-      } catch (Exception e) {
-        return getGeneral().getString("forgottenPasswordResetError");
-      }
+      userId = getAdminService().getUserIdByAuthenticationKey(authenticationKey);
+    } catch (Exception e) {
+      return getGeneral().getString("forgottenPasswordResetError");
+    }
+    try {
       if (userId != null) {
-        String password = PasswordRulesServiceProvider.getPasswordRulesService().generate();
-        ForgottenPasswordMailParameters parameters = null;
-        try {
-          parameters = getMailParameters(userId);
-        } catch (AdminException e) {
-          throw new ForgottenPasswordException(
-              "CredentialsServlet.resetPasswordHandler.doAction()",
-              "forgottenPassword.EX_GET_USER_DETAIL", "userId=" + userId, e);
-        }
-
-        UserFull user;
-        try {
-          user = getAdminService().getUserFull(userId);
-          request.setAttribute("userLanguage", user.getUserPreferences().getLanguage());
-        } catch (AdminException e) {
-          throw new ForgottenPasswordException(
-              "CredentialsServlet.resetPasswordHandler.doAction()",
-              "forgottenPassword.EX_GET_FULL_USER_DETAIL", "userId=" + userId, e);
-        }
-        try {
-          AuthenticationCredential credential = AuthenticationCredential
-              .newWithAsLogin(user.getLogin())
-              .withAsDomainId(user.getDomainId());
-          AuthenticationService authenticator = AuthenticationServiceProvider.getService();
-          authenticator.resetPassword(credential, password);
-        } catch (AuthenticationException e1) {
-          throw new ForgottenPasswordException(
-              "CredentialsServlet.resetPasswordHandler.doAction()",
-              "forgottenPassword.EX_RESET_PASSWORD_FAILED", "userId=" + userId, e1);
-        }
-
+        final String password = PasswordRulesServiceProvider.getPasswordRulesService().generate();
+        final ForgottenPasswordMailParameters parameters = initializeParameters(userId);
+        final UserFull user = getUserFull(request, userId);
+        resetPassword(userId, password, user);
         parameters.setPassword(password);
         parameters.setLink(getContextPath(request) + "/ResetLoginPassword"
             + "?login=" + user.getLogin()
             + "&domainId=" + user.getDomainId());
-        try {
-          getForgottenPasswordMailManager().sendNewPasswordMail(parameters);
-        } catch (MessagingException e) {
-          throw new ForgottenPasswordException(
-              "CredentialsServlet.resetPasswordHandler.doAction()",
-              "forgottenPassword.EX_SEND_MAIL", "userId=" + userId, e);
-        }
-
+        getForgottenPasswordMailManager().sendNewPasswordMail(parameters);
         return getGeneral().getString("forgottenPasswordReset");
       } else {
         return getGeneral().getString("forgottenPasswordResetError");
       }
     } catch (ForgottenPasswordException fpe) {
       return forgottenPasswordError(request, fpe);
+    }
+  }
+
+  private ForgottenPasswordMailParameters initializeParameters(final String userId)
+      throws ForgottenPasswordException {
+    ForgottenPasswordMailParameters parameters = null;
+    try {
+      parameters = getMailParameters(userId);
+    } catch (AdminException e) {
+      throw new ForgottenPasswordException(LOG_CONTEXT,
+          "forgottenPassword.EX_GET_USER_DETAIL", USER_ID_LOG_DATA + userId, e);
+    }
+    return parameters;
+  }
+
+  private UserFull getUserFull(final HttpServletRequest request, final String userId)
+      throws ForgottenPasswordException {
+    UserFull user;
+    try {
+      user = getAdminService().getUserFull(userId);
+      request.setAttribute("userLanguage", user.getUserPreferences().getLanguage());
+    } catch (AdminException e) {
+      throw new ForgottenPasswordException(LOG_CONTEXT,
+          "forgottenPassword.EX_GET_FULL_USER_DETAIL", USER_ID_LOG_DATA + userId, e);
+    }
+    return user;
+  }
+
+  private void resetPassword(final String userId, final String password, final UserFull user)
+      throws ForgottenPasswordException {
+    try {
+      AuthenticationCredential credential = AuthenticationCredential
+          .newWithAsLogin(user.getLogin())
+          .withAsDomainId(user.getDomainId());
+      AuthenticationService authenticator = AuthenticationServiceProvider.getService();
+      authenticator.resetPassword(credential, password);
+    } catch (AuthenticationException e) {
+      throw new ForgottenPasswordException(LOG_CONTEXT,
+          "forgottenPassword.EX_RESET_PASSWORD_FAILED", USER_ID_LOG_DATA + userId, e);
     }
   }
 }

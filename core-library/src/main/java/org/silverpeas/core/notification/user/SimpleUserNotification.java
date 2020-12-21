@@ -44,6 +44,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
+import static org.silverpeas.core.ui.DisplayI18NHelper.verifyLanguage;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -64,9 +65,11 @@ public class SimpleUserNotification implements UserNotification {
   private String componentInstanceId = null;
   private UnaryOperator<String> title = l -> "";
   private UnaryOperator<String> message = l -> "";
+  private String extraMessage = null;
   private Pair<String, String> templatePath = Pair.of("notification/user", "simple");
   private BiConsumer<SilverpeasTemplate, String> templateConsumer = null;
   private Function<String, Link> link = null;
+  private String emailLanguage = null;
   private Set<String> userIds = new HashSet<>();
   private Set<String> groupIds = new HashSet<>();
   private Set<String> externalMails = new HashSet<>();
@@ -123,6 +126,16 @@ public class SimpleUserNotification implements UserNotification {
    */
   public SimpleUserNotification andMessage(UnaryOperator<String> message) {
     this.message = message;
+    return this;
+  }
+
+  /**
+   * Sets an extra message which is not produced against a language.
+   * @param extraMessage an extra message as string.
+   * @return itself.
+   */
+  public SimpleUserNotification withExtraMessage(String extraMessage) {
+    this.extraMessage = extraMessage;
     return this;
   }
 
@@ -217,28 +230,12 @@ public class SimpleUserNotification implements UserNotification {
 
   /**
    * Sets the given e-mails as receivers.
-   * @param eMails a list of receiver e-mails.
-   * @return itself.
-   */
-  public SimpleUserNotification toEMails(Collection<String> eMails) {
-    return toEMails(eMails.stream());
-  }
-
-  /**
-   * Sets the given e-mails as receivers.
-   * @param eMails an array of receiver e-mails.
-   * @return itself.
-   */
-  public SimpleUserNotification toEMails(String... eMails) {
-    return toEMails(Arrays.stream(eMails));
-  }
-
-  /**
-   * Sets the given e-mails as receivers.
    * @param eMails a stream of receiver e-mails.
+   * @param language the language to use with emails.
    * @return itself.
    */
-  public SimpleUserNotification toEMails(Stream<String> eMails) {
+  public SimpleUserNotification toEMails(Stream<String> eMails, String language) {
+    this.emailLanguage = verifyLanguage(language);
     eMails.forEach(e -> externalMails.add(e));
     return this;
   }
@@ -267,11 +264,19 @@ public class SimpleUserNotification implements UserNotification {
       implements FallbackToCoreTemplatePathBehavior {
 
     private static final Object NO_RESOURCE = new Object();
-    private SimpleUserNotification source;
+    private final SimpleUserNotification source;
 
     private SimpleUserNotificationBuilder(final SimpleUserNotification source) {
       super(NO_RESOURCE);
       this.source = source;
+    }
+
+    @Override
+    protected void perform(final Object resource) {
+      super.perform(resource);
+      if (isDefined(source.emailLanguage)) {
+        super.getNotificationMetaData().setExternalLanguage(source.emailLanguage);
+      }
     }
 
     @Override
@@ -288,6 +293,9 @@ public class SimpleUserNotification implements UserNotification {
       }
       if (source.templateConsumer != null) {
         source.templateConsumer.accept(template, language);
+      }
+      if (isDefined(source.extraMessage)) {
+        super.getNotificationMetaData().addExtraMessage(source.extraMessage, language);
       }
     }
 

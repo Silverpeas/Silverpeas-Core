@@ -23,9 +23,8 @@
  */
 package org.silverpeas.core.web.authentication.credentials;
 
-import org.silverpeas.core.security.authentication.password.ForgottenPasswordException;
 import org.silverpeas.core.security.authentication.password.ForgottenPasswordMailParameters;
-import javax.mail.MessagingException;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -35,22 +34,11 @@ public class SendMessageHandler extends FunctionHandler {
 
   @Override
   public String doAction(HttpServletRequest request) {
-    try {
-      ForgottenPasswordMailParameters parameters = new ForgottenPasswordMailParameters();
-      parameters.setUserName(
-          request.getParameter("firstname") + " " + request.getParameter("lastname"));
-      parameters.setEmail(request.getParameter("email"));
-      parameters.setMessage(request.getParameter("message"));
-      try {
-        getForgottenPasswordMailManager().sendAdminMail(parameters);
-        return getGeneral().getString("forgottenPasswordSendMessage");
-      } catch (MessagingException e) {
-        throw new ForgottenPasswordException(
-            "CredentialsServlet.sendMessageHandler.doAction()",
-            "forgottenPassword.EX_SEND_MAIL", e);
-      }
-    } catch (ForgottenPasswordException fpe) {
-      return forgottenPasswordError(request, fpe);
-    }
+    final ForgottenPasswordMailParameters parameters = new ForgottenPasswordMailParameters();
+    parameters.setUserName(request.getParameter("firstname") + " " + request.getParameter("lastname"));
+    parameters.setEmail(request.getParameter("email"));
+    parameters.setMessage(request.getParameter("message"));
+    getForgottenPasswordMailManager().sendAdminMail(parameters);
+    return getGeneral().getString("forgottenPasswordSendMessage");
   }
 }

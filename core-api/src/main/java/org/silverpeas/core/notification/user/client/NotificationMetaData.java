@@ -36,15 +36,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.NOTIFICATION_RECEIVER_GROUPS;
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey.NOTIFICATION_RECEIVER_USERS;
@@ -67,6 +59,7 @@ public class NotificationMetaData implements java.io.Serializable {
   private final Collection<UserRecipient> userRecipients = new ArrayList<>();
   private final Collection<UserRecipient> userRecipientsToExclude = new ArrayList<>();
   private final Collection<GroupRecipient> groupRecipients = new ArrayList<>();
+  private String externalLanguage = null;
   private final Collection<ExternalRecipient> externalRecipients = new ArrayList<>();
   private String componentId;
   private boolean isAnswerAllowed = false;
@@ -535,6 +528,18 @@ public class NotificationMetaData implements java.io.Serializable {
     if (users != null) {
       this.userRecipientsToExclude.addAll(users);
     }
+  }
+
+  public String getExternalLanguage() {
+    return Optional.ofNullable(externalLanguage).orElse(DisplayI18NHelper.getDefaultLanguage());
+  }
+
+  /**
+   * Sets language to use for external receivers.
+   * @param externalLanguage a lenguage as string.
+   */
+  public void setExternalLanguage(final String externalLanguage) {
+    this.externalLanguage = externalLanguage;
   }
 
   /**
