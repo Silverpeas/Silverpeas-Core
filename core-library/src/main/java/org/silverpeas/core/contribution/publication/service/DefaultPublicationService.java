@@ -236,7 +236,16 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     } catch (SQLException e) {
       throw new PublicationRuntimeException(e);
     }
+  }
 
+  @Override
+  @Transactional
+  public void resetPublicationsOrder(NodePK nodePK) {
+    try (Connection con = getConnection()) {
+      PublicationFatherDAO.resetOrder(con, nodePK);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException(e);
+    }
   }
 
   @Override

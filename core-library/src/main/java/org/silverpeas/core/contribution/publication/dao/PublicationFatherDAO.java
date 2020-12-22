@@ -118,6 +118,20 @@ public class PublicationFatherDAO {
   }
 
   /**
+   * Reset the order of the publications of the specified father.
+   * @param con the connection to the data source
+   * @param fatherPK the identifier of the father in the data source.
+   * @throws SQLException if an error occurs while requesting the data source.
+   */
+  public static void resetOrder(Connection con, NodePK fatherPK) throws SQLException {
+    JdbcSqlQuery.createUpdateFor(PUBLICATION_FATHER_TABLE_NAME)
+        .addUpdateParam(PUB_ORDER, 0)
+        .where(NODE_ID_SET, Integer.parseInt(fatherPK.getId()))
+        .and(INSTANCE_ID_SET, fatherPK.getInstanceId())
+        .executeWith(con);
+  }
+
+  /**
    * Adds a new alias to the specified publication. If the given location isn't an alias, then
    * an {@link IllegalArgumentException} exception is thrown.
    * @param con the connection to the data source.

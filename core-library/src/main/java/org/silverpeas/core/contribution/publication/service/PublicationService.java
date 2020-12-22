@@ -443,6 +443,8 @@ public interface PublicationService {
 
   void changePublicationsOrder(List<String> ids, NodePK nodePK);
 
+  void resetPublicationsOrder(NodePK nodePK);
+
   Collection<Coordinate> getCoordinates(String pubId, String componentId);
 
   /**
