@@ -40,7 +40,7 @@ import org.silverpeas.core.contribution.publication.dao.PublicationDAO;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.rule.DbSetupRule;
 
 import java.sql.Connection;
 import java.time.OffsetDateTime;
@@ -62,11 +62,11 @@ import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 public class LastPublicationDAOIT {
 
   private static final String TABLE_CREATION_SCRIPT = "create-table.sql";
-  private static final String DATASET_XML_SCRIPT = "test-last-publication-dao-dataset.xml";
+  private static final String DATASET_SQL_SCRIPT = "test-last-publication-dao-dataset.sql";
 
   @Rule
-  public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule(TABLE_CREATION_SCRIPT, DATASET_XML_SCRIPT);
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(TABLE_CREATION_SCRIPT)
+      .loadInitialDataSetFrom(DATASET_SQL_SCRIPT);
 
   @Deployment
   public static Archive<?> createTestArchive() {

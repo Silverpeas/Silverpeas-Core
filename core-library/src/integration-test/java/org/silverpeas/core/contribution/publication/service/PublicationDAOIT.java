@@ -38,7 +38,7 @@ import org.silverpeas.core.contribution.publication.social.SocialInformationPubl
 import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.DateUtil;
 
@@ -61,11 +61,11 @@ import static org.silverpeas.core.test.rule.DbSetupRule.getSafeConnection;
 public class PublicationDAOIT {
 
   private static final String TABLE_CREATION_SCRIPT = "create-table.sql";
-  private static final String DATASET_XML_SCRIPT = "test-publication-dao-dataset.xml";
+  private static final String DATASET_SQL_SCRIPT = "test-publication-dao-dataset.sql";
 
   @Rule
-  public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule(TABLE_CREATION_SCRIPT, DATASET_XML_SCRIPT);
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(TABLE_CREATION_SCRIPT)
+      .loadInitialDataSetFrom(DATASET_SQL_SCRIPT);
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -151,7 +151,7 @@ public class PublicationDAOIT {
       assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
       assertEquals("100", result.getCreatorId());
       assertEquals("Première publication de test", result.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(result.getEndDate()));
+      assertEquals("2120/12/18", DateUtil.formatDate(result.getEndDate()));
       assertEquals("23:59", result.getEndHour());
       assertEquals(1, result.getImportance());
       assertEquals("0", result.getInfoId());
@@ -182,7 +182,7 @@ public class PublicationDAOIT {
       assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
       assertEquals("100", result.getCreatorId());
       assertEquals("Première publication de test", result.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(result.getEndDate()));
+      assertEquals("2120/12/18", DateUtil.formatDate(result.getEndDate()));
       assertEquals("23:59", result.getEndHour());
       assertEquals(1, result.getImportance());
       assertEquals("0", result.getInfoId());
@@ -215,7 +215,7 @@ public class PublicationDAOIT {
       assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
       assertEquals("100", result.getCreatorId());
       assertEquals("Première publication de test", result.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(result.getEndDate()));
+      assertEquals("2120/12/18", DateUtil.formatDate(result.getEndDate()));
       assertEquals("23:59", result.getEndHour());
       assertEquals(1, result.getImportance());
       assertEquals("0", result.getInfoId());
@@ -249,7 +249,7 @@ public class PublicationDAOIT {
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("100", detail.getCreatorId());
       assertEquals("Première publication de test", detail.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(detail.getEndDate()));
+      assertEquals("2120/12/18", DateUtil.formatDate(detail.getEndDate()));
       assertEquals("23:59", detail.getEndHour());
       assertEquals(1, detail.getImportance());
       assertEquals("0", detail.getInfoId());
@@ -270,7 +270,7 @@ public class PublicationDAOIT {
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("101", detail.getCreatorId());
       assertEquals("2ème publication de test", detail.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(detail.getEndDate()));
+      assertEquals("2120/12/18", DateUtil.formatDate(detail.getEndDate()));
       assertEquals("20:35", detail.getEndHour());
       assertEquals(5, detail.getImportance());
       assertEquals("0", detail.getInfoId());
@@ -308,7 +308,7 @@ public class PublicationDAOIT {
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("100", detail.getCreatorId());
       assertEquals("Première publication de test", detail.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(detail.getEndDate()));
+      assertEquals("2120/12/18", DateUtil.formatDate(detail.getEndDate()));
       assertEquals("23:59", detail.getEndHour());
       assertEquals(1, detail.getImportance());
       assertEquals("0", detail.getInfoId());
@@ -335,7 +335,7 @@ public class PublicationDAOIT {
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("100", detail.getCreatorId());
       assertEquals("Première publication de test", detail.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(detail.getEndDate()));
+      assertEquals("2120/12/18", DateUtil.formatDate(detail.getEndDate()));
       assertEquals("23:59", detail.getEndHour());
       assertEquals(1, detail.getImportance());
       assertEquals("0", detail.getInfoId());
@@ -443,7 +443,7 @@ public class PublicationDAOIT {
       assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
       assertEquals("100", result.getCreatorId());
       assertEquals("Première publication de test", result.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(result.getEndDate()));
+      assertEquals("2120/12/18", DateUtil.formatDate(result.getEndDate()));
       assertEquals("23:59", result.getEndHour());
       assertEquals(1, result.getImportance());
       assertEquals("0", result.getInfoId());
@@ -472,7 +472,7 @@ public class PublicationDAOIT {
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("100", detail.getCreatorId());
       assertEquals("Première publication de test", detail.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(detail.getEndDate()));
+      assertEquals("2120/12/18", DateUtil.formatDate(detail.getEndDate()));
       assertEquals("23:59", detail.getEndHour());
       assertEquals(1, detail.getImportance());
       assertEquals("0", detail.getInfoId());
@@ -494,7 +494,7 @@ public class PublicationDAOIT {
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("100", detail.getCreatorId());
       assertEquals("Première publication de test", detail.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(detail.getEndDate()));
+      assertEquals("2120/12/18", DateUtil.formatDate(detail.getEndDate()));
       assertEquals("23:59", detail.getEndHour());
       assertEquals(1, detail.getImportance());
       assertEquals("0", detail.getInfoId());
@@ -523,7 +523,7 @@ public class PublicationDAOIT {
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("100", detail.getCreatorId());
       assertEquals("Première publication de test", detail.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(detail.getEndDate()));
+      assertEquals("2120/12/18", DateUtil.formatDate(detail.getEndDate()));
       assertEquals("23:59", detail.getEndHour());
       assertEquals(1, detail.getImportance());
       assertEquals("0", detail.getInfoId());
@@ -611,7 +611,7 @@ public class PublicationDAOIT {
       assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
       assertEquals("100", result.getCreatorId());
       assertEquals("Première publication de test", result.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(result.getEndDate()));
+      assertEquals("2120/12/18", DateUtil.formatDate(result.getEndDate()));
       assertEquals("23:59", result.getEndHour());
       assertEquals(1, result.getImportance());
       assertEquals("0", result.getInfoId());
@@ -642,7 +642,7 @@ public class PublicationDAOIT {
       assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
       assertEquals("100", result.getCreatorId());
       assertEquals("Première publication de test", result.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(result.getEndDate()));
+      assertEquals("2120/12/18", DateUtil.formatDate(result.getEndDate()));
       assertEquals("23:59", result.getEndHour());
       assertEquals(1, result.getImportance());
       assertEquals("0", result.getInfoId());

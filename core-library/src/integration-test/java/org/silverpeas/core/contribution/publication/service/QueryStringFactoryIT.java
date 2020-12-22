@@ -32,7 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.publication.test.WarBuilder4Publication;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.rule.DbSetupRule;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,11 +54,11 @@ public class QueryStringFactoryIT {
   private final int NB_EXECUTIONS = 5;
 
   private static final String TABLE_CREATION_SCRIPT = "create-table.sql";
-  private static final String DATASET_XML_SCRIPT = "test-empty-dataset.xml";
+  private static final String DATASET_SQL_SCRIPT = "test-empty-dataset.xml";
 
   @Rule
-  public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule(TABLE_CREATION_SCRIPT, DATASET_XML_SCRIPT);
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(TABLE_CREATION_SCRIPT)
+      .loadInitialDataSetFrom(DATASET_SQL_SCRIPT);
 
   @Deployment
   public static Archive<?> createTestArchive() {
