@@ -24,13 +24,41 @@
 package org.silverpeas.core.index.indexing.parser;
 
 import java.io.Reader;
+import java.util.Optional;
 
 /**
  * A parser is used to retrieve the text content of a file.
  */
 public interface Parser {
+
+  interface Metadata {
+    Optional<String> getValue(final String key);
+  }
+
   /**
-   * Returns a Reader giving only the text content of the file.
+   * The paser context ensures to provide a {@link Reader} instance with also {@link Metadata}.
    */
-  Reader getReader(String path, String encoding);
+  class Context {
+    private final Reader reader;
+    private final Metadata metadata;
+
+    public Context(final Reader reader, final Metadata metadata) {
+      this.reader = reader;
+      this.metadata = metadata;
+    }
+
+    public Reader getReader() {
+      return reader;
+    }
+
+    public Metadata getMetadata() {
+      return metadata;
+    }
+  }
+
+  /**
+   * @return a {@link Context} instance providing a {@link Reader} and {@link Metadata} about the
+   * file.
+   */
+  Context getContext(String path, String encoding);
 }

@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.Supplier;
 
+import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
+
 /**
  * @author silveryocha
  */
@@ -53,7 +55,7 @@ public class IndexProcessor {
   }
 
   public static <R> R doSearch(SearchIndexProcess<R> searchIndexProcess, Supplier<R> defaultReturn) throws ParseException {
-    final SilverLogger logger = SilverLogger.getLogger(IndexProcessor.class);
+    final SilverLogger logger = indexingLogger();
     final long stamp;
     synchronized (MUTEX) {
       stamp = SEARCH_LOCK.tryReadLock();
@@ -93,7 +95,7 @@ public class IndexProcessor {
 
   static void doRemoveAll(RemoveAllIndexesProcess removeAllIndexesProcess) {
     final long stamp = SEARCH_LOCK.writeLock();
-    final SilverLogger logger = SilverLogger.getLogger(IndexProcessor.class);
+    final SilverLogger logger = indexingLogger();
     logger.debug("starting remove of all index entries");
     try {
       logger.debug("closing all index readers");
@@ -108,7 +110,7 @@ public class IndexProcessor {
   }
 
   private static void closeIndexReaders() {
-    final SilverLogger logger = SilverLogger.getLogger(IndexProcessor.class);
+    final SilverLogger logger = indexingLogger();
     if (SEARCH_LOCK.getReadLockCount() == 0) {
       synchronized (UPDATED_MUTEX) {
         if (searchSettings.getBoolean("index.reader.closeAfterLastSearch", false)) {

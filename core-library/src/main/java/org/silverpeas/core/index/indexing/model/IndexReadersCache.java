@@ -35,11 +35,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
+
 public class IndexReadersCache {
   private static final Object READER_MUTEX = new Object();
   private static final Map<String, IndexReader> INDEX_READERS = new HashMap<>();
   private static final BiConsumer<String, IndexReader> CLOSE_INDEX_CONSUMER = (s, r) -> {
-    final SilverLogger logger = SilverLogger.getLogger(IndexReadersCache.class);
+    final SilverLogger logger = indexingLogger();
     try {
       logger.debug("closing reader of path {0}", s);
       r.close();
@@ -71,16 +73,14 @@ public class IndexReadersCache {
           indexReader = DirectoryReader.open(FSDirectory.open(rootPath.toPath()));
           INDEX_READERS.put(path, indexReader);
         } catch (Exception e) {
-          SilverLogger.getLogger(IndexReadersCache.class).warn(e);
+          indexingLogger().warn(e);
         }
       } else if (indexReader != null && !validRootPath) {
-        SilverLogger.getLogger(IndexReadersCache.class).warn(
-            "index reader exists in cache but no index path is existing! ({0})", path);
+        indexingLogger().warn("index reader exists in cache but no index path is existing! ({0})", path);
         closeIndexReader(path);
         indexReader = null;
       } else if (!validRootPath) {
-        SilverLogger.getLogger(IndexReadersCache.class)
-            .debug("index reader for path {0} can not be open as there is no index data", path);
+        indexingLogger().debug("index reader for path {0} can not be open as there is no index data", path);
       }
       return indexReader;
     }

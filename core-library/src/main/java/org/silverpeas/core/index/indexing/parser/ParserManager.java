@@ -26,7 +26,6 @@ package org.silverpeas.core.index.indexing.parser;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -34,7 +33,11 @@ import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.Set;
+
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
 
 /**
  * The ParserManager class manages all the parsers which will be used to parse the indexed files.
@@ -73,29 +76,23 @@ public final class ParserManager {
           Parser parser = ServiceProvider.getService(parserName);
           parserMap.put(mimeType, parser);
         } catch (IllegalStateException e) {
-          SilverLogger.getLogger(this)
-              .error("No parser found in silverpeas for {0}: {1}", mimeType, parserName);
+          indexingLogger().error("No parser found in silverpeas for {0}: {1}", mimeType, parserName);
         } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
+          indexingLogger().error(e.getMessage(), e);
         }
       }
     } catch (MissingResourceException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      indexingLogger().error(e.getMessage(), e);
     }
   }
 
   /**
    * Get the parser for a given file format.
-   *
-   * @param format
-   * @return
+   * @param format a file format.
+   * @return an optional {@link Parser} instance.
    */
-  public Parser getParser(String format) {
-    Parser parser = parserMap.get(format);
-    if (parser == null) {
-      return defaultParser;
-    }
-    return parser;
+  public Optional<Parser> getParser(String format) {
+    return ofNullable(parserMap.getOrDefault(format, defaultParser));
   }
 
 }

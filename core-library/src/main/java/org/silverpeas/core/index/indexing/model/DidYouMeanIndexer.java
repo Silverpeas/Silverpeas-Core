@@ -27,10 +27,11 @@ import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.IOException;
+
+import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
 
 /**
  * This class allows to manage the specific index of "did you mean" functionality. <br>
@@ -65,8 +66,7 @@ public class DidYouMeanIndexer {
     // stop the process if method parameters is null or empty
     if (!StringUtil.isDefined(field) || !StringUtil.isDefined(originalIndexDirectory) ||
         !StringUtil.isDefined(spellIndexDirectory)) {
-      SilverLogger.getLogger(DidYouMeanIndexer.class)
-          .error("Invalid argument passed to create a spell index");
+      indexingLogger().error("Invalid argument passed to create a spell index");
       return;
     }
   }
@@ -104,7 +104,7 @@ public class DidYouMeanIndexer {
             spell.clearIndex();
             isCleared = true;
         } catch (IOException e) {
-          SilverLogger.getLogger(DidYouMeanIndexer.class).error(e);
+          indexingLogger().error(e);
         }
       }
     return isCleared;
