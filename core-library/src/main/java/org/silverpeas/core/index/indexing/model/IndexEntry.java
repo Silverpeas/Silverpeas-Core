@@ -26,10 +26,10 @@ package org.silverpeas.core.index.indexing.model;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,7 +42,7 @@ import java.util.Set;
  * IndexEntry is created by a Silverpeas component when it creates a new element or document. This
  * IndexEntry will be returned later when the document matches a query.
  */
-public class IndexEntry implements Serializable, Cloneable {
+public class IndexEntry implements Serializable {
 
   private static final long serialVersionUID = -4817004188601716658L;
 
@@ -87,6 +87,28 @@ public class IndexEntry implements Serializable, Cloneable {
    */
   public IndexEntry(IndexEntryKey pk) {
     this.pk = pk;
+  }
+
+  IndexEntry(final IndexEntry other) {
+    this.pk = new IndexEntryKey(other.pk);
+    this.lang = other.lang;
+    this.creationDate = other.creationDate;
+    this.creationUser = other.creationUser;
+    this.lastModificationDate = other.lastModificationDate;
+    this.lastModificationUser = other.lastModificationUser;
+    this.startDate = other.startDate;
+    this.endDate = other.endDate;
+    this.indexId = other.indexId;
+    this.thumbnail = other.thumbnail;
+    this.thumbnailMimeType = other.thumbnailMimeType;
+    this.thumbnailDirectory = other.thumbnailDirectory;
+    this.titles = other.titles != null ? new HashMap<>(other.titles) : null;
+    this.previews = other.previews != null ? new HashMap<>(other.previews) : null;
+    this.keywordsI18N = other.keywordsI18N != null ? new HashMap<>(other.keywordsI18N) : null;
+    this.serverName = other.serverName;
+    this.filename = other.filename;
+    this.paths = other.paths != null ? new ArrayList<>(other.paths) : null;
+    this.alias = other.alias;
   }
 
   /**
@@ -396,14 +418,14 @@ public class IndexEntry implements Serializable, Cloneable {
 
   private Map<String, String> getTitles() {
     if (titles == null) {
-      titles = new HashMap<String, String>();
+      titles = new HashMap<>();
     }
     return titles;
   }
 
   private Map<String, String> getPreviews() {
     if (previews == null) {
-      previews = new HashMap<String, String>();
+      previews = new HashMap<>();
     }
     return previews;
   }
@@ -493,18 +515,6 @@ public class IndexEntry implements Serializable, Cloneable {
 
   public void setAlias(boolean alias) {
     this.alias = alias;
-  }
-
-  @Override
-  public IndexEntry clone() {
-    IndexEntry clone;
-    try {
-      clone = (IndexEntry) super.clone();
-    } catch (final CloneNotSupportedException e) {
-      SilverLogger.getLogger(this).error(e);
-      clone = null;
-    }
-    return clone;
   }
 
   private String getDate(Date date) {

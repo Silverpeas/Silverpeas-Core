@@ -330,7 +330,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         }
       }
 
-      if (indexOperation == IndexManager.ADD || indexOperation == IndexManager.READD) {
+      if (indexOperation == IndexManager.ADD || indexOperation == IndexManager.ADD_AGAIN) {
         createIndex(detail.getPK(), true, indexOperation);
       } else if (indexOperation == IndexManager.REMOVE) {
         deleteIndex(detail.getPK());
@@ -954,7 +954,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   private void createIndex(PublicationDetail pubDetail, boolean processContent) {
     if (pubDetail.getIndexOperation() == IndexManager.ADD ||
-        pubDetail.getIndexOperation() == IndexManager.READD) {
+        pubDetail.getIndexOperation() == IndexManager.ADD_AGAIN) {
       try {
         FullIndexEntry indexEntry = getFullIndexEntry(pubDetail, processContent);
         IndexEngineProxy.addIndexEntry(indexEntry);
@@ -985,7 +985,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   private void createIndex(PublicationPK pubPK, boolean processContent, int indexOperation) {
 
-    if (indexOperation == IndexManager.ADD || indexOperation == IndexManager.READD) {
+    if (indexOperation == IndexManager.ADD || indexOperation == IndexManager.ADD_AGAIN) {
 
       try {
         PublicationDetail pubDetail = getDetail(pubPK);
@@ -1181,7 +1181,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     });
 
     for (Map.Entry<IndexEntryKey, List<String>> entry : pathsByIndex.entrySet()) {
-      final FullIndexEntry aliasIndexEntry = index.clone();
+      final FullIndexEntry aliasIndexEntry = index.getCopy();
       final IndexEntryKey indexEntryKey = entry.getKey();
       aliasIndexEntry.setPK(indexEntryKey);
       aliasIndexEntry.setPaths(entry.getValue());
