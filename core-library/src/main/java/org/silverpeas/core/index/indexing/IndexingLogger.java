@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,27 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.notification.sse;
+package org.silverpeas.core.index.indexing;
 
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
 @Service
-public class SseLogger implements Initialization {
+public class IndexingLogger implements Initialization {
 
   private static SilverLogger silverLogger;
 
   static void initLogger() {
     if (silverLogger == null) {
-      silverLogger = SilverLogger.getLogger(SseLogger.class);
+      silverLogger = SilverLogger.getLogger(IndexingLogger.class);
     }
   }
 
-  public static SilverLogger get() {
+  public static SilverLogger indexingLogger() {
     return silverLogger;
   }
 

@@ -30,7 +30,8 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
+
+import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
 
 /**
  * Initialization of some of the Tika properties.
@@ -48,11 +49,10 @@ public class TikaInitialization implements Initialization {
     try {
       XMLReaderUtils.setPoolSize(poolSize);
     } catch (TikaException e) {
-      SilverLogger.getLogger(this)
+      indexingLogger()
           .error("Failure while setting the size of the SAX parsers pool to " + poolSize +
               ". Rollback to the default pool size (" + XMLReaderUtils.DEFAULT_POOL_SIZE + ")", e);
       XMLReaderUtils.setPoolSize(XMLReaderUtils.DEFAULT_POOL_SIZE);
     }
   }
 }
-  

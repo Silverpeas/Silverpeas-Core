@@ -25,7 +25,6 @@ package org.silverpeas.core.index.indexing.model;
 
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -33,6 +32,8 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
 
 /**
  * An RepositoryIndexer allow to index files in a whole repository except the directories
@@ -83,7 +84,7 @@ public class RepositoryIndexer {
    */
   private void processFileList(Path dir, LocalDate creationDate, String creatorId, String action) {
     if (count % 10000 == 0) {
-      SilverLogger.getLogger(this).debug("# of indexed documents = {0}", count);
+      indexingLogger().debug("# of indexed documents = {0}", count);
     }
 
     File[] dirs = dir.toFile().listFiles(DirectorySPFilter.getInstance());

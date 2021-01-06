@@ -37,8 +37,7 @@ import java.util.Set;
  * (mainly all the data contents which must be indexed but which is useless at retrieve time). This
  * extra-content is indexed but not stored in the index.
  */
-public class FullIndexEntry extends IndexEntry implements Serializable, Cloneable {
-
+public class FullIndexEntry extends IndexEntry implements Serializable {
   private static final long serialVersionUID = -4955524385769457730L;
 
   /**
@@ -57,6 +56,15 @@ public class FullIndexEntry extends IndexEntry implements Serializable, Cloneabl
 
   public FullIndexEntry(IndexEntryKey pk) {
     super(pk);
+  }
+
+  FullIndexEntry(final FullIndexEntry other) {
+    super(other);
+    this.textList = other.textList != null ? new ArrayList<>(other.textList) : null;
+    this.fileList = other.fileList != null ? new ArrayList<>(other.fileList) : null;
+    this.linkedFileList = other.linkedFileList != null ? new ArrayList<>(other.linkedFileList) : null;
+    this.fields = other.fields != null ? new ArrayList<>(other.fields) : null;
+    this.linkedFileIdsList = other.linkedFileIdsList != null ? new HashSet<>(other.linkedFileIdsList) : null;
   }
 
   /**
@@ -193,8 +201,7 @@ public class FullIndexEntry extends IndexEntry implements Serializable, Cloneabl
     return fields;
   }
 
-  @Override
-  public FullIndexEntry clone() {
-    return (FullIndexEntry) super.clone();
+  public FullIndexEntry getCopy() {
+    return new FullIndexEntry(this);
   }
 }

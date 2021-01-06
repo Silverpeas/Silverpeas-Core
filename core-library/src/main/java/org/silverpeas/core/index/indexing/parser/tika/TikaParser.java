@@ -28,7 +28,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.index.indexing.parser.DefaultParser;
 import org.silverpeas.core.index.indexing.parser.Parser;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
@@ -36,6 +36,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Optional;
+
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
 
 @Technical
 @Bean
@@ -51,12 +56,29 @@ public class TikaParser implements Parser {
   }
 
   @Override
-  public Reader getReader(String path, String encoding) {
+  public Context getContext(String path, String encoding) {
     try {
-      return tika.parse(new File(path));
+      final org.apache.tika.metadata.Metadata metadata = new org.apache.tika.metadata.Metadata();
+      final Reader reader = tika.parse(new File(path), metadata);
+      return new Context(reader, new TikaMetadata(metadata));
     } catch (IOException ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+      indexingLogger().error(ex.getMessage(), ex);
     }
-    return new StringReader("");
+    return new Context(new StringReader(""), new TikaMetadata(null));
+  }
+
+  private static class TikaMetadata implements Metadata {
+    private final org.apache.tika.metadata.Metadata metadata;
+
+    private TikaMetadata(final org.apache.tika.metadata.Metadata metadata) {
+      this.metadata = metadata;
+    }
+
+    @Override
+    public Optional<String> getValue(final String key) {
+      return metadata == null
+          ? empty()
+          : ofNullable(metadata.get(key)).filter(StringUtil::isDefined);
+    }
   }
 }

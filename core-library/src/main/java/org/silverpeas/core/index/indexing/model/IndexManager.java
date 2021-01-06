@@ -61,8 +61,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+import static java.lang.System.currentTimeMillis;
+import static java.text.MessageFormat.format;
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
+import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
 import static org.silverpeas.core.index.indexing.model.IndexProcessor.doFlush;
 import static org.silverpeas.core.index.indexing.model.IndexProcessor.doRemoveAll;
 
@@ -109,10 +115,12 @@ public class IndexManager {
   public static final int NONE = -1;
   public static final int ADD = 0;
   public static final int REMOVE = 1;
-  public static final int READD = 2;
+  public static final int ADD_AGAIN = 2;
   private static final String ATTACHMENT_PREFIX = "Attachment";
   private static final int DEFAULT_MAX_FIELD_LENGTH = 10000;
   private static final int DEFAULT_MERGE_FACTOR_VALUE = 10;
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.index.indexing.IndexEngine");
   /*
    * The lucene index engine parameters.
    */
@@ -123,25 +131,7 @@ public class IndexManager {
   // enable the "Did you mean " indexing
   private static boolean enableDymIndexing = false;
   private static String serverName = null;
-
-  static {
-    // Reads and set the index engine parameters from the given properties file
-    SettingBundle settings =
-        ResourceLocator.getSettingBundle("org.silverpeas.index.indexing.IndexEngine");
-    maxFieldLength = settings.getInteger("lucene.maxFieldLength", maxFieldLength);
-    mergeFactor = settings.getInteger("lucene.mergeFactor", mergeFactor);
-    maxMergeDocs = settings.getInteger("lucene.maxMergeDocs", maxMergeDocs);
-
-    String stringValue = settings.getString("lucene.RAMBufferSizeMB", Double.toString(
-        IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB));
-    defaultRamBufferSizeMb = Double.parseDouble(stringValue);
-
-    enableDymIndexing = settings.getBoolean("enableDymIndexing", false);
-    serverName = settings.getString("server.name", "Silverpeas");
-  }
-
-  private Map<String, IndexWriter> indexWriters = new LinkedHashMap<>();
-
+  private final Map<String, IndexWriter> indexWriters = new LinkedHashMap<>();
   @Inject
   private ParserManager parserManager;
 
@@ -162,11 +152,17 @@ public class IndexManager {
    * @param indexEntry
    */
   void addIndexEntry(FullIndexEntry indexEntry) {
-    indexEntry.setServerName(serverName);
-    String indexPath = getIndexDirectoryPath(indexEntry);
-    IndexWriter writer = getIndexWriter(indexPath, indexEntry.getLang());
-    removeIndexEntry(writer, indexEntry.getPK());
-    index(writer, indexEntry);
+    final long start = currentTimeMillis();
+    try {
+      indexEntry.setServerName(serverName);
+      String indexPath = getIndexDirectoryPath(indexEntry);
+      IndexWriter writer = getIndexWriter(indexPath, indexEntry.getLang());
+      removeIndexEntry(writer, indexEntry.getPK());
+      index(writer, indexEntry);
+    } finally {
+      indexingLogger().debug(() ->
+          format("addIndexEntry {0} in {1}", indexEntry.getPK(), formatDurationHMS(currentTimeMillis() - start)));
+    }
   }
 
   /**
@@ -174,7 +170,7 @@ public class IndexManager {
    */
   public void flush() {
     doFlush(() -> {
-      final SilverLogger logger = SilverLogger.getLogger(this);
+      final SilverLogger logger = indexingLogger();
       final List<String> pathProcessed = new ArrayList<>(indexWriters.size());
       final Iterator<Map.Entry<String, IndexWriter>> it = indexWriters.entrySet().iterator();
       logger.debug("flushing manager of indexation about {0} writer(s)", indexWriters.size());
@@ -187,7 +183,7 @@ public class IndexManager {
         try {
           writer.close();
         } catch (IOException e) {
-          SilverLogger.getLogger(this).error("Cannot close index " + path, e);
+          indexingLogger().error("Cannot close index " + path, e);
         }
         // update the spelling index
         if (enableDymIndexing) {
@@ -205,7 +201,7 @@ public class IndexManager {
       // removing document according to indexEntryPK
       writer.deleteDocuments(term);
     } catch (IOException e) {
-      SilverLogger.getLogger(this).error("Index deletion failure: " + indexEntryKey.toString(), e);
+      indexingLogger().error("Index deletion failure: " + indexEntryKey.toString(), e);
     }
   }
 
@@ -228,7 +224,7 @@ public class IndexManager {
       // removing documents according to SCOPE term
       writer.deleteDocuments(term);
     } catch (IOException e) {
-      SilverLogger.getLogger(this).error("Index deletion failure for scope : " + scope, e);
+      indexingLogger().error("Index deletion failure for scope : " + scope, e);
     }
   }
 
@@ -298,19 +294,38 @@ public class IndexManager {
   }
 
   /**
-   * Get the reader specific of the file described by the file description
-   *
-   * @param file
-   * @return the reader specific of the file described by the file description
+   * @param file a file description
+   * @return the optional {@link Reader} specific of the file described by the file description
    */
-  private Reader getReader(FileDescription file) {
-    Reader reader = null;
-    Parser parser = parserManager.getParser(file.getFormat());
+  private Optional<Reader> getReader(FileDescription file) {
+    final String filePath = file.getPath();
+    return ofNullable(file.getFormat())
+        .map(f -> hasMimetypeToBeIgnored(filePath, f) ? null : f)
+        .flatMap(parserManager::getParser)
+        .map(p -> p.getContext(filePath, file.getEncoding()))
+        .filter(c -> !c.getMetadata().getValue("Content-Type")
+            .map(t -> hasMimetypeToBeIgnored(filePath, t))
+            .filter(Boolean.TRUE::equals)
+            .isPresent())
+        .map(Parser.Context::getReader);
+  }
 
-    if (parser != null) {
-      reader = parser.getReader(file.getPath(), file.getEncoding());
+  /**
+   * Indicates if the given mime-type has to be ignored.
+   * <p>
+   * File path is used for logging purpose.
+   * </p>
+   * @param filePath a file path.
+   * @param mimeType the according mime type.
+   * @return true if mime type is protected, false otherwise.
+   */
+  private boolean hasMimetypeToBeIgnored(final String filePath, final String mimeType) {
+    final String pattern = settings.getString("index.file.content.mimetype.ignore.pattern", "(?i).*(protected|encrypted).*");
+    final boolean hasToBeIgnored = mimeType.matches(pattern);
+    if (hasToBeIgnored) {
+      indexingLogger().warn("Mimetype {0} must be ignored, removing from indexation the content of file {1}", mimeType, filePath);
     }
-    return reader;
+    return hasToBeIgnored;
   }
 
   /**
@@ -338,7 +353,7 @@ public class IndexManager {
                 .setMergePolicy(policy);
         return new IndexWriter(FSDirectory.open(file.toPath()), configuration);
       } catch (IOException e) {
-        SilverLogger.getLogger(this).error("Unknown index file " + path, e);
+        indexingLogger().error("Unknown index file " + path, e);
       }
       // The map is not filled
       return null;
@@ -356,7 +371,7 @@ public class IndexManager {
       Term key = new Term(KEY, indexEntry.getPK().toString());
       writer.updateDocument(key, makeDocument(indexEntry));
     } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      indexingLogger().error(e.getMessage(), e);
     }
   }
 
@@ -618,14 +633,26 @@ public class IndexManager {
       return;
     }
     try {
-      Reader reader = getReader(fileDescription);
-      if (reader != null) {
-        Field field = new Field(getFieldName(CONTENT, fileDescription.getLang()), reader,
-            TextField.TYPE_NOT_STORED);
+      getReader(fileDescription).ifPresent(r -> {
+        final Field field = new Field(getFieldName(CONTENT, fileDescription.getLang()), r, TextField.TYPE_NOT_STORED);
         doc.add(field);
-      }
+      });
     } catch (RuntimeException e) {
-      SilverLogger.getLogger(this).error("Failed to parse file " + fileDescription.getPath(), e);
+      indexingLogger().error("Failed to parse file " + fileDescription.getPath(), e);
     }
+  }
+
+  static {
+    // Reads and set the index engine parameters from the given properties file
+    maxFieldLength = settings.getInteger("lucene.maxFieldLength", maxFieldLength);
+    mergeFactor = settings.getInteger("lucene.mergeFactor", mergeFactor);
+    maxMergeDocs = settings.getInteger("lucene.maxMergeDocs", maxMergeDocs);
+
+    String stringValue = settings.getString("lucene.RAMBufferSizeMB", Double.toString(
+        IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB));
+    defaultRamBufferSizeMb = Double.parseDouble(stringValue);
+
+    enableDymIndexing = settings.getBoolean("enableDymIndexing", false);
+    serverName = settings.getString("server.name", "Silverpeas");
   }
 }

@@ -63,6 +63,12 @@ public final class IndexEntryKey implements Serializable {
     this.objectId = objectId;
   }
 
+  IndexEntryKey(final IndexEntryKey other) {
+    this.component = other.component;
+    this.objectType = other.objectType;
+    this.objectId = other.objectId;
+  }
+
   /**
    * Create a new IndexEntry from s. We must have :
    * <PRE>
