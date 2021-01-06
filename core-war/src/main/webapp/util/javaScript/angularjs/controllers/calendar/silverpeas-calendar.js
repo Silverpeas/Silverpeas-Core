@@ -34,8 +34,8 @@
   });
 
   angular.module('silverpeas.controllers').controller('silverpeasCalendarController',
-      ['context', '$scope', 'CalendarService', '$timeout', 'visibleFilter', 'defaultFilter',
-        function(context, $scope, CalendarService, $timeout, visibleFilter, defaultFilter) {
+      ['context', '$scope', 'CalendarService', '$timeout', 'visibleFilter', 'defaultFilter', 'synchronizedFilter',
+        function(context, $scope, CalendarService, $timeout, visibleFilter, defaultFilter, synchronizedFilter) {
           $scope.getCalendarService = function() {
             console.error('Please implement this method into the child controller.')
           };
@@ -121,9 +121,11 @@
                       reloadedOccurrence.startDate = context.occurrenceStartDate;
                       reloadedOccurrence.onAllDay = context.occurrenceStartDate.indexOf('T') < 0;
                     }
-                    if (!reloadedOccurrence.calendar && $scope.calendars &&
-                        $scope.calendars.length) {
-                      reloadedOccurrence.calendar = $scope.calendars[0];
+                    if (!reloadedOccurrence.calendar && $scope.calendars && $scope.calendars.length) {
+                      let potentialCalendars = synchronizedFilter($scope.calendars, false);
+                      if (potentialCalendars && potentialCalendars.length) {
+                        reloadedOccurrence.calendar = potentialCalendars[0];
+                      }
                     }
                     $timeout(function() {
                       $scope.ceo = reloadedOccurrence;
