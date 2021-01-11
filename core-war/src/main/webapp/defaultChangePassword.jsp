@@ -128,56 +128,58 @@
   <div id="emailAddressMessage" style="display: none; max-width: 400px; text-align: left;">
     <view:applyTemplate locationBase="${templateLocationBase}" name="${titleTemplate}"/></div>
 </c:if>
+<view:loadScript src="/util/javaScript/silverpeas-password.js" jsPromiseName="loadingPromise"/>
 <script type="text/javascript">
-  setTimeout(function() {
-    var extraValidations;
-    <c:if test="${isEmailAddress}">
-    extraValidations = function(errorStack) {
-      if (!$.trim($('#emailAddress').val())) {
-        errorStack.push(
-            '<fmt:message key="authentication.email.error" bundle="${authenticationBundle}"/>');
-      }
-      return sp.promise.resolveDirectlyWith();
-    };
-    var $emailMessage = $('#emailAddressMessage');
-    if ($emailMessage.length > 0 && $.trim($emailMessage.html())) {
-      var $emailAddress = $('#emailAddress');
-      $emailAddress.qtip({
-        content : $emailMessage,
-        style : {
-          width : "auto",
-          tip : true,
-          classes : "qtip-shadow qtip-cream"
-        },
-        position : {
-          adjust : {
-            method : "flip flip"
-          },
-          viewport : $(window),
-          at : "bottom left",
-          my : "top right"
-        },
-        show : {
-          delay : 0,
-          event : "displayQTip"
-        },
-        hide : {
-          fixed : true,
-          event : "hideQTip"
+  loadingPromise.then(function() {
+    setTimeout(function() {
+      var extraValidations;
+      <c:if test="${isEmailAddress}">
+      extraValidations = function(errorStack) {
+        if (!$.trim($('#emailAddress').val())) {
+          errorStack.push(
+              '<fmt:message key="authentication.email.error" bundle="${authenticationBundle}"/>');
         }
+        return sp.promise.resolveDirectlyWith();
+      };
+      var $emailMessage = $('#emailAddressMessage');
+      if ($emailMessage.length > 0 && $.trim($emailMessage.html())) {
+        var $emailAddress = $('#emailAddress');
+        $emailAddress.qtip({
+          content : $emailMessage,
+          style : {
+            width : "auto",
+            tip : true,
+            classes : "qtip-shadow qtip-cream"
+          },
+          position : {
+            adjust : {
+              method : "flip flip"
+            },
+            viewport : $(window),
+            at : "bottom left",
+            my : "top right"
+          },
+          show : {
+            delay : 0,
+            event : "displayQTip"
+          },
+          hide : {
+            fixed : true,
+            event : "hideQTip"
+          }
+        });
+        $emailAddress.trigger("displayQTip");
+      }
+      </c:if>
+      handlePasswordForm({
+        passwordFormId : 'changePwdForm',
+        passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePasswordFromLogin"/>',
+        passwordInputId : 'newPassword',
+        extraValidations : extraValidations
       });
-      $emailAddress.trigger("displayQTip");
-    }
-    </c:if>
-    handlePasswordForm({
-      passwordFormId : 'changePwdForm',
-      passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePasswordFromLogin"/>',
-      passwordInputId : 'newPassword',
-      extraValidations : extraValidations
-    });
-    document.querySelector("input").focus();
-  }, 0);
+      document.querySelector("input").focus();
+    }, 0);
+  });
 </script>
-<view:script src="/util/javaScript/silverpeas-password.js"/>
 </view:sp-body-part>
 </view:sp-page>
