@@ -103,16 +103,18 @@
     <input type="hidden" name="DomainId" value="<%=userDetail.getDomainId()%>"/>
   </div>
 </form>
+<view:loadScript src="/util/javaScript/silverpeas-password.js" jsPromiseName="loadingPromise"/>
 <script type="text/javascript">
-  setTimeout(function() {
-    $('#password').focus();
-    handlePasswordForm({
-      passwordFormId : 'changePwdForm',
-      passwordFormAction : '<c:url value="/CredentialsServlet/ChangePassword"/>',
-      passwordInputId : 'password'
-    });
-  }, 0);
+  loadingPromise.then(function() {
+    setTimeout(function() {
+      $('#password').focus();
+      handlePasswordForm({
+        passwordFormId : 'changePwdForm',
+        passwordFormAction : '<c:url value="/CredentialsServlet/ChangePassword"/>',
+        passwordInputId : 'password'
+      });
+    }, 0);
+  });
 </script>
-<view:script src="/util/javaScript/silverpeas-password.js"/>
 </view:sp-body-part>
 </view:sp-page>
