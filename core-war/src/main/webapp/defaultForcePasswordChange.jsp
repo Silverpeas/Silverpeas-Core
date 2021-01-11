@@ -104,16 +104,18 @@
     </div>
   </div>
 </form>
+<view:loadScript src="/util/javaScript/silverpeas-password.js" jsPromiseName="loadingPromise"/>
 <script type="text/javascript">
-  setTimeout(function() {
-    $('#oldPassword').focus();
-    handlePasswordForm({
-      passwordFormId : 'changePwdForm',
-      passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePassword"/>',
-      passwordInputId : 'newPassword'
-    });
-  }, 0);
+  loadingPromise.then(function() {
+    setTimeout(function() {
+      $('#oldPassword').focus();
+      handlePasswordForm({
+        passwordFormId : 'changePwdForm',
+        passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePassword"/>',
+        passwordInputId : 'newPassword'
+      });
+    }, 0);
+  });
 </script>
-<view:script src="/util/javaScript/silverpeas-password.js"/>
 </view:sp-body-part>
 </view:sp-page>
