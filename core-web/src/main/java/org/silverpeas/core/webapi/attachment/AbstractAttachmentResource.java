@@ -23,17 +23,20 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.webapi.base.RESTWebService;
+
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-
-import org.silverpeas.core.webapi.base.RESTWebService;
+import static java.util.Optional.ofNullable;
 
 /**
  * A REST Web resource providing access to attachments.
@@ -50,19 +53,27 @@ public abstract class AbstractAttachmentResource extends RESTWebService {
 
   protected Response getFileContent(String attachmentId) {
     final SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService()
-        .searchDocumentById(new SimpleDocumentPK(attachmentId), null).getLastPublicVersion();
-    if (!isFileReadable(attachment)) {
-      throw new WebApplicationException(Status.UNAUTHORIZED);
+        .searchDocumentById(new SimpleDocumentPK(attachmentId), null);
+    if (attachment == null) {
+      SilverLogger.getLogger(this).warn("Resource not found from request {0} with user {1}",
+          getHttpRequest().getRequestURI(), ofNullable(getUser()).map(User::getId).orElse("N/A"));
+      return Response.noContent().status(Status.NOT_FOUND).build();
+    }
+    final SimpleDocument lastPublicVersion = attachment.getLastPublicVersion();
+    if (!isFileReadable(lastPublicVersion)) {
+      SilverLogger.getLogger(this).warn("Resource not authorized from request {0} with user {1}",
+          getHttpRequest().getRequestURI(), ofNullable(getUser()).map(User::getId).orElse("N/A"));
+      return Response.noContent().status(Status.UNAUTHORIZED).build();
     }
     StreamingOutput data = output -> {
       try {
         AttachmentServiceProvider.getAttachmentService().getBinaryContent(
-            output, attachment.getPk(), attachment.getLanguage());
+            output, lastPublicVersion.getPk(), lastPublicVersion.getLanguage());
       } catch (Exception e) {
         throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
       }
     };
-    return Response.ok().entity(data).type(attachment.getContentType()).build();
+    return Response.ok().entity(data).type(lastPublicVersion.getContentType()).build();
   }
 
   protected abstract boolean isFileReadable(SimpleDocument attachment);
