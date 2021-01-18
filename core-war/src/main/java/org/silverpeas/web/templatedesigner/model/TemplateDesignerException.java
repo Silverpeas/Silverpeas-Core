@@ -23,41 +23,21 @@
  */
 package org.silverpeas.web.templatedesigner.model;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 public class TemplateDesignerException extends SilverpeasException {
 
-  private static final long serialVersionUID = 8766639903297162905L;
+  private static final long serialVersionUID = 4372963985921040145L;
 
-  /**
-   * -------------------------------------------------------------------------- constructors
-   * constructors
-   */
-  public TemplateDesignerException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+  public TemplateDesignerException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public TemplateDesignerException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public TemplateDesignerException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public TemplateDesignerException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public TemplateDesignerException(final Throwable cause) {
+    super(cause);
   }
-
-  public TemplateDesignerException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * -------------------------------------------------------------------------- getModule getModule
-   */
-  public String getModule() {
-    return "TemplateDesigner";
-  }
-
 }

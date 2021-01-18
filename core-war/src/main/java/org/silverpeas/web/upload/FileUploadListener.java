@@ -23,6 +23,8 @@
  */
 package org.silverpeas.web.upload;
 
+import java.io.Serializable;
+
 /**
  * Listener to listen to the status of a file upload.
  *
@@ -62,7 +64,7 @@ public class FileUploadListener implements OutputStreamListener {
     return fileUploadStats;
   }
 
-  public static class FileUploadStats {
+  public static class FileUploadStats implements Serializable {
 
     private long totalSize = 0;
     private long bytesRead = 0;

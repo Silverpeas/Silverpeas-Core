@@ -36,7 +36,6 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
 import org.silverpeas.core.security.encryption.ContentEncryptionServiceProvider;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
@@ -62,16 +61,19 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class TemplateDesignerSessionController extends AbstractComponentSessionController {
 
-  PublicationTemplateImpl template = null;
+  private static final String VIEW_HTML = "view.html";
+  private static final String UPDATE_HTML = "update.html";
+  transient PublicationTemplateImpl template = null;
   boolean updateInProgress = false;
-  private final static int SCOPE_DATA = 0;
-  private final static int SCOPE_VIEW = 1;
-  private final static int SCOPE_UPDATE = 2;
-  private final static int SCOPE_SEARCH = 3;
-  private final static int SCOPE_SEARCHRESULT = 4;
+  private static final int SCOPE_DATA = 0;
+  private static final int SCOPE_VIEW = 1;
+  private static final int SCOPE_UPDATE = 2;
+  private static final int SCOPE_SEARCH = 3;
+  private static final int SCOPE_SEARCHRESULT = 4;
   private List<String> languages = null;
   private final AdminController adminController;
 
@@ -103,8 +105,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
       return getPublicationTemplateManager().getPublicationTemplates(false);
     } catch (PublicationTemplateException e) {
-      throw new TemplateDesignerException("TemplateDesignerSessionController.getTemplates",
-          SilverpeasException.ERROR, "templateManager.GETTING_TEMPLATES_FAILED", e);
+      throw new TemplateDesignerException("Fail to get template", e);
     }
   }
 
@@ -132,8 +133,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
       return template;
     } catch (PublicationTemplateException e) {
-      throw new TemplateDesignerException("TemplateDesignerSessionController.getTemplate",
-          SilverpeasException.ERROR, "templateManager.GETTING_TEMPLATE_FAILED", e);
+      throw new TemplateDesignerException("Fail to get template", e);
     }
   }
 
@@ -161,8 +161,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     try {
       FileFolderManager.createFolder(templateDir);
     } catch (org.silverpeas.core.util.UtilException e) {
-      throw new TemplateDesignerException(getClass().getSimpleName() + ".createTemplate",
-          SilverpeasException.ERROR, "root.EX_NO_MESSAGE", e);
+      throw new TemplateDesignerException("Fail to create template", e);
     }
 
     this.template.setFileName(fileName + ".xml");
@@ -170,13 +169,13 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
     String viewFileName = "view.xml";
     if (this.template.isViewLayerDefined()) {
-      viewFileName = "view.html";
+      viewFileName = VIEW_HTML;
     }
     this.template.setViewFileName(fileName + File.separator + viewFileName);
 
     String updateFileName = "update.xml";
     if (this.template.isUpdateLayerDefined()) {
-      updateFileName = "update.html";
+      updateFileName = UPDATE_HTML;
     }
     this.template.setUpdateFileName(fileName + File.separator + updateFileName);
 
@@ -239,14 +238,14 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     String subdir = getSubdir(this.template.getFileName());
 
     if (this.template.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
-      this.template.setViewFileName(subdir + File.separator + "view.html");
+      this.template.setViewFileName(subdir + File.separator + VIEW_HTML);
     } else if (updatedTemplate.getViewLayerAction() ==
         PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
       this.template.setViewFileName(subdir + File.separator + "view.xml");
     }
 
     if (this.template.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
-      this.template.setUpdateFileName(subdir + File.separator + "update.html");
+      this.template.setUpdateFileName(subdir + File.separator + UPDATE_HTML);
     } else if (updatedTemplate.getUpdateLayerAction() ==
         PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
       this.template.setUpdateFileName(subdir + File.separator + "update.xml");
@@ -329,7 +328,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     return null;
   }
 
-  public FieldTemplate getField(String fieldName) throws TemplateDesignerException {
+  public FieldTemplate getField(String fieldName) {
     Iterator<FieldTemplate> fields = getFields();
     while (fields != null && fields.hasNext()) {
       FieldTemplate field = fields.next();
@@ -352,41 +351,52 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   private GenericRecordTemplate getRecordTemplate(int scope) {
     GenericRecordTemplate recordTemplate = null;
     try {
-      if (scope == SCOPE_VIEW) {
-        recordTemplate = (GenericRecordTemplate) template.getViewTemplate();
-        if (recordTemplate == null) {
-          recordTemplate = new GenericRecordTemplate();
-          template.setViewTemplate(recordTemplate);
-        }
-      } else if (scope == SCOPE_UPDATE) {
-        recordTemplate = (GenericRecordTemplate) template.getUpdateTemplate();
-        if (recordTemplate == null) {
-          recordTemplate = new GenericRecordTemplate();
-          template.setUpdateTemplate(recordTemplate);
-        }
-      } else if (scope == SCOPE_SEARCH) {
-        recordTemplate = (GenericRecordTemplate) template.getSearchTemplate(false);
-        if (recordTemplate == null) {
-          recordTemplate = new GenericRecordTemplate();
-          template.setSearchTemplate(recordTemplate);
-        }
-      } else if (scope == SCOPE_SEARCHRESULT) {
-        recordTemplate = (GenericRecordTemplate) template.getSearchResultTemplate();
-        if (recordTemplate == null) {
-          recordTemplate = new GenericRecordTemplate();
-          template.setSearchResultTemplate(recordTemplate);
-        }
-      } else {
-        recordTemplate = (GenericRecordTemplate) template.getDataTemplate();
-        if (recordTemplate == null) {
-          recordTemplate = new GenericRecordTemplate();
-          template.setTemplate(recordTemplate);
-        }
+      switch (scope) {
+        case SCOPE_VIEW:
+          recordTemplate = (GenericRecordTemplate) template.getViewTemplate();
+          if (recordTemplate == null) {
+            recordTemplate = new GenericRecordTemplate();
+            template.setViewTemplate(recordTemplate);
+          }
+          break;
+
+        case SCOPE_UPDATE:
+          recordTemplate = (GenericRecordTemplate) template.getUpdateTemplate();
+          if (recordTemplate == null) {
+            recordTemplate = new GenericRecordTemplate();
+            template.setUpdateTemplate(recordTemplate);
+          }
+          break;
+
+        case SCOPE_SEARCH:
+          recordTemplate = (GenericRecordTemplate) template.getSearchTemplate(false);
+          if (recordTemplate == null) {
+            recordTemplate = new GenericRecordTemplate();
+            template.setSearchTemplate(recordTemplate);
+          }
+          break;
+
+        case SCOPE_SEARCHRESULT:
+          recordTemplate = (GenericRecordTemplate) template.getSearchResultTemplate();
+          if (recordTemplate == null) {
+            recordTemplate = new GenericRecordTemplate();
+            template.setSearchResultTemplate(recordTemplate);
+          }
+          break;
+
+        default:
+          recordTemplate = (GenericRecordTemplate) template.getDataTemplate();
+          if (recordTemplate == null) {
+            recordTemplate = new GenericRecordTemplate();
+            template.setTemplate(recordTemplate);
+          }
       }
     } catch (PublicationTemplateException e) {
       // Do nothing
       SilverLogger.getLogger(this).error(e);
     }
+
+    Objects.requireNonNull(recordTemplate);
     return recordTemplate;
   }
 
@@ -439,22 +449,14 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
       updateInProgress = false;
     } catch (PublicationTemplateException e) {
-      throw new TemplateDesignerException("TemplateDesignerSessionController.saveTemplate",
-          SilverpeasException.ERROR, "templateManager.TEMPLATE_SAVING_FAILED",
-          "template = " + template.getName(), e);
+      throw new TemplateDesignerException("Fail to save template", e);
     }
   }
 
   private void saveTemplateHeader() throws TemplateDesignerException, CryptoException {
     try {
       // Save main xml File
-      try {
-        getPublicationTemplateManager().savePublicationTemplate(template);
-      } catch (CryptoException e) {
-        // reload current template as it was before saving
-        reloadCurrentTemplate();
-        throw e;
-      }
+      savePublicationTemplate();
 
       String dir =
           PublicationTemplateManager.getInstance().makePath(getSubdir(template.getFileName()));
@@ -463,22 +465,31 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
           template.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
         saveLayer(template.getViewLayerFileName(), dir);
       } else if (template.getViewLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
-        removeLayer(new File(dir, "view.html"));
+        removeLayer(new File(dir, VIEW_HTML));
       }
 
       if (template.isUpdateLayerDefined() &&
           template.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_ADD) {
         saveLayer(template.getUpdateLayerFileName(), dir);
       } else if (template.getUpdateLayerAction() == PublicationTemplateImpl.LAYER_ACTION_REMOVE) {
-        removeLayer(new File(dir, "update.html"));
+        removeLayer(new File(dir, UPDATE_HTML));
       }
 
       // reset caches partially
       getPublicationTemplateManager().removePublicationTemplateFromCaches(template.getFileName());
     } catch (PublicationTemplateException e) {
-      throw new TemplateDesignerException("TemplateDesignerSessionController.saveTemplate",
-          SilverpeasException.ERROR, "templateManager.TEMPLATE_SAVING_FAILED",
-          "template = " + template.getName(), e);
+      throw new TemplateDesignerException("Fail to save the template " + template.getName(), e);
+    }
+  }
+
+  private void savePublicationTemplate()
+      throws PublicationTemplateException, TemplateDesignerException, CryptoException {
+    try {
+      getPublicationTemplateManager().savePublicationTemplate(template);
+    } catch (CryptoException e) {
+      // reload current template as it was before saving
+      reloadCurrentTemplate();
+      throw e;
     }
   }
 
@@ -486,7 +497,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     try {
       File file = new File(dir, FilenameUtils.getName(filePath));
       if (file.exists()) {
-        file.delete();
+        Files.delete(file.toPath());
       }
       FileUtils.moveFileToDirectory(new File(filePath), new File(dir), false);
     } catch (IOException ioe) {

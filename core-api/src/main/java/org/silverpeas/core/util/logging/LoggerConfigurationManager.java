@@ -35,6 +35,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -139,15 +141,16 @@ public class LoggerConfigurationManager {
     Map<String, LoggerConfiguration> loggerConfigurations = getLoggerConfigurations();
     if (loggerConfigurations.containsKey(configuration.getNamespace()) &&
         configuration.hasConfigurationFile()) {
-      try {
+      try(InputStream input = new FileInputStream(configuration.getConfigurationFile());
+          OutputStream output = new FileOutputStream(configuration.getConfigurationFile())) {
         Properties properties = new Properties();
-        properties.load(new FileInputStream(configuration.getConfigurationFile()));
+        properties.load(input);
         if (configuration.getLevel() == null) {
           properties.remove(LOGGER_LEVEL);
         } else {
           properties.setProperty(LOGGER_LEVEL, configuration.getLevel().name());
         }
-        properties.store(new FileOutputStream(configuration.getConfigurationFile()), null);
+        properties.store(output, null);
       } catch (IOException e) {
         java.util.logging.Logger.getLogger(THIS_LOGGER_NAMESPACE)
             .log(java.util.logging.Level.WARNING, e.getMessage(), e);
@@ -172,7 +175,9 @@ public class LoggerConfigurationManager {
 
   private LoggerConfiguration loadLoggerConfiguration(File loggerConfFile) throws IOException {
     Properties loggerProperties = new Properties();
-    loggerProperties.load(new FileInputStream(loggerConfFile));
+    try(InputStream input = new FileInputStream(loggerConfFile)) {
+      loggerProperties.load(input);
+    }
     String namespace = loggerProperties.getProperty(LOGGER_NAMESPACE);
     Level level = null;
     String strLevel = loggerProperties.getProperty(LOGGER_LEVEL);

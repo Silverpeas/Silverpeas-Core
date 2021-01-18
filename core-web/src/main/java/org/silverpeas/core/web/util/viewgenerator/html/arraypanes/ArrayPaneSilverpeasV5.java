@@ -170,10 +170,6 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
             "\"><span class=\"export csv\">");
         result.append(gef.getMultilang().getString("GEF.export.option.csv")).append("</span></a>");
         result.append("</div>");
-        // Be careful we only put a unique name in the session, so we cannot export two ArrayPanes
-        // which are displayed in the same page (use this.name instead of "arraypane")
-        getSession().setAttribute("Silverpeas_arraypane_columns", getColumns());
-        getSession().setAttribute("Silverpeas_arraypane_lines", getLines());
         result.append("</div>");
       }
       result.append("</td>\n");

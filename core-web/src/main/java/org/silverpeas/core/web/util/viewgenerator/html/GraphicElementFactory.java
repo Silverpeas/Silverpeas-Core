@@ -66,6 +66,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.window.WindowWeb20V5;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -80,7 +81,7 @@ import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_
  * graphic component instanciation. You should never directly instanciate a component without using
  * this factory ! This class uses the "factory design pattern".
  */
-public class GraphicElementFactory {
+public class GraphicElementFactory implements Serializable {
 
   /**
    * The key with which is associated the resources wrapper used by a Silverpeas component instance
@@ -91,8 +92,8 @@ public class GraphicElementFactory {
   private static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.util.viewGenerator.settings.graphicElementFactorySettings");
   private static final String ARRAY_PANE = "ArrayPane";
-  private static SettingBundle lookSettings = null;
-  private SettingBundle favoriteLookSettings = null;
+  private static SettingBundle lookSettings;
+  private transient SettingBundle favoriteLookSettings = null;
   private static final String REQUEST_SPACE_ID = GraphicElementFactory.class + "_REQUEST_SPACE_ID";
   private static final String REQUEST_COMPONENT_ID =
       GraphicElementFactory.class + "_REQUEST_COMPONENT_ID";
@@ -102,7 +103,7 @@ public class GraphicElementFactory {
       GraphicElementFactory.class + "_REQUEST_EXTERNAL_STYLESHEET";
   private static final String ICONS_PATH =
       (URLUtil.getApplicationURL() + settings.getString("IconsPath")).replaceAll("/$", "");
-  private LocalizationBundle multilang = null;
+  private transient LocalizationBundle multilang = null;
   private String currentLookName = null;
   private MainSessionController mainSessionController = null;
   public static final String DEFAULT_LOOK_NAME = "Initial";

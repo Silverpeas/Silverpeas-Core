@@ -180,7 +180,7 @@ public class DefaultScoreService implements ScoreService {
   public void deleteScoreByFatherPK(ScorePK scorePK, String fatherId) {
     Connection con = getConnection();
     try {
-      ScoreDAO.deleteScoreByFatherPK(con, scorePK, fatherId);
+      ScoreDAO.deleteScoreByFatherPK(con, fatherId);
     } catch (Exception e) {
       throw new ScoreRuntimeException(e);
     } finally {

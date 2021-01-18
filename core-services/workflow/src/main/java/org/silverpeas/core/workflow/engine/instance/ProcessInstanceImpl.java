@@ -109,7 +109,7 @@ public class ProcessInstanceImpl
    * Abstract process model
    */
   @Transient
-  private ProcessModel model = null;
+  private transient ProcessModel model = null;
   /**
    * Flag that indicates validity of this processInstance
    */
@@ -156,7 +156,7 @@ public class ProcessInstanceImpl
    * The current history step used to add atomic operations in history
    */
   @Transient
-  private HistoryStep currentStep = null;
+  private transient HistoryStep currentStep = null;
   /**
    * the status of this instance regarding 'undo' process while true, the atomic operations are not
    * stored anymore

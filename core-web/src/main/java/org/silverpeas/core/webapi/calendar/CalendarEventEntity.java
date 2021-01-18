@@ -390,7 +390,8 @@ public class CalendarEventEntity implements WebEntity {
   @XmlElement
   public Map<String, String[]> getAttachmentParameters() {
     return attachmentParameters.stream()
-        .collect(Collectors.toMap(p -> p.getName(), p -> new String[]{p.getValue()}));
+        .collect(
+            Collectors.toMap(AttachmentParameterEntity::getName, p -> new String[]{p.getValue()}));
   }
 
   /**
@@ -460,13 +461,13 @@ public class CalendarEventEntity implements WebEntity {
   @XmlTransient
   void applyOn(final CalendarEvent event) {
     String currentText = getContent() == null ? "" : getContent();
-    if (event.getContent().isPresent()) {
-      event.getContent().get().setData(currentText);
-    } else if (!currentText.isEmpty()) {
-      WysiwygContent wysiwygContent = new WysiwygContent(LocalizedContribution.from(event));
-      wysiwygContent.setData(currentText);
-      event.setContent(wysiwygContent);
-    }
+    event.getContent().ifPresentOrElse(c -> c.setData(currentText), () -> {
+      if (!currentText.isEmpty()) {
+        WysiwygContent wysiwygContent = new WysiwygContent(LocalizedContribution.from(event));
+        wysiwygContent.setData(currentText);
+        event.setContent(wysiwygContent);
+      }
+    });
     event.withVisibilityLevel(getVisibility());
     if (getRecurrence() != null) {
       getRecurrence().applyOn(event, getPeriod());

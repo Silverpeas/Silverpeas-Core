@@ -45,6 +45,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+@Deprecated(forRemoval = true)
 public class AgendaHtmlView {
 
   public static final int BYDAY = 1;
@@ -563,7 +564,7 @@ public class AgendaHtmlView {
             }
 
             result.append("<td width=\"")
-                .append((600 / maxColumns))
+                .append((600 / maxColumns == 0 ? 1:maxColumns))
                 .append("\" class=\"")
                 .append(color)
                 .append("\" rowspan=\"")

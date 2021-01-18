@@ -94,7 +94,7 @@ public class PersonalComponentInstance implements SilverpeasPersonalComponentIns
           PersonalComponent.getByName(matcher.group(COMPONENT_NAME_INDEX));
       User user = User.getById(matcher.group(USER_ID_INDEX));
       if (personalComponent.isPresent() && user != null) {
-        instance = from(user, personalComponent.get());
+        instance = from(user, personalComponent.orElse(null));
       }
     }
     return Optional.ofNullable(instance);

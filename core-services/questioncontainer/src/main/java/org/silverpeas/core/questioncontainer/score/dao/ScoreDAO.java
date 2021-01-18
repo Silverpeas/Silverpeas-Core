@@ -59,6 +59,12 @@ public class ScoreDAO {
   private static final String DELETE_SCORES_FOR_ALL_QUESTIONS =
       "DELETE FROM SB_Question_Score WHERE qcId in (SELECT QC.qcId FROM SB_Question_Question Q, " +
           "SB_QuestionContainer_QC QC WHERE QC.qcId = Q.qcId AND Q.instanceId = ?)";
+  private static final String SELECT = "select ";
+  private static final String FROM = " from ";
+
+  private ScoreDAO() {
+
+  }
 
   /**
    * @param rs
@@ -77,11 +83,8 @@ public class ScoreDAO {
     String participationDate = rs.getString(7);
     String suggestion = rs.getString(8);
 
-    ScoreDetail result =
-        new ScoreDetail(new ScorePK(id, scorePK), fatherId, userId, participationId,
+    return new ScoreDetail(new ScorePK(id, scorePK), fatherId, userId, participationId,
             participationDate, score, elapsedTime, suggestion);
-
-    return result;
   }
 
   /**
@@ -161,11 +164,10 @@ public class ScoreDAO {
 
   /**
    * @param con the database connection
-   * @param scorePK the score identifier
    * @param fatherId the father idenfifier
    * @throws SQLException
    */
-  public static void deleteScoreByFatherPK(Connection con, ScorePK scorePK, String fatherId)
+  public static void deleteScoreByFatherPK(Connection con, String fatherId)
       throws SQLException {
 
     PreparedStatement prepStmt = null;
@@ -204,7 +206,7 @@ public class ScoreDAO {
       throws SQLException {
     ResultSet rs = null;
     ScoreDetail scoreDetail;
-    String selectStatement = "select " + SCORECOLUMNNAMES + " from " + scorePK.getTableName() +
+    String selectStatement = SELECT + SCORECOLUMNNAMES + FROM + scorePK.getTableName() +
         " order by scoreParticipationDate desc";
     PreparedStatement prepStmt = null;
 
@@ -235,7 +237,7 @@ public class ScoreDAO {
       String userId) throws SQLException {
     ResultSet rs = null;
     ScoreDetail scoreDetail;
-    String selectStatement = "select " + SCORECOLUMNNAMES + " from " + scorePK.getTableName() +
+    String selectStatement = SELECT + SCORECOLUMNNAMES + FROM + scorePK.getTableName() +
         " where userId = ? order by scoreParticipationDate desc";
     PreparedStatement prepStmt = null;
 
@@ -267,7 +269,7 @@ public class ScoreDAO {
       String fatherId, String userId) throws SQLException {
     ResultSet rs = null;
     ScoreDetail scoreDetail;
-    String selectStatement = "select " + SCORECOLUMNNAMES + " from " + scorePK.getTableName() +
+    String selectStatement = SELECT + SCORECOLUMNNAMES + FROM + scorePK.getTableName() +
         " where qcId = ? and userId=? order by scoreParticipationDate desc";
     PreparedStatement prepStmt = null;
 
@@ -330,7 +332,7 @@ public class ScoreDAO {
     ResultSet rs = null;
     ScoreDetail scoreDetail;
     int nbRecord = 0;
-    String selectStatement = "select " + SCORECOLUMNNAMES + " from " + scorePK.getTableName() +
+    String selectStatement = SELECT + SCORECOLUMNNAMES + FROM + scorePK.getTableName() +
         " where qcId = ? order by scoreScore desc";
 
     PreparedStatement prepStmt = null;
@@ -365,7 +367,7 @@ public class ScoreDAO {
     ResultSet rs = null;
     ScoreDetail scoreDetail;
     int nbRecord = 0;
-    String selectStatement = "select " + SCORECOLUMNNAMES + " from " + scorePK.getTableName() +
+    String selectStatement = SELECT + SCORECOLUMNNAMES + FROM + scorePK.getTableName() +
         " where qcId = ? order by scoreScore";
     PreparedStatement prepStmt = null;
 
@@ -436,7 +438,7 @@ public class ScoreDAO {
         rs = prepStmt.executeQuery();
         if (rs.next()) {
           sumPoints = rs.getInt(1);
-          average = Math.round((sumPoints / nbVoters) * 10) / 10;
+          average = Math.round(((float) sumPoints / nbVoters) * 10F) / 10F;
         }
       } finally {
         DBUtil.close(rs, prepStmt);
@@ -459,7 +461,7 @@ public class ScoreDAO {
   public static ScoreDetail getUserScoreByFatherIdAndParticipationId(Connection con,
       ScorePK scorePK, String fatherId, String userId, int participationId) throws SQLException {
     ResultSet rs = null;
-    String selectStatement = "select " + SCORECOLUMNNAMES + " from " + scorePK.getTableName() +
+    String selectStatement = SELECT + SCORECOLUMNNAMES + FROM + scorePK.getTableName() +
         " where qcId = ? and userId = ? and scoreParticipationId= ?";
     PreparedStatement prepStmt = null;
 

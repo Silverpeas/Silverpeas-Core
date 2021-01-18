@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Unit tests on the execution of the different DefaultContentEncryptionService's methods in a concurrent
  * way.
  */
-public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
+class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
 
   // the AES key in hexadecimal stored in the key file.
   private String key;
@@ -61,9 +61,9 @@ public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
   }
 
   @Test
-  public void testTheCipherRenewingIsBlocking() {
+  void testTheCipherRenewingIsBlocking() {
     ExecutorService executor = Executors.newCachedThreadPool();
-    executor.submit((Runnable) () -> {
+    executor.submit(() -> {
       try {
         renewContentCipher();
       } catch (Exception e) {
@@ -71,7 +71,7 @@ public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
       }
     });
 
-    executor.submit((Runnable) () -> {
+    executor.submit(() -> {
       try {
         TextContent[] contents = generateTextContents(1);
         Map<String, String> content = contents[0].getProperties();
@@ -82,7 +82,7 @@ public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
       }
     });
 
-    executor.submit((Runnable) () -> {
+    executor.submit(() -> {
       try {
         EncryptionContentIterator iterator = getEncryptionContentIteratorForDecryption();
         getContentEncryptionService().encryptContents(iterator);
@@ -99,7 +99,166 @@ public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
   }
 
   @Test
-  public void testTheCipherRenewingIsBlockedWhenAContentIsEncrypted() {
+  void testTheCipherRenewingIsBlockedWhenAContentIsEncrypted() {
+    ExecutorService executor = Executors.newCachedThreadPool();
+    final long[] time = new long[1];
+    final Future[] futures = new Future[3];
+    futures[0] = executor.submit(() -> {
+      try {
+        TextContent[] contents = generateTextContents(1);
+        Map<String, String> content = contents[0].getProperties();
+        getContentEncryptionService().encryptContent(content);
+        time[0] = System.currentTimeMillis();
+      } catch (Exception e) {
+        fail(e.getMessage());
+      }
+    });
+
+    futures[1] = executor.submit(() -> {
+      try {
+        TextContent[] contents = generateTextContents(1);
+        getContentEncryptionService()
+            .encryptContent(contents[0].getText(), contents[0].getDescription(),
+                contents[0].getText());
+        time[0] = System.currentTimeMillis();
+      } catch (Exception e) {
+        fail(e.getMessage());
+      }
+    });
+
+    futures[2] = executor.submit(() -> {
+      try {
+        EncryptionContentIterator iterator = getEncryptionContentIteratorForEncryption();
+        getContentEncryptionService().encryptContents(iterator);
+        time[0] = System.currentTimeMillis();
+      } catch (Exception e) {
+        fail(e.getMessage());
+      }
+    });
+
+    executor.submit(() -> {
+      try {
+        for (Future future : futures) {
+          assertThat(future.isDone(), is(false));
+        }
+        renewContentCipher();
+        assertThat(System.currentTimeMillis(), greaterThan(time[0]));
+        for (Future future : futures) {
+          assertThat(future.isDone(), is(true));
+        }
+      } catch (Exception e) {
+        fail(e.getMessage());
+      }
+    });
+
+    executor.shutdown();
+    while (!executor.isTerminated()) {
+
+    }
+  }
+
+  @Test
+  void testTheCipherRenewingIsBlockedWhenAContentIsDecrypted() {
+    ExecutorService executor = Executors.newCachedThreadPool();
+    final long[] time = new long[1];
+    final Future[] futures = new Future[3];
+    futures[0] = executor.submit(() -> {
+      try {
+        TextContent[] contents = generateTextContents(1);
+        TextContent[] encryptedContents = encryptTextContents(contents, key);
+        Map<String, String> encryptedContent = encryptedContents[0].getProperties();
+        getContentEncryptionService().decryptContent(encryptedContent);
+        time[0] = System.currentTimeMillis();
+      } catch (Exception e) {
+        fail(e.getMessage());
+      }
+    });
+
+    futures[1] = executor.submit(() -> {
+      try {
+        TextContent[] contents = generateTextContents(1);
+        TextContent[] encryptedContents = encryptTextContents(contents, key);
+        getContentEncryptionService()
+            .decryptContent(encryptedContents[0].getText(), encryptedContents[0].getDescription(),
+                encryptedContents[0].getText());
+        time[0] = System.currentTimeMillis();
+      } catch (Exception e) {
+        fail(e.getMessage());
+      }
+    });
+
+    futures[2] = executor.submit(() -> {
+      try {
+        EncryptionContentIterator iterator = getEncryptionContentIteratorForDecryption();
+        getContentEncryptionService().decryptContents(iterator);
+        time[0] = System.currentTimeMillis();
+      } catch (Exception e) {
+        fail(e.getMessage());
+      }
+    });
+
+    executor.submit(() -> {
+      try {
+        for (Future future : futures) {
+          assertThat(future.isDone(), is(false));
+        }
+        renewContentCipher();
+        assertThat(System.currentTimeMillis(), greaterThan(time[0]));
+        for (Future future : futures) {
+          assertThat(future.isDone(), is(true));
+        }
+      } catch (Exception e) {
+        fail(e.getMessage());
+      }
+    });
+
+    executor.shutdown();
+    while (!executor.isTerminated()) {
+
+    }
+  }
+
+  @Test
+  void testTheKeyUpdateIsBlocking() {
+    ExecutorService executor = Executors.newCachedThreadPool();
+    executor.submit(() -> {
+      try {
+        String key1 = generateAESKey();
+        getContentEncryptionService().updateCipherKey(key1);
+      } catch (Exception e) {
+        fail(e.getMessage());
+      }
+    });
+
+    executor.submit(() -> {
+      try {
+        TextContent[] contents = generateTextContents(1);
+        Map<String, String> content = contents[0].getProperties();
+        getContentEncryptionService().encryptContent(content);
+        fail("An error should be thrown");
+      } catch (Exception e) {
+        assertThat(e instanceof IllegalStateException, is(true));
+      }
+    });
+
+    executor.submit(() -> {
+      try {
+        EncryptionContentIterator iterator = getEncryptionContentIteratorForDecryption();
+        getContentEncryptionService().encryptContents(iterator);
+        fail("An error should be thrown");
+      } catch (Exception e) {
+        assertThat(e instanceof IllegalStateException, is(true));
+      }
+    });
+
+    executor.shutdown();
+    while (!executor.isTerminated()) {
+
+    }
+  }
+
+  @Test
+  void testTheKeyUpdateIsBlockedWhenAContentIsEncrypted() {
     ExecutorService executor = Executors.newCachedThreadPool();
     final long[] time = new long[1];
     final Future[] futures = new Future[3];
@@ -126,7 +285,7 @@ public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
       }
     });
 
-    futures[2] = executor.submit((Runnable) () -> {
+    futures[2] = executor.submit(() -> {
       try {
         EncryptionContentIterator iterator = getEncryptionContentIteratorForEncryption();
         getContentEncryptionService().encryptContents(iterator);
@@ -136,166 +295,7 @@ public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
       }
     });
 
-    executor.submit((Runnable) () -> {
-      try {
-        for (Future future : futures) {
-          assertThat(future.isDone(), is(false));
-        }
-        renewContentCipher();
-        assertThat(System.currentTimeMillis(), greaterThan(time[0]));
-        for (Future future : futures) {
-          assertThat(future.isDone(), is(true));
-        }
-      } catch (Exception e) {
-        fail(e.getMessage());
-      }
-    });
-
-    executor.shutdown();
-    while (!executor.isTerminated()) {
-
-    }
-  }
-
-  @Test
-  public void testTheCipherRenewingIsBlockedWhenAContentIsDecrypted() {
-    ExecutorService executor = Executors.newCachedThreadPool();
-    final long[] time = new long[1];
-    final Future[] futures = new Future[3];
-    futures[0] = executor.submit((Runnable) () -> {
-      try {
-        TextContent[] contents = generateTextContents(1);
-        TextContent[] encryptedContents = encryptTextContents(contents, key);
-        Map<String, String> encryptedContent = encryptedContents[0].getProperties();
-        getContentEncryptionService().decryptContent(encryptedContent);
-        time[0] = System.currentTimeMillis();
-      } catch (Exception e) {
-        fail(e.getMessage());
-      }
-    });
-
-    futures[1] = executor.submit((Runnable) () -> {
-      try {
-        TextContent[] contents = generateTextContents(1);
-        TextContent[] encryptedContents = encryptTextContents(contents, key);
-        getContentEncryptionService()
-            .decryptContent(encryptedContents[0].getText(), encryptedContents[0].getDescription(),
-                encryptedContents[0].getText());
-        time[0] = System.currentTimeMillis();
-      } catch (Exception e) {
-        fail(e.getMessage());
-      }
-    });
-
-    futures[2] = executor.submit((Runnable) () -> {
-      try {
-        EncryptionContentIterator iterator = getEncryptionContentIteratorForDecryption();
-        getContentEncryptionService().decryptContents(iterator);
-        time[0] = System.currentTimeMillis();
-      } catch (Exception e) {
-        fail(e.getMessage());
-      }
-    });
-
-    executor.submit((Runnable) () -> {
-      try {
-        for (Future future : futures) {
-          assertThat(future.isDone(), is(false));
-        }
-        renewContentCipher();
-        assertThat(System.currentTimeMillis(), greaterThan(time[0]));
-        for (Future future : futures) {
-          assertThat(future.isDone(), is(true));
-        }
-      } catch (Exception e) {
-        fail(e.getMessage());
-      }
-    });
-
-    executor.shutdown();
-    while (!executor.isTerminated()) {
-
-    }
-  }
-
-  @Test
-  public void testTheKeyUpdateIsBlocking() {
-    ExecutorService executor = Executors.newCachedThreadPool();
-    executor.submit((Runnable) () -> {
-      try {
-        String key1 = generateAESKey();
-        getContentEncryptionService().updateCipherKey(key1);
-      } catch (Exception e) {
-        fail(e.getMessage());
-      }
-    });
-
-    executor.submit((Runnable) () -> {
-      try {
-        TextContent[] contents = generateTextContents(1);
-        Map<String, String> content = contents[0].getProperties();
-        getContentEncryptionService().encryptContent(content);
-        fail("An error should be thrown");
-      } catch (Exception e) {
-        assertThat(e instanceof IllegalStateException, is(true));
-      }
-    });
-
-    executor.submit((Runnable) () -> {
-      try {
-        EncryptionContentIterator iterator = getEncryptionContentIteratorForDecryption();
-        getContentEncryptionService().encryptContents(iterator);
-        fail("An error should be thrown");
-      } catch (Exception e) {
-        assertThat(e instanceof IllegalStateException, is(true));
-      }
-    });
-
-    executor.shutdown();
-    while (!executor.isTerminated()) {
-
-    }
-  }
-
-  @Test
-  public void testTheKeyUpdateIsBlockedWhenAContentIsEncrypted() {
-    ExecutorService executor = Executors.newCachedThreadPool();
-    final long[] time = new long[1];
-    final Future[] futures = new Future[3];
-    futures[0] = executor.submit((Runnable) () -> {
-      try {
-        TextContent[] contents = generateTextContents(1);
-        Map<String, String> content = contents[0].getProperties();
-        getContentEncryptionService().encryptContent(content);
-        time[0] = System.currentTimeMillis();
-      } catch (Exception e) {
-        fail(e.getMessage());
-      }
-    });
-
-    futures[1] = executor.submit((Runnable) () -> {
-      try {
-        TextContent[] contents = generateTextContents(1);
-        getContentEncryptionService()
-            .encryptContent(contents[0].getText(), contents[0].getDescription(),
-                contents[0].getText());
-        time[0] = System.currentTimeMillis();
-      } catch (Exception e) {
-        fail(e.getMessage());
-      }
-    });
-
-    futures[2] = executor.submit((Runnable) () -> {
-      try {
-        EncryptionContentIterator iterator = getEncryptionContentIteratorForEncryption();
-        getContentEncryptionService().encryptContents(iterator);
-        time[0] = System.currentTimeMillis();
-      } catch (Exception e) {
-        fail(e.getMessage());
-      }
-    });
-
-    executor.submit((Runnable) () -> {
+    executor.submit(() -> {
       try {
         for (Future future : futures) {
           assertThat(future.isDone(), is(false));
@@ -318,11 +318,11 @@ public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
   }
 
   @Test
-  public void testTheKeyUpdateIsBlockedWhenAContentIsDecrypted() {
+  void testTheKeyUpdateIsBlockedWhenAContentIsDecrypted() {
     ExecutorService executor = Executors.newCachedThreadPool();
     final long[] time = new long[1];
     final Future[] futures = new Future[3];
-    futures[0] = executor.submit((Runnable) () -> {
+    futures[0] = executor.submit(() -> {
       try {
         TextContent[] contents = generateTextContents(1);
         TextContent[] encryptedContents = encryptTextContents(contents, key);
@@ -334,7 +334,7 @@ public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
       }
     });
 
-    futures[1] = executor.submit((Runnable) () -> {
+    futures[1] = executor.submit(() -> {
       try {
         TextContent[] contents = generateTextContents(1);
         TextContent[] encryptedContents = encryptTextContents(contents, key);
@@ -347,7 +347,7 @@ public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
       }
     });
 
-    futures[2] = executor.submit((Runnable) () -> {
+    futures[2] = executor.submit(() -> {
       try {
         EncryptionContentIterator iterator = getEncryptionContentIteratorForDecryption();
         getContentEncryptionService().decryptContents(iterator);
@@ -357,7 +357,7 @@ public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
       }
     });
 
-    executor.submit((Runnable) () -> {
+    executor.submit(() -> {
       try {
         for (Future future : futures) {
           assertThat(future.isDone(), is(false));

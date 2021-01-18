@@ -2226,7 +2226,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       try {
         Optional<WAComponent> optionalComponent = WAComponent.getByName(name);
         if (optionalComponent.isPresent()) {
-          WAComponent component = WAComponent.getByName(name).get();
+          WAComponent component = optionalComponent.get();
           localizedComponent = new LocalizedComponent(component, getLanguage());
           localizedComponents.put(name, localizedComponent);
         }

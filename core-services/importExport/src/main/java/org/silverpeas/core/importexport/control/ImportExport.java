@@ -314,7 +314,6 @@ public class ImportExport extends AbstractExportProcess {
         exportReport = new ExportReport();
         exportReport.setDateDebut(new Date());
         // détruire le répertoire et tout ce qu'il contient
-        fileExportDir.delete();
         try {
           FileFolderManager.deleteFolder(fileExportDir.getPath());
         } catch (Exception ex) {

@@ -25,10 +25,7 @@ package org.silverpeas.web.portlets.portal;
 
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.MissingResourceException;
 
 /**
@@ -49,24 +46,11 @@ public class PropertiesContext {
    * Constructs a PropertiesContext. It loads all of the properties about the portal context.
    */
   protected PropertiesContext() {
-    InputStream defaultConfigBundle = null;
     SettingBundle properties;
-    try {
-      properties =
-          ResourceLocator.getSettingBundle("org.silverpeas.portlets." + CONFIG_FILE);
-      if (!properties.exists()) {
-        throw new MissingResourceException("Missing org.silverpeas.portlets." + CONFIG_FILE,
-            PropertiesContext.class.getName(), "");
-      }
-    } finally {
-      if (defaultConfigBundle != null) {
-        try {
-          defaultConfigBundle.close();
-        } catch (IOException e) {
-          // drop through
-          SilverLogger.getLogger(this).silent(e);
-        }
-      }
+    properties = ResourceLocator.getSettingBundle("org.silverpeas.portlets." + CONFIG_FILE);
+    if (!properties.exists()) {
+      throw new MissingResourceException("Missing org.silverpeas.portlets." + CONFIG_FILE,
+          PropertiesContext.class.getName(), "");
     }
     configProperties = properties;
   }

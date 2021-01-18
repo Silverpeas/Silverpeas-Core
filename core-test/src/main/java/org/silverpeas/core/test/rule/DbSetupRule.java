@@ -158,7 +158,7 @@ public class DbSetupRule implements TestRule {
           try {
             cleanUpDataSource(description);
           } finally {
-            me.set(null);
+            me.remove();
           }
         }
       }
@@ -329,7 +329,7 @@ public class DbSetupRule implements TestRule {
   CURRENT ME
    */
 
-  private static ThreadLocal<DbSetupRule> me = new ThreadLocal<>();
+  private static final ThreadLocal<DbSetupRule> me = new ThreadLocal<>();
 
   /**
    * Gets the current instance of the rule.

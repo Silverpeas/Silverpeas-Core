@@ -80,6 +80,7 @@ import org.silverpeas.web.jobstartpage.NavBarManager;
 import org.silverpeas.web.jobstartpage.SpaceLookHelper;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.util.*;
 
@@ -530,7 +531,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         FileUtils.deleteQuietly(wallpaper);
       }
 
-      file.write(new File(path + File.separator + "wallPaper." + extension.toLowerCase()));
+      String imgExtension = extension != null ? "." + extension.toLowerCase() : "";
+      file.write(new File(path + File.separatorChar + "wallPaper" + imgExtension));
     }
   }
 
@@ -539,8 +541,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     if (file != null && StringUtil.isDefined(file.getName())) {
       // Remove previous file
       File css = new File(path, SilverpeasLook.SPACE_CSS + ".css");
-      if (css != null && css.exists()) {
-        css.delete();
+      if (css.exists()) {
+        Files.delete(css.toPath());
       }
 
       file.write(css);

@@ -69,7 +69,7 @@ import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
  */
 @Technical
 @Bean
-public class BackgroundProcessTask extends AbstractRequestTask {
+public class BackgroundProcessTask extends AbstractRequestTask<AbstractRequestTask.ProcessContext> {
 
   static final Map<String, RequestContext> synchronizedContexts =
       Collections.synchronizedMap(new LinkedHashMap<>(2000));
@@ -126,8 +126,8 @@ public class BackgroundProcessTask extends AbstractRequestTask {
   }
 
   public enum LOCK_DURATION {
-    NO_TIME(0), TEN_SECONDS(10000), AN_HOUR(60 * 60000), AN_HALF_DAY(12 * 60 * 60000),
-    A_DAY(24 * 60 * 60000);
+    NO_TIME(0), TEN_SECONDS(10000), AN_HOUR(60L * 60000), AN_HALF_DAY(12L * 60 * 60000),
+    A_DAY(24L * 60 * 60000);
 
     private final long duration;
 

@@ -41,6 +41,7 @@ import java.util.Vector;
  * Class declaration
  * @author
  */
+@Deprecated(forRemoval = true)
 public class CalendarHtmlView {
 
   private Vector<SchedulableCount> scheduleCounts = new Vector<SchedulableCount>();

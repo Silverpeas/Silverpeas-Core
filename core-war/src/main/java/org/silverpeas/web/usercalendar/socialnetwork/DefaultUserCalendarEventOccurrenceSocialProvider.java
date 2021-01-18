@@ -184,7 +184,7 @@ public class DefaultUserCalendarEventOccurrenceSocialProvider implements SocialE
       // Updated value is hacked. Not super good, but for now, no refactoring at this level.
       // Here, if true (default value) this data means that the calendar occurrence is a personal
       // one of requester.
-      final String componentIdOfRequester = from(requester, userCalendarComponent.get()).getId();
+      final String componentIdOfRequester = from(requester, userCalendarComponent.orElse(null)).getId();
       streamResult = streamResult.map(i -> {
         final boolean isOneOfRequester = i.getOccurrence().getCalendarEvent().getCalendar()
             .getComponentInstanceId().equals(componentIdOfRequester);

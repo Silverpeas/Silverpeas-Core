@@ -79,7 +79,7 @@ public class MassiveWebSecurityFilter implements Filter {
   private static final List<Pattern> XSS_PATTERNS;
 
   private static final Pattern ENDS_WITH_WORD_CHARACTER_OR_NUMERIC_PATTERN =
-      Pattern.compile("(?i)[\\w\\-_éèçàëäüïöâêûîôµùÉÈÇÀËÄÜÏÖÂÊÛÎÔΜÙ]$");
+      Pattern.compile("(?ui)[\\w\\-_éèçàëäüïöâêûîôµùÉÈÇÀËÄÜÏÖÂÊÛÎÔΜÙ]$");
 
 
   private static final Pattern SQL_SELECT_FROM_PATTERN = Pattern.compile("(?i)select.*from");

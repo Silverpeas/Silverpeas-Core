@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Objects;
@@ -182,10 +183,10 @@ public class ResourceLocator {
    */
   public static synchronized void saveSettingBundle(SettingBundle settings,
       Properties properties) {
-    try {
-      final String bundleName = "/" + settings.getBaseBundleName().replace('.', '/') + ".properties";
-      properties.store(new FileOutputStream(new File(
-          Objects.requireNonNull(loader.getResource(bundleName)).toURI())), null);
+    final String bundleName = "/" + settings.getBaseBundleName().replace('.', '/') + ".properties";
+    try (OutputStream output = new FileOutputStream(
+        new File(Objects.requireNonNull(loader.getResource(bundleName)).toURI()))) {
+      properties.store(output, null);
       ResourceBundle.clearCache(loader);
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e);

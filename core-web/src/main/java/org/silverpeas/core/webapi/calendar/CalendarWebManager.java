@@ -26,6 +26,7 @@ package org.silverpeas.core.webapi.calendar;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
@@ -496,7 +497,10 @@ public class CalendarWebManager {
       } else {
         bundleKey = "calendar.message.event.occurrence.deleted.from";
         //noinspection OptionalGetWithoutIsPresent
-        endDate = updatedEvent.get().getRecurrence().getRecurrenceEndDate().get();
+        endDate = updatedEvent.get()
+            .getRecurrence()
+            .getRecurrenceEndDate()
+            .orElseThrow(() -> new SilverpeasRuntimeException("No Recurrence end date!"));
       }
       successMessage(bundleKey, occurrence.getTitle(), getMessager()
           .formatDate(getDateWithOffset(occurrence.asCalendarComponent(), endDate, zoneId)));
@@ -525,11 +529,15 @@ public class CalendarWebManager {
       Optional<EventOperationResult> optionalResult =
           updateSingleOccurrenceAttendeeParticipation(occurrence, attendeeId, participationStatus);
       if (optionalResult.isPresent()) {
-        modifiedEvent = optionalResult.get().instance().get().getCalendarEvent();
+        modifiedEvent = optionalResult.get()
+            .instance()
+            .orElseThrow(() -> new SilverpeasRuntimeException(
+                "No event occurrence in the operation result!"))
+            .getCalendarEvent();
         successMessage("calendar.message.event.occurrence.attendee.participation.updated.unique",
             occurrence.getTitle(), getMessager().formatDate(
-                getDateWithOffset(occurrence.asCalendarComponent(), occurrence.getOriginalStartDate(),
-                    zoneId)));
+                getDateWithOffset(occurrence.asCalendarComponent(),
+                    occurrence.getOriginalStartDate(), zoneId)));
       }
     } else if (methodType == ALL) {
       Optional<EventOperationResult> optionalResult =
@@ -538,7 +546,11 @@ public class CalendarWebManager {
         if (optionalResult.get().updated().isPresent()) {
           modifiedEvent = optionalResult.get().updated().get();
         } else {
-          modifiedEvent = optionalResult.get().instance().get().getCalendarEvent();
+          modifiedEvent = optionalResult.get()
+              .instance()
+              .orElseThrow(() -> new SilverpeasRuntimeException(
+                  "No event occurrence in the operation result!"))
+              .getCalendarEvent();
         }
         successMessage("calendar.message.event.attendee.participation.updated",
             occurrence.getCalendarEvent().getTitle());
@@ -676,7 +688,7 @@ public class CalendarWebManager {
     // Retrieving the occurrences from personal calendars
     final List<Calendar> personalCalendars = new ArrayList<>();
     users.forEach(u -> personalCalendars.addAll(getCalendarsHandledBy(
-        PersonalComponentInstance.from(u, PersonalComponent.getByName("userCalendar").get())
+        PersonalComponentInstance.from(u, PersonalComponent.getByName("userCalendar").orElse(null))
             .getId())));
     final List<CalendarEventOccurrence> entities = personalCalendars.isEmpty() ? emptyList() :
         Calendar.getTimeWindowBetween(startDate, endDate)

@@ -30,6 +30,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -62,8 +63,8 @@ public class AjaxFileUploadServlet extends HttpServlet {
   private static final String UPLOAD_ERRORS = "UPLOAD_ERRORS";
   private static final String UPLOAD_FATAL_ERROR = "UPLOAD_FATAL_ERROR";
   private static final String SAVING_FILE_FLAG = "SAVING_FILE_FLAG";
-  private static String uploadDir;
-  private static String whiteList;
+  private String uploadDir;
+  private String whiteList;
 
   @Override
   public void init(ServletConfig config) throws ServletException {
@@ -73,20 +74,23 @@ public class AjaxFileUploadServlet extends HttpServlet {
   }
 
   @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     doPost(request, response);
   }
 
   @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     HttpSession session = request.getSession();
 
-    if ("status".equals(request.getParameter("q"))) {
-      doStatus(session, response);
-    } else {
-      doFileUpload(session, request);
+    try {
+      if ("status".equals(request.getParameter("q"))) {
+        doStatus(session, response);
+      } else {
+        doFileUpload(session, request);
+      }
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e.getMessage());
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -113,37 +117,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
       String errorMessage = "";
       for (FileItem fileItem : items) {
         if (!fileItem.isFormField() && fileItem.getSize() > 0L) {
-          try {
-            String filename = fileItem.getName();
-            if (filename.indexOf('/') >= 0) {
-              filename = filename.substring(filename.lastIndexOf('/') + 1);
-            }
-            if (filename.indexOf('\\') >= 0) {
-              filename = filename.substring(filename.lastIndexOf('\\') + 1);
-            }
-            if (!isInWhiteList(filename)) {
-              errorMessage += "The file " + filename + " is not uploaded!";
-              errorMessage += (StringUtil.isDefined(whiteList) ? " Only " + whiteList.
-                  replaceAll(" ", ", ") + " file types can be uploaded<br>"
-                  : " No allowed file format has been defined for upload<br>");
-              session.setAttribute(UPLOAD_ERRORS, errorMessage);
-            } else {
-              filename = System.currentTimeMillis() + "-" + filename;
-              File targetDirectory = new File(uploadDir, fileItem.getFieldName());
-              targetDirectory.mkdirs();
-              File uploadedFile = new File(targetDirectory, filename);
-              OutputStream out = null;
-              try {
-                out = new FileOutputStream(uploadedFile);
-                IOUtils.copy(fileItem.getInputStream(), out);
-                paths.add(uploadedFile.getParentFile().getName() + '/' + uploadedFile.getName());
-              } finally {
-                IOUtils.closeQuietly(out);
-              }
-            }
-          } finally {
-            fileItem.delete();
-          }
+          errorMessage = uploadFileItem(session, fileItem, paths, errorMessage);
         }
       }
     } catch (Exception e) {
@@ -153,6 +127,38 @@ public class AjaxFileUploadServlet extends HttpServlet {
     } finally {
       endingToSaveUploadedFile(session);
     }
+  }
+
+  private String uploadFileItem(final HttpSession session, final FileItem fileItem,
+      final List<String> paths, String errorMessage) throws IOException {
+    try {
+      String filename = fileItem.getName();
+      if (filename.indexOf('/') >= 0) {
+        filename = filename.substring(filename.lastIndexOf('/') + 1);
+      }
+      if (filename.indexOf('\\') >= 0) {
+        filename = filename.substring(filename.lastIndexOf('\\') + 1);
+      }
+      if (!isInWhiteList(filename)) {
+        errorMessage += "The file " + filename + " is not uploaded!";
+        errorMessage += (StringUtil.isDefined(whiteList) ? " Only " + whiteList.
+            replace(" ", ", ") + " file types can be uploaded<br>"
+            : " No allowed file format has been defined for upload<br>");
+        session.setAttribute(UPLOAD_ERRORS, errorMessage);
+      } else {
+        filename = System.currentTimeMillis() + "-" + filename;
+        File targetDirectory = new File(uploadDir, fileItem.getFieldName());
+        targetDirectory.mkdirs();
+        File uploadedFile = new File(targetDirectory, filename);
+        try(OutputStream out = new FileOutputStream(uploadedFile)) {
+          IOUtils.copy(fileItem.getInputStream(), out);
+          paths.add(uploadedFile.getParentFile().getName() + '/' + uploadedFile.getName());
+        }
+      }
+    } finally {
+      fileItem.delete();
+    }
+    return errorMessage;
   }
 
   private synchronized void startingToSaveUploadedFile(HttpSession session) {
@@ -174,65 +180,69 @@ public class AjaxFileUploadServlet extends HttpServlet {
    * @param response where the status is to be written.
    * @throws IOException
    */
-  private void doStatus(HttpSession session, HttpServletResponse response) throws IOException {
-    boolean isSavingUploadedFiles = isSavingUploadedFile(session);
-    Long bytesProcessed = null;
-    Long totalSize = null;
-    FileUploadListener.FileUploadStats fileUploadStats
-        = (FileUploadListener.FileUploadStats) session.getAttribute(FILE_UPLOAD_STATS);
-    if (fileUploadStats != null) {
-      bytesProcessed = fileUploadStats.getBytesRead();
-      totalSize = fileUploadStats.getTotalSize();
-    }
+  private void doStatus(HttpSession session, HttpServletResponse response) {
+    try {
+      boolean isSavingUploadedFiles = isSavingUploadedFile(session);
+      Long bytesProcessed = null;
+      Long totalSize = null;
+      FileUploadListener.FileUploadStats fileUploadStats = (FileUploadListener.FileUploadStats) session.getAttribute(FILE_UPLOAD_STATS);
+      if (fileUploadStats != null) {
+        bytesProcessed = fileUploadStats.getBytesRead();
+        totalSize = fileUploadStats.getTotalSize();
+      }
 
-    // Make sure the status response is not cached by the browser
-    response.addHeader("Expires", "0");
-    response.addHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-    response.addHeader("Cache-Control", "post-check=0, pre-check=0");
-    response.addHeader("Pragma", "no-cache");
+      // Make sure the status response is not cached by the browser
+      response.addHeader("Expires", "0");
+      response.addHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+      response.addHeader("Cache-Control", "post-check=0, pre-check=0");
+      response.addHeader("Pragma", "no-cache");
 
-    String fatalError = (String) session.getAttribute(UPLOAD_FATAL_ERROR);
-    if (StringUtil.isDefined(fatalError)) {
-      List<String> paths = (List<String>) session.getAttribute(FILE_UPLOAD_PATHS);
-      String uploadedFilePaths = getUploadedFilePaths(paths);
-      response.getWriter().println("<b>Upload uncomplete.</b>");
-      response.getWriter()
-          .println("<script type='text/javascript'>window.parent.stop('" + fatalError + "', "
-              + uploadedFilePaths + "); stop('" + fatalError + "', " + uploadedFilePaths
-              + ");</script>");
-      return;
-    }
+      String fatalError = (String) session.getAttribute(UPLOAD_FATAL_ERROR);
+      if (StringUtil.isDefined(fatalError)) {
+        List<String> paths = (List<String>) session.getAttribute(FILE_UPLOAD_PATHS);
+        String uploadedFilePaths = getUploadedFilePaths(paths);
+        response.getWriter().println("<b>Upload uncomplete.</b>");
+        response.getWriter()
+            .println("<script type='text/javascript'>window.parent.stop('" + fatalError + "', " +
+                uploadedFilePaths + "); stop('" + fatalError + "', " + uploadedFilePaths +
+                ");</script>");
+        return;
+      }
 
-    if (bytesProcessed != null) {
-      long percentComplete = (long) Math.floor((bytesProcessed.doubleValue() / totalSize.
-          doubleValue()) * 100.0);
-      response.getWriter().println("<b>Upload Status:</b><br>");
+      if (bytesProcessed != null) {
+        long percentComplete = (long) Math.floor((bytesProcessed.doubleValue() / totalSize.
+            doubleValue()) * 100.0);
+        response.getWriter().println("<b>Upload Status:</b><br>");
 
-      if (!bytesProcessed.equals(totalSize)) {
-        response.getWriter().println(
-            "<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: " + percentComplete
-            + "%;\"></div></div>");
-      } else {
-        response.getWriter().println(
-            "<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: 100%;"
-            + "\"></div></div>");
-
-        if (!isSavingUploadedFiles) {
-          List<String> paths = (List<String>) session.getAttribute(FILE_UPLOAD_PATHS);
-          String uploadedFilePaths = getUploadedFilePaths(paths);
-          String errors = (String) session.getAttribute(UPLOAD_ERRORS);
-          if (StringUtil.isDefined(errors)) {
-            response.getWriter().println("<b>Upload complete with error(s).</b><br>");
-          } else {
-            response.getWriter().println("<b>Upload complete.</b><br>");
-            errors = "";
-          }
+        if (!bytesProcessed.equals(totalSize)) {
           response.getWriter()
-              .println("<script type='text/javascript'>window.parent.stop('" + errors + "', "
-                  + uploadedFilePaths + "); stop('" + errors + "', " + uploadedFilePaths
-                  + ");</script>");
+              .println("<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: " +
+                  percentComplete + "%;\"></div></div>");
+        } else {
+          response.getWriter()
+              .println("<div class=\"prog-border\"><div class=\"prog-bar\" style=\"width: 100%;" +
+                  "\"></div></div>");
+
+          if (!isSavingUploadedFiles) {
+            List<String> paths = (List<String>) session.getAttribute(FILE_UPLOAD_PATHS);
+            String uploadedFilePaths = getUploadedFilePaths(paths);
+            String errors = (String) session.getAttribute(UPLOAD_ERRORS);
+            if (StringUtil.isDefined(errors)) {
+              response.getWriter().println("<b>Upload complete with error(s).</b><br>");
+            } else {
+              response.getWriter().println("<b>Upload complete.</b><br>");
+              errors = "";
+            }
+            response.getWriter()
+                .println("<script type='text/javascript'>window.parent.stop('" + errors + "', " +
+                    uploadedFilePaths + "); stop('" + errors + "', " + uploadedFilePaths +
+                    ");</script>");
+          }
         }
       }
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e.getMessage());
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 

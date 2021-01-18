@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.container.dao;
 
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.container.model.Comment;
 import org.silverpeas.core.questioncontainer.container.model.CommentPK;
@@ -35,11 +36,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class is made to access database only (table SB_QuestionContainer_QC and
@@ -75,12 +76,15 @@ public class QuestionContainerDAO {
           "SB_QuestionContainer_QC WHERE instanceId = ?)";
 
   // the date format used in database to represent a date
-  private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+  private static final FastDateFormat formatter = FastDateFormat.getInstance("yyyy/MM/dd");
 
   // if beginDate is null, it will be replace in database with it
   private static final String NULL_BEGIN_DATE = "0000/00/00";
   // if endDate is null, it will be replace in database with it
   private static final String NULL_END_DATE = "9999/99/99";
+  private static final String UNKNOWN_ID = "unknown";
+  private static final String SELECT = "select ";
+  private static final String FROM = " from ";
 
   /**
    * Hidden constructor.
@@ -177,7 +181,7 @@ public class QuestionContainerDAO {
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader;
-    QuestionContainerPK questionContainerPK = new QuestionContainerPK("unknown");
+    QuestionContainerPK questionContainerPK = new QuestionContainerPK(UNKNOWN_ID);
     List<QuestionContainerHeader> list = new ArrayList<>();
     StringBuilder whereClause = new StringBuilder();
 
@@ -195,9 +199,10 @@ public class QuestionContainerDAO {
           whereClause.append(" ) ");
         }
       }
+      Objects.requireNonNull(pk);
 
       String selectStatement =
-          "select " + QUESTIONCONTAINERCOLUMNNAMES + " from " + questionContainerPK.getTableName() +
+          SELECT + QUESTIONCONTAINERCOLUMNNAMES + FROM + questionContainerPK.getTableName() +
               " where " + whereClause.toString() + " and instanceId = '" + pk.getComponentName() +
               "' order by qcBeginDate DESC, qcEndDate DESC";
       Statement stmt = null;
@@ -229,7 +234,7 @@ public class QuestionContainerDAO {
     QuestionContainerHeader questionContainerHeader;
 
     String selectStatement =
-        "select " + QUESTIONCONTAINERCOLUMNNAMES + " from " + questionContainerPK.getTableName() +
+        SELECT + QUESTIONCONTAINERCOLUMNNAMES + FROM + questionContainerPK.getTableName() +
             " where ? between qcBeginDate and qcEndDate " +
             " and qcIsClosed = 0 and instanceId = ? order by  qcBeginDate DESC, qcEndDate DESC";
 
@@ -266,7 +271,7 @@ public class QuestionContainerDAO {
     QuestionContainerHeader questionContainerHeader;
 
     String selectStatement =
-        "select " + QUESTIONCONTAINERCOLUMNNAMES + " from " + questionContainerPK.getTableName() +
+        SELECT + QUESTIONCONTAINERCOLUMNNAMES + FROM + questionContainerPK.getTableName() +
             " where instanceId = '" + questionContainerPK.getComponentName() + "' " +
             " and qcIsClosed = 0 order by qcBeginDate DESC, qcEndDate DESC";
 
@@ -300,7 +305,7 @@ public class QuestionContainerDAO {
     QuestionContainerHeader questionContainerHeader;
 
     String selectStatement =
-        "select " + QUESTIONCONTAINERCOLUMNNAMES + " from " + questionContainerPK.getTableName() +
+        SELECT + QUESTIONCONTAINERCOLUMNNAMES + FROM + questionContainerPK.getTableName() +
             " where ( ? > qcEndDate " + " or qcIsClosed = 1 )" + " and instanceId = ? ";
 
     PreparedStatement prepStmt = null;
@@ -333,7 +338,7 @@ public class QuestionContainerDAO {
     ResultSet rs = null;
     QuestionContainerHeader header;
     String selectStatement =
-        "select " + QUESTIONCONTAINERCOLUMNNAMES + " from " + qcPK.getTableName() +
+        SELECT + QUESTIONCONTAINERCOLUMNNAMES + FROM + qcPK.getTableName() +
             " where ? < qcBeginDate and instanceId = ?";
     PreparedStatement prepStmt = null;
     try {
@@ -607,7 +612,7 @@ public class QuestionContainerDAO {
    */
   public static void addComment(Connection con, Comment comment) throws SQLException {
     QuestionContainerPK questionContainerPK = comment.getQuestionContainerPK();
-    CommentPK commentPK = new CommentPK("unknown", questionContainerPK);
+    CommentPK commentPK = new CommentPK(UNKNOWN_ID, questionContainerPK);
     int newId;
 
     String insertStatement =
@@ -652,9 +657,9 @@ public class QuestionContainerDAO {
 
     ResultSet rs = null;
     Comment comment;
-    CommentPK commentPK = new CommentPK("unknown", qcPK);
+    CommentPK commentPK = new CommentPK(UNKNOWN_ID, qcPK);
 
-    String selectStatement = "select " + COMMENTCOLUMNNAMES + " from " + commentPK.getTableName() +
+    String selectStatement = SELECT + COMMENTCOLUMNNAMES + FROM + commentPK.getTableName() +
         " where commentFatherId  = ? " + " order by commentDate DESC";
 
     PreparedStatement prepStmt = null;

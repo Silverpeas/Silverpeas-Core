@@ -342,7 +342,7 @@ public class WorkflowDesignerRequestRouter extends
       workflowDesignerSC.updateProcessModelHeader(processModel);
     }
 
-    workflowDesignerSC.saveProcessModel(strProcessFileName);
+    workflowDesignerSC.saveProcessModel();
 
     request.setAttribute("redirectTo", "Main");
     return root + "redirect.jsp";

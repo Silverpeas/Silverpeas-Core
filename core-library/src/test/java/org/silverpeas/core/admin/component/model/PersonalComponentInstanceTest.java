@@ -64,7 +64,7 @@ public class PersonalComponentInstanceTest {
   public void getInstanceFromExistingUserAndPersonalComponentShouldWork() {
     User user = putInContextMockedUserWithId("26");
     PersonalComponent personalComponent =
-        PersonalComponent.getByName(USER_CALENDAR_PERSONAL_COMPONENT_NAME).get();
+        PersonalComponent.getByName(USER_CALENDAR_PERSONAL_COMPONENT_NAME).orElse(null);
     String expectedInstanceId = USER_CALENDAR_PERSONAL_COMPONENT_NAME + user.getId() + "_PCI";
     PersonalComponentInstance instance = PersonalComponentInstance.from(user, personalComponent);
     assertThat(instance, notNullValue());
@@ -89,7 +89,7 @@ public class PersonalComponentInstanceTest {
   public void getInstanceFromExistingUserButUnknownPersonalComponentShouldThrowAnError() {
     assertThrows(IllegalArgumentException.class, () -> {
       PersonalComponent personalComponent =
-          PersonalComponent.getByName(USER_CALENDAR_PERSONAL_COMPONENT_NAME).get();
+          PersonalComponent.getByName(USER_CALENDAR_PERSONAL_COMPONENT_NAME).orElse(null);
       PersonalComponentInstance.from(null, personalComponent);
     });
   }

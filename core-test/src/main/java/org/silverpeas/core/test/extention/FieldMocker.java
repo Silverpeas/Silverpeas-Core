@@ -28,9 +28,11 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.mockito.Mockito;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 /**
@@ -39,19 +41,19 @@ import java.util.StringTokenizer;
  */
 public class FieldMocker implements AfterEachCallback {
 
-  private Map<Object, Map<FieldInjectionDirective, Object>> entitiesOldValues = new HashMap<>();
+  private Map<Object, Map<FieldInjectionDirective<?>, Object>> entitiesOldValues = new HashMap<>();
 
   @Override
   public void afterEach(final ExtensionContext context) throws Exception {
     unsetMockedFields();
   }
 
-  protected void unsetMockedFields() throws Exception {
-    for (Map.Entry<Object, Map<FieldInjectionDirective, Object>> objectOldValue :
+  protected void unsetMockedFields() throws IllegalAccessException {
+    for (Map.Entry<Object, Map<FieldInjectionDirective<?>, Object>> objectOldValue :
         entitiesOldValues.entrySet()) {
-      for (Map.Entry<FieldInjectionDirective, Object> oldValue : objectOldValue.getValue()
+      for (Map.Entry<FieldInjectionDirective<?>, Object> oldValue : objectOldValue.getValue()
           .entrySet()) {
-        FieldInjectionDirective fieldDirective = oldValue.getKey();
+        FieldInjectionDirective<?> fieldDirective = oldValue.getKey();
         fieldDirective.write(oldValue.getValue());
       }
     }
@@ -118,7 +120,7 @@ public class FieldMocker implements AfterEachCallback {
       return inject(instanceOrClass, new FieldInjectionDirective<>(instanceOrClass, fieldNames),
           value);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
@@ -127,9 +129,9 @@ public class FieldMocker implements AfterEachCallback {
    * @return the injected value.
    */
   private <T> T inject(Object instanceOrClass, FieldInjectionDirective<T> fieldInjectionDirective,
-      T newValue) throws Exception {
-    Map<FieldInjectionDirective, Object> entityOldValues =
-        entitiesOldValues.computeIfAbsent(instanceOrClass, (k) -> new HashMap<>());
+      T newValue) throws IllegalAccessException {
+    Map<FieldInjectionDirective<?>, Object> entityOldValues =
+        entitiesOldValues.computeIfAbsent(instanceOrClass, k -> new HashMap<>());
     entityOldValues.put(fieldInjectionDirective, fieldInjectionDirective.write(newValue));
     return newValue;
   }
@@ -152,7 +154,7 @@ public class FieldMocker implements AfterEachCallback {
      * @return the final Object / Field to set by analyzing the path.
      * @throws Exception
      */
-    private ObjectField getFinalObjectField() throws Exception {
+    private ObjectField getFinalObjectField() throws IllegalAccessException {
       Object currentInstanceOrClass = instanceOrClass;
       StringTokenizer fieldNameTokenizer = new StringTokenizer(fieldNames, ".");
       while (fieldNameTokenizer.hasMoreTokens()) {
@@ -176,8 +178,9 @@ public class FieldMocker implements AfterEachCallback {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public T read() throws Exception {
+    public T read() throws IllegalAccessException {
       ObjectField finalObjectField = getFinalObjectField();
+      Objects.requireNonNull(finalObjectField);
       if (finalObjectField.getInstanceOrClass() instanceof Class) {
         return (T) FieldUtils.readStaticField((Class) finalObjectField.getInstanceOrClass(),
             finalObjectField.getFieldName(), true);
@@ -191,11 +194,12 @@ public class FieldMocker implements AfterEachCallback {
      * Writes into the field the given value.
      * @param object the given value to write.
      * @return the previous value.
-     * @throws Exception
+     * @throws IllegalAccessException
      */
-    public T write(T object) throws Exception {
+    public T write(Object object) throws IllegalAccessException {
       T previousValue = read();
       ObjectField finalObjectField = getFinalObjectField();
+      Objects.requireNonNull(finalObjectField);
       if (finalObjectField.getInstanceOrClass() instanceof Class) {
         FieldUtils.writeStaticField((Class) finalObjectField.getInstanceOrClass(),
             finalObjectField.getFieldName(), object, true);

@@ -23,10 +23,13 @@
  */
 package org.silverpeas.core.util.lang;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Map;
@@ -44,15 +47,14 @@ public class DefaultSystemWrapper implements SystemWrapper {
     // we don't use the ResourceLocator API here in order to avoid cyclic dependency between
     // SystemWrapper and ResourceLocator
     Properties systemSettings = new Properties();
-    try {
-      systemSettings.load(new FileReader(
-          Paths.get(System.getenv("SILVERPEAS_HOME"), "properties", "org", "silverpeas",
-              "systemSettings.properties").toFile()));
+    Path systemSettingsPath = Paths.get(System.getenv("SILVERPEAS_HOME"), "properties", "org", "silverpeas",
+        "systemSettings.properties");
+    try(FileReader reader = new FileReader(systemSettingsPath.toFile())) {
+      systemSettings.load(reader);
     } catch (IOException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
     systemSettings.stringPropertyNames()
-        .stream()
         .forEach(key -> setProperty(key, systemSettings.getProperty(key)));
   }
 

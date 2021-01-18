@@ -171,12 +171,10 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   }
 
   /**
-* Save the currently cached process model in a XML file
-*
-* @param strProcessModelFileName the relative path and the name of the file
-* @throws WorkflowDesignerException when the saving goes wrong...
-*/
-  public void saveProcessModel(String strProcessModelFileName)
+   * Save the currently cached process model in a XML file
+   * @throws WorkflowDesignerException when the saving goes wrong...
+   */
+  public void saveProcessModel()
       throws WorkflowDesignerException {
     try {
       // Is this the first save of a process model?
@@ -185,17 +183,16 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         // Make sure that you are not overwriting sth.
         //
         List<String> processList = Workflow.getProcessModelManager().listProcessModels();
-        strProcessModelFileName = StringUtil.toAcceptableFilename(processModel.getName());
-        strProcessModelFileName = strProcessModelFileName.replace(' ', '_');
-        strProcessModelFileName = strProcessModelFileName+".xml";
-        strProcessModelFileName = FileUtil.convertPathToServerOS(strProcessModelFileName);
+        String fileNameFromModelName = StringUtil.toAcceptableFilename(processModel.getName());
+        String normalizedFileName = fileNameFromModelName.replace(' ', '_') + ".xml";
+        String filePath = FileUtil.convertPathToServerOS(normalizedFileName);
 
-        if (processList.contains(strProcessModelFileName)) {
+        if (processList.contains(filePath)) {
           throw new WorkflowDesignerException("WorkflowDesignerSessionController.saveProcesModel",
               SilverpeasException.ERROR, "workflowDesigner.EX_PROCESS_MODEL_EXISTS");
         }
         // Cache the file name if it is the first save
-        processModelFileName = strProcessModelFileName;
+        processModelFileName = filePath;
       }
       Workflow.getProcessModelManager().saveProcessModel(processModel, processModelFileName);
     } catch (WorkflowException e) {
