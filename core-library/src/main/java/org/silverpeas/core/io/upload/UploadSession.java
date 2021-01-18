@@ -323,11 +323,16 @@ public class UploadSession {
   public static void clearFrom(SessionInfo sessionInfo) {
     Set<String> sessionIds = sessionInfo.getCache().get(SESSION_CACHE_KEY, Set.class);
     if (sessionIds != null) {
-      for (String uploadSessionId : new ArrayList<String>(sessionIds)) {
+      for (String uploadSessionId : new ArrayList<>(sessionIds)) {
         try {
           UploadSession.from(uploadSessionId).clear();
-        } catch (Exception ignore) {
-          SilverLogger.getLogger(UploadSession.class).silent(ignore);
+        } catch (NegativeArraySizeException e) {
+          SilverLogger.getLogger(UploadSession.class).error(
+              "On jSessionId={0}, with {1} uploadSessionIds (user {2})",
+              new Object[]{sessionInfo.getSessionId(), String.valueOf(sessionIds.size()), sessionInfo.getUserDetail().getId()},
+              e);
+        } catch (Exception e) {
+          SilverLogger.getLogger(UploadSession.class).silent(e);
         }
       }
       sessionInfo.getCache().remove(SESSION_CACHE_KEY);
