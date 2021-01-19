@@ -75,6 +75,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.silverpeas.core.notification.user.client.NotificationParameterNames.*;
+import static org.silverpeas.core.util.URLUtil.getAbsoluteApplicationURL;
 
 /**
  * Title: Notification Manager Description: La fonction de ce manager est de décider en fonction de
@@ -400,11 +401,16 @@ public class DefaultNotificationManager extends AbstractNotification
   public void testNotifAddress(final String addressId, final String aUserId)
       throws NotificationException {
     try {
+      final NotificationMetaData metaData = new NotificationMetaData(
+          NotificationParameters.PRIORITY_NORMAL,
+          multilang.getString("testMsgTitle"),
+          multilang.getString("testMsgBody"));
       NotificationParameters params = new NotificationParameters();
       params.setAddressId(Integer.parseInt(addressId))
-          .setTitle(multilang.getString("testMsgTitle"))
-          .setMessage(multilang.getString("testMsgBody"))
-          .setFromUserId(Integer.parseInt(aUserId));
+          .setTitle(metaData.getTitle())
+          .setMessage(metaData.getContent())
+          .setFromUserId(Integer.parseInt(aUserId))
+          .setLanguage(multilang.getLocale().getLanguage());
       NotificationData nd = createNotificationData(params, aUserId);
       server.addNotification(nd);
 
@@ -769,13 +775,13 @@ public class DefaultNotificationManager extends AbstractNotification
     // set the destination address
     nd.setTargetReceipt(nar.getAddress());
     // Set subject parameter
-
     setSubject(params, theMessage, theExtraParams, ncr);
 
     String senderName = getSenderName(params);
     setSenderAddress(params, theMessage, theExtraParams, ncr, nd, senderName);
 
     // Set Url parameter
+    theExtraParams.put(SERVERURL, getUserAutoRedirectSilverpeasServerURL(aUserId));
     final String url = params.getLink().getLinkUrl();
     if (StringUtil.isDefined(url)) {
       theExtraParams.put(URL,
@@ -833,11 +839,13 @@ public class DefaultNotificationManager extends AbstractNotification
     // set the destination address
     nd.setTargetReceipt(nar.getAddress());
     // Set subject parameter
-
     setSubject(params, theMessage, theExtraParams, ncr);
 
     String senderName = getSenderName(params);
     setSenderEmail(params, theExtraParams, senderName);
+
+    // Set Url parameter
+    theExtraParams.put(SERVERURL, getAbsoluteApplicationURL());
     if (StringUtil.isDefined(params.getLink().getLinkUrl())) {
       theExtraParams.put(URL, params.getLink().getLinkUrl());
       theExtraParams.put(LINKLABEL, params.getLink().getLinkLabel());
@@ -942,7 +950,6 @@ public class DefaultNotificationManager extends AbstractNotification
       StringBuilder theMessage = new StringBuilder(100);
       Map<String, Object> theExtraParams = new HashMap<>();
       // Set subject parameter
-
       setSubject(params, theMessage, theExtraParams, notifChannelRow);
 
       String senderName = getSenderName(params);
