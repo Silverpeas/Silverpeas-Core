@@ -65,7 +65,7 @@ import static org.silverpeas.core.util.CollectionUtil.union;
  */
 @EnableSilverTestEnv
 @Execution(ExecutionMode.SAME_THREAD)
-public class GroupSynchronizationRuleTest {
+class GroupSynchronizationRuleTest {
 
   private static final String GROUP_ID = "26";
 
@@ -116,7 +116,7 @@ public class GroupSynchronizationRuleTest {
 
   @SuppressWarnings({"unchecked", "Duplicates"})
   @BeforeEach
-  public void setup(@TestManagedMock UserManager userManager, @TestManagedMock GroupManager groupManager,
+  void setup(@TestManagedMock UserManager userManager, @TestManagedMock GroupManager groupManager,
       @TestManagedMock DomainDriverManager domainDriverManager,
       @TestManagedMock DomainDriverManagerProvider domainDriverManagerProvider,
       @TestManagedMock Administration admin,
@@ -151,7 +151,7 @@ public class GroupSynchronizationRuleTest {
           return extractUserIds(users);
         });
 
-    when(userManager.getAllUserIdsInGroups(anyListOf(String.class)))
+    when(userManager.getAllUserIdsInGroups(anyList()))
         .then(invocation -> {
           List<String> groupIds = (List<String>) invocation.getArguments()[0];
           List<String> userIds = new ArrayList<>();
@@ -215,7 +215,7 @@ public class GroupSynchronizationRuleTest {
           return users.toArray(new UserDetail[users.size()]);
         });
 
-    when(userManager.getUsersBySpecificIdsAndDomainId(anyListOf(String.class), anyString()))
+    when(userManager.getUsersBySpecificIdsAndDomainId(anyList(), anyString()))
         .then(invocation -> {
           List<String> specificIds = (List<String>) invocation.getArguments()[0];
           String domainId = (String) invocation.getArguments()[1];
@@ -230,20 +230,20 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromNullRuleShouldReturnEmptyList() throws Exception {
+  void getUserIdsFromNullRuleShouldReturnEmptyList() throws Exception {
     List<String> userIds = from(group4Rule(DOMAIN_A, null)).getUserIds();
     assertThat(userIds, empty());
   }
 
   @Test
-  public void getUserIdsFromEmptyRuleShouldReturnEmptyList() throws Exception {
+  void getUserIdsFromEmptyRuleShouldReturnEmptyList() throws Exception {
     List<String> userIds = from(group4Rule(DOMAIN_A, "")).getUserIds();
     assertThat(userIds, empty());
   }
 
   @SuppressWarnings("unchecked")
   @Test
-  public void notEscapedParenthesesShouldThrowAnError() throws Exception {
+  void notEscapedParenthesesShouldThrowAnError() throws Exception {
     try {
       from(group4Rule(DOMAIN_B, "(DC_ville=Va(le)nce)")).getUserIds();
     } catch (GroupSynchronizationRule.RuleError e) {
@@ -254,7 +254,7 @@ public class GroupSynchronizationRuleTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void errorShouldContainsOriginalOne() throws Exception {
+  void errorShouldContainsOriginalOne() throws Exception {
     GroupSynchronizationRule.RuleError notNullError = null;
     try {
       from(group4Rule(DOMAIN_B, "(DC_ville=Va(le)nce)")).getUserIds();
@@ -278,21 +278,21 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void notEscapedParenthesesButSimpleValueShouldBeTakenIntoAccount() throws Exception {
+  void notEscapedParenthesesButSimpleValueShouldBeTakenIntoAccount() throws Exception {
     List<String> userIds = from(group4Rule(DOMAIN_B, "DC_ville=Va(le)nce")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_B_USER_ADMIN_1, DOMAIN_B_USER_SPACE_ADMIN_1, DOMAIN_B_USER_1)));
   }
 
   @Test
-  public void escapedParenthesesShouldBeTakenIntoAccount() throws Exception {
+  void escapedParenthesesShouldBeTakenIntoAccount() throws Exception {
     List<String> userIds = from(group4Rule(DOMAIN_B, "DC_ville=Va\\(le\\)nce")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_B_USER_ADMIN_1, DOMAIN_B_USER_SPACE_ADMIN_1, DOMAIN_B_USER_1)));
   }
 
   @Test
-  public void getUserIdsFromAllAccessLevelRuleShouldReturnAllUsers() throws Exception {
+  void getUserIdsFromAllAccessLevelRuleShouldReturnAllUsers() throws Exception {
     List<String> userIds = from(group4Rule(DOMAIN_A, "DS_AccessLevel = *")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_ADMIN_3,
@@ -316,7 +316,7 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromAdminAccessLevelRuleShouldReturnAdminUsers() throws Exception {
+  void getUserIdsFromAdminAccessLevelRuleShouldReturnAdminUsers() throws Exception {
     List<String> userIds = from(group4Rule(DOMAIN_A, "DS_AccessLevel = A")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_ADMIN_3)));
@@ -332,7 +332,7 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromUserAccessLevelRuleShouldReturnSimpleUsers() throws Exception {
+  void getUserIdsFromUserAccessLevelRuleShouldReturnSimpleUsers() throws Exception {
     List<String> userIds = from(group4Rule(DOMAIN_A, "DS_AccessLevel =U")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_1, DOMAIN_A_USER_2, DOMAIN_A_USER_3, DOMAIN_A_USER_4)));
@@ -351,7 +351,7 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromDomainRuleShouldReturnAllUsersOfDomain()
+  void getUserIdsFromDomainRuleShouldReturnAllUsersOfDomain()
       throws Exception {
     List<String> userIds = from(group4Rule(DOMAIN_A, "  DS_domain= 10  ")).getUserIds();
     assertThat(userIds, Matchers.empty());
@@ -392,7 +392,7 @@ public class GroupSynchronizationRuleTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void getUserIdsFromWrongDomainIdFormatRuleShouldThrowAnNumberFormatException()
+  void getUserIdsFromWrongDomainIdFormatRuleShouldThrowAnNumberFormatException()
       throws Exception {
     try {
       from(group4Rule(SHARED_DOMAIN, "DS_domain = A")).getUserIds();
@@ -402,7 +402,7 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromGroupRuleShouldReturnAllUsersOfGroupAndNotThoseOfSubGroups()
+  void getUserIdsFromGroupRuleShouldReturnAllUsersOfGroupAndNotThoseOfSubGroups()
       throws Exception {
     Matcher<Iterable<? extends String>> expectedUserIds = containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_1,
@@ -420,7 +420,7 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromGroupWithSubGroupsRuleShouldReturnAllUsersOfGroupAndSubGroups()
+  void getUserIdsFromGroupWithSubGroupsRuleShouldReturnAllUsersOfGroupAndSubGroups()
       throws Exception {
     Matcher<Iterable<? extends String>> expectedUserIds = containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_2, DOMAIN_A_USER_SPACE_ADMIN_1,
@@ -442,7 +442,7 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromSpecificPropertyRuleShouldReturnUsersWhichVerifyTheCondition() {
+  void getUserIdsFromSpecificPropertyRuleShouldReturnUsersWhichVerifyTheCondition() {
     assertThrows(GroupSynchronizationRule.GroundRuleError.class, () -> {
       from(group4Rule(DOMAIN_A, "  DC_ ville= Romans sur Isère  ")).getUserIds();
     });
@@ -462,7 +462,7 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromCombinationRuleWithoutClause() throws Exception {
+  void getUserIdsFromCombinationRuleWithoutClause() throws Exception {
     List<String> userIds = from(group4Rule(DOMAIN_A, "  ( DC_ville= Romans sur Isère )  ")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
         DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1)));
@@ -478,7 +478,7 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromCombinationRuleWithAndClause() throws Exception {
+  void getUserIdsFromCombinationRuleWithAndClause() throws Exception {
     List<String> userIds =
         from(group4Rule(DOMAIN_A, "  ( & ( DC_ville= Romans sur Isère ) )  "))
             .getUserIds();
@@ -521,7 +521,7 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromCombinationRuleWithOrClause() throws Exception {
+  void getUserIdsFromCombinationRuleWithOrClause() throws Exception {
     List<String> userIds =
         from(group4Rule(DOMAIN_A, "  ( | ( DC_ville= Romans sur Isère ) )  "))
             .getUserIds();
@@ -569,7 +569,7 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromCombinationRuleWithNegateOperator() throws Exception {
+  void getUserIdsFromCombinationRuleWithNegateOperator() throws Exception {
     List<String> userIds =
         from(group4Rule(DOMAIN_A, " ( ! (    DC_ville= Va\\(le\\)nce  ) ) ")).getUserIds();
     assertThat(userIds, containsInAnyOrder(extractUserIds(
@@ -609,7 +609,7 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void negateOperatorCanNotBeUsedDirectlyIntoSimpleSilverpeasRule() {
+  void negateOperatorCanNotBeUsedDirectlyIntoSimpleSilverpeasRule() {
     List<String> userIds = from(group4Rule(DOMAIN_A, "(!(DC_ville=Va\\(le\\)nce))")).getUserIds();
     assertThat(userIds, containsInAnyOrder(
         extractUserIds(DOMAIN_A_USER_ADMIN_1, DOMAIN_A_USER_SPACE_ADMIN_2, DOMAIN_A_USER_1)));
@@ -618,14 +618,14 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromCombinationRuleWithNegateOperatorOnSeveralOperands() throws Exception {
+  void getUserIdsFromCombinationRuleWithNegateOperatorOnSeveralOperands() throws Exception {
     List<String> userIds =
         from(group4Rule(DOMAIN_A, "(!(DC_ville=Va\\(le\\)nce)(DS_AccessLevel=U))")).getUserIds();
     assertThat(userIds, Matchers.empty());
   }
 
   @Test
-  public void getUserIdsFromCombinationRuleWithSubCondition() throws Exception {
+  void getUserIdsFromCombinationRuleWithSubCondition() throws Exception {
     List<String> userIds = from(
         group4Rule(DOMAIN_A, "(&(|(DS_AccessLevel=A)(DS_AccessLevel=S))(DC_ville=Va\\(le\\)nce))"))
         .getUserIds();
@@ -654,7 +654,7 @@ public class GroupSynchronizationRuleTest {
   }
 
   @Test
-  public void getUserIdsFromCombinationRuleWithSubSubCondition() throws Exception {
+  void getUserIdsFromCombinationRuleWithSubSubCondition() throws Exception {
     List<String> userIds = from(
         group4Rule(DOMAIN_A, "(&(|(DS_AccessLevel=A)(DS_AccessLevel=S))(DC_ville=Va\\(le\\)nce))"))
         .getUserIds();

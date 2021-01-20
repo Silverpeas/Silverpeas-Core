@@ -24,11 +24,11 @@
 package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -64,7 +64,7 @@ import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
  */
 @Entity
 @Table(name = "sb_cal_recurrence")
-public class Recurrence implements Cloneable {
+public class Recurrence implements Serializable {
 
   /**
    * A constant that defines a specific value for an empty recurrence.
@@ -447,17 +447,21 @@ public class Recurrence implements Cloneable {
         .toHashCode();
   }
 
-  @Override
-  public Recurrence clone() {
-    try {
-      Recurrence clone = (Recurrence) super.clone();
-      clone.id = null;
-      clone.daysOfWeek = new HashSet<>(daysOfWeek);
-      clone.exceptionDates = new HashSet<>(exceptionDates);
-      return clone;
-    } catch (CloneNotSupportedException e) {
-      throw new SilverpeasRuntimeException(e);
-    }
+  /**
+   * Copies the specified recurrence into another object. The identifier of the recurrence is set to
+   * null as it is not yet persisted.
+   * @return a copy of this recurrence.
+   */
+  public Recurrence copy() {
+    Recurrence copy = new Recurrence();
+    copy.id = null;
+    copy.startDate = this.startDate;
+    copy.endDateTime = this.endDateTime;
+    copy.count = this.count;
+    copy.frequency = this.frequency;
+    copy.daysOfWeek = new HashSet<>(this.daysOfWeek);
+    copy.exceptionDates = new HashSet<>(this.exceptionDates);
+    return copy;
   }
 
   /**

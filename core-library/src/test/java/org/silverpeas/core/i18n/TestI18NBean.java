@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,23 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.test.rule;
 
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+package org.silverpeas.core.i18n;
 
 /**
- * @author Yohann Chastagnier
+ * @author mmoquillon
  */
-public class LibCoreCommonAPI4Test extends CommonAPI4Test {
+public class TestI18NBean extends AbstractI18NBean<TestI18N> {
+  private static final long serialVersionUID = -7696451005336074443L;
 
-  @Override
-  protected void beforeEvaluate() {
-    super.beforeEvaluate();
-    clearCacheData();
-  }
+  protected TestI18NBean() {
 
-  private void clearCacheData() {
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    CacheServiceProvider.getThreadCacheService().clearAllCaches();
   }
 }
+  

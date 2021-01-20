@@ -24,11 +24,12 @@
 package org.silverpeas.core.i18n;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
-public class BeanTranslation implements Translation, Serializable, Cloneable {
+public class BeanTranslation implements Translation, Serializable {
 
   private static final long serialVersionUID = -3879515108587719162L;
   private int id = -1;
@@ -102,13 +103,22 @@ public class BeanTranslation implements Translation, Serializable, Cloneable {
     this.description = description;
   }
 
-  @Override
-  protected BeanTranslation clone() {
+  protected BeanTranslation copy() {
     try {
-      return (BeanTranslation) super.clone();
-    } catch (CloneNotSupportedException e) {
-      // When cloning is in error, returning null is expected
-      SilverLogger.getLogger(this).silent(e);
+      Constructor<? extends BeanTranslation> constructor = getClass().getDeclaredConstructor();
+      if (!constructor.canAccess(null)) {
+        constructor.trySetAccessible();
+      }
+      BeanTranslation copy = constructor.newInstance();
+
+      copy.id = id;
+      copy.objectId = objectId;
+      copy.language = language;
+      copy.name = name;
+      copy.description = description;
+      return copy;
+    } catch (NoSuchMethodException | InstantiationException | InvocationTargetException |
+        IllegalAccessException e) {
       throw new SilverpeasRuntimeException(e);
     }
   }

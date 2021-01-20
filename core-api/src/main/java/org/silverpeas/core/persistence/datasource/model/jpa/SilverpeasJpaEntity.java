@@ -71,14 +71,14 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
 
   @Column(name = "createDate", nullable = false, insertable = true, updatable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
-  private Date creationDate;
+  private Date creationDate = null;
 
   @Column(name = "lastUpdatedBy", nullable = false, length = 40)
   private String lastUpdaterId;
 
   @Column(name = "lastUpdateDate", nullable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
-  private Date lastUpdateDate;
+  private Date lastUpdateDate = null;
 
   @Version
   @Column(name = "version", nullable = false)
@@ -202,7 +202,7 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
    * @param creationDate the creation date
    * @return the entity itself.
    */
-  protected SilverpeasJpaEntity setCreationDate(final Date creationDate) {
+  protected SilverpeasJpaEntity<E, I> setCreationDate(final Date creationDate) {
     this.creationDate = creationDate;
     return this;
   }
@@ -216,7 +216,7 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
    * @param creator the user that has created this entity.
    * @return the entity itself.
    */
-  protected SilverpeasJpaEntity setCreator(final User creator) {
+  protected SilverpeasJpaEntity<E, I> setCreator(final User creator) {
     this.creator = creator;
     this.creatorId = creator == null ? null : creator.getId();
     return this;
@@ -236,7 +236,7 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
    * @param lastUpdateDate the date of the last update.
    * @return the entity itself.
    */
-  protected SilverpeasJpaEntity setLastUpdateDate(final Date lastUpdateDate) {
+  protected SilverpeasJpaEntity<E, I> setLastUpdateDate(final Date lastUpdateDate) {
     this.lastUpdateDate = lastUpdateDate;
     return this;
   }
@@ -250,7 +250,7 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
    * @param updater the user that has updated this entity.
    * @return the entity itself.
    */
-  protected SilverpeasJpaEntity setLastUpdater(final User updater) {
+  protected SilverpeasJpaEntity<E, I> setLastUpdater(final User updater) {
     this.lastUpdater = updater;
     this.lastUpdaterId = updater == null ? null : updater.getId();
     return this;
@@ -345,25 +345,6 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
       return matcher.isEquals();
     }
     return false;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see java.lang.Object#clone()
-   */
-  @SuppressWarnings({"unchecked", "CloneDoesntDeclareCloneNotSupportedException"})
-  @Override
-  public E clone() {
-    SilverpeasJpaEntity clone = (SilverpeasJpaEntity) super.clone();
-    if (clone != null) {
-      clone.setCreator(null);
-      clone.setCreationDate(null);
-      clone.setLastUpdater(null);
-      clone.setLastUpdateDate(null);
-      clone.setVersion(0L);
-      clone.clearSystemData();
-    }
-    return (E) clone;
   }
 
   @Override

@@ -175,7 +175,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
       templates.put(curLanguage, template);
 
       performTemplateData(curLanguage, resource, template);
-      resourceData = nRDBase.clone();
+      resourceData = new NotificationResourceData(nRDBase);
       resourceData.setCurrentLanguage(curLanguage);
       resourceData.setLinkLabel(linkLabel);
       performNotificationResource(curLanguage, resource, resourceData);

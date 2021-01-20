@@ -36,17 +36,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @EnableSilverTestEnv
-public class MailExtractorTest {
+class MailExtractorTest {
 
   @Test
-  public void testEMLBrut() throws Exception {
+  void testEMLBrut() throws Exception {
     String fileName = "Silverpeas test archivage 1_3 (brut sans pieces jointes).eml";
     OffsetDateTime mailDateTime = OffsetDateTime.parse("2013-01-21T10:10:48+01:00");
     testBrut(fileName, mailDateTime);
   }
 
   @Test
-  public void testMSGBrut() throws Exception {
+  void testMSGBrut() throws Exception {
     String fileName = "Silverpeas test archivage 1_3 (brut sans pieces jointes).msg";
     OffsetDateTime mailDateTime = OffsetDateTime.parse("2013-01-21T10:10:48+01:00");
     testBrut(fileName, mailDateTime);
@@ -73,14 +73,14 @@ public class MailExtractorTest {
   }
 
   @Test
-  public void testEMLHTMLWithoutFiles() throws Exception {
+  void testEMLHTMLWithoutFiles() throws Exception {
     String fileName = "Silverpeas test archivage 2_3 (html sans pieces jointes).eml";
     OffsetDateTime mailDateTime = OffsetDateTime.parse("2013-01-21T10:11:03+01:00");
     testHTMLWithoutFiles(fileName, mailDateTime);
   }
 
   @Test
-  public void testMSGHTMLWithoutFiles() throws Exception {
+  void testMSGHTMLWithoutFiles() throws Exception {
     String fileName = "Silverpeas test archivage 2_3 (html sans pieces jointes).msg";
     OffsetDateTime mailDateTime = OffsetDateTime.parse("2013-01-21T10:11:03+01:00");
     testHTMLWithoutFiles(fileName, mailDateTime);
@@ -110,7 +110,7 @@ public class MailExtractorTest {
   }
 
   @Test
-  public void testEMLHTMLWithFiles() throws Exception {
+  void testEMLHTMLWithFiles() throws Exception {
     String fileName = "Silverpeas test archivage 3_3 (html avec pieces jointes).eml";
     OffsetDateTime mailDateTime = OffsetDateTime.parse("2013-01-21T10:11:25+01:00");
     String body = "Bonjour,<div><br></div><div>Ce mail est au format html est permet&nbsp;<u>"
@@ -128,7 +128,7 @@ public class MailExtractorTest {
   }
 
   @Test
-  public void testMSGHTMLWithFiles() throws Exception {
+  void testMSGHTMLWithFiles() throws Exception {
     String fileName = "Silverpeas test archivage 3_3 (html avec pieces jointes).msg";
     OffsetDateTime mailDateTime = OffsetDateTime.parse("2013-01-21T10:11:25+01:00");
     String body = "Bonjour,<br/><br/>Ce mail est au format html est permet quelques fantaisies."

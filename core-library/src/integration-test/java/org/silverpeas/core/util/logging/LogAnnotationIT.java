@@ -31,7 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPITestRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
@@ -61,7 +61,7 @@ public class LogAnnotationIT {
   public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  public CommonAPITestRule commonAPIRule = new CommonAPITestRule();
 
   @Inject
   private AnAnnotatedObject anAnnotatedObject;
@@ -80,7 +80,7 @@ public class LogAnnotationIT {
 
   @Before
   public void SetUpTestContext() {
-    commonAPI4Test.setLoggerLevel(Level.DEBUG);
+    commonAPIRule.setLoggerLevel(Level.DEBUG);
     SystemWrapper.get()
         .getenv()
         .put("SILVERPEAS_HOME", mavenTargetDirectoryRule.getBuildDirFile().getAbsolutePath());

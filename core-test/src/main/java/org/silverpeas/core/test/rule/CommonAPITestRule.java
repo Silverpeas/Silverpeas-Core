@@ -23,33 +23,55 @@
  */
 package org.silverpeas.core.test.rule;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.internal.util.MockUtil;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.GroupProvider;
+import org.silverpeas.core.admin.user.service.UserProvider;
+import org.silverpeas.core.silvertrace.SilverpeasTrace;
 import org.silverpeas.core.test.TestBeanContainer;
-import org.silverpeas.core.test.TestSystemWrapper;
+import org.silverpeas.core.test.util.lang.TestSystemWrapper;
+import org.silverpeas.core.test.util.log.TestSilverpeasTrace;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 import org.silverpeas.core.util.logging.SilverLoggerProvider;
 
 import javax.enterprise.concurrent.ManagedThreadFactory;
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.silverpeas.core.util.logging.SilverLoggerProvider.ROOT_NAMESPACE;
 
 /**
  * @author Yohann Chastagnier
  */
-public class CommonAPI4Test implements TestRule {
+public class CommonAPITestRule implements TestRule {
+
+  private TestContext testContext;
+  private UserProvider userProvider;
 
   @Override
   public Statement apply(final Statement base, final Description description) {
+
+    File testTempData = new File(new File(
+        description.getTestClass().getProtectionDomain().getCodeSource().getLocation().getFile()),
+        "test-temp-data");
+    testContext = new TestContext(description, testTempData);
 
     return new Statement() {
       @Override
@@ -58,7 +80,11 @@ public class CommonAPI4Test implements TestRule {
           beforeEvaluate();
           base.evaluate();
         } finally {
-          afterEvaluate();
+          try {
+            afterEvaluate();
+          } finally {
+            FileUtils.deleteQuietly(testTempData);
+          }
         }
       }
     };
@@ -66,34 +92,99 @@ public class CommonAPI4Test implements TestRule {
 
   protected void beforeEvaluate() {
     reset(TestBeanContainer.getMockedBeanContainer());
+    userProvider();
+    groupProvider();
     systemWrapper();
     loggerConfigurationManager();
+    silverTrace();
     managedThreadFactory();
   }
 
   protected void afterEvaluate() {
+    // nothing to do
   }
 
-  @SuppressWarnings({"unchecked", "Duplicates"})
-  public <T> T injectIntoMockedBeanContainer(T bean, Annotation... qualifiers) {
+  public TestContext getTestContext() {
+    return testContext;
+  }
+
+  public void setLoggerLevel(Level level) {
+    final ConsoleHandler handler = new ConsoleHandler();
+    setLoggerHandler(handler);
+    handler.setFormatter(new SimpleFormatter());
+    switch (level) {
+      case INFO:
+        Logger.getLogger(ROOT_NAMESPACE).setLevel(java.util.logging.Level.INFO);
+        handler.setLevel(java.util.logging.Level.INFO);
+        break;
+      case DEBUG:
+        Logger.getLogger(ROOT_NAMESPACE).setLevel(java.util.logging.Level.FINE);
+        handler.setLevel(java.util.logging.Level.FINE);
+        break;
+      case WARNING:
+        Logger.getLogger(ROOT_NAMESPACE).setLevel(java.util.logging.Level.WARNING);
+        handler.setLevel(java.util.logging.Level.WARNING);
+        break;
+      case ERROR:
+        Logger.getLogger(ROOT_NAMESPACE).setLevel(java.util.logging.Level.SEVERE);
+        handler.setLevel(java.util.logging.Level.SEVERE);
+        break;
+    }
+  }
+
+  private void setLoggerHandler(final Handler handler) {
+    Logger.getLogger(ROOT_NAMESPACE).setUseParentHandlers(false);
+    if (Arrays.stream(Logger.getLogger(ROOT_NAMESPACE).getHandlers())
+        .filter(h -> handler.getClass().isInstance(h)).count() == 0) {
+      Logger.getLogger(ROOT_NAMESPACE).addHandler(handler);
+    }
+  }
+
+  public void setCurrentRequester(final User user) {
+    when(userProvider.getCurrentRequester()).thenReturn(user);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T injectIntoMockedBeanContainer(T bean, Annotation ... qualifiers) {
     final Class<T> clazz;
     if (MockUtil.isMock(bean) || MockUtil.isSpy(bean)) {
       clazz = (Class<T>) MockUtil.getMockHandler(bean).getMockSettings().getTypeToMock();
     } else {
       clazz = (Class<T>) bean.getClass();
     }
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(clazz, qualifiers)).thenReturn(
-        bean);
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(clazz, qualifiers)).thenReturn(bean);
     if (!clazz.isInterface()) {
       Class[] interfaces = clazz.getInterfaces();
       if (interfaces != null) {
-        for (Class anInterface : interfaces) {
+        for(Class anInterface : interfaces) {
           when(TestBeanContainer.getMockedBeanContainer().getBeanByType(anInterface, qualifiers))
               .thenReturn(bean);
         }
       }
+      if (clazz.getSimpleName().endsWith("4Test") && clazz.getGenericSuperclass() instanceof Class) {
+        when(TestBeanContainer.getMockedBeanContainer()
+            .getBeanByType((Class) clazz.getGenericSuperclass(), qualifiers)).thenReturn(bean);
+      }
     }
     return bean;
+  }
+
+  private void silverTrace() {
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(SilverpeasTrace.class))
+        .thenReturn(new TestSilverpeasTrace());
+  }
+
+  private void userProvider() {
+    userProvider = mock(StubbedUserProvider.class);
+    doCallRealMethod().when(userProvider).getCurrentRequester();
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class))
+        .thenReturn(userProvider);
+  }
+
+  private void groupProvider() {
+    GroupProvider groupProvider = mock(GroupProvider.class);
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(GroupProvider.class))
+        .thenReturn(groupProvider);
   }
 
   private void systemWrapper() {
@@ -122,12 +213,31 @@ public class CommonAPI4Test implements TestRule {
       managedThreadPoolConstructor.setAccessible(true);
       ManagedThreadPool managedThreadPool = managedThreadPoolConstructor.newInstance();
       ManagedThreadFactory managedThreadFactory = Thread::new;
-      FieldUtils.writeField(managedThreadPool, "managedThreadFactory", managedThreadFactory, true);
+      FieldUtils.writeField(managedThreadPool, "managedThreadFactory",
+          managedThreadFactory, true);
       when(TestBeanContainer.getMockedBeanContainer()
           .getBeanByType(ManagedThreadPool.class)).thenReturn(managedThreadPool);
     } catch (IllegalAccessException | NoSuchMethodException | InstantiationException |
         InvocationTargetException e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
+
+  protected class TestContext {
+    private final Description description;
+    private final File tempData;
+
+    public TestContext(final Description description, final File tempData) {
+      this.description = description;
+      this.tempData = tempData;
+    }
+
+    public Description getDescription() {
+      return description;
+    }
+
+    public File getTempData() {
+      return tempData;
     }
   }
 
@@ -146,4 +256,10 @@ public class CommonAPI4Test implements TestRule {
     }
   }
 
+  private abstract class StubbedUserProvider implements UserProvider {
+    @Override
+    public User getCurrentRequester() {
+      return UserProvider.super.getCurrentRequester();
+    }
+  }
 }

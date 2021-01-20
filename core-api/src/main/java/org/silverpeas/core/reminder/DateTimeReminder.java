@@ -47,6 +47,13 @@ public class DateTimeReminder extends Reminder {
   @Transient
   private transient OffsetDateTime dateTime;
 
+  @Override
+  public Reminder copy() {
+    DateTimeReminder copy = (DateTimeReminder) super.copy();
+    copy.dateTime = dateTime;
+    return copy;
+  }
+
   /**
    * Constructs a new reminder about the given contribution for the system.
    * @param contributionId the unique identifier of a contribution.

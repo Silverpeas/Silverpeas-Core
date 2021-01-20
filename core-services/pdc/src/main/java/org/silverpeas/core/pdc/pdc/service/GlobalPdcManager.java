@@ -1830,32 +1830,28 @@ public class GlobalPdcManager implements PdcManager {
   @Override
   public List<ClassifyPosition> getPositions(int silverObjectId, String sComponentId)
       throws PdcException {
-    List<Position> positions = pdcClassifyManager.getPositions(silverObjectId, sComponentId);
+    List<Position<org.silverpeas.core.pdc.classification.Value>> positions =
+        pdcClassifyManager.getPositions(silverObjectId, sComponentId);
     ArrayList<ClassifyPosition> classifyPositions = new ArrayList<>();
 
     // transform Position to ClassifyPosition
     ClassifyPosition classifyPosition;
-    for (Position position : positions) {
-      List values = position.getValues();
+    for (Position<org.silverpeas.core.pdc.classification.Value> position : positions) {
+      List<org.silverpeas.core.pdc.classification.Value> values = position.getValues();
 
       // transform Value to ClassifyValue
-      ClassifyValue classifyValue = null;
-      org.silverpeas.core.pdc.classification.Value value;
       ArrayList<ClassifyValue> classifyValues = new ArrayList<>();
-      String valuePath = "";
-      String valueId = "";
-      for (Object value1 : values) {
-        value = (org.silverpeas.core.pdc.classification.Value) value1;
-        classifyValue = new ClassifyValue(value.getAxisId(), value.getValue());
+      for (org.silverpeas.core.pdc.classification.Value value : values) {
+        ClassifyValue  classifyValue = new ClassifyValue(value.getAxisId(), value.getValue());
 
         if (value.getAxisId() != -1) {
           int treeId = Integer.parseInt(getTreeId(Integer.toString(value.getAxisId())));
           // enrichit le classifyValue avec le chemin complet de la racine jusqu'à la valeur
-          valuePath = value.getValue();
+          String valuePath = value.getValue();
           if (valuePath != null) {
             // enleve le dernier /
             valuePath = valuePath.substring(0, valuePath.length() - 1);
-            valueId = valuePath.substring(valuePath.lastIndexOf('/') + 1);
+            String valueId = valuePath.substring(valuePath.lastIndexOf('/') + 1);
             classifyValue.setFullPath(getFullPath(valueId, String.valueOf(treeId)));
             classifyValues.add(classifyValue);
           }
@@ -2180,16 +2176,16 @@ public class GlobalPdcManager implements PdcManager {
       String sComponentId) throws PdcException {
     try {
       // Get the positions
-      List alPositions = pdcClassifyManager.getPositions(nSilverContentId, sComponentId);
+      List<Position<org.silverpeas.core.pdc.classification.Value>> alPositions =
+          pdcClassifyManager.getPositions(nSilverContentId, sComponentId);
 
       // Convert the first position in SearchContext
       SearchContext searchContext = new SearchContext(null);
       if (alPositions != null && !alPositions.isEmpty()) {
-        Position pos = (Position) alPositions.get(0);
-        List alValues = pos.getValues();
+        Position<org.silverpeas.core.pdc.classification.Value> pos = alPositions.get(0);
+        List<org.silverpeas.core.pdc.classification.Value> alValues = pos.getValues();
         for (int nI = 0; alValues != null && nI < alValues.size(); nI++) {
-          org.silverpeas.core.pdc.classification.Value value =
-              (org.silverpeas.core.pdc.classification.Value) alValues.get(nI);
+          org.silverpeas.core.pdc.classification.Value value = alValues.get(nI);
           if (value.getAxisId() != -1 && value.getValue() != null) {
             searchContext.addCriteria(new SearchCriteria(value.getAxisId(), value.getValue()));
           }

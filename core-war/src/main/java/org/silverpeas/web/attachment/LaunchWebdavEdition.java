@@ -59,7 +59,6 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-   *
    * @param request servlet request
    * @param response servlet response
    */
@@ -71,12 +70,11 @@ public class LaunchWebdavEdition extends SilverpeasAuthenticatedHttpServlet {
     SimpleDocument document =
         AttachmentService.get().searchDocumentById(new SimpleDocumentPK(id), language);
 
-    if (!document.isReadOnly()
-        || !document.canBeModifiedBy(user)
-        || (!document.getEditedBy().equals(user.getId())
-            && (!wbe || !document.editableSimultaneously().orElse(false)))) {
-      throwHttpForbiddenError();
-    }
+      if (!document.isReadOnly() || !document.canBeModifiedBy(user) ||
+          (!document.getEditedBy().equals(user.getId()) &&
+              (!wbe || !document.editableSimultaneously().orElse(false)))) {
+        throwHttpForbiddenError();
+      }
 
     try {
       final Optional<String> wopiEditorUrl = Optional.of(wbe).filter(w -> w).flatMap(w -> WebWopiFileEdition.get().initializeWith(request, new WebdavWopiFile(document)));

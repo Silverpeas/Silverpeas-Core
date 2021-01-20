@@ -35,10 +35,10 @@ import java.util.ResourceBundle;
  */
 public class MultiSilverpeasBundle {
 
-  private LocalizationBundle specificMultilang = null;
+  private final LocalizationBundle specificMultilang;
   private SettingBundle specificIcons = null;
   private SettingBundle specificSettings = null;
-  private String language = null;
+  private final String language;
 
   /**
    * Constructs a new multiple bundle.
@@ -124,7 +124,7 @@ public class MultiSilverpeasBundle {
     if (key != null) {
       valret = key;
       if (specificMultilang != null) {
-        valret = specificMultilang.getStringWithParams(key, params);
+        valret = specificMultilang.getStringWithParams(key, (Object[]) params);
       }
     }
     if (valret == null) {

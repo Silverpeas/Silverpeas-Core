@@ -70,7 +70,6 @@ public class AutoRedirectServlet extends HttpServlet {
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
    * @param request servlet request
    * @param response servlet response
-   * @throws IOException if an I/O error occurs
    */
   private void processRequest(HttpServletRequest request, HttpServletResponse response) {
     prepareResponseHeader(response);
@@ -80,7 +79,6 @@ public class AutoRedirectServlet extends HttpServlet {
     final GraphicElementFactory gef = context.getGraphicElementFactory();
 
     try {
-
       // The user is either not connected or as the anonymous user. He comes back to the login page.
       if (mainController == null ||
           (gef != null && UserDetail.isAnonymousUser(mainController.getUserId()) && context.notExistsGoto())) {
@@ -88,7 +86,6 @@ public class AutoRedirectServlet extends HttpServlet {
       } else {
         redirect(httpRequest, context, mainController, gef);
       }
-
     } catch (IOException e) {
       SilverLogger.getLogger(this).error(e);
       response.setStatus(SC_INTERNAL_SERVER_ERROR);

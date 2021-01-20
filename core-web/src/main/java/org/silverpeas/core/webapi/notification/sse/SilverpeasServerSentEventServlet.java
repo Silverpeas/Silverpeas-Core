@@ -34,7 +34,6 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.servlet.AsyncContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -45,11 +44,9 @@ import java.util.Set;
 import static java.lang.Math.min;
 import static java.text.MessageFormat.format;
 import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.registerAsyncContext;
-import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask
-    .sendLastServerEventsFromId;
+import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.sendLastServerEventsFromId;
 import static org.silverpeas.core.notification.sse.SilverpeasAsyncContext.wrap;
-import static org.silverpeas.core.notification.user.client.NotificationManagerSettings
-    .getSseAsyncTimeout;
+import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getSseAsyncTimeout;
 import static org.silverpeas.core.security.session.SessionManagementProvider.getSessionManagement;
 
 /**
@@ -78,80 +75,77 @@ public abstract class SilverpeasServerSentEventServlet extends SilverpeasAuthent
   }
 
   @Override
-  protected void doGet(final HttpServletRequest req, final HttpServletResponse response)
-      throws ServletException, IOException {
-    HttpRequest request = HttpRequest.decorate(req);
-    sseUri.add(request.getRequestURI());
-    final SilverLogger silverLogger = SseLogger.get();
-
-    final String requestURI = request.getRequestURI();
-    final MainSessionController mainSessionController = getMainSessionController(request);
-    final String mainSessionId = mainSessionController.getSessionId();
-    final User sessionUser = mainSessionController.getCurrentUserDetail();
-    final String userSessionId;
-    if (sessionUser.isAnonymous()) {
-      userSessionId = mainSessionId;
-    } else {
-      final SessionInfo sessionInfo =
-          getSessionManagement().getSessionInfo(mainSessionController.getSessionId());
-      userSessionId = sessionInfo.getSessionId();
-    }
-
-    if (!"text/event-stream".equals(request.getHeader("Accept"))) {
-      final String errorMessage =
-          "Server Sent Servlet accepts only 'test/event-stream' requests ({0})";
-      silverLogger.error(errorMessage, requestURI);
-      throwHttpForbiddenError(errorMessage);
-    }
-
-    silverLogger
-        .debug("Asking for SSE communication (sessionUser={0}) on URI {1} (SessionId={2})",
-            sessionUser.getId(), requestURI, userSessionId);
-
-    // Is heartbeat requested? (first opening)
-    boolean heartbeat = StringUtil.getBooleanValue(request.getParameter(HEARTBEAT_PARAM));
-
-    // An initial response
-    Long lastServerEventId;
+  protected void doGet(final HttpServletRequest req, final HttpServletResponse response) {
     try {
-      lastServerEventId = Long.valueOf(request.getHeader(LAST_EVENT_ID_HEADER));
-    } catch (NumberFormatException ignore) {
-      lastServerEventId = request.getParameterAsLong(LAST_EVENT_ID_PARAM);
-      if (lastServerEventId != null) {
-        // When the last server event identifier is retrieved from parameters, that is the
-        // polyfill event source implementation behind.
-        // Heartbeat is required in a such case.
-        heartbeat = true;
-      }
-    }
-    if (lastServerEventId != null) {
-      silverLogger.debug(
-          () -> format("Sending emitted events since disconnection for sessionId {0} on URI {1}",
-              request.getSession(false).getId(), requestURI));
-      RetryServerEvent.createFor(userSessionId, lastServerEventId)
-          .send(request, response, userSessionId, sessionUser);
-      lastServerEventId =
-          sendLastServerEventsFromId(request, response, lastServerEventId, userSessionId,
-              sessionUser);
-    } else {
-      InitializationServerEvent.createFor(userSessionId)
-          .send(request, response, userSessionId, sessionUser);
-    }
+      HttpRequest request = HttpRequest.decorate(req);
+      sseUri.add(request.getRequestURI());
+      final SilverLogger silverLogger = SseLogger.get();
 
-    if (!request.isAsyncStarted()) {
-      // Start Async processing
-      final AsyncContext startedAsyncContext = request.startAsync(request, response);
-      final SilverpeasAsyncContext asyncContext =
-          wrap(silverLogger, startedAsyncContext, userSessionId, sessionUser);
-      final int userSessionTimeout = request.getSession(false).getMaxInactiveInterval() * 1000;
-      final int asyncTimeout = min(getSseAsyncTimeout(), userSessionTimeout);
-      asyncContext.setTimeout(asyncTimeout);
-      asyncContext.setLastServerEventId(lastServerEventId);
-      asyncContext.setHeartbeat(heartbeat);
-      registerAsyncContext(asyncContext);
-    } else {
-      silverLogger.warn("Strange that the asynchronous context is already started {0}",
-          request.getAsyncContext());
+      final String requestURI = request.getRequestURI();
+      final MainSessionController mainSessionController = getMainSessionController(request);
+      final String mainSessionId = mainSessionController.getSessionId();
+      final User sessionUser = mainSessionController.getCurrentUserDetail();
+      final String userSessionId;
+      if (sessionUser.isAnonymous()) {
+        userSessionId = mainSessionId;
+      } else {
+        final SessionInfo sessionInfo = getSessionManagement().getSessionInfo(mainSessionController.getSessionId());
+        userSessionId = sessionInfo.getSessionId();
+      }
+
+      if (!"text/event-stream".equals(request.getHeader("Accept"))) {
+        final String errorMessage =
+            "Server Sent Servlet accepts only 'test/event-stream' requests ({0})";
+        silverLogger.error(errorMessage, requestURI);
+        throwHttpForbiddenError(errorMessage);
+      }
+
+      silverLogger.debug("Asking for SSE communication (sessionUser={0}) on URI {1} (SessionId={2})",
+          sessionUser.getId(), requestURI, userSessionId);
+
+      // Is heartbeat requested? (first opening)
+      boolean heartbeat = StringUtil.getBooleanValue(request.getParameter(HEARTBEAT_PARAM));
+
+      // An initial response
+      Long lastServerEventId;
+      try {
+        lastServerEventId = Long.valueOf(request.getHeader(LAST_EVENT_ID_HEADER));
+      } catch (NumberFormatException ignore) {
+        lastServerEventId = request.getParameterAsLong(LAST_EVENT_ID_PARAM);
+        if (lastServerEventId != null) {
+          // When the last server event identifier is retrieved from parameters, that is the
+          // polyfill event source implementation behind.
+          // Heartbeat is required in a such case.
+          heartbeat = true;
+        }
+      }
+      if (lastServerEventId != null) {
+        silverLogger.debug(() -> format("Sending emitted events since disconnection for sessionId {0} on URI {1}",
+            request.getSession(false).getId(), requestURI));
+        RetryServerEvent.createFor(userSessionId, lastServerEventId).send(request, response, userSessionId, sessionUser);
+        lastServerEventId =
+            sendLastServerEventsFromId(request, response, lastServerEventId, userSessionId,
+                sessionUser);
+      } else {
+        InitializationServerEvent.createFor(userSessionId).send(request, response, userSessionId, sessionUser);
+      }
+
+      if (!request.isAsyncStarted()) {
+        // Start Async processing
+        final AsyncContext startedAsyncContext = request.startAsync(request, response);
+        final SilverpeasAsyncContext asyncContext = wrap(silverLogger, startedAsyncContext, userSessionId, sessionUser);
+        final int userSessionTimeout = request.getSession(false).getMaxInactiveInterval() * 1000;
+        final int asyncTimeout = min(getSseAsyncTimeout(), userSessionTimeout);
+        asyncContext.setTimeout(asyncTimeout);
+        asyncContext.setLastServerEventId(lastServerEventId);
+        asyncContext.setHeartbeat(heartbeat);
+        registerAsyncContext(asyncContext);
+      } else {
+        silverLogger.warn("Strange that the asynchronous context is already started {0}", request.getAsyncContext());
+      }
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 }

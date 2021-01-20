@@ -29,6 +29,7 @@ import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -100,7 +101,7 @@ public interface EntityRepository<T extends IdentifiableEntity> {
    * @return the created or updated entity.
    */
   default T save(T entity) {
-    return save(Arrays.asList(entity)).get(0);
+    return save(Collections.singletonList(entity)).get(0);
   }
 
   /**

@@ -37,7 +37,7 @@ import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirectiv
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexps;
 
 @UnitTest
-public class StringDataRegexpExtractorTest {
+class StringDataRegexpExtractorTest {
 
   private final static String COMMON_STRING =
       "common/string/0256/?param=ab-04\ncommon/StRing/abcd/toto";
@@ -47,25 +47,25 @@ public class StringDataRegexpExtractorTest {
   private final static int[] VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE_GROUP_INDEX = new int[]{1, 2};
 
   @Test
-  public void extractFromNullWithNoDirective() {
+  void extractFromNullWithNoDirective() {
     List<String> result = StringDataExtractor.from(null).extract();
     assertThat(result, hasSize(0));
   }
 
   @Test
-  public void extractFromEmptyWithNoDirective() {
+  void extractFromEmptyWithNoDirective() {
     List<String> result = StringDataExtractor.from("").extract();
     assertThat(result, hasSize(0));
   }
 
   @Test
-  public void extractFromCommonStringWithNoDirective() {
+  void extractFromCommonStringWithNoDirective() {
     List<String> result = StringDataExtractor.from(COMMON_STRING).extract();
     assertThat(result, hasSize(0));
   }
 
   @Test
-  public void extractFromNullWithOneDirective() {
+  void extractFromNullWithOneDirective() {
     List<String> result = StringDataExtractor.from(null).withDirective(
         regexp(VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE,
             VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE_GROUP_INDEX)).extract();
@@ -73,7 +73,7 @@ public class StringDataRegexpExtractorTest {
   }
 
   @Test
-  public void extractFromEmptyWithOneDirective() {
+  void extractFromEmptyWithOneDirective() {
     List<String> result = StringDataExtractor.from("").withDirective(
         regexp(VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE,
             VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE_GROUP_INDEX)).extract();
@@ -81,7 +81,7 @@ public class StringDataRegexpExtractorTest {
   }
 
   @Test
-  public void extractFromCommonStringWithOneDirective() {
+  void extractFromCommonStringWithOneDirective() {
     List<String> result = StringDataExtractor.from(COMMON_STRING).withDirective(
         regexp(VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE,
             VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE_GROUP_INDEX)).extract();
@@ -89,21 +89,21 @@ public class StringDataRegexpExtractorTest {
   }
 
   @Test
-  public void extractFromCommonStringWithOneDirectiveButNotGroupIndex() {
+  void extractFromCommonStringWithOneDirectiveButNotGroupIndex() {
     List<String> result = StringDataExtractor.from(COMMON_STRING)
         .withDirective(regexp(VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE)).extract();
     assertThat(result, contains("string/0256/", "StRing/abcd/to"));
   }
 
   @Test
-  public void extractFromCommonStringWithOneDirectiveButBadGroupIndex() {
+  void extractFromCommonStringWithOneDirectiveButBadGroupIndex() {
     assertThrows(IndexOutOfBoundsException.class, () ->
     StringDataExtractor.from(COMMON_STRING)
         .withDirective(regexp(VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE, 3)).extract());
   }
 
   @Test
-  public void extractFromCommonStringWithTwoDirectives() {
+  void extractFromCommonStringWithTwoDirectives() {
     List<String> result = StringDataExtractor.from(COMMON_STRING).withDirective(
         regexp(VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE,
             VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE_GROUP_INDEX))
@@ -112,7 +112,7 @@ public class StringDataRegexpExtractorTest {
   }
 
   @Test
-  public void extractFromCommonStringWithTwoDirectivesSpecifiedInOneCall() {
+  void extractFromCommonStringWithTwoDirectivesSpecifiedInOneCall() {
     List<String> result = StringDataExtractor.from(COMMON_STRING).withDirectives(regexps(
         asList(VALID_COMMON_EXTRACT_PATTERN_DIRECTIVE,
             Pattern.compile(".*string/(.+)/(.{1,3})?.*")),
@@ -121,7 +121,7 @@ public class StringDataRegexpExtractorTest {
   }
 
   @Test
-  public void
+  void
   extractFromCommonStringWithTwoDirectivesInOtherOrderAndDemonstratesThatReturnedValuesAreUnique() {
     List<String> result = StringDataExtractor.from(COMMON_STRING)
         .withDirective(regexp(".*string/(.+)/(.{1,3})?.*", 2)).withDirective(
@@ -131,29 +131,29 @@ public class StringDataRegexpExtractorTest {
   }
 
   @Test
-  public void extractUniqueFromCommonStringWithOneDirective() {
+  void extractUniqueFromCommonStringWithOneDirective() {
     String result = StringDataExtractor.from(COMMON_STRING).withDirective(regexp(".*(string).*", 1))
         .extractUnique();
     assertThat(result, is("string"));
   }
 
   @Test
-  public void extractUniqueFromCommonStringWithOneDirectiveOtherTry() {
+  void extractUniqueFromCommonStringWithOneDirectiveOtherTry() {
     String result =
         StringDataExtractor.from(COMMON_STRING).withDirective(regexp("string", 0)).extractUnique();
     assertThat(result, is("string"));
   }
 
   @Test
-  public void extractUniqueFromCommonStringWithOneDirectiveAndNoValue() {
+  void extractUniqueFromCommonStringWithOneDirectiveAndNoValue() {
     String result =
         StringDataExtractor.from(COMMON_STRING).withDirective(regexp(".*(novalue).*", 1))
             .extractUnique();
-    assertThat(result, isEmptyString());
+    assertThat(result, is(emptyString()));
   }
 
   @Test
-  public void extractUniqueFromCommonStringWithOneDirectiveButSeveralValues() {
+  void extractUniqueFromCommonStringWithOneDirectiveButSeveralValues() {
     assertThrows(IllegalStateException.class, () ->
     StringDataExtractor.from(COMMON_STRING).withDirective(regexp("(?i).*(string).*", 1))
         .extractUnique());

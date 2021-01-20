@@ -31,6 +31,9 @@ public class GlobalSilverContentI18N extends SilverContentI18N implements java.i
 
   private static final long serialVersionUID = 1L;
 
+  protected GlobalSilverContentI18N() {
+  }
+
   public GlobalSilverContentI18N(String language, String name, String description) {
     super(language, name, description);
   }

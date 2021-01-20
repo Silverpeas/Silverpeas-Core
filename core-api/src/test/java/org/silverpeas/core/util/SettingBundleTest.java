@@ -25,10 +25,7 @@ package org.silverpeas.core.util;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.SilverpeasBundleList;
+import org.silverpeas.core.test.rule.CommonAPIRule;
 
 import java.util.List;
 
@@ -45,7 +42,7 @@ public class SettingBundleTest {
       ResourceLocator.getSettingBundle("org.silverpeas.jobDomainPeas.settings.usersCSVFormat");
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  public CommonAPIRule commonAPIRule = new CommonAPIRule();
 
   @Test
   public void getStringListOnNameSuffixShouldReturn6Values() {

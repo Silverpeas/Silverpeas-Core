@@ -43,7 +43,7 @@ import org.silverpeas.core.contribution.publication.model.Visibility;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
+import org.silverpeas.core.test.rule.LibCoreCommonAPIRule;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.util.CollectionUtil;
 
@@ -78,7 +78,7 @@ public class TestPublicationAccessController {
   private User user;
 
   @Rule
-  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
+  public LibCoreCommonAPIRule commonAPIRule = new LibCoreCommonAPIRule();
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
@@ -88,9 +88,9 @@ public class TestPublicationAccessController {
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
     publicationService = mock(PublicationService.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(publicationService);
+    commonAPIRule.injectIntoMockedBeanContainer(publicationService);
     organizationController = mock(OrganizationController.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(organizationController);
+    commonAPIRule.injectIntoMockedBeanContainer(organizationController);
     componentAccessController = mock(ComponentAccessControl.class);
     nodeAccessController = mock(NodeAccessControl.class);
     testContext = new TestContext();

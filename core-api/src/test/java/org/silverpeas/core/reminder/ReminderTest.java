@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.NoSuchPropertyException;
 import org.silverpeas.core.date.TimeUnit;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPIRule;
 
 import java.time.OffsetDateTime;
 
@@ -45,8 +45,8 @@ import static org.silverpeas.core.reminder.ReminderTestContext.PROCESS_NAME;
 public class ReminderTest {
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-  private ReminderTestContext context = new ReminderTestContext(commonAPI4Test);
+  public CommonAPIRule commonAPIRule = new CommonAPIRule();
+  private ReminderTestContext context = new ReminderTestContext(commonAPIRule);
 
   @Before
   public void prepareInjection() {

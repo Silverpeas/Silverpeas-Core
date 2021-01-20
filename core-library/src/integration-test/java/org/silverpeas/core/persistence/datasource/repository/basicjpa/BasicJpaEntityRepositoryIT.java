@@ -26,7 +26,7 @@ package org.silverpeas.core.persistence.datasource.repository.basicjpa;
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
 import org.hamcrest.Matchers;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.hibernate.LazyInitializationException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -34,10 +34,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.AnimalBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.AnimalTypeBasicEntity;
-import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.PersonBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.EquipmentBasicEntity;
+import org.silverpeas.core.persistence.datasource.repository.basicjpa.model.PersonBasicEntity;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityServiceTest;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
@@ -202,6 +204,12 @@ public class BasicJpaEntityRepositoryIT {
     basicJpaEntityServiceTest.save(null, newPersonBasicEntity);
   }
 
+  @Test(expected = LazyInitializationException.class)
+  public void entityCloneFailureWithLazyFetching() {
+    AnimalBasicEntity animal = basicJpaEntityServiceTest.getAnimalsByName("Titi");
+    animal.copy();
+  }
+
   @Test
   public void entityGetUpdateCloneBehaviour() {
     assertThat(basicJpaEntityServiceTest.getAllPersons(), hasSize(5));
@@ -211,14 +219,20 @@ public class BasicJpaEntityRepositoryIT {
     assertThat(personBasicEntity.getId(), notNullValue());
 
     // Update
-    PersonBasicEntity personBasicEntityUpdated =
-        basicJpaEntityServiceTest.save(personBasicEntity);
+    PersonBasicEntity personBasicEntityUpdated = Transaction.performInOne(() -> {
+      PersonBasicEntity entity = basicJpaEntityServiceTest.save(personBasicEntity);
+      // we force the loading of animals here (must be in a persistence session)
+      assertThat(entity.getAnimals().stream().mapToLong(a -> a.getEquipments().size()).sum() >= 0,
+          is(true));
+      return entity;
+    });
     assertThat(personBasicEntityUpdated, not(sameInstance(personBasicEntity)));
     assertThat(personBasicEntityUpdated.getId(), notNullValue());
     assertThat(basicJpaEntityServiceTest.getAllPersons(), hasSize(5));
 
+
     // Clone
-    PersonBasicEntity personBasicEntityCloned = personBasicEntityUpdated.clone();
+    PersonBasicEntity personBasicEntityCloned = personBasicEntityUpdated.copy();
     assertThat(personBasicEntityCloned.getId(), nullValue());
     assertThat(personBasicEntityCloned.getFirstName(),
         is(personBasicEntityUpdated.getFirstName()));

@@ -51,7 +51,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class ComponentInst extends AbstractI18NBean<ComponentI18N>
-    implements Cloneable, SilverpeasSharedComponentInstance {
+    implements SilverpeasSharedComponentInstance {
 
   private static final long serialVersionUID = 1L;
   private static final Pattern COMPONENT_INSTANCE_IDENTIFIER =
@@ -130,14 +130,25 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return componentId;
   }
 
-  @Override
-  public Object clone() {
-    ComponentInst ci;
-    try {
-      ci = (ComponentInst) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new SilverpeasRuntimeException(e);
-    }
+  public ComponentInst copy() {
+    ComponentInst ci = new ComponentInst();
+    ci.id = id;
+    ci.name = name;
+    ci.domainFatherId = domainFatherId;
+    ci.order = order;
+    ci.createDate = createDate;
+    ci.updateDate = updateDate;
+    ci.removeDate = removeDate;
+    ci.status = status;
+    ci.creatorUserId = creatorUserId;
+    ci.creator = creator;
+    ci.updaterUserId = updaterUserId;
+    ci.updater = updater;
+    ci.removerUserId = removerUserId;
+    ci.remover = remover;
+    ci.isPublic = isPublic;
+    ci.isHidden = isHidden;
+    ci.isInheritanceBlocked = isInheritanceBlocked;
     if (profiles == null) {
       ci.profiles = null;
     } else {
@@ -283,11 +294,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
   }
 
   public void deleteProfileInst(ProfileInst profileInst) {
-    for (int nI = 0; nI < profiles.size(); nI++) {
-      if (profiles.get(nI).getName().equals(profileInst.getName())) {
-        profiles.remove(nI);
-      }
-    }
+    profiles.removeIf(p -> p.getName().equals(profileInst.getName()));
   }
 
   public List<ProfileInst> getAllProfilesInst() {

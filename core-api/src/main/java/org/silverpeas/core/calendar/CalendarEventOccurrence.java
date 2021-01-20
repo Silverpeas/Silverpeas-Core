@@ -130,7 +130,7 @@ public class CalendarEventOccurrence
       final Temporal endDate) {
     setId(generateId(event, startDate));
     this.event = event;
-    this.component = event.asCalendarComponent().clone();
+    this.component = event.asCalendarComponent().copy();
     setCreationData(this.component, event.getCreator(), event.getCreationDate());
     setUpdateData(this.component, event.getLastUpdater(), event.getLastUpdateDate());
     this.component.setPeriod(Period.between(startDate, endDate));
@@ -601,11 +601,11 @@ public class CalendarEventOccurrence
     return getCalendarEvent().deleteOnly(this);
   }
 
-  CalendarEventOccurrence cloneWithEvent(final CalendarEvent event) {
+  CalendarEventOccurrence copyWithEvent(final CalendarEvent event) {
     CalendarEventOccurrence newOccurrence = new CalendarEventOccurrence();
     newOccurrence.setId(generateId(event, getOriginalStartDate()));
     newOccurrence.event = event;
-    newOccurrence.component = this.component.clone();
+    newOccurrence.component = this.component.copy();
     newOccurrence.component.setCalendar(event.getCalendar());
     return newOccurrence;
   }
@@ -655,7 +655,7 @@ public class CalendarEventOccurrence
   CalendarEvent toRecurrentCalendarEvent() {
     CalendarEvent newEvent = toCalendarEvent();
     if (this.getCalendarEvent().isRecurrent()) {
-      Recurrence recurrence = this.getCalendarEvent().getRecurrence().clone();
+      Recurrence recurrence = this.getCalendarEvent().getRecurrence().copy();
       recurrence.clearsAllExceptionDates();
       if (!this.getCalendarEvent().getRecurrence().isEndless()) {
         recurrence.until(this.getCalendarEvent().getRecurrence().getEndDate()
@@ -704,7 +704,8 @@ public class CalendarEventOccurrence
         // The clone permits to not imply a modification of event component into persistence. As
         // the below treatment is performed into the case of creation, the original start date is
         // compared to the current start date in order to try to detect a real period modification.
-        final CalendarComponent pccClone = pcc.clone(); pccClone.setPeriod(component.getPeriod());
+        final CalendarComponent pccClone = pcc.copy();
+        pccClone.setPeriod(component.getPeriod());
         modifiedSince = component.isModifiedSince(pccClone) || !getOriginalStartDate().toString().equals(getStartDate().toString());
       }
       if (!modifiedSince && getAttendees().onlyAttendeePropertyChange(pcc.getAttendees())) {

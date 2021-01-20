@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http//www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
@@ -111,7 +111,7 @@ public class WysiwygManager implements WysiwygContentRepository {
     }
     String content = null;
     if (wysiwygFile.exists() && wysiwygFile.isFile()) {
-      content = FileUtils.readFileToString(wysiwygFile);
+      content = FileUtils.readFileToString(wysiwygFile, Charsets.UTF_8);
     }
     return content;
   }

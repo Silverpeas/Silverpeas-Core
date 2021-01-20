@@ -23,14 +23,13 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.util.logging.SilverLogger;
-
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -43,7 +42,7 @@ import java.util.stream.Stream;
  * are expected to be managed by the {@link Plannable} itself.
  */
 @Embeddable
-public class CategorySet implements Cloneable {
+public class CategorySet implements Serializable {
 
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "sb_cal_categories", joinColumns = {@JoinColumn(name = "id")})
@@ -181,15 +180,13 @@ public class CategorySet implements Cloneable {
     this.categories.addAll(categories.categories);
   }
 
-  @Override
-  public CategorySet clone() {
-    CategorySet clone = null;
-    try {
-      clone = (CategorySet) super.clone();
-      clone.categories = new HashSet<>(categories);
-    } catch (CloneNotSupportedException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
-    return clone;
+  /**
+   * Copies this object into another {@link CategorySet} instance.
+   * @return a copy of this object.
+   */
+  public CategorySet copy() {
+    CategorySet copy = new CategorySet();
+    copy.categories = new HashSet<>(categories);
+    return copy;
   }
 }

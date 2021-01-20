@@ -38,7 +38,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
+import org.silverpeas.core.test.rule.LibCoreCommonAPIRule;
 import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.Optional;
@@ -65,18 +65,18 @@ public class TestNodeAccessController {
   private User user;
 
   @Rule
-  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
+  public LibCoreCommonAPIRule commonAPIRule = new LibCoreCommonAPIRule();
 
   @Before
   public void setup() {
     user = mock(User.class);
     when(UserProvider.get().getUser(userId)).thenReturn(user);
     organizationController = mock(OrganizationController.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(organizationController);
+    commonAPIRule.injectIntoMockedBeanContainer(organizationController);
     componentAccessController = mock(ComponentAccessControl.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(componentAccessController);
+    commonAPIRule.injectIntoMockedBeanContainer(componentAccessController);
     nodeService = mock(NodeService.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(nodeService);
+    commonAPIRule.injectIntoMockedBeanContainer(nodeService);
     instance = new NodeAccessController(componentAccessController);
     when(organizationController.getComponentParameterValue(anyString(), eq("rightsOnTopics")))
         .then(new Returns("false"));

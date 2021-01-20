@@ -366,7 +366,7 @@ public class SilverpeasJpaEntityRepositoryIT {
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(5));
 
     // Clone
-    Person personCloned = personUpdated.clone();
+    Person personCloned = personUpdated.copy();
     assertThat(personCloned.getId(), nullValue());
     assertThat(personCloned.getFirstName(), is(personUpdated.getFirstName()));
     assertThat(personCloned.getLastName(), is(personUpdated.getLastName()));

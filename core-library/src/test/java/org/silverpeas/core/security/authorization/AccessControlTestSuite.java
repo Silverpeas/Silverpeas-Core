@@ -23,8 +23,9 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.platform.suite.api.SelectClasses;
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
 import org.silverpeas.core.test.UnitTest;
 
 /**
@@ -33,8 +34,8 @@ import org.silverpeas.core.test.UnitTest;
  * @author Yohann Chastagnier
  */
 @UnitTest
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
+@RunWith(JUnitPlatform.class)
+@SelectClasses({
     TestComponentAccessController.class,
     TestComponentAccessControllerFilter.class,
     TestNodeAccessController.class,

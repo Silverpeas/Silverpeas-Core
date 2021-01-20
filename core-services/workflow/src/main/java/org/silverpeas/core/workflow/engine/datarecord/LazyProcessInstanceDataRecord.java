@@ -65,7 +65,6 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
   public LazyProcessInstanceDataRecord(ProcessInstance instance, String role, String lang)
       throws WorkflowException {
     super(instance, role, lang);
-    this.instance = instance;
     this.role = role;
     this.lang = lang;
   }
@@ -200,11 +199,11 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
     Field field;
     try {
       Item fieldItem = instance.getProcessModel().getDataFolder().getItem(fieldName);
-      Class fieldImpl = TypeManager.getInstance().getFieldImplementation(fieldItem.getType());
-      Class[] noParameterClass = new Class[0];
-      Constructor constructor = fieldImpl.getConstructor(noParameterClass);
+      Class<? extends Field> fieldImpl = TypeManager.getInstance().getFieldImplementation(fieldItem.getType());
+      Class<?>[] noParameterClass = new Class[0];
+      Constructor<? extends Field> constructor = fieldImpl.getConstructor(noParameterClass);
       Object[] noParameter = new Object[0];
-      field = (Field) constructor.newInstance(noParameter);
+      field = constructor.newInstance(noParameter);
       field.setStringValue(getFieldValue(fieldName));
 
       return field;
@@ -244,7 +243,6 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
   /**
    * The process instance whose data are managed by this data record.
    */
-  final ProcessInstance instance;
   final String role;
   final String lang;
   private Map<String, String> rawValues = new HashMap<>();

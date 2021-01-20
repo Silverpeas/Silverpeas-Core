@@ -38,19 +38,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author miguel
  */
 @EnableSilverTestEnv
-public class LoggerConfigurationManagerTest {
+class LoggerConfigurationManagerTest {
 
   @TestedBean
   private LoggerConfigurationManager manager;
 
   @Test
-  public void allConfigurationFilesAreLoaded() {
+  void allConfigurationFilesAreLoaded() {
     manager = LoggerConfigurationManager.get();
     assertThat(manager.getLoggerConfigurations().size(), is(5));
   }
 
   @Test
-  public void getLoggerConfigurationWithoutLevelOfAnExistingNamespace() {
+  void getLoggerConfigurationWithoutLevelOfAnExistingNamespace() {
     final String namespace = "silverpeas.core.contribution.attachment";
     manager = LoggerConfigurationManager.get();
     LoggerConfiguration configuration = manager.getLoggerConfiguration(namespace);
@@ -61,7 +61,7 @@ public class LoggerConfigurationManagerTest {
   }
 
   @Test
-  public void getLoggerConfigurationWithLevelOfAnExistingNamespace() {
+  void getLoggerConfigurationWithLevelOfAnExistingNamespace() {
     final String namespace = "silverpeas.core.security.authentication";
     manager = LoggerConfigurationManager.get();
     LoggerConfiguration configuration = manager.getLoggerConfiguration(namespace);
@@ -72,7 +72,7 @@ public class LoggerConfigurationManagerTest {
   }
 
   @Test
-  public void getLoggerConfigurationOfANonExistingNamespace() {
+  void getLoggerConfigurationOfANonExistingNamespace() {
     final String namespace = "org.tartempion.toto";
     manager = LoggerConfigurationManager.get();
     LoggerConfiguration configuration = manager.getLoggerConfiguration(namespace);
@@ -83,7 +83,7 @@ public class LoggerConfigurationManagerTest {
   }
 
   @Test
-  public void updateLoggerConfigurationOfAnExistingNamespacePersistsTheChange() {
+  void updateLoggerConfigurationOfAnExistingNamespacePersistsTheChange() {
     final String namespace = "silverpeas.core.calendar";
     final Level level = Level.DEBUG;
     manager = LoggerConfigurationManager.get();
@@ -103,7 +103,7 @@ public class LoggerConfigurationManagerTest {
   }
 
   @Test
-  public void updateLoggerConfigurationOfAnUnexistingNamespaceDoesNothing() {
+  void updateLoggerConfigurationOfAnUnexistingNamespaceDoesNothing() {
     final String namespace = "org.tartempion.toto";
     final Level level = Level.DEBUG;
     manager = LoggerConfigurationManager.get();

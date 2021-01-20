@@ -30,23 +30,24 @@ import org.silverpeas.core.security.encryption.cipher.CipherFactory;
 import org.silverpeas.core.security.encryption.cipher.CipherKey;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests on encryption management done by the DefaultContentEncryptionService instances.
  */
-public class KeyManagementTest extends ContentEncryptionServiceTest {
+class KeyManagementTest extends ContentEncryptionServiceTest {
 
   @Test
-  public void testKeyCreation() throws Exception {
+  void testKeyCreation() throws Exception {
     // no existing key file
     File keyFile = new File(ACTUAL_KEY_FILE_PATH);
     assertThat(keyFile.exists(), is(false));
@@ -60,13 +61,13 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
   }
 
   @Test
-  public void testKeyUpdate() throws Exception {
+  void testKeyUpdate() throws Exception {
     // create the key file with an encryption key
     File keyFile = new File(ACTUAL_KEY_FILE_PATH);
     String key = generateAESKey();
     createKeyFileWithTheActualKey(key);
     // the key encrypted by the service
-    String previousEncryptedKey = FileUtils.readFileToString(keyFile);
+    String previousEncryptedKey = FileUtils.readFileToString(keyFile, Charsets.UTF_8);
 
     // new encryption key
     key = generateAESKey();
@@ -78,13 +79,13 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
   }
 
   @Test
-  public void testKeyUpdateWithRegisteredContentIterators() throws Exception {
+  void testKeyUpdateWithRegisteredContentIterators() throws Exception {
     // create the key file with an encryption key
     File keyFile = new File(ACTUAL_KEY_FILE_PATH);
     String key = generateAESKey();
     createKeyFileWithTheActualKey(key);
     // the key encrypted by the service
-    String previousEncryptedKey = FileUtils.readFileToString(keyFile);
+    String previousEncryptedKey = FileUtils.readFileToString(keyFile, Charsets.UTF_8);
     // some iterators on encrypted contents
     final int count = 5;
     MyOwnContentIterator[] iterators = getEncryptionContentIterators(count, key);
@@ -103,7 +104,7 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
   }
 
   @Test
-  public void testCipherRenewFailureWhenUpdatingCipherKey() throws Exception {
+  void testCipherRenewFailureWhenUpdatingCipherKey() throws Exception {
     // create the key file with the actual cipher key
     String encryptedKey = generateAESKey();
     createKeyFileWithTheActualKey(encryptedKey);
@@ -142,7 +143,7 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
       throws Exception {
     assertThat(keyFile.exists(), is(true));
     //assertThat(keyFile.canWrite(), is(false)); doesn't work when test is running as root
-    String[] encryptedKeys = FileUtils.readFileToString(keyFile).split(" ");
+    String[] encryptedKeys = FileUtils.readFileToString(keyFile, Charsets.UTF_8).split(" ");
     assertThat(StringUtil.isDefined(encryptedKeys[1]), is(true));
     CipherFactory cipherFactory = CipherFactory.getFactory();
     Cipher cast125 = cipherFactory.getCipher(CryptographicAlgorithmName.CAST5);
@@ -156,10 +157,10 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
     File deprecatedKeyFile = new File(DEPRECATED_KEY_FILE_PATH);
     File keyFile = new File(ACTUAL_KEY_FILE_PATH);
 
-    String encryptedKey = FileUtils.readFileToString(keyFile);
+    String encryptedKey = FileUtils.readFileToString(keyFile, Charsets.UTF_8);
     assertThat(encryptedKey, not(previousEncryptedKey));
     assertThat(deprecatedKeyFile.exists(), is(true));
-    String deprecatedKey = FileUtils.readFileToString(deprecatedKeyFile);
+    String deprecatedKey = FileUtils.readFileToString(deprecatedKeyFile, Charsets.UTF_8);
     assertThat(deprecatedKey, is(previousEncryptedKey));
   }
 

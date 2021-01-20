@@ -25,7 +25,6 @@ package org.silverpeas.core.util;
 
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.CharEncoding;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,14 +39,14 @@ import java.util.Optional;
 import java.util.zip.ZipEntry;
 
 import static java.io.File.separatorChar;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author ehugonnet
  */
 @EnableSilverTestEnv
-public class ZipUtilTest {
+class ZipUtilTest {
 
   private File tempDir;
 
@@ -67,14 +66,14 @@ public class ZipUtilTest {
    * @throws Exception
    */
   @Test
-  public void testCompressPathToZip(MavenTestEnv mavenTestEnv) throws Exception {
+  void testCompressPathToZip(MavenTestEnv mavenTestEnv) throws Exception {
     File path = new File(mavenTestEnv.getResourceTestDirFile(), "ZipSample");
     File outfile = new File(tempDir, "testCompressPathToZip.zip");
     ZipUtil.compressPathToZip(path, outfile);
-    ZipFile zipFile = new ZipFile(outfile, CharEncoding.UTF_8);
+    ZipFile zipFile = new ZipFile(outfile, Charsets.UTF_8.name());
     try {
       Enumeration<? extends ZipEntry> entries = zipFile.getEntries();
-      assertThat(zipFile.getEncoding(), is(CharEncoding.UTF_8));
+      assertThat(zipFile.getEncoding(), is(Charsets.UTF_8.name()));
       int nbEntries = 0;
       while (entries.hasMoreElements()) {
         ZipEntry entry = entries.nextElement();
@@ -104,7 +103,7 @@ public class ZipUtilTest {
    * @throws Exception
    */
   @Test
-  public void testCompressStreamToZip() throws Exception {
+  void testCompressStreamToZip() throws Exception {
     InputStream inputStream = this.getClass().getClassLoader()
         .getResourceAsStream("FrenchScrum.odp");
     String filePathNameToCreate =
@@ -126,7 +125,7 @@ public class ZipUtilTest {
    * Test of extract method, of class ZipManager.
    */
   @Test
-  public void testExtractZipFromLinux(MavenTestEnv mavenTestEnv) {
+  void testExtractZipFromLinux(MavenTestEnv mavenTestEnv) {
     File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtractZipFromLinux.zip");
     File dest = new File(tempDir, "extract");
     dest.mkdirs();
@@ -140,7 +139,7 @@ public class ZipUtilTest {
    * Test of extract method, of class ZipManager.
    */
   @Test
-  public void testExtractZipFrom7ZipWithoutAccent(MavenTestEnv mavenTestEnv) {
+  void testExtractZipFrom7ZipWithoutAccent(MavenTestEnv mavenTestEnv) {
     File source = new File(mavenTestEnv.getResourceTestDirFile(),
         "testExtractZipFrom7ZipWithoutAccent.zip");
     File dest = new File(tempDir, "extract");
@@ -155,7 +154,7 @@ public class ZipUtilTest {
    * Test of extract method, of class ZipManager.
    */
   @Test
-  public void testExtractZipFrom7Zip(MavenTestEnv mavenTestEnv) {
+  void testExtractZipFrom7Zip(MavenTestEnv mavenTestEnv) {
     File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtractZipFrom7Zip.zip");
     File dest = new File(tempDir, "extract");
     dest.mkdirs();
@@ -169,7 +168,7 @@ public class ZipUtilTest {
    * Test of extract method, of class ZipManager.
    */
   @Test
-  public void testExtractZipFromWindows(MavenTestEnv mavenTestEnv) {
+  void testExtractZipFromWindows(MavenTestEnv mavenTestEnv) {
     File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtractZipFromWindows.zip");
     File dest = new File(tempDir, "extract");
     dest.mkdirs();
@@ -183,7 +182,7 @@ public class ZipUtilTest {
    * Test of extract method, of class ZipManager.
    */
   @Test
-  public void testExtractZipFromMacos(MavenTestEnv mavenTestEnv) {
+  void testExtractZipFromMacos(MavenTestEnv mavenTestEnv) {
     File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtractZipFromMacos.zip");
     File dest = new File(tempDir, "extract");
     dest.mkdirs();
@@ -198,7 +197,7 @@ public class ZipUtilTest {
    * @throws Exception
    */
   @Test
-  public void testExtractTarGz(MavenTestEnv mavenTestEnv) throws Exception {
+  void testExtractTarGz(MavenTestEnv mavenTestEnv) throws Exception {
     File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtract.tar.gz");
     File dest = new File(tempDir, "extract-tar");
     dest.mkdirs();
@@ -215,7 +214,7 @@ public class ZipUtilTest {
    * @throws Exception
    */
   @Test
-  public void testExtractTarBz2(MavenTestEnv mavenTestEnv) throws Exception {
+  void testExtractTarBz2(MavenTestEnv mavenTestEnv) throws Exception {
     File source = new File(mavenTestEnv.getResourceTestDirFile(), "testExtract.tar.bz2");
     File dest = new File(tempDir, "extract-bz2");
     dest.mkdirs();
@@ -232,7 +231,7 @@ public class ZipUtilTest {
    * @throws Exception
    */
   @Test
-  public void testGetNbFiles(MavenTestEnv mavenTestEnv) throws Exception {
+  void testGetNbFiles(MavenTestEnv mavenTestEnv) throws Exception {
     File path = new File(mavenTestEnv.getResourceTestDirFile(), "ZipSample");
     File outfile = new File(tempDir, "testGetNbFiles.zip");
     ZipUtil.compressPathToZip(path, outfile);

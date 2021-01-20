@@ -35,6 +35,8 @@ import org.silverpeas.core.test.TestBeanContainer;
 
 import javax.enterprise.util.AnnotationLiteral;
 
+import java.util.Objects;
+
 import static java.time.LocalDate.parse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -48,7 +50,7 @@ import static org.silverpeas.core.calendar.CalendarComponentDiffDescriptor.diffB
 /**
  * @author Yohann Chastagnier
  */
-public class CalendarComponentDiffDescriptorTest {
+class CalendarComponentDiffDescriptorTest {
 
   private static final String TITLE_BEFORE = "TITLE BEFORE";
 
@@ -63,30 +65,30 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void nullOrEmptyValuesShouldNotThrowError() {
+  void nullOrEmptyValuesShouldNotThrowError() {
     CalendarComponent componentBase = createComponentToMergeDiffInto();
     componentBase.setPeriod(Period.between(parse("2017-04-12"), parse("2017-04-13")));
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
     assertThat(diff.existsDiff(), is(false));
   }
 
   @Test
-  public void noChangeShouldMergeNothing() {
+  void noChangeShouldMergeNothing() {
     CalendarComponent componentBase = initComponent();
     componentBase.setDescription("DESCRIPTION BEFORE");
     componentBase.setLocation("LOCATION BEFORE");
     componentBase.setPriority(Priority.NORMAL);
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
     assertThat(diff.existsDiff(), is(false));
   }
 
   @Test
-  public void titleChangeShouldBeMerged() {
+  void titleChangeShouldBeMerged() {
     CalendarComponent componentBase = initComponent();
     componentBase.setDescription("DESCRIPTION BEFORE");
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.setTitle("TITLE AFTER");
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
@@ -101,9 +103,9 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void descriptionChangeShouldBeMerged() {
+  void descriptionChangeShouldBeMerged() {
     CalendarComponent componentBase = initComponent();
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.setDescription("A DESCRIPTION");
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
@@ -118,10 +120,10 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void descriptionEmptyChangeShouldBeMerged() {
+  void descriptionEmptyChangeShouldBeMerged() {
     CalendarComponent componentBase = initComponent();
     componentBase.setDescription("A DESCRIPTION");
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.setDescription(null);
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
@@ -137,10 +139,10 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void locationChangeShouldBeMerged() {
+  void locationChangeShouldBeMerged() {
     CalendarComponent componentBase = initComponent();
     componentBase.setLocation("LOCATION BEFORE");
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.setLocation("LOCATION AFTER");
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
@@ -155,10 +157,10 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void priorityChangeShouldBeMerged() {
+  void priorityChangeShouldBeMerged() {
     CalendarComponent componentBase = initComponent();
     componentBase.setPriority(Priority.NORMAL);
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.setPriority(Priority.HIGH);
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
@@ -173,9 +175,9 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void oneAttributeAddShouldBeMerged() {
+  void oneAttributeAddShouldBeMerged() {
     CalendarComponent componentBase = initComponent();
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.getAttributes().set("ATTR_ADD", "ADDED VALUE");
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
@@ -192,10 +194,10 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void oneAttributeUpdateShouldBeMerged() {
+  void oneAttributeUpdateShouldBeMerged() {
     CalendarComponent componentBase = initComponent();
     componentBase.getAttributes().set("ATTR_A", "VALUE A BEFORE");
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.getAttributes().set("ATTR_A", "VALUE A AFTER");
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
@@ -213,10 +215,10 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void oneAttributeRemoveShouldBeMerged() {
+  void oneAttributeRemoveShouldBeMerged() {
     CalendarComponent componentBase = initComponent();
     componentBase.getAttributes().set("ATTR_REMOVE", "VALUE TO REMOVE");
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.getAttributes().remove("ATTR_REMOVE");
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
@@ -234,12 +236,12 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void severalAttributeChangesShouldBeMerged() {
+  void severalAttributeChangesShouldBeMerged() {
     CalendarComponent componentBase = initComponent();
     componentBase.getAttributes().set("ATTR_NOT_CHANGED", "VALUE NOT CHANGED");
     componentBase.getAttributes().set("ATTR_UPDATE", "VALUE TO UPDATE");
     componentBase.getAttributes().set("ATTR_REMOVE", "VALUE TO REMOVE");
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.getAttributes().remove("ATTR_REMOVE");
     modifiedComponent.getAttributes().set("ATTR_UPDATE", "UPDATED VALUE");
     modifiedComponent.getAttributes().set("ATTR_ADD", "ADDED VALUE");
@@ -264,9 +266,9 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void oneAttendeeAddShouldBeMerged() {
+  void oneAttendeeAddShouldBeMerged() {
     CalendarComponent componentBase = initComponent();
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.getAttendees().add(new AttendeeTest("ATTENDEE_ID"));
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
@@ -284,10 +286,10 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void oneAttendeeUpdateShouldBeMerged() {
+  void oneAttendeeUpdateShouldBeMerged() {
     CalendarComponent componentBase = initComponent();
     componentBase.getAttendees().add(new AttendeeTest("ATTENDEE_ID"));
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.getAttendees().get("ATTENDEE_ID").orElse(null).setPresenceStatus(INFORMATIVE);
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
@@ -308,10 +310,10 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void oneAttendeeRemoveShouldBeMerged() {
+  void oneAttendeeRemoveShouldBeMerged() {
     CalendarComponent componentBase = initComponent();
     componentBase.getAttendees().add(new AttendeeTest("ATTENDEE_ID_TO_REMOVE"));
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.getAttendees().removeIf(a -> "ATTENDEE_ID_TO_REMOVE".equals(a.getId()));
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
@@ -329,12 +331,12 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void severalAttendeeChangesShouldBeMerged() {
+  void severalAttendeeChangesShouldBeMerged() {
     CalendarComponent componentBase = initComponent();
     componentBase.getAttendees().add(new AttendeeTest("ATTENDEE_ID_NOT_CHANGED"));
     componentBase.getAttendees().add(new AttendeeTest("ATTENDEE_ID_TO_UPDATE"));
     componentBase.getAttendees().add(new AttendeeTest("ATTENDEE_ID_TO_REMOVE"));
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.getAttendees().get("ATTENDEE_ID_TO_UPDATE").orElse(null)
         .setPresenceStatus(INFORMATIVE);
     modifiedComponent.getAttendees().removeIf(a -> "ATTENDEE_ID_TO_REMOVE".equals(a.getId()));
@@ -369,11 +371,11 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void attendeeStatusChangeShouldBeMergedIfAttendeeExists() {
+  void attendeeStatusChangeShouldBeMergedIfAttendeeExists() {
     CalendarComponent componentBase = initComponent();
     componentBase.getAttendees().add(new AttendeeTest("ATTENDEE_ID"));
-    CalendarComponent modifiedComponent = clone(componentBase);
-    modifiedComponent.getAttendees().get("ATTENDEE_ID").orElse(null)
+    CalendarComponent modifiedComponent = copy(componentBase);
+    Objects.requireNonNull(modifiedComponent.getAttendees().get("ATTENDEE_ID").orElse(null))
         .setParticipationStatus(ACCEPTED);
 
     CalendarComponentDiffDescriptor diff = diffBetween(modifiedComponent, componentBase);
@@ -393,10 +395,10 @@ public class CalendarComponentDiffDescriptorTest {
   }
 
   @Test
-  public void attendeeStatusChangeShouldNotBeMergedIfAttendeeDoesNotExist() {
+  void attendeeStatusChangeShouldNotBeMergedIfAttendeeDoesNotExist() {
     CalendarComponent componentBase = initComponent();
     componentBase.getAttendees().add(new AttendeeTest("ATTENDEE_ID"));
-    CalendarComponent modifiedComponent = clone(componentBase);
+    CalendarComponent modifiedComponent = copy(componentBase);
     modifiedComponent.getAttendees().get("ATTENDEE_ID").orElse(null)
         .setParticipationStatus(ACCEPTED);
 
@@ -430,11 +432,15 @@ public class CalendarComponentDiffDescriptorTest {
     return component;
   }
 
-  private CalendarComponent clone(CalendarComponent component) {
-    return component.clone();
+  private CalendarComponent copy(CalendarComponent component) {
+    return component.copy();
   }
 
   private static class AttendeeTest extends Attendee {
+
+    protected AttendeeTest() {
+      // empty to allow copy
+    }
 
     AttendeeTest(String id) {
       super(id, null);

@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPITestRule;
 import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.File;
@@ -57,7 +57,7 @@ public abstract class AbstractHandledFileTest {
   protected FileHandler fileHandler;
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  public CommonAPITestRule commonAPIRule = new CommonAPITestRule();
 
   @Before
   public void beforeTest() throws Exception {

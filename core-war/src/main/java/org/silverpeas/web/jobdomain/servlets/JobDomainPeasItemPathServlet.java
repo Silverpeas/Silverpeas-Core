@@ -68,7 +68,6 @@ public class JobDomainPeasItemPathServlet extends HttpServlet {
     } else if (StringUtil.isDefined(componentId)) {
       result = getComponentPath(sc, componentId);
     }
-
     try {
       Writer writer = resp.getWriter();
       writer.write(result);

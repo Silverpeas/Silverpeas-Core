@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
+import org.silverpeas.core.contribution.content.form.record.Parameter;
+
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
-import org.silverpeas.core.contribution.content.form.record.Parameter;
 
 /**
  * A FieldTemplate describes a specific field of a DataRecord. A FieldTemplate gives the field name,
@@ -34,79 +35,79 @@ import org.silverpeas.core.contribution.content.form.record.Parameter;
  * @see DataRecord
  * @see RecordTemplate
  */
-public interface FieldTemplate {
+public interface FieldTemplate extends Serializable {
   /**
    * Returns the field name of the Field built on this template.
    */
-  public String getFieldName();
+  String getFieldName();
 
   /**
    * Returns the type name of the described field.
    */
-  public String getTypeName();
+  String getTypeName();
 
   /**
    * Returns the name of the FieldDisplayer to display the described field.
    */
-  public String getDisplayerName();
+  String getDisplayerName();
 
   /**
    * Returns the label of the described field (in the default locale).
    */
-  public String getLabel();
+  String getLabel();
 
   /**
    * Returns the local label of the described field.
    */
-  public String getLabel(String lang);
+  String getLabel(String lang);
 
   /**
    * Returns the locals
    */
-  public String[] getLanguages();
+  String[] getLanguages();
 
   /**
    * Returns true when the described field must have a value.
    */
-  public boolean isMandatory();
+  boolean isMandatory();
 
   /**
    * Returns true when the described field can't be updated.
    */
-  public boolean isReadOnly();
+  boolean isReadOnly();
 
   /**
    * Returns true when the described field must be disabled.
    */
-  public boolean isDisabled();
+  boolean isDisabled();
 
   /**
    * Returns true when the described field must be hidden.
    */
-  public boolean isHidden();
+  boolean isHidden();
 
   /**
    * Returns a Map (String -> String) of named parameters which can be used by the displayer
    * (max-size, length ...).
    */
-  public Map<String, String> getParameters(String language);
+  Map<String, String> getParameters(String language);
 
-  public List<Parameter> getParametersObj();
+  List<Parameter> getParametersObj();
 
   /**
    * Returns an empty Field built on this template.
    */
-  public Field getEmptyField() throws FormException;
-  public Field getEmptyField(int occurrence) throws FormException;
+  Field getEmptyField() throws FormException;
+  Field getEmptyField(int occurrence) throws FormException;
 
-  public boolean isSearchable();
+  boolean isSearchable();
 
-  public String getTemplateName();
+  String getTemplateName();
 
-  public boolean isUsedAsFacet();
+  boolean isUsedAsFacet();
 
-  public int getMaximumNumberOfOccurrences();
+  int getMaximumNumberOfOccurrences();
 
-  public boolean isRepeatable();
+  boolean isRepeatable();
 
 }

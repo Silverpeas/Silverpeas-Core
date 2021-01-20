@@ -40,6 +40,7 @@ import org.silverpeas.core.pdc.classification.Value;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
+import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.JoinStatement;
@@ -116,7 +117,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
   }
 
   @Override
-  public List<Position> getPositions(int silverObjectId, String sComponentId) throws PdcException {
+  public List<Position<Value>> getPositions(int silverObjectId, String sComponentId) throws PdcException {
     try {
       // Get all the positions for the given silverObjectId
       return classifyEngine.findPositionsBySilverOjectId(silverObjectId);
@@ -219,7 +220,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
     boolean hasOnePosition = false;
     for (int i = 0; i < objectIdList.size() && !hasOnePosition; i++) {
       if (objectIdList.get(i) != -1) {
-        final List<Position> positions = getPositions(objectIdList.get(i), instanceId);
+        final List<Position<Value>> positions = getPositions(objectIdList.get(i), instanceId);
         for (int j = 0; j < positions.size() && !hasOnePosition; j++) {
           final Value value = positions.get(i).getValueByAxis(usedAxis.
               getAxisId());
@@ -286,7 +287,7 @@ public class DefaultPdcClassifyManager implements PdcClassifyManager, ComponentI
       boolean recursiveSearch, boolean visibilitySensitive) throws PdcException {
     try {
       // Change the position in criteria
-      List alCriterias = searchContext.getCriterias();
+      List<SearchCriteria> alCriterias = searchContext.getCriterias();
       return classifyEngine.findSilverOjectByCriterias(alCriterias,
           alComponentId, contentManager.getPositionsByGenericSearch(
           authorId, afterDate, beforeDate), afterDate, beforeDate,

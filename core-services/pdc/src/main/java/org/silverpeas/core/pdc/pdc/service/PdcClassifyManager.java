@@ -83,7 +83,7 @@ interface PdcClassifyManager {
    * @return a Position List
    * @throws PdcException
    */
-  List<Position> getPositions(int silverObjectId, String sComponentId)
+  List<Position<Value>> getPositions(int silverObjectId, String sComponentId)
       throws PdcException;
 
   void registerAxis(Connection con, int axisId) throws PdcException;

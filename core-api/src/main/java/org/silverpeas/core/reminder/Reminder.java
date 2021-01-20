@@ -40,6 +40,8 @@ import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.filter.Filter;
 
 import javax.persistence.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -127,6 +129,38 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
    */
   public static Reminder getById(final String reminderId) {
     return ReminderRepository.get().getById(reminderId);
+  }
+
+  /**
+   * Copies this reminder to another one. This method expects the concrete class extending the
+   * {@link Reminder} abstract one implements a default constructor as it is used to constructs an
+   * empty {@link Reminder} instance before setting the attributes. Any concrete reminders should
+   * override this method in order to set their specifics attributes.
+   * @return a copy of this reminder.
+   */
+  public Reminder copy() {
+    Reminder copy = newEmptyReminder();
+    copy.userId = userId;
+    copy.contributionId = contributionId;
+    copy.processName = getProcessName();
+    copy.triggerDateTime = triggerDateTime;
+    copy.text = text;
+    copy.contributionProperty = contributionProperty;
+    copy.nextTriggeringDate = nextTriggeringDate;
+    copy.triggered = triggered;
+    return copy;
+  }
+
+  private Reminder newEmptyReminder() {
+    try {
+      Constructor<? extends Reminder> constructor = getClass().getDeclaredConstructor();
+      if (! constructor.canAccess(null)) {
+        constructor.trySetAccessible();
+      }
+      return constructor.newInstance();
+    } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
   }
 
   /**

@@ -71,10 +71,10 @@ class SQLStatement {
   }
 
   // Build the SQL statement to classify the object
-  public String buildClassifyStatement(int nSilverObjectId, Position<Value> position,
+  public <T extends Value> String buildClassifyStatement(int nSilverObjectId, Position<T> position,
       int nNextPositionId) {
     StringBuilder sSQLStatement = new StringBuilder(1000);
-    List<Value> alValues = position.getValues();
+    List<T> alValues = position.getValues();
 
     // Build the SQL statement to classify the object
     sSQLStatement.append("INSERT INTO ").append(CLASSIFICATION_TABLE).append(" (").append(
@@ -122,9 +122,9 @@ class SQLStatement {
   }
 
   // Build the SQL statement to get a position
-  public String buildVerifyStatement(int nSilverObjectId, Position<Value> position) {
+  public <T extends Value> String buildVerifyStatement(int nSilverObjectId, Position<T> position) {
     StringBuilder sSQLStatement = new StringBuilder(1000);
-    List<Value> alValues = position.getValues();
+    List<T> alValues = position.getValues();
 
     // Build the SQL statement to classify the object
     sSQLStatement.append("SELECT ").append(POSITION_ID_COLUMN).append(" FROM ").append(
@@ -134,7 +134,7 @@ class SQLStatement {
     sSQLStatement.append(" WHERE (");
     for (int axis = 0; axis <= axisMaxNumber; axis++) {
       Value foundValue = null;
-      for (Value aValue : alValues) {
+      for (T aValue : alValues) {
         if (aValue.getPhysicalAxisId() == axis) {
           foundValue = aValue;
           break;
@@ -200,17 +200,17 @@ class SQLStatement {
   }
 
   // Update a Position with the given one for the given SilverObjectId
-  public String buildUpdateByPositionIdStatement(Position<Value> newPosition) {
+  public <T extends Value> String buildUpdateByPositionIdStatement(Position<T> newPosition) {
     StringBuilder sSQLStatement = new StringBuilder(1000);
     sSQLStatement.append("UPDATE ").append(CLASSIFICATION_TABLE).append(" SET ").append(
         POSITION_ID_COLUMN).append(" = ").append(
         newPosition.getPositionId()).append(", ");
-    List<Value> allValues = newPosition.getValues();
+    List<T> allValues = newPosition.getValues();
     int valuesTakenInCharge = 0;
     for (int axisId = 0; axisId < axisMaxNumber; axisId++) {
       String value = null;
       if (valuesTakenInCharge < allValues.size()) {
-        for (Value aValue : allValues) {
+        for (T aValue : allValues) {
           if (aValue.getPhysicalAxisId() == axisId) {
             value = aValue.getValue();
             valuesTakenInCharge++;

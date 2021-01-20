@@ -165,7 +165,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
           // space transverse
           displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
-              defaultLook, displayPDC, true, helper, writer, listUserFS, displayMode, restrictedPath);
+              defaultLook, true, helper, writer, listUserFS, displayMode, restrictedPath);
 
           // other spaces
           displayTree(userId, componentId, spaceIdsPath, preferences.getLanguage(), defaultLook,
@@ -174,28 +174,20 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
           displayPDC(displayPDC, spaceId, componentId, userId, mainSessionController, writer);
         }
       } else if (StringUtil.isDefined(axisId) && StringUtil.isDefined(valuePath)) {
-        try {
-          writer.write(PDC_START_TAG);
-          getPertinentValues(spaceId, componentId, userId, axisId, valuePath, displayContextualPDC,
-              mainSessionController, writer);
-          writer.write(PDC_END_TAG);
-        } catch (PdcException e) {
-          SilverLogger.getLogger(this).error(e);
-        }
+        writePertinentValues(mainSessionController, userId, spaceId, componentId, axisId, valuePath,
+            displayContextualPDC, writer);
       } else if (StringUtil.isDefined(spaceId)) {
         if (isPersonalSpace(spaceId)) {
           // Affichage de l'espace perso
           SettingBundle settings = gef.getFavoriteLookSettings();
           LocalizationBundle message = ResourceLocator.getLocalizationBundle(
               "org.silverpeas.homePage.multilang.homePageBundle", preferences.getLanguage());
-          serializePersonalSpace(writer, userId, preferences.getLanguage(), helper, settings,
-              message);
+          serializePersonalSpace(writer, userId, helper, settings, message);
         } else {
           // First get space's path cause it can be a subspace
           List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, organisationController);
           displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
-              defaultLook, displayPDC, false, helper, writer, listUserFS, displayMode,
-              restrictedPath);
+              defaultLook, false, helper, writer, listUserFS, displayMode, restrictedPath);
           displayPDC(displayPDC, spaceId, componentId, userId, mainSessionController, writer);
         }
       } else if (StringUtil.isDefined(componentId)) {
@@ -209,7 +201,20 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       SilverLogger.getLogger(this).error(e);
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
+  }
 
+  private void writePertinentValues(final MainSessionController mainSessionController,
+      final String userId, final String spaceId, final String componentId, final String axisId,
+      final String valuePath, final boolean displayContextualPDC, final Writer writer)
+      throws IOException {
+    try {
+      writer.write(PDC_START_TAG);
+      getPertinentValues(spaceId, componentId, userId, axisId, valuePath, displayContextualPDC,
+          mainSessionController, writer);
+      writer.write(PDC_END_TAG);
+    } catch (PdcException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
   }
 
   private void displayNotContextualPDC(String userId, MainSessionController mainSC, Writer writer)
@@ -246,9 +251,6 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     }
     List<String> spaceIdsPath = new ArrayList<>();
     for (SpaceInstLight space : spacePath) {
-      if (spaceIdsPath == null) {
-        spaceIdsPath = new ArrayList<>();
-      }
       spaceIdsPath.add(space.getId());
     }
     return spaceIdsPath;
@@ -290,10 +292,9 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
    * @throws IOException
    */
   private void displaySpace(String spaceId, String componentId, List<String> spacePath,
-      String userId, String language, String defaultLook, boolean displayPDC,
-      boolean displayTransverse, LookHelper helper, Writer writer,
-      List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode,
-      boolean restrictedPath) throws IOException {
+      String userId, String language, String defaultLook, boolean displayTransverse,
+      LookHelper helper, Writer writer, List<UserFavoriteSpaceVO> listUFS,
+      UserMenuDisplay userMenuDisplayMode, boolean restrictedPath) throws IOException {
     boolean isTransverse = false;
     int i = 0;
     while (!isTransverse && i < spacePath.size()) {
@@ -306,8 +307,8 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       return;
     }
 
-    boolean open = (spacePath != null && spacePath.contains(spaceId));
-    if ((open) && (!restrictedPath)) {
+    boolean open = spacePath.contains(spaceId);
+    if (open && !restrictedPath) {
       spaceId = spacePath.remove(0);
     }
 
@@ -387,7 +388,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
           isLoadingContentNeeded(userMenuDisplayMode, userId, spaceInst, listUFS);
       if (loadCurSpace && isSpaceVisible(userId, spaceId, helper)) {
         displaySpace(spaceId, targetComponentId, spacePath, userId, language, defaultLook, false,
-            false, helper, out, listUFS, userMenuDisplayMode, false);
+            helper, out, listUFS, userMenuDisplayMode, false);
       }
     }
     out.write("</spaces>");
@@ -447,15 +448,13 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       spaceId = availableSpaceId;
       space = organisationController.getSpaceInstLightById(spaceId);
       boolean loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, space, listUFS);
-      if (loadCurSpace && isSpaceVisible(userId, spaceId, helper)) {
-        if (space != null) {
-          StringBuilder itemSB = new StringBuilder(200);
-          itemSB.append("<item ");
-          itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
-          itemSB.append(getFavoriteSpaceAttribute(userId, listUFS, space, helper));
-          itemSB.append("/>");
-          out.write(itemSB.toString());
-        }
+      if (loadCurSpace && isSpaceVisible(userId, spaceId, helper) && space != null) {
+        StringBuilder itemSB = new StringBuilder(200);
+        itemSB.append("<item ");
+        itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
+        itemSB.append(getFavoriteSpaceAttribute(userId, listUFS, space, helper));
+        itemSB.append("/>");
+        out.write(itemSB.toString());
       }
     }
     out.write("</spaces>");
@@ -559,7 +558,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
         cmps = Arrays.asList(mainSC.getUserAvailComponentIds());
       }
 
-      if (cmps.size() > 0) {
+      if (!cmps.isEmpty()) {
         primaryAxis = pdc.getPertinentAxisByInstanceIds(searchContext, "P", cmps);
       }
     }
@@ -578,7 +577,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
   }
 
   private List<String> getAvailableComponents(String spaceId, String userId) {
-    String a[] = organisationController.getAvailCompoIds(spaceId, userId);
+    String[] a = organisationController.getAvailCompoIds(spaceId, userId);
     return Arrays.asList(a);
   }
 
@@ -667,8 +666,8 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     return SpaceInst.PERSONAL_SPACE_ID.equalsIgnoreCase(spaceId);
   }
 
-  protected void serializePersonalSpace(Writer writer, String userId, String language,
-      LookHelper helper, SettingBundle settings, LocalizationBundle message) throws IOException {
+  protected void serializePersonalSpace(Writer writer, String userId, LookHelper helper,
+      SettingBundle settings, LocalizationBundle message) throws IOException {
     User user = User.getById(userId);
 
     // Affichage de l'espace perso
@@ -713,7 +712,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       // mes connexions
       if (settings.getBoolean("webconnectionsVisible", true)) {
         WebConnectionsInterface webConnections = WebConnectionsInterface.get();
-        if (webConnections.listWebConnectionsOfUser(userId).size() > 0) {
+        if (!webConnections.listWebConnectionsOfUser(userId).isEmpty()) {
           componentItems.add(ComponentItem.of(URLUtil.CMP_WEBCONNECTIONS)
               .withLabel(message.getString("WebConnections")));
         }
@@ -747,13 +746,11 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
           instances.addAll(personalSpace.getAllComponentsInst());
         }
         int nbComponentAvailables = personalSpaceManager.getVisibleComponents().size();
-        if (nbComponentAvailables > 0) {
-          if (personalSpace == null ||
-              personalSpace.getAllComponentsInst().size() < nbComponentAvailables) {
-            componentItems.add(ComponentItem.of("addComponent")
-                .withLabel(helper.getString("lookSilverpeasV5.personalSpace.add"))
-                .andFullComponentUrl("javascript:listComponents()"));
-          }
+        if (nbComponentAvailables > 0 && (personalSpace == null ||
+            personalSpace.getAllComponentsInst().size() < nbComponentAvailables)) {
+          componentItems.add(ComponentItem.of("addComponent")
+              .withLabel(helper.getString("lookSilverpeasV5.personalSpace.add"))
+              .andFullComponentUrl("javascript:listComponents()"));
         }
       }
 
@@ -789,8 +786,9 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       case BOOKMARKS:
         return isUserFavoriteSpace(listUFS, space) ||
             containsFavoriteSubSpace(space, listUFS, userId);
+      default:
+        return false;
     }
-    return false;
   }
 
   /**
@@ -804,7 +802,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     if (helper.getSettings("displaySpaceContainingOnlyHiddenComponents", true)) {
       return true;
     }
-    String compoIds[] = organisationController.getAvailCompoIds(spaceId, userId);
+    String[] compoIds = organisationController.getAvailCompoIds(spaceId, userId);
     for (String id : compoIds) {
       ComponentInst compInst = organisationController.getComponentInst(id);
       if (!compInst.isHidden()) {

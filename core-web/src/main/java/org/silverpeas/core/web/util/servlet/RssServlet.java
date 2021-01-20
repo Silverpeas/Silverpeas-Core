@@ -43,7 +43,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,6 +59,7 @@ public abstract class RssServlet<T> extends HttpServlet {
 
   private static final long serialVersionUID = 1756308502037077021L;
   private static final int DEFAULT_MAX_TEMS_COUNT = 15;
+  private static final String NOTHING = "";
 
   @Inject
   private AdminController adminController;
@@ -67,14 +67,12 @@ public abstract class RssServlet<T> extends HttpServlet {
   private OrganizationController organizationController;
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
-      IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse res)  {
 
     String instanceId = getObjectId(req);
     String userId = getUserId(req);
@@ -192,7 +190,7 @@ public abstract class RssServlet<T> extends HttpServlet {
 
   public String getExternalCreatorId(T element) {
     // designed to be extended but return nothing in standard case
-    return "";
+    return NOTHING;
   }
 
   protected String getObjectId(HttpServletRequest request) {
@@ -225,13 +223,17 @@ public abstract class RssServlet<T> extends HttpServlet {
     return getMainSessionController(req) != null;
   }
 
-  protected void objectNotFound(HttpServletRequest req, HttpServletResponse res)
-      throws IOException {
-    boolean isLoggedIn = isUserLogin(req);
-    if (!isLoggedIn) {
-      res.sendRedirect("/weblib/notFound.html");
-    } else {
-      res.sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
+  protected void objectNotFound(HttpServletRequest req, HttpServletResponse res) {
+    try {
+      boolean isLoggedIn = isUserLogin(req);
+      if (!isLoggedIn) {
+        res.sendRedirect("/weblib/notFound.html");
+      } else {
+        res.sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
+      }
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 }

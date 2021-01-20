@@ -67,4 +67,11 @@ public class EquipmentBasicEntity
     this.animal = animalBasicEntity;
     return this;
   }
+
+  public EquipmentBasicEntity copy() {
+    EquipmentBasicEntity entity = new EquipmentBasicEntity();
+    entity.name = name;
+    entity.animal = animal;
+    return entity;
+  }
 }

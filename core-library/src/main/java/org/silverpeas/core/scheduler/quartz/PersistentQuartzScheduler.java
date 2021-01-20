@@ -85,12 +85,13 @@ public class PersistentQuartzScheduler extends QuartzScheduler {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   protected Class<PersistentJobExecutor> getJobExecutor() {
     return PersistentJobExecutor.class;
   }
 
   @Override
-  protected void execute(final SchedulingTask schedulingTask) throws SchedulerException {
+  protected <T> void execute(final SchedulingTask<T> schedulingTask) throws SchedulerException {
     try {
       Transaction.performInOne(() -> {
         schedulingTask.execute();
@@ -115,17 +116,18 @@ public class PersistentQuartzScheduler extends QuartzScheduler {
       return getByReflection(listenerClass, null);
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T getByReflection(final String className, final String param)
         throws JobExecutionException {
-      Class propertyClass;
+      Class<T> propertyClass;
       try {
-        propertyClass = Class.forName(className);
+        propertyClass = (Class<T>) Class.forName(className);
       } catch (ClassNotFoundException e) {
         throw new JobExecutionException(e);
       }
 
       try {
-        return (T) ServiceProvider.getService(propertyClass);
+        return ServiceProvider.getService(propertyClass);
       } catch (IllegalStateException e) {
         SilverLogger.getLogger(getClass())
             .debug("The " + className + " isn't in the IoC container");
@@ -133,10 +135,11 @@ public class PersistentQuartzScheduler extends QuartzScheduler {
 
       try {
         if (StringUtil.isDefined(param)) {
-          Constructor constructor = propertyClass.getDeclaredConstructor(String.class);
-          return (T) constructor.newInstance(param);
+          Constructor<T> constructor = propertyClass.getDeclaredConstructor(String.class);
+          return constructor.newInstance(param);
         } else {
-          return (T) propertyClass.newInstance();
+          Constructor<T> constructor = propertyClass.getDeclaredConstructor();
+          return constructor.newInstance();
         }
       } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
           InvocationTargetException e) {

@@ -39,7 +39,7 @@ import org.silverpeas.core.scheduler.ScheduledJob;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPIRule;
 
 import javax.enterprise.util.AnnotationLiteral;
 import javax.persistence.EntityManager;
@@ -62,15 +62,15 @@ public class ReminderTestContext {
 
   static final ReminderProcessName PROCESS_NAME = () -> "TestReminderProcess";
 
-  private final CommonAPI4Test commonAPI4Test;
+  private final CommonAPIRule commonAPIRule;
   private final ContributionIdentifier plannable =
       ContributionIdentifier.from("calendar23", "event12", Plannable.class.getSimpleName());
   private final ContributionIdentifier contribution =
       ContributionIdentifier.from("kmelia12", "12", Contribution.class.getSimpleName());
   private final User user = mock(User.class);
 
-  public ReminderTestContext(final CommonAPI4Test commonAPI4Test) {
-    this.commonAPI4Test = commonAPI4Test;
+  public ReminderTestContext(final CommonAPIRule commonAPIRule) {
+    this.commonAPIRule = commonAPIRule;
   }
 
   public void setUp() {
@@ -84,7 +84,7 @@ public class ReminderTestContext {
 
   private void setUpUsers() {
     UserProvider userProvider = mock(UserProvider.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(userProvider);
+    commonAPIRule.injectIntoMockedBeanContainer(userProvider);
 
     when(user.getId()).thenReturn("2");
     when(user.getUserPreferences()).thenReturn(
@@ -123,7 +123,7 @@ public class ReminderTestContext {
       }
       return Optional.of(contribution);
     });
-    commonAPI4Test.injectIntoMockedBeanContainer(contributionManager);
+    commonAPIRule.injectIntoMockedBeanContainer(contributionManager);
   }
 
   /**
@@ -140,9 +140,9 @@ public class ReminderTestContext {
     DateTimeReminder dateTimeReminder = new DateTimeReminder(contribution, user, PROCESS_NAME);
     when(entityManager.find(eq(DateTimeReminder.class), any(ReminderIdentifier.class))).thenReturn(
         dateTimeReminder);
-    commonAPI4Test.injectIntoMockedBeanContainer(entityManagerProvider);
+    commonAPIRule.injectIntoMockedBeanContainer(entityManagerProvider);
     // inject a Transaction object, dependency of Reminder
-    commonAPI4Test.injectIntoMockedBeanContainer(new Transaction());
+    commonAPIRule.injectIntoMockedBeanContainer(new Transaction());
   }
 
   /**
@@ -156,12 +156,12 @@ public class ReminderTestContext {
       return reminder;
     });
     // inject a mock of the ReminderRepository
-    commonAPI4Test.injectIntoMockedBeanContainer(repository);
+    commonAPIRule.injectIntoMockedBeanContainer(repository);
   }
 
   private void setUpReminderProcess() {
     ReminderProcess reminderProcess = mock(ReminderProcess.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(reminderProcess);
+    commonAPIRule.injectIntoMockedBeanContainer(reminderProcess);
   }
 
   /**
@@ -181,7 +181,7 @@ public class ReminderTestContext {
     } catch (SchedulerException e) {
 
     }
-    commonAPI4Test.injectIntoMockedBeanContainer(scheduler,
+    commonAPIRule.injectIntoMockedBeanContainer(scheduler,
         new AnnotationLiteral<PersistentScheduling>() {
         });
   }

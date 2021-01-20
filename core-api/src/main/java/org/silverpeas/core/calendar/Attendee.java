@@ -23,11 +23,14 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
 import javax.persistence.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -260,16 +263,35 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   }
 
   /**
-   * Clones this attendee for the specified calendar component. The cloned attendee is added in
-   * the given calendar component before returning it.
+   * Copies this attendee for the specified calendar component. The copied attendee is added in
+   * the given calendar component before returning it. This method requires the concrete class
+   * extending the {@link Attendee} one implements a default constructor.
    * @param calendarComponent a calendar component for which this attendee is cloned.
    * @return the clone of this attendee but for the specified calendar component.
    */
-  Attendee cloneFor(CalendarComponent calendarComponent) {
-    Attendee clone = clone();
-    clone.component = calendarComponent;
-    calendarComponent.getAttendees().add(clone);
-    return clone;
+  Attendee copyFor(CalendarComponent calendarComponent) {
+    Attendee copy = newEmptyAttendee();
+    copy.attendeeId = attendeeId;
+    copy.delegate = delegate;
+    copy.participationStatus = participationStatus;
+    copy.presenceStatus = presenceStatus;
+    copy.participationStatusAnswered = participationStatusAnswered;
+    copy.presenceStatusChanged = presenceStatusChanged;
+    copy.component = calendarComponent;
+    calendarComponent.getAttendees().add(copy);
+    return copy;
+  }
+
+  private Attendee newEmptyAttendee() {
+    try {
+      Constructor<? extends Attendee> constructor = getClass().getDeclaredConstructor();
+      if (!constructor.canAccess(null)) {
+        constructor.trySetAccessible();
+      }
+      return constructor.newInstance();
+    } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
   }
 
   /**

@@ -30,53 +30,53 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @UnitTest
-public class MailAddressTest {
+class MailAddressTest {
 
   @Test
-  public void emptyEmail() {
+  void emptyEmail() {
     MailAddress mailAddress = MailAddress.eMail(null);
-    assertThat(mailAddress.getEmail(), isEmptyString());
-    assertThat(mailAddress.getName(), isEmptyString());
+    assertThat(mailAddress.getEmail(), is(emptyString()));
+    assertThat(mailAddress.getName(), is(emptyString()));
 
     mailAddress = MailAddress.eMail("");
-    assertThat(mailAddress.getEmail(), isEmptyString());
-    assertThat(mailAddress.getName(), isEmptyString());
+    assertThat(mailAddress.getEmail(), is(emptyString()));
+    assertThat(mailAddress.getName(), is(emptyString()));
 
     mailAddress = MailAddress.eMail("   ");
-    assertThat(mailAddress.getEmail(), isEmptyString());
-    assertThat(mailAddress.getName(), isEmptyString());
+    assertThat(mailAddress.getEmail(), is(emptyString()));
+    assertThat(mailAddress.getName(), is(emptyString()));
 
     mailAddress = MailAddress.eMail("null");
-    assertThat(mailAddress.getEmail(), isEmptyString());
-    assertThat(mailAddress.getName(), isEmptyString());
+    assertThat(mailAddress.getEmail(), is(emptyString()));
+    assertThat(mailAddress.getName(), is(emptyString()));
   }
 
   @Test
-  public void anEMailOnly() {
+  void anEMailOnly() {
     String anEMail = "anEMail";
     MailAddress mailAddress = MailAddress.eMail(anEMail);
     assertThat(mailAddress.getEmail(), is(anEMail));
-    assertThat(mailAddress.getName(), isEmptyString());
+    assertThat(mailAddress.getName(), is(emptyString()));
 
     mailAddress = MailAddress.eMail(anEMail).withName(null);
     assertThat(mailAddress.getEmail(), is(anEMail));
-    assertThat(mailAddress.getName(), isEmptyString());
+    assertThat(mailAddress.getName(), is(emptyString()));
 
     mailAddress = MailAddress.eMail(anEMail).withName("");
     assertThat(mailAddress.getEmail(), is(anEMail));
-    assertThat(mailAddress.getName(), isEmptyString());
+    assertThat(mailAddress.getName(), is(emptyString()));
 
     mailAddress = MailAddress.eMail(anEMail).withName("   ");
     assertThat(mailAddress.getEmail(), is(anEMail));
-    assertThat(mailAddress.getName(), isEmptyString());
+    assertThat(mailAddress.getName(), is(emptyString()));
 
     mailAddress = MailAddress.eMail(anEMail).withName("null");
     assertThat(mailAddress.getEmail(), is(anEMail));
-    assertThat(mailAddress.getName(), isEmptyString());
+    assertThat(mailAddress.getName(), is(emptyString()));
   }
 
   @Test
-  public void anEMailWithName() {
+  void anEMailWithName() {
     String anEMail = "anEMail";
     String aName = "aName";
     MailAddress mailAddress = MailAddress.eMail(anEMail).withName(aName);
@@ -85,7 +85,7 @@ public class MailAddressTest {
   }
 
   @Test
-  public void equalsAndHashcode() {
+  void equalsAndHashcode() {
     MailAddress base = MailAddress.eMail("email").withName("name");
 
     MailAddress test = MailAddress.eMail("email").withName("name");

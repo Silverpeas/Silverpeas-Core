@@ -26,10 +26,8 @@ package org.silverpeas.core.util;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPIRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import static org.hamcrest.Matchers.is;
@@ -44,7 +42,7 @@ public class LocalizationBundleTest {
   private static final String LOCALIZATION_BUNDLE = "org.silverpeas.util.multilang.test";
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  public CommonAPIRule commonAPIRule = new CommonAPIRule();
 
   @Rule
   public MavenTargetDirectoryRule mavenTargetDirectory = new MavenTargetDirectoryRule(this);

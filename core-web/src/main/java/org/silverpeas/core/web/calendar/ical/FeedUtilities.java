@@ -31,7 +31,9 @@ import com.rometools.rome.io.XmlReader;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.PropertyList;
+import net.fortuna.ical4j.model.component.CalendarComponent;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Description;
@@ -136,14 +138,14 @@ public final class FeedUtilities {
 
     // Create new calendar
     Calendar calendar = new Calendar();
-    PropertyList props = calendar.getProperties();
+    PropertyList<Property> props = calendar.getProperties();
     props.add(new ProdId("-//Silverpeas//iCal4j 1.0//FR"));
     props.add(Version.VERSION_2_0);
     props.add(CalScale.GREGORIAN);
 
     // Convert events
     SyndEntry[] entries = getFeedEntries(feed);
-    ComponentList events = calendar.getComponents();
+    ComponentList<CalendarComponent> events = calendar.getComponents();
     java.util.Date now = new java.util.Date();
     SyndEntry entry;
     for (SyndEntry entry1 : entries) {
@@ -175,7 +177,7 @@ public final class FeedUtilities {
       VEvent event = new VEvent(startDate, endDate, title);
 
       // Set event URL
-      PropertyList args = event.getProperties();
+      PropertyList<Property> args = event.getProperties();
       URI uri = URI.create(url);
       args.add(new Url(uri));
 
@@ -207,7 +209,7 @@ public final class FeedUtilities {
   }
 
   private static final SyndEntry[] getFeedEntries(SyndFeed feed) {
-    List list = feed.getEntries();
+    List<SyndEntry> list = feed.getEntries();
     SyndEntry[] entries = new SyndEntry[list.size()];
     list.toArray(entries);
     return entries;

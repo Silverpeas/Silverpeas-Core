@@ -57,7 +57,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -417,30 +416,25 @@ public class AuthenticationService {
    */
   private String getAuthenticationServerName(Connection con, String domainId)
       throws AuthenticationException {
-    Statement stmt = null;
-    ResultSet rs = null;
     String query = "SELECT " + DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME
         + " FROM " + DOMAIN_TABLE_NAME + " WHERE " + DOMAIN_ID_COLUMN_NAME
-        + " = " + domainId + "";
-
-
-    try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(query);
-      if (rs.next()) {
-        String serverName = rs.getString(DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME);
-        if (!StringUtil.isDefined(serverName)) {
-          throw new AuthenticationException("No server found for domain of id " + domainId);
+        + " = ?";
+    try(PreparedStatement stmt = con.prepareStatement(query)) {
+      stmt.setInt(1, Integer.parseInt(domainId));
+      try(ResultSet rs = stmt.executeQuery()) {
+        if (rs.next()) {
+          String serverName = rs.getString(DOMAIN_AUTHENTICATION_SERVER_COLUMN_NAME);
+          if (!StringUtil.isDefined(serverName)) {
+            throw new AuthenticationException("No server found for domain of id " + domainId);
+          } else {
+            return serverName;
+          }
         } else {
-          return serverName;
+          throw new AuthenticationException("No such domain with id " + domainId);
         }
-      } else {
-        throw new AuthenticationException("No such domain with id " + domainId);
       }
     } catch (SQLException ex) {
       throw new AuthenticationException("Error with domain of id" + domainId, ex);
-    } finally {
-      DBUtil.close(rs, stmt);
     }
   }
 

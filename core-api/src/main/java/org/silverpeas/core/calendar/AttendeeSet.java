@@ -31,6 +31,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,7 +46,7 @@ import java.util.stream.Stream;
  * A set of attendees in a given calendar component.
  */
 @Embeddable
-public class AttendeeSet implements Iterable<Attendee> {
+public class AttendeeSet implements Iterable<Attendee>, Serializable {
 
   @Transient
   private CalendarComponent component;

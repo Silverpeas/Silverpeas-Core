@@ -70,7 +70,7 @@ public class TypeManager {
    *
    * @throws FormException if the type name is unknown.
    */
-  public Class<?> getFieldImplementation(String typeName)
+  public Class<? extends Field> getFieldImplementation(String typeName)
       throws FormException {
     if (!implementations.containsKey(typeName)) {
       throw new FormException(TYPE_MANAGER, FORM_EXP_UNKNOWN_TYPE, typeName);
@@ -134,7 +134,7 @@ public class TypeManager {
    */
   public void setFieldImplementation(String fieldClassName,
       String typeName) throws FormException {
-    Class<?> fieldImplementation = getFieldClass(fieldClassName);
+    Class<? extends Field> fieldImplementation = getFieldClass(fieldClassName);
     implementations.put(typeName, fieldImplementation);
   }
 
@@ -262,10 +262,11 @@ public class TypeManager {
   /**
    * Get the field class from class name.
    */
-  private Class<?> getFieldClass(String fieldClassName)
+  @SuppressWarnings("unchecked")
+  private Class<? extends Field> getFieldClass(String fieldClassName)
       throws FormException {
     try {
-      Class<?> fieldClass = Class.forName(fieldClassName);
+      Class<? extends Field> fieldClass = (Class<? extends Field>) Class.forName(fieldClassName);
       // try to built a displayer from this class
       // and discards the constructed object.
       constructField(fieldClass);
@@ -322,7 +323,7 @@ public class TypeManager {
   /**
    * The Map (typeName -> fieldClass)
    */
-  private final Map<String, Class<?>> implementations = new HashMap<>();
+  private final Map<String, Class<? extends Field>> implementations = new HashMap<>();
   /**
    * The Map (typeName -> List(displayerName)) (the first is the default).
    */

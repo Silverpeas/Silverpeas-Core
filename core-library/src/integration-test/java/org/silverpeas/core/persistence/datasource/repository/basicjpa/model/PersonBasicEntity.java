@@ -34,7 +34,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * User: Yohann Chastagnier
@@ -87,5 +89,13 @@ public class PersonBasicEntity extends BasicJpaEntity<PersonBasicEntity, UuidIde
   public PersonBasicEntity setAnimals(final List<AnimalBasicEntity> animalCustomEntities) {
     this.animals = animalCustomEntities;
     return this;
+  }
+
+  public PersonBasicEntity copy() {
+    PersonBasicEntity entity = new PersonBasicEntity();
+    entity.firstName = firstName;
+    entity.lastName = lastName;
+    entity.animals = animals.stream().map(AnimalBasicEntity::copy).collect(Collectors.toList());
+    return entity;
   }
 }

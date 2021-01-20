@@ -722,7 +722,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   private String getQuotaReachedErrorMessage(Quota quotaReached, String language,
       final String stringTemplateFile) {
     if (!QuotaType.COMPONENTS_IN_SPACE.equals(quotaReached.getType())) {
-      quotaReached = quotaReached.clone();
+      quotaReached = new Quota(quotaReached);
       quotaReached.setMinCount(
           UnitUtil.convertTo(quotaReached.getMinCount(), MemoryUnit.B, MemoryUnit.MB));
       quotaReached.setMaxCount(
@@ -801,7 +801,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
     // clone components
     List<ComponentInst> allComponents = getAllComponentsInst();
     for (ComponentInst component : allComponents) {
-      clone.addComponentInst((ComponentInst) component.clone());
+      clone.addComponentInst(component.copy());
     }
 
     // clone subspace ids

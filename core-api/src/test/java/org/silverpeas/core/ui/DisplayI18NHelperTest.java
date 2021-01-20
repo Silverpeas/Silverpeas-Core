@@ -26,7 +26,7 @@ package org.silverpeas.core.ui;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPIRule;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 
 import static org.silverpeas.core.ui.DisplayI18NHelper.getDefaultLanguage;
@@ -38,7 +38,7 @@ import static org.hamcrest.Matchers.is;
 public class DisplayI18NHelperTest {
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  public CommonAPIRule commonAPIRule = new CommonAPIRule();
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();

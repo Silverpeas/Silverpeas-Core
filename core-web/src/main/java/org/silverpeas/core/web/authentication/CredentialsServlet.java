@@ -91,45 +91,52 @@ public class CredentialsServlet extends HttpServlet {
    * javax.servlet.http.HttpServletResponse)
    */
   @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    String function = getFunction(request);
-    FunctionHandler handler = handlers.get(function);
-    if (handler != null) {
-      UserDetail user = null;
-      String login = request.getParameter("Login");
-      String domainId = request.getParameter("DomainId");
-      String destinationPage = "";
-      AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user)
-          .clearSession(request);
-      if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId)) {
-        // Verify that the user can login
-        UserCanLoginVerifier userStateVerifier = AuthenticationUserVerifierFactory
-            .getUserCanLoginVerifier(AuthenticationCredential.newWithAsLogin(login).withAsDomainId(
-                    domainId));
-        try {
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+    try {
+      String function = getFunction(request);
+      FunctionHandler handler = handlers.get(function);
+      if (handler != null) {
+        UserDetail user = null;
+        String login = request.getParameter("Login");
+        String domainId = request.getParameter("DomainId");
+        String destinationPage = "";
+        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user).clearSession(request);
+        if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId)) {
+          // Verify that the user can login
+          UserCanLoginVerifier userStateVerifier = AuthenticationUserVerifierFactory.getUserCanLoginVerifier(
+              AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId));
           user = userStateVerifier.getUser();
-          userStateVerifier.verify();
-        } catch (AuthenticationException e) {
-          SilverLogger.getLogger(this).debug(e.getMessage(), e);
-          destinationPage = userStateVerifier.getErrorDestination();
+          destinationPage = checkUserState(destinationPage, userStateVerifier);
         }
-      }
 
-      if (!StringUtil.isDefined(destinationPage)) {
-        destinationPage = handler.doAction(request);
-      }
+        if (!StringUtil.isDefined(destinationPage)) {
+          destinationPage = handler.doAction(request);
+        }
 
-      if (destinationPage.startsWith("http")) {
-        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user).clearCache();
-        response.sendRedirect(response.encodeRedirectURL(destinationPage));
-        return;
+        if (destinationPage.startsWith("http")) {
+          AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user).clearCache();
+          response.sendRedirect(response.encodeRedirectURL(destinationPage));
+          return;
+        }
+        RequestDispatcher dispatcher = request.getRequestDispatcher(destinationPage);
+        dispatcher.forward(request, response);
+      } else {
+        response.sendError(HttpServletResponse.SC_NOT_FOUND, "command not found : " + function);
       }
-      RequestDispatcher dispatcher = request.getRequestDispatcher(destinationPage);
-      dispatcher.forward(request, response);
-    } else {
-      response.sendError(HttpServletResponse.SC_NOT_FOUND, "command not found : " + function);
+    } catch (ServletException | IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
+  }
+
+  private String checkUserState(String destinationPage, final UserCanLoginVerifier userStateVerifier) {
+    try {
+      userStateVerifier.verify();
+    } catch (AuthenticationException e) {
+      SilverLogger.getLogger(this).debug(e.getMessage(), e);
+      destinationPage = userStateVerifier.getErrorDestination();
+    }
+    return destinationPage;
   }
 
   /**

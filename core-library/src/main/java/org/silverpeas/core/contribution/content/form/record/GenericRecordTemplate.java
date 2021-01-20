@@ -58,6 +58,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
    * A GenericRecordTemplate is built empty : use addFieldTemplate for each field.
    */
   public GenericRecordTemplate() {
+    // empty constructor
   }
 
   public List<FieldTemplate> getFieldList() {

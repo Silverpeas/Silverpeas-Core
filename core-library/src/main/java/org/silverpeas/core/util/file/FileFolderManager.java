@@ -307,7 +307,7 @@ public class FileFolderManager {
     if (directory.toFile().isDirectory()) {
       String content = null;
       try {
-        content = new String(Files.readAllBytes(directory.resolve(fileName)), Charsets.UTF_8);
+        content = Files.readString(directory.resolve(fileName), Charsets.UTF_8);
       } catch (IOException e) {
         SilverLogger.getLogger(FileFolderManager.class)
             .debug(directory.resolve(fileName).toString() + "does not exist");

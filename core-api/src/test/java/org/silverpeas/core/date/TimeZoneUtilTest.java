@@ -26,7 +26,7 @@ package org.silverpeas.core.date;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPIRule;
 
 import java.time.ZoneId;
 
@@ -39,7 +39,7 @@ import static org.hamcrest.Matchers.is;
 public class TimeZoneUtilTest {
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  public CommonAPIRule commonAPIRule = new CommonAPIRule();
 
   @Test
   public void toZoneId() {

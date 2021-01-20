@@ -157,13 +157,14 @@ public class ContentManager implements Serializable {
       int newInstanceId = DBUtil.getNextId(INSTANCE_TABLE, "instanceId");
       // Insert the association container - content
       String sSQLStatement = "INSERT INTO " + INSTANCE_TABLE +
-          "(instanceId, componentId, containerType, contentType) ";
-      sSQLStatement +=
-          "VALUES (" + newInstanceId + ",'" + sComponentId + "','" + sContainerType + "','" +
-              sContentType + "')";
+          "(instanceId, componentId, containerType, contentType) VALUES (?, ?, ?, ?)";
       // Execute the insertion
 
       prepStmt = theConnection.prepareStatement(sSQLStatement);
+      prepStmt.setInt(1, newInstanceId);
+      prepStmt.setString(2, sComponentId);
+      prepStmt.setString(3, sContainerType);
+      prepStmt.setString(4, sContentType);
       prepStmt.executeUpdate();
       addMapping(sComponentId, newInstanceId);
       return newInstanceId;

@@ -358,7 +358,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    */
   static CalendarEvent from(final CalendarEventOccurrence occurrence) {
     CalendarEvent event = new CalendarEvent();
-    event.component = occurrence.asCalendarComponent().clone();
+    event.component = occurrence.asCalendarComponent().copy();
     return event.withVisibilityLevel(occurrence.getVisibilityLevel())
         .withExternalId(occurrence.getCalendarEvent().getExternalId())
         .withCategories(occurrence.getCategories().asArray());
@@ -874,19 +874,26 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return this;
   }
 
-  @Override
-  public CalendarEvent clone() {
-    CalendarEvent clone = super.clone();
-    clone.externalId = null;
+  /**
+   * Copies the specified event to another one. Only the specific business event attributes are
+   * copied. Others business attributes as well as technical ones are set to null: creation date,
+   * update date, creator, updater, identifier and version number.
+   * @return a shallow copy of this event.
+   */
+  public CalendarEvent copy() {
+    CalendarEvent copy = new CalendarEvent();
+    copy.externalId = null;
     if (recurrence == Recurrence.NO_RECURRENCE) {
-      clone.recurrence = Recurrence.NO_RECURRENCE;
+      copy.recurrence = Recurrence.NO_RECURRENCE;
     } else {
-      clone.recurrence = recurrence.clone();
+      copy.recurrence = recurrence.copy();
     }
-    clone.categories = categories.clone();
-    clone.component = component.clone();
-    clone.visibilityLevel = visibilityLevel;
-    return clone;
+    copy.categories = categories.copy();
+    copy.component = component.copy();
+    copy.visibilityLevel = visibilityLevel;
+    copy.content = new WysiwygContent(content);
+    copy.synchronizationDate = synchronizationDate;
+    return copy;
   }
 
   /**
@@ -1358,7 +1365,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     // previousOccurrences list by applyToPersistedOccurrences method)
     deleteAllOccurrencesFromPersistence();
     // New event is created on other calendar
-    CalendarEvent newEvent = this.clone();
+    CalendarEvent newEvent = this.copy();
     newEvent.component.setSequence(0);
     newEvent.planOn(this.getCalendar());
     // Deleting previous event
@@ -1385,7 +1392,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       if (plannedIntoAnotherCalendar) {
         previousOccurrences.stream()
             .map(o -> {
-              CalendarEventOccurrence newOccurrence = o.cloneWithEvent(updatedEvent);
+              CalendarEventOccurrence newOccurrence = o.copyWithEvent(updatedEvent);
               diff.mergeInto(newOccurrence.asCalendarComponent());
               return newOccurrence;
             })

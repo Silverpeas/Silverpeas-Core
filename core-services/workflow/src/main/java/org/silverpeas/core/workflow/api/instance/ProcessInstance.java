@@ -33,10 +33,11 @@ import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.instance.ActionAndState;
 import org.silverpeas.core.workflow.engine.instance.LockingUser;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public interface ProcessInstance {
+public interface ProcessInstance extends Serializable {
 
   /**
    * @return ProcessModel

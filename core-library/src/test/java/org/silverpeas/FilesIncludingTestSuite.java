@@ -23,8 +23,9 @@
  */
 package org.silverpeas;
 
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.platform.suite.api.SelectClasses;
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
 import org.silverpeas.core.io.temp.TestLastModifiedDateFileTask;
 import org.silverpeas.core.io.upload.TestUploadSession;
 import org.silverpeas.core.io.upload.TestUploadSessionFile;
@@ -40,8 +41,8 @@ import org.silverpeas.core.test.UnitTest;
  * @author miguel
  */
 @UnitTest
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
+@RunWith(JUnitPlatform.class)
+@SelectClasses({
     TestUploadSession.class,
     TestUploadSessionFile.class,
     TestAbstractFileHandler.class,

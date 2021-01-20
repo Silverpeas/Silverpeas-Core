@@ -35,6 +35,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * User: Yohann Chastagnier
@@ -86,5 +87,14 @@ public class Person extends SilverpeasJpaEntity<Person, UuidIdentifier> implemen
   public Person setAnimals(final List<Animal> animals) {
     this.animals = animals;
     return this;
+  }
+
+  public Person copy() {
+    Person copy = new Person();
+    copy.firstName = firstName;
+    copy.lastName = lastName;
+    // animals are fetched eagerly, so by convention they should be also copied
+    copy.animals = animals.stream().map(Animal::copy).collect(Collectors.toList());
+    return copy;
   }
 }

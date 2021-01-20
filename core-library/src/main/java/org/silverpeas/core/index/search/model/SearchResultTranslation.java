@@ -30,6 +30,10 @@ import org.silverpeas.core.contribution.contentcontainer.content.SilverContentI1
  */
 public class SearchResultTranslation extends SilverContentI18N {
 
+  protected SearchResultTranslation() {
+
+  }
+
   public SearchResultTranslation(String language, String name, String description) {
     super(language, name, description);
   }

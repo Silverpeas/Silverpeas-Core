@@ -23,8 +23,9 @@
  */
 package org.silverpeas.core.util;
 
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.platform.suite.api.SelectClasses;
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
 import org.silverpeas.core.util.time.TestDuration;
 
 /**
@@ -33,8 +34,8 @@ import org.silverpeas.core.util.time.TestDuration;
  * that they work on the memory each of their turn.
  * @author mmoquillon
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
+@RunWith(JUnitPlatform.class)
+@SelectClasses({
     TestMemoryData.class,
     TestDuration.class,
     TestUnitUtil.class

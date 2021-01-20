@@ -28,7 +28,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPIRule;
 import org.silverpeas.core.util.LocalizationBundle;
 
 import java.util.LinkedList;
@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.*;
 public class MessageManagerTest {
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  public CommonAPIRule commonAPIRule = new CommonAPIRule();
 
   @Before
   public void setup() {

@@ -272,18 +272,17 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
   }
 
   /**
-   * Clones this calendar component. Only the state of this calendar component is cloned to a new
+   * Copies this calendar component. Only the state of this calendar component is cloned to a new
    * calendar component. The returned calendar component is not planned in any calendar.
    * @see CalendarComponent#copyTo(CalendarComponent)
-   * @see SilverpeasJpaEntity#clone()
    * @return an unplanned clone of this calendar component.
    */
-  @Override
-  public CalendarComponent clone() {
-    CalendarComponent clone = super.clone();
-    clone.sequence = sequence;
-    clone.sequenceUpdated = false;
-    return copyTo(clone);
+  public CalendarComponent copy() {
+    CalendarComponent copy = new CalendarComponent();
+    copy.calendar = calendar;
+    copy.sequence = sequence;
+    copy.sequenceUpdated = false;
+    return copyTo(copy);
   }
 
   /**
@@ -300,17 +299,17 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     anotherComponent.location = location;
     anotherComponent.period = period.copy();
     anotherComponent.priority = priority;
-    anotherComponent.attributes = attributes.clone();
+    anotherComponent.attributes = attributes.copy();
     if (OperationContext.statesOf(IMPORT)) {
       if (StringUtil.isNotDefined(anotherComponent.getId())) {
         // In case of import, the attendees are not modified
         AttendeeSet existingAttendees = anotherComponent.attendees;
         anotherComponent.attendees = new AttendeeSet(anotherComponent);
-        existingAttendees.forEach(a -> a.cloneFor(anotherComponent));
+        existingAttendees.forEach(a -> a.copyFor(anotherComponent));
       }
     } else {
       anotherComponent.attendees = new AttendeeSet(anotherComponent);
-      attendees.forEach(a -> a.cloneFor(anotherComponent));
+      attendees.forEach(a -> a.copyFor(anotherComponent));
     }
     return anotherComponent;
   }

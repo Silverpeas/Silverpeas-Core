@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.webapi.node;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -82,7 +84,7 @@ public class NodeAttrEntity {
   }
 
   public static NodeAttrEntity fromNodeDetail(final NodeDetail node, String uri, String lang) {
-    return fromNodeDetail(node, getURI(uri), lang);
+    return fromNodeDetail(node, computeURI(uri), lang);
   }
 
   private NodeAttrEntity(final NodeDetail node, URI uri, String lang) {
@@ -103,18 +105,19 @@ public class NodeAttrEntity {
     try {
       this.creationDate = DateUtil.parse(node.getCreationDate());
     } catch (ParseException e) {
+      SilverLogger.getLogger(this).silent(e);
     }
     if (!this.id.equalsIgnoreCase("tovalidate")) {
       this.specificRights = node.haveLocalRights();
     }
   }
 
-  private static URI getURI(String uri) {
+  private static URI computeURI(String uri) {
     try {
       return new URI(uri);
     } catch (URISyntaxException ex) {
       getLogger(NodeAttrEntity.class).error(ex.getMessage(), ex);
-      throw new RuntimeException(ex.getMessage(), ex);
+      throw new SilverpeasRuntimeException(ex.getMessage(), ex);
     }
   }
 

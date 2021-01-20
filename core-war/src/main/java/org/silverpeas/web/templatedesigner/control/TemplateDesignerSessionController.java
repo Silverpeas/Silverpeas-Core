@@ -425,7 +425,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
         }
 
         // process view.xml (set field to simpletext)
-        GenericFieldTemplate cloneField = ((GenericFieldTemplate) field).clone();
+        GenericFieldTemplate cloneField = ((GenericFieldTemplate) field).copy();
         String cloneDisplayer = cloneField.getDisplayerName();
         if (isAReadOnlyField(cloneDisplayer)) {
           cloneField.setReadOnly(true);

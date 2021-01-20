@@ -45,6 +45,7 @@ import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -69,7 +70,7 @@ import static org.hamcrest.Matchers.*;
 @SmtpConfig("/org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties")
 @Execution(ExecutionMode.SAME_THREAD)
 @TestManagedBeans(MailSenderTask.class)
-public class SmtpMailSendingTest {
+class SmtpMailSendingTest {
 
   private final static String COMMON_FROM = "from@titi.org";
   private final static String MALFORMED_FROM = "fromATtiti.org";
@@ -95,15 +96,15 @@ public class SmtpMailSendingTest {
   }
 
   @Test
-  public void sendingMailSynchronouslyWithDefaultValues(GreenMailOperations mail) throws Exception {
+  void sendingMailSynchronouslyWithDefaultValues(GreenMailOperations mail) throws Exception {
     MailSending mailSending = MailSending.from(null);
 
     // Verifying data
     assertThat(mailSending.getMailToSend().getFrom(), nullValue());
     assertThat(mailSending.getMailToSend().getTo(), nullValue());
-    assertThat(mailSending.getMailToSend().getSubject(), isEmptyString());
+    assertThat(mailSending.getMailToSend().getSubject(), is(emptyString()));
     assertThat(mailSending.getMailToSend().getContent().isHtml(), is(true));
-    assertThat(mailSending.getMailToSend().getContent().toString(), isEmptyString());
+    assertThat(mailSending.getMailToSend().getContent().toString(), is(emptyString()));
     assertThat(mailSending.getMailToSend().isReplyToRequired(), is(false));
     assertThat(mailSending.getMailToSend().isAsynchronous(), is(true));
 
@@ -112,14 +113,14 @@ public class SmtpMailSendingTest {
   }
 
   @Test
-  public void sendingMailSynchronouslyWithFromNoToAndDefaultValues(GreenMailOperations mail) throws Exception {
+  void sendingMailSynchronouslyWithFromNoToAndDefaultValues(GreenMailOperations mail) throws Exception {
     MailAddress email = MailAddress.eMail(COMMON_FROM);
     MailSending mailSending = MailSending.from(email);
 
     // Verifying data
     assertThat(mailSending.getMailToSend().getFrom(), is(email));
     assertThat(mailSending.getMailToSend().getTo(), nullValue());
-    assertThat(mailSending.getMailToSend().getSubject(), isEmptyString());
+    assertThat(mailSending.getMailToSend().getSubject(), is(emptyString()));
     assertThat(mailSending.getMailToSend().getContent().isHtml(), is(true));
     assertThatContentIsHtmlComputed(mailSending.getMailToSend(), EMPTY_HTML_CONTENT);
     assertThat(mailSending.getMailToSend().isReplyToRequired(), is(false));
@@ -130,7 +131,7 @@ public class SmtpMailSendingTest {
   }
 
   @Test
-  public void sendingMailSynchronouslyWithFromWithToAndDefaultValues(GreenMailOperations mail) throws Exception {
+  void sendingMailSynchronouslyWithFromWithToAndDefaultValues(GreenMailOperations mail) throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail);
@@ -142,7 +143,7 @@ public class SmtpMailSendingTest {
     MailToSend mailToSend = getStubbedSmtpMailSender().currentMailToSend;
     assertThat(mailToSend.getFrom(), is(senderEmail));
     assertThat(mailToSend.getTo(), hasItem(receiverEmail));
-    assertThat(mailToSend.getSubject(), isEmptyString());
+    assertThat(mailToSend.getSubject(), is(emptyString()));
     assertThat(mailToSend.getContent().isHtml(), is(true));
     assertThatContentIsHtmlComputed(mailToSend, EMPTY_HTML_CONTENT);
     assertThat(mailToSend.isReplyToRequired(), is(false));
@@ -151,7 +152,7 @@ public class SmtpMailSendingTest {
   }
 
   @Test
-  public void sendingMailSynchronouslyWithMalformedFromWithToAndDefaultValues(GreenMailOperations mail) throws Exception {
+  void sendingMailSynchronouslyWithMalformedFromWithToAndDefaultValues(GreenMailOperations mail) throws Exception {
     MailAddress senderEmail = MailAddress.eMail(MALFORMED_FROM);
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail);
@@ -159,7 +160,7 @@ public class SmtpMailSendingTest {
     // Verifying data
     assertThat(mailSending.getMailToSend().getFrom(), is(senderEmail));
     assertThat(mailSending.getMailToSend().getTo(), hasItem(receiverEmail));
-    assertThat(mailSending.getMailToSend().getSubject(), isEmptyString());
+    assertThat(mailSending.getMailToSend().getSubject(), is(emptyString()));
     assertThat(mailSending.getMailToSend().getContent().isHtml(), is(true));
     assertThatContentIsHtmlComputed(mailSending.getMailToSend(), EMPTY_HTML_CONTENT);
     assertThat(mailSending.getMailToSend().isReplyToRequired(), is(false));
@@ -170,7 +171,7 @@ public class SmtpMailSendingTest {
   }
 
   @Test
-  public void sendingMailSynchronouslyWithFromWithMalformedToAndDefaultValues(GreenMailOperations mail) throws Exception {
+  void sendingMailSynchronouslyWithFromWithMalformedToAndDefaultValues(GreenMailOperations mail) throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
     MailAddress receiverEmail = MailAddress.eMail(MALFORMED_TO);
     MailSending mailSending = MailSending.from(senderEmail).to(receiverEmail);
@@ -182,7 +183,7 @@ public class SmtpMailSendingTest {
     MailToSend mailToSend = getStubbedSmtpMailSender().currentMailToSend;
     assertThat(mailToSend.getFrom(), is(senderEmail));
     assertThat(mailToSend.getTo(), hasItem(receiverEmail));
-    assertThat(mailToSend.getSubject(), isEmptyString());
+    assertThat(mailToSend.getSubject(), is(emptyString()));
     assertThat(mailToSend.getContent().isHtml(), is(true));
     assertThatContentIsHtmlComputed(mailToSend, EMPTY_HTML_CONTENT);
     assertThat(mailToSend.isReplyToRequired(), is(false));
@@ -191,7 +192,7 @@ public class SmtpMailSendingTest {
   }
 
   @Test
-  public void sendingMailSynchronouslyWithFromWithToWithSubjectAndDefaultValues(GreenMailOperations mail) throws Exception {
+  void sendingMailSynchronouslyWithFromWithToWithSubjectAndDefaultValues(GreenMailOperations mail) throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     String subject = "A subject";
@@ -213,7 +214,7 @@ public class SmtpMailSendingTest {
   }
 
   @Test
-  public void sendingMailSynchronouslyWithFromWithToWithStringContentAndDefaultValues(GreenMailOperations mail)
+  void sendingMailSynchronouslyWithFromWithToWithStringContentAndDefaultValues(GreenMailOperations mail)
       throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
@@ -227,7 +228,7 @@ public class SmtpMailSendingTest {
     MailToSend mailToSend = getStubbedSmtpMailSender().currentMailToSend;
     assertThat(mailToSend.getFrom(), is(senderEmail));
     assertThat(mailToSend.getTo(), hasItem(receiverEmail));
-    assertThat(mailToSend.getSubject(), isEmptyString());
+    assertThat(mailToSend.getSubject(), is(emptyString()));
     assertThat(mailToSend.getContent().isHtml(), is(true));
     assertThatContentIsHtmlComputed(mailToSend, "<html><body>" + content + "</body></html>");
     assertThat(mailToSend.isReplyToRequired(), is(false));
@@ -236,7 +237,7 @@ public class SmtpMailSendingTest {
   }
 
   @Test
-  public void
+  void
   sendingMailSynchronouslyWithFromPersonalWithToWithSubjectWithMailContentContentAndDefaultValues(GreenMailOperations mail)
       throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM).withName("From Personal Name");
@@ -262,7 +263,7 @@ public class SmtpMailSendingTest {
   }
 
   @Test
-  public void
+  void
   sendingMailSynchronouslyWithFromWithToPersonalWithSubjectWithMultipartContentAndDefaultValues(GreenMailOperations mail)
       throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
@@ -291,7 +292,7 @@ public class SmtpMailSendingTest {
   }
 
   @Test
-  public void sendingMailSynchronouslyValidMailWithReplyTo(GreenMailOperations mail) throws Exception {
+  void sendingMailSynchronouslyValidMailWithReplyTo(GreenMailOperations mail) throws Exception {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM).withName("From Personal Name");
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO).withName("To Personal Name");
     String subject = "A subject";
@@ -319,7 +320,7 @@ public class SmtpMailSendingTest {
   }
 
   @Test
-  public void sendingMailAsynchronously(GreenMailOperations mail) {
+  void sendingMailAsynchronously(GreenMailOperations mail) {
     MailAddress senderEmail = MailAddress.eMail(COMMON_FROM);
     MailAddress receiverEmail = MailAddress.eMail(COMMON_TO);
     MailSending mailSending =
@@ -429,7 +430,11 @@ public class SmtpMailSendingTest {
     public void send(final MailToSend mail) {
       await().atLeast(2, TimeUnit.MILLISECONDS).untilTrue(new AtomicBoolean(true));
       currentMailToSend = mail;
-      super.send(mail);
+      try {
+        super.send(mail);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e.getMessage());
+      }
     }
   }
 }

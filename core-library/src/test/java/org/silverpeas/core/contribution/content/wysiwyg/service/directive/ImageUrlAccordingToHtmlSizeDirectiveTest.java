@@ -34,7 +34,7 @@ import org.silverpeas.core.contribution.attachment.SimpleDocumentUrlAccordingToH
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerTest;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPITestRule;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 
@@ -58,7 +58,7 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 public class ImageUrlAccordingToHtmlSizeDirectiveTest {
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  public CommonAPITestRule commonAPIRule = new CommonAPITestRule();
 
   @Rule
   public BenchmarkRule benchmarkRule = new BenchmarkRule();

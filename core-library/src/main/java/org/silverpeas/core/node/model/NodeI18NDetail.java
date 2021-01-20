@@ -28,6 +28,11 @@ import org.silverpeas.core.i18n.BeanTranslation;
 public class NodeI18NDetail extends BeanTranslation implements java.io.Serializable {
 
   private static final long serialVersionUID = 1L;
+  private static final String TABLE_NAME = "SB_Node_NodeI18N";
+
+  protected NodeI18NDetail() {
+
+  }
 
   public NodeI18NDetail(String lang, String nodeName, String nodeDescription) {
     super(lang, nodeName, nodeDescription);
@@ -39,7 +44,7 @@ public class NodeI18NDetail extends BeanTranslation implements java.io.Serializa
   }
 
   public int getNodeId() {
-    return new Integer(super.getObjectId());
+    return Integer.parseInt(super.getObjectId());
   }
 
   public void setNodeId(String id) {
@@ -52,7 +57,7 @@ public class NodeI18NDetail extends BeanTranslation implements java.io.Serializa
    * @since 1.0
    */
   public String getTableName() {
-    return "SB_Node_NodeI18N";
+    return TABLE_NAME;
   }
 
 }

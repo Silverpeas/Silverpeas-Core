@@ -29,7 +29,7 @@ import org.junit.runners.model.Statement;
 import org.mockito.invocation.InvocationOnMock;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPITestRule;
 import org.silverpeas.core.test.util.JpaMocker;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.workflow.api.UserManager;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
  * Context of unit tests on the delegation API.
  * @author mmoquillon
  */
-public class TestContext extends CommonAPI4Test {
+public class TestContext extends CommonAPITestRule {
 
   static final String WORKFLOW_ID = "workflow42";
   private final User anIncumbent;

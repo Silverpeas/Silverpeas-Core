@@ -36,6 +36,7 @@ import org.silverpeas.core.workflow.api.model.ProcessModel;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A ProcessInstanceRecordTemplate describes all the data grouped in a ProcessInstanceDataRecord.
@@ -71,10 +72,10 @@ public class ProcessInstanceRecordTemplate implements ProcessInstanceTemplate {
   public String[] getFieldNames() {
     if (fieldNames == null) {
       fieldNames = new String[fields.size()];
-      Iterator names = fields.keySet().iterator();
+      Iterator<String> names = fields.keySet().iterator();
       String name;
       while (names.hasNext()) {
-        name = (String) names.next();
+        name = names.next();
         try {
           fieldNames[getFieldIndex(name)] = name;
         } catch (Exception e) {
@@ -91,10 +92,10 @@ public class ProcessInstanceRecordTemplate implements ProcessInstanceTemplate {
   public FieldTemplate[] getFieldTemplates() throws FormException {
     if (fieldTemplates == null) {
       fieldTemplates = new FieldTemplate[fields.size()];
-      Iterator names = fields.keySet().iterator();
+      Iterator<String> names = fields.keySet().iterator();
       String name;
       while (names.hasNext()) {
-        name = (String) names.next();
+        name = names.next();
         try {
           fieldTemplates[getFieldIndex(name)] = getFieldTemplate(name);
         } catch (Exception e) {
@@ -110,7 +111,7 @@ public class ProcessInstanceRecordTemplate implements ProcessInstanceTemplate {
    * @throw FormException if the field name is unknown.
    */
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
-    IndexedFieldTemplate indexed = (IndexedFieldTemplate) fields.get(fieldName);
+    IndexedFieldTemplate indexed = fields.get(fieldName);
 
     if (indexed == null) {
       throw new FormException(PROCESS_INSTANCE_RECORD_TEMPLATE, FORM_EXP_UNKNOWN_FIELD, fieldName);
@@ -138,7 +139,7 @@ public class ProcessInstanceRecordTemplate implements ProcessInstanceTemplate {
    */
   @Override
   public int getFieldIndex(String fieldName) throws FormException {
-    IndexedFieldTemplate indexed = (IndexedFieldTemplate) fields.get(fieldName);
+    IndexedFieldTemplate indexed = fields.get(fieldName);
 
     if (indexed == null) {
       throw new FormException(PROCESS_INSTANCE_RECORD_TEMPLATE, FORM_EXP_UNKNOWN_FIELD, fieldName);
@@ -203,7 +204,7 @@ public class ProcessInstanceRecordTemplate implements ProcessInstanceTemplate {
   /**
    * The map (fieldName -> IndexedFieldTemplate).
    */
-  private HashMap fields = new HashMap();
+  private Map<String, IndexedFieldTemplate> fields = new HashMap<>();
 
   /**
    * Inits the fields

@@ -63,7 +63,7 @@ public abstract class AbstractServerEvent implements ServerEvent {
   @Override
   public Long getId() {
     if (id == -1) {
-      id = idCounter++;
+      id = nextId();
     }
     return id;
   }
@@ -132,5 +132,9 @@ public abstract class AbstractServerEvent implements ServerEvent {
       BiFunction<String, User, String> dynamicData) {
     this.dynamicData = dynamicData;
     return (T) this;
+  }
+
+  private static long nextId() {
+    return idCounter++;
   }
 }

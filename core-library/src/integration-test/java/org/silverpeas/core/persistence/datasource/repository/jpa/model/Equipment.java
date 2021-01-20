@@ -67,4 +67,11 @@ public class Equipment extends SilverpeasJpaEntity<Equipment, UuidIdentifier> im
     this.animal = animal;
     return this;
   }
+
+  public Equipment copy() {
+    Equipment copy = new Equipment();
+    copy.name = name;
+    copy.animal = animal;
+    return copy;
+  }
 }

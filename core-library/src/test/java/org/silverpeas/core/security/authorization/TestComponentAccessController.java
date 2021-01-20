@@ -42,7 +42,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
+import org.silverpeas.core.test.rule.LibCoreCommonAPIRule;
 
 import java.util.Optional;
 import java.util.Set;
@@ -80,7 +80,7 @@ public class TestComponentAccessController {
   private static final AccessControlOperation A_PERSIST_ACTION = AccessControlOperation.PERSIST_ACTIONS.iterator().next();
 
   @Rule
-  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
+  public LibCoreCommonAPIRule commonAPIRule = new LibCoreCommonAPIRule();
 
   private OrganizationController controller;
 
@@ -91,7 +91,7 @@ public class TestComponentAccessController {
   @Before
   public void setup() {
     controller = mock(OrganizationController.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(controller);
+    commonAPIRule.injectIntoMockedBeanContainer(controller);
     final UserDetail user = new UserDetail();
     user.setId(USER_ID);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
@@ -100,7 +100,7 @@ public class TestComponentAccessController {
     anonymous.setId(ANONYMOUS_ID);
     when(UserProvider.get().getUser(ANONYMOUS_ID)).thenReturn(anonymous);
     when(controller.getUserDetail(ANONYMOUS_ID)).thenReturn(anonymous);
-    final PersonalComponentRegistry personalComponentRegistry = commonAPI4Test
+    final PersonalComponentRegistry personalComponentRegistry = commonAPIRule
         .injectIntoMockedBeanContainer(mock(PersonalComponentRegistry.class));
     final PersonalComponent personalComponent = mock(PersonalComponent.class);
     when(personalComponentRegistry.getPersonalComponent("personalComponent"))

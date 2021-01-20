@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.notification.user.delayed.model;
 
-import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -38,6 +37,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.substring;
 
 /**
  * Data on a delayed notification to users. A notification is delayed when it is sent not
@@ -88,10 +88,10 @@ public class DelayedNotificationData
   private boolean sendImmediately = false;
 
   @Transient
-  private NotificationData notificationData;
+  private transient NotificationData notificationData;
 
   @Transient
-  private NotificationParameters notificationParameters;
+  private transient NotificationParameters notificationParameters;
 
   /**
    * Checks the data integrity
@@ -125,7 +125,7 @@ public class DelayedNotificationData
   }
 
   public void setUserId(final String userId) {
-    this.userId = new Integer(userId);
+    this.userId = Integer.valueOf(userId);
   }
 
   public Integer getFromUserId() {
@@ -214,5 +214,15 @@ public class DelayedNotificationData
 
   public void setNotificationParameters(final NotificationParameters notificationParameters) {
     this.notificationParameters = notificationParameters;
+  }
+
+  @Override
+  public boolean equals(final Object notificationData) {
+    return super.equals(notificationData);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

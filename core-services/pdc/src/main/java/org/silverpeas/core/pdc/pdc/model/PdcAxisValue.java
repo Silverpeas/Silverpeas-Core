@@ -232,6 +232,18 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
   }
 
   /**
+   * Copies this value into another one. In fact, the attributes of the copy refers to the same
+   * object referred by the attributes of this instance.
+   * @return a copy of this PdC axis value.
+   */
+  protected PdcAxisValue copy() {
+    PdcAxisValue copy = new PdcAxisValue();
+    copy.treeNode = treeNode;
+    copy.treeNodeParents = treeNodeParents;
+    return copy;
+  }
+
+  /**
    * Gets the axis to which this value belongs to and that is used to classify contents on the PdC.
    * @return a PdC axis configured to be used in the classification of contents.
    */

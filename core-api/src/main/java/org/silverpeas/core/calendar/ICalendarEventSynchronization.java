@@ -37,7 +37,7 @@ import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.SchedulerProvider;
-import org.silverpeas.core.scheduler.trigger.CronJobTrigger;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig;
 import org.silverpeas.core.thread.ManagedThreadPoolException;
@@ -126,7 +126,7 @@ public class ICalendarEventSynchronization implements Initialization {
         public void execute(final JobExecutionContext context) throws SilverpeasException {
           synchronizeAll();
         }
-      }, CronJobTrigger.triggerAt(cron));
+      }, JobTrigger.triggerAt(cron));
     } catch (MissingResourceException | SchedulerException | ParseException e) {
       SilverLogger.getLogger(this).error("The synchronization scheduling failed to start", e);
     }

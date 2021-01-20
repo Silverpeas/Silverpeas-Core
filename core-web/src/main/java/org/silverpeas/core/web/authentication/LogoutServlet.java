@@ -28,7 +28,6 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,43 +41,51 @@ public class LogoutServlet extends HttpServlet {
   private static final long serialVersionUID = 996291597161289526L;
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Get the session
-    HttpSession session = request.getSession(false);
-    if (session != null) {
-      getSessionManagement().closeSession(session.getId());
-      try {
-        // In some cases, a wildfly session is yet valid whereas it does not exist anymore a
-        // Silverpeas session. But the wildfly session must be invalidated because the logout can
-        // be performed by a cloud mechanism which need clean wildfly session.
-        session.invalidate();
-      } catch (IllegalStateException e) {
-        SilverLogger.getLogger(this).silent(e);
+  public void doPost(HttpServletRequest request, HttpServletResponse response) {
+    try {
+      // Get the session
+      HttpSession session = request.getSession(false);
+      if (session != null) {
+        getSessionManagement().closeSession(session.getId());
+        invalidateUserSession(session);
       }
+      StringBuilder buffer = new StringBuilder(512);
+      buffer.append(request.getScheme()).append("://").append(request.getServerName()).append(':');
+      buffer.append(request.getServerPort()).append(request.getContextPath());
+      SettingBundle resource = ResourceLocator.getSettingBundle(
+          "org.silverpeas.authentication.settings.authenticationSettings");
+      String postLogoutPage = resource.getString("logout.page", "/Login?logout=true");
+      User currentUser = User.getCurrentRequester();
+      if (currentUser != null) {
+        String paramDelimiter = (postLogoutPage.contains("?") ? "&" : "?");
+        postLogoutPage +=
+            paramDelimiter + LoginServlet.PARAM_DOMAINID + "=" + currentUser.getDomainId();
+      }
+      if (postLogoutPage.startsWith("http")) {
+        response.sendRedirect(postLogoutPage);
+        return;
+      }
+      buffer.append(postLogoutPage);
+      response.sendRedirect(response.encodeRedirectURL(buffer.toString()));
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
-    StringBuilder buffer = new StringBuilder(512);
-    buffer.append(request.getScheme()).append("://").append(request.getServerName()).append(':');
-    buffer.append(request.getServerPort()).append(request.getContextPath());
-    SettingBundle resource = ResourceLocator.getSettingBundle(
-        "org.silverpeas.authentication.settings.authenticationSettings");
-    String postLogoutPage = resource.getString("logout.page", "/Login?logout=true");
-    User currentUser = User.getCurrentRequester();
-    if (currentUser != null) {
-      String paramDelimiter = (postLogoutPage.contains("?") ? "&" : "?");
-      postLogoutPage +=
-          paramDelimiter + LoginServlet.PARAM_DOMAINID + "=" + currentUser.getDomainId();
+  }
+
+  private void invalidateUserSession(final HttpSession session) {
+    try {
+      // In some cases, a wildfly session is yet valid whereas it does not exist anymore a
+      // Silverpeas session. But the wildfly session must be invalidated because the logout can
+      // be performed by a cloud mechanism which need clean wildfly session.
+      session.invalidate();
+    } catch (IllegalStateException e) {
+      SilverLogger.getLogger(this).silent(e);
     }
-    if (postLogoutPage.startsWith("http")) {
-      response.sendRedirect(postLogoutPage);
-      return;
-    }
-    buffer.append(postLogoutPage);
-    response.sendRedirect(response.encodeRedirectURL(buffer.toString()));
   }
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws
-      ServletException, IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) {
     doPost(request, response);
   }
 }

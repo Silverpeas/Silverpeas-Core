@@ -71,8 +71,8 @@ public class NotificationMetaData implements java.io.Serializable {
   private final Map<String, String> titles = new HashMap<>();
   private final Map<String, String> contents = new HashMap<>();
   private final Map<String, Link> links = new HashMap<>();
-  private Map<String, SilverpeasTemplate> templates;
-  private Map<String, SilverpeasTemplate> templatesMessageFooter;
+  private transient Map<String, SilverpeasTemplate> templates;
+  private transient Map<String, SilverpeasTemplate> templatesMessageFooter;
 
   private String originalExtraMessage = null;
   private boolean displayReceiversInFooter = false;

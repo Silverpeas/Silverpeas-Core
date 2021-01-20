@@ -34,7 +34,7 @@ import org.silverpeas.core.process.io.file.exception.FileHandlerException;
 import org.silverpeas.core.process.session.DefaultProcessSession;
 import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPITestRule;
 import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.File;
@@ -61,7 +61,7 @@ public class TestAbstractFileHandler {
   private File sessionPath;
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  public CommonAPITestRule commonAPIRule = new CommonAPITestRule();
 
   @Before
   public void beforeTest() throws Exception {

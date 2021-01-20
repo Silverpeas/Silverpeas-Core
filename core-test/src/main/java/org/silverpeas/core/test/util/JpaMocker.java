@@ -30,7 +30,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import org.silverpeas.core.persistence.datasource.repository.jpa.AbstractJpaEntityRepository;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPITestRule;
 import org.silverpeas.core.util.Mutable;
 
 import javax.persistence.EntityManager;
@@ -47,14 +47,14 @@ import static org.mockito.Mockito.when;
  */
 public class JpaMocker {
 
-  private final CommonAPI4Test commonAPI4Test;
+  private final CommonAPITestRule commonAPITestRule;
 
   /**
    * Constructs a mocker for the JPA environment context.
-   * @param commonAPI4Test the {@link CommonAPI4Test} rule used in the test.
+   * @param commonAPITestRule the {@link CommonAPITestRule} rule used in the test.
    */
-  public JpaMocker(final CommonAPI4Test commonAPI4Test) {
-    this.commonAPI4Test = commonAPI4Test;
+  public JpaMocker(final CommonAPITestRule commonAPITestRule) {
+    this.commonAPITestRule = commonAPITestRule;
   }
 
   /**
@@ -77,7 +77,7 @@ public class JpaMocker {
       savedEntity.set(EntityIdSetter.setIdTo(entity, UuidIdentifier.class));
       return savedEntity.get();
     });
-    commonAPI4Test.injectIntoMockedBeanContainer(repository);
+    commonAPITestRule.injectIntoMockedBeanContainer(repository);
     return repository;
   }
 
@@ -102,8 +102,8 @@ public class JpaMocker {
       }
       return entity;
     });
-    commonAPI4Test.injectIntoMockedBeanContainer(entityManagerProvider);
-    commonAPI4Test.injectIntoMockedBeanContainer(new Transaction());
+    commonAPITestRule.injectIntoMockedBeanContainer(entityManagerProvider);
+    commonAPITestRule.injectIntoMockedBeanContainer(new Transaction());
   }
 }
   

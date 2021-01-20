@@ -23,11 +23,13 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
+import java.io.Serializable;
+
 /**
  * A RecordTemplate describes DataRecord and gives the field names and type informations.
  * @see DataRecord
  */
-public interface RecordTemplate {
+public interface RecordTemplate extends Serializable {
   /**
    * Returns all the field names of the DataRecord built on this template.
    */

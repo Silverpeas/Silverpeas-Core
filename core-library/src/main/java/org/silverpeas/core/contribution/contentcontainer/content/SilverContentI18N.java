@@ -33,6 +33,10 @@ public class SilverContentI18N extends BeanTranslation implements java.io.Serial
 
   private static final long serialVersionUID = 1L;
 
+  protected SilverContentI18N() {
+
+  }
+
   public SilverContentI18N(String language, String name, String description) {
     super(language, name, description);
   }

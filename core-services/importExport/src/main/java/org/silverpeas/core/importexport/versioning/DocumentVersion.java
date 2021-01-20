@@ -28,9 +28,10 @@
 package org.silverpeas.core.importexport.versioning;
 
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
-import org.silverpeas.core.xml.DateAdapter;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.xml.DateAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -40,10 +41,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.File;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public class DocumentVersion implements java.io.Serializable, Cloneable {
+public class DocumentVersion implements java.io.Serializable {
 
   private static final long serialVersionUID = 1L;
   public static final int STATUS_VALIDATION_NOT_REQ = 0;
@@ -257,5 +260,34 @@ public class DocumentVersion implements java.io.Serializable, Cloneable {
 
   public String getOriginalPath() {
     return originalPath;
+  }
+
+  public DocumentVersion copy() {
+    DocumentVersion copy = new DocumentVersion();
+    copy.pk = pk;
+    copy.majorNumber = majorNumber;
+    copy.minorNumber = minorNumber;
+    copy.authorId = authorId;
+    copy.creationDate = creationDate;
+    copy.comments = comments;
+    copy.type = type;
+    copy.physicalName = physicalName;
+    copy.logicalName = logicalName;
+    copy.size = size;
+    copy.instanceId = instanceId;
+    copy.xmlForm = xmlForm;
+    copy.creatorName = creatorName;
+    copy.xmlModelContentType = xmlModelContentType;
+    copy.removeAfterImport = removeAfterImport;
+    copy.originalPath = originalPath;
+    if (xmlModelContentType != null) {
+      copy.xmlModelContentType = new XMLModelContentType(xmlModelContentType.getName());
+      List<XMLField> fields = copy.xmlModelContentType.getFields()
+          .stream()
+          .map(f -> new XMLField(f.getName(), f.getValue()))
+          .collect(Collectors.toList());
+      copy.xmlModelContentType.setFields(fields);
+    }
+    return copy;
   }
 }

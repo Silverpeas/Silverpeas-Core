@@ -21,27 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
+package org.silverpeas.core.test.rule;
 
-package org.silverpeas.core.pdc.tree.model;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 
-import org.silverpeas.core.i18n.BeanTranslation;
-import org.silverpeas.core.pdc.pdc.model.AxisHeaderI18N;
+/**
+ * @author Yohann Chastagnier
+ */
+public class LibCoreCommonAPIRule extends CommonAPITestRule {
 
-public class TreeNodeI18N extends BeanTranslation implements java.io.Serializable {
-
-  private static final long serialVersionUID = 7977604222849839444L;
-
-  public TreeNodeI18N() {
+  @Override
+  protected void beforeEvaluate() {
+    super.beforeEvaluate();
+    clearCacheData();
   }
 
-  public TreeNodeI18N(int nodeId, String lang, String name, String description) {
-    super(lang, name, description);
-    setObjectId(Integer.toString(nodeId));
-  }
-
-  public TreeNodeI18N(final AxisHeaderI18N otherTranslation) {
-    super(otherTranslation);
+  private void clearCacheData() {
+    CacheServiceProvider.getRequestCacheService().clearAllCaches();
+    CacheServiceProvider.getThreadCacheService().clearAllCaches();
   }
 }

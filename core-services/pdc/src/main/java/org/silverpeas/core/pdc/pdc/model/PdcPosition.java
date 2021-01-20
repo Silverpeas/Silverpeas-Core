@@ -23,17 +23,23 @@
  */
 package org.silverpeas.core.pdc.pdc.model;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
-
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.TableGenerator;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A position of a content on some axis of the classification plan (named PdC). The positions of a
@@ -46,7 +52,7 @@ import javax.validation.constraints.Size;
  * "France / Rhônes-Alpes / Isère / Grenoble" where Grenoble is the last term of the axis valuation.
  */
 @Entity
-public class PdcPosition implements Serializable, Cloneable {
+public class PdcPosition implements Serializable {
 
   private static final long serialVersionUID = 665144316569539208L;
 
@@ -122,11 +128,10 @@ public class PdcPosition implements Serializable, Cloneable {
     return this;
   }
 
-  @Override
-  protected PdcPosition clone() {
+  protected PdcPosition copy() {
     PdcPosition position = new PdcPosition();
     for (PdcAxisValue aValue : axisValues) {
-      position.getValues().add(aValue.clone());
+      position.getValues().add(aValue.copy());
     }
     return position;
   }

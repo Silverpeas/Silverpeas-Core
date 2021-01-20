@@ -63,7 +63,7 @@ import static org.silverpeas.core.util.annotation.ClassAnnotationUtil
  */
 @MappedSuperclass
 public abstract class AbstractJpaEntity<T extends IdentifiableEntity, U extends EntityIdentifier>
-    implements IdentifiableEntity, Cloneable {
+    implements IdentifiableEntity {
 
   @EmbeddedId
   private U id;
@@ -108,24 +108,6 @@ public abstract class AbstractJpaEntity<T extends IdentifiableEntity, U extends 
       return matcher.isEquals();
     }
     return false;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see java.lang.Object#clone()
-   */
-  @SuppressWarnings({"unchecked", "CloneDoesntDeclareCloneNotSupportedException"})
-  @Override
-  public T clone() {
-    AbstractJpaEntity entity;
-    try {
-      entity = (AbstractJpaEntity) super.clone();
-      entity.setId(null);
-    } catch (final CloneNotSupportedException e) {
-      SilverLogger.getLogger(this).error(e);
-      entity = null;
-    }
-    return (T) entity;
   }
 
   /**
@@ -174,7 +156,7 @@ public abstract class AbstractJpaEntity<T extends IdentifiableEntity, U extends 
 
   private U newIdentifierInstance() {
     try {
-      return getEntityIdentifierClass().newInstance();
+      return getEntityIdentifierClass().getConstructor().newInstance();
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e);
     }

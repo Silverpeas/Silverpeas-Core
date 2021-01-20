@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.util.logging.SilverLogger;
-
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -33,6 +31,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.MapsId;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -50,7 +49,7 @@ import java.util.stream.Stream;
  * @author mmoquillon
  */
 @Embeddable
-public class AttributeSet implements Cloneable, Iterable<Map.Entry<String, String>> {
+public class AttributeSet implements Serializable, Iterable<Map.Entry<String, String>> {
 
   @ElementCollection(fetch = FetchType.EAGER)
   @MapsId
@@ -168,16 +167,14 @@ public class AttributeSet implements Cloneable, Iterable<Map.Entry<String, Strin
     addAllFrom(attributes);
   }
 
-  @Override
-  public AttributeSet clone() {
-    AttributeSet clone = null;
-    try {
-      clone = (AttributeSet) super.clone();
-      clone.attributes = new HashMap<>(attributes);
-    } catch (CloneNotSupportedException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
-    return clone;
+  /**
+   * Copies this object into another one.
+   * @return the copied object.
+   */
+  public AttributeSet copy() {
+    AttributeSet copy = new AttributeSet();
+    copy.attributes = new HashMap<>(attributes);
+    return copy;
   }
 
   Map<String, String> getData() {

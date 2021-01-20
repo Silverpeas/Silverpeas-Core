@@ -95,10 +95,24 @@ public class NotificationResourceData
   private transient String currentLanguage = DisplayI18NHelper.getDefaultLanguage();
 
   /**
+   * Constructs a new empty {@link NotificationResourceData} instance.
+   */
+  public NotificationResourceData() {
+  }
+
+  /**
+   * Constructs a new instance as a copy of the specified notification resource data.
+   * @param notificationResourceData the {@link NotificationResourceData} instance to copy.
+   */
+  public NotificationResourceData(final NotificationResourceData notificationResourceData) {
+    fillFrom(notificationResourceData);
+  }
+
+  /**
    * Copying all data from the given resource excepted the id
    * @param notificationResourceData the data from which all is copied.
    */
-  public void fillFrom(final NotificationResourceData notificationResourceData) {
+  public final void fillFrom(final NotificationResourceData notificationResourceData) {
     this.resourceId = notificationResourceData.resourceId;
     this.resourceType = notificationResourceData.resourceType;
     this.resourceName = notificationResourceData.resourceName;

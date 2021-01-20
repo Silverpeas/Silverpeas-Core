@@ -43,6 +43,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Optional;
@@ -166,7 +167,7 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
    * example for persistent jobs.
    * @param schedulingTask the scheduling task to execute.
    */
-  protected abstract void execute(final SchedulingTask schedulingTask)
+  protected abstract <T> void execute(final SchedulingTask<T> schedulingTask)
       throws org.quartz.SchedulerException;
 
   private void fireNow(final Date expectedFireTime, final Job job,
@@ -178,8 +179,9 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
     Class<? extends JobExecutor> jobExecutorClass = getJobExecutor();
     JobExecutor executor;
     try {
-      executor = jobExecutorClass.newInstance();
-    } catch (InstantiationException | IllegalAccessException e) {
+      executor = jobExecutorClass.getDeclaredConstructor().newInstance();
+    } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
+        IllegalAccessException e) {
       throw new org.quartz.SchedulerException(e.getMessage(), e);
     }
     org.silverpeas.core.scheduler.JobExecutionContext context =

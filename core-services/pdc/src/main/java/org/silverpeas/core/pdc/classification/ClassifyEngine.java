@@ -270,10 +270,10 @@ public class ClassifyEngine implements SilverContentPostUpdate {
     return false;
   }
 
-  public int isPositionAlreadyExists(int nSilverObjectId, Position position)
+  public <T extends Value> int isPositionAlreadyExists(int nSilverObjectId, Position<T> position)
       throws ClassifyEngineException {
     // Convert the Axis Ids
-    List<Value> alValues = position.getValues();
+    List<T> alValues = position.getValues();
     for (Value value : alValues) {
       value.setPhysicalAxisId(getPhysicalAxisId(value.getAxisId()));
     }
@@ -300,15 +300,15 @@ public class ClassifyEngine implements SilverContentPostUpdate {
    * Classify the given SilverObjectid within the classifyEngine If the given connection is null,
    * then we have to open a connection and close it Return the PositionId
    */
-  public int classifySilverObject(Connection connection, int silverObjectId,
-      Position position) throws ClassifyEngineException {
+  public <T extends Value> int classifySilverObject(Connection connection, int silverObjectId,
+      Position<T> position) throws ClassifyEngineException {
     Objects.requireNonNull(connection);
 
     // Check the minimum required
     this.checkParameters(silverObjectId, position);
 
     // Convert the Axis Ids
-    List<Value> alValues = position.getValues();
+    List<T> alValues = position.getValues();
     for (Value value : alValues) {
       value.setPhysicalAxisId(getPhysicalAxisId(value.getAxisId()));
     }
@@ -381,13 +381,13 @@ public class ClassifyEngine implements SilverContentPostUpdate {
    * update the given new position within the classifyEngine If the given connection is null, then
    * we have to open a connection and close it
    */
-  public void updateSilverObjectPosition(final Position newPosition)
+  public <T extends Value> void updateSilverObjectPosition(final Position<T> newPosition)
       throws ClassifyEngineException {
     // Check the minimum required
     this.checkPosition(newPosition);
 
     // Convert the Axis Ids
-    List<Value> alValues = newPosition.getValues();
+    List<T> alValues = newPosition.getValues();
     for (Value value : alValues) {
       value.setPhysicalAxisId(getPhysicalAxisId(value.getAxisId()));
     }
@@ -436,7 +436,7 @@ public class ClassifyEngine implements SilverContentPostUpdate {
   /*
    * Find all the SilverObjectId corresponding to the given criterias and the given Join Statement
    */
-  public List<Integer> findSilverOjectByCriterias(List<Criteria> alGivenCriterias,
+  public List<Integer> findSilverOjectByCriterias(List<? extends Criteria> alGivenCriterias,
       List<String> instanceIds, JoinStatement joinStatementContent,
       String afterDate, String beforeDate, boolean recursiveSearch,
       boolean visibilitySensitive) throws ClassifyEngineException {
@@ -493,7 +493,7 @@ public class ClassifyEngine implements SilverContentPostUpdate {
   /*
    * Find all the Positions corresponding to the given SilverObjectId
    */
-  public List<Position> findPositionsBySilverOjectId(int nSilverObjectId)
+  public List<Position<Value>> findPositionsBySilverOjectId(int nSilverObjectId)
       throws ClassifyEngineException {
     // Check the minimum required
     this.checkSilverObjectId(nSilverObjectId);
@@ -507,7 +507,7 @@ public class ClassifyEngine implements SilverContentPostUpdate {
            final ResultSet resSet = prepStmt.executeQuery()) {
 
         // Fetch the results and convert them in Positions
-        final List<Position> allResults = new ArrayList<>();
+        final List<Position<Value>> allResults = new ArrayList<>();
         while (resSet.next()) {
           Position<Value> position = new Position<>();
           position.setPositionId(resSet.getInt(1));
@@ -648,7 +648,7 @@ public class ClassifyEngine implements SilverContentPostUpdate {
     }
   }
 
-  private void checkPosition(Position<Value> position) throws ClassifyEngineException {
+  private <T extends Value> void checkPosition(Position<T> position) throws ClassifyEngineException {
     if (position != null) {
       position.checkPosition();
     } else {
@@ -656,7 +656,7 @@ public class ClassifyEngine implements SilverContentPostUpdate {
     }
   }
 
-  private void checkParameters(int nSilverObjectId, Position<Value> position)
+  private <T extends Value> void checkParameters(int nSilverObjectId, Position<T> position)
       throws ClassifyEngineException {
     this.checkSilverObjectId(nSilverObjectId);
     this.checkPosition(position);

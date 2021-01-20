@@ -47,7 +47,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
+import org.silverpeas.core.test.rule.LibCoreCommonAPIRule;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.Pair;
 
@@ -138,7 +138,7 @@ public class TestPublicationAccessControllerFilter {
   private User user;
 
   @Rule
-  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
+  public LibCoreCommonAPIRule commonAPIRule = new LibCoreCommonAPIRule();
 
   @Before
   public void setup() {
@@ -146,13 +146,13 @@ public class TestPublicationAccessControllerFilter {
     when(user.getDisplayedName()).thenReturn(USER_ID);
     final UserProvider userProvider = mock(UserProvider.class);
     when(userProvider.getUser(anyString())).thenReturn(user);
-    commonAPI4Test.injectIntoMockedBeanContainer(userProvider);
+    commonAPIRule.injectIntoMockedBeanContainer(userProvider);
     publicationService = mock(PublicationService.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(publicationService);
+    commonAPIRule.injectIntoMockedBeanContainer(publicationService);
     nodeService = mock(NodeService.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(nodeService);
+    commonAPIRule.injectIntoMockedBeanContainer(nodeService);
     organizationController = mock(OrganizationController.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(organizationController);
+    commonAPIRule.injectIntoMockedBeanContainer(organizationController);
     testContext = new TestContext();
     PUB_1_NODE_38_26_SAME_GED_ALIAS.clearAliases().addAliasLocation(NODE_38_62);
     PUB_4_NODE_83_620_OTHER_GED_ALIAS_SPE.clearAliases().addAliasLocation(NODE_ALIAS_OTHER_SPE);

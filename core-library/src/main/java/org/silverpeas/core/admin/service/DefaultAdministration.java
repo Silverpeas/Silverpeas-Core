@@ -5363,8 +5363,7 @@ class DefaultAdministration implements Administration {
       // cannot paste component on root
       return null;
     }
-    ComponentInst newCompo = (ComponentInst) getComponentInst(pasteDetail.getFromComponentId()).
-        clone();
+    ComponentInst newCompo = getComponentInst(pasteDetail.getFromComponentId()).copy();
     SpaceInst destinationSpace = getSpaceInstById(pasteDetail.getToSpaceId());
 
     String lang = newCompo.getLanguage();

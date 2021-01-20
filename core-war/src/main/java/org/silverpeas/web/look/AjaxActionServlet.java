@@ -130,7 +130,6 @@ public class AjaxActionServlet extends HttpServlet {
           return jsonObject;
         });
       } else {
-        // TODO bundle this message error
         json = JSONCodec.encodeObject(
             jsonObject -> jsonObject.put(SUCCESS, false).put(MESSAGE, "Technical problem in DAO"));
       }

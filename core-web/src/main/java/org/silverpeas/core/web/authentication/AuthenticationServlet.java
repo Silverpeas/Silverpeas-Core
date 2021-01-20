@@ -99,57 +99,63 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
    * @throws ServletException if the request for the POST couldn't be handled.
    */
   @Override
-  public void doPost(HttpServletRequest servletRequest, HttpServletResponse response)
-      throws IOException, ServletException {
-    HttpRequest request = HttpRequest.decorate(servletRequest);
+  public void doPost(HttpServletRequest servletRequest, HttpServletResponse response) {
+    try {
+      HttpRequest request = HttpRequest.decorate(servletRequest);
 
-    final UserSessionStatus userSessionStatus = existOpenedUserSession(servletRequest);
-    final AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
-    if (userSessionStatus.isValid()) {
-      final User connectedUser = userSessionStatus.getInfo().getUserDetail();
-      // Prevent trashing the user session on SSO authentication when user behind the current
-      // session is the one authenticated for SSO.
-      if (authenticationParameters.isSsoMode() &&
-          connectedUser.getLogin().equals(authenticationParameters.getLogin()) &&
-          connectedUser.getDomainId().equals(authenticationParameters.getDomainId())) {
-        SilverLogger.getLogger("silverpeas.sso").debug(() -> format(
-            "SSO Authentication of PRINCIPAL {0} on domain {1}, keeping existing user session alive {2}",
-            connectedUser.getLogin(), connectedUser.getDomainId(), userSessionStatus.getInfo().getSessionId()));
-        forward(request, response, "/Login");
-        return;
+      final UserSessionStatus userSessionStatus = existOpenedUserSession(servletRequest);
+      final AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
+      if (userSessionStatus.isValid()) {
+        final User connectedUser = userSessionStatus.getInfo().getUserDetail();
+        // Prevent trashing the user session on SSO authentication when user behind the current
+        // session is the one authenticated for SSO.
+        if (authenticationParameters.isSsoMode() &&
+            connectedUser.getLogin().equals(authenticationParameters.getLogin()) &&
+            connectedUser.getDomainId().equals(authenticationParameters.getDomainId())) {
+          SilverLogger.getLogger("silverpeas.sso")
+              .debug(() -> format(
+                  "SSO Authentication of PRINCIPAL {0} on domain {1}, keeping existing user session alive {2}",
+                  connectedUser.getLogin(), connectedUser.getDomainId(),
+                  userSessionStatus.getInfo().getSessionId()));
+          forward(request, response, "/Login");
+          return;
+        }
+        final HttpSession session = servletRequest.getSession(false);
+        silverpeasSessionOpener.closeSession(session);
       }
-      final HttpSession session = servletRequest.getSession(false);
-      silverpeasSessionOpener.closeSession(session);
-    }
 
-    // Get an existing session or creates a new one.
-    HttpSession session = request.getSession();
+      // Get an existing session or creates a new one.
+      HttpSession session = request.getSession();
 
-    if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-      request.setCharacterEncoding(Charsets.UTF_8.name());
-    }
-    if (!userSessionStatus.isValid() && request.isWithinAnonymousUserSession()) {
-      // invalidate previous Wildfly session (directly because anonymous session are not managed
-      // by Silverpeas SessionManager)
-      session.invalidate();
-      // create a new Wildfly session to process correctly the authentication process
-      request.getSession(true);
-    }
+      if (!StringUtil.isDefined(request.getCharacterEncoding())) {
+        request.setCharacterEncoding(Charsets.UTF_8.name());
+      }
+      if (!userSessionStatus.isValid() && request.isWithinAnonymousUserSession()) {
+        // invalidate previous Wildfly session (directly because anonymous session are not managed
+        // by Silverpeas SessionManager)
+        session.invalidate();
+        // create a new Wildfly session to process correctly the authentication process
+        request.getSession(true);
+      }
 
-    String authenticationKey = authenticate(request, authenticationParameters);
+      String authenticationKey = authenticate(request, authenticationParameters);
 
-    // Verify if the user can try again to login.
-    UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier
-        = AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(
-            authenticationParameters.getCredential());
-    userCanTryAgainToLoginVerifier.clearSession(request);
+      // Verify if the user can try again to login.
+      UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier =
+          AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(
+              authenticationParameters.getCredential());
+      userCanTryAgainToLoginVerifier.clearSession(request);
 
-    if (authService.isInError(authenticationKey)) {
-      processError(authenticationKey, request, response, authenticationParameters,
-          userCanTryAgainToLoginVerifier);
-    } else {
-      openNewSession(authenticationKey, request, response, authenticationParameters,
-          userCanTryAgainToLoginVerifier);
+      if (authService.isInError(authenticationKey)) {
+        processError(authenticationKey, request, response, authenticationParameters,
+            userCanTryAgainToLoginVerifier);
+      } else {
+        openNewSession(authenticationKey, request, response, authenticationParameters,
+            userCanTryAgainToLoginVerifier);
+      }
+    } catch (ServletException | IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 

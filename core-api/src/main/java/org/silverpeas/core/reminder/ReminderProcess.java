@@ -89,7 +89,7 @@ public class ReminderProcess implements SchedulerEventListener {
   }
 
   private void notifyUserAbout(final Reminder reminder) {
-    final Reminder reminderCopy = reminder.clone();
+    final Reminder reminderCopy = reminder.copy();
     BackgroundProcessTask.push(new BackgroundReminderUserNotificationProcess(reminderCopy));
   }
 

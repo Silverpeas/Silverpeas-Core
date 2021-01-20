@@ -35,7 +35,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,13 +47,13 @@ import java.util.StringTokenizer;
  */
 @XmlRootElement(name = "fieldTemplate")
 @XmlAccessorType(XmlAccessType.NONE)
-public class GenericFieldTemplate implements FieldTemplate, Serializable, Cloneable {
+public class GenericFieldTemplate implements FieldTemplate {
 
   private static final long serialVersionUID = 1L;
   private static final String TYPE_MANAGER = "TypeManager";
   @XmlElement(required = true)
   private String fieldName;
-  private Class fieldImpl;
+  private Class<? extends Field> fieldImpl;
   private String typeName;
   @XmlElement(required = true)
   private String displayerName = "";
@@ -106,7 +105,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
    * Builds a GenericFieldTemplate from a field name and a field implementation. You must use the
    * set and add methods to change any default value.
    */
-  public GenericFieldTemplate(String fieldName, Class fieldImpl) throws FormException {
+  public GenericFieldTemplate(String fieldName, Class<? extends Field> fieldImpl) throws FormException {
     this.fieldName = fieldName;
     this.fieldImpl = fieldImpl;
 
@@ -382,7 +381,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   @SuppressWarnings("unchecked")
   public Field getEmptyField(int occurrence) throws FormException {
     try {
-      Constructor<Field> constructor = fieldImpl.getConstructor();
+      Constructor<? extends Field> constructor = fieldImpl.getConstructor();
       Field field = constructor.newInstance();
       field.setName(fieldName);
       field.setOccurrence(occurrence);
@@ -484,30 +483,28 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
     this.usedAsFacet = usedAsFacet;
   }
 
-  @SuppressWarnings({"CloneDoesntDeclareCloneNotSupportedException", "CloneDoesntCallSuperClone"})
-  @Override
-  public GenericFieldTemplate clone() {
-    GenericFieldTemplate clone;
+  public GenericFieldTemplate copy() {
+    GenericFieldTemplate copy;
     try {
-      clone = new GenericFieldTemplate();
-      clone.setDisabled(this.isDisabled());
-      clone.setDisplayerName(this.getDisplayerName());
-      clone.setFieldName(this.getFieldName());
-      clone.setHidden(this.isHidden());
-      clone.setLabel(this.getLabel());
-      clone.setLabelsObj(this.getLabelsObj());
-      clone.setMandatory(this.isMandatory());
-      clone.setParametersObj(this.getParametersObj());
-      clone.setReadOnly(this.isReadOnly());
-      clone.setSearchable(this.isSearchable());
-      clone.setTemplateName(this.getTemplateName());
-      clone.setTypeName(this.getTypeName());
-      clone.setUsedAsFacet(isUsedAsFacet());
-      clone.setMaximumNumberOfOccurrences(getMaximumNumberOfOccurrences());
+      copy = new GenericFieldTemplate();
+      copy.setDisabled(this.isDisabled());
+      copy.setDisplayerName(this.getDisplayerName());
+      copy.setFieldName(this.getFieldName());
+      copy.setHidden(this.isHidden());
+      copy.setLabel(this.getLabel());
+      copy.setLabelsObj(this.getLabelsObj());
+      copy.setMandatory(this.isMandatory());
+      copy.setParametersObj(this.getParametersObj());
+      copy.setReadOnly(this.isReadOnly());
+      copy.setSearchable(this.isSearchable());
+      copy.setTemplateName(this.getTemplateName());
+      copy.setTypeName(this.getTypeName());
+      copy.setUsedAsFacet(isUsedAsFacet());
+      copy.setMaximumNumberOfOccurrences(getMaximumNumberOfOccurrences());
     } catch (FormException e) {
       throw new SilverpeasRuntimeException(e);
     }
-    return clone;
+    return copy;
   }
 
   @Override

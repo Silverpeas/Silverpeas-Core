@@ -63,6 +63,17 @@ public class WysiwygContent implements ContributionContent<String> {
   }
 
   /**
+   * Constructs a copy of the specified other content.
+   * @param content the WYSIWYG content to copy.
+   */
+  public WysiwygContent(final WysiwygContent content) {
+    this.contribution = content.contribution;
+    this.text = content.text;
+    this.author = content.author;
+    this.modified = content.modified;
+  }
+
+  /**
    * Gets the WYSIWYG content of the specified contribution.
    * @param contribution a localized contribution.
    * @return the WYSIWYG content of the contribution or null if no such content exists.

@@ -30,6 +30,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -280,6 +281,8 @@ public class XmlSettingBundle implements SilverpeasBundle {
       }
       try (InputStream stream = this.loader.apply(theName)) {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        builderFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         DocumentBuilder documentBuilder = builderFactory.newDocumentBuilder();
         InputSource inputSource = new InputSource(stream);
         dom = documentBuilder.parse(inputSource);

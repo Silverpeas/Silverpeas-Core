@@ -38,7 +38,7 @@ import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
+import org.silverpeas.core.test.rule.LibCoreCommonAPIRule;
 import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.Arrays;
@@ -86,14 +86,14 @@ public class TestComponentAccessControllerFilter {
   private User user;
 
   @Rule
-  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
+  public LibCoreCommonAPIRule commonAPIRule = new LibCoreCommonAPIRule();
 
   @Before
   public void setup() {
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
     organizationController = mock(OrganizationController.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(organizationController);
+    commonAPIRule.injectIntoMockedBeanContainer(organizationController);
     testContext = new TestContext();
   }
 

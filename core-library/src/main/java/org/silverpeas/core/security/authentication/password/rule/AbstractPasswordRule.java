@@ -29,6 +29,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
 import java.util.MissingResourceException;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +44,7 @@ public abstract class AbstractPasswordRule implements PasswordRule {
   protected static SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.password.settings.password");
   private PasswordRuleType passwordRuleType;
+  private Random random = new Random();
 
   protected AbstractPasswordRule(final PasswordRuleType passwordRuleType) {
     this.passwordRuleType = passwordRuleType;
@@ -83,7 +85,7 @@ public abstract class AbstractPasswordRule implements PasswordRule {
    * @return
    */
   protected int random(int maxValue) {
-    return (int) (maxValue * Math.random());
+    return (int) (maxValue * random.nextDouble());
   }
 
   /**
@@ -100,7 +102,7 @@ public abstract class AbstractPasswordRule implements PasswordRule {
     String translation;
     try {
       translation =
-          (params != null && params.length > 0) ? messages.getStringWithParams(key, params) :
+          (params != null && params.length > 0) ? messages.getStringWithParams(key, (Object[]) params) :
               messages.getString(key);
     } catch (MissingResourceException ex) {
       translation = "";
@@ -115,9 +117,9 @@ public abstract class AbstractPasswordRule implements PasswordRule {
    * @return
    */
   protected Integer getIntegerFromSettings(final String key, final Integer defaultValue) {
-    Integer value = 0;
+    Integer value = defaultValue;
     try {
-      value = settings.getInteger(key, 0);
+      value = settings.getInteger(key, defaultValue);
     } catch (NumberFormatException nfe) {
       // Nothing to do
     }

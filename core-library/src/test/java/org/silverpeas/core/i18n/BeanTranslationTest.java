@@ -37,13 +37,13 @@ import static org.hamcrest.Matchers.sameInstance;
  * @author Yohann Chastagnier
  */
 @UnitTest
-public class BeanTranslationTest {
+class BeanTranslationTest {
 
   private TestI18NBean testI18NBean = new TestI18NBean();
 
   @SuppressWarnings("unchecked")
   @Test
-  public void getClonedTranslations() {
+  void getClonedTranslations() {
     Map<String, TestI18N> translations = new HashMap<String, TestI18N>();
     translations.put("fr", new TestI18N("fr", "nom", "description", "valeur", new ObjectClonable(),
         new ObjectNotClonable()));
@@ -94,39 +94,6 @@ public class BeanTranslationTest {
     }
   }
 
-  public class TestI18N extends BeanTranslation {
-    private static final long serialVersionUID = 353607407808930532L;
-
-    private String value;
-    private ObjectClonable objectClonable;
-    private ObjectNotClonable objectNotClonable;
-
-    public TestI18N(String lang, String name, String description, String value,
-        ObjectClonable objectClonable, ObjectNotClonable objectNotClonable) {
-      super(lang, name, description);
-      this.value = value;
-      this.objectClonable = objectClonable;
-      this.objectNotClonable = objectNotClonable;
-    }
-
-    public String getValue() {
-      return value;
-    }
-
-    public ObjectClonable getObjectClonable() {
-      return objectClonable;
-    }
-
-    public ObjectNotClonable getObjectNotClonable() {
-      return objectNotClonable;
-    }
-
-    @Override
-    protected TestI18N clone() {
-      return (TestI18N) super.clone();
-    }
-  }
-
   public class ObjectNotClonable {
     public String value = "tata";
   }
@@ -145,7 +112,4 @@ public class BeanTranslationTest {
     }
   }
 
-  public class TestI18NBean extends AbstractI18NBean<TestI18N> {
-    private static final long serialVersionUID = -7696451005336074443L;
-  }
 }

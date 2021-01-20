@@ -26,7 +26,7 @@ package org.silverpeas.core.util;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPIRule;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -41,7 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class DateUtilTest {
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  public CommonAPIRule commonAPIRule = new CommonAPIRule();
 
   private static final String LANGUAGE = "en";
 

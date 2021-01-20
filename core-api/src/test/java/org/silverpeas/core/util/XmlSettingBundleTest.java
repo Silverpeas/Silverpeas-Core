@@ -26,7 +26,7 @@ package org.silverpeas.core.util;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPIRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
@@ -45,7 +45,7 @@ public class XmlSettingBundleTest {
   private static final String XML_SETTING_BUNDLE = "org.silverpeas.util.settings.dbDriverSettings";
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  public CommonAPIRule commonAPIRule = new CommonAPIRule();
 
   @Rule
   public MavenTargetDirectoryRule mavenTargetDirectory = new MavenTargetDirectoryRule(this);

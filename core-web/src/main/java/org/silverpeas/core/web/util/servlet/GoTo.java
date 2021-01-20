@@ -30,6 +30,7 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -38,7 +39,6 @@ import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,14 +58,12 @@ public abstract class GoTo extends HttpServlet {
   protected SilverpeasWebUtil util;
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse res) {
     final HttpRequest httpRequest = HttpRequest.decorate(req);
     final Context context = new Context(httpRequest, res).init();
     String id = getObjectId(httpRequest);
@@ -109,26 +107,40 @@ public abstract class GoTo extends HttpServlet {
     return MANUAL_JSON_RESPONSE_PREFIX + jsonContent;
   }
 
-  private void objectNotFound(final Context context) throws IOException {
-    if (context.isFromResponsiveWindow()) {
-      sendJsonResponse(context, JSONCodec.encodeObject(o -> o.put("errorMessage",
-          getGeneralLocalizationBundle(context.getLanguage()).getString("GML.DocumentNotFound"))));
-    } else {
-      boolean isLoggedIn = isUserLogin(context.getRequest());
-      if (!isLoggedIn) {
-        context.getResponse().sendRedirect("/weblib/notFound.html");
+  private void objectNotFound(final Context context) {
+    try {
+      if (context.isFromResponsiveWindow()) {
+        sendJsonResponse(context, JSONCodec.encodeObject(o -> o.put("errorMessage",
+            getGeneralLocalizationBundle(context.getLanguage()).getString(
+                "GML.DocumentNotFound"))));
       } else {
-        context.getResponse().sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
+        boolean isLoggedIn = isUserLogin(context.getRequest());
+        if (!isLoggedIn) {
+          context.getResponse().sendRedirect("/weblib/notFound.html");
+        } else {
+          context.getResponse()
+              .sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
+        }
       }
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      context.getResponse().setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 
-  private void accessForbidden(final Context context) throws IOException {
-    if (context.isFromResponsiveWindow()) {
-      sendJsonResponse(context, JSONCodec.encodeObject(o -> o.put("errorMessage",
-          getGeneralLocalizationBundle(context.getLanguage()).getString("GML.ForbiddenAccessContent"))));
-    } else {
-      context.getResponse().sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
+  private void accessForbidden(final Context context) {
+    try {
+      if (context.isFromResponsiveWindow()) {
+        sendJsonResponse(context, JSONCodec.encodeObject(o -> o.put("errorMessage",
+            getGeneralLocalizationBundle(context.getLanguage()).getString(
+                "GML.ForbiddenAccessContent"))));
+      } else {
+        context.getResponse()
+            .sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
+      }
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      context.getResponse().setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 

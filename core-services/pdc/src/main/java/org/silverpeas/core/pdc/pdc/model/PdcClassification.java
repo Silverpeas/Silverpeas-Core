@@ -70,7 +70,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
     @NamedQuery(name = "findByPdcAxisValues", query = "select distinct c from PdcClassification c" +
         " join c.positions p join p.axisValues v where v in :values")})
 public class PdcClassification
-    extends BasicJpaEntity<PdcClassification, UniqueLongIdentifier> implements Cloneable {
+    extends BasicJpaEntity<PdcClassification, UniqueLongIdentifier> {
 
   /**
    * Represents an empty classification (id est no classification on the PdC).
@@ -336,14 +336,18 @@ public class PdcClassification
         + nodeId + '}';
   }
 
-  @Override
-  public PdcClassification clone() {
+  /**
+   * Copies this classification on the PdC. The copy isn't persisted and hence its identifier is not
+   * set.
+   * @return a copy of this classification.
+   */
+  public PdcClassification copy() {
     PdcClassification classification = new PdcClassification().ofContent(contentId).
         forNode(nodeId).
         inComponentInstance(instanceId);
     classification.modifiable = modifiable;
     for (PdcPosition pdcPosition : positions) {
-      classification.getPositions().add(pdcPosition.clone());
+      classification.getPositions().add(pdcPosition.copy());
     }
     return classification;
   }

@@ -43,7 +43,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.test.UnitTest;
-import org.silverpeas.core.test.rule.LibCoreCommonAPI4Test;
+import org.silverpeas.core.test.rule.LibCoreCommonAPIRule;
 import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.ArrayList;
@@ -75,15 +75,15 @@ public class TestSimpleDocumentAccessController {
   private User user;
 
   @Rule
-  public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
+  public LibCoreCommonAPIRule commonAPIRule = new LibCoreCommonAPIRule();
   @Before
   public void setup() {
     user = mock(User.class);
     when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
     organizationController = mock(OrganizationController.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(organizationController);
+    commonAPIRule.injectIntoMockedBeanContainer(organizationController);
     publicationService = mock(PublicationService.class);
-    commonAPI4Test.injectIntoMockedBeanContainer(publicationService);
+    commonAPIRule.injectIntoMockedBeanContainer(publicationService);
     nodeAccessController = mock(NodeAccessControl.class);
     componentAccessController = mock(ComponentAccessControl.class);
     ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);

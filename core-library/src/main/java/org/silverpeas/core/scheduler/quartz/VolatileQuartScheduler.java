@@ -72,12 +72,13 @@ public class VolatileQuartScheduler extends QuartzScheduler {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   protected Class<VolatileJobExecutor> getJobExecutor() {
     return VolatileJobExecutor.class;
   }
 
   @Override
-  protected void execute(final SchedulingTask schedulingTask) throws SchedulerException {
+  protected <T> void execute(final SchedulingTask<T> schedulingTask) throws SchedulerException {
     schedulingTask.execute();
   }
 

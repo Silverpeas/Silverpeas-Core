@@ -35,9 +35,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnableSilverTestEnv
-public class ImageProfilTest {
+class ImageProfilTest {
 
   @AfterEach
   public void prepareDir() throws Exception {
@@ -45,7 +46,7 @@ public class ImageProfilTest {
   }
 
   @Test
-  public void testIsImage() {
+  void testIsImage() {
     ImageProfil imageProfil = new ImageProfil("nidale.jpg");
     assertEquals(true, imageProfil.isImage());
     imageProfil = new ImageProfil("nidale.bmp");
@@ -59,14 +60,14 @@ public class ImageProfilTest {
   }
 
   @Test
-  public void testExtractImage() throws IOException {
+  void testExtractImage() throws IOException {
     ImageProfil imageProfil = new ImageProfil("SilverAdmin.jpg");
     try (InputStream fis = this.getClass().getResourceAsStream("/SilverAdmin.jpg")) {
       imageProfil.saveImage(fis);
     }
     try (InputStream image = imageProfil.getImage();
          InputStream fis = this.getClass().getResourceAsStream("/SilverAdmin.jpg")) {
-      IOUtils.contentEquals(fis, image);
+      assertTrue(IOUtils.contentEquals(fis, image));
     }
   }
 

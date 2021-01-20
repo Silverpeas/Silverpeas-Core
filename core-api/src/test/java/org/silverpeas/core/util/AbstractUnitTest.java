@@ -29,11 +29,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.rule.CommonAPIRule;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SilverpeasBundle;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -49,7 +46,7 @@ import static org.mockito.Mockito.when;
 public abstract class AbstractUnitTest {
 
   @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+  public CommonAPIRule commonAPIRule = new CommonAPIRule();
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();

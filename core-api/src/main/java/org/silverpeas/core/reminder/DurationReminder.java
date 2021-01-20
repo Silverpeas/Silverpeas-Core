@@ -81,6 +81,14 @@ public class DurationReminder extends Reminder {
   @Enumerated(EnumType.STRING)
   private TimeUnit timeUnit;
 
+  @Override
+  public Reminder copy() {
+    DurationReminder reminder = (DurationReminder) super.copy();
+    reminder.duration = duration;
+    reminder.timeUnit = timeUnit;
+    return reminder;
+  }
+
   /**
    * Constructs a new reminder about the given contribution for the system.
    * @param contributionId the unique identifier of a contribution.

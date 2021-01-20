@@ -23,9 +23,7 @@
  */
 package org.silverpeas.core.importexport.versioning;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,10 +31,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public class Document implements java.io.Serializable, Cloneable {
+public class Document implements java.io.Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -102,17 +101,19 @@ public class Document implements java.io.Serializable, Cloneable {
         + status + ", instanceId = " + instanceId + " ];";
   }
 
-  /**
-   * Support Cloneable Interface
-   */
-  public Object clone() {
-    try {
-      return super.clone();
-    } catch (CloneNotSupportedException e) {
-      // this should never happened
-      SilverLogger.getLogger(this).silent(e);
-      throw new SilverpeasRuntimeException(e);
+  public Document copy() {
+    Document copy = new Document();
+    copy.pk = pk;
+    copy.foreignKey = foreignKey;
+    copy.name = name;
+    copy.description = description;
+    copy.status = status;
+    copy.instanceId = instanceId;
+    if (!versionsType.isEmpty()) {
+      copy.versionsType =
+          versionsType.stream().map(DocumentVersion::copy).collect(Collectors.toList());
     }
+    return copy;
   }
 
   public List<DocumentVersion> getVersionsType() {

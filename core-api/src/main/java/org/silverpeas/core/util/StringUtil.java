@@ -78,8 +78,46 @@ public class StringUtil extends StringUtils {
     return StringUtils.join(array, separator);
   }
 
+  /**
+   * <p>Abbreviates a String using ellipses. This will turn
+   * "Now is the time for all good men" into "...is the time for..."</p>
+   *
+   * <p>Works like {@code abbreviate(String, int)}, but allows you to specify
+   * a "left edge" offset.  Note that this left edge is not necessarily going to
+   * be the leftmost character in the result, or the first character following the
+   * ellipses, but it will appear somewhere in the result.
+   *
+   * <p>In no case will it return a String of length greater than
+   * {@code maxWidth}.</p>
+   *
+   * <pre>
+   * StringUtils.abbreviate(null, *, *)                = null
+   * StringUtils.abbreviate("", 0, 4)                  = ""
+   * StringUtils.abbreviate("abcdefghijklmno", -1, 10) = "abcdefg..."
+   * StringUtils.abbreviate("abcdefghijklmno", 0, 10)  = "abcdefg..."
+   * StringUtils.abbreviate("abcdefghijklmno", 1, 10)  = "abcdefg..."
+   * StringUtils.abbreviate("abcdefghijklmno", 4, 10)  = "abcdefg..."
+   * StringUtils.abbreviate("abcdefghijklmno", 5, 10)  = "...fghi..."
+   * StringUtils.abbreviate("abcdefghijklmno", 6, 10)  = "...ghij..."
+   * StringUtils.abbreviate("abcdefghijklmno", 8, 10)  = "...ijklmno"
+   * StringUtils.abbreviate("abcdefghijklmno", 10, 10) = "...ijklmno"
+   * StringUtils.abbreviate("abcdefghijklmno", 12, 10) = "...ijklmno"
+   * StringUtils.abbreviate("abcdefghij", 0, 3)        = IllegalArgumentException
+   * StringUtils.abbreviate("abcdefghij", 5, 6)        = IllegalArgumentException
+   * </pre>
+   * @param str the String to check, may be null
+   * @param offset left edge of source String
+   * @param maxWidth maximum length of result String, must be at least 4
+   * @return abbreviated String, {@code null} if null String input
+   * @throws IllegalArgumentException if the width is too small
+   */
+  public static String abbreviate(final String str, final int offset, final int maxWidth) {
+    return StringUtils.abbreviate(str, offset, maxWidth);
+  }
+
   public static boolean isDefined(String parameter) {
-    return (parameter != null && !parameter.trim().isEmpty() && !"null".equalsIgnoreCase(parameter));
+    return (parameter != null && !parameter.trim().isEmpty() &&
+        !"null".equalsIgnoreCase(parameter));
   }
 
   public static boolean isNotDefined(String parameter) {

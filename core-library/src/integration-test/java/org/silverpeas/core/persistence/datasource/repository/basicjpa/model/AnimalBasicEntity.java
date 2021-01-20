@@ -23,12 +23,16 @@
  */
 package org.silverpeas.core.persistence.datasource.repository.basicjpa.model;
 
+import org.hibernate.LazyInitializationException;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.persistence.datasource.repository.basicjpa.repository.EquipmentBasicEntityRepository;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * User: Yohann Chastagnier
@@ -92,9 +96,18 @@ public class AnimalBasicEntity
     return equipments;
   }
 
-  public AnimalBasicEntity setEquipments(
-      final List<EquipmentBasicEntity> equipmentCustomEntities) {
+  public AnimalBasicEntity setEquipments(final List<EquipmentBasicEntity> equipmentCustomEntities) {
     this.equipments = equipmentCustomEntities;
     return this;
+  }
+
+  public AnimalBasicEntity copy() {
+    AnimalBasicEntity entity = new AnimalBasicEntity();
+    entity.type = type;
+    entity.name = name;
+    entity.person = person;
+    entity.equipments =
+        equipments.stream().map(EquipmentBasicEntity::copy).collect(Collectors.toList());
+    return entity;
   }
 }

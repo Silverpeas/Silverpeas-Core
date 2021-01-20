@@ -191,7 +191,7 @@ public abstract class AbstractI18NBean<T extends BeanTranslation>
   public Map<String, T> getClonedTranslations() {
     Map<String, T> clonedTranslations = new HashMap<>(3);
     for (Map.Entry<String, T> entry : translations.entrySet()) {
-      clonedTranslations.put(entry.getKey(), (T) entry.getValue().clone());
+      clonedTranslations.put(entry.getKey(), (T) entry.getValue().copy());
     }
     return clonedTranslations;
   }

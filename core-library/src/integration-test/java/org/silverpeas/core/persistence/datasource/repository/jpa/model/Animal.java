@@ -28,7 +28,9 @@ import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * User: Yohann Chastagnier
@@ -93,5 +95,15 @@ public class Animal extends SilverpeasJpaEntity<Animal, UniqueLongIdentifier> im
   public Animal setEquipments(final List<Equipment> equipments) {
     this.equipments = equipments;
     return this;
+  }
+
+  public Animal copy() {
+    Animal copy = new Animal();
+    copy.name = name;
+    copy.type = type;
+    copy.person = person;
+    // equipments are fetched lazily, so they shouldn't be copied by convention
+    copy.equipments = new ArrayList<>();
+    return copy;
   }
 }
